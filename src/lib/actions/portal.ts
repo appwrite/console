@@ -6,7 +6,7 @@ export type PortalConfig = string | HTMLElement | undefined;
 export const portal: Action<HTMLElement, PortalConfig> = (el, target = 'body') => {
     let targetEl;
 
-    async function update(newTarget: HTMLElement | string | undefined) {
+    async function update(newTarget: PortalConfig) {
         target = newTarget;
         if (typeof target === 'string') {
             targetEl = document.querySelector(target);

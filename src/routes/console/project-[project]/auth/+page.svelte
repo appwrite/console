@@ -25,14 +25,21 @@
         TableHeader,
         TableRowLink
     } from '$lib/elements/table';
-    import { toLocaleDateTime } from '$lib/helpers/date';
+    import { toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
     import type { Models } from '@appwrite.io/console';
+    import { writable } from 'svelte/store';
     import type { PageData } from './$types';
     import Create from './createUser.svelte';
-    import { writable } from 'svelte/store';
 
     export let data: PageData;
+
+    // TODO: Remove this when the console SDK is updated
+    const users = data.users.users.map((user) => {
+        const labels: string[] = [];
+        const accessedAt = '';
+        return { accessedAt, labels, ...user };
+    });
 
     const projectId = $page.params.project;
     async function userCreated(event: CustomEvent<Models.User<Record<string, unknown>>>) {
@@ -53,10 +60,12 @@
                 <TableCellHead onlyDesktop>Identifiers</TableCellHead>
                 <TableCellHead onlyDesktop width={130}>Status</TableCellHead>
                 <TableCellHead onlyDesktop width={100}>ID</TableCellHead>
+                <TableCellHead onlyDesktop width={100}>Labels</TableCellHead>
                 <TableCellHead onlyDesktop>Joined</TableCellHead>
+                <TableCellHead onlyDesktop>Last Activity</TableCellHead>
             </TableHeader>
             <TableBody>
-                {#each data.users.users as user}
+                {#each users as user}
                     <TableRowLink
                         href={`${base}/console/project-${projectId}/auth/user-${user.$id}`}>
                         <TableCell title="Name">
@@ -106,8 +115,14 @@
                                 </Pill>
                             </Copy>
                         </TableCell>
+                        <TableCellText onlyDesktop title="Labels">
+                            {user.labels.join(', ')}
+                        </TableCellText>
                         <TableCellText onlyDesktop title="Joined">
                             {toLocaleDateTime(user.registration)}
+                        </TableCellText>
+                        <TableCellText onlyDesktop title="Last Activity">
+                            {user.accessedAt ? toLocaleDate(user.accessedAt) : 'never'}
                         </TableCellText>
                     </TableRowLink>
                 {/each}

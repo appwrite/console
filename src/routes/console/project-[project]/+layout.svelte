@@ -5,13 +5,15 @@
     import { project, stats } from './store';
 
     import { goto } from '$app/navigation';
-    import {
-        addSubPanel,
-        registerCommands,
-        registerSearchers,
-        updateCommandGroupRanks
-    } from '$lib/commandCenter';
+    import { addSubPanel, registerCommands, registerSearchers } from '$lib/commandCenter';
 
+    import {
+        BucketsPanel,
+        DatabasesPanel,
+        FunctionsPanel,
+        TeamsPanel,
+        UsersPanel
+    } from '$lib/commandCenter/panels';
     import {
         bucketSearcher,
         dbSearcher,
@@ -20,13 +22,6 @@
         userSearcher
     } from '$lib/commandCenter/searchers';
     import { MigrationBox } from '$lib/components';
-    import {
-        UsersPanel,
-        TeamsPanel,
-        DatabasesPanel,
-        FunctionsPanel,
-        BucketsPanel
-    } from '$lib/commandCenter/panels';
 
     onMount(async () => {
         return sdk.forConsole.client.subscribe(['project', 'console'], (response) => {
@@ -40,7 +35,7 @@
 
     $: $registerCommands([
         {
-            label: 'Go to Overview',
+            label: 'Go to overview',
             callback: () => {
                 goto(`/console/project-${$project.$id}`);
             },
@@ -49,7 +44,7 @@
         },
 
         {
-            label: 'Go to Auth',
+            label: 'Go to auth',
             callback: () => {
                 goto(`/console/project-${$project.$id}/auth`);
             },
@@ -57,7 +52,7 @@
             group: 'navigation'
         },
         {
-            label: 'Go to Databases',
+            label: 'Go to databases',
             callback: () => {
                 goto(`/console/project-${$project.$id}/databases`);
             },
@@ -65,7 +60,7 @@
             group: 'navigation'
         },
         {
-            label: 'Go to Functions',
+            label: 'Go to functions',
             callback: () => {
                 goto(`/console/project-${$project.$id}/functions`);
             },
@@ -73,7 +68,7 @@
             group: 'navigation'
         },
         {
-            label: 'Go to Storage',
+            label: 'Go to storage',
             callback: () => {
                 goto(`/console/project-${$project.$id}/storage`);
             },
@@ -81,7 +76,7 @@
             group: 'navigation'
         },
         {
-            label: 'Go to Settings',
+            label: 'Go to settings',
             callback: () => {
                 goto(`/console/project-${$project.$id}/settings`);
             },
@@ -89,7 +84,7 @@
             group: 'navigation'
         },
         {
-            label: 'Find Users',
+            label: 'Find users',
             callback: () => {
                 addSubPanel(UsersPanel);
             },
@@ -99,7 +94,7 @@
             rank: 10
         },
         {
-            label: 'Find Teams',
+            label: 'Find teams',
             callback: () => {
                 addSubPanel(TeamsPanel);
             },
@@ -108,7 +103,7 @@
             keys: ['f', 't']
         },
         {
-            label: 'Find Databases',
+            label: 'Find databases',
             callback: () => {
                 addSubPanel(DatabasesPanel);
             },
@@ -117,7 +112,7 @@
             keys: ['f', 'd']
         },
         {
-            label: 'Find Functions',
+            label: 'Find functions',
             callback: () => {
                 addSubPanel(FunctionsPanel);
             },
@@ -126,7 +121,7 @@
             keys: ['f', 'f']
         },
         {
-            label: 'Find Buckets',
+            label: 'Find buckets',
             callback: () => {
                 addSubPanel(BucketsPanel);
             },

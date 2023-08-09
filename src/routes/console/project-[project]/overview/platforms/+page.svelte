@@ -70,15 +70,6 @@
             return 'unknown';
         }
     };
-
-    // $: $registerCommands([
-    //     {
-    //         label: 'Create Web App',
-    //         callback: () => addPlatform(Platform.Web),
-    //         keys: ['c'],
-    //         icon: 'plus'
-    //     }
-    // ]);
 </script>
 
 <div class="common-section u-flex u-gap-12">

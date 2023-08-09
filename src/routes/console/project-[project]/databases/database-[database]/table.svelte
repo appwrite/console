@@ -7,19 +7,18 @@
     import FloatingActionBar from '$lib/components/floatingActionBar.svelte';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
-    import InputCheckbox from '$lib/elements/forms/inputCheckbox.svelte';
     import {
         TableBody,
         TableCell,
+        TableCellCheck,
         TableCellHead,
+        TableCellHeadCheck,
         TableCellText,
         TableHeader,
         TableRowLink,
         TableScroll
     } from '$lib/elements/table';
-    import { toggle } from '$lib/helpers/array';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import { isHTMLInputElement } from '$lib/helpers/types';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import type { PageData } from './$types';
@@ -62,18 +61,9 @@
 
 <TableScroll>
     <TableHeader>
-        <TableCellHead width={10}>
-            <InputCheckbox
-                id="select-all"
-                indeterminate={selected.length > 0 && selected.length < data.collections.total}
-                value={selected.length === data.collections.total}
-                on:click={(e) => {
-                    if (!isHTMLInputElement(e.target)) return;
-                    selected = e.target.checked
-                        ? data.collections.collections.map((database) => database.$id)
-                        : [];
-                }} />
-        </TableCellHead>
+        <TableCellHeadCheck
+            bind:selected
+            pageItemsIds={data.collections.collections.map((c) => c.$id)} />
         {#each $columns as column}
             {#if column.show}
                 <TableCellHead width={column.width}>{column.title}</TableCellHead>
@@ -84,25 +74,7 @@
         {#each data.collections.collections as collection}
             <TableRowLink
                 href={`${base}/console/project-${projectId}/databases/database-${databaseId}/collection-${collection.$id}`}>
-                <TableCell>
-                    <InputCheckbox
-                        id="select-{collection.$id}"
-                        value={selected.includes(collection.$id)}
-                        on:click={(e) => {
-                            // Prevent the link from being followed
-                            e.preventDefault();
-                            const el = e.currentTarget;
-                            if (!isHTMLInputElement(el)) return;
-
-                            selected = toggle(selected, collection.$id);
-
-                            // Hack to make sure the checkbox is checked, independent of the
-                            // preventDefault() call above
-                            window.setTimeout(() => {
-                                el.checked = selected.includes(collection.$id);
-                            });
-                        }} />
-                </TableCell>
+                <TableCellCheck bind:selectedIds={selected} id={collection.$id} />
                 {#each $columns as column}
                     {#if column.show}
                         {#if column.id === '$id'}

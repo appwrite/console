@@ -1,11 +1,11 @@
 import { trackEvent } from '$lib/actions/analytics';
-import type { SvelteComponent } from 'svelte';
+import type { ComponentType } from 'svelte';
 import { writable } from 'svelte/store';
 
 export type WizardStore = {
     show: boolean;
     media?: string;
-    component?: typeof SvelteComponent;
+    component?: ComponentType;
     interceptor?: () => Promise<void>;
     nextDisabled: boolean;
 };
@@ -22,10 +22,11 @@ function createWizardStore() {
     return {
         subscribe,
         set,
-        start: (component: typeof SvelteComponent, media: string = null) =>
+        start: (component: ComponentType, media: string = null) =>
             update((n) => {
                 n.show = true;
                 n.component = component;
+                n.interceptor = null;
                 n.media = media;
                 trackEvent('wizard_start');
                 return n;
@@ -46,6 +47,7 @@ function createWizardStore() {
             update((n) => {
                 n.show = false;
                 n.component = null;
+                n.interceptor = null;
                 n.media = null;
 
                 return n;

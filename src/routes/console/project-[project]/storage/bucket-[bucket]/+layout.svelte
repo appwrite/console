@@ -57,7 +57,7 @@
             icon: 'puzzle'
         },
         {
-            label: 'File Security',
+            label: 'File security',
             async callback() {
                 await goto(
                     `/console/project-${$project.$id}/storage/bucket-${$bucket.$id}/settings#file-security`

@@ -1,12 +1,21 @@
 <script lang="ts">
     import SvgIcon from '$lib/components/svgIcon.svelte';
-    import { Button, FormList, InputNumber, InputPassword, InputText } from '$lib/elements/forms';
+    import {
+        Button,
+        FormList,
+        InputNumber,
+        InputPassword,
+        InputSelect,
+        InputText
+    } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
     import type { Provider } from '$lib/stores/migration';
     import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/stores';
     import { provider } from '.';
     import { addNotification } from '$lib/stores/notifications';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
 
     const providers: Record<Provider, string> = {
         appwrite: 'Appwrite Self-hosted',
@@ -20,19 +29,13 @@
         const target = new URL(
             `${sdk.forProject.client.config.endpoint}/migrations/firebase/connect`
         );
-        target.searchParams.set('projectId', $page.params.project);
         target.searchParams.set('redirect', redirect.toString());
+        target.searchParams.set('projectId', $page.params.project);
         return target;
     }
 
-    function getFirebaseProjects() {
-        sdk.forProject.migrations.listFirebaseProjects().then((res) => {
-            firebaseProjects = res.projects;
-        });
-    }
-
     function deauthorizeGoogle() {
-        sdk.forProject.migrations.firebaseDeauthorize().then(() => {
+        sdk.forProject.migrations.deleteFirebaseAuth().then(() => {
             firebaseProjects = [];
         });
 
@@ -40,23 +43,22 @@
             type: 'success',
             message: 'Signed out of Google successfully'
         });
+
+        invalidate(Dependencies.MIGRATIONS);
     }
 
-    let firebaseProjects = [];
+    $: firebaseProjects = $page.data.firebaseProjects;
+
+    $: console.log(firebaseProjects);
 
     let showAuth = false;
-
-    $: if ($provider.provider === 'firebase') {
-        getFirebaseProjects();
-    }
 </script>
 
 <WizardStep>
     <svelte:fragment slot="title">Choose provider</svelte:fragment>
-    <div class="cards">
+    <div class="u-flex u-flex-vertical u-gap-16">
         {#each Object.entries(providers) as [key, value]}
-            <label
-                class="card is-allow-focus u-height-100-percent u-flex u-flex-vertical u-cursor-pointer">
+            <label class="u-flex u-cross-center u-cursor-pointer u-gap-8">
                 <input
                     class="is-small"
                     type="radio"
@@ -93,49 +95,51 @@
                 bind:value={$provider.apiKey} />
         </FormList>
     {:else if $provider.provider === 'firebase'}
-        {#if firebaseProjects.length == 0}
+        {#if !firebaseProjects?.length}
             <div class="box u-flex u-flex-vertical u-gap-16 u-cross-center u-margin-block-start-24">
                 <p class="u-text-center u-bold">Sign in with Google to get started</p>
                 <Button secondary href={connectGoogle().toString()}>
                     <SvgIcon name="google" />Sign in
                 </Button>
             </div>
-        {:else}
-            {#each firebaseProjects as project}
-                <div
-                    class="card is-allow-focus u-height-100-percent u-flex u-flex-vertical u-cursor-pointer u-margin-block-start-24">
-                    <div class="content">
-                        <p>{project.displayName}</p>
-                        <span>{project.projectId}</span>
-                    </div>
-                </div>
-            {/each}
 
+            <button
+                class="tag u-margin-block-start-16"
+                type="button"
+                on:click={() => (showAuth = !showAuth)}
+                class:is-selected={showAuth}>
+                <span class="icon-lock-closed" aria-hidden="true" />
+                <span class="text">Manual authentication</span>
+            </button>
+
+            {#if showAuth}
+                <div class="u-margin-block-start-16">
+                    <InputText
+                        id="credentials"
+                        label="Account credentials"
+                        required
+                        bind:value={$provider.serviceAccount}
+                        placeholder="Enter account credentials" />
+                </div>
+            {/if}
+        {:else}
+            <FormList class="u-margin-block-start-24">
+                <InputSelect
+                    id="firebase-project"
+                    label="Firebase project"
+                    required
+                    bind:value={$provider.projectId}
+                    options={firebaseProjects.map((project) => ({
+                        label: project.displayName,
+                        value: project.projectId
+                    }))} />
+            </FormList>
             <p class="u-text-center u-margin-block-start-24">
                 Signed in
                 <button class="u-bold" on:click|preventDefault={deauthorizeGoogle}>
                     Sign Out?
                 </button>
             </p>
-        {/if}
-        <button
-            class="tag u-margin-block-start-16"
-            type="button"
-            on:click={() => (showAuth = !showAuth)}
-            class:is-selected={showAuth}>
-            <span class="icon-lock-closed" aria-hidden="true" />
-            <span class="text">Manual authentication</span>
-        </button>
-
-        {#if showAuth}
-            <div class="u-margin-block-start-16">
-                <InputText
-                    id="credentials"
-                    label="Account credentials"
-                    required
-                    bind:value={$provider.serviceAccount}
-                    placeholder="Enter account credentials" />
-            </div>
         {/if}
     {:else if $provider.provider === 'supabase'}
         <FormList class="u-margin-block-start-24">
@@ -225,40 +229,3 @@
         </FormList>
     {/if}
 </WizardStep>
-
-<style lang="scss">
-    .cards {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(9.125rem, 1fr));
-        align-items: stretch;
-        gap: 1rem;
-    }
-
-    .card {
-        --card-padding: 0;
-        --card-border-radius: var(--border-radius-small);
-        display: block;
-        position: relative;
-
-        block-size: auto;
-        display: grid;
-        place-items: center;
-        text-align: center;
-
-        input {
-            position: absolute;
-            top: 0.5rem;
-            left: 0.5rem;
-        }
-
-        .content {
-            width: 9.125rem;
-            height: 5.5rem;
-
-            padding: 0 2rem;
-
-            display: grid;
-            place-items: center;
-        }
-    }
-</style>

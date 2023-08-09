@@ -21,8 +21,8 @@
     import { AIPanel, OrganizationsPanel, ProjectsPanel } from '$lib/commandCenter/panels';
     import { orgSearcher, projectsSearcher } from '$lib/commandCenter/searchers';
     import { addSubPanel } from '$lib/commandCenter/subPanels';
-    import { openMigrationWizard } from './(migration-wizard)';
     import { addNotification } from '$lib/stores/notifications';
+    import { openMigrationWizard } from './(migration-wizard)';
 
     $: $registerCommands([
         {
@@ -34,7 +34,7 @@
             icon: 'light-bulb'
         },
         {
-            label: 'Go to Account',
+            label: 'Go to account',
             callback: () => {
                 goto('/console/account');
             },
@@ -42,7 +42,7 @@
             group: 'navigation'
         },
         {
-            label: 'Find an Organization',
+            label: 'Find an organization',
             callback: () => {
                 addSubPanel(OrganizationsPanel);
             },
@@ -60,7 +60,7 @@
             icon: 'search'
         },
         {
-            label: 'Create new Organization',
+            label: 'Create new organization',
             callback: () => {
                 newOrgModal.set(true);
             },
@@ -68,7 +68,7 @@
             group: 'organizations'
         },
         {
-            label: 'Go to Home',
+            label: 'Go to home',
             callback: () => {
                 goto('/console');
             },
@@ -127,6 +127,7 @@
             icon: 'switch-horizontal'
         }
     ]);
+    let isOpen = false;
 
     onMount(() => {
         loading.set(false);
@@ -168,12 +169,13 @@
 <CommandCenter />
 
 <Shell
+    bind:isOpen
     showSideNavigation={$page.url.pathname !== '/console' &&
         !$page?.params.organization &&
         !$page.url.pathname.includes('/console/account') &&
         !$page.url.pathname.includes('/console/onboarding')}>
     <Header slot="header" />
-    <SideNavigation slot="side" />
+    <SideNavigation slot="side" bind:isOpen />
     <slot />
     <Footer slot="footer" />
 </Shell>

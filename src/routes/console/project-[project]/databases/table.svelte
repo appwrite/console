@@ -6,20 +6,19 @@
     import { Id, Modal } from '$lib/components';
     import FloatingActionBar from '$lib/components/floatingActionBar.svelte';
     import { Dependencies } from '$lib/constants';
-    import Button from '$lib/elements/forms/button.svelte';
-    import InputCheckbox from '$lib/elements/forms/inputCheckbox.svelte';
+    import { Button } from '$lib/elements/forms';
     import {
         TableBody,
         TableCell,
         TableCellHead,
+        TableCellHeadCheck,
         TableCellText,
         TableHeader,
         TableRowLink,
-        TableScroll
+        TableScroll,
+        TableCellCheck
     } from '$lib/elements/table';
-    import { toggle } from '$lib/helpers/array';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import { isHTMLInputElement } from '$lib/helpers/types';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import type { PageData } from './$types';
@@ -59,18 +58,9 @@
 
 <TableScroll>
     <TableHeader>
-        <TableCellHead width={10}>
-            <InputCheckbox
-                id="select-all"
-                indeterminate={selected.length > 0 && selected.length < data.databases.total}
-                value={selected.length === data.databases.total}
-                on:click={(e) => {
-                    if (!isHTMLInputElement(e.target)) return;
-                    selected = e.target.checked
-                        ? data.databases.databases.map((database) => database.$id)
-                        : [];
-                }} />
-        </TableCellHead>
+        <TableCellHeadCheck
+            bind:selected
+            pageItemsIds={data.databases.databases.map((c) => c.$id)} />
         {#each $columns as column}
             {#if column.show}
                 <TableCellHead width={column.width}>{column.title}</TableCellHead>
@@ -81,25 +71,7 @@
         {#each data.databases.databases as database}
             <TableRowLink
                 href={`${base}/console/project-${projectId}/databases/database-${database.$id}`}>
-                <TableCell>
-                    <InputCheckbox
-                        id="select-{database.$id}"
-                        value={selected.includes(database.$id)}
-                        on:click={(e) => {
-                            // Prevent the link from being followed
-                            e.preventDefault();
-                            const el = e.currentTarget;
-                            if (!isHTMLInputElement(el)) return;
-
-                            selected = toggle(selected, database.$id);
-
-                            // Hack to make sure the checkbox is checked, independent of the
-                            // preventDefault() call above
-                            window.setTimeout(() => {
-                                el.checked = selected.includes(database.$id);
-                            });
-                        }} />
-                </TableCell>
+                <TableCellCheck bind:selectedIds={selected} id={database.$id} />
                 {#each $columns as column}
                     {#if column.show}
                         {#if column.id === '$id'}

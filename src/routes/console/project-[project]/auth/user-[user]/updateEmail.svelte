@@ -36,6 +36,11 @@
 <Form onSubmit={updateEmail}>
     <CardGrid>
         <Heading tag="h6" size="7">Email</Heading>
+        <p>
+            Update user's email. An Email should be formatted as: <span class="inline-code"
+                >name@example.com</span
+            >.
+        </p>
         <svelte:fragment slot="aside">
             <ul>
                 <InputEmail

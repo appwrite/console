@@ -56,8 +56,12 @@ export const versions = cachedStore<
 >('versions', function ({ set }) {
     return {
         load: async () => {
-            const { endpoint } = sdk.forConsole.client.config;
-            const response = await fetch(`${endpoint}/../versions`);
+            const { endpoint, project } = sdk.forConsole.client.config;
+            const response = await fetch(`${endpoint}/../versions`, {
+                headers: {
+                    'X-Appwrite-Project': project
+                }
+            });
             set(await response.json());
         }
     };

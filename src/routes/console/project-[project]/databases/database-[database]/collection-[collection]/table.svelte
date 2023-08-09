@@ -2,37 +2,32 @@
     import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { tooltip } from '$lib/actions/tooltip';
-    import { Id } from '$lib/components';
+    import { Alert, FloatingActionBar, Id, Modal } from '$lib/components';
+    import { Dependencies } from '$lib/constants';
+    import { Button, InputChoice } from '$lib/elements/forms';
     import {
         TableBody,
         TableCell,
+        TableCellCheck,
         TableCellHead,
+        TableCellHeadCheck,
         TableCellText,
         TableHeader,
         TableRow,
         TableRowLink,
         TableScroll
     } from '$lib/elements/table';
+    import { addNotification } from '$lib/stores/notifications';
     import { preferences } from '$lib/stores/preferences';
+    import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import type { PageData } from './$types';
     import { isRelationship, isRelationshipToMany } from './document-[document]/attributes/store';
     import RelationshipsModal from './relationshipsModal.svelte';
     import { attributes, collection, columns } from './store';
-    import InputCheckbox from '$lib/elements/forms/inputCheckbox.svelte';
-    import { isHTMLInputElement } from '$lib/helpers/types';
-    import { toggle } from '$lib/helpers/array';
-    import { sdk } from '$lib/stores/sdk';
-    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { addNotification } from '$lib/stores/notifications';
-    import { Dependencies } from '$lib/constants';
-    import FloatingActionBar from '$lib/components/floatingActionBar.svelte';
-    import Button from '$lib/elements/forms/button.svelte';
-    import Modal from '$lib/components/modal.svelte';
-    import Alert from '$lib/components/alert.svelte';
-    import InputChoice from '$lib/elements/forms/inputChoice.svelte';
 
     export let data: PageData;
 
@@ -88,14 +83,16 @@
 
     $: selected = preferences.getCustomCollectionColumns($page.params.collection);
 
-    $: columns.set(
-        $collection.attributes.map((attribute) => ({
-            id: attribute.key,
-            title: attribute.key,
-            type: attribute.type,
-            show: selected?.includes(attribute.key) ?? true
-        }))
-    );
+    $: {
+        columns.set(
+            $collection.attributes.map((attribute) => ({
+                id: attribute.key,
+                title: attribute.key,
+                type: attribute.type,
+                show: selected?.includes(attribute.key) ?? true
+            }))
+        );
+    }
 
     let selectedDb: string[] = [];
     let showDelete = false;
@@ -112,7 +109,7 @@
             trackEvent(Submit.DocumentDelete);
             addNotification({
                 type: 'success',
-                message: `${selected.length} document${selected.length > 1 ? 's' : ''} deleted`
+                message: `${selectedDb.length} document${selectedDb.length > 1 ? 's' : ''} deleted`
             });
             invalidate(Dependencies.DOCUMENTS);
         } catch (error) {
@@ -122,7 +119,7 @@
             });
             trackError(error, Submit.DocumentDelete);
         } finally {
-            selected = [];
+            selectedDb = [];
             showDelete = false;
         }
     }
@@ -142,18 +139,9 @@
 
 <TableScroll isSticky>
     <TableHeader>
-        <TableCellHead width={10}>
-            <InputCheckbox
-                id="select-all"
-                indeterminate={selectedDb.length > 0 && selectedDb.length < data.documents.total}
-                value={selectedDb.length === data.documents.total}
-                on:click={(e) => {
-                    if (!isHTMLInputElement(e.target)) return;
-                    selectedDb = e.target.checked
-                        ? data.documents.documents.map((database) => database.$id)
-                        : [];
-                }} />
-        </TableCellHead>
+        <TableCellHeadCheck
+            bind:selected={selectedDb}
+            pageItemsIds={data.documents.documents.map((d) => d.$id)} />
         <TableCellHead width={150} eyebrow={false}>Document ID</TableCellHead>
         {#each $columns.filter((n) => n.show) as column}
             {#if column.show}
@@ -165,25 +153,7 @@
         {#each data.documents.documents as document}
             <TableRowLink
                 href={`${base}/console/project-${projectId}/databases/database-${databaseId}/collection-${$collection.$id}/document-${document.$id}`}>
-                <TableCell>
-                    <InputCheckbox
-                        id="select-{document.$id}"
-                        value={selectedDb.includes(document.$id)}
-                        on:click={(e) => {
-                            // Prevent the link from being followed
-                            e.preventDefault();
-                            const el = e.currentTarget;
-                            if (!isHTMLInputElement(el)) return;
-
-                            selectedDb = toggle(selectedDb, document.$id);
-
-                            // Hack to make sure the checkbox is checked, independent of the
-                            // preventDefault() call above
-                            window.setTimeout(() => {
-                                el.checked = selectedDb.includes(document.$id);
-                            });
-                        }} />
-                </TableCell>
+                <TableCellCheck bind:selectedIds={selectedDb} id={document.$id} />
 
                 <TableCell width={150}>
                     <Id value={document.$id}>

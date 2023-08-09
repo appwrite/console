@@ -1,16 +1,16 @@
 <script lang="ts">
     import { EmptySearch } from '$lib/components';
+    import { Pill } from '$lib/elements';
+    import { Button } from '$lib/elements/forms';
     import {
         Table,
         TableBody,
-        TableHeader,
-        TableRow,
-        TableCellHead,
         TableCell,
-        TableCellText
+        TableCellHead,
+        TableCellText,
+        TableHeader,
+        TableRow
     } from '$lib/elements/table';
-    import { Pill } from '$lib/elements';
-    import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import DeleteAllSessions from '../deleteAllSessions.svelte';
@@ -47,7 +47,7 @@
                     <TableRow>
                         <TableCell title="Client">
                             <div class="u-flex u-gap-12 u-cross-center">
-                                <div class="image-item">
+                                <div class="avatar">
                                     <img
                                         height="20"
                                         width="20"
