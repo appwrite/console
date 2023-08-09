@@ -11,6 +11,9 @@
     import EnableAllServices from './enableAllServices.svelte';
     import DisableAllServices from './disableAllServices.svelte';
 
+    let showDisableAll = false;
+    let showEnableAll = false;
+
     $: services.load($project);
 
     async function serviceUpdate(service: Service) {

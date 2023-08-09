@@ -14,6 +14,7 @@
     import DeleteProject from './deleteProject.svelte';
     import { services, type Service } from '$lib/stores/project-services';
     import { CardGrid, CopyInput, Box, Heading } from '$lib/components';
+    import { toLocaleDateTime } from '$lib/helpers/date';
     import {
         Button,
         Form,
@@ -35,8 +36,6 @@
     let showTransfer = false;
     const endpoint = sdk.forConsole.client.config.endpoint;
     const projectId = $page.params.project;
-    let showDisableAll = false;
-    let showEnableAll = false;
 
     onMount(() => {
         name ??= $project.name;
@@ -88,7 +87,6 @@
         await sdk.forProject.projectApi.deleteVariable(variableId);
         await invalidate(Dependencies.PROJECT_VARIABLES);
     }
-
 </script>
 
 <Container>
@@ -104,7 +102,6 @@
             variableList={data.variables} />
         <DeleteProject />
 
-       
         <CardGrid>
             <Heading tag="h6" size="7">Transfer project</Heading>
             <p class="text">Transfer your project to another organization that you own.</p>
@@ -152,7 +149,6 @@
         </CardGrid>
     {/if}
 </Container>
-
 
 {#if teamId}
     <Transfer
