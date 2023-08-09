@@ -17,7 +17,7 @@
     import { Dependencies } from '$lib/constants';
     import { timer } from '$lib/actions/timer';
     import { tooltip } from '$lib/actions/tooltip';
-    import { tick } from 'svelte/types/runtime/internal/scheduler';
+    import DeploymentSource from '../deploymentSource.svelte';
 
     export let data;
 
@@ -79,21 +79,11 @@
                             {calculateTime(data.deployment.buildTime)}
                         {/if}
                     </p>
-                    <p><b>Created:</b> {timeFromNow(data.deployment.$createdAt)}</p>
+                    <p><b>Created:</b> <deploymentCreatedBy deployment={activeDeployment} /></p>
                     <p><b>Size:</b> {fileSize.value + fileSize.unit}</p>
                     <p>
                         <b>Source:</b>
-                        <span
-                            use:tooltip={{
-                                interactive: true,
-                                allowHTML: true,
-                                disabled: false,
-                                onShow(instance) {
-                                    tick().then(() => {
-                                        instance.setContent(tooltipContent);
-                                    });
-                                }
-                            }}>Git</span>
+                        <DeploymentSource deployment={data.deployment} />
                     </p>
                 </div>
                 <div class="u-flex u-flex-vertical u-cross-end">

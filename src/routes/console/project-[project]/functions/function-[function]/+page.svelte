@@ -38,8 +38,9 @@
     import DropListLink from '$lib/components/dropListLink.svelte';
     import { page } from '$app/stores';
     import { tooltip } from '$lib/actions/tooltip';
-    import { tick } from 'svelte';
     import RedeployModal from './redeployModal.svelte';
+    import DeploymentSource from './deploymentSource.svelte';
+    import DeploymentCreatedBy from './deploymentCreatedBy.svelte';
 
     export let data: PageData;
 
@@ -50,7 +51,6 @@
     let showRedeploy = false;
 
     let selectedDeployment: Models.Deployment = null;
-    let tooltipContent: HTMLDivElement;
 
     function handleActivate() {
         invalidate(Dependencies.DEPLOYMENTS);
@@ -102,7 +102,10 @@
                         </div>
 
                         <div class="u-flex u-gap-12 u-cross-center">
-                            <a href={'//' + data.domain.rules[0].domain} target="_blank">
+                            <a
+                                class="u-underline u-cursor-pointer"
+                                href={'//' + data.domain.rules[0].domain}
+                                target="_blank">
                                 {data.domain.rules[0].domain}
                             </a>
                         </div>
@@ -114,21 +117,14 @@
                     <div class="u-flex u-main-space-between">
                         <div>
                             <p><b>Build time:</b> {calculateTime(activeDeployment.buildTime)}</p>
-                            <p><b>Created:</b> {timeFromNow(activeDeployment.$createdAt)}</p>
+                            <p>
+                                <b>Created:</b>
+                                <DeploymentCreatedBy deployment={activeDeployment} />
+                            </p>
                             <p><b>Size:</b> {fileSize.value + fileSize.unit}</p>
                             <p>
                                 <b>Source:</b>
-                                <span
-                                    use:tooltip={{
-                                        interactive: true,
-                                        allowHTML: true,
-                                        disabled: false,
-                                        onShow(instance) {
-                                            tick().then(() => {
-                                                instance.setContent(tooltipContent);
-                                            });
-                                        }
-                                    }}>Git</span>
+                                <DeploymentSource deployment={activeDeployment} />
                             </p>
                         </div>
                         <div class="u-flex u-flex-vertical u-cross-end">
@@ -168,7 +164,7 @@
         {/if}
 
         <div class="common-section">
-            <Heading tag="h3" size="7">Inactive</Heading>
+            <Heading tag="h3" size="7">All</Heading>
         </div>
         {#if data.deployments.total > 0}
             <TableScroll>
@@ -194,12 +190,22 @@
                                     warning={status === 'pending'}
                                     success={status === 'completed' || status === 'ready'}
                                     info={status === 'processing' || status === 'building'}>
-                                    <span>{status}</span>
+                                    <span
+                                        class="text u-trim"
+                                        use:tooltip={{
+                                            content: 'Active Deployment',
+                                            placement: 'top'
+                                        }}>
+                                        {#if deployment.$id === $func.deployment}
+                                            <span class="icon-check-circle" aria-hidden="true" />
+                                        {/if}
+                                        <span>{status}</span></span>
                                 </Pill>
                             </TableCell>
-                            <TableCellText width={70} title="Source">Git</TableCellText>
+                            <TableCellText width={70} title="Source">
+                                <DeploymentSource {deployment} /></TableCellText>
                             <TableCellText width={140} title="Created">
-                                {timeFromNow(deployment.$createdAt)}
+                                <DeploymentCreatedBy {deployment} />
                             </TableCellText>
 
                             <TableCellText width={100} title="Build Time">
@@ -307,9 +313,3 @@
     <Activate {selectedDeployment} bind:showActivate on:activated={handleActivate} />
     <RedeployModal {selectedDeployment} bind:show={showRedeploy} />
 {/if}
-
-<div class="u-hide">
-    <div bind:this={tooltipContent}>
-        <p class="text">test</p>
-    </div>
-</div>
