@@ -35,7 +35,7 @@
     icon="exclamation"
     state="warning"
     headerDivider={false}>
-    <svelte:fragment slot="header">Delete Account</svelte:fragment>
+    <svelte:fragment slot="title">Delete Account</svelte:fragment>
     <p>Are you sure you want to delete your account?</p>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)}>Cancel</Button>

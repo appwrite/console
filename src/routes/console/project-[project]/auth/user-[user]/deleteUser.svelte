@@ -38,7 +38,7 @@
     icon="exclamation"
     state="warning"
     headerDivider={false}>
-    <svelte:fragment slot="header">Delete User</svelte:fragment>
+    <svelte:fragment slot="title">Delete User</svelte:fragment>
     <p data-private>Are you sure you want to delete <b>{$user.name}</b> from '{$project.name}'?</p>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)}>Cancel</Button>

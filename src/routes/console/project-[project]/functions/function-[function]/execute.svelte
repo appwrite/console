@@ -64,7 +64,7 @@
 </script>
 
 <Modal bind:show size="big" onSubmit={handleSubmit} on:close={close}>
-    <svelte:fragment slot="header">Execute Function</svelte:fragment>
+    <svelte:fragment slot="title">Execute Function</svelte:fragment>
     <FormList>
         <InputTextarea bind:value={data} id="data" label="Custom data (optional)" />
         <InputChoice type="switchbox" id="json" label="Show example JSON" bind:value={showJson}>

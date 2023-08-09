@@ -38,7 +38,7 @@
     bind:show={showDelete}
     onSubmit={handleDelete}
     headerDivider={false}>
-    <svelte:fragment slot="header">Delete Database</svelte:fragment>
+    <svelte:fragment slot="title">Delete Database</svelte:fragment>
     <p class="text" data-private>
         Are you sure you want to delete <b>{$database.name}</b>?
     </p>

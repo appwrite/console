@@ -61,7 +61,7 @@
     </Button>
 
     <Modal bind:show={showFiltersMobile} size="big">
-        <svelte:fragment slot="header">Filters</svelte:fragment>
+        <svelte:fragment slot="title">Filters</svelte:fragment>
         <Content on:apply={(e) => (applied = e.detail.applied)} on:clear={() => (applied = 0)} />
         <svelte:fragment slot="footer">
             <Button text on:click={clearAll}>Clear all</Button>

@@ -44,7 +44,7 @@
 </script>
 
 <Modal bind:show on:close={() => (migrationId = null)} size="big">
-    <svelte:fragment slot="header">
+    <svelte:fragment slot="title">
         {#if details.status === 'failed'}
             Resolve migration issues
         {:else}

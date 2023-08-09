@@ -39,7 +39,7 @@
     icon="exclamation"
     state="warning"
     headerDivider={false}>
-    <svelte:fragment slot="header">Delete API Key</svelte:fragment>
+    <svelte:fragment slot="title">Delete API Key</svelte:fragment>
     <p>The API Key will be permanently deleted. This action is irreversible.</p>
 
     <svelte:fragment slot="footer">

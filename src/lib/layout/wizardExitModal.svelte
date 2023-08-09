@@ -12,7 +12,7 @@
 </script>
 
 <Modal bind:show onSubmit={handleSubmit} icon="exclamation" state="warning">
-    <svelte:fragment slot="header">Exit Process</svelte:fragment>
+    <svelte:fragment slot="title">Exit Process</svelte:fragment>
     <p>
         Are you sure you want to exit from <slot />? All data will be deleted. This action is
         irreversible.

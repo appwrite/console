@@ -43,7 +43,7 @@
     bind:show={showDelete}
     onSubmit={handleDelete}
     headerDivider={false}>
-    <svelte:fragment slot="header">Delete Collection</svelte:fragment>
+    <svelte:fragment slot="title">Delete Collection</svelte:fragment>
 
     <p data-private>
         Are you sure you want to delete <b>{$collection.name}</b>?

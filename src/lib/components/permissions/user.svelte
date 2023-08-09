@@ -62,7 +62,7 @@
 </script>
 
 <Modal bind:show onSubmit={create} on:close={reset} size="big">
-    <svelte:fragment slot="header">Select users</svelte:fragment>
+    <svelte:fragment slot="title">Select users</svelte:fragment>
     <p class="text">Grant access to any authenticated or anonymous user.</p>
     <InputSearch
         autofocus

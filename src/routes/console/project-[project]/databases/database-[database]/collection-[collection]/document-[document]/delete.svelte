@@ -66,7 +66,7 @@
     onSubmit={handleDelete}
     bind:show={showDelete}
     headerDivider={false}>
-    <svelte:fragment slot="header">Delete Document</svelte:fragment>
+    <svelte:fragment slot="title">Delete Document</svelte:fragment>
 
     <p data-private>
         Are you sure you want to delete <b

@@ -42,7 +42,7 @@
     icon="exclamation"
     state="warning"
     headerDivider={false}>
-    <svelte:fragment slot="header">Delete Organization</svelte:fragment>
+    <svelte:fragment slot="title">Delete Organization</svelte:fragment>
     <p>
         Are you sure you want to delete <b>{$organization.name}</b>? All projects ({$organization.total})
         and data associated with this organization will be deleted. This action is irreversible.

@@ -38,7 +38,7 @@
     icon="exclamation"
     state="warning"
     headerDivider={false}>
-    <svelte:fragment slot="header">Delete Domain</svelte:fragment>
+    <svelte:fragment slot="title">Delete Domain</svelte:fragment>
     {#if selectedDomain}
         <p data-private>
             Are you sure you want to delete <b>{selectedDomain.domain}</b> from '{$project.name}'?

@@ -122,7 +122,7 @@
     onSubmit={handleDelete}
     headerDivider={false}
     closable={!deleting}>
-    <svelte:fragment slot="header">Delete Collections</svelte:fragment>
+    <svelte:fragment slot="title">Delete Collections</svelte:fragment>
     <p class="text" data-private>
         Are you sure you want to delete <b>{selected.length}</b>
         {selected.length > 1 ? 'collections' : 'collection'}?

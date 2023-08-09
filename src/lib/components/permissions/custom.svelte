@@ -26,7 +26,7 @@
 </script>
 
 <Modal bind:show on:close={reset} onSubmit={create}>
-    <svelte:fragment slot="header">Custom permission</svelte:fragment>
+    <svelte:fragment slot="title">Custom permission</svelte:fragment>
     <p class="text">
         Custom permissions allow you to grant access to specific users or teams using their ID and
         role.

@@ -37,7 +37,7 @@
     icon="exclamation"
     state="warning"
     headerDivider={false}>
-    <svelte:fragment slot="header">Delete Sessions</svelte:fragment>
+    <svelte:fragment slot="title">Delete Sessions</svelte:fragment>
 
     <p>Are you sure you want to delete this session?</p>
     <svelte:fragment slot="footer">

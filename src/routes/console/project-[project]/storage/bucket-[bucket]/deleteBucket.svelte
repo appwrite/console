@@ -37,7 +37,7 @@
     icon="exclamation"
     state="warning"
     headerDivider={false}>
-    <svelte:fragment slot="header">Delete Bucket</svelte:fragment>
+    <svelte:fragment slot="title">Delete Bucket</svelte:fragment>
     <p data-private>Are you sure you want to delete <b>{$bucket.name}</b>?</p>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)}>Cancel</Button>

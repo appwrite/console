@@ -248,7 +248,7 @@
     onSubmit={handleDelete}
     headerDivider={false}
     closable={!deleting}>
-    <svelte:fragment slot="header">Delete Documents</svelte:fragment>
+    <svelte:fragment slot="title">Delete Documents</svelte:fragment>
 
     <div>
         <p class="text" data-private>

@@ -32,7 +32,7 @@
 </script>
 
 <Modal bind:show={showCreate} onSubmit={handleVariable} size="big">
-    <svelte:fragment slot="header">
+    <svelte:fragment slot="title">
         {selectedVar ? 'Update' : 'Create'} Variable
     </svelte:fragment>
     <FormList>

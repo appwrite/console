@@ -121,7 +121,7 @@
     onSubmit={handleDelete}
     headerDivider={false}
     closable={!deleting}>
-    <svelte:fragment slot="header">Delete Database</svelte:fragment>
+    <svelte:fragment slot="title">Delete Database</svelte:fragment>
     <p class="text" data-private>
         Are you sure you want to delete <b>{selected.length}</b>
         {selected.length > 1 ? 'databases' : 'database'}?

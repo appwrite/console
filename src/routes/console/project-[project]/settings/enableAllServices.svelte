@@ -7,7 +7,7 @@
 </script>
 
 <Modal bind:show onSubmit={handleEnableAll}>
-    <svelte:fragment slot="header">Enable all services</svelte:fragment>
+    <svelte:fragment slot="title">Enable all services</svelte:fragment>
     <p class="text" data-private>All project services will be enabled.</p>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (show = false)}>Cancel</Button>

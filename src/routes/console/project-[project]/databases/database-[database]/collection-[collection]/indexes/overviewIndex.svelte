@@ -9,7 +9,7 @@
 </script>
 
 <Modal size="big" bind:show={showOverview}>
-    <svelte:fragment slot="header">Overview</svelte:fragment>
+    <svelte:fragment slot="title">Overview</svelte:fragment>
     <FormList>
         <InputText
             id="key"

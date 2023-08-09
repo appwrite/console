@@ -50,7 +50,7 @@
 </script>
 
 <Modal {error} size="big" bind:show={showCreate} onSubmit={create}>
-    <svelte:fragment slot="header">Invite Member</svelte:fragment>
+    <svelte:fragment slot="title">Invite Member</svelte:fragment>
     <FormList>
         <InputEmail
             required

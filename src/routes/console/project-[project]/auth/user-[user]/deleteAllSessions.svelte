@@ -37,7 +37,7 @@
     icon="exclamation"
     state="warning"
     headerDivider={false}>
-    <svelte:fragment slot="header">Delete All Sessions</svelte:fragment>
+    <svelte:fragment slot="title">Delete All Sessions</svelte:fragment>
     <p data-private>
         Are you sure you want to delete <b>all of {$user.name}'s sessions?</b>
     </p>
