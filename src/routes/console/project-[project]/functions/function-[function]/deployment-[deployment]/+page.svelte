@@ -79,7 +79,7 @@
                             {calculateTime(data.deployment.buildTime)}
                         {/if}
                     </p>
-                    <p><b>Created:</b> <deploymentCreatedBy deployment={activeDeployment} /></p>
+                    <p><b>Created:</b> <deploymentCreatedBy deployment={data.deployment} /></p>
                     <p><b>Size:</b> {fileSize.value + fileSize.unit}</p>
                     <p>
                         <b>Source:</b>
