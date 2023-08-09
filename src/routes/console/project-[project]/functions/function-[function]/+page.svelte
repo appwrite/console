@@ -4,6 +4,7 @@
         CardGrid,
         DropList,
         DropListItem,
+        DropListLink,
         Empty,
         Heading,
         PaginationWithLimit,
@@ -27,16 +28,17 @@
     import { timeFromNow } from '$lib/helpers/date';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import type { Models } from '@appwrite.io/console';
+    import { Query, type Models } from '@appwrite.io/console';
     import type { PageData } from './$types';
     import Delete from './delete.svelte';
+    import Create from './create.svelte';
+    import { timer } from '$lib/actions/timer';
+    import { page } from '$app/stores';
+    import { onMount } from 'svelte';
+    import { sdk } from '$lib/stores/sdk';
     import Activate from './activate.svelte';
     import { calculateTime } from '$lib/helpers/timeConversion';
-    import { timer } from '$lib/actions/timer';
     import { Pill } from '$lib/elements';
-    import Create from './create.svelte';
-    import DropListLink from '$lib/components/dropListLink.svelte';
-    import { page } from '$app/stores';
     import { tooltip } from '$lib/actions/tooltip';
     import RedeployModal from './redeployModal.svelte';
     import DeploymentSource from './deploymentSource.svelte';
@@ -51,6 +53,18 @@
     let showRedeploy = false;
 
     let selectedDeployment: Models.Deployment = null;
+    let activeDeployment: Models.Deployment = null;
+
+    onMount(async () => {
+        activeDeployment = await getActiveDeployment();
+    });
+
+    async function getActiveDeployment() {
+        const list = await sdk.forProject.functions.listDeployments($page.params.function, [
+            Query.equal('$id', $func?.deployment)
+        ]);
+        return list?.deployments?.[0];
+    }
 
     function handleActivate() {
         invalidate(Dependencies.DEPLOYMENTS);

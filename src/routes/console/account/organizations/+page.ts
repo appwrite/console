@@ -15,7 +15,7 @@ export const load: PageLoad = async ({ url, route }) => {
         organizations: await sdk.forConsole.teams.list([
             Query.offset(offset),
             Query.limit(limit),
-            Query.orderDesc('$createdAt')
+            Query.orderDesc('')
         ])
     };
 };

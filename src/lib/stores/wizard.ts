@@ -1,5 +1,4 @@
 import { trackEvent } from '$lib/actions/analytics';
-import type { SvelteComponent } from 'svelte';
 import { writable } from 'svelte/store';
 
 export type WizardStore = {
@@ -26,6 +25,7 @@ function createWizardStore() {
             update((n) => {
                 n.show = true;
                 n.component = component;
+                n.interceptor = null;
                 n.media = media;
                 n.cover = null;
                 trackEvent('wizard_start');
@@ -42,6 +42,7 @@ function createWizardStore() {
             update((n) => {
                 n.show = false;
                 n.component = null;
+                n.interceptor = null;
                 n.media = null;
                 n.cover = null;
                 return n;

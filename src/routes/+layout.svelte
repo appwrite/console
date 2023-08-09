@@ -60,11 +60,20 @@
          * Handle initial load.
          */
         if (!$page.url.pathname.startsWith('/auth') && !$page.url.pathname.startsWith('/git')) {
-            const acceptedRoutes = ['/login', '/register', '/recover', '/invite'];
+            const acceptedRoutes = [
+                '/login',
+                '/register',
+                '/recover',
+                '/invite',
+                '/card',
+                '/hackathon'
+            ];
             if ($user) {
                 if (
                     !$page.url.pathname.startsWith('/console') &&
-                    !$page.url.pathname.startsWith('/invite')
+                    !$page.url.pathname.startsWith('/invite') &&
+                    !$page.url.pathname.startsWith('/card') &&
+                    !$page.url.pathname.startsWith('/hackathon')
                 ) {
                     await goto(`${base}/console`, {
                         replaceState: true
@@ -141,5 +150,38 @@
         &[data-placement^='right'] > .tippy-arrow::before {
             border-right-color: hsl(var(--p-tooltip--bg-color));
         }
+    }
+
+    .theme-dark .with-separators {
+        --separator-color: hsl(var(--color-neutral-200));
+        --separator-text: hsl(var(--color-neutral-100));
+    }
+
+    .with-separators {
+        --separator-color: hsl(var(--color-neutral-5));
+        --separator-text: hsl(var(--color-neutral-50));
+    }
+
+    .with-separators {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+
+        text-transform: uppercase;
+        width: 100%;
+
+        color: var(--separator-text);
+
+        &::before,
+        &::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--separator-color);
+        }
+    }
+
+    [type='checkbox']:where(:checked)::before {
+        content: '\ea38';
     }
 </style>

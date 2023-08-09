@@ -84,7 +84,7 @@
                                                 aria-hidden="true" />
                                         {/if}
                                     </div>
-                                    <span class="text u-trim" data-private>{attribute.key}</span>
+                                    <span class="text u-trim-1" data-private>{attribute.key}</span>
                                 </div>
                                 {#if attribute.status !== 'available'}
                                     <Pill
