@@ -31,7 +31,7 @@ export const load: PageLoad = async ({ params, depends, url, route }) => {
             [
                 Query.limit(limit),
                 Query.offset(offset),
-                Query.orderDesc('$createdAt'),
+                Query.orderDesc(''),
                 ...parsedQueries.values()
             ]
         )
