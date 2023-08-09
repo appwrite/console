@@ -30,14 +30,14 @@
                 $func.events || undefined,
                 $func.schedule || undefined,
                 $func.timeout || undefined,
-                $func.enabled,
+                $func.enabled || undefined,
                 functionLogging,
-                $func.commands,
-                $func.installationId,
-                $func.providerRepositoryId,
-                $func.providerBranch,
-                $func.providerSilentMode,
-                $func.providerRootDirectory
+                $func.commands || undefined,
+                $func.installationId || undefined,
+                $func.providerRepositoryId || undefined,
+                $func.providerBranch || undefined,
+                $func.providerSilentMode || undefined,
+                $func.providerRootDirectory || undefined
             );
             await invalidate(Dependencies.FUNCTION);
             addNotification({

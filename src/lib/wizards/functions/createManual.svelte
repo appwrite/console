@@ -32,7 +32,7 @@
             undefined,
             undefined,
             undefined,
-            $createFunction.commands
+            $createFunction.commands || undefined
         );
         await sdk.forProject.functions.createDeployment(
             response.$id,

@@ -26,12 +26,12 @@
             undefined,
             undefined,
             undefined,
-            $createFunction.commands,
+            $createFunction.commands || undefined,
             $installation.$id,
             $repository.id,
             $choices.branch,
-            $choices.silentMode,
-            $choices.rootDir
+            $choices.silentMode || undefined,
+            $choices.rootDir || undefined
         );
         goto(`${base}/console/project-${$page.params.project}/functions/function-${response.$id}`);
         addNotification({
