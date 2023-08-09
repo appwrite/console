@@ -24,18 +24,18 @@
 
             switch ($provider.provider) {
                 case 'appwrite': {
-                    const res = await sdk.forProject.migrations.createAppwriteMigration(
+                    await sdk.forProject.migrations.createAppwriteMigration(
                         resources,
                         $provider.endpoint,
                         $provider.projectID,
                         $provider.apiKey
                     );
-                    console.log('appwrite', res);
+
                     invalidate(Dependencies.MIGRATIONS);
                     break;
                 }
                 case 'supabase': {
-                    const res = await sdk.forProject.migrations.createSupabaseMigration(
+                    await sdk.forProject.migrations.createSupabaseMigration(
                         resources,
                         $provider.endpoint,
                         $provider.apiKey,
@@ -44,27 +44,25 @@
                         $provider.password,
                         $provider.port
                     );
-                    console.log('Supabase', res);
+
                     invalidate(Dependencies.MIGRATIONS);
                     break;
                 }
                 case 'firebase': {
-                    console.log('firebase', $provider.serviceAccount);
                     if ($provider.projectId) {
                         // OAuth
                     } else if ($provider.serviceAccount) {
                         // Manual auth
-                        const res = await sdk.forProject.migrations.createFirebaseMigration(
+                        await sdk.forProject.migrations.createFirebaseMigration(
                             resources,
                             $provider.serviceAccount
                         );
-                        console.log('Firebase', res);
                     }
                     invalidate(Dependencies.MIGRATIONS);
                     break;
                 }
                 case 'nhost': {
-                    const res = await sdk.forProject.migrations.createNHostMigration(
+                    await sdk.forProject.migrations.createNHostMigration(
                         resources,
                         $provider.subdomain,
                         $provider.region,
@@ -73,7 +71,7 @@
                         $provider.username,
                         $provider.password
                     );
-                    console.log('nhost', res);
+
                     invalidate(Dependencies.MIGRATIONS);
                     break;
                 }
