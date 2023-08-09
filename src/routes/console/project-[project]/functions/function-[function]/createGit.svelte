@@ -10,7 +10,7 @@
 
 <Modal size="big" bind:show headerDivider={false}>
     <svelte:fragment slot="header">Create git deployment</svelte:fragment>
-    {#if !$func.installationId && $func.providerRepositoryId}
+    {#if $func.installationId && $func.providerRepositoryId}
         <p class="text">
             Deploy your function from the Git provider of your choice by following the steps below.
             Learn more in our <a

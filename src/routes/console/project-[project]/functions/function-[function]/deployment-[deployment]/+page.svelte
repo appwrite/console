@@ -16,10 +16,13 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { timer } from '$lib/actions/timer';
+    import { tooltip } from '$lib/actions/tooltip';
+    import { tick } from 'svelte/types/runtime/internal/scheduler';
 
     export let data;
 
     let logs = '';
+    let tooltipContent: HTMLDivElement;
 
     onMount(() => {
         logs = data.deployment.buildLogs;
@@ -78,7 +81,20 @@
                     </p>
                     <p><b>Created:</b> {timeFromNow(data.deployment.$createdAt)}</p>
                     <p><b>Size:</b> {fileSize.value + fileSize.unit}</p>
-                    <p><b>Source:</b> <span>tbd</span></p>
+                    <p>
+                        <b>Source:</b>
+                        <span
+                            use:tooltip={{
+                                interactive: true,
+                                allowHTML: true,
+                                disabled: false,
+                                onShow(instance) {
+                                    tick().then(() => {
+                                        instance.setContent(tooltipContent);
+                                    });
+                                }
+                            }}>Git</span>
+                    </p>
                 </div>
                 <div class="u-flex u-flex-vertical u-cross-end">
                     <Pill
@@ -118,3 +134,9 @@
         </div>
     </Card>
 </Container>
+
+<div class="u-hide">
+    <div bind:this={tooltipContent}>
+        <p class="text">test</p>
+    </div>
+</div>

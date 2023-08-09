@@ -26,7 +26,7 @@
         } else if (os.includes('Mac') || os.includes('Linux')) {
             category = 'Unix';
         } else {
-            category = 'PowerShell';
+            category = 'Unix';
         }
     });
 
