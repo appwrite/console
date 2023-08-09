@@ -99,10 +99,15 @@
         >.
     </Alert>
 
-    <div>
-        <SecondaryTabs>
+    <div class="editor-border">
+        <SecondaryTabs large class="u-sep-block-end u-padding-8">
             {#each ['Unix', 'CMD', 'PowerShell'] as cat}
-                <SecondaryTabsItem on:click={() => (category = cat)} disabled={category === cat}>
+                <SecondaryTabsItem
+                    stretch
+                    fullWidth
+                    center
+                    on:click={() => (category = cat)}
+                    disabled={category === cat}>
                     {cat}
                 </SecondaryTabsItem>
             {/each}
