@@ -1,3 +1,9 @@
+<script lang="ts" context="module">
+    export const openCreateDomainWizard = () => {
+        wizard.start(Create);
+    };
+</script>
+
 <script lang="ts">
     import { page } from '$app/stores';
     import { Empty, Heading } from '$lib/components';
@@ -23,6 +29,7 @@
     import Create from './create.svelte';
     import Delete from './delete.svelte';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { onMount } from 'svelte';
 
     export let data: PageData;
 
@@ -31,10 +38,6 @@
     let showDelete = false;
     let selectedDomain: Models.Domain;
     let isVerifying = {};
-
-    const openWizard = () => {
-        wizard.start(Create);
-    };
 
     async function refreshDomain(domain: Models.Domain) {
         const domainId = domain.$id;
@@ -58,13 +61,19 @@
             isVerifying[domainId] = false;
         }
     }
+
+    onMount(() => {
+        if (data.create) {
+            openCreateDomainWizard();
+        }
+    });
 </script>
 
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
         <Heading tag="h2" size="5">Custom Domains</Heading>
 
-        <Button on:click={openWizard}>
+        <Button on:click={openCreateDomainWizard}>
             <span class="icon-plus" aria-hidden="true" /> <span class="text">Create domain</span>
         </Button>
     </div>
@@ -138,7 +147,7 @@
             single
             href="https://appwrite.io/docs/custom-domains"
             target="domain"
-            on:click={openWizard} />
+            on:click={openCreateDomainWizard} />
     {/if}
 </Container>
 

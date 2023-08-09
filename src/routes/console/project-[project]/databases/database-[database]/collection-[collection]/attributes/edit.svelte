@@ -9,7 +9,7 @@
     import { deepEqual } from '$lib/helpers/object';
     import { addNotification } from '$lib/stores/notifications';
     import type { Attributes } from '../store';
-    import { options, type Option } from './store';
+    import { attributeOptions, type Option } from './store';
 
     export let showEdit = false;
     export let selectedAttribute: Attributes;
@@ -20,7 +20,7 @@
     let error: string;
     let currentAttr: Attributes;
 
-    $: option = options.find((option) => {
+    $: option = attributeOptions.find((option) => {
         if (selectedAttribute) {
             if ('format' in selectedAttribute && selectedAttribute.format) {
                 return option?.format === selectedAttribute?.format;

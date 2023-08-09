@@ -1,49 +1,56 @@
+<script lang="ts" context="module">
+    let showCreate = writable(false);
+    export const showCreateDeployment = () => {
+        showCreate.set(true);
+    };
+</script>
+
 <script lang="ts">
-    import { Button } from '$lib/elements/forms';
+    import { browser } from '$app/environment';
+    import { invalidate } from '$app/navigation';
+    import { base } from '$app/paths';
+    import { page } from '$app/stores';
+    import { timer } from '$lib/actions/timer';
     import {
         CardGrid,
         DropList,
         DropListItem,
         Empty,
-        Status,
         Heading,
+        Id,
         PaginationWithLimit,
-        Id
+        Status
     } from '$lib/components';
+    import { Dependencies } from '$lib/constants';
+    import { Button } from '$lib/elements/forms';
     import {
-        TableHeader,
         TableBody,
-        TableRow,
-        TableCellHead,
         TableCell,
+        TableCellHead,
         TableCellText,
+        TableHeader,
+        TableRow,
         TableScroll
     } from '$lib/elements/table';
-    import { execute, func } from './store';
-    import { Container } from '$lib/layout';
-    import { base } from '$app/paths';
-    import { app } from '$lib/stores/app';
-    import { calculateSize } from '$lib/helpers/sizeConvertion';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import { log } from '$lib/stores/logs';
-    import { invalidate } from '$app/navigation';
-    import { Dependencies } from '$lib/constants';
-    import { Query, type Models } from '@appwrite.io/console';
-    import type { PageData } from './$types';
-    import Delete from './delete.svelte';
-    import Create from './create.svelte';
-    import Rebuild from './rebuild.svelte';
-    import Activate from './activate.svelte';
-    import { browser } from '$app/environment';
-    import { sdk } from '$lib/stores/sdk';
-    import { page } from '$app/stores';
+    import { calculateSize } from '$lib/helpers/sizeConvertion';
     import { calculateTime } from '$lib/helpers/timeConversion';
-    import { timer } from '$lib/actions/timer';
+    import { Container } from '$lib/layout';
+    import { app } from '$lib/stores/app';
+    import { log } from '$lib/stores/logs';
+    import { sdk } from '$lib/stores/sdk';
+    import { Query, type Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
+    import { writable } from 'svelte/store';
+    import type { PageData } from './$types';
+    import Activate from './activate.svelte';
+    import Create from './create.svelte';
+    import Delete from './delete.svelte';
+    import Rebuild from './rebuild.svelte';
+    import { execute, func } from './store';
 
     export let data: PageData;
 
-    let showCreate = false;
     let showDropdown = [];
     let showDelete = false;
     let showActivate = false;
@@ -98,7 +105,7 @@
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
         <Heading tag="h2" size="5">Deployments</Heading>
-        <Button on:click={() => (showCreate = true)} event="create_deployment">
+        <Button on:click={() => showCreate.set(true)} event="create_deployment">
             <span class="icon-plus" aria-hidden="true" />
             <span class="text">Create deployment</span>
         </Button>
@@ -167,7 +174,7 @@
                 single
                 href="https://appwrite.io/docs/functions#createFunction"
                 target="deployment"
-                on:click={() => (showCreate = true)} />
+                on:click={() => showCreate.set(true)} />
         {/if}
 
         <div class="common-section">
@@ -274,7 +281,7 @@
                 </TableBody>
             </TableScroll>
         {:else}
-            <Empty single target="deployment" on:click={() => (showCreate = true)}>
+            <Empty single target="deployment" on:click={() => showCreate.set(true)}>
                 <div class="u-text-center">
                     <Heading size="7" tag="h2"
                         >You have no inactive deployments. Create one to see it here.</Heading>
@@ -289,7 +296,7 @@
                         text
                         event="empty_documentation"
                         ariaLabel={`create {target}`}>Documentation</Button>
-                    <Button secondary on:click={() => (showCreate = true)}>
+                    <Button secondary on:click={() => showCreate.set(true)}>
                         Create deployment
                     </Button>
                 </div>
@@ -300,14 +307,14 @@
             single
             target="deployment"
             href="https://appwrite.io/docs/functions#createFunction"
-            on:click={() => (showCreate = true)} />
+            on:click={() => showCreate.set(true)} />
     {/if}
     {@const sum = data.deployments.total ? data.deployments.total - 1 : 0}
 
     <PaginationWithLimit name="Deployments" limit={data.limit} offset={data.offset} total={sum} />
 </Container>
 
-<Create bind:showCreate />
+<Create bind:showCreate={$showCreate} />
 
 {#if selectedDeployment}
     <Delete {selectedDeployment} bind:showDelete />

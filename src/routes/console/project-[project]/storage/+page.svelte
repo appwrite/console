@@ -1,31 +1,34 @@
+<script lang="ts" context="module">
+    export let showCreateBucket = writable(false);
+</script>
+
 <script lang="ts">
-    import { page } from '$app/stores';
     import { goto } from '$app/navigation';
-    import { Button } from '$lib/elements/forms';
+    import { base } from '$app/paths';
+    import { page } from '$app/stores';
+    import { tooltip } from '$lib/actions/tooltip';
     import {
+        CardContainer,
         Empty,
         GridItem1,
-        CardContainer,
         Heading,
-        PaginationWithLimit,
-        Id
+        Id,
+        PaginationWithLimit
     } from '$lib/components';
     import { Pill } from '$lib/elements';
-    import Create from './create.svelte';
+    import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
-    import { base } from '$app/paths';
-    import { tooltip } from '$lib/actions/tooltip';
     import type { Models } from '@appwrite.io/console';
+    import { writable } from 'svelte/store';
     import type { PageData } from './$types';
+    import Create from './create.svelte';
 
     export let data: PageData;
-
-    let showCreate = false;
 
     const project = $page.params.project;
 
     async function bucketCreated(event: CustomEvent<Models.Bucket>) {
-        showCreate = false;
+        $showCreateBucket = false;
         await goto(`${base}/console/project-${project}/storage/bucket-${event.detail.$id}`);
     }
 </script>
@@ -34,7 +37,7 @@
     <div class="u-flex u-gap-12 common-section u-main-space-between">
         <Heading tag="h2" size="5">Buckets</Heading>
 
-        <Button on:click={() => (showCreate = true)} event="create_bucket">
+        <Button on:click={() => ($showCreateBucket = true)} event="create_bucket">
             <span class="icon-plus" aria-hidden="true" /> <span class="text">Create bucket</span>
         </Button>
     </div>
@@ -44,7 +47,7 @@
             total={data.buckets.total}
             offset={data.offset}
             event="bucket"
-            on:click={() => (showCreate = true)}>
+            on:click={() => ($showCreateBucket = true)}>
             {#each data.buckets.buckets as bucket}
                 <GridItem1 href={`${base}/console/project-${project}/storage/bucket-${bucket.$id}`}>
                     <svelte:fragment slot="title">{bucket.name}</svelte:fragment>
@@ -97,8 +100,8 @@
             single
             href="https://appwrite.io/docs/storage"
             target="bucket"
-            on:click={() => (showCreate = true)} />
+            on:click={() => ($showCreateBucket = true)} />
     {/if}
 </Container>
 
-<Create bind:showCreate on:created={bucketCreated} />
+<Create bind:showCreate={$showCreateBucket} on:created={bucketCreated} />
