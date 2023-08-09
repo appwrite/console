@@ -4,11 +4,7 @@ import { sdk } from '$lib/stores/sdk';
 import { Query } from '@appwrite.io/console';
 import type { PageLoad } from './$types';
 
-function queryParamToMap(queryParam: string) {
-    const decodedQueryParam = decodeURIComponent(queryParam);
-    const queries = JSON.parse(decodedQueryParam) as [string, string][];
-    return new Map(queries);
-}
+import { queries, queryParamToMap } from './(filters)/store';
 
 export const load: PageLoad = async ({ params, depends, url, route }) => {
     depends(Dependencies.DOCUMENTS);
@@ -17,8 +13,9 @@ export const load: PageLoad = async ({ params, depends, url, route }) => {
     const view = getView(url, route, View.Grid);
     const offset = pageToOffset(page, limit);
 
-    const queries = url.searchParams.get('query');
-    const parsedQueries = queryParamToMap(queries || '[]');
+    const paramQueries = url.searchParams.get('query');
+    const parsedQueries = queryParamToMap(paramQueries || '[]');
+    queries.set(parsedQueries);
 
     return {
         offset,

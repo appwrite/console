@@ -11,7 +11,7 @@
     import type { Option } from './attributes/store';
     import CreateAttribute from './createAttribute.svelte';
     import Create from './createDocument.svelte';
-    import Filters from './filters.svelte';
+    import Filters from './(filters)/filters.svelte';
     import { collection, columns } from './store';
     import Table from './table.svelte';
 
@@ -43,11 +43,7 @@
 <Container>
     <div class="heading-grid u-main-justify-between u-cross-center">
         <Heading tag="h2" size="5">Documents</Heading>
-
-        <Filters />
-
-        <div class="u-flex u-main-end u-gap-16 u-contents-mobile">
-            <ViewSelector view={data.view} {columns} isCustomCollection hideView allowNoColumns />
+        <div class="u-flex u-main-end is-only-mobile">
             <Button
                 disabled={!(hasAttributes && hasValidAttributes)}
                 on:click={openWizard}
@@ -55,6 +51,27 @@
                 <span class="icon-plus" aria-hidden="true" />
                 <span class="text">Create document</span>
             </Button>
+        </div>
+
+        <Filters />
+
+        <div class="u-flex u-main-end u-gap-16">
+            <ViewSelector
+                view={data.view}
+                {columns}
+                isCustomCollection
+                hideView
+                allowNoColumns
+                showColsTextMobile />
+            <div class="is-not-mobile">
+                <Button
+                    disabled={!(hasAttributes && hasValidAttributes)}
+                    on:click={openWizard}
+                    event="create_document">
+                    <span class="icon-plus" aria-hidden="true" />
+                    <span class="text">Create document</span>
+                </Button>
+            </div>
         </div>
     </div>
 
@@ -115,8 +132,10 @@
         grid-template-columns: 1fr 1fr;
         gap: 2rem;
 
-        > :global(h2) {
-            grid-column: span 2;
+        @media (min-width: 768px) {
+            :global(h2) {
+                grid-column: span 2;
+            }
         }
     }
 </style>
