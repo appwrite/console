@@ -6,11 +6,19 @@ import { sdk } from '$lib/stores/sdk';
 import { redirect } from '@sveltejs/kit';
 import { Dependencies } from '$lib/constants';
 import type { LayoutLoad } from './$types';
+import { requestedMigration } from './store';
+import { parseIfString } from '$lib/helpers/object';
 
 export const ssr = false;
 
 export const load: LayoutLoad = async ({ depends, url }) => {
     depends(Dependencies.ACCOUNT);
+
+    if (url.searchParams.has('migrate')) {
+        const migrateData = url.searchParams.get('migrate');
+        requestedMigration.set(parseIfString(migrateData));
+    }
+
     try {
         const account = await sdk.forConsole.account.get();
 

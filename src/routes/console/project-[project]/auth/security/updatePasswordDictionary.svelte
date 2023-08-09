@@ -35,7 +35,7 @@
 
 <Form onSubmit={updatePasswordDictionary}>
     <CardGrid>
-        <Heading tag="h2" size="7">Password Dictionary</Heading>
+        <Heading tag="h2" size="7" id="password-dictionary">Password Dictionary</Heading>
         <svelte:fragment slot="aside">
             <FormList>
                 <InputSwitch

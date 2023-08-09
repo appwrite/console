@@ -8,6 +8,7 @@
     export let label: string;
     export let showLabel = true;
     export let id: string;
+    export let name: string = id;
     export let value = '';
     export let placeholder = '';
     export let required = false;
@@ -64,6 +65,7 @@
     <div class="input-text-wrapper" on:click on:keyup={clickOnEnter}>
         <textarea
             {id}
+            {name}
             {placeholder}
             {disabled}
             {readonly}

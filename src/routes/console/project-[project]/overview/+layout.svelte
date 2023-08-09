@@ -21,20 +21,23 @@
 </script>
 
 <script lang="ts">
-    import type { Models } from '@appwrite.io/console';
-    import { Container, type UsagePeriods } from '$lib/layout';
-    import { page } from '$app/stores';
-    import { onboarding, project } from '../store';
-    import { usage } from './store';
-    import { onMount } from 'svelte';
     import { afterNavigate } from '$app/navigation';
+    import { base } from '$app/paths';
+    import { page } from '$app/stores';
+    import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
+    import { PlatformsPanel } from '$lib/commandCenter/panels';
     import { Heading, Tab } from '$lib/components';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
-    import { base } from '$app/paths';
-    import Realtime from './realtime.svelte';
+    import { Container, type UsagePeriods } from '$lib/layout';
+    import type { Models } from '@appwrite.io/console';
+    import { onMount } from 'svelte';
+    import { onboarding, project } from '../store';
     import Bandwith from './bandwith.svelte';
-    import Requests from './requests.svelte';
+    import { createApiKey } from './keys/+page.svelte';
     import Onboard from './onboard.svelte';
+    import Realtime from './realtime.svelte';
+    import Requests from './requests.svelte';
+    import { usage } from './store';
 
     $: projectId = $page.params.project;
     $: path = `/console/project-${projectId}/overview`;
@@ -55,6 +58,31 @@
         period = newPeriod;
         usage.load(period);
     }
+
+    $: $registerCommands([
+        {
+            label: 'Add platform',
+            keys: ['a', 'p'],
+            callback() {
+                addSubPanel(PlatformsPanel);
+            },
+            icon: 'plus',
+            group: 'integrations'
+        },
+        {
+            label: 'Create API Key',
+            icon: 'plus',
+            callback() {
+                createApiKey();
+            },
+            keys: ['c', 'k'],
+            group: 'integrations'
+        }
+    ]);
+
+    $: $updateCommandGroupRanks({
+        integrations: 10
+    });
 </script>
 
 <svelte:head>

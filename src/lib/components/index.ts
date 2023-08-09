@@ -1,3 +1,4 @@
+export { default as Arrow } from './arrow.svelte';
 export { default as Modal } from './modal.svelte';
 export { default as Pagination } from './pagination.svelte';
 export { default as PaginationInline } from './paginationInline.svelte';
@@ -53,3 +54,7 @@ export { default as ClickableListItem } from './clickableListItem.svelte';
 export { default as Id } from './id.svelte';
 export { default as NumericList } from './numericList.svelte';
 export { default as NumericListItem } from './numericListItem.svelte';
+export { default as EyebrowHeading } from './eyebrowHeading.svelte';
+export { default as SvgIcon } from './svgIcon.svelte';
+export { default as MigrationBox } from './migrationBox.svelte';
+export { default as FloatingActionBar } from './floatingActionBar.svelte';

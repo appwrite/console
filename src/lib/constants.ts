@@ -38,7 +38,9 @@ export enum Dependencies {
     KEYS = 'dependency:keys',
     DOMAINS = 'dependency:domains',
     WEBHOOK = 'dependency:webhook',
-    WEBHOOKS = 'dependency:webhooks'
+    WEBHOOKS = 'dependency:webhooks',
+    MIGRATIONS = 'dependency:migrations',
+    COLLECTIONS = 'dependency:collections'
 }
 
 export const scopes: {
@@ -172,6 +174,16 @@ export const scopes: {
     {
         scope: 'health.read',
         description: "Access to read your project's health status",
+        category: 'Other'
+    },
+    {
+        scope: 'migrations.read',
+        description: "Access to read your project's migration status",
+        category: 'Other'
+    },
+    {
+        scope: 'migrations.write',
+        description: 'Access to create migrations',
         category: 'Other'
     }
 ];

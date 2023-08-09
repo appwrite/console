@@ -55,7 +55,7 @@
 
 <Form onSubmit={updateTimeout}>
     <CardGrid>
-        <Heading tag="h6" size="7">Timeout</Heading>
+        <Heading tag="h6" size="7" id="timeout">Timeout</Heading>
         <p>Limit the execution time of your function. Maximum value is 900 seconds (15 minutes).</p>
         <svelte:fragment slot="aside">
             <FormList>

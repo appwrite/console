@@ -135,22 +135,19 @@
                             Skip optional steps
                         </Button>
                     {/if}
+
                     {#if currentStep === 1}
                         <Button secondary on:click={handleExit}>Cancel</Button>
-                        <Button submit>Next</Button>
-                    {:else if isLastStep}
-                        <Button
-                            secondary
-                            on:click={() => currentStep--}
-                            on:click={() => trackEvent('wizard_back')}>Back</Button>
-                        <Button submit>{finalAction}</Button>
                     {:else}
                         <Button
                             secondary
                             on:click={() => currentStep--}
                             on:click={() => trackEvent('wizard_back')}>Back</Button>
-                        <Button submit>Next</Button>
                     {/if}
+
+                    <Button submit disabled={$wizard.nextDisabled}>
+                        {isLastStep ? finalAction : 'Next'}
+                    </Button>
                 </div>
             </div>
         </Form>
