@@ -31,22 +31,15 @@
     });
 
     async function updateSmtp() {
-        const path = '/projects/' + $project.$id + '/smtp';
-
-        const params = {
-            enabled,
-            sender,
-            host,
-            port,
-            username,
-            password
-        };
         try {
-            await sdk.forConsole.client.call(
-                'PATCH',
-                new URL(sdk.forConsole.client.config.endpoint + path),
-                { 'content-type': 'application/json' },
-                params
+            await sdk.forConsole.projects.updateSmtpConfiguration(
+                $project.$id,
+                enabled,
+                sender,
+                host,
+                port,
+                username,
+                password
             );
 
             invalidate(Dependencies.PROJECT);
