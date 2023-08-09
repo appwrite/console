@@ -21,6 +21,11 @@
             href: `${path}/webhooks`,
             title: 'Webhooks',
             event: 'webhooks'
+        },
+        {
+            href: `${path}/smtp`,
+            title: 'SMTP Settings',
+            event: 'smtp'
         }
     ];
 </script>

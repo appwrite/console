@@ -142,6 +142,7 @@ export enum Submit {
     ProjectUpdateName = 'submit_project_update_name',
     ProjectUpdateTeam = 'submit_project_update_team',
     ProjectService = 'submit_project_service',
+    ProjectUpdateSMTP = 'submit_project_update_smtp',
     MemberCreate = 'submit_member_create',
     MemberDelete = 'submit_member_delete',
     MembershipUpdateStatus = 'submit_membership_update_status',
@@ -221,5 +222,16 @@ export enum Submit {
     BucketUpdateExtensions = 'submit_bucket_update_extensions',
     FileCreate = 'submit_file_create',
     FileDelete = 'submit_file_delete',
-    FileUpdatePermissions = 'submit_file_update_permissions'
+    FileUpdatePermissions = 'submit_file_update_permissions',
+    EmailChangeLocale = 'submit_email_change_locale',
+    EmailResetTemplate = 'submit_email_reset_template',
+    EmailUpdateInviteTemplate = 'submit_email_update_invite_template',
+    EmailUpdateMagicUrlTemplate = 'submit_email_update_magic_url_template',
+    EmailUpdateRecoveryTemplate = 'submit_email_update_recovery_template',
+    EmailUpdateVerificationTemplate = 'submit_email_update_verification_template',
+    SmsChangeLocale = 'submit_sms_change_locale',
+    SmsResetTemplate = 'submit_sms_reset_template',
+    SmsUpdateInviteTemplate = 'submit_sms_update_invite_template',
+    SmsUpdateLoginTemplate = 'submit_sms_update_login_template',
+    SmsUpdateVerificationTemplate = 'submit_sms_update_verification_template'
 }
