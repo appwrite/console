@@ -77,10 +77,7 @@
             {#each rules.rules as domain, i}
                 <TableRow>
                     <TableCellText title="Domain">
-                        <a
-                            href={`https://${domain.domain}`}
-                            target="_blank"
-                            rel="noopener noreferrer">
+                        <a href={`//${domain.domain}`} target="_blank" rel="noopener noreferrer">
                             {domain.domain}
                             <span
                                 class="icon-external-link"

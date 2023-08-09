@@ -102,8 +102,8 @@
                         </div>
 
                         <div class="u-flex u-gap-12 u-cross-center">
-                            <a href={'http://' + data.domain.rules[0].domain} target="_blank">
-                                {'http://' + data.domain.rules[0].domain + '/'}
+                            <a href={'//' + data.domain.rules[0].domain} target="_blank">
+                                {data.domain.rules[0].domain}
                             </a>
                         </div>
                     </div>
