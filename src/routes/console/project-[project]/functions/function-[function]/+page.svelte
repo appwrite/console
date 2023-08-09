@@ -31,16 +31,15 @@
     import type { PageData } from './$types';
     import Delete from './delete.svelte';
     import Activate from './activate.svelte';
-    import { sdk } from '$lib/stores/sdk';
     import { calculateTime } from '$lib/helpers/timeConversion';
     import { timer } from '$lib/actions/timer';
-    import { addNotification } from '$lib/stores/notifications';
-    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Pill } from '$lib/elements';
     import Create from './create.svelte';
     import DropListLink from '$lib/components/dropListLink.svelte';
     import { page } from '$app/stores';
     import { tooltip } from '$lib/actions/tooltip';
+    import { tick } from 'svelte';
+    import RedeployModal from './redeployModal.svelte';
 
     export let data: PageData;
 
@@ -48,38 +47,16 @@
     let showDropdown = [];
     let showDelete = false;
     let showActivate = false;
+    let showRedeploy = false;
 
     let selectedDeployment: Models.Deployment = null;
+    let tooltipContent: HTMLDivElement;
 
     function handleActivate() {
         invalidate(Dependencies.DEPLOYMENTS);
     }
 
     $: activeDeployment = data.deployments.deployments.find((d) => d.$id === $func?.deployment);
-
-    async function redeploy(deployment: Models.Deployment) {
-        try {
-            await sdk.forProject.functions.createBuild(
-                $func.$id,
-                deployment.$id,
-                deployment.buildId
-            );
-            addNotification({
-                type: 'success',
-                message: `${$func.name} has been redeployed.`
-            });
-            trackEvent(Submit.FunctionRedeploy);
-
-            invalidate(Dependencies.DEPLOYMENTS);
-            invalidate(Dependencies.FUNCTION);
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
-            trackError(error, Submit.FunctionRedeploy);
-        }
-    }
 </script>
 
 <Container>
@@ -139,7 +116,20 @@
                             <p><b>Build time:</b> {calculateTime(activeDeployment.buildTime)}</p>
                             <p><b>Created:</b> {timeFromNow(activeDeployment.$createdAt)}</p>
                             <p><b>Size:</b> {fileSize.value + fileSize.unit}</p>
-                            <p><b>Source:</b> <span>Git</span></p>
+                            <p>
+                                <b>Source:</b>
+                                <span
+                                    use:tooltip={{
+                                        interactive: true,
+                                        allowHTML: true,
+                                        disabled: false,
+                                        onShow(instance) {
+                                            tick().then(() => {
+                                                instance.setContent(tooltipContent);
+                                            });
+                                        }
+                                    }}>Git</span>
+                            </p>
                         </div>
                         <div class="u-flex u-flex-vertical u-cross-end">
                             <Pill
@@ -159,7 +149,12 @@
                         href={`/console/project-${$page.params.project}/functions/function-${$page.params.function}/deployment-${activeDeployment.$id}`}>
                         Build logs
                     </Button>
-                    <Button text on:click={() => redeploy(activeDeployment)}>Redeploy</Button>
+                    <Button
+                        text
+                        on:click={() => {
+                            selectedDeployment = activeDeployment;
+                            showRedeploy = true;
+                        }}>Redeploy</Button>
 
                     <Button secondary on:click={() => ($execute = $func)}>Execute now</Button>
                 </svelte:fragment>
@@ -173,7 +168,7 @@
         {/if}
 
         <div class="common-section">
-            <Heading tag="h3" size="7">All</Heading>
+            <Heading tag="h3" size="7">Inactive</Heading>
         </div>
         {#if data.deployments.total > 0}
             <TableScroll>
@@ -199,16 +194,7 @@
                                     warning={status === 'pending'}
                                     success={status === 'completed' || status === 'ready'}
                                     info={status === 'processing' || status === 'building'}>
-                                    <span
-                                        class="text u-trim"
-                                        use:tooltip={{
-                                            content: 'Active Deployment',
-                                            placement: 'top'
-                                        }}>
-                                        {#if deployment.$id === $func.deployment}
-                                            <span class="icon-check-circle" aria-hidden="true" />
-                                        {/if}
-                                        <span>{status}</span></span>
+                                    <span>{status}</span>
                                 </Pill>
                             </TableCell>
                             <TableCellText width={70} title="Source">Git</TableCellText>
@@ -245,7 +231,8 @@
                                         <DropListItem
                                             icon="refresh"
                                             on:click={() => {
-                                                redeploy(deployment);
+                                                selectedDeployment = deployment;
+                                                showRedeploy = true;
                                                 showDropdown = [];
                                             }}>
                                             Redeploy
@@ -318,4 +305,11 @@
 {#if selectedDeployment}
     <Delete {selectedDeployment} bind:showDelete />
     <Activate {selectedDeployment} bind:showActivate on:activated={handleActivate} />
+    <RedeployModal {selectedDeployment} bind:show={showRedeploy} />
 {/if}
+
+<div class="u-hide">
+    <div bind:this={tooltipContent}>
+        <p class="text">test</p>
+    </div>
+</div>

@@ -17,9 +17,21 @@
         <span class="text">Create deployment</span>
     </Button>
     <svelte:fragment slot="list">
-        <DropListItem on:click={() => (showCreateGit = true)}>Git</DropListItem>
-        <DropListItem on:click={() => (showCreateCli = true)}>CLI</DropListItem>
-        <DropListItem on:click={() => (showCreateManual = true)}>Manual</DropListItem>
+        <DropListItem
+            on:click={() => {
+                showCreateGit = true;
+                showCreate = false;
+            }}>Git</DropListItem>
+        <DropListItem
+            on:click={() => {
+                showCreateCli = true;
+                showCreate = false;
+            }}>CLI</DropListItem>
+        <DropListItem
+            on:click={() => {
+                showCreateManual = true;
+                showCreate = false;
+            }}>Manual</DropListItem>
     </svelte:fragment>
 </DropList>
 <CreateCli bind:show={showCreateCli} />
