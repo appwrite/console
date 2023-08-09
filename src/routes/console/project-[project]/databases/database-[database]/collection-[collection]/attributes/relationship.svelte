@@ -74,7 +74,7 @@
         if (search) {
             const collections = await sdk.forProject.databases.listCollections(
                 databaseId,
-                [Query.orderDesc('$createdAt')],
+                [Query.orderDesc('')],
                 search
             );
             return collections;

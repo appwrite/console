@@ -61,7 +61,7 @@
             const documents = await sdk.forProject.databases.listDocuments(
                 databaseId,
                 attribute.relatedCollection,
-                [Query.startsWith('$id', search), Query.orderDesc('$createdAt')]
+                [Query.startsWith('$id', search), Query.orderDesc('')]
             );
             return documents;
         } else {

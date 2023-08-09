@@ -17,7 +17,7 @@ export const load: PageLoad = async ({ params, url, route }) => {
         collections: await sdk.forProject.databases.listCollections(params.database, [
             Query.limit(limit),
             Query.offset(offset),
-            Query.orderDesc('$createdAt')
+            Query.orderDesc('')
         ])
     };
 };

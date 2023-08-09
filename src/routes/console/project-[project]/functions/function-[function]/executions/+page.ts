@@ -15,7 +15,8 @@ export const load: PageLoad = async ({ params, depends, url, route }) => {
         limit,
         executions: await sdk.forProject.functions.listExecutions(params.function, [
             Query.limit(limit),
-            Query.offset(offset)
+            Query.offset(offset),
+            Query.orderDesc('')
         ])
     };
 };
