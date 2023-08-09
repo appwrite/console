@@ -1,6 +1,5 @@
 <script lang="ts">
     import { timeFromNow } from '$lib/helpers/date';
-    import { tooltip } from '$lib/actions/tooltip';
     import type { Models } from '@appwrite.io/console';
 
     export let deployment: Models.Deployment;

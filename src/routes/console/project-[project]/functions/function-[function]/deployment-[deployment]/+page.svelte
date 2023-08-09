@@ -3,7 +3,6 @@
     import { Card, CardGrid, Id } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
-    import { timeFromNow } from '$lib/helpers/date';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { calculateTime } from '$lib/helpers/timeConversion';
     import { Container } from '$lib/layout';
@@ -16,13 +15,11 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { timer } from '$lib/actions/timer';
-    import { tooltip } from '$lib/actions/tooltip';
     import DeploymentSource from '../deploymentSource.svelte';
 
     export let data;
 
     let logs = '';
-    let tooltipContent: HTMLDivElement;
 
     onMount(() => {
         logs = data.deployment.buildLogs;
@@ -124,9 +121,3 @@
         </div>
     </Card>
 </Container>
-
-<div class="u-hide">
-    <div bind:this={tooltipContent}>
-        <p class="text">test</p>
-    </div>
-</div>

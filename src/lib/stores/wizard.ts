@@ -1,4 +1,5 @@
 import { trackEvent } from '$lib/actions/analytics';
+import type { SvelteComponent } from 'svelte';
 import { writable } from 'svelte/store';
 
 export type WizardStore = {

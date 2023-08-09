@@ -25,7 +25,6 @@
     import { base } from '$app/paths';
     import { app } from '$lib/stores/app';
     import { calculateSize, humanFileSize } from '$lib/helpers/sizeConvertion';
-    import { timeFromNow } from '$lib/helpers/date';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { Query, type Models } from '@appwrite.io/console';

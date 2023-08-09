@@ -7,7 +7,6 @@
     import { calculateTime } from '$lib/helpers/timeConversion';
     import {
         TableBody,
-        TableCell,
         TableCellHead,
         TableCellText,
         TableHeader,
