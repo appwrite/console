@@ -4,7 +4,7 @@
     import NullCheckbox from './nullCheckbox.svelte';
     import TextCounter from './textCounter.svelte';
 
-    export let label: string;
+    export let label: string = undefined;
     export let optionalText: string | undefined = undefined;
     export let showLabel = true;
     export let id: string;
@@ -67,9 +67,11 @@
 </script>
 
 <FormItem>
-    <Label {required} {tooltip} {optionalText} hide={!showLabel} for={id}>
-        {label}
-    </Label>
+    {#if label}
+        <Label {required} {tooltip} {optionalText} hide={!showLabel} for={id}>
+            {label}
+        </Label>
+    {/if}
 
     <div class="input-text-wrapper">
         <input

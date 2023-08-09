@@ -23,6 +23,7 @@
     export let hideView = false;
     export let hideColumns = false;
     export let allowNoColumns = false;
+    export let showColsTextMobile = false;
 
     let showSelectColumns = false;
 
@@ -84,7 +85,7 @@
                         class="icon-view-boards u-opacity-50"
                         aria-hidden="true"
                         aria-label="columns" />
-                    <span class="text is-only-desktop">Columns</span>
+                    <span class="text {showColsTextMobile ? '' : 'is-only-desktop'}">Columns</span>
                     <span class="inline-tag">{selectedColumnsNumber}</span>
                 </Button>
                 <svelte:fragment slot="list">
