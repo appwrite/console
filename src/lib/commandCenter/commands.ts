@@ -4,6 +4,7 @@ import { wizard } from '$lib/stores/wizard';
 import { onMount } from 'svelte';
 import { derived, writable } from 'svelte/store';
 import { nanoid } from 'nanoid/non-secure';
+import { trackEvent } from '$lib/actions/analytics';
 
 const groups = [
     'ungrouped',
@@ -212,7 +213,18 @@ export const registerCommands = {
 
         runner((newCommands: Command[]) => {
             commandMap.update((curr) => {
-                curr.set(uuid, newCommands);
+                const commandsWithTracking = newCommands.map((command) => {
+                    const trackingCallback = () => {
+                        if (command.label) {
+                            trackEvent('command', { label: command.label, group: command.group });
+                        }
+                        command.callback();
+                    };
+
+                    return { ...command, callback: trackingCallback };
+                });
+
+                curr.set(uuid, commandsWithTracking);
                 return curr;
             });
         });
