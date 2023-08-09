@@ -166,6 +166,8 @@
 
                                         {#if generatingApiKey}
                                             <span class="loader is-small" />
+                                        {:else if showApiKeyCheck && ($templateConfig.variables[variable.name] ? true : false)}
+                                            <span class="text">Generated</span>
                                         {:else}
                                             <span class="text">Generate</span>
                                         {/if}
