@@ -1,5 +1,6 @@
 <script lang="ts">
     import { clickOnEnter } from '$lib/helpers/a11y';
+
     export let withIndentation = false;
     export let open = false;
 </script>
