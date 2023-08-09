@@ -97,7 +97,7 @@
 <Modal bind:show {onSubmit}>
     <svelte:fragment slot="header">Export to self-hosted instance</svelte:fragment>
     <div class="modal-contents">
-        <Alert standalone>
+        <Alert isStandalone>
             <svelte:fragment slot="title">API key creation</svelte:fragment>
             By initiating the transfer, an API key will be automatically generated in the background,
             which you can delete after completion
