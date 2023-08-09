@@ -12,7 +12,7 @@ export const fileSearcher = (async (query: string) => {
 
     const { files } = await sdk.forProject.storage.listFiles(
         $bucket.$id,
-        [Query.orderDesc('$createdAt')],
+        [Query.orderDesc('')],
         query || undefined
     );
 
