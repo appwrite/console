@@ -617,7 +617,38 @@ export const marketplace = [
     }
 ];
 
-export type MarketplaceTemplate = (typeof marketplace)[number];
+type Runtime = {
+    name: string;
+    commands: string;
+    entrypoint: string;
+    providerRootDirectory: string;
+};
+
+type Variable = {
+    name: string;
+    description: string;
+    value?: string;
+    placeholder: string;
+    required: boolean;
+};
+
+export type MarketplaceTemplate = {
+    icon: string;
+    id: string;
+    name: string;
+    tagline: string;
+    permissions: string[];
+    events: string[];
+    cron: string;
+    timeout: number;
+    runtimes: Runtime[];
+    instructions: string;
+    vcsProvider: string;
+    providerRepositoryId: string;
+    providerOwner: string;
+    providerBranch: string;
+    variables: Variable[];
+};
 
 /*
 Template:
