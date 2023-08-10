@@ -2,7 +2,6 @@
     import { createEventDispatcher } from 'svelte';
     import type { Buttons } from '../stores/notifications';
 
-    export let isInline = false;
     export let dismissible = false;
     export let type: 'info' | 'success' | 'warning' | 'error' = 'info';
     export let standalone = false;
@@ -20,8 +19,7 @@
     class:is-success={type === 'success'}
     class:is-warning={type === 'warning'}
     class:is-danger={type === 'error'}
-    class:is-info={type === 'info'}
-    class:is-inline={isInline}>
+    class:is-info={type === 'info'}>
     <div class="alert-grid">
         {#if dismissible}
             <button
