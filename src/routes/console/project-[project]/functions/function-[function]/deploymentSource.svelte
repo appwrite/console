@@ -47,7 +47,7 @@
                 class="u-underline u-cursor-pointer"
                 target="_blank"
                 href={deployment.providerCommitUrl}
-                >{deployment.providerCommitHash.substring(0, 7)}
+                >{deployment?.providerCommitHash?.substring(0, 7)}
                 {deployment.providerCommitMessage}</a
             ></span>
     </div>
