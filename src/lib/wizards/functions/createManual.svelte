@@ -52,13 +52,7 @@
     }
 
     function resetState() {
-        createFunction.set({
-            $id: null,
-            name: null,
-            entrypoint: null,
-            execute: [],
-            runtime: null
-        });
+        createFunction.reset();
         choices.set({
             branch: null,
             silentMode: false,

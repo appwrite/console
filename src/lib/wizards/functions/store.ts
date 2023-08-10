@@ -31,13 +31,29 @@ export const installations = derived(
     ($page) => $page.data.installations as Models.InstallationList
 );
 
-export const createFunction = writable<Partial<Models.Function>>({
+const initialCreateFunction: Partial<Models.Function> = {
     $id: null,
     name: null,
     entrypoint: null,
     execute: [],
     runtime: null,
     commands: null
-});
+};
+
+function createFunctionStore() {
+    const store = writable<Partial<Models.Function>>({
+        ...initialCreateFunction
+    });
+
+    const reset = () => {
+        store.set({ ...initialCreateFunction });
+    };
+
+    return {
+        ...store,
+        reset
+    };
+}
+export const createFunction = createFunctionStore();
 
 export const createFunctionDeployment = writable<FileList>();
