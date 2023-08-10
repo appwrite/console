@@ -13,3 +13,5 @@ export const repositories: Writable<{
     installationId: '',
     repositories: []
 });
+
+export const showCreateDeployment: Writable<boolean> = writable(false);

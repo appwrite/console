@@ -4,33 +4,43 @@
     import CreateCli from './createCli.svelte';
     import CreateGit from './createGit.svelte';
     import CreateManual from './createManual.svelte';
+    import { showCreateDeployment } from './store';
 
-    export let showCreate = false;
+    export let secondary = false;
+    // This allows us to know which one to open when the user uses the shortcut in the command center
+    export let main = false;
+    let show = false;
     let showCreateCli = false;
     let showCreateGit = false;
     let showCreateManual = false;
+
+    $: if ($showCreateDeployment && main) {
+        show = true;
+    }
 </script>
 
-<DropList bind:show={showCreate} placement="bottom-end">
-    <Button on:click={() => (showCreate = true)} event="create_deployment">
-        <span class="icon-plus" aria-hidden="true" />
+<DropList bind:show placement="bottom-end">
+    <Button {secondary} on:click={() => (show = !show)} event="create_deployment">
+        {#if !secondary}
+            <span class="icon-plus" aria-hidden="true" />
+        {/if}
         <span class="text">Create deployment</span>
     </Button>
     <svelte:fragment slot="list">
         <DropListItem
             on:click={() => {
                 showCreateGit = true;
-                showCreate = false;
+                show = false;
             }}>Git</DropListItem>
         <DropListItem
             on:click={() => {
                 showCreateCli = true;
-                showCreate = false;
+                show = false;
             }}>CLI</DropListItem>
         <DropListItem
             on:click={() => {
                 showCreateManual = true;
-                showCreate = false;
+                show = false;
             }}>Manual</DropListItem>
     </svelte:fragment>
 </DropList>

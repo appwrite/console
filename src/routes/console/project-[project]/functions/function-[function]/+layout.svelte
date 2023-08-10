@@ -1,11 +1,10 @@
 <script lang="ts">
-    import { execute, func } from './store';
+    import { execute, func, showCreateDeployment } from './store';
     import Execute from './execute.svelte';
     import { registerCommands } from '$lib/commandCenter';
     import { goto } from '$app/navigation';
     import { project } from '../../store';
     import { page } from '$app/stores';
-    import { showCreateDeployment } from './+page.svelte';
 
     $: $registerCommands([
         {
@@ -14,7 +13,7 @@
                 if (!$page.url.pathname.endsWith($func.$id)) {
                     await goto(`/console/project-${$project.$id}/functions/function-${$func.$id}`);
                 }
-                showCreateDeployment();
+                showCreateDeployment.set(true);
             },
             keys: $page.url.pathname.endsWith($func.$id) ? ['c'] : ['c', 'd'],
             group: 'functions',

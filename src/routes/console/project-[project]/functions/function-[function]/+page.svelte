@@ -1,10 +1,3 @@
-<script lang="ts" context="module">
-    let showCreate = writable(false);
-    export const showCreateDeployment = () => {
-        showCreate.set(true);
-    };
-</script>
-
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { base } from '$app/paths';
@@ -49,7 +42,6 @@
     import RedeployModal from './redeployModal.svelte';
     import DeploymentSource from './deploymentSource.svelte';
     import DeploymentCreatedBy from './deploymentCreatedBy.svelte';
-    import { writable } from 'svelte/store';
 
     export let data: PageData;
 
@@ -82,7 +74,7 @@
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
         <Heading tag="h2" size="5">Deployments</Heading>
-        <Create bind:showCreate={$showCreate} />
+        <Create main />
     </div>
     {#if data.deployments.total}
         <div class="common-section">
@@ -180,7 +172,7 @@
                 single
                 href="https://appwrite.io/docs/functions#createFunction"
                 target="deployment"
-                on:click={() => showCreate.set(true)} />
+                on:click />
         {/if}
 
         <div class="common-section">
@@ -297,7 +289,7 @@
                 </TableBody>
             </TableScroll>
         {:else}
-            <Empty single target="deployment" on:click={() => showCreate.set(true)}>
+            <Empty single target="deployment" on:click>
                 <div class="u-text-center">
                     <Heading size="7" tag="h2"
                         >You have no deployments. Create one to see it here.</Heading>
@@ -312,18 +304,29 @@
                         text
                         event="empty_documentation"
                         ariaLabel={`create {target}`}>Documentation</Button>
-                    <Button secondary on:click={() => showCreate.set(true)}>
-                        Create deployment
-                    </Button>
+                    <Button secondary on:click>Create deployment</Button>
+                    <Create />
                 </div>
             </Empty>
         {/if}
     {:else}
-        <Empty
-            single
-            target="deployment"
-            href="https://appwrite.io/docs/functions#createFunction"
-            on:click={() => showCreate.set(true)} />
+        <Empty single target="deployment" on:click>
+            <div class="u-text-center">
+                <Heading size="7" tag="h2">Create your first deployment to get started.</Heading>
+                <p class="body-text-2 u-bold u-margin-block-start-4">
+                    Learn more about deployments in our Documentation.
+                </p>
+            </div>
+            <div class="u-flex u-gap-16 u-main-center">
+                <Button
+                    external
+                    href="https://appwrite.io/docs/functions#createFunction"
+                    text
+                    event="empty_documentation"
+                    ariaLabel={`create {target}`}>Documentation</Button>
+                <Create secondary />
+            </div>
+        </Empty>
     {/if}
     {@const sum = data.deployments.total ? data.deployments.total - 1 : 0}
 
