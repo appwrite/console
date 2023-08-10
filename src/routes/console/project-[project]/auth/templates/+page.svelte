@@ -83,7 +83,7 @@
     {#if !$project.smtpEnabled}
         <div class="u-margin-block-start-24">
             <Alert
-                isStandalone={true}
+                isStandalone
                 dismissible
                 type="info"
                 buttons={[

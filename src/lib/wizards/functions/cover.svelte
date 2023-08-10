@@ -14,8 +14,8 @@
     import { sdk } from '$lib/stores/sdk';
     import CreateTemplate from './createTemplate.svelte';
 
-    let hasInstallations;
-    let selectedRepository;
+    let hasInstallations: boolean;
+    let selectedRepository: string;
 
     const quickStart = marketplace.find((template) => template.id === 'starter');
     const templates = marketplace
