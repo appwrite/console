@@ -49,7 +49,7 @@
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
         <Heading tag="h2" size="5">Functions</Heading>
-        <Button on:click={openWizard} event="create_attribute">
+        <Button on:click={openWizard} event="create_function">
             <span class="icon-plus" aria-hidden="true" />
             <span class="text">Create function</span>
         </Button>
