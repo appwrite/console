@@ -1,8 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import Alert from '$lib/components/alert.svelte';
-    import Collapsible from '$lib/components/collapsible.svelte';
-    import CollapsibleItem from '$lib/components/collapsibleItem.svelte';
     import CustomId from '$lib/components/customId.svelte';
     import Button from '$lib/elements/forms/button.svelte';
     import FormList from '$lib/elements/forms/formList.svelte';
@@ -18,10 +16,6 @@
     let showCustomId = false;
     let generatingApiKey = false;
     let showApiKeyCheck = false;
-
-    $: runtimeDetail =
-        $templateConfig.runtime &&
-        $template.runtimes.find((r) => r.name === $templateConfig.runtime);
 
     async function generateApiKey() {
         if (generatingApiKey) {
@@ -185,52 +179,5 @@
                 </div>
             </div>
         {/if}
-
-        <Collapsible>
-            <CollapsibleItem>
-                <svelte:fragment slot="title">Additional settings</svelte:fragment>
-                <FormList>
-                    {#if $template.cron}
-                        <InputText
-                            disabled={true}
-                            label="Cron schedule"
-                            id="cron"
-                            value={$template.cron} />
-                    {/if}
-
-                    {#if $template.permissions && $template.permissions.length > 0}
-                        <InputText
-                            disabled={true}
-                            label="Execute access"
-                            id="permissions"
-                            value={$template.permissions.join(', ')} />
-                    {/if}
-
-                    {#if $template.events && $template.events.length > 0}
-                        <InputText
-                            disabled={true}
-                            label="Events"
-                            id="events"
-                            value={$template.events.join(', ')} />
-                    {/if}
-
-                    {#if runtimeDetail && runtimeDetail.entrypoint}
-                        <InputText
-                            disabled={true}
-                            label="Entrypoint"
-                            id="entrypoint"
-                            value={runtimeDetail.entrypoint} />
-                    {/if}
-
-                    {#if runtimeDetail && runtimeDetail.commands}
-                        <InputText
-                            disabled={true}
-                            label="Commands"
-                            id="commands"
-                            value={runtimeDetail.commands} />
-                    {/if}
-                </FormList>
-            </CollapsibleItem>
-        </Collapsible>
     </div>
 </WizardStep>
