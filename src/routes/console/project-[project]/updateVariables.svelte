@@ -73,7 +73,7 @@
             showVariablesModal = false;
             addNotification({
                 type: 'success',
-                message: `Variable has been created.`
+                message: `${$project.name} global variable has been created.`
             });
             trackEvent(Submit.VariableCreate);
         } catch (error) {
@@ -93,7 +93,7 @@
             showVariablesModal = false;
             addNotification({
                 type: 'success',
-                message: `Variable has been updated.`
+                message: `${$project.name} global variable has been updated.`
             });
             trackEvent(Submit.VariableUpdate);
         } catch (error) {
@@ -110,7 +110,7 @@
             await sdkDeleteVariable(variable.$id);
             addNotification({
                 type: 'success',
-                message: `Variable has been deleted.`
+                message: `${$project.name} global variable has been deleted.`
             });
             trackEvent(Submit.VariableDelete);
         } catch (error) {
