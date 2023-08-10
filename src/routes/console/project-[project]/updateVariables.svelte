@@ -41,22 +41,6 @@
     export let sdkUpdateVariable: (variableId: string, key: string, value: string) => Promise<any>;
     export let sdkDeleteVariable: (variableId: string) => Promise<any>;
 
-    $: conflictVariables = globalVariableList
-        ? globalVariableList.variables.filter((globalVariable) => {
-              return variableList.variables.find((variable) => {
-                  return variable.key === globalVariable.key;
-              });
-          })
-        : [];
-
-    $: hasConflictOnPage = globalVariableList
-        ? variableList.variables.slice(offset, offset + limit).filter((variable) => {
-              return globalVariableList.variables.find((globalVariable) => {
-                  return variable.key === globalVariable.key;
-              });
-          })
-        : false;
-
     let showVariablesDropdown = [];
     let selectedVar: Models.Variable = null;
     let showVariablesUpload = false;
@@ -161,6 +145,22 @@
             trackError(error, Submit.VariableDelete);
         }
     }
+
+    $: conflictVariables = globalVariableList
+        ? globalVariableList.variables.filter((globalVariable) => {
+              return variableList.variables.find((variable) => {
+                  return variable.key === globalVariable.key;
+              });
+          })
+        : [];
+
+    $: hasConflictOnPage = globalVariableList
+        ? variableList.variables.slice(offset, offset + limit).filter((variable) => {
+              return globalVariableList.variables.find((globalVariable) => {
+                  return variable.key === globalVariable.key;
+              });
+          })
+        : false;
 </script>
 
 <CardGrid>
