@@ -20,7 +20,7 @@
         const resources = migrationFormToResources($formData);
         if ($provider.provider !== 'appwrite') return;
 
-        await getSdkForProject($selectedProject).migrations.migrateAppwrite(
+        await getSdkForProject($selectedProject).migrations.createAppwriteMigration(
             resources,
             $provider.endpoint,
             $provider.projectID,
