@@ -15,6 +15,7 @@
     import AttributeItem from '../attributeItem.svelte';
     import { symmetricDifference } from '$lib/helpers/array';
     import { isRelationship, isRelationshipToMany } from '../attributes/store';
+    import { deepClone } from '$lib/helpers/object';
 
     const databaseId = $page.params.database;
     const collectionId = $page.params.collection;
@@ -22,21 +23,23 @@
     const editing = true;
 
     const work = writable(
-        Object.keys($doc)
-            .filter((key) => {
-                return ![
-                    '$id',
-                    '$collection',
-                    '$collectionId',
-                    '$databaseId',
-                    '$createdAt',
-                    '$updatedAt'
-                ].includes(key);
-            })
-            .reduce((obj, key) => {
-                obj[key] = $doc[key];
-                return obj;
-            }, {}) as Models.Document
+        deepClone(
+            Object.keys($doc)
+                .filter((key) => {
+                    return ![
+                        '$id',
+                        '$collection',
+                        '$collectionId',
+                        '$databaseId',
+                        '$createdAt',
+                        '$updatedAt'
+                    ].includes(key);
+                })
+                .reduce((obj, key) => {
+                    obj[key] = $doc[key];
+                    return obj;
+                }, {}) as Models.Document
+        )
     );
 
     async function updateData() {
