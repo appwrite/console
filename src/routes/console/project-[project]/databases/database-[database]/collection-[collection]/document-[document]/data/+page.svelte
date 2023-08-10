@@ -22,25 +22,29 @@
     const documentId = $page.params.document;
     const editing = true;
 
-    const work = writable(
-        deepClone(
-            Object.keys($doc)
-                .filter((key) => {
-                    return ![
-                        '$id',
-                        '$collection',
-                        '$collectionId',
-                        '$databaseId',
-                        '$createdAt',
-                        '$updatedAt'
-                    ].includes(key);
-                })
-                .reduce((obj, key) => {
-                    obj[key] = $doc[key];
-                    return obj;
-                }, {}) as Models.Document
-        )
-    );
+    function initWork() {
+        const prohibitedKeys = [
+            '$id',
+            '$collection',
+            '$collectionId',
+            '$databaseId',
+            '$createdAt',
+            '$updatedAt'
+        ];
+
+        const filteredKeys = Object.keys($doc).filter((key) => {
+            return !prohibitedKeys.includes(key);
+        });
+
+        const result = filteredKeys.reduce((obj, key) => {
+            obj[key] = $doc[key];
+            return obj;
+        }, {});
+
+        return writable(deepClone(result as Models.Document));
+    }
+
+    const work = initWork();
 
     async function updateData() {
         try {
