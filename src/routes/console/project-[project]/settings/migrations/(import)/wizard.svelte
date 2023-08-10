@@ -56,7 +56,6 @@
                             $provider.projectId
                         );
 
-                        console.log('Firebase', res);
                     } else if ($provider.serviceAccount) {
                         // Manual auth
                         await sdk.forProject.migrations.createFirebaseMigration(
