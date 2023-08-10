@@ -26,7 +26,7 @@
     <span class="u-margin-inline-start-auto">
         <Button on:click={create}>
             <span class="icon-plus" aria-hidden="true" />
-            <span class="text">Create API Key</span>
+            <span class="text">Create API key</span>
         </Button>
     </span>
 </div>

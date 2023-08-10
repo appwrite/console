@@ -61,7 +61,7 @@
         <svelte:fragment slot="aside">
             <div>
                 <p>Created: {toLocaleDateTime($doc.$createdAt)}</p>
-                <p>Last Updated: {toLocaleDateTime($doc.$updatedAt)}</p>
+                <p>Last updated: {toLocaleDateTime($doc.$updatedAt)}</p>
             </div>
         </svelte:fragment>
     </CardGrid>
@@ -121,7 +121,7 @@
                     <h6 class="u-bold u-trim-1">{$doc.$id}</h6>
                 </svelte:fragment>
                 <p>
-                    Last Updated: {toLocaleDateTime($doc.$updatedAt)}
+                    Last updated: {toLocaleDateTime($doc.$updatedAt)}
                 </p>
             </Box>
         </svelte:fragment>

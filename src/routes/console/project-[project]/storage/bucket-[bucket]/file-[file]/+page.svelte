@@ -97,7 +97,7 @@
                     <p>MIME Type: {$file.mimeType}</p>
                     <p>Size: {calculateSize($file.sizeOriginal)}</p>
                     <p>Created: {toLocaleDate($file.$createdAt)}</p>
-                    <p>Last Updated: {toLocaleDate($file.$updatedAt)}</p>
+                    <p>Last updated: {toLocaleDate($file.$updatedAt)}</p>
                 </div>
             </svelte:fragment>
 
@@ -157,7 +157,7 @@
                         <h6 class="u-bold u-trim-1" data-private>{$file.name}</h6>
                     </svelte:fragment>
                     <p>
-                        Last Updated: {toLocaleDateTime($file.$updatedAt)}
+                        Last updated: {toLocaleDateTime($file.$updatedAt)}
                     </p>
                 </Box>
             </svelte:fragment>

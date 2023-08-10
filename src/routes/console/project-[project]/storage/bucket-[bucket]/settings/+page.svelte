@@ -224,7 +224,7 @@
                                 bind:value={enabled} />
                         </FormList>
                         <p class="text">Created: {toLocaleDateTime($bucket.$createdAt)}</p>
-                        <p class="text">Last Updated: {toLocaleDateTime($bucket.$updatedAt)}</p>
+                        <p class="text">Last updated: {toLocaleDateTime($bucket.$updatedAt)}</p>
                     </div>
                 </svelte:fragment>
 
@@ -455,7 +455,7 @@
                     <svelte:fragment slot="title">
                         <h6 class="u-bold u-trim-1">{$bucket.name}</h6>
                     </svelte:fragment>
-                    <p class="text">Last Updated: {toLocaleDateTime($bucket.$updatedAt)}</p>
+                    <p class="text">Last updated: {toLocaleDateTime($bucket.$updatedAt)}</p>
                 </Box>
             </svelte:fragment>
 

@@ -56,7 +56,7 @@
                 </div>
                 <div class="grid-1-2-col-2">
                     <p>Created: {toLocaleDateTime($database.$createdAt)}</p>
-                    <p>Last Updated: {toLocaleDateTime($database.$updatedAt)}</p>
+                    <p>Last updated: {toLocaleDateTime($database.$updatedAt)}</p>
                 </div>
             </div>
         </Card>
@@ -100,7 +100,7 @@
                 <Box>
                     <svelte:fragment slot="title">
                         <h6 class="u-bold u-trim-1">{$database.name}</h6>
-                        <span>Last Updated: {toLocaleDateTime($database.$updatedAt)}</span>
+                        <span>Last updated: {toLocaleDateTime($database.$updatedAt)}</span>
                     </svelte:fragment>
                 </Box>
             </svelte:fragment>
