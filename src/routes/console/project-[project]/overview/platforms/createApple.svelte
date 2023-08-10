@@ -35,7 +35,7 @@
         optional: true
     });
     stepsComponents.set(3, {
-        label: "Let's get coding",
+        label: "Initialize SDK",
         component: Step3,
         optional: true
     });
