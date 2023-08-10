@@ -19,13 +19,13 @@
 </script>
 
 <Modal headerDivider={false} bind:show={showGitInstall} size="big">
-    <svelte:fragment slot="header">Connect to Git</svelte:fragment>
+    <svelte:fragment slot="header">Install</svelte:fragment>
     <p>Select a provider to import an existing git repositories.</p>
 
     <div class="u-flex u-cross-center u-flex-vertical u-gap-16">
         <Button on:click={connectGitHub} fullWidth secondary>
             <span class="icon-github" aria-hidden="true" />
-            <span class="text">Continue with GitHub</span>
+            <span class="text">GitHub</span>
         </Button>
         <Button disabled fullWidth secondary>
             <span class="icon-gitlab" aria-hidden="true" />
