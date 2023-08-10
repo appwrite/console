@@ -37,7 +37,7 @@
         if (alert === 'installation-created') {
             addNotification({
                 type: 'success',
-                message: `Git installation has been successfully added`
+                message: `Git installation has imported to your project`
             });
             trackEvent(Submit.InstallationCreate);
             notified = true;

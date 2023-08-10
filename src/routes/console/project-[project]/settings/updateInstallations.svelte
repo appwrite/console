@@ -6,6 +6,7 @@
         CardGrid,
         DropList,
         DropListItem,
+        DropListLink,
         Heading,
         Id,
         PaginationInline
@@ -67,7 +68,7 @@
         target.searchParams.set('projectId', $page.params.project);
         target.searchParams.set('success', redirect.toString());
         target.searchParams.set('failure', redirect.toString());
-        goto(target);
+        return target?.toString();
     }
 
     async function navigateInstallations() {
@@ -146,14 +147,14 @@
                                             <span class="icon-dots-horizontal" aria-hidden="true" />
                                         </button>
                                         <svelte:fragment slot="list">
-                                            <DropListItem
+                                            <DropListLink
+                                                href={configureGitHub()}
                                                 icon="external-link"
                                                 on:click={() => {
                                                     showInstallationDropdown[i] = false;
-                                                    configureGitHub();
                                                 }}>
                                                 Configure {ProviderNames[installation.provider]}
-                                            </DropListItem>
+                                            </DropListLink>
                                             <DropListItem
                                                 icon="x-circle"
                                                 on:click={async () => {

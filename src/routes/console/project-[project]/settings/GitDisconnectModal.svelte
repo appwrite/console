@@ -38,12 +38,10 @@
     }
 
     async function loadFunctions() {
-        const functions = await sdk.forProject.functions.list([
+        return await sdk.forProject.functions.list([
             Query.limit(100),
             Query.equal('installationId', selectedInstallation.$id)
         ]);
-
-        return functions.functions;
     }
 </script>
 
@@ -53,22 +51,23 @@
     headerDivider={false}
     bind:show={showGitDisconnect}
     onSubmit={handleSubmit}
-    size="small">
+    size="big">
     <svelte:fragment slot="header">Disconnect installation</svelte:fragment>
+    <p>
+        Are you sure you want to disconnect this git installation? This will affect future
+        deployments to the following functions:
+    </p>
 
     {#await loadFunctions()}
-        <div class="avatar is-size-x-small">
-            <div class="loader u-margin-16" />
+        <div class="u-flex u-main-center">
+            <div class="avatar is-size-x-small">
+                <div class="loader u-margin-16" />
+            </div>
         </div>
     {:then functions}
-        {#if functions.length > 0}
-            <p>
-                Are you sure you want to disconnect this git installation? This will affect future
-                deployments to the following functions:
-            </p>
-
+        {#if functions.total}
             <div class="u-flex u-flex-vertical u-gap-12">
-                {#each functions as func}
+                {#each functions.functions as func}
                     <div class="u-flex u-main-space-between u-cross-center u-width-full-line">
                         <div class="u-flex u-main-start u-cross-center u-gap-8">
                             <Avatar
