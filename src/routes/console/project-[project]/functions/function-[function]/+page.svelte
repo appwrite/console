@@ -82,10 +82,7 @@
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
         <Heading tag="h2" size="5">Deployments</Heading>
-        <Button on:click={() => showCreate.set(true)} event="create_deployment">
-            <span class="icon-plus" aria-hidden="true" />
-            <span class="text">Create deployment</span>
-        </Button>
+        <Create bind:showCreate={$showCreate} />
     </div>
     {#if data.deployments.total}
         <div class="common-section">
@@ -332,8 +329,6 @@
 
     <PaginationWithLimit name="Deployments" limit={data.limit} offset={data.offset} total={sum} />
 </Container>
-
-<Create bind:showCreate={$showCreate} />
 
 {#if selectedDeployment}
     <Delete {selectedDeployment} bind:showDelete />
