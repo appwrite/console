@@ -51,6 +51,11 @@
                 case 'firebase': {
                     if ($provider.projectId) {
                         // OAuth
+                        const res = await sdk.forProject.migrations.createFirebaseOAuthMigration(
+                            resources,
+                            $provider.projectId
+                        );
+
                     } else if ($provider.serviceAccount) {
                         // Manual auth
                         await sdk.forProject.migrations.createFirebaseMigration(
