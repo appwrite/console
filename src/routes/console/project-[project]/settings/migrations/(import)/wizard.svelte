@@ -49,9 +49,14 @@
                     break;
                 }
                 case 'firebase': {
-                    console.log('firebase', $provider.serviceAccount);
                     if ($provider.projectId) {
                         // OAuth
+                        const res = await sdk.forProject.migrations.createFirebaseOAuthMigration(
+                            resources,
+                            $provider.projectId
+                        );
+
+                        console.log('Firebase', res);
                     } else if ($provider.serviceAccount) {
                         // Manual auth
                         const res = await sdk.forProject.migrations.createFirebaseMigration(

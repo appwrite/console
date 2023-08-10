@@ -6,7 +6,7 @@ async function getFirebaseProjects() {
         const res = await sdk.forProject.migrations.listFirebaseProjects();
         return res.projects;
     } catch (e) {
-        if (e.code === 401) {
+        if (e.type === 'user_identity_not_found') {
             return [];
         } else {
             throw e;
