@@ -190,10 +190,11 @@
             <article class="card-git card is-border-dashed is-no-shadow">
                 <div class="u-flex u-cross-center u-flex-vertical u-gap-32">
                     <div class="u-flex u-cross-center u-flex-vertical u-gap-8">
-                        <AvatarGroup icons={['github', 'gitlab', 'bitBucket', 'azure']} />
+                        <AvatarGroup bordered icons={['github', 'gitlab', 'bitBucket', 'azure']} />
                         <span class="icon-arrow-narrow-down" />
 
                         <div class="avatar"><span class="icon-appwrite" /></div>
+                        <!-- <div class="avatar"><SvgIcon name="appwrite" type="color" /></div> -->
                     </div>
                     <Button on:click={() => (showGitIstall = true)} secondary>
                         <span class="text">Add Installation</span>
