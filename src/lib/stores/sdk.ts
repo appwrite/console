@@ -1,5 +1,4 @@
 import { getProjectId } from '$lib/helpers/project';
-import { Project } from '$lib/sdk/project';
 import { VARS } from '$lib/system';
 import {
     Account,
@@ -11,6 +10,7 @@ import {
     Locale,
     Migrations,
     Projects,
+    Project,
     Storage,
     Teams,
     Users

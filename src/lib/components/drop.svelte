@@ -14,7 +14,9 @@
     export let fullWidth = false;
     export let fixed = false;
 
-    const dispatch = createEventDispatcher();
+    const dispatch = createEventDispatcher<{
+        blur: undefined;
+    }>();
 
     let element: HTMLDivElement;
     let tooltip: HTMLDivElement;

@@ -44,7 +44,7 @@
             <FormList>
                 <InputSwitch
                     bind:value={passwordHistoryEnabled}
-                    id="passwordHisotryEnabled"
+                    id="passwordHistoryEnabled"
                     label="Password History" />
             </FormList>
             <p class="text">

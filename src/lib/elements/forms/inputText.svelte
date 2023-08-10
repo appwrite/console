@@ -17,6 +17,7 @@
     export let readonly = false;
     export let autofocus = false;
     export let autocomplete = false;
+    export let fullWidth = false;
     export let maxlength: number = null;
     export let tooltip: string = null;
 
@@ -66,7 +67,7 @@
     };
 </script>
 
-<FormItem>
+<FormItem {fullWidth}>
     {#if label}
         <Label {required} {tooltip} {optionalText} hide={!showLabel} for={id}>
             {label}

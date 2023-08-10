@@ -44,7 +44,7 @@
         </p>
         <Code label="Bash" language="sh" code="npm install appwrite" withCopy />
         <p class="common-section">
-            When you're using a bundler (like <a
+            If you're using a bundler like <a
                 href="https://vitejs.dev"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -52,14 +52,11 @@
             or
             <a href="https://rollupjs.org" target="_blank" rel="noopener noreferrer" class="link"
                 >Rollup</a
-            >), import the Appwrite module when you need it:
+            >, import Appwrite as a module.
         </p>
         <Code label="Web SDK" labelIcon="code" language="js" code={example1} withCopy />
     {:else if method === Method.CDN}
-        <p>
-            To install with a CDN (content delivery network) add the following scripts to the bottom
-            of your tag, but before you use any Appwrite services:
-        </p>
+        <p>Add the following script tags to install Appwrite with a CDN.</p>
         <Code label="HTML" language="html" code={example2} withCopy />
     {/if}
 </WizardStep>

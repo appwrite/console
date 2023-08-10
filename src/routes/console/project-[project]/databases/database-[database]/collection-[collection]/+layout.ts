@@ -19,7 +19,7 @@ export const load: LayoutLoad = async ({ params, depends }) => {
             ),
             subNavigation: SubNavigation,
             allCollections: await sdk.forProject.databases.listCollections(params.database, [
-                Query.orderDesc('$createdAt')
+                Query.orderDesc('')
             ])
         };
     } catch (e) {

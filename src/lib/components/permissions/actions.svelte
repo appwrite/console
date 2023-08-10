@@ -20,7 +20,7 @@
     }
 </script>
 
-<DropList bind:show={showDropdown} placement="bottom-end">
+<DropList bind:show={showDropdown} placement="bottom-end" fixed>
     <slot />
     <svelte:fragment slot="list">
         <DropListItem disabled={$groups.has('any')} on:click={() => dispatch('create', ['any'])}>

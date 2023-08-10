@@ -6,46 +6,48 @@
 </script>
 
 <script lang="ts">
-    import { Button } from '$lib/elements/forms';
+    import { browser } from '$app/environment';
+    import { invalidate } from '$app/navigation';
+    import { base } from '$app/paths';
+    import { page } from '$app/stores';
+    import { timer } from '$lib/actions/timer';
     import {
         CardGrid,
         DropList,
         DropListItem,
         Empty,
-        Status,
         Heading,
+        Id,
         PaginationWithLimit,
-        Id
+        Status
     } from '$lib/components';
+    import { Dependencies } from '$lib/constants';
+    import { Button } from '$lib/elements/forms';
     import {
-        TableHeader,
         TableBody,
-        TableRow,
-        TableCellHead,
         TableCell,
+        TableCellHead,
         TableCellText,
+        TableHeader,
+        TableRow,
         TableScroll
     } from '$lib/elements/table';
-    import { execute, func } from './store';
-    import { Container } from '$lib/layout';
-    import { base } from '$app/paths';
-    import { app } from '$lib/stores/app';
-    import { calculateSize } from '$lib/helpers/sizeConvertion';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import { log } from '$lib/stores/logs';
-    import { invalidate } from '$app/navigation';
-    import { Dependencies } from '$lib/constants';
-    import type { Models } from '@appwrite.io/console';
-    import type { PageData } from './$types';
-    import Delete from './delete.svelte';
-    import Create from './create.svelte';
-    import Rebuild from './rebuild.svelte';
-    import Activate from './activate.svelte';
-    import { browser } from '$app/environment';
-    import { sdk } from '$lib/stores/sdk';
+    import { calculateSize } from '$lib/helpers/sizeConvertion';
     import { calculateTime } from '$lib/helpers/timeConversion';
-    import { timer } from '$lib/actions/timer';
+    import { Container } from '$lib/layout';
+    import { app } from '$lib/stores/app';
+    import { log } from '$lib/stores/logs';
+    import { sdk } from '$lib/stores/sdk';
+    import { Query, type Models } from '@appwrite.io/console';
+    import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
+    import type { PageData } from './$types';
+    import Activate from './activate.svelte';
+    import Create from './create.svelte';
+    import Delete from './delete.svelte';
+    import Rebuild from './rebuild.svelte';
+    import { execute, func } from './store';
 
     export let data: PageData;
 
@@ -55,6 +57,18 @@
     let showRebuild = false;
 
     let selectedDeployment: Models.Deployment = null;
+    let activeDeployment: Models.Deployment = null;
+
+    onMount(async () => {
+        activeDeployment = await getActiveDeployment();
+    });
+
+    async function getActiveDeployment() {
+        const list = await sdk.forProject.functions.listDeployments($page.params.function, [
+            Query.equal('$id', $func?.deployment)
+        ]);
+        return list?.deployments?.[0];
+    }
 
     function handleActivate() {
         invalidate(Dependencies.DEPLOYMENTS);
