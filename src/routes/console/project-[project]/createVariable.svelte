@@ -6,6 +6,7 @@
     import type { Models } from '@appwrite.io/console';
     import Alert from '$lib/components/alert.svelte';
     import { project } from './store';
+    import { base } from '$app/paths';
 
     export let isGlobal: boolean;
     export let showCreate = false;
@@ -49,7 +50,7 @@
             <Alert type="info">
                 <p class="text">
                     When there is a naming conflict with a global variable in your <a
-                        href={`/console/project-${$project.$id}/settings/variables`}
+                        href={`${base}/console/project-${$project.$id}/settings/variables`}
                         title="Project settings"
                         class="link">
                         project settings</a> and a function environment variable, the global variable

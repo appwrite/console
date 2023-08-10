@@ -31,6 +31,7 @@
     import PromoteVariableModal from './promoteVariableModal.svelte';
     import CreateVariable from './createVariable.svelte';
     import RawVariableEditor from './rawVariableEditor.svelte';
+    import { base } from '$app/paths';
 
     export let variableList: Models.VariableList;
     export let globalVariableList: Models.VariableList | undefined = undefined;
@@ -173,7 +174,7 @@
         <p>
             Set the environment variables or secret keys that will be passed to your function.
             Global variables can be found in <a
-                href={`/console/project-${$project.$id}/settings/variables`}
+                href={`${base}/console/project-${$project.$id}/settings/variables`}
                 title="Project settings"
                 class="link">
                 project settings</a
@@ -215,7 +216,7 @@
                             {/if}
                             a naming conflict with a global variable. View global variables in
                             <a
-                                href={`/console/project-${$project.$id}/settings/variables`}
+                                href={`${base}/console/project-${$project.$id}/settings/variables`}
                                 title="Project settings"
                                 class="link">
                                 project settings</a
