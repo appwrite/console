@@ -171,58 +171,42 @@
                                     </p>
                                 </Alert>
                             {:else if selectedRequest === 'headers'}
-                                {@const headers = Object.entries(execution?.responseHeaders)}
-                                {#if headers.length}
-                                    <TableList>
-                                        {#each headers as [key, value]}
-                                            <li class="table-row">
-                                                <TableCellText title="name">
-                                                    {key}
-                                                </TableCellText>
-                                                <TableCellText title="value">
-                                                    {value}
-                                                </TableCellText>
-                                            </li>
-                                        {/each}
-                                    </TableList>
-                                {:else}
-                                    <Alert type="info">
-                                        <svelte:fragment slot="title">
-                                            Only some request headers are stored
-                                        </svelte:fragment>
-                                        <p class="text">
-                                            Logging some headers might compromise privacy and
-                                            security. We only log well-known public headers. To log
-                                            more headers intentionally, use <b>context.log()</b>
-                                            in your function and make them available in Logs tab.
-                                            <a
-                                                href="http://#"
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                class="link">Learn more</a
-                                            >.
-                                        </p>
-                                    </Alert>
+                                <Alert type="info">
+                                    <svelte:fragment slot="title">
+                                        Only some request headers are stored
+                                    </svelte:fragment>
+                                    <p class="text">
+                                        Logging some headers might compromise privacy and security.
+                                        We only log well-known public headers. To log more headers
+                                        intentionally, use <b>context.log()</b>
+                                        in your function and make them available in Logs tab.
+                                        <a
+                                            href="http://#"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            class="link">Learn more</a
+                                        >.
+                                    </p>
+                                </Alert>
 
-                                    {#if execution.requestHeaders.length}
-                                        <Table>
-                                            <TableHeader>
-                                                <TableCellHead>Name</TableCellHead>
-                                                <TableCellHead>Value</TableCellHead>
-                                            </TableHeader>
-                                            <TableBody>
-                                                {#each execution.requestHeaders as header}
-                                                    <TableRow>
-                                                        <TableCellText title="Name">
-                                                            {header.name}
-                                                        </TableCellText>
-                                                        <TableCellText title="Value"
-                                                            >{header.value}</TableCellText>
-                                                    </TableRow>
-                                                {/each}
-                                            </TableBody>
-                                        </Table>
-                                    {/if}
+                                {#if execution.requestHeaders.length}
+                                    <Table>
+                                        <TableHeader>
+                                            <TableCellHead>Name</TableCellHead>
+                                            <TableCellHead>Value</TableCellHead>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {#each execution.requestHeaders as header}
+                                                <TableRow>
+                                                    <TableCellText title="Name">
+                                                        {header.name}
+                                                    </TableCellText>
+                                                    <TableCellText title="Value"
+                                                        >{header.value}</TableCellText>
+                                                </TableRow>
+                                            {/each}
+                                        </TableBody>
+                                    </Table>
                                 {/if}
                             {:else if selectedRequest === 'body'}
                                 <Alert type="warning">

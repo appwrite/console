@@ -11,7 +11,7 @@
     import { VARS } from '$lib/system';
 
     const { input, handleSubmit, completion, isLoading, complete } = useCompletion({
-        api: VARS.ASSISTANT_ENDPOINT
+        api: VARS.APPWRITE_ENDPOINT + '/console/assistant'
     });
 
     const examples = [
