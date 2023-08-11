@@ -42,7 +42,7 @@
     <ExecuteFunction />
     <UpdateName />
     <UpdateRuntime />
-    <UpdateConfiguration repository={data.repository} installations={data.installations} />
+    <UpdateConfiguration installations={data.installations} />
     <UpdateLogging />
     <UpdatePermissions />
     <UpdateEvents />

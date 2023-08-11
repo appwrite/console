@@ -2,22 +2,10 @@ import { sdk } from '$lib/stores/sdk';
 import { Dependencies } from '$lib/constants';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ params, depends, parent }) => {
+export const load: PageLoad = async ({ params, depends }) => {
     depends(Dependencies.VARIABLES);
 
-    const data = await parent();
-
-    const [repository, globalVariables, variables] = await Promise.all([
-        (async () => {
-            if (data.function.installationId && data.function.providerRepositoryId) {
-                return await sdk.forProject.vcs.getRepository(
-                    data.function.installationId,
-                    data.function.providerRepositoryId
-                );
-            } else {
-                return null;
-            }
-        })(),
+    const [globalVariables, variables] = await Promise.all([
         sdk.forProject.projectApi.listVariables(),
         sdk.forProject.functions.listVariables(params.function)
     ]);
@@ -42,7 +30,6 @@ export const load: PageLoad = async ({ params, depends, parent }) => {
 
     return {
         variables,
-        globalVariables,
-        repository
+        globalVariables
     };
 };
