@@ -29,12 +29,6 @@
     let selectedDir: string;
     let silentMode = false;
 
-    $: selectedRepo = (repositoriesList ?? []).find((repo) => repo.id === selectedRepoId) ?? null;
-    $: selectedInstallation =
-        (installationsList?.installations ?? []).find(
-            (installation) => installation.$id === selectedInstallationId
-        ) ?? null;
-
     let installationsOptions = installationsList.installations.map((installation) => {
         return {
             value: installation.$id,
@@ -129,6 +123,12 @@
         offset = 0;
         getRepos();
     }
+
+    $: selectedRepo = (repositoriesList ?? []).find((repo) => repo.id === selectedRepoId) ?? null;
+    $: selectedInstallation =
+        (installationsList?.installations ?? []).find(
+            (installation) => installation.$id === selectedInstallationId
+        ) ?? null;
 </script>
 
 <Modal headerDivider={false} bind:show size="big" onSubmit={handleSubmit}>
@@ -209,8 +209,8 @@
                             <p>There are no repositories that match your search.</p>
                         </div>
                         <div class="u-flex u-gap-16 common-section u-main-center">
-                            <Button external href="https://appwrite.io/docs/client/teams" text
-                                >Documentation</Button>
+                            <!-- TODO: add link to docs -->
+                            <Button external href="#/" text>Documentation</Button>
                             <Button secondary on:click={() => (search = '')}>Clear search</Button>
                         </div>
                     </div>
@@ -220,9 +220,10 @@
                     <div class="common-section">
                         <div class="u-text-center common-section">
                             <p class="text u-line-height-1-5">You have no repositories.</p>
+                            <!-- TODO: add link to docs -->
                             <p class="text u-line-height-1-5">
                                 Need a hand? Learn more in our <a
-                                    href="https://appwrite.io/docs/client/teams"
+                                    href="#/"
                                     target="_blank"
                                     rel="noopener noreferrer">
                                     documentation</a

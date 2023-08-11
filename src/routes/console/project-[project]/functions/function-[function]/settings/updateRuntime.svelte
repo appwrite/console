@@ -26,7 +26,7 @@
         }));
     });
 
-    async function updateName() {
+    async function updateRuntime() {
         try {
             await sdk.forProject.functions.update(
                 functionId,
@@ -62,7 +62,7 @@
     }
 </script>
 
-<Form onSubmit={updateName}>
+<Form onSubmit={updateRuntime}>
     <CardGrid>
         <Heading tag="h6" size="7">Runtime</Heading>
 
