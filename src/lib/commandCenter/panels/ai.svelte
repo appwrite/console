@@ -13,7 +13,10 @@
     const endpoint = VARS.APPWRITE_ENDPOINT ?? `${globalThis?.location?.origin}/v1`;
 
     const { input, handleSubmit, completion, isLoading, complete } = useCompletion({
-        api: endpoint + '/console/assistant'
+        api: endpoint + '/console/assistant',
+        headers: {
+            'content-type': 'application/json'
+        }
     });
 
     const examples = [
