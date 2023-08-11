@@ -9,7 +9,8 @@
         DropListLink,
         Heading,
         Id,
-        PaginationInline
+        PaginationInline,
+        SvgIcon
     } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import {
@@ -181,8 +182,7 @@
                         <AvatarGroup bordered icons={['github', 'gitlab', 'bitBucket', 'azure']} />
                         <span class="icon-arrow-narrow-down" />
 
-                        <div class="avatar"><span class="icon-appwrite" /></div>
-                        <!-- <div class="avatar"><SvgIcon name="appwrite" type="color" /></div> -->
+                        <div class="avatar"><SvgIcon name="appwrite" type="color" size={80} /></div>
                     </div>
                     <Button on:click={() => (showGitIstall = true)} secondary>
                         <span class="text">Add Installation</span>
