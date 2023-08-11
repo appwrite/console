@@ -10,8 +10,10 @@
     import CoolerAppwrite from '$lib/images/appwrite-cooler.svg';
     import { VARS } from '$lib/system';
 
+    const endpoint = VARS.APPWRITE_ENDPOINT ?? `${globalThis?.location?.origin}/v1`;
+
     const { input, handleSubmit, completion, isLoading, complete } = useCompletion({
-        api: VARS.APPWRITE_ENDPOINT + '/console/assistant'
+        api: endpoint + '/console/assistant'
     });
 
     const examples = [
