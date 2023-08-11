@@ -2,7 +2,7 @@
     import { EyebrowHeading } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { deepMap } from '$lib/helpers/object';
-    import type { DeepKeys, WritableValue } from '$lib/helpers/types';
+    import type { WritableValue } from '$lib/helpers/types';
     import { sdk } from '$lib/stores/sdk';
 
     import { onMount } from 'svelte';
@@ -20,8 +20,17 @@
     export let formData: ReturnType<typeof createMigrationFormStore>;
     export let provider: ReturnType<typeof createMigrationProviderStore>;
 
+    type ValueOf<T> = T[keyof T];
     type FormData = WritableValue<typeof formData>;
-    type FormKeys = DeepKeys<FormData>;
+    // TL;DR of this type: It gets a object with two levels (in this case FormData)
+    // And returns a join of the keys with a dot between them.
+    // e.g. If FormData was { users: { root: boolean, teams: boolean } }
+    // The type would be 'users.root' | 'users.teams'
+    type FormKeys = ValueOf<{
+        [K in keyof FormData]: ValueOf<{
+            [L in keyof FormData[K]]: L extends string ? `${K}.${L}` : never;
+        }>;
+    }>;
 
     /**
      *
