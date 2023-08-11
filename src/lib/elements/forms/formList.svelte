@@ -1,7 +1,7 @@
 <script lang="ts">
     export let isCommonSection = false;
     export let gap = 24;
-    let classes: string = undefined;
+    let classes = '';
     export { classes as class };
 </script>
 

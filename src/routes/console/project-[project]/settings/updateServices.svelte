@@ -15,8 +15,6 @@
     let showDisableAll = false;
     let showEnableAll = false;
 
-    $: services.load($project);
-
     async function serviceUpdate(service: Service) {
         try {
             await sdk.forConsole.projects.updateServiceStatus(
@@ -88,6 +86,8 @@
             showEnableAll = false;
         }
     }
+
+    $: services.load($project);
 </script>
 
 <CardGrid>
@@ -97,29 +97,32 @@
         services are not accessible to client SDKs but remain accessible to server SDKs.
     </p>
     <svelte:fragment slot="aside">
-        <ul class="buttons-list u-main-end">
-            <li class="buttons-list-item">
-                <Button text={true} on:click={() => toggleAllServices(true)}>Enable all</Button>
-            </li>
-            <li class="buttons-list-item">
-                <Button text={true} on:click={() => toggleAllServices(false)}>Disable all</Button>
-            </li>
-        </ul>
-        <FormList>
+        <div>
+            <ul class="buttons-list u-main-end">
+                <li class="buttons-list-item">
+                    <Button text={true} on:click={() => toggleAllServices(true)}>Enable all</Button>
+                </li>
+                <li class="buttons-list-item">
+                    <Button text={true} on:click={() => toggleAllServices(false)}
+                        >Disable all</Button>
+                </li>
+            </ul>
             <form class="form card-separator">
-                <ul class="form-list is-multiple">
-                    {#each $services.list as service}
-                        <InputSwitch
-                            label={service.label}
-                            id={service.method}
-                            bind:value={service.value}
-                            on:change={() => {
-                                serviceUpdate(service);
-                            }} />
-                    {/each}
-                </ul>
+                <FormList>
+                    <ul class="form-list is-multiple">
+                        {#each $services.list as service}
+                            <InputSwitch
+                                label={service.label}
+                                id={service.method}
+                                bind:value={service.value}
+                                on:change={() => {
+                                    serviceUpdate(service);
+                                }} />
+                        {/each}
+                    </ul>
+                </FormList>
             </form>
-        </FormList>
+        </div>
     </svelte:fragment>
 </CardGrid>
 

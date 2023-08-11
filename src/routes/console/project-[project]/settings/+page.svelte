@@ -19,12 +19,10 @@
 
     export let data;
 
-    let name: string = null;
     let teamId: string = null;
     let showTransfer = false;
 
     onMount(() => {
-        name ??= $project.name;
         teamId ??= $project.teamId;
 
         const queryString = window.location.search;
