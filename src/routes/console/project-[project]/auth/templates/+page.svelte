@@ -76,7 +76,7 @@
     <div class="u-flex u-gap-8 u-cross-center">
         <Heading tag="h2" size="5">Templates</Heading>
         <div class="tag eyebrow-heading-3">
-            <span class="text u-x-small">Beta</span>
+            <span class="text u-x-small">Experimental</span>
         </div>
     </div>
 
@@ -84,7 +84,6 @@
         <div class="u-margin-block-start-24">
             <Alert
                 isStandalone
-                dismissible
                 type="info"
                 buttons={[
                     {

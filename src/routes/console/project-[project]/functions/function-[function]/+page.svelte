@@ -202,16 +202,19 @@
                                     warning={status === 'pending'}
                                     success={status === 'completed' || status === 'ready'}
                                     info={status === 'processing' || status === 'building'}>
-                                    <span
-                                        class="text u-trim"
-                                        use:tooltip={{
-                                            content: 'Active Deployment',
-                                            placement: 'top'
-                                        }}>
-                                        {#if deployment.$id === $func.deployment}
+                                    {#if deployment.$id === $func.deployment}
+                                        <span
+                                            class="text u-trim"
+                                            use:tooltip={{
+                                                content: 'Active Deployment',
+                                                placement: 'top'
+                                            }}>
                                             <span class="icon-check-circle" aria-hidden="true" />
-                                        {/if}
-                                        <span>{status}</span></span>
+                                            <span>{status}</span>
+                                        </span>
+                                    {:else}
+                                        <span>{status}</span>
+                                    {/if}
                                 </Pill>
                             </TableCell>
                             <TableCellText width={70} title="Source">
@@ -255,8 +258,7 @@
                                             }}>
                                             Redeploy
                                         </DropListItem>
-
-                                        {#if deployment.status === 'ready'}
+                                        {#if deployment.status === 'ready' && deployment.$id !== $func.deployment}
                                             <DropListItem
                                                 icon="lightning-bolt"
                                                 on:click={() => {
