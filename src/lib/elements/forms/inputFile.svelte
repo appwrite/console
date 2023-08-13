@@ -1,11 +1,12 @@
 <script lang="ts">
     import { Trim } from '$lib/components';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
+    import { onMount } from 'svelte';
     import { Helper } from '.';
 
     export let label: string = null;
     export let files: FileList;
-    export let list = new DataTransfer();
+
     export let allowedFileExtensions: string[] = [];
     export let maxSize: number = null;
     export let required = false;
@@ -14,16 +15,35 @@
     let input: HTMLInputElement;
     let hovering = false;
 
+    function setFiles(value: FileList) {
+        if (!value) return;
+
+        const hasInvalidExt = Array.from(value).some((file) => {
+            const fileExtension = file.name.split('.').pop();
+            return !allowedFileExtensions.includes(fileExtension);
+        });
+        if (hasInvalidExt) {
+            error = 'Invalid file extension';
+            return;
+        }
+
+        files = value;
+        input.files = value;
+    }
+
+    function resetFiles() {
+        setFiles(new DataTransfer().files);
+    }
+
     function dropHandler(ev: DragEvent) {
         ev.dataTransfer.dropEffect = 'move';
         hovering = false;
-        if (ev.dataTransfer.items) {
-            for (let i = 0; i < ev.dataTransfer.items.length; i++) {
-                if (ev.dataTransfer.items[i].kind === 'file') {
-                    list.items.clear();
-                    list.items.add(ev.dataTransfer.items[i].getAsFile());
-                    files = list.files;
-                }
+        if (!ev.dataTransfer.items) return;
+        for (let i = 0; i < ev.dataTransfer.items.length; i++) {
+            if (ev.dataTransfer.items[i].kind === 'file') {
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(ev.dataTransfer.items[i].getAsFile());
+                setFiles(dataTransfer.files);
             }
         }
     }
@@ -47,10 +67,19 @@
     }
 
     $: fileArray = files?.length ? Array.from(files) : [];
+
+    onMount(() => {
+        setFiles(files);
+    });
+
+    const handleChange = (event: Event) => {
+        const target = event.currentTarget as HTMLInputElement;
+        setFiles(target.files);
+    };
 </script>
 
 <input
-    bind:files
+    on:change={handleChange}
     bind:this={input}
     accept={allowedFileExtensions.map((n) => `.${n}`).join(',')}
     type="file"
@@ -123,7 +152,7 @@
                                 {fileSize.value + fileSize.unit}
                             </span>
                             <button
-                                on:click={() => (files = null)}
+                                on:click|preventDefault={resetFiles}
                                 type="button"
                                 class="button is-text is-only-icon u-margin-inline-start-auto"
                                 aria-label="remove file"

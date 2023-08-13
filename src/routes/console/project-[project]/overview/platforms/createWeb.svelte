@@ -26,7 +26,7 @@
 
     const stepsComponents: WizardStepsType = new Map();
     stepsComponents.set(1, {
-        label: 'Register your app',
+        label: 'Register your platform',
         component: Step1
     });
     stepsComponents.set(2, {
@@ -35,7 +35,7 @@
         optional: true
     });
     stepsComponents.set(3, {
-        label: "Let's get coding",
+        label: 'Initialize SDK',
         component: Step3,
         optional: true
     });
@@ -47,8 +47,8 @@
 </script>
 
 <Wizard
-    title="Add a Web Project"
+    title="Add a web platform"
     steps={stepsComponents}
     on:finish={onFinish}
     on:exit={onFinish}
-    finalAction="Take me to my Dashboard" />
+    finalAction="Go to dashboard" />

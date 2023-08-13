@@ -77,7 +77,7 @@
             );
 
             addNotification({
-                message: 'Index has been created',
+                message: 'Creating index',
                 type: 'success'
             });
             trackEvent(Submit.IndexCreate);
