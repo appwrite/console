@@ -126,7 +126,6 @@
         left: 50%;
         transform: translateX(-50%);
         padding: 0.5rem;
-        // background-color: hsl(var(--color-neutral-500) / 0.5);
         z-index: 9999;
 
         display: flex;

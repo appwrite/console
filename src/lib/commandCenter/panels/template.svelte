@@ -350,6 +350,9 @@
 
         --result-bg: hsl(var(--color-neutral-10));
         --footer-bg: linear-gradient(180deg, #fff 0%, #e8e9f0 100%);
+
+        --icon-color: hsl(var(--color-neutral-50));
+        --label-color: hsl(var(--color-neutral-100));
     }
 
     :global(.theme-dark) .card {
@@ -364,6 +367,9 @@
 
         --result-bg: hsl(var(--color-neutral-200));
         --footer-bg: linear-gradient(180deg, #1b1b28 0%, #282a3b 100%);
+
+        --icon-color: hsl(var(--color-neutral-70));
+        --label-color: hsl(var(--color-neutral-30));
     }
 
     // Elements
@@ -485,11 +491,13 @@
 
                     box-shadow: none !important;
 
+                    color: var(--label-color);
+
                     :global(i[class^='icon-']) {
                         font-size: 1rem !important;
                         width: 1rem !important;
                         height: 1rem !important;
-
+                        color: var(--icon-color);
                         position: relative;
                     }
 

@@ -26,7 +26,19 @@
 
     $: $registerCommands([
         {
-            label: 'Ask AI',
+            label: 'Go to projects',
+            callback: () => {
+                goto('/console');
+            },
+            keys: ['g', 'p'],
+            group: 'navigation',
+            disabled:
+                $page.url.pathname.includes('/console/organization-') &&
+                !$page.url.pathname.endsWith('/members') &&
+                !$page.url.pathname.endsWith('/settings')
+        },
+        {
+            label: 'Ask the AI',
             callback: () => {
                 addSubPanel(AIPanel);
             },
@@ -39,7 +51,8 @@
                 goto('/console/account');
             },
             keys: ['i'],
-            group: 'navigation'
+            group: 'navigation',
+            rank: 1
         },
         {
             label: 'Find an organization',
