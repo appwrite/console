@@ -35,7 +35,7 @@ const sdkForProject = {
     storage: new Storage(clientProject),
     teams: new Teams(clientProject),
     users: new Users(clientProject),
-    // migrations: new Migrations(clientProject)
+    migrations: {}
 };
 
 export const getSdkForProject = (projectId: string) => {
@@ -57,7 +57,7 @@ export const sdk = {
         projects: new Projects(clientConsole),
         teams: new Teams(clientConsole),
         users: new Users(clientConsole),
-        // migrations: new Migrations(clientConsole)
+        migrations: {}
     },
     get forProject() {
         const projectId = getProjectId();
