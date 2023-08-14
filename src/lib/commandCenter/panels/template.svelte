@@ -458,6 +458,8 @@
                 position: relative;
                 z-index: 10;
 
+                font-size: 10px !important;
+
                 &:not(:first-child) {
                     margin-block-start: 1rem;
                 }
@@ -475,12 +477,28 @@
                 }
 
                 .option {
-                    padding: 0.5rem 0.75rem;
+                    padding: 0.5rem 9.5px;
+                    font-size: 14px;
                     position: relative;
                     z-index: 10;
                     width: 100%;
 
                     box-shadow: none !important;
+
+                    :global(i[class^='icon-']) {
+                        font-size: 1rem !important;
+                        width: 1rem !important;
+                        height: 1rem !important;
+
+                        position: relative;
+                    }
+
+                    :global(i[class^='icon-']::before) {
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        translate: -50% -50%;
+                    }
                 }
 
                 &.nested {

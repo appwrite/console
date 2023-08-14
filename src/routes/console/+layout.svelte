@@ -68,14 +68,6 @@
             group: 'organizations'
         },
         {
-            label: 'Go to home',
-            callback: () => {
-                goto('/console');
-            },
-            keys: ['h'],
-            group: 'navigation'
-        },
-        {
             label: 'Open documentation',
             callback: () => {
                 window.open('https://appwrite.io/docs', '_blank');
