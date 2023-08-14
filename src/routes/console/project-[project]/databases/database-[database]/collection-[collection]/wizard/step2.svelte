@@ -31,7 +31,7 @@
     {:else}
         <Alert type="info">
             <svelte:fragment slot="title">Document security is disabled</svelte:fragment>
-            If you want to assign document permissions, navigate to Collection settings and enable document
+            If you want to assign document permissions, navigate to collection settings and enable document
             security. Otherwise, only Collection permissions will be used.
         </Alert>
     {/if}

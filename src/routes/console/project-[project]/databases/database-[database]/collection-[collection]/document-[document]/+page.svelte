@@ -72,8 +72,8 @@
     <CardGrid>
         <Heading tag="h6" size="7">Permissions</Heading>
         <p>
-            Assign read or write permissions at the <b> collection Level</b> or
-            <b> document Level</b>. If collection level permissions are assigned, permissions
+            Assign read or write permissions at the <b> collection level</b> or
+            <b> document level</b>. If collection level permissions are assigned, permissions
             applied to individual documents are ignored.
         </p>
         <svelte:fragment slot="aside">
@@ -98,7 +98,7 @@
                         Go to <a
                             href={`${base}/console/project-${projectId}/databases/database-${$doc.$databaseId}/collection-${$doc.$collectionId}/settings`}
                             class="link">
-                            Collection settings</a> to enable document level permissions.
+                            collection settings</a> to enable document level permissions.
                     </p>
                 </Alert>
             {/if}
