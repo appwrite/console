@@ -25,7 +25,7 @@
 
     {#if data.collections.total}
         {#if data.view === 'grid'}
-            <Grid {data} />
+            <Grid {data} {showCreate} />
         {:else}
             <Table {data} />
         {/if}

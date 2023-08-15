@@ -3,16 +3,17 @@
     import { page } from '$app/stores';
     import { CardContainer, GridItem1, Id } from '$lib/components';
     import { Pill } from '$lib/elements';
+    import type { Writable } from 'svelte/store';
     import type { PageData } from './$types';
     export let data: PageData;
-    export let showCreate = false;
+    export let showCreate: Writable<boolean>;
     const projectId = $page.params.project;
     const databaseId = $page.params.database;
 </script>
 
 <CardContainer
     total={data.collections.total}
-    on:click={() => (showCreate = true)}
+    on:click={() => ($showCreate = true)}
     event="collection">
     {#each data.collections.collections as collection}
         <GridItem1

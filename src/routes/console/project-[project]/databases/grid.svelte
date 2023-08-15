@@ -4,7 +4,7 @@
     import { CardContainer, GridItem1, Id } from '$lib/components';
     import type { PageData } from './$types';
     export let data: PageData;
-    export let showCreate = false;
+    export let showCreate: boolean;
     const project = $page.params.project;
 </script>
 
