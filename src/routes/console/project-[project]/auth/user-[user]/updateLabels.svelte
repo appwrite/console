@@ -86,12 +86,8 @@
                 <InputTags
                     id="user-labels"
                     label="Labels"
-                    placeholder="Select or tyype user labels"
+                    placeholder="Select or type user labels"
                     bind:tags={labels} />
-                <li>
-                    <Helper type={error ? 'warning' : 'neutral'}
-                        >{error ? error : 'Only alphanumeric characters are allowed'}</Helper>
-                </li>
                 <li class="u-flex u-gap-12 u-margin-block-start-8">
                     {#each suggestedLabels as suggestedLabel}
                         <Pill
@@ -108,6 +104,10 @@
                             {suggestedLabel}
                         </Pill>
                     {/each}
+                </li>
+                <li>
+                    <Helper type={error ? 'warning' : 'neutral'}
+                        >{error ? error : 'Only alphanumeric characters are allowed'}</Helper>
                 </li>
             </ul>
         </svelte:fragment>
