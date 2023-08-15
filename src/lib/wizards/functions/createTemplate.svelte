@@ -14,6 +14,7 @@
     import TemplateConfiguration from './steps/templateConfiguration.svelte';
     import RepositoryBehaviour from './steps/repositoryBehaviour.svelte';
     import CreateRepository from './steps/createRepository.svelte';
+    import TemplateVariables from './steps/templateVariables.svelte';
 
     async function create() {
         const runtimeDetail = $template.runtimes.find((r) => r.name === $templateConfig.runtime);
@@ -60,18 +61,22 @@
 
     const stepsComponents: WizardStepsType = new Map();
     stepsComponents.set(1, {
-        label: 'Function configuration',
+        label: 'Template configuration',
         component: TemplateConfiguration
     });
     stepsComponents.set(2, {
+        label: 'Variables',
+        component: TemplateVariables
+    });
+    stepsComponents.set(3, {
         label: 'Repository behaviour',
         component: RepositoryBehaviour
     });
-    stepsComponents.set(3, {
+    stepsComponents.set(4, {
         label: 'Select repository',
         component: CreateRepository
     });
-    stepsComponents.set(4, {
+    stepsComponents.set(5, {
         label: 'Git configuration',
         component: GitConfiguration
     });
