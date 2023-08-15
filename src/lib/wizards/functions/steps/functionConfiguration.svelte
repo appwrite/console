@@ -52,8 +52,9 @@
 
 <WizardStep>
     <svelte:fragment slot="title">Function configuration</svelte:fragment>
-    <svelte:fragment slot="subtitle"
-        >Set your deployment configuration and any build commands here.</svelte:fragment>
+    <svelte:fragment slot="subtitle">
+        Set your deployment configuration and any build commands here.
+    </svelte:fragment>
     <FormList>
         <InputText
             label="Name"
@@ -69,7 +70,11 @@
                 </Pill>
             </div>
         {:else}
-            <CustomId bind:show={showCustomId} name="Function" bind:id={$createFunction.$id} />
+            <CustomId
+                bind:show={showCustomId}
+                name="Function"
+                bind:id={$createFunction.$id}
+                fullWidth />
         {/if}
 
         {#if detectingRuntime}
@@ -107,6 +112,7 @@
                         label="Commands"
                         placeholder="Enter a build commad (e.g. 'npm install')"
                         id="build"
+                        tooltip="Enter a single command or chain multiple commands with the && operator"
                         bind:value={$createFunction.commands} />
                 </FormList>
             </CollapsibleItem>

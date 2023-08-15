@@ -204,7 +204,7 @@
     <div class="u-flex u-cross-center u-flex-vertical u-gap-16">
         <Button href={connectGitHub().toString()} fullWidth secondary>
             <span class="icon-github" aria-hidden="true" />
-            <span class="text">Continue with GitHub</span>
+            <span class="text">GitHub</span>
         </Button>
         <Button disabled fullWidth secondary>
             <span class="icon-gitlab" aria-hidden="true" />

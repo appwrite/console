@@ -100,7 +100,11 @@
                     </Pill>
                 </div>
             {:else}
-                <CustomId bind:show={showCustomId} name="Function" bind:id={$templateConfig.$id} />
+                <CustomId
+                    bind:show={showCustomId}
+                    name="Function"
+                    bind:id={$templateConfig.$id}
+                    fullWidth />
             {/if}
         </FormList>
 

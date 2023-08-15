@@ -81,6 +81,6 @@
 
     <svelte:fragment slot="footer">
         <Button text on:click={() => (show = false)}>Cancel</Button>
-        <Button submit>Import</Button>
+        <Button submit disabled={!files?.length}>Import</Button>
     </svelte:fragment>
 </Modal>

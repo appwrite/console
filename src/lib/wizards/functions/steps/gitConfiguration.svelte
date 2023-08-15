@@ -38,16 +38,9 @@
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">Execute access</svelte:fragment>
+    <svelte:fragment slot="title">Git configuration</svelte:fragment>
     <svelte:fragment slot="subtitle">
-        Choose who can execute this function using the client API. For more information, check out
-        the <a
-            href="https://appwrite.io/docs/permissions"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="link">
-            Permissions Guide
-        </a>.
+        Configure the Git repository that will trigger your function deployments when updated.
     </svelte:fragment>
 
     <div class="box" style:--box-border-radius="var(--border-radius-small)">
@@ -97,4 +90,12 @@
             </div>
         {/await}
     </div>
+    <p class="text u-margin-block-start-8">
+        View your configuration in <a
+            href={$repository.html_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="link">{$repository.provider}</a
+        >.
+    </p>
 </WizardStep>
