@@ -3,7 +3,7 @@ export const marketplace = [
         icon: 'icon-lightning-bolt',
         id: 'starter',
         name: 'Starter function',
-        tagline: 'A simple function. Create something awesome! 🚀',
+        tagline: 'A simple function to get started. Edit this function to explore endless possibilities with Appwrite Functions. 🚀',
         permissions: ['any'],
         events: [],
         cron: '',
