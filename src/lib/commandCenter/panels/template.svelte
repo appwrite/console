@@ -10,7 +10,7 @@
 
     import { clearSubPanels, popSubPanel, subPanels } from '../subPanels';
 
-    type Option = $$Generic<Command>;
+    type Option = $$Generic<Omit<Command, 'group'> & { group?: string }>;
     export let options: Option[] | null = null;
     export let search = '';
     export let searchPlaceholder = 'Search...';

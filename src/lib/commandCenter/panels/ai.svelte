@@ -1,13 +1,12 @@
 <script lang="ts">
     import Template from './template.svelte';
 
-    import { AvatarInitials, Code } from '$lib/components';
+    import { AvatarInitials, Code, SvgIcon } from '$lib/components';
     import { user } from '$lib/stores/user';
     import { useCompletion } from 'ai/svelte';
     import { subPanels } from '../subPanels';
 
     import { isLanguage, type Language } from '$lib/components/code.svelte';
-    import CoolerAppwrite from '$lib/images/appwrite-cooler.svg';
     import { VARS } from '$lib/system';
 
     const { input, handleSubmit, completion, isLoading, complete } = useCompletion({
@@ -106,7 +105,7 @@
         <div class="content">
             <div class="u-flex u-gap-8">
                 <div class="logo">
-                    <img src={CoolerAppwrite} alt="Appwrite logo" />
+                    <SvgIcon name="sparkles" type="color" />
                 </div>
                 <div class="answer">
                     {#if $isLoading && !$completion}
@@ -169,6 +168,14 @@
 </Template>
 
 <style lang="scss">
+    :global(.theme-dark) .content {
+        --logo-bg: #282a3b;
+    }
+
+    :global(.theme-light) .content {
+        --logo-bg: #f2f2f8;
+    }
+
     .content {
         overflow-y: auto;
         padding: 1rem;
@@ -182,7 +189,7 @@
             flex-shrink: 0;
 
             border-radius: 0.25rem;
-            background: #282a3b;
+            background: var(--logo-bg);
         }
 
         .answer {
@@ -190,29 +197,6 @@
 
             p {
                 white-space: pre-wrap;
-            }
-        }
-
-        h2 {
-            color: hsl(var(--color-neutral-70));
-        }
-
-        .examples {
-            display: flex;
-            flex-direction: column;
-
-            li {
-                padding: 0.59375rem 0.5rem;
-
-                button {
-                    &:hover {
-                        opacity: 0.75;
-                    }
-
-                    i {
-                        color: hsl(var(--color-neutral-70));
-                    }
-                }
             }
         }
     }
