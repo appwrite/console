@@ -1,33 +1,7 @@
-<script lang="ts">
-    import { base } from '$app/paths';
-    import { Heading } from '$lib/components';
-    import { clickOnEnter } from '$lib/helpers/a11y';
-    import WizardCover from '$lib/layout/wizardCover.svelte';
-    import { app } from '$lib/stores/app';
-    import { wizard } from '$lib/stores/wizard';
-    import type { Models } from '@appwrite.io/console';
-    import Repositories from './components/repositories.svelte';
-    import CreateManual from './createManual.svelte';
-    import { repository, templateConfig, template as templateStore } from './store';
-    import CreateGit from './createGit.svelte';
-    import { marketplace, type MarketplaceTemplate } from '$lib/stores/marketplace';
-    import { sdk } from '$lib/stores/sdk';
+<script context="module" lang="ts">
     import CreateTemplate from './createTemplate.svelte';
 
-    let hasInstallations: boolean;
-    let selectedRepository: string;
-
-    const quickStart = marketplace.find((template) => template.id === 'starter');
-    const templates = marketplace
-        .filter((template) => template.id !== 'starter')
-        .filter((_template, index) => index < 3);
-
-    function connect(event: CustomEvent<Models.ProviderRepository>) {
-        repository.set(event.detail);
-        wizard.start(CreateGit);
-    }
-
-    function connectTemplate(template: MarketplaceTemplate, runtime: string | null = null) {
+    export function connectTemplate(template: MarketplaceTemplate, runtime: string | null = null) {
         const variables: any = {};
         template.variables.forEach((variable) => {
             variables[variable.name] = variable.value ?? '';
@@ -49,6 +23,33 @@
             repositoryId: null
         });
         wizard.start(CreateTemplate);
+    }
+</script>
+
+<script lang="ts">
+    import { base } from '$app/paths';
+    import { Heading } from '$lib/components';
+    import { clickOnEnter } from '$lib/helpers/a11y';
+    import WizardCover from '$lib/layout/wizardCover.svelte';
+    import { app } from '$lib/stores/app';
+    import { wizard } from '$lib/stores/wizard';
+    import { repository, templateConfig, template as templateStore } from './store';
+    import { marketplace, type MarketplaceTemplate } from '$lib/stores/marketplace';
+    import { sdk } from '$lib/stores/sdk';
+    import type { Models } from '@appwrite.io/console';
+    import Repositories from './components/repositories.svelte';
+    import CreateManual from './createManual.svelte';
+    import CreateGit from './createGit.svelte';
+
+    let hasInstallations: boolean;
+    let selectedRepository: string;
+
+    const quickStart = marketplace.find((template) => template.id === 'starter');
+    const templates = marketplace.filter((template) => template.id !== 'starter').slice(0, 3);
+
+    function connect(event: CustomEvent<Models.Repository>) {
+        repository.set(event.detail);
+        wizard.start(CreateGit);
     }
 
     async function loadRuntimes() {

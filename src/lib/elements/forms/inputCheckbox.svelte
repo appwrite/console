@@ -45,7 +45,8 @@
             bind:this={element}
             bind:checked={value}
             on:invalid={handleInvalid}
-            on:click />
+            on:click
+            on:change />
     </div>
     {#if error}
         <Helper type="warning">{error}</Helper>
