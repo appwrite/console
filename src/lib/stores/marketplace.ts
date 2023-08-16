@@ -60,7 +60,7 @@ export const marketplace = [
         icon: 'icon-open-ai',
         id: 'prompt-chatgpt',
         name: 'Prompt ChatGPT',
-        tagline: 'Ask question, and let OpenAI GPT-3.5-turbo answer.',
+        tagline: 'Ask questions and let OpenAI GPT-3.5-turbo answer.',
         permissions: ['any'],
         events: [],
         cron: '',
