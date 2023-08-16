@@ -32,19 +32,20 @@
             await sdk.forProject.functions.update(
                 functionId,
                 $func.name,
-                $func.execute || undefined,
+                $func.runtime,
                 $func.entrypoint || undefined,
+                $func.execute || undefined,
                 Array.from($eventSet),
                 $func.schedule || undefined,
                 $func.timeout || undefined,
-                $func.enabled,
-                $func.logging,
-                $func.commands,
-                $func.vcsInstallationId,
-                $func.vcsRepositoryId,
-                $func.vcsBranch,
-                $func.vcsSilentMode,
-                $func.vcsRootDirectory
+                $func.enabled || undefined,
+                $func.logging || undefined,
+                $func.commands || undefined,
+                $func.installationId || undefined,
+                $func.providerRepositoryId || undefined,
+                $func.providerBranch || undefined,
+                $func.providerSilentMode || undefined,
+                $func.providerRootDirectory || undefined
             );
             await invalidate(Dependencies.FUNCTION);
             addNotification({
@@ -86,7 +87,7 @@
 
 <Form onSubmit={updateEvents}>
     <CardGrid>
-        <Heading tag="h6" size="7">Events</Heading>
+        <Heading tag="h6" size="7" id="events">Events</Heading>
         <p>Set the events that will trigger your function. Maximum 100 events allowed.</p>
         <svelte:fragment slot="aside">
             {#if $eventSet.size}

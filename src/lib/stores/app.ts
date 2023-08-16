@@ -1,23 +1,22 @@
 import { browser } from '$app/environment';
 import { VARS } from '$lib/system';
-import { writable } from 'svelte/store';
+import { derived, writable } from 'svelte/store';
+import type { Feedback } from './feedback';
 
 export type AppStore = {
     theme: 'light' | 'dark' | 'auto';
     themeInUse: 'light' | 'dark';
 };
 
-export type Feedback = {
-    elapsed: number;
-    visualized: number;
-    notification: boolean;
-    type: 'nps' | 'general';
-    show: boolean;
-};
-
 export const app = writable<AppStore>({
     theme: 'auto',
     themeInUse: 'light'
+});
+
+export const iconPath = derived(app, ($app) => {
+    return (name: string, type: 'color' | 'grayscale') => {
+        return `/icons/${$app.themeInUse}/${type}/${name}.svg`;
+    };
 });
 
 function createFeedbackStore() {
@@ -88,6 +87,7 @@ function createFeedbackStore() {
         }
     };
 }
+
 export const feedback = createFeedbackStore();
 
 if (browser) {

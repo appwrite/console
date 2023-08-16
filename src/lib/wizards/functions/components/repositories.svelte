@@ -6,9 +6,9 @@
     import { timeFromNow } from '$lib/helpers/date';
     import { app } from '$lib/stores/app';
     import { sdk } from '$lib/stores/sdk';
+    import { repositories } from '$routes/console/project-[project]/functions/function-[function]/store';
     import { installation, installations, repository } from '../store';
     import { createEventDispatcher } from 'svelte';
-    import type { Models } from '@appwrite.io/console';
 
     const dispatch = createEventDispatcher();
 
@@ -32,32 +32,34 @@
 
     let search = '';
     async function loadRepositories(installationId: string, search: string) {
-        return sdk.forProject.vcs.listRepositories(installationId, search || undefined);
-    }
-
-    const detectionMemory = new Map<string, Models.Detection>();
-    async function loadDetection(installationId: string, repositoryId: string) {
-        const key = `${installationId}.${repositoryId}`;
-        if (detectionMemory.has(key)) {
-            return detectionMemory.get(key);
+        if (
+            !$repositories ||
+            $repositories.installationId !== installationId ||
+            $repositories.search !== search
+        ) {
+            $repositories.repositories = (
+                await sdk.forProject.vcs.listRepositories(installationId, search || undefined)
+            ).providerRepositories;
         }
-        const detection = await sdk.forProject.vcs.createRepositoryDetection(
-            installationId,
-            repositoryId
-        );
-        detectionMemory.set(key, detection);
 
-        return detection;
+        $repositories.search = search;
+        $repositories.installationId = installationId;
+
+        if ($repositories.repositories.length) {
+            selectedRepository = $repositories.repositories[0].id;
+            $repository = $repositories.repositories[0];
+        }
+
+        return $repositories.repositories;
     }
 
     function connectGitHub() {
         const redirect = new URL($page.url);
         redirect.searchParams.append('github-installed', 'true');
-        const target = new URL(
-            `${sdk.forProject.client.config.endpoint}/v1/vcs/github/installations`
-        );
+        const target = new URL(`${sdk.forProject.client.config.endpoint}/vcs/github/authorize`);
         target.searchParams.set('projectId', $page.params.project);
-        target.searchParams.set('redirect', redirect.toString());
+        target.searchParams.set('success', redirect.toString());
+        target.searchParams.set('failure', redirect.toString());
         return target;
     }
 </script>
@@ -110,9 +112,9 @@
                 </div>
             </div>
         {:then response}
-            {#if response?.total}
+            {#if response?.length}
                 <ul class="table is-remove-outer-styles common-section">
-                    {#each response.repositories as repo}
+                    {#each response as repo}
                         <li class="table-row">
                             <div class="table-col">
                                 <div
@@ -122,31 +124,30 @@
                                         <input
                                             class="is-small u-margin-inline-end-8"
                                             type="radio"
-                                            name={repo.name}
+                                            name="repositories"
                                             bind:group={selectedRepository}
                                             on:change={() => repository.set(repo)}
                                             value={repo.id} />
                                     {/if}
-                                    {#await loadDetection(selectedInstallation, repo.id)}
-                                        <div class="avatar is-size-x-small">
-                                            <div class="loader u-margin-16" />
-                                        </div>
-                                    {:then detection}
-                                        <div
-                                            class="avatar is-size-x-small"
-                                            style:--p-text-size="1.25rem"
-                                            class:is-color-empty={!detection.runtime}>
-                                            {#if detection.runtime}
-                                                <img
-                                                    src={`${base}/icons/${$app.themeInUse}/color/${detection.runtime}.svg`}
-                                                    alt={repo.name} />
-                                            {/if}
-                                        </div>
-                                    {/await}
+                                    <div
+                                        class="avatar is-size-x-small"
+                                        style:--p-text-size="1.25rem"
+                                        class:is-color-empty={!repo.runtime}>
+                                        {#if repo.runtime}
+                                            <img
+                                                src={`${base}/icons/${$app.themeInUse}/color/${
+                                                    repo.runtime.split('-')[0]
+                                                }.svg`}
+                                                alt={repo.name} />
+                                        {/if}
+                                    </div>
                                     <div class="u-flex u-gap-8">
                                         <span class="text">{repo.name}</span>
                                         {#if repo.private}
-                                            <span class="icon-lock" aria-hidden="true" />
+                                            <span
+                                                class="icon-lock-closed"
+                                                style="font-size: var(--icon-size-small)"
+                                                aria-hidden="true" />
                                         {/if}
                                         <time class="u-color-text-gray" datetime={repo.pushedAt}>
                                             {timeFromNow(repo.pushedAt)}
@@ -203,7 +204,7 @@
     <div class="u-flex u-cross-center u-flex-vertical u-gap-16">
         <Button href={connectGitHub().toString()} fullWidth secondary>
             <span class="icon-github" aria-hidden="true" />
-            <span class="text">Continue with GitHub</span>
+            <span class="text">GitHub</span>
         </Button>
         <Button disabled fullWidth secondary>
             <span class="icon-gitlab" aria-hidden="true" />
@@ -212,6 +213,10 @@
         <Button disabled fullWidth secondary>
             <span class="icon-bitBucket" aria-hidden="true" />
             <span class="text">BitBucket (coming soon)</span>
+        </Button>
+        <Button disabled fullWidth secondary>
+            <span class="icon-azure" aria-hidden="true" />
+            <span class="text">Azure (coming soon)</span>
         </Button>
     </div>
 {/if}

@@ -56,11 +56,8 @@
 
 <Form onSubmit={updatePrefs}>
     <CardGrid>
-        <Heading tag="h6" size="7">User Preferences</Heading>
-        <p>
-            You can update your user preferences by storing information on the user's objects so
-            they can easily be shared across devices and sessions.
-        </p>
+        <Heading tag="h6" size="7">Preferences</Heading>
+        <p>Add custom user preferences to share them across devices and sessions.</p>
         <svelte:fragment slot="aside">
             <form class="form u-grid u-gap-16">
                 <ul class="form-list">

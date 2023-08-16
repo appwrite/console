@@ -17,7 +17,7 @@ export const load: PageLoad = async ({ params, depends, url, route }) => {
         search,
         files: await sdk.forProject.storage.listFiles(
             params.bucket,
-            [Query.limit(limit), Query.offset(offset), Query.orderDesc('$createdAt')],
+            [Query.limit(limit), Query.offset(offset), Query.orderDesc('')],
             search
         )
     };

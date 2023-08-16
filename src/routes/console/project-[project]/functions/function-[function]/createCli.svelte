@@ -1,15 +1,18 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
-    import { Modal, Collapsible, CollapsibleItem, Code } from '$lib/components';
+    import { Modal, Code, Alert } from '$lib/components';
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
     import { func } from './store';
+    import SecondaryTabs from '$lib/components/secondaryTabs.svelte';
+    import SecondaryTabsItem from '$lib/components/secondaryTabsItem.svelte';
 
     export let show = false;
 
     let lang = 'js';
     let codeSnippets = {};
     let os = 'unknown';
+    let category = 'Unix';
 
     const functionId = $page.params.function;
 
@@ -17,6 +20,14 @@
         lang = setLanguage($func.runtime);
         codeSnippets = setCodeSnippets(lang);
         os = navigator['userAgentData']?.platform || navigator?.platform || 'unknown';
+
+        if (os.includes('Win')) {
+            category = 'CMD';
+        } else if (os.includes('Mac') || os.includes('Linux')) {
+            category = 'Unix';
+        } else {
+            category = 'Unix';
+        }
     });
 
     function setLanguage(runtime: string) {
@@ -70,53 +81,49 @@
             }
         };
     }
-
-    function openCategory(category: string, index: number) {
-        switch (category) {
-            case 'CMD':
-                return os.includes('Win');
-            case 'PowerShell':
-                return os.includes('Win');
-            case 'Unix':
-                return (
-                    os === 'unknown' || os.includes('Linux') || os.includes('Mac') || index === 0
-                );
-            default:
-                return index === 0;
-        }
-    }
 </script>
 
 <Modal size="big" bind:show>
-    <svelte:fragment slot="header">Create Deployment</svelte:fragment>
+    <svelte:fragment slot="header">Create CLI deployment</svelte:fragment>
     <p class="text">
-        You can deploy your function from the Appwrite CLI using Unix, CMD, or PowerShell. Check out
-        our Documentation to learn more about <a
-            href="https://appwrite.io/docs/functions#deployFunction"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="link">deploying your functions</a
-        >, or how to install and use the
-        <a
+        Deploy your function using the Appwrite CLI by running the following command inside your
+        function's folder.
+    </p>
+
+    <Alert dismissible={false} type="warning">
+        If you did not create your function using the CLI, initialize your function by following our <a
             href="https://appwrite.io/docs/command-line"
             target="_blank"
             rel="noopener noreferrer"
-            class="link">Appwrite CLI</a
+            class="link">documentation</a
         >.
-    </p>
-    <Collapsible>
-        {#each ['Unix', 'CMD', 'PowerShell'] as category, i}
-            <CollapsibleItem open={openCategory(category, i)}>
-                <svelte:fragment slot="title">{category}</svelte:fragment>
+    </Alert>
+
+    <div class="editor-border">
+        <SecondaryTabs large class="u-sep-block-end u-padding-8">
+            {#each ['Unix', 'CMD', 'PowerShell'] as cat}
+                <SecondaryTabsItem
+                    stretch
+                    fullWidth
+                    center
+                    on:click={() => (category = cat)}
+                    disabled={category === cat}>
+                    {cat}
+                </SecondaryTabsItem>
+            {/each}
+        </SecondaryTabs>
+
+        {#each ['Unix', 'CMD', 'PowerShell'] as cat}
+            {#if category === cat}
                 <Code
                     withLineNumbers
                     withCopy
                     language="sh"
-                    label={codeSnippets[category].language}
-                    code={codeSnippets[category].code} />
-            </CollapsibleItem>
+                    label={codeSnippets[cat].language}
+                    code={codeSnippets[cat].code} />
+            {/if}
         {/each}
-    </Collapsible>
+    </div>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (show = false)}>Close</Button>
     </svelte:fragment>

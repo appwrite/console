@@ -22,19 +22,20 @@
             await sdk.forProject.functions.update(
                 functionId,
                 $func.name,
-                $func.execute || undefined,
+                $func.runtime,
                 $func.entrypoint || undefined,
+                $func.execute || undefined,
                 $func.events || undefined,
                 functionSchedule,
                 $func.timeout || undefined,
-                $func.enabled,
-                $func.logging,
-                $func.commands,
-                $func.vcsInstallationId,
-                $func.vcsRepositoryId,
-                $func.vcsBranch,
-                $func.vcsSilentMode,
-                $func.vcsRootDirectory
+                $func.enabled || undefined,
+                $func.logging || undefined,
+                $func.commands || undefined,
+                $func.installationId || undefined,
+                $func.providerRepositoryId || undefined,
+                $func.providerBranch || undefined,
+                $func.providerSilentMode || undefined,
+                $func.providerRootDirectory || undefined
             );
             await invalidate(Dependencies.FUNCTION);
             addNotification({
@@ -54,10 +55,10 @@
 
 <Form onSubmit={updateSchedule}>
     <CardGrid>
-        <Heading tag="h6" size="7">Schedule</Heading>
+        <Heading tag="h6" size="7" id="schedule">Schedule</Heading>
         <p>
             Set a Cron schedule to trigger your function. Leave blank for no schedule. <a
-                href="https://en.wikipedia.org/wiki/Cron"
+                href="https://appwrite.io/docs/functions#scheduled-execution"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="link">

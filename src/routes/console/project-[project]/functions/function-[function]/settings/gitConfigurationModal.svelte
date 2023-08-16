@@ -5,12 +5,13 @@
     import { Box, EmptySearch, Modal, PaginationInline } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { InputChoice, InputSearch, InputSelect, InputText, Button } from '$lib/elements/forms';
-    import { toLocaleDateTime } from '$lib/helpers/date';
+    import { timeFromNow, toLocaleDateTime } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
-    import { func } from '../store';
+    import { func, repositories } from '../store';
     import { invalidate } from '$app/navigation';
+    import InputSelectSearch from '$lib/elements/forms/inputSelectSearch.svelte';
 
     export let show: boolean;
     export let installationsList: Models.InstallationList;
@@ -21,19 +22,12 @@
     let selectedInstallationId: string;
     let step = 1;
     let search: string;
-    let repositoriesList: Models.RepositoryList;
+    let repositoriesList: Models.ProviderRepository[];
     let branchesList: Models.BranchList;
     let offset = 0;
     let selectedBranch: string;
     let selectedDir: string;
     let silentMode = false;
-
-    $: selectedRepo =
-        (repositoriesList?.repositories ?? []).find((repo) => repo.id === selectedRepoId) ?? null;
-    $: selectedInstallation =
-        (installationsList?.installations ?? []).find(
-            (installation) => installation.$id === selectedInstallationId
-        ) ?? null;
 
     let installationsOptions = installationsList.installations.map((installation) => {
         return {
@@ -55,14 +49,15 @@
             await sdk.forProject.functions.update(
                 functionId,
                 $func.name,
-                $func.execute || undefined,
+                $func.runtime,
                 $func.entrypoint,
+                $func.execute || undefined,
                 $func.events || undefined,
                 $func.schedule || undefined,
                 $func.timeout || undefined,
-                $func.enabled,
-                $func.logging,
-                $func.commands,
+                $func.enabled || undefined,
+                $func.logging || undefined,
+                $func.commands || undefined,
                 selectedInstallationId,
                 selectedRepoId,
                 selectedBranch,
@@ -87,10 +82,24 @@
 
     async function getRepos() {
         if (!show || !selectedInstallationId) return;
-        repositoriesList = await sdk.forProject.vcs.listRepositories(
-            selectedInstallationId,
-            search
-        );
+
+        if (
+            !$repositories ||
+            $repositories.installationId !== selectedInstallationId ||
+            $repositories.search !== search
+        ) {
+            $repositories.repositories = (
+                await sdk.forProject.vcs.listRepositories(
+                    selectedInstallationId,
+                    search || undefined
+                )
+            ).providerRepositories;
+        }
+
+        $repositories.search = search;
+        $repositories.installationId = selectedInstallation.$id;
+
+        repositoriesList = $repositories.repositories;
     }
     async function getBranches() {
         if (!show || !selectedInstallationId) return;
@@ -114,6 +123,12 @@
         offset = 0;
         getRepos();
     }
+
+    $: selectedRepo = (repositoriesList ?? []).find((repo) => repo.id === selectedRepoId) ?? null;
+    $: selectedInstallation =
+        (installationsList?.installations ?? []).find(
+            (installation) => installation.$id === selectedInstallationId
+        ) ?? null;
 </script>
 
 <Modal headerDivider={false} bind:show size="big" onSubmit={handleSubmit}>
@@ -146,16 +161,16 @@
                     >project settings</a
                 >.
             </p>
-            {#if repositoriesList?.total}
+            {#if repositoriesList.length}
                 <ul class="table is-remove-outer-styles u-sep-block-start">
-                    {#each repositoriesList.repositories as repo}
+                    {#each repositoriesList as repo}
                         <li class="table-row">
                             <label class="table-col u-cursor-pointer">
                                 <div class="u-flex u-cross-center u-gap-8">
                                     <input
                                         class="is-small u-margin-inline-end-8"
                                         type="radio"
-                                        name={repo.name}
+                                        name="repositories"
                                         bind:group={selectedRepoId}
                                         value={repo.id} />
                                     <div class="avatar is-size-x-small">
@@ -163,11 +178,14 @@
                                     </div>
                                     <div class="u-flex u-gap-8">
                                         <span class="text">{repo.name}</span>
-
-                                        <time
-                                            class="u-color-text-gray"
-                                            datetime="2011-11-18T14:54:39.929">
-                                            XXm ago
+                                        {#if repo.private}
+                                            <span
+                                                class="icon-lock-closed"
+                                                style="font-size: var(--icon-size-small)"
+                                                aria-hidden="true" />
+                                        {/if}
+                                        <time class="u-color-text-gray" datetime={repo.pushedAt}>
+                                            {timeFromNow(repo.pushedAt)}
                                         </time>
                                     </div>
                                 </div>
@@ -176,11 +194,11 @@
                     {/each}
                 </ul>
                 <div class="u-flex u-margin-block-start-32 u-main-space-between">
-                    <p class="text">Total results: {repositoriesList?.total}</p>
+                    <p class="text">Total results: {repositoriesList.length}</p>
                     <PaginationInline
                         limit={5}
                         bind:offset
-                        sum={repositoriesList?.total}
+                        sum={repositoriesList.length}
                         hidePages />
                 </div>
             {:else if search}
@@ -191,8 +209,8 @@
                             <p>There are no repositories that match your search.</p>
                         </div>
                         <div class="u-flex u-gap-16 common-section u-main-center">
-                            <Button external href="https://appwrite.io/docs/client/teams" text
-                                >Documentation</Button>
+                            <!-- TODO: add link to docs -->
+                            <Button external href="#/" text>Documentation</Button>
                             <Button secondary on:click={() => (search = '')}>Clear search</Button>
                         </div>
                     </div>
@@ -202,9 +220,10 @@
                     <div class="common-section">
                         <div class="u-text-center common-section">
                             <p class="text u-line-height-1-5">You have no repositories.</p>
+                            <!-- TODO: add link to docs -->
                             <p class="text u-line-height-1-5">
                                 Need a hand? Learn more in our <a
-                                    href="https://appwrite.io/docs/client/teams"
+                                    href="#/"
                                     target="_blank"
                                     rel="noopener noreferrer">
                                     documentation</a
@@ -231,18 +250,28 @@
                 <p>Last updated: {toLocaleDateTime(selectedRepo.pushedAt)}</p>
             </Box>
 
-            <InputSelect
+            <InputSelectSearch
+                required={true}
                 id="branch"
                 label="Branch"
-                required={true}
+                placeholder="main"
+                bind:value={selectedBranch}
+                bind:search={selectedBranch}
+                on:select={(event) => {
+                    selectedBranch = event.detail.value;
+                }}
+                name="branch"
                 options={branchesList?.branches?.map((branch) => {
                     return {
                         value: branch.name,
                         label: branch.name
                     };
-                }) ?? []}
-                bind:value={selectedBranch} />
-            <InputText id="root" label="Root directory" bind:value={selectedDir} />
+                }) ?? []} />
+            <InputText
+                id="root"
+                label="Root directory"
+                placeholder="functions/my-function"
+                bind:value={selectedDir} />
             <InputChoice
                 id="silent"
                 label="Silent mode"

@@ -21,20 +21,23 @@
 </script>
 
 <script lang="ts">
-    import type { Models } from '@appwrite.io/console';
-    import { Container, type UsagePeriods } from '$lib/layout';
-    import { page } from '$app/stores';
-    import { onboarding, project } from '../store';
-    import { usage } from './store';
-    import { onMount } from 'svelte';
     import { afterNavigate } from '$app/navigation';
+    import { base } from '$app/paths';
+    import { page } from '$app/stores';
+    import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
+    import { PlatformsPanel } from '$lib/commandCenter/panels';
     import { Heading, Tab } from '$lib/components';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
-    import { base } from '$app/paths';
-    import Realtime from './realtime.svelte';
+    import { Container, type UsagePeriods } from '$lib/layout';
+    import type { Models } from '@appwrite.io/console';
+    import { onMount } from 'svelte';
+    import { onboarding, project } from '../store';
     import Bandwith from './bandwith.svelte';
-    import Requests from './requests.svelte';
+    import { createApiKey } from './keys/+page.svelte';
     import Onboard from './onboard.svelte';
+    import Realtime from './realtime.svelte';
+    import Requests from './requests.svelte';
+    import { usage } from './store';
 
     $: projectId = $page.params.project;
     $: path = `/console/project-${projectId}/overview`;
@@ -44,7 +47,7 @@
     afterNavigate(handle);
 
     async function handle() {
-        const promise = usage.load(projectId, period);
+        const promise = usage.load(period);
 
         if ($usage) {
             await promise;
@@ -53,8 +56,33 @@
 
     function changePeriod(newPeriod: UsagePeriods) {
         period = newPeriod;
-        usage.load(projectId, period);
+        usage.load(period);
     }
+
+    $: $registerCommands([
+        {
+            label: 'Add platform',
+            keys: ['a', 'p'],
+            callback() {
+                addSubPanel(PlatformsPanel);
+            },
+            icon: 'plus',
+            group: 'integrations'
+        },
+        {
+            label: 'Create API Key',
+            icon: 'plus',
+            callback() {
+                createApiKey();
+            },
+            keys: ['c', 'k'],
+            group: 'integrations'
+        }
+    ]);
+
+    $: $updateCommandGroupRanks({
+        integrations: 10
+    });
 </script>
 
 <svelte:head>
@@ -67,7 +95,7 @@
             <Onboard {projectId} />
         {:else}
             {#if $usage}
-                {@const storage = humanFileSize(total($usage.storage) ?? 0)}
+                {@const storage = humanFileSize(total($usage.filesStorage) ?? 0)}
                 <section class="common-section">
                     <div class="grid-dashboard-1s-2m-6l">
                         <div class="card is-2-columns-medium-screen is-3-columns-large-screen">
@@ -91,14 +119,14 @@
 
                                 <div class="grid-item-1-end-start">
                                     <div class="heading-level-4">
-                                        {format(total($usage.documents) ?? 0)}
+                                        {format(total($usage.documentsTotal) ?? 0)}
                                     </div>
                                     <div>Documents</div>
                                 </div>
 
                                 <div class="grid-item-1-end-end">
                                     <div class="text">
-                                        Databases: {format(total($usage.databases) ?? 0)}
+                                        Databases: {format(total($usage.databasesTotal) ?? 0)}
                                     </div>
                                 </div>
                             </div>
@@ -126,7 +154,7 @@
 
                                 <div class="grid-item-1-end-end">
                                     <div class="text">
-                                        Buckets: {format(total($usage.buckets) ?? 0)}
+                                        Buckets: {format(total($usage.bucketsTotal) ?? 0)}
                                     </div>
                                 </div>
                             </div>
@@ -146,7 +174,7 @@
 
                                 <div class="grid-item-1-end-start">
                                     <div class="heading-level-4">
-                                        {format(total($usage.users) ?? 0)}
+                                        {format(total($usage.usersTotal) ?? 0)}
                                     </div>
                                     <div>Users</div>
                                 </div>
@@ -167,7 +195,7 @@
 
                                 <div class="grid-item-1-end-start">
                                     <div class="heading-level-4">
-                                        {format(total($usage.executions) ?? 0)}
+                                        {format(total($usage.executionsTotal) ?? 0)}
                                     </div>
                                     <div>Executions</div>
                                 </div>

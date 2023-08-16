@@ -37,7 +37,7 @@
         });
     });
 
-    function showLogs(execution: Models.Execution<any>) {
+    function showLogs(execution: Models.Execution) {
         $log.show = true;
         $log.func = $func;
         $log.data = execution;
@@ -50,7 +50,7 @@
     </div>
     {#if !$func.logging}
         <div class="common-section">
-            <Alert type="info" isInline>
+            <Alert type="info" standalone>
                 <svelte:fragment slot="title">Your execution logs are disabled</svelte:fragment>
 
                 To see the latest execution logs, enable them in your

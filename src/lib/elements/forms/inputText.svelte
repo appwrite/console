@@ -4,10 +4,11 @@
     import NullCheckbox from './nullCheckbox.svelte';
     import TextCounter from './textCounter.svelte';
 
-    export let label: string;
+    export let label: string = undefined;
     export let optionalText: string | undefined = undefined;
     export let showLabel = true;
     export let id: string;
+    export let name: string = id;
     export let value = '';
     export let placeholder = '';
     export let required = false;
@@ -16,6 +17,7 @@
     export let readonly = false;
     export let autofocus = false;
     export let autocomplete = false;
+    export let fullWidth = false;
     export let maxlength: number = null;
     export let tooltip: string = null;
 
@@ -39,8 +41,11 @@
         error = element.validationMessage;
     };
 
-    $: if (value) {
-        error = null;
+    $: {
+        value;
+        if (element?.validity?.valid) {
+            error = null;
+        }
     }
 
     let prevValue = '';
@@ -56,16 +61,23 @@
 
     $: showTextCounter = !!maxlength;
     $: showNullCheckbox = nullable && !required;
+
+    type $$Events = {
+        input: Event & { target: HTMLInputElement };
+    };
 </script>
 
-<FormItem>
-    <Label {required} {tooltip} {optionalText} hide={!showLabel} for={id}>
-        {label}
-    </Label>
+<FormItem {fullWidth}>
+    {#if label}
+        <Label {required} {tooltip} {optionalText} hide={!showLabel} for={id}>
+            {label}
+        </Label>
+    {/if}
 
     <div class="input-text-wrapper">
         <input
             {id}
+            {name}
             {placeholder}
             {disabled}
             {readonly}
@@ -77,7 +89,8 @@
             bind:value
             class:u-padding-inline-end-56={typeof maxlength === 'number'}
             bind:this={element}
-            on:invalid={handleInvalid} />
+            on:invalid={handleInvalid}
+            on:input />
         {#if showTextCounter || showNullCheckbox}
             <ul
                 class="buttons-list u-cross-center u-gap-8 u-position-absolute u-inset-block-start-8 u-inset-block-end-8 u-inset-inline-end-12">

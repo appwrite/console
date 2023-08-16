@@ -1,35 +1,46 @@
+<script lang="ts" context="module">
+    export let showCreateUser = writable(false);
+</script>
+
 <script lang="ts">
+    import { goto } from '$app/navigation';
+    import { base } from '$app/paths';
     import { page } from '$app/stores';
     import {
+        AvatarInitials,
+        Copy,
         Empty,
         EmptySearch,
-        Copy,
-        SearchQuery,
-        AvatarInitials,
-        PaginationWithLimit
+        PaginationWithLimit,
+        SearchQuery
     } from '$lib/components';
+    import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import {
         Table,
-        TableHeader,
         TableBody,
-        TableCellHead,
         TableCell,
+        TableCellHead,
         TableCellText,
+        TableHeader,
         TableRowLink
     } from '$lib/elements/table';
-    import { Pill } from '$lib/elements';
-    import { toLocaleDateTime } from '$lib/helpers/date';
+    import { toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
-    import { base } from '$app/paths';
-    import { goto } from '$app/navigation';
-    import Create from './createUser.svelte';
     import type { Models } from '@appwrite.io/console';
+    import { writable } from 'svelte/store';
     import type { PageData } from './$types';
+    import Create from './createUser.svelte';
 
     export let data: PageData;
 
-    let showCreate = false;
+    // TODO: Remove this when the console SDK is updated
+    const users = data.users.users.map((user) => {
+        const labels: string[] = [];
+        const accessedAt = '';
+        return { accessedAt, labels, ...user };
+    });
+
     const projectId = $page.params.project;
     async function userCreated(event: CustomEvent<Models.User<Record<string, unknown>>>) {
         await goto(`${base}/console/project-${projectId}/auth/user-${event.detail.$id}`);
@@ -38,7 +49,7 @@
 
 <Container>
     <SearchQuery search={data.search} placeholder="Search by name, email, phone, or ID">
-        <Button on:click={() => (showCreate = true)} event="create_user">
+        <Button on:click={() => ($showCreateUser = true)} event="create_user">
             <span class="icon-plus" aria-hidden="true" /> <span class="text">Create user</span>
         </Button>
     </SearchQuery>
@@ -49,10 +60,12 @@
                 <TableCellHead onlyDesktop>Identifiers</TableCellHead>
                 <TableCellHead onlyDesktop width={130}>Status</TableCellHead>
                 <TableCellHead onlyDesktop width={100}>ID</TableCellHead>
+                <TableCellHead onlyDesktop width={100}>Labels</TableCellHead>
                 <TableCellHead onlyDesktop>Joined</TableCellHead>
+                <TableCellHead onlyDesktop>Last Activity</TableCellHead>
             </TableHeader>
             <TableBody>
-                {#each data.users.users as user}
+                {#each users as user}
                     <TableRowLink
                         href={`${base}/console/project-${projectId}/auth/user-${user.$id}`}>
                         <TableCell title="Name">
@@ -102,8 +115,14 @@
                                 </Pill>
                             </Copy>
                         </TableCell>
+                        <TableCellText onlyDesktop title="Labels">
+                            {user.labels.join(', ')}
+                        </TableCellText>
                         <TableCellText onlyDesktop title="Joined">
                             {toLocaleDateTime(user.registration)}
+                        </TableCellText>
+                        <TableCellText onlyDesktop title="Last Activity">
+                            {user.accessedAt ? toLocaleDate(user.accessedAt) : 'never'}
                         </TableCellText>
                     </TableRowLink>
                 {/each}
@@ -128,8 +147,8 @@
             single
             href="https://appwrite.io/docs/server/users"
             target="user"
-            on:click={() => (showCreate = true)} />
+            on:click={() => showCreateUser.set(true)} />
     {/if}
 </Container>
 
-<Create bind:showCreate on:created={userCreated} />
+<Create bind:showCreate={$showCreateUser} on:created={userCreated} />

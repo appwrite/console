@@ -5,9 +5,10 @@
     export let icons: string[] = [];
     export let total = avatars.length;
     export let size = 40;
+    export let bordered = false;
 </script>
 
-<ul class="avatars-group">
+<ul class="avatars-group" class:is-with-border={bordered}>
     {#each avatars as name, index}
         {#if index < 2}
             <li class="avatars-group-item">

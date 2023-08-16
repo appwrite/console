@@ -5,8 +5,16 @@
     import { base } from '$app/paths';
     import { app } from '$lib/stores/app';
     import { calculateTime } from '$lib/helpers/timeConversion';
-    import { TableCellText, TableList } from '$lib/elements/table';
+    import {
+        TableBody,
+        TableCellHead,
+        TableCellText,
+        TableHeader,
+        TableList,
+        TableRow
+    } from '$lib/elements/table';
     import { beforeNavigate } from '$app/navigation';
+    import Table from '$lib/elements/table/table.svelte';
 
     let selectedRequest = 'parameters';
     let selectedResponse = 'logs';
@@ -29,6 +37,12 @@
 
     $: execution = $log.data;
     $: func = $log.func;
+
+    $: if (execution) {
+        if (execution.errors) {
+            selectedResponse = 'errors';
+        }
+    }
 </script>
 
 <svelte:window on:keydown={handleKeydown} />
@@ -66,7 +80,7 @@
                 </div>
                 <ul>
                     <li class="text">
-                        <b>Total duration: </b>
+                        <b>Duration: </b>
                         <time>
                             {calculateTime(execution.duration)}
                         </time>
@@ -95,17 +109,26 @@
                 <section class="code-panel">
                     <header class="code-panel-header u-flex u-main-space-between u-width-full-line">
                         <div class="u-flex u-gap-24">
-                            <div class="u-flex u-gap-16">
+                            <div class="u-flex u-gap-4">
                                 <h4 class="u-bold">Method:</h4>
-                                <span>{execution.method}</span>
+                                <span>{execution.requestMethod}</span>
                             </div>
-                            <div class="u-flex u-gap-16">
+                            <div class="u-flex u-gap-4">
                                 <h4 class="u-bold">Path:</h4>
-                                <span>{execution.path}</span>
+                                <span>{execution.requestPath}</span>
                             </div>
                         </div>
 
-                        <p>Triggered by: <b>{execution.trigger}</b></p>
+                        <div class="u-flex u-gap-24">
+                            <div class="u-flex u-gap-4">
+                                <h4 class="u-bold">Triggered by:</h4>
+                                <span>{execution.trigger}</span>
+                            </div>
+                            <div class="u-flex u-gap-4">
+                                <h4 class="u-bold">Status Code:</h4>
+                                <span>{execution.responseStatusCode}</span>
+                            </div>
+                        </div>
                     </header>
                     <div class="code-panel-content grid-1-2" style="u-grid">
                         <div class="grid-1-2-col-1 u-flex u-flex-vertical u-gap-16">
@@ -148,60 +171,60 @@
                                     </p>
                                 </Alert>
                             {:else if selectedRequest === 'headers'}
-                                {@const headers = Object.entries(execution?.headers)}
-                                {#if headers.length}
-                                    <TableList>
-                                        {#each headers as [key, value]}
-                                            <li class="table-row">
-                                                <TableCellText title="name">
-                                                    {key}
-                                                </TableCellText>
-                                                <TableCellText title="value">
-                                                    {value}
-                                                </TableCellText>
-                                            </li>
-                                        {/each}
-                                    </TableList>
-                                {:else}
-                                    <Alert type="info">
-                                        <svelte:fragment slot="title">
-                                            Header data is not stored in function executions
-                                        </svelte:fragment>
-                                        <p class="text">
-                                            Logging header data might compromise privacy and
-                                            security. To log them intentionally, use <b
-                                                >context.log(context.req.headers)</b>
-                                            in your function and make them available in Logs tab.
-                                            <a
-                                                href="http://#"
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                class="link">Learn more</a
-                                            >.
-                                        </p>
-                                    </Alert>
+                                <Alert type="info">
+                                    <svelte:fragment slot="title">
+                                        Only some request headers are stored
+                                    </svelte:fragment>
+                                    <p class="text">
+                                        Logging some headers might compromise privacy and security.
+                                        We only log well-known public headers. To log more headers
+                                        intentionally, use <b>context.log()</b>
+                                        in your function and make them available in Logs tab.
+                                        <a
+                                            href="http://#"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            class="link">Learn more</a
+                                        >.
+                                    </p>
+                                </Alert>
+
+                                {#if execution.requestHeaders.length}
+                                    <Table>
+                                        <TableHeader>
+                                            <TableCellHead>Name</TableCellHead>
+                                            <TableCellHead>Value</TableCellHead>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {#each execution.requestHeaders as header}
+                                                <TableRow>
+                                                    <TableCellText title="Name">
+                                                        {header.name}
+                                                    </TableCellText>
+                                                    <TableCellText title="Value"
+                                                        >{header.value}</TableCellText>
+                                                </TableRow>
+                                            {/each}
+                                        </TableBody>
+                                    </Table>
                                 {/if}
                             {:else if selectedRequest === 'body'}
-                                {#if execution.headers?.body?.length}
-                                    <Code withCopy noMargin code={execution.body} language="sh" />
-                                {:else}
-                                    <Alert type="info">
-                                        <svelte:fragment slot="title">
-                                            Body data is not stored in function executions
-                                        </svelte:fragment>
-                                        <p class="text">
-                                            Logging body data might compromise privacy and security.
-                                            To log them intentionally, use <b>context.log()</b>
-                                            in your function and make them available in Logs tab.
-                                            <a
-                                                href="http://#"
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                class="link">Learn more</a
-                                            >.
-                                        </p>
-                                    </Alert>
-                                {/if}
+                                <Alert type="warning">
+                                    <svelte:fragment slot="title">
+                                        Request body is not stored
+                                    </svelte:fragment>
+                                    <p class="text">
+                                        Logging body might compromise privacy and security. To log
+                                        it intentionally, use <b>context.log()</b>
+                                        in your function and make it available in Logs tab.
+                                        <a
+                                            href="http://#"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            class="link">Learn more</a
+                                        >.
+                                    </p>
+                                </Alert>
                             {/if}
                         </div>
                         <div class="grid-1-2-col-2 u-flex u-flex-vertical u-gap-16">
@@ -237,11 +260,12 @@
                             {:else if selectedResponse === 'headers'}
                                 <Alert type="info">
                                     <svelte:fragment slot="title">
-                                        Header data is not stored in function executions
+                                        Only some response headers are stored
                                     </svelte:fragment>
                                     <p class="text">
-                                        Logging header data might compromise privacy and security.
-                                        To log them intentionally, use <b>context.log()</b>
+                                        Logging some headers might compromise privacy and security.
+                                        We only log well-known public headers. To log more headers
+                                        intentionally, use <b>context.log()</b>
                                         in your function and make them available in Logs tab.
                                         <a
                                             href="http://#"
@@ -251,15 +275,35 @@
                                         >.
                                     </p>
                                 </Alert>
+
+                                {#if execution.responseHeaders.length}
+                                    <Table>
+                                        <TableHeader>
+                                            <TableCellHead>Name</TableCellHead>
+                                            <TableCellHead>Value</TableCellHead>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {#each execution.responseHeaders as header}
+                                                <TableRow>
+                                                    <TableCellText title="Name">
+                                                        {header.name}
+                                                    </TableCellText>
+                                                    <TableCellText title="Value"
+                                                        >{header.value}</TableCellText>
+                                                </TableRow>
+                                            {/each}
+                                        </TableBody>
+                                    </Table>
+                                {/if}
                             {:else if selectedResponse === 'body'}
-                                <Alert type="info">
+                                <Alert type="warning">
                                     <svelte:fragment slot="title">
-                                        Body data is not stored in function executions
+                                        Response body is not stored
                                     </svelte:fragment>
                                     <p class="text">
-                                        Logging body data might compromise privacy and security. To
-                                        log them intentionally, use <b>context.log()</b>
-                                        in your function and make them available in Logs tab.
+                                        Logging body might compromise privacy and security. To log
+                                        it intentionally, use <b>context.log()</b>
+                                        in your function and make it available in Logs tab.
                                         <a
                                             href="http://#"
                                             target="_blank"

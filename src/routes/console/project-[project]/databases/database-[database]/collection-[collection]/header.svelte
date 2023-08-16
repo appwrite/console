@@ -51,7 +51,9 @@
         <CoverTitle href={`/console/project-${projectId}/databases/database-${databaseId}`}>
             {$collection?.name}
         </CoverTitle>
-        <Id value={$collection?.$id}>{$collection?.$id}</Id>
+        {#key $collection?.$id}
+            <Id value={$collection?.$id}>{$collection?.$id}</Id>
+        {/key}
     </svelte:fragment>
 
     <Tabs>

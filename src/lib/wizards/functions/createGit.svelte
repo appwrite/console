@@ -19,19 +19,19 @@
             $createFunction.$id || ID.unique(),
             $createFunction.name,
             $createFunction.runtime,
-            $createFunction.execute || undefined,
             $createFunction.entrypoint,
+            $createFunction.execute || undefined,
             undefined,
             undefined,
             undefined,
             undefined,
             undefined,
-            $createFunction.commands,
+            $createFunction.commands || undefined,
             $installation.$id,
             $repository.id,
             $choices.branch,
-            $choices.silentMode,
-            $choices.rootDir
+            $choices.silentMode || undefined,
+            $choices.rootDir || undefined
         );
         goto(`${base}/console/project-${$page.params.project}/functions/function-${response.$id}`);
         addNotification({

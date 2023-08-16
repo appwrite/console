@@ -1,3 +1,7 @@
+<script lang="ts" context="module">
+    export let showCreateTeam = writable(false);
+</script>
+
 <script lang="ts">
     import { page } from '$app/stores';
     import {
@@ -24,10 +28,9 @@
     import { base } from '$app/paths';
     import type { Models } from '@appwrite.io/console';
     import type { PageData } from './$types';
+    import { writable } from 'svelte/store';
 
     export let data: PageData;
-
-    let showCreate = false;
 
     const project = $page.params.project;
     const teamCreated = async (event: CustomEvent<Models.Team<Record<string, unknown>>>) => {
@@ -37,7 +40,7 @@
 
 <Container>
     <SearchQuery search={data.search} placeholder="Search by name">
-        <Button on:click={() => (showCreate = true)} event="create_team">
+        <Button on:click={() => ($showCreateTeam = true)} event="create_team">
             <span class="icon-plus" aria-hidden="true" /> <span class="text">Create team</span>
         </Button>
     </SearchQuery>
@@ -86,10 +89,10 @@
     {:else}
         <Empty
             single
-            on:click={() => (showCreate = true)}
+            on:click={() => ($showCreateTeam = true)}
             href="https://appwrite.io/docs/client/teams"
             target="team" />
     {/if}
 </Container>
 
-<Create bind:showCreate on:created={teamCreated} />
+<Create bind:showCreate={$showCreateTeam} on:created={teamCreated} />

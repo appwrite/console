@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Modal } from '$lib/components';
-    import { option, options } from './attributes/store';
+    import { option, attributeOptions, type Option } from './attributes/store';
     import { Button, InputText, FormList } from '$lib/elements/forms';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
@@ -10,10 +10,10 @@
     import type { Attributes } from './store';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { preferences } from '$lib/stores/preferences';
-    import { feedback } from '$lib/stores/app';
+    import { feedback } from '$lib/stores/feedback';
 
     export let showCreate = false;
-    export let selectedOption: string = null;
+    export let selectedOption: Option['name'] = null;
     const databaseId = $page.params.database;
     $: collectionId = $page.params.collection;
 
@@ -82,7 +82,7 @@
     }
 
     $: if (selectedOption) {
-        $option = options.find((option) => option.name === selectedOption);
+        $option = attributeOptions.find((option) => option.name === selectedOption);
     }
 
     $: if (!showCreate) {

@@ -26,19 +26,20 @@
             await sdk.forProject.functions.update(
                 functionId,
                 $func.name,
-                permissions,
+                $func.runtime,
                 $func.entrypoint || undefined,
+                permissions,
                 $func.events || undefined,
                 $func.schedule || undefined,
                 $func.timeout || undefined,
-                $func.enabled,
-                $func.logging,
-                $func.commands,
-                $func.vcsInstallationId,
-                $func.vcsRepositoryId,
-                $func.vcsBranch,
-                $func.vcsSilentMode,
-                $func.vcsRootDirectory
+                $func.enabled || undefined,
+                $func.logging || undefined,
+                $func.commands || undefined,
+                $func.installationId || undefined,
+                $func.providerRepositoryId || undefined,
+                $func.providerBranch || undefined,
+                $func.providerSilentMode || undefined,
+                $func.providerRootDirectory || undefined
             );
             await invalidate(Dependencies.FUNCTION);
             addNotification({
@@ -64,7 +65,7 @@
 
 <Form onSubmit={updatePermissions}>
     <CardGrid>
-        <Heading tag="h6" size="7">Execute Access</Heading>
+        <Heading tag="h6" size="7" id="permissions">Execute Access</Heading>
         <p>
             Choose who can execute this function using the client API. For more information, check
             out the <a

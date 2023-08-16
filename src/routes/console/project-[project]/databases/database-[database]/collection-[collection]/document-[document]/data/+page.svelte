@@ -52,7 +52,7 @@
             invalidate(Dependencies.DOCUMENT);
             trackEvent(Submit.DocumentUpdate);
             addNotification({
-                message: 'Document was updated!',
+                message: 'Document has been updated',
                 type: 'success'
             });
         } catch (error) {

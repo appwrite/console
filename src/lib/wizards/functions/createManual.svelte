@@ -25,14 +25,14 @@
             $createFunction.$id || ID.unique(),
             $createFunction.name,
             $createFunction.runtime,
-            $createFunction.execute || undefined,
             $createFunction.entrypoint,
+            $createFunction.execute || undefined,
             undefined,
             undefined,
             undefined,
             undefined,
             undefined,
-            $createFunction.commands
+            $createFunction.commands || undefined
         );
         await sdk.forProject.functions.createDeployment(
             response.$id,
@@ -52,13 +52,7 @@
     }
 
     function resetState() {
-        createFunction.set({
-            $id: null,
-            name: null,
-            entrypoint: null,
-            execute: [],
-            runtime: null
-        });
+        createFunction.reset();
         choices.set({
             branch: null,
             silentMode: false,

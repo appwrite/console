@@ -2,22 +2,29 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { addNotification } from '$lib/stores/notifications';
+    import { organizationList } from '$lib/stores/organization';
     import { project } from '../store';
-    import { services } from '$lib/stores/project-services';
     import { Container } from '$lib/layout';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { Submit, trackEvent } from '$lib/actions/analytics';
-    import type { PageData } from './$types';
     import UpdateName from './updateName.svelte';
     import UpdateServices from './updateServices.svelte';
     import UpdateInstallations from './updateInstallations.svelte';
     import UpdateVariables from '../updateVariables.svelte';
     import DeleteProject from './deleteProject.svelte';
+    import { CardGrid, Heading } from '$lib/components';
+    import { Button, FormList, InputSelect } from '$lib/elements/forms';
+    import { Submit, trackEvent } from '$lib/actions/analytics';
+    import Transfer from './transferProject.svelte';
 
-    export let data: PageData;
+    export let data;
+
+    let teamId: string = null;
+    let showTransfer = false;
 
     onMount(() => {
+        teamId ??= $project.teamId;
+
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
 
@@ -28,7 +35,7 @@
         if (alert === 'installation-created') {
             addNotification({
                 type: 'success',
-                message: `Git installation has been successfully added`
+                message: `Git installation has imported to your project`
             });
             trackEvent(Submit.InstallationCreate);
             notified = true;
@@ -64,8 +71,6 @@
         await sdk.forProject.projectApi.deleteVariable(variableId);
         await invalidate(Dependencies.PROJECT_VARIABLES);
     }
-
-    $: services.load($project);
 </script>
 
 <Container>
@@ -79,6 +84,39 @@
             {sdkDeleteVariable}
             isGlobal={true}
             variableList={data.variables} />
+
+        <CardGrid>
+            <Heading tag="h6" size="7">Transfer project</Heading>
+            <p class="text">Transfer your project to another organization that you own.</p>
+
+            <svelte:fragment slot="aside">
+                <FormList>
+                    <InputSelect
+                        id="organization"
+                        label="Available organizations"
+                        bind:value={teamId}
+                        options={$organizationList.teams.map((team) => ({
+                            value: team.$id,
+                            label: team.name
+                        }))} />
+                </FormList>
+            </svelte:fragment>
+
+            <svelte:fragment slot="actions">
+                <Button
+                    secondary
+                    disabled={teamId === $project.teamId}
+                    on:click={() => (showTransfer = true)}>Transfer</Button>
+            </svelte:fragment>
+        </CardGrid>
+
         <DeleteProject />
     {/if}
 </Container>
+
+{#if teamId}
+    <Transfer
+        bind:teamId
+        teamName={$organizationList.teams.find((t) => t.$id == teamId).name}
+        bind:show={showTransfer} />
+{/if}

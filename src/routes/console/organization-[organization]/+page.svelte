@@ -1,13 +1,31 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { Pill } from '$lib/elements';
-    import { GridItem1, Heading, Empty, CardContainer, PaginationWithLimit } from '$lib/components';
-    import { Button } from '$lib/elements/forms';
-    import { Container } from '$lib/layout';
-    import CreateProject from './createProject.svelte';
-    import CreateOrganization from '../createOrganization.svelte';
-    import type { PageData } from './$types';
     import { page } from '$app/stores';
+    import { registerCommands } from '$lib/commandCenter';
+    import {
+        CardContainer,
+        DropList,
+        DropListItem,
+        Empty,
+        GridItem1,
+        Heading,
+        PaginationWithLimit
+    } from '$lib/components';
+    import { Pill } from '$lib/elements';
+    import { Button } from '$lib/elements/forms';
+
+    import { goto } from '$app/navigation';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { Container } from '$lib/layout';
+    import { services } from '$lib/stores/project-services';
+    import { sdk } from '$lib/stores/sdk';
+    import { loading } from '$routes/store';
+    import type { Models } from '@appwrite.io/console';
+    import { ID } from '@appwrite.io/console';
+    import CreateOrganization from '../createOrganization.svelte';
+    import { openImportWizard } from '../project-[project]/settings/migrations/(import)';
+    import type { PageData } from './$types';
+    import CreateProject from './createProject.svelte';
 
     export let data: PageData;
 
@@ -38,19 +56,76 @@
         return { name, icon };
     };
 
+    function allServiceDisabled(project: Models.Project): boolean {
+        let disabled = true;
+        services.load(project);
+        $services.list.forEach((service) => {
+            if (service.value) {
+                disabled = false;
+            }
+        });
+        return disabled;
+    }
+
     function filterPlatforms(platforms: { name: string; icon: string }[]) {
         return platforms.filter(
             (value, index, self) => index === self.findIndex((t) => t.name === value.name)
         );
     }
+
+    $: $registerCommands([
+        {
+            label: 'Create project',
+            callback: () => {
+                showCreate = true;
+            },
+            keys: ['c'],
+            disabled: showCreate,
+            group: 'projects',
+            icon: 'plus'
+        }
+    ]);
+
+    let showDropdown = false;
+
+    const importProject = async () => {
+        try {
+            loading.set(true);
+            const project = await sdk.forConsole.projects.create(
+                ID.unique(),
+                `Imported project ${new Date().toISOString()}`,
+                $page.params.organization,
+                'default'
+            );
+            trackEvent(Submit.ProjectCreate, {
+                teamId: $page.params.organization
+            });
+            await goto(`/console/project-${project.$id}/settings/migrations`);
+            openImportWizard();
+            loading.set(false);
+        } catch (e) {
+            trackError(e, Submit.ProjectCreate);
+        }
+    };
 </script>
 
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
         <Heading tag="h2" size="5">Projects</Heading>
-        <Button on:click={() => (showCreate = true)} event="create_project">
-            <span class="icon-plus" aria-hidden="true" /> <span class="text">Create project</span>
-        </Button>
+        <DropList bind:show={showDropdown} placement="bottom-end">
+            <Button on:click={() => (showDropdown = true)} event="create_project">
+                <span class="icon-plus" aria-hidden="true" />
+                <span class="text">Create project</span>
+            </Button>
+            <svelte:fragment slot="list">
+                <DropListItem on:click={() => (showCreate = true)}>Empty project</DropListItem>
+                <DropListItem on:click={importProject}>
+                    <div class="u-flex u-gap-8 u-cross-center">
+                        Import project <span class="tag eyebrow-heading-3">Experimental</span>
+                    </div>
+                </DropListItem>
+            </svelte:fragment>
+        </DropList>
     </div>
 
     {#if data.projects.total}
@@ -67,6 +142,11 @@
                     <svelte:fragment slot="title">
                         {project.name}
                     </svelte:fragment>
+                    {#if allServiceDisabled(project)}
+                        <p>
+                            <span class="icon-pause" aria-hidden="true" /> All services are disabled.
+                        </p>
+                    {/if}
                     {@const platforms = filterPlatforms(
                         project.platforms.map((platform) => getPlatformInfo(platform.type))
                     )}

@@ -22,19 +22,20 @@
             await sdk.forProject.functions.update(
                 functionId,
                 $func.name,
-                $func.execute || undefined,
+                $func.runtime,
                 $func.entrypoint || undefined,
+                $func.execute || undefined,
                 $func.events || undefined,
                 $func.schedule || undefined,
                 timeout,
-                $func.enabled,
-                $func.logging,
-                $func.commands,
-                $func.vcsInstallationId,
-                $func.vcsRepositoryId,
-                $func.vcsBranch,
-                $func.vcsSilentMode,
-                $func.vcsRootDirectory
+                $func.enabled || undefined,
+                $func.logging || undefined,
+                $func.commands || undefined,
+                $func.installationId || undefined,
+                $func.providerRepositoryId || undefined,
+                $func.providerBranch || undefined,
+                $func.providerSilentMode || undefined,
+                $func.providerRootDirectory || undefined
             );
             await invalidate(Dependencies.FUNCTION);
             addNotification({
@@ -54,7 +55,7 @@
 
 <Form onSubmit={updateTimeout}>
     <CardGrid>
-        <Heading tag="h6" size="7">Timeout</Heading>
+        <Heading tag="h6" size="7" id="timeout">Timeout</Heading>
         <p>Limit the execution time of your function. Maximum value is 900 seconds (15 minutes).</p>
         <svelte:fragment slot="aside">
             <FormList>

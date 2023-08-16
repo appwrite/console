@@ -8,7 +8,7 @@
     import { app } from '$lib/stores/app';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import type { Models } from '@appwrite.io/console';
+    import { Query, type Models } from '@appwrite.io/console';
     import { Avatar } from '$lib/components';
     import { toLocaleDateTime } from '$lib/helpers/date';
 
@@ -36,6 +36,13 @@
             showGitDisconnect = false;
         }
     }
+
+    async function loadFunctions() {
+        return await sdk.forProject.functions.list([
+            Query.limit(100),
+            Query.equal('installationId', selectedInstallation.$id)
+        ]);
+    }
 </script>
 
 <Modal
@@ -44,38 +51,45 @@
     headerDivider={false}
     bind:show={showGitDisconnect}
     onSubmit={handleSubmit}
-    size="small">
+    size="big">
     <svelte:fragment slot="header">Disconnect installation</svelte:fragment>
+    <p>
+        Are you sure you want to disconnect this git installation? This will affect future
+        deployments to the following functions:
+    </p>
 
-    {#if selectedInstallation.functions.length > 0}
-        <p>
-            Are you sure you want to disconnect this git installation? This will affect future
-            deployments to the following functions:
-        </p>
-
-        <div class="u-flex u-flex-vertical u-gap-12">
-            {#each selectedInstallation.functions as func}
-                <div class="u-flex u-main-space-between u-cross-center u-width-full-line">
-                    <div class="u-flex u-main-start u-cross-center u-gap-8">
-                        <Avatar
-                            size={24}
-                            name={func.runtime.split('-')[0]}
-                            src={`${base}/icons/${$app.themeInUse}/color/${
-                                func.runtime.split('-')[0]
-                            }.svg`} />
-
-                        <h6>{func.name}</h6>
-                    </div>
-
-                    <p class="u-x-small" style="color: hsl(var(--color-neutral-70));">
-                        Last deployed: {toLocaleDateTime(func.$updatedAt)}
-                    </p>
-                </div>
-            {/each}
+    {#await loadFunctions()}
+        <div class="u-flex u-main-center">
+            <div class="avatar is-size-x-small">
+                <div class="loader u-margin-16" />
+            </div>
         </div>
-    {:else}
-        <p>Are you sure you want to disconnect this git installation?</p>
-    {/if}
+    {:then functions}
+        {#if functions.total}
+            <div class="u-flex u-flex-vertical u-gap-12">
+                {#each functions.functions as func}
+                    <div class="u-flex u-main-space-between u-cross-center u-width-full-line">
+                        <div class="u-flex u-main-start u-cross-center u-gap-8">
+                            <Avatar
+                                size={24}
+                                name={func.runtime.split('-')[0]}
+                                src={`${base}/icons/${$app.themeInUse}/color/${
+                                    func.runtime.split('-')[0]
+                                }.svg`} />
+
+                            <h6>{func.name}</h6>
+                        </div>
+
+                        <p class="u-x-small" style="color: hsl(var(--color-neutral-70));">
+                            Last deployed: {toLocaleDateTime(func.$updatedAt)}
+                        </p>
+                    </div>
+                {/each}
+            </div>
+        {:else}
+            <p>Are you sure you want to disconnect this git installation?</p>
+        {/if}
+    {/await}
 
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showGitDisconnect = false)}>Cancel</Button>

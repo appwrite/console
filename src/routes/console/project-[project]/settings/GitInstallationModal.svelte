@@ -10,23 +10,22 @@
     function connectGitHub() {
         const redirect = new URL($page.url);
         redirect.searchParams.append('alert', 'installation-created');
-        const target = new URL(
-            `${sdk.forProject.client.config.endpoint}/v1/vcs/github/installations`
-        );
+        const target = new URL(`${sdk.forProject.client.config.endpoint}/vcs/github/authorize`);
         target.searchParams.set('projectId', $page.params.project);
-        target.searchParams.set('redirect', redirect.toString());
+        target.searchParams.set('success', redirect.toString());
+        target.searchParams.set('failure', redirect.toString());
         goto(target);
     }
 </script>
 
 <Modal headerDivider={false} bind:show={showGitInstall} size="big">
-    <svelte:fragment slot="header">Connect to Git</svelte:fragment>
+    <svelte:fragment slot="header">Install</svelte:fragment>
     <p>Select a provider to import an existing git repositories.</p>
 
     <div class="u-flex u-cross-center u-flex-vertical u-gap-16">
         <Button on:click={connectGitHub} fullWidth secondary>
             <span class="icon-github" aria-hidden="true" />
-            <span class="text">Continue with GitHub</span>
+            <span class="text">GitHub</span>
         </Button>
         <Button disabled fullWidth secondary>
             <span class="icon-gitlab" aria-hidden="true" />
@@ -35,6 +34,10 @@
         <Button disabled fullWidth secondary>
             <span class="icon-bitBucket" aria-hidden="true" />
             <span class="text">BitBucket (coming soon)</span>
+        </Button>
+        <Button disabled fullWidth secondary>
+            <span class="icon-azure" aria-hidden="true" />
+            <span class="text">Azure (coming soon)</span>
         </Button>
     </div>
 

@@ -1,8 +1,9 @@
 import { page } from '$app/stores';
 import { user } from '$lib/stores/user';
-import { ENV, MODE, VARS } from '$lib/system';
+import { ENV, MODE, VARS, isCloud } from '$lib/system';
 import googleAnalytics from '@analytics/google-analytics';
 import { AppwriteException } from '@appwrite.io/console';
+import googleTagManager from '@analytics/google-tag-manager';
 import Analytics from 'analytics';
 import { get } from 'svelte/store';
 
@@ -11,7 +12,14 @@ const analytics = Analytics({
     plugins: [
         googleAnalytics({
             measurementIds: [VARS.GOOGLE_ANALYTICS || 'G-R4YJ9JN8L4']
-        })
+        }),
+        ...(isCloud
+            ? [
+                  googleTagManager({
+                      containerId: [VARS.GOOGLE_TAG || 'GTM-P3T9TBV']
+                  })
+              ]
+            : [])
     ]
 });
 
@@ -118,6 +126,7 @@ export enum Submit {
     UserCreate = 'submit_user_create',
     UserDelete = 'submit_user_delete',
     UserUpdateEmail = 'submit_user_update_email',
+    UserUpdateLabels = 'submit_user_update_labels',
     UserUpdateName = 'submit_user_update_name',
     UserUpdatePassword = 'submit_user_update_password',
     UserUpdatePhone = 'submit_user_update_phone',
@@ -131,7 +140,9 @@ export enum Submit {
     ProjectCreate = 'submit_project_create',
     ProjectDelete = 'submit_project_delete',
     ProjectUpdateName = 'submit_project_update_name',
+    ProjectUpdateTeam = 'submit_project_update_team',
     ProjectService = 'submit_project_service',
+    ProjectUpdateSMTP = 'submit_project_update_smtp',
     MemberCreate = 'submit_member_create',
     MemberDelete = 'submit_member_delete',
     MembershipUpdateStatus = 'submit_membership_update_status',
@@ -143,6 +154,7 @@ export enum Submit {
     AuthStatusUpdate = 'submit_auth_status_update',
     AuthPasswordHistoryUpdate = 'submit_auth_password_history_limit_update',
     AuthPasswordDictionaryUpdate = 'submit_auth_password_dictionary_update',
+    AuthPersonalDataCheckUpdate = 'submit_auth_personal_data_check_update',
     SessionsLengthUpdate = 'submit_sessions_length_update',
     SessionsLimitUpdate = 'submit_sessions_limit_update',
     SessionDelete = 'submit_session_delete',
@@ -217,5 +229,16 @@ export enum Submit {
     FileDelete = 'submit_file_delete',
     FileUpdatePermissions = 'submit_file_update_permissions',
     InstallationCreate = 'submit_installation_create',
-    InstallationDelete = 'submit_installation_delete'
+    InstallationDelete = 'submit_installation_delete',
+    EmailChangeLocale = 'submit_email_change_locale',
+    EmailResetTemplate = 'submit_email_reset_template',
+    EmailUpdateInviteTemplate = 'submit_email_update_invite_template',
+    EmailUpdateMagicUrlTemplate = 'submit_email_update_magic_url_template',
+    EmailUpdateRecoveryTemplate = 'submit_email_update_recovery_template',
+    EmailUpdateVerificationTemplate = 'submit_email_update_verification_template',
+    SmsChangeLocale = 'submit_sms_change_locale',
+    SmsResetTemplate = 'submit_sms_reset_template',
+    SmsUpdateInviteTemplate = 'submit_sms_update_invite_template',
+    SmsUpdateLoginTemplate = 'submit_sms_update_login_template',
+    SmsUpdateVerificationTemplate = 'submit_sms_update_verification_template'
 }

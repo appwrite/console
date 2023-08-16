@@ -21,7 +21,7 @@
     import CreateAttributeDropdown from './createAttributeDropdown.svelte';
     import Delete from './deleteAttribute.svelte';
     import Edit from './edit.svelte';
-    import { options } from './store';
+    import { attributeOptions } from './store';
 
     const projectId = $page.params.project;
     const databaseId = $page.params.database;
@@ -61,7 +61,9 @@
             </TableHeader>
             <TableBody>
                 {#each $attributes as attribute, index}
-                    {@const option = options.find((option) => option.type === attribute.type)}
+                    {@const option = attributeOptions.find(
+                        (option) => option.type === attribute.type
+                    )}
                     <TableRow>
                         <TableCell title="Key">
                             <div class="u-flex u-main-space-between u-cross-center">
@@ -84,7 +86,7 @@
                                                 aria-hidden="true" />
                                         {/if}
                                     </div>
-                                    <span class="text u-trim" data-private>{attribute.key}</span>
+                                    <span class="text u-trim-1" data-private>{attribute.key}</span>
                                 </div>
                                 {#if attribute.status !== 'available'}
                                     <Pill

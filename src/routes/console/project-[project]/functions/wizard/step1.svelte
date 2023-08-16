@@ -54,7 +54,11 @@
                 </Pill>
             </div>
         {:else}
-            <CustomId bind:show={showCustomId} name="Function" bind:id={$createFunction.id} />
+            <CustomId
+                bind:show={showCustomId}
+                name="Function"
+                bind:id={$createFunction.id}
+                fullWidth />
         {/if}
     </FormList>
 </WizardStep>

@@ -49,7 +49,7 @@
 </script>
 
 <Modal {error} size="big" bind:show onSubmit={create}>
-    <svelte:fragment slot="header">Create Deployment</svelte:fragment>
+    <svelte:fragment slot="header">Create deployment</svelte:fragment>
     <FormList>
         <InputFile
             label="Gzipped code (tar.gz)"

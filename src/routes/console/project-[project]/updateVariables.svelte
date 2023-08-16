@@ -31,6 +31,7 @@
     import PromoteVariableModal from './promoteVariableModal.svelte';
     import CreateVariable from './createVariable.svelte';
     import RawVariableEditor from './rawVariableEditor.svelte';
+    import { base } from '$app/paths';
 
     export let variableList: Models.VariableList;
     export let globalVariableList: Models.VariableList | undefined = undefined;
@@ -39,22 +40,6 @@
     export let sdkCreateVariable: (key: string, value: string) => Promise<any>;
     export let sdkUpdateVariable: (variableId: string, key: string, value: string) => Promise<any>;
     export let sdkDeleteVariable: (variableId: string) => Promise<any>;
-
-    $: conflictVariables = globalVariableList
-        ? globalVariableList.variables.filter((globalVariable) => {
-              return variableList.variables.find((variable) => {
-                  return variable.key === globalVariable.key;
-              });
-          })
-        : [];
-
-    $: hasConflictOnPage = globalVariableList
-        ? variableList.variables.slice(offset, offset + limit).filter((variable) => {
-              return globalVariableList.variables.find((globalVariable) => {
-                  return variable.key === globalVariable.key;
-              });
-          })
-        : false;
 
     let showVariablesDropdown = [];
     let selectedVar: Models.Variable = null;
@@ -73,7 +58,7 @@
             showVariablesModal = false;
             addNotification({
                 type: 'success',
-                message: `Variable has been created.`
+                message: `${$project.name} global variable has been created.`
             });
             trackEvent(Submit.VariableCreate);
         } catch (error) {
@@ -93,7 +78,7 @@
             showVariablesModal = false;
             addNotification({
                 type: 'success',
-                message: `Variable has been updated.`
+                message: `${$project.name} global variable has been updated.`
             });
             trackEvent(Submit.VariableUpdate);
         } catch (error) {
@@ -110,7 +95,7 @@
             await sdkDeleteVariable(variable.$id);
             addNotification({
                 type: 'success',
-                message: `Variable has been deleted.`
+                message: `${$project.name} global variable has been deleted.`
             });
             trackEvent(Submit.VariableDelete);
         } catch (error) {
@@ -160,6 +145,22 @@
             trackError(error, Submit.VariableDelete);
         }
     }
+
+    $: conflictVariables = globalVariableList
+        ? globalVariableList.variables.filter((globalVariable) => {
+              return variableList.variables.find((variable) => {
+                  return variable.key === globalVariable.key;
+              });
+          })
+        : [];
+
+    $: hasConflictOnPage = globalVariableList
+        ? variableList.variables.slice(offset, offset + limit).filter((variable) => {
+              return globalVariableList.variables.find((globalVariable) => {
+                  return variable.key === globalVariable.key;
+              });
+          })
+        : false;
 </script>
 
 <CardGrid>
@@ -173,7 +174,7 @@
         <p>
             Set the environment variables or secret keys that will be passed to your function.
             Global variables can be found in <a
-                href={`/console/project-${$project.$id}/settings/variables`}
+                href={`${base}/console/project-${$project.$id}/settings/variables`}
                 title="Project settings"
                 class="link">
                 project settings</a
@@ -215,7 +216,7 @@
                             {/if}
                             a naming conflict with a global variable. View global variables in
                             <a
-                                href={`/console/project-${$project.$id}/settings/variables`}
+                                href={`${base}/console/project-${$project.$id}/settings/variables`}
                                 title="Project settings"
                                 class="link">
                                 project settings</a

@@ -1,22 +1,23 @@
 <script lang="ts">
+    import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { Button } from '$lib/elements/forms';
+    import { tooltip } from '$lib/actions/tooltip';
     import {
-        Empty,
         CardContainer,
+        Empty,
         GridItem1,
         Heading,
-        PaginationWithLimit,
-        Id
+        Id,
+        PaginationWithLimit
     } from '$lib/components';
+    import { Button } from '$lib/elements/forms';
+    import { toLocaleDateTime } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
-    import { base } from '$app/paths';
-    import { tooltip } from '$lib/actions/tooltip';
     import { app } from '$lib/stores/app';
     import { wizard } from '$lib/stores/wizard';
-    import { toLocaleDateTime } from '$lib/helpers/date';
     import { onMount } from 'svelte';
     import Initial from '$lib/wizards/functions/cover.svelte';
+    import { registerCommands } from '$lib/commandCenter';
 
     export let data;
 
@@ -33,12 +34,22 @@
     function openWizard() {
         wizard.showCover(Initial);
     }
+
+    $: $registerCommands([
+        {
+            label: 'Create function',
+            callback: openWizard,
+            keys: ['c'],
+            disabled: $wizard.show,
+            icon: 'plus'
+        }
+    ]);
 </script>
 
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
         <Heading tag="h2" size="5">Functions</Heading>
-        <Button on:click={openWizard} event="create_attribute">
+        <Button on:click={openWizard} event="create_function">
             <span class="icon-plus" aria-hidden="true" />
             <span class="text">Create function</span>
         </Button>

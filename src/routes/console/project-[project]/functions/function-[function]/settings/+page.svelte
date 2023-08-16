@@ -4,6 +4,7 @@
     import UpdateEvents from './updateEvents.svelte';
     import ExecuteFunction from './executeFunction.svelte';
     import UpdateName from './updateName.svelte';
+    import UpdateRuntime from './updateRuntime.svelte';
     import UpdatePermissions from './updatePermissions.svelte';
     import UpdateSchedule from './updateSchedule.svelte';
     import UpdateTimeout from './updateTimeout.svelte';
@@ -40,7 +41,8 @@
 <Container>
     <ExecuteFunction />
     <UpdateName />
-    <UpdateConfiguration repository={data.repository} installations={data.installations} />
+    <UpdateRuntime />
+    <UpdateConfiguration installations={data.installations} />
     <UpdateLogging />
     <UpdatePermissions />
     <UpdateEvents />

@@ -3,7 +3,6 @@
     import { Card, CardGrid, Id } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
-    import { timeFromNow } from '$lib/helpers/date';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { calculateTime } from '$lib/helpers/timeConversion';
     import { Container } from '$lib/layout';
@@ -16,16 +15,14 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { timer } from '$lib/actions/timer';
+    import DeploymentSource from '../deploymentSource.svelte';
+    import { deployment } from './store';
 
-    export let data;
-
-    let stdout = '',
-        stderr = '';
+    let logs = '';
 
     onMount(() => {
-        stdout = data.deployment.buildStdout;
-        stderr = data.deployment.buildStderr;
-        if (data.deployment.status === 'ready') {
+        logs = $deployment.buildLogs;
+        if ($deployment.status === 'ready') {
             return;
         }
         return sdk.forConsole.client.subscribe<Models.Deployment>('console', (message) => {
@@ -34,8 +31,7 @@
                     `functions.${$page.params.function}.deployments.${$page.params.deployment}.update`
                 )
             ) {
-                stdout = (message.payload as any).stdout as string;
-                stderr = (message.payload as any).stderr as string;
+                logs = (message.payload as any).logs as string;
                 if (message.payload.status === 'ready') {
                     invalidate(Dependencies.DEPLOYMENT);
                 }
@@ -60,28 +56,31 @@
                 </div>
 
                 <div class="u-flex u-gap-12 u-cross-center">
-                    <Id value={data.deployment.$id}>
-                        {data.deployment.$id}
+                    <Id value={$deployment.$id}>
+                        {$deployment.$id}
                     </Id>
                 </div>
             </div>
         </div>
         <svelte:fragment slot="aside">
-            {@const status = data.deployment.status}
-            {@const fileSize = humanFileSize(data.deployment.size)}
+            {@const status = $deployment.status}
+            {@const fileSize = humanFileSize($deployment.size)}
             <div class="u-flex u-main-space-between">
                 <div>
                     <p>
                         <b>Build time:</b>
-                        {#if ['processing', 'building'].includes(data.deployment.status)}
-                            <span use:timer={{ start: data.deployment.$createdAt }} />
+                        {#if ['processing', 'building'].includes($deployment.status)}
+                            <span use:timer={{ start: $deployment.$createdAt }} />
                         {:else}
-                            {calculateTime(data.deployment.buildTime)}
+                            {calculateTime($deployment.buildTime)}
                         {/if}
                     </p>
-                    <p><b>Created:</b> {timeFromNow(data.deployment.$createdAt)}</p>
+                    <p><b>Created:</b> <deploymentCreatedBy deployment={$deployment} /></p>
                     <p><b>Size:</b> {fileSize.value + fileSize.unit}</p>
-                    <p><b>Source:</b> <span>tbd</span></p>
+                    <p>
+                        <b>Source:</b>
+                        <DeploymentSource deployment={$deployment} />
+                    </p>
                 </div>
                 <div class="u-flex u-flex-vertical u-cross-end">
                     <Pill
@@ -89,7 +88,7 @@
                         warning={status === 'pending'}
                         success={status === 'completed' || status === 'ready'}
                         info={status === 'processing' || status === 'building'}>
-                        <span class="text u-trim">{data.deployment.status}</span>
+                        <span class="text u-trim">{$deployment.status}</span>
                     </Pill>
                 </div>
             </div>
@@ -102,12 +101,15 @@
                 <header class="code-panel-header u-flex u-main-space-between u-width-full-line">
                     <div class="u-flex u-flex-vertical">
                         <h4 class="u-bold">Build [{$func.name}]</h4>
-                        <span>Building...</span>
+                        {#if $deployment.status === 'building'}
+                            <span>Building...</span>
+                        {/if}
                     </div>
 
                     <div class="u-flex u-gap-16">
-                        <Button disabled text>
-                            <span class="icon-external-link" aria-hidden="true" /> Raw data</Button>
+                        <!-- TODO: add button once function is implemented -->
+                        <!-- <Button disabled text>
+                            <span class="icon-external-link" aria-hidden="true" /> Raw data</Button> -->
                         <Button
                             secondary
                             on:click={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
@@ -115,10 +117,7 @@
                     </div>
                 </header>
                 <div class="code-panel-content">
-                    <pre><code>{stdout}</code></pre>
-                    {#if stderr}
-                        <pre><code>{stderr}</code></pre>
-                    {/if}
+                    <pre><code>{logs}</code></pre>
                 </div>
             </section>
         </div>

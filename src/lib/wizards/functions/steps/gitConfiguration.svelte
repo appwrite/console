@@ -1,10 +1,11 @@
 <script lang="ts">
-    import { FormList, InputChoice, InputSelect, InputText } from '$lib/elements/forms';
+    import { FormList, InputChoice, InputText } from '$lib/elements/forms';
+    import InputSelectSearch from '$lib/elements/forms/inputSelectSearch.svelte';
     import { WizardStep } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { choices, installation, repository } from '../store';
 
-    $choices.rootDir ??= './';
+    $choices.rootDir ??= '';
     function getProviderIcon(provider: string) {
         switch (provider) {
             case 'github':
@@ -26,23 +27,20 @@
 
             return a.name > b.name ? -1 : 1;
         });
-        $choices.branch = sorted[0].name ?? null;
+        $choices.branch = sorted[0]?.name ?? null;
+
+        if (!$choices.branch) {
+            $choices.branch = 'main';
+        }
 
         return sorted;
     }
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">Execute access</svelte:fragment>
+    <svelte:fragment slot="title">Git configuration</svelte:fragment>
     <svelte:fragment slot="subtitle">
-        Choose who can execute this function using the client API. For more information, check out
-        the <a
-            href="https://appwrite.io/docs/permissions"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="link">
-            Permissions Guide
-        </a>.
+        Configure the Git repository that will trigger your function deployments when updated.
     </svelte:fragment>
 
     <div class="box" style:--box-border-radius="var(--border-radius-small)">
@@ -61,17 +59,28 @@
         {:then branches}
             <div class="u-margin-block-start-24">
                 <FormList>
-                    <InputSelect
+                    <InputSelectSearch
+                        required={true}
                         id="branch"
-                        label="Branch"
+                        label="Select branch"
+                        placeholder="main"
+                        bind:value={$choices.branch}
+                        bind:search={$choices.branch}
+                        on:select={(event) => {
+                            $choices.branch = event.detail.value;
+                        }}
+                        name="branch"
                         options={branches?.map((branch) => {
                             return {
                                 value: branch.name,
                                 label: branch.name
                             };
-                        }) ?? []}
-                        bind:value={$choices.branch} />
-                    <InputText id="root" label="Root directory" bind:value={$choices.rootDir} />
+                        }) ?? []} />
+                    <InputText
+                        id="root"
+                        label="Root directory"
+                        placeholder="functions/my-function"
+                        bind:value={$choices.rootDir} />
                     <InputChoice
                         id="silent"
                         label="Silent mode"
@@ -81,4 +90,12 @@
             </div>
         {/await}
     </div>
+    <p class="text u-margin-block-start-8">
+        View your configuration in <a
+            href={$repository.html_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="link">{$repository.provider}</a
+        >.
+    </p>
 </WizardStep>

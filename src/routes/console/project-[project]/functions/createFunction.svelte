@@ -30,8 +30,8 @@
                 $createFunction.id ?? ID.unique(),
                 $createFunction.name,
                 $createFunction.runtime,
-                $createFunction.execute || undefined,
                 $createFunction.entrypoint || undefined,
+                $createFunction.execute || undefined,
                 $createFunction.events || undefined,
                 $createFunction.schedule || undefined,
                 $createFunction.timeout || undefined
@@ -41,7 +41,8 @@
                     sdk.forProject.functions.createVariable(response.$id, v.key, v.value)
                 )
             );
-            goto(`${base}/console/project-${projectId}/functions/function-${response.$id}`);
+            await invalidate(Dependencies.FUNCTIONS);
+            await goto(`${base}/console/project-${projectId}/functions/function-${response.$id}`);
             addNotification({
                 message: `${$createFunction.name} has been created`,
                 type: 'success'

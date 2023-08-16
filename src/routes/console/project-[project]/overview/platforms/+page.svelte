@@ -1,12 +1,12 @@
 <script lang="ts" context="module">
-    import { wizard } from '$lib/stores/wizard';
-    import { versions } from './wizard/store';
-    import SearchLight from '$lib/images/search-light.svg';
     import SearchDark from '$lib/images/search-dark.svg';
+    import SearchLight from '$lib/images/search-light.svg';
+    import { wizard } from '$lib/stores/wizard';
     import CreateAndroid from './createAndroid.svelte';
     import CreateApple from './createApple.svelte';
     import CreateFlutter from './createFlutter.svelte';
     import CreateWeb from './createWeb.svelte';
+    import { versions } from './wizard/store';
 
     export enum Platform {
         Web,
@@ -29,11 +29,11 @@
 </script>
 
 <script lang="ts">
+    import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { DropList, DropListItem, Heading } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import { base } from '$app/paths';
     import { app } from '$lib/stores/app';
     import type { PageData } from './$types';
 
@@ -156,7 +156,7 @@
                         <svelte:fragment slot="list">
                             <DropListItem on:click={() => addPlatform(Platform.Web)}>
                                 Web App
-                            </DropListItem>
+                            </DropListItem>Ï
                             <DropListItem on:click={() => addPlatform(Platform.Flutter)}>
                                 Flutter App
                             </DropListItem>

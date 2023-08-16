@@ -9,7 +9,6 @@
         Form,
         FormList,
         InputChoice,
-        InputSelect,
         InputText,
         InputTextarea
     } from '$lib/elements/forms';
@@ -25,9 +24,9 @@
     import { Pill } from '$lib/elements';
     import { wizard } from '$lib/stores/wizard';
     import ConnectExisting from '$lib/wizards/functions/connectExisting.svelte';
+    import InputSelectSearch from '$lib/elements/forms/inputSelectSearch.svelte';
 
     export let installations: Models.InstallationList;
-    export let repository: Models.Repository | null;
     const functionId = $page.params.function;
 
     let entrypoint: string;
@@ -39,22 +38,44 @@
     let selectedDir: string;
     let showDisconnect = false;
 
+    let repository: Models.ProviderRepository | null | false = false;
+
     onMount(() => {
         entrypoint = $func?.entrypoint;
         commands = $func?.commands;
-        selectedBranch = $func?.vcsBranch;
-        silentMode = $func?.vcsSilentMode ?? false;
-        selectedDir = $func?.vcsRootDirectory;
+        selectedBranch = $func?.providerBranch;
+        silentMode = $func?.providerSilentMode ?? false;
+        selectedDir = $func?.providerRootDirectory;
 
         if ($page.url.searchParams.has('github-installed')) {
             wizard.start(ConnectExisting);
         }
+
+        loadRepository();
     });
+
+    async function loadRepository() {
+        try {
+            if ($func.installationId && $func.providerRepositoryId) {
+                repository = await sdk.forProject.vcs.getRepository(
+                    $func.installationId,
+                    $func.providerRepositoryId
+                );
+            }
+        } catch (err) {
+            console.warn(err);
+        } finally {
+            if (repository === false) {
+                repository = null;
+            }
+        }
+    }
 
     enum ProviderNames {
         github = 'GitHub',
         gitlab = 'GitLab',
-        bitBucket = 'BitBucket'
+        bitBucket = 'BitBucket',
+        azure = 'Azure'
     }
 
     function getProviderIcon(provider: string) {
@@ -66,7 +87,7 @@
         }
     }
 
-    function getRepositoryLink(repository: Models.Repository) {
+    function getRepositoryLink(repository: Models.ProviderRepository) {
         switch (repository.provider) {
             case 'github':
                 return `https://github.com/${repository.organization}/${repository.name}`;
@@ -80,16 +101,17 @@
             await sdk.forProject.functions.update(
                 functionId,
                 $func.name,
-                $func.execute || undefined,
+                $func.runtime,
                 entrypoint,
+                $func.execute || undefined,
                 $func.events || undefined,
                 $func.schedule || undefined,
                 $func.timeout || undefined,
-                $func.enabled,
-                $func.logging,
+                $func.enabled || undefined,
+                $func.logging || undefined,
                 commands,
-                $func.vcsInstallationId,
-                $func.vcsRepositoryId,
+                $func.installationId || undefined,
+                $func.providerRepositoryId || undefined,
                 selectedBranch,
                 silentMode,
                 selectedDir
@@ -119,19 +141,19 @@
             return a.name > b.name ? -1 : 1;
         });
 
-        selectedBranch = $func?.vcsBranch ?? branchesList.branches[0].name;
+        selectedBranch = $func?.providerBranch ?? branchesList.branches[0].name;
     }
 
-    $: if ($func?.vcsInstallationId && $func?.vcsRepositoryId) {
-        getBranches($func.vcsInstallationId, $func.vcsRepositoryId);
+    $: if ($func?.installationId && $func?.providerRepositoryId) {
+        getBranches($func.installationId, $func.providerRepositoryId);
     }
 
     $: isUpdateButtonEnabled =
         entrypoint !== $func?.entrypoint ||
         commands !== $func?.commands ||
-        selectedBranch !== $func?.vcsBranch ||
-        silentMode !== $func?.vcsSilentMode ||
-        selectedDir !== $func?.vcsRootDirectory;
+        selectedBranch !== $func?.providerBranch ||
+        silentMode !== $func?.providerSilentMode ||
+        selectedDir !== $func?.providerRootDirectory;
 </script>
 
 <Form onSubmit={updateConfiguration}>
@@ -151,74 +173,99 @@
                     bind:value={entrypoint} />
             </FormList>
             <Collapsible>
-                <CollapsibleItem>
-                    <svelte:fragment slot="title">
-                        <span class="u-margin-inline-end-16">Git settings</span>
-                        {#if !repository}
-                            <Pill>NOT CONNECTED</Pill>
-                        {/if}
-                    </svelte:fragment>
-                    {#if repository}
-                        <div class="box" style:--box-border-radius="var(--border-radius-small)">
-                            <div class="u-flex u-gap-16">
-                                <div class="avatar is-size-x-small">
-                                    <span class={getProviderIcon(repository.provider)} />
-                                </div>
-                                <div class="u-cross-child-center u-line-height-1-5">
-                                    <h6 class="u-bold u-trim-1">{repository.name}</h6>
-                                    <p>Last updated: {toLocaleDateTime(repository.pushedAt)}</p>
-                                </div>
-                            </div>
-                            <div class="u-margin-block-start-24">
-                                <FormList>
-                                    <InputSelect
-                                        id="branch"
-                                        label="Branch"
-                                        options={branchesList?.branches?.map((branch) => {
-                                            return {
-                                                value: branch.name,
-                                                label: branch.name
-                                            };
-                                        }) ?? []}
-                                        bind:value={selectedBranch} />
-                                    <InputText
-                                        id="root"
-                                        label="Root directory"
-                                        bind:value={selectedDir} />
-                                    <InputChoice
-                                        id="silent"
-                                        label="Silent mode"
-                                        tooltip="Don't create comments when pushing to this repository"
-                                        bind:value={silentMode} />
-                                </FormList>
-                            </div>
-                            <div class="u-margin-block-start-24 u-flex u-gap-16 u-main-end">
-                                <Button text on:click={() => (showDisconnect = true)}
-                                    >Disconnect repository</Button>
-                                <Button secondary href={getRepositoryLink(repository)} external>
-                                    View on {ProviderNames[repository.provider] ??
-                                        'unknown provider'}
-                                    <span class="icon-external-link" />
-                                </Button>
+                {#if repository === false}
+                    <CollapsibleItem>
+                        <svelte:fragment slot="title">
+                            <span class="u-margin-inline-end-16">Git settings</span>
+                        </svelte:fragment>
+                        <div class="card-git card is-border-dashed is-no-shadow common-section">
+                            <div class="u-flex u-gap-8 u-cross-center u-main-center">
+                                <div class="loader u-margin-16" />
+                                Loading repository...
                             </div>
                         </div>
-                    {:else}
-                        <article class="card-git card is-border-dashed is-no-shadow">
-                            <div class="u-flex u-cross-center u-flex-vertical u-gap-32">
-                                <div class="u-flex u-cross-center u-gap-8">
-                                    <AvatarGroup icons={['github', 'gitlab', 'bitBucket']} />
-
-                                    <span class="icon-arrow-narrow-right" />
-
-                                    <div class="avatar"><span class="icon-server" /></div>
+                    </CollapsibleItem>
+                {:else}
+                    <CollapsibleItem>
+                        <svelte:fragment slot="title">
+                            <span class="u-margin-inline-end-16">Git settings</span>
+                            {#if !repository}
+                                <Pill>NOT CONNECTED</Pill>
+                            {/if}
+                        </svelte:fragment>
+                        {#if repository}
+                            <div class="box" style:--box-border-radius="var(--border-radius-small)">
+                                <div class="u-flex u-gap-16">
+                                    <div class="avatar is-size-x-small">
+                                        <span class={getProviderIcon(repository.provider)} />
+                                    </div>
+                                    <div class="u-cross-child-center u-line-height-1-5">
+                                        <h6 class="u-bold u-trim-1">{repository.name}</h6>
+                                        <p>Last updated: {toLocaleDateTime(repository.pushedAt)}</p>
+                                    </div>
                                 </div>
-                                <Button secondary on:click={() => wizard.start(ConnectExisting)}>
-                                    <span class="text">Connect Git</span>
-                                </Button>
+                                <div class="u-margin-block-start-24">
+                                    <FormList>
+                                        <InputSelectSearch
+                                            required={true}
+                                            id="branch"
+                                            label="Branch"
+                                            placeholder="main"
+                                            bind:value={selectedBranch}
+                                            bind:search={selectedBranch}
+                                            on:select={(event) => {
+                                                selectedBranch = event.detail.value;
+                                            }}
+                                            name="branch"
+                                            options={branchesList?.branches?.map((branch) => {
+                                                return {
+                                                    value: branch.name,
+                                                    label: branch.name
+                                                };
+                                            }) ?? []} />
+                                        <InputText
+                                            id="root"
+                                            label="Root directory"
+                                            placeholder="functions/my-function"
+                                            bind:value={selectedDir} />
+                                        <InputChoice
+                                            id="silent"
+                                            label="Silent mode"
+                                            tooltip="Don't create comments when pushing to this repository"
+                                            bind:value={silentMode} />
+                                    </FormList>
+                                </div>
+                                <div class="u-margin-block-start-24 u-flex u-gap-16 u-main-end">
+                                    <Button text on:click={() => (showDisconnect = true)}
+                                        >Disconnect repository</Button>
+                                    <Button secondary href={getRepositoryLink(repository)} external>
+                                        View on {ProviderNames[repository.provider] ??
+                                            'unknown provider'}
+                                        <span class="icon-external-link" />
+                                    </Button>
+                                </div>
                             </div>
-                        </article>
-                    {/if}
-                </CollapsibleItem>
+                        {:else}
+                            <article class="card-git card is-border-dashed is-no-shadow">
+                                <div class="u-flex u-cross-center u-flex-vertical u-gap-32">
+                                    <div class="u-flex u-cross-center u-gap-8">
+                                        <AvatarGroup
+                                            icons={['github', 'gitlab', 'bitBucket', 'azure']} />
+
+                                        <span class="icon-arrow-narrow-right" />
+
+                                        <div class="avatar"><span class="icon-appwrite" /></div>
+                                    </div>
+                                    <Button
+                                        secondary
+                                        on:click={() => wizard.start(ConnectExisting)}>
+                                        <span class="text">Connect Git</span>
+                                    </Button>
+                                </div>
+                            </article>
+                        {/if}
+                    </CollapsibleItem>
+                {/if}
                 <CollapsibleItem>
                     <svelte:fragment slot="title">Build settings</svelte:fragment>
                     <FormList>
