@@ -112,25 +112,22 @@
             group: 'help',
             icon: 'discord'
         },
-        {
-            label: 'Toggle theme',
-            callback: () => {
-                if ($app.theme === 'auto') {
-                    $app.theme = 'light';
-                } else if ($app.theme === 'light') {
-                    $app.theme = 'dark';
-                } else {
-                    $app.theme = 'auto';
-                }
-                addNotification({
-                    title: 'Theme changed',
-                    message: `Theme changed to ${$app.theme}`,
-                    type: 'success'
-                });
-            },
-            group: 'misc',
-            icon: 'switch-horizontal'
-        }
+        ...(['auto', 'dark', 'light'] as const).map((theme) => {
+            return {
+                label: `Set theme to ${theme}`,
+                callback: () => {
+                    $app.theme = theme;
+                    addNotification({
+                        title: 'Theme changed',
+                        message: `Theme changed to ${$app.theme}`,
+                        type: 'success'
+                    });
+                },
+                group: 'misc',
+                icon: 'switch-horizontal',
+                keys: ['t', theme[0]]
+            } as const;
+        })
     ]);
     let isOpen = false;
 

@@ -76,6 +76,11 @@
     }
 
     $: answer = parseCompletion($completion);
+
+    function getInitials(name: string) {
+        const [first, last] = name.split(' ');
+        return `${first[0]}${last[0]}`;
+    }
 </script>
 
 <Template
@@ -105,7 +110,11 @@
 
     {#if $isLoading || answer}
         <div class="content">
-            <div class="u-flex u-gap-8">
+            <div class="u-flex u-gap-8 u-cross-center">
+                <div class="avatar is-size-x-small">{getInitials($user.name)}</div>
+                <p class="u-opacity-75">{$input}</p>
+            </div>
+            <div class="u-flex u-gap-8 u-margin-block-start-24">
                 <div class="logo">
                     <SvgIcon name="sparkles" type="color" />
                 </div>
