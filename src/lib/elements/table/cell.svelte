@@ -14,3 +14,9 @@
     role="cell">
     <slot />
 </div>
+
+<style lang="scss">
+    .table-col {
+        position: relative;
+    }
+</style>

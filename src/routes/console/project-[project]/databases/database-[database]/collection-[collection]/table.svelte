@@ -235,7 +235,7 @@
         <div class="u-flex u-cross-center u-gap-8">
             <span class="indicator body-text-2 u-bold">{selectedDb.length}</span>
             <span>
-                {selected.length > 1 ? 'documents' : 'document'} selected
+                {selectedDb.length > 1 ? 'documents' : 'document'} selected
             </span>
         </div>
 
