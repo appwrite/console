@@ -50,7 +50,7 @@ export const marketplace = [
         variables: [
             {
                 name: 'APPWRITE_API_KEY',
-                description: `The API Key to talk to Appwrite backend APIs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/getting-started-for-server">Learn more</a>`,
+                description: `The API Key to talk to Appwrite backend APIs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/getting-started-for-server">Learn more</a>.`,
                 value: '',
                 placeholder: 'd1efb...aec35',
                 required: false
@@ -123,7 +123,7 @@ export const marketplace = [
         variables: [
             {
                 name: 'PERSPECTIVE_API_KEY',
-                description: `Google Perspective API key. It authenticates your function, allowing it to interact with the API. <a class="u-bold" target="_blank" href="https://developers.google.com/codelabs/setup-perspective-api">Learn more</a>`,
+                description: `Google Perspective API key. It authenticates your function, allowing it to interact with the API. <a class="u-bold" target="_blank" href="https://developers.google.com/codelabs/setup-perspective-api">Learn more</a>.`,
                 value: '',
                 placeholder: 'AIzaS...fk-fuM',
                 required: true
@@ -157,7 +157,7 @@ export const marketplace = [
         variables: [
             {
                 name: 'PANGEA_REDACT_TOKEN',
-                description: `Access token for the Pangea Redact API. <a class="u-bold" target="_blank" href="https://pangea.cloud/docs/redact/getting-started/configuration">Learn more</a>`,
+                description: `Access token for the Pangea Redact API. <a class="u-bold" target="_blank" href="https://pangea.cloud/docs/redact/getting-started/configuration">Learn more</a>.`,
                 value: '',
                 placeholder: 'pts_7p4...5wl4',
                 required: true
@@ -215,7 +215,7 @@ export const marketplace = [
         variables: [
             {
                 name: 'DISCORD_PUBLIC_KEY',
-                description: `Discord Public Key to verify request signature. <a class="u-bold" target="_blank" href="https://discord.com/developers/docs/tutorials/hosting-on-cloudflare-workers#creating-an-app-on-discord">Learn more</a>`,
+                description: `Discord Public Key to verify request signature. <a class="u-bold" target="_blank" href="https://discord.com/developers/docs/tutorials/hosting-on-cloudflare-workers#creating-an-app-on-discord">Learn more</a>.`,
                 value: '',
                 placeholder: 'd1efb...aec35',
                 required: true
@@ -249,14 +249,14 @@ export const marketplace = [
         variables: [
             {
                 name: 'GITHUB_TOKEN',
-                description: `A personal access token from GitHub with the necessary permissions to post comments on issues. <a class="u-bold" target="_blank" href="https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token">Learn more</a>`,
+                description: `A personal access token from GitHub with the necessary permissions to post comments on issues. <a class="u-bold" target="_blank" href="https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token">Learn more</a>.`,
                 value: '',
                 placeholder: 'ghp_1...',
                 required: true
             },
             {
                 name: 'GITHUB_WEBHOOK_SECRET',
-                description: `The secret used to verify that the webhook request comes from GitHub. <a class="u-bold" target="_blank" href="https://docs.github.com/en/developers/webhooks-and-events/securing-your-webhooks">Learn more</a>`,
+                description: `The secret used to verify that the webhook request comes from GitHub. <a class="u-bold" target="_blank" href="https://docs.github.com/en/developers/webhooks-and-events/securing-your-webhooks">Learn more</a>.`,
                 value: '',
                 placeholder: 'd1efb...aec35',
                 required: true
@@ -289,28 +289,28 @@ export const marketplace = [
         variables: [
             {
                 name: 'APPWRITE_API_KEY',
-                description: `The API Key to talk to Appwrite backend APIs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/getting-started-for-server">Learn more</a>`,
+                description: `The API Key to talk to Appwrite backend APIs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/getting-started-for-server">Learn more</a>.`,
                 value: '',
                 placeholder: 'd1efb...aec35',
                 required: true
             },
             {
                 name: 'APPWRITE_ENDPOINT',
-                description: `The URL endpoint of the Appwrite server. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/getting-started-for-server">Learn more</a>`,
+                description: `The URL endpoint of the Appwrite server. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/getting-started-for-server">Learn more</a>.`,
                 value: 'https://cloud.appwrite.io/v1',
                 placeholder: 'https://cloud.appwrite.io/v1',
                 required: false
             },
             {
                 name: 'APPWRITE_DATABASE_ID',
-                description: `The ID of the database to store the short URLs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/databases">Learn more</a>`,
+                description: `The ID of the database to store the short URLs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/databases">Learn more</a>.`,
                 value: 'urlShortener',
                 placeholder: 'urlShortener',
                 required: false
             },
             {
                 name: 'APPWRITE_COLLECTION_ID',
-                description: `The ID of the collection to store the short URLs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/collections">Learn more</a>`,
+                description: `The ID of the collection to store the short URLs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/collections">Learn more</a>.`,
                 value: 'urls',
                 placeholder: 'urls',
                 required: false
@@ -343,44 +343,44 @@ export const marketplace = [
         variables: [
             {
                 name: 'APPWRITE_API_KEY',
-                description: `The API Key to talk to Appwrite backend APIs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/getting-started-for-server">Learn more</a>`,
+                description: `The API Key to talk to Appwrite backend APIs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/getting-started-for-server">Learn more</a>.`,
                 value: '',
                 placeholder: 'd1efb...aec35',
                 required: true
             },
             {
                 name: 'APPWRITE_DATABASE_ID',
-                description: `The ID of the Appwrite database that contains the collection to sync. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/databases">Learn more</a>`,
+                description: `The ID of the Appwrite database that contains the collection to sync. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/databases">Learn more</a>.`,
                 placeholder: '64a55...7b912',
                 required: true
             },
             {
                 name: 'APPWRITE_COLLECTION_ID',
-                description: `The ID of the collection in the Appwrite database to sync. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/collections">Learn more</a>`,
+                description: `The ID of the collection in the Appwrite database to sync. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/collections">Learn more</a>.`,
                 placeholder: '7c3e8...2a9f1',
                 required: true
             },
             {
                 name: 'ALGOLIA_ADMIN_API_KEY',
-                description: `The admin API Key for your Algolia service. <a class="u-bold" target="_blank" href="https://www.algolia.com/doc/guides/security/api-keys/">Learn more</a>`,
+                description: `The admin API Key for your Algolia service. <a class="u-bold" target="_blank" href="https://www.algolia.com/doc/guides/security/api-keys/">Learn more</a>.`,
                 placeholder: 'fd0aa...136a8',
                 required: true
             },
             {
                 name: 'ALGOLIA_INDEX_ID',
-                description: `The ID of the index in Algolia where the documents are to be synced. <a class="u-bold" target="_blank" href="https://www.algolia.com/doc/api-client/methods/indexing/">Learn more</a>`,
+                description: `The ID of the index in Algolia where the documents are to be synced. <a class="u-bold" target="_blank" href="https://www.algolia.com/doc/api-client/methods/indexing/">Learn more</a>.`,
                 placeholder: 'appwrite_index',
                 required: true
             },
             {
                 name: 'ALGOLIA_SEARCH_API_KEY',
-                description: `The search API Key for your Algolia service. This key is used for searching the synced index. <a class="u-bold" target="_blank" href="https://www.algolia.com/doc/guides/security/api-keys/">Learn more</a>`,
+                description: `The search API Key for your Algolia service. This key is used for searching the synced index. <a class="u-bold" target="_blank" href="https://www.algolia.com/doc/guides/security/api-keys/">Learn more</a>.`,
                 placeholder: 'bf2f5...df733',
                 required: true
             },
             {
                 name: 'APPWRITE_ENDPOINT',
-                description: `The URL endpoint of the Appwrite server. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/getting-started-for-server">Learn more</a>`,
+                description: `The URL endpoint of the Appwrite server. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/getting-started-for-server">Learn more</a>.`,
                 value: 'https://cloud.appwrite.io/v1',
                 placeholder: 'https://cloud.appwrite.io/v1',
                 required: false
@@ -413,50 +413,50 @@ export const marketplace = [
         variables: [
             {
                 name: 'APPWRITE_API_KEY',
-                description: `The API Key to talk to Appwrite backend APIs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/getting-started-for-server">Learn more</a>`,
+                description: `The API Key to talk to Appwrite backend APIs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/getting-started-for-server">Learn more</a>.`,
                 value: '',
                 placeholder: 'd1efb...aec35',
                 required: true
             },
             {
                 name: 'APPWRITE_DATABASE_ID',
-                description: `The ID of the Appwrite database that contains the collection to sync. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/databases">Learn more</a>`,
+                description: `The ID of the Appwrite database that contains the collection to sync. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/databases">Learn more</a>.`,
                 placeholder: '64a55...7b912',
                 required: true
             },
             {
                 name: 'APPWRITE_COLLECTION_ID',
-                description: `The ID of the collection in the Appwrite database to sync. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/collections">Learn more</a>`,
+                description: `The ID of the collection in the Appwrite database to sync. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/collections">Learn more</a>.`,
                 placeholder: '7c3e8...2a9f1',
                 required: true
             },
             {
                 name: 'MEILISEARCH_ENDPOINT',
-                description: `The host URL of the Meilisearch server. <a class="u-bold" target="_blank" href="https://www.meilisearch.com/docs/learn/getting_started/quick_start/">Learn more</a>`,
+                description: `The host URL of the Meilisearch server. <a class="u-bold" target="_blank" href="https://www.meilisearch.com/docs/learn/getting_started/quick_start/">Learn more</a>.`,
                 placeholder: 'http://127.0.0.1:7700',
                 required: true
             },
             {
                 name: 'MEILISEARCH_ADMIN_API_KEY',
-                description: `The admin API key for Meilisearch. <a class="u-bold" target="_blank" href="https://docs.meilisearch.com/reference/api/keys/">Learn more</a>`,
+                description: `The admin API key for Meilisearch. <a class="u-bold" target="_blank" href="https://docs.meilisearch.com/reference/api/keys/">Learn more</a>.`,
                 placeholder: 'masterKey1234',
                 required: true
             },
             {
                 name: 'MEILISEARCH_SEARCH_API_KEY',
-                description: `API Key for Meilisearch search operations. <a class="u-bold" target="_blank" href="https://www.algolia.com/doc/guides/security/api-keys/">Learn more</a>`,
+                description: `API Key for Meilisearch search operations. <a class="u-bold" target="_blank" href="https://www.algolia.com/doc/guides/security/api-keys/">Learn more</a>.`,
                 placeholder: 'searchKey1234',
                 required: true
             },
             {
                 name: 'MEILISEARCH_INDEX_NAME',
-                description: `Name of the Meilisearch index to which the documents will be synchronized. <a class="u-bold" target="_blank" href="https://www.meilisearch.com/docs/learn/core_concepts/indexes/">Learn more</a>`,
+                description: `Name of the Meilisearch index to which the documents will be synchronized. <a class="u-bold" target="_blank" href="https://www.meilisearch.com/docs/learn/core_concepts/indexes/">Learn more</a>.`,
                 placeholder: 'appwrite_index',
                 required: true
             },
             {
                 name: 'APPWRITE_ENDPOINT',
-                description: `The URL endpoint of the Appwrite server. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/getting-started-for-server">Learn more</a>`,
+                description: `The URL endpoint of the Appwrite server. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/getting-started-for-server">Learn more</a>.`,
                 value: 'https://cloud.appwrite.io/v1',
                 placeholder: 'https://cloud.appwrite.io/v1',
                 required: false
@@ -489,26 +489,26 @@ export const marketplace = [
         variables: [
             {
                 name: 'VONAGE_API_KEY',
-                description: `API Key to use the Vonage API. <a class="u-bold" target="_blank" href="https://api.support.vonage.com/hc/en-us/articles/204014493-How-do-I-find-my-Voice-API-key-and-API-secret-">Learn more</a>`,
+                description: `API Key to use the Vonage API. <a class="u-bold" target="_blank" href="https://api.support.vonage.com/hc/en-us/articles/204014493-How-do-I-find-my-Voice-API-key-and-API-secret-">Learn more</a>.`,
                 value: '',
                 placeholder: '62...97',
                 required: true
             },
             {
                 name: 'VONAGE_API_SECRET',
-                description: `Secret to use the Vonage API. <a class="u-bold" target="_blank" href="https://api.support.vonage.com/hc/en-us/articles/204014493-How-do-I-find-my-Voice-API-key-and-API-secret-">Learn more</a>`,
+                description: `Secret to use the Vonage API. <a class="u-bold" target="_blank" href="https://api.support.vonage.com/hc/en-us/articles/204014493-How-do-I-find-my-Voice-API-key-and-API-secret-">Learn more</a>.`,
                 placeholder: 'Zjc...5PH',
                 required: true
             },
             {
                 name: 'VONAGE_API_SIGNATURE_SECRET',
-                description: `Secret to verify the JWT token sent by Vonage. <a class="u-bold" target="_blank" href="https://developer.vonage.com/en/getting-started/concepts/signing-messages">Learn more</a>`,
+                description: `Secret to verify the JWT token sent by Vonage. <a class="u-bold" target="_blank" href="https://developer.vonage.com/en/getting-started/concepts/signing-messages">Learn more</a>.`,
                 placeholder: 'NXOi3...IBHDa',
                 required: true
             },
             {
                 name: 'VONAGE_WHATSAPP_NUMBER',
-                description: `Vonage WhatsApp number to send messages from. <a class="u-bold" target="_blank" href="https://api.support.vonage.com/hc/en-us/articles/4431993282580-Where-do-I-find-my-WhatsApp-Number-Certificate-">Learn more</a>`,
+                description: `Vonage WhatsApp number to send messages from. <a class="u-bold" target="_blank" href="https://api.support.vonage.com/hc/en-us/articles/4431993282580-Where-do-I-find-my-WhatsApp-Number-Certificate-">Learn more</a>.`,
                 placeholder: '+14000000102',
                 required: true
             }
@@ -540,26 +540,26 @@ export const marketplace = [
         variables: [
             {
                 name: 'FCM_PROJECT_ID',
-                description: `A unique identifier for your FCM project. <a class="u-bold" target="_blank" href="https://firebase.google.com/docs/projects/learn-more#project-id">Learn more</a>`,
+                description: `A unique identifier for your FCM project. <a class="u-bold" target="_blank" href="https://firebase.google.com/docs/projects/learn-more#project-id">Learn more</a>.`,
                 value: '',
                 placeholder: 'mywebapp-f6e57',
                 required: true
             },
             {
                 name: 'FCM_CLIENT_EMAIL',
-                description: `Your FCM service account email. <a class="u-bold" target="_blank" href="https://github.com/appwrite/templates/tree/main/node/push-notification-with-fcm#:~:text=Documentation-,FCM%3A%20SDK%20Setup,-FCM_PRIVATE_KEY">Learn more</a>`,
+                description: `Your FCM service account email. <a class="u-bold" target="_blank" href="https://github.com/appwrite/templates/tree/main/node/push-notification-with-fcm#:~:text=Documentation-,FCM%3A%20SDK%20Setup,-FCM_PRIVATE_KEY">Learn more</a>.`,
                 placeholder: 'fcm-adminsdk-2f0de@test-f7q57.iam.gserviceaccount.com',
                 required: true
             },
             {
                 name: 'FCM_PRIVATE_KEY',
-                description: `A unique private key used to authenticate with FCM. <a class="u-bold" target="_blank" href="https://github.com/appwrite/templates/tree/main/node/push-notification-with-fcm#:~:text=Documentation-,FCM%3A%20SDK%20Setup,-FCM_DATABASE_URL">Learn more</a>`,
+                description: `A unique private key used to authenticate with FCM. <a class="u-bold" target="_blank" href="https://github.com/appwrite/templates/tree/main/node/push-notification-with-fcm#:~:text=Documentation-,FCM%3A%20SDK%20Setup,-FCM_DATABASE_URL">Learn more</a>.`,
                 placeholder: '0b683...75675',
                 required: true
             },
             {
                 name: 'FCM_DATABASE_URL',
-                description: `URL of your FCM database. <a class="u-bold" target="_blank" href="https://firebase.google.com/docs/admin/setup#initialize_the_sdk_in_non-google_environments">Learn more</a>`,
+                description: `URL of your FCM database. <a class="u-bold" target="_blank" href="https://firebase.google.com/docs/admin/setup#initialize_the_sdk_in_non-google_environments">Learn more</a>.`,
                 placeholder: 'https://my-app-f298e.firebaseio.com',
                 required: true
             }
