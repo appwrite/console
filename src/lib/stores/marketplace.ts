@@ -265,7 +265,7 @@ export const marketplace = [
     {
         icon: 'icon-bookmark',
         id: 'url-shortener',
-        name: 'URL Shortener',
+        name: 'URL shortener',
         tagline: 'Generate URL with short ID and redirect to the original URL when visited.',
         permissions: ['any'],
         events: [],
