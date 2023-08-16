@@ -567,7 +567,7 @@ export const marketplace = [
     {
         icon: 'icon-mail',
         id: 'email-contact-form',
-        name: 'Email Contact Form',
+        name: 'Email contact form',
         tagline: 'Sends an email with the contents of a HTML form.',
         permissions: ['any'],
         events: [],
