@@ -135,7 +135,7 @@ export const marketplace = [
         id: 'censor-with-redact',
         name: 'Censor with Redact',
         tagline:
-            'Cesnor sensitive information from a provided text string using Redact API by Pangea.',
+            'Censor sensitive information from a provided text string using Redact API by Pangea.',
         permissions: ['any'],
         events: [],
         cron: '',
