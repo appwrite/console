@@ -243,7 +243,7 @@
         </div>
 
         <div class="u-flex u-cross-center u-gap-8">
-            <Button text on:click={() => (selected = [])}>Cancel</Button>
+            <Button text on:click={() => (selectedDb = [])}>Cancel</Button>
             <Button secondary on:click={() => (showDelete = true)}>
                 <p>
                     Delete <span class="is-only-desktop">selection</span>
