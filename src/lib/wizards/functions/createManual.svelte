@@ -21,34 +21,43 @@
     import ExecuteAccess from './steps/executeAccess.svelte';
 
     async function create() {
-        const response = await sdk.forProject.functions.create(
-            $createFunction.$id || ID.unique(),
-            $createFunction.name,
-            $createFunction.runtime,
-            $createFunction.entrypoint,
-            $createFunction.execute || undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            $createFunction.commands || undefined
-        );
-        await sdk.forProject.functions.createDeployment(
-            response.$id,
-            $createFunctionDeployment[0],
-            true
-        );
-        goto(`${base}/console/project-${$page.params.project}/functions/function-${response.$id}`);
-        addNotification({
-            message: `${$createFunction.name} has been created`,
-            type: 'success'
-        });
-        trackEvent(Submit.FunctionCreate, {
-            customId: !!$createFunction.$id
-        });
-        resetState();
-        wizard.hide();
+        try {
+            const response = await sdk.forProject.functions.create(
+                $createFunction.$id || ID.unique(),
+                $createFunction.name,
+                $createFunction.runtime,
+                $createFunction.entrypoint,
+                $createFunction.execute || undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                $createFunction.commands || undefined
+            );
+            await sdk.forProject.functions.createDeployment(
+                response.$id,
+                $createFunctionDeployment[0],
+                true
+            );
+            goto(
+                `${base}/console/project-${$page.params.project}/functions/function-${response.$id}`
+            );
+            addNotification({
+                message: `${$createFunction.name} has been created`,
+                type: 'success'
+            });
+            trackEvent(Submit.FunctionCreate, {
+                customId: !!$createFunction.$id
+            });
+            resetState();
+            wizard.hide();
+        } catch (error) {
+            addNotification({
+                message: error.message,
+                type: 'error'
+            });
+        }
     }
 
     function resetState() {

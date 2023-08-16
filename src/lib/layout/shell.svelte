@@ -30,13 +30,12 @@
      * Cancel navigation when wizard is open and triggered by popstate
      */
     beforeNavigate((n) => {
-        if ($wizard.show || $wizard.cover) {
-            if (n.type === 'popstate') {
-                n.cancel();
-            }
-            if (n.type !== 'leave') {
-                wizard.hide();
-            }
+        if (!$wizard.show || !$wizard.cover) return;
+        if (n.type === 'popstate') {
+            n.cancel();
+        }
+        if (n.type !== 'leave') {
+            wizard.hide();
         }
     });
 </script>

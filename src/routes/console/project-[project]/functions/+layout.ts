@@ -11,6 +11,6 @@ export const load: LayoutLoad = async ({ depends }) => {
     return {
         header: Header,
         breadcrumbs: Breadcrumbs,
-        installations: await sdk.forProject.vcs.listInstallations([Query.limit(100)])
+        installations: sdk.forProject.vcs.listInstallations([Query.limit(100)])
     };
 };
