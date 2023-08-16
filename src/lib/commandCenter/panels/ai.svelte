@@ -94,7 +94,9 @@
     clearOnCallback={false}
     fullheight
     --command-panel-max-height="40rem">
-    <div slot="search" />
+    <div slot="search">
+        <span class="experimental border-gradient">EXPERIMENTAL</span>
+    </div>
 
     <div slot="option" let:option class="u-flex u-cross-center u-gap-8">
         <i class="icon-question-mark-circle" />
@@ -207,5 +209,36 @@
             height: 1.5rem;
             background-color: hsl(var(--color-neutral-150));
         }
+    }
+
+    .experimental {
+        display: flex;
+        padding: 0.09375rem 0.25rem;
+        align-items: center;
+
+        color: var(--light-neutrals-30, #e8e9f0);
+        text-align: center;
+        font-family: Inter;
+        font-size: 0.625rem;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 150%; /* 0.9375rem */
+        letter-spacing: 0.075rem;
+        text-transform: uppercase;
+
+        background: rgba(240, 46, 101, 0.24);
+        --border-gradient: linear-gradient(
+                to bottom,
+                rgba(240, 46, 101, 0.48) 0%,
+                rgba(240, 46, 101, 0) 150%
+            )
+            border-box;
+        --border-size: 0.03rem;
+        --border-radius: 0.25rem;
+        border-radius: var(--border-radius);
+    }
+
+    :global(.theme-light) .experimental {
+        color: rgba(240, 46, 101, 1);
     }
 </style>

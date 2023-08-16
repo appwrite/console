@@ -179,7 +179,16 @@
 
     const castOption = (option: IndexedOption) => option as Option;
 
-    $: breadcrumbs = $subPanels.filter((panel) => panel.name !== 'root').map((panel) => panel.name);
+    function getBreadcrumbs(subPanels: typeof $subPanels) {
+        return subPanels.filter((panel) => panel.name !== 'root').map((panel) => panel.name);
+    }
+
+    let breadcrumbs = getBreadcrumbs($subPanels);
+
+    // Avoid clearing subpanels before the closing transition is finished
+    $: if ($subPanels.length) {
+        breadcrumbs = getBreadcrumbs($subPanels);
+    }
 
     const handleCrumbClick = (index: number) => {
         if (index === breadcrumbs.length - 1) {
