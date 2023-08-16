@@ -517,7 +517,7 @@ export const marketplace = [
     {
         icon: 'icon-bell',
         id: 'push-notification-with-fcm',
-        name: 'Push Notification with FCM',
+        name: 'Push notification with FCM',
         tagline: 'Send push notifications to your users using Firebase Cloud Messaging (FCM).',
         permissions: ['any'],
         events: [],
