@@ -2,7 +2,7 @@ export const marketplace = [
     {
         icon: 'icon-lightning-bolt',
         id: 'starter',
-        name: 'Starter',
+        name: 'Starter function',
         tagline: 'A simple function. Create something awesome! 🚀',
         permissions: ['any'],
         events: [],
