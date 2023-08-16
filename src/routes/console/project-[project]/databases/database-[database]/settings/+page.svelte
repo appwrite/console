@@ -89,7 +89,7 @@
 
         <CardGrid danger>
             <div>
-                <Heading tag="h6" size="7">Delete Database</Heading>
+                <Heading tag="h6" size="7">Delete database</Heading>
             </div>
 
             <p>

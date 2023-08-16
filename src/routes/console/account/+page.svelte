@@ -155,7 +155,7 @@
     </Form>
     <CardGrid danger>
         <div>
-            <Heading tag="h6" size="7">Delete Account</Heading>
+            <Heading tag="h6" size="7">Delete account</Heading>
         </div>
         <p>
             Your account will be permanently deleted and access will be lost to any of your teams

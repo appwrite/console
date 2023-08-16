@@ -10,7 +10,7 @@
 
 <CardGrid danger>
     <div>
-        <Heading tag="h2" size="7">Delete Webhook</Heading>
+        <Heading tag="h2" size="7">Delete webhook</Heading>
     </div>
     <p>The webhook will be permanently deleted. This action is irreversible.</p>
     <svelte:fragment slot="aside">

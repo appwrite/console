@@ -68,8 +68,8 @@
     <CardGrid>
         <Heading tag="h6" size="7">Permissions</Heading>
         <p>
-            Assign read or write permissions at the <b> Collection Level</b> or
-            <b> Document Level</b>. If collection Level permissions are assigned, permissions
+            Assign read or write permissions at the <b>collection level</b> or
+            <b>document level</b>. If collection level permissions are assigned, permissions
             applied to individual documents are ignored.
         </p>
 
@@ -80,7 +80,7 @@
                         <svelte:fragment slot="title">Document security is enabled</svelte:fragment>
                         <p class="text">
                             Users will be able to access this document if they have been granted <b
-                                >either Document or Collection permissions.
+                                >either document or collection permissions.
                             </b>
                         </p>
                     </Alert>
@@ -93,7 +93,7 @@
                     <svelte:fragment slot="title">Document security is disabled</svelte:fragment>
                     <p class="text">
                         If you want to assign document permissions, navigate to Collection settings
-                        and enable document security. Otherwise, only Collection permissions will be
+                        and enable document security. Otherwise, only collection permissions will be
                         used.
                     </p>
                 </Alert>
@@ -110,7 +110,7 @@
     </CardGrid>
 
     <CardGrid danger>
-        <Heading tag="h6" size="7">Delete Document</Heading>
+        <Heading tag="h6" size="7">Delete document</Heading>
         <p>
             The document will be permanently deleted, including all the data within it. This action
             is irreversible.

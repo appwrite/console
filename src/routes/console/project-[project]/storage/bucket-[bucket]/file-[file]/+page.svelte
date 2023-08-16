@@ -111,7 +111,7 @@
         <CardGrid>
             <Heading tag="h6" size="7">Permissions</Heading>
             <p>
-                Assign read or write permissions at the Bucket Level or File Level. If Bucket Level
+                Assign read or write permissions at the bucket level or file level. If bucket level
                 permissions are enabled, file permissions will be ignored.
             </p>
             <svelte:fragment slot="aside">
@@ -149,7 +149,7 @@
         </CardGrid>
 
         <CardGrid danger>
-            <Heading tag="h6" size="7">Delete File</Heading>
+            <Heading tag="h6" size="7">Delete file</Heading>
             <p>The file will be permanently deleted. This action is irreversible.</p>
             <svelte:fragment slot="aside">
                 <Box>

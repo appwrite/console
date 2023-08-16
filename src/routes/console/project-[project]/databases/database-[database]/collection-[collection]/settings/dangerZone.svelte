@@ -9,7 +9,7 @@
 </script>
 
 <CardGrid danger>
-    <Heading tag="h6" size="7">Delete Collection</Heading>
+    <Heading tag="h6" size="7">Delete collection</Heading>
     <p>
         The collection will be permanently deleted, including all the documents within it. This
         action is irreversible.

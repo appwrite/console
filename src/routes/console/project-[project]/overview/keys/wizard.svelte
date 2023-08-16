@@ -57,4 +57,4 @@
     });
 </script>
 
-<Wizard title="Create an API Key" steps={stepsComponents} on:finish={onFinish} />
+<Wizard title="Create an API key" steps={stepsComponents} on:finish={onFinish} />

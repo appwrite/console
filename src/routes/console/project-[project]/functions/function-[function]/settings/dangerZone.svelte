@@ -11,7 +11,7 @@
 </script>
 
 <CardGrid danger>
-    <Heading tag="h6" size="7">Delete Function</Heading>
+    <Heading tag="h6" size="7">Delete function</Heading>
     <p>
         The function will be permanently deleted, including all deployments associated with it. This
         action is irreversible.

@@ -59,5 +59,5 @@
         </TableBody>
     </Table>
 {:else}
-    <Empty single href="https://appwrite.io/docs/keys" target="API Key" on:click={create} />
+    <Empty single href="https://appwrite.io/docs/keys" target="API key" on:click={create} />
 {/if}

@@ -39,13 +39,13 @@
 
 <Form onSubmit={updatePasswordHistoryLimit}>
     <CardGrid>
-        <Heading tag="h2" size="7">Password History</Heading>
+        <Heading tag="h2" size="7">Password history</Heading>
         <svelte:fragment slot="aside">
             <FormList>
                 <InputSwitch
                     bind:value={passwordHistoryEnabled}
                     id="passwordHisotryEnabled"
-                    label="Password History" />
+                    label="Password history" />
             </FormList>
             <p class="text">
                 Enabling this option prevents users from reusing recent passwords by comparing the

@@ -45,7 +45,7 @@
     onSubmit={handleDelete}
     bind:show={showDelete}
     headerDivider={false}>
-    <svelte:fragment slot="header">Delete Index</svelte:fragment>
+    <svelte:fragment slot="header">Delete index</svelte:fragment>
 
     <p data-private>
         Are you sure you want to delete <b>'{selectedIndex.key}' from {$collection.name}</b>?

@@ -77,8 +77,8 @@
                 target="_blank"
                 rel="noopener noreferrer"
                 class="link">
-                Permissions Guide
-            </a>.
+                Permissions guide
+                </a>.
         </p>
         {#if $bucket.fileSecurity}
             <div class="common-section">

@@ -266,8 +266,8 @@
                         target="_blank"
                         rel="noopener noreferrer"
                         class="link">
-                        Permissions Guide
-                    </a>.
+                        Permissions guide
+                        </a>.
                 </p>
                 <svelte:fragment slot="aside">
                     {#if bucketPermissions}
@@ -282,13 +282,13 @@
 
         <Form onSubmit={updateFileSecurity}>
             <CardGrid>
-                <Heading tag="h6" size="7">File Security</Heading>
+                <Heading tag="h6" size="7">File security</Heading>
                 <svelte:fragment slot="aside">
                     <FormList>
                         <InputSwitch
                             bind:value={bucketFileSecurity}
                             id="security"
-                            label="File Security" />
+                            label="File security" />
                     </FormList>
                     <p class="text">
                         When file security is enabled, users will be able to access files for which
@@ -310,7 +310,7 @@
 
         <Form onSubmit={updateSecurity}>
             <CardGrid>
-                <Heading tag="h2" size="7">Security Settings</Heading>
+                <Heading tag="h2" size="7">Security settings</Heading>
                 <p class="text">
                     Enable or disable security services for the bucket including <b>Ecryption</b>
                     and <b>Antivirus scanning.</b>
@@ -406,7 +406,7 @@
 
         <Form onSubmit={updateAllowedExtensions}>
             <CardGrid>
-                <Heading tag="h6" size="7">File Extensions</Heading>
+                <Heading tag="h6" size="7">File extensions</Heading>
                 <p class="text">
                     Allowed file extensions. A maximum of 100 file extensions can be added. Leave
                     blank to allow all file types.
@@ -445,7 +445,7 @@
         </Form>
 
         <CardGrid danger>
-            <Heading tag="h6" size="7">Delete Bucket</Heading>
+            <Heading tag="h6" size="7">Delete bucket</Heading>
             <p class="text">
                 The bucket will be permanently deleted, including all the files within it. This
                 action is irreversible.
