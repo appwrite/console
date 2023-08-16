@@ -385,9 +385,10 @@
     .card {
         display: flex;
         flex-direction: column;
-        width: var(--command-panel-width, 42.5rem);
+        width: var(--width, 42.5rem);
         max-width: 100%;
-        max-height: var(--command-panel-max-height, 32rem);
+        min-height: var(--min-height);
+        max-height: var(--max-height, 32rem);
         overflow: hidden;
         padding: 0;
 
@@ -403,7 +404,7 @@
         backdrop-filter: blur(6px);
 
         &.fullheight {
-            height: var(--command-panel-max-height, 32rem);
+            height: var(--max-height, 32rem);
         }
 
         :global(.kbd) {

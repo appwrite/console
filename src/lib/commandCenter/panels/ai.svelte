@@ -97,8 +97,8 @@
               };
           })}
     clearOnCallback={false}
-    fullheight
-    --command-panel-max-height="40rem">
+    --min-height="40rem"
+    --max-height="52.5rem">
     <div slot="search">
         <span class="experimental border-gradient">EXPERIMENTAL</span>
     </div>
@@ -188,7 +188,7 @@
     }
 
     .content {
-        overflow-y: auto;
+        overflow: auto;
         padding: 1rem;
 
         .logo {
