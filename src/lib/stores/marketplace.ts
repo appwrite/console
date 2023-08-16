@@ -191,7 +191,7 @@ export const marketplace = [
     {
         icon: 'icon-discord',
         id: 'discord-command-bot',
-        name: 'Discord Command Bot',
+        name: 'Discord command bot',
         tagline: 'Simple command using Discord Interactions.',
         permissions: ['any'],
         events: [],
