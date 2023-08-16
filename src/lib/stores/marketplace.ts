@@ -227,7 +227,7 @@ export const marketplace = [
         id: 'github-issue-bot',
         name: 'GitHub issue bot',
         tagline:
-            'Automate the process of responding to newly opened issues on a GitHub repository.',
+            'Automate the process of responding to newly opened issues in a GitHub repository.',
         permissions: ['any'],
         events: [],
         cron: '',
