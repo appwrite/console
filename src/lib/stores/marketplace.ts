@@ -82,7 +82,7 @@ export const marketplace = [
         variables: [
             {
                 name: 'OPENAI_API_KEY',
-                description: `A unique key used to authenticate with the OpenAI API. Please note that this is a paid service and you will be charged for each request made to the API. <a class="u-bold" target="_blank" href="https://platform.openai.com/docs/quickstart/add-your-api-key">Learn More</a>`,
+                description: `A unique key used to authenticate with the OpenAI API. This is a paid service and you will be charged for each request made to the API. <a class="u-bold" target="_blank" href="https://platform.openai.com/docs/quickstart/add-your-api-key">Learn more</a>.`,
                 value: '',
                 placeholder: 'sk-wzG...vcy',
                 required: true
