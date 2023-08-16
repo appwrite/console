@@ -4,7 +4,6 @@
 
     export let dismissible = false;
     export let type: 'info' | 'success' | 'warning' | 'error' = 'info';
-    export let standalone = false;
     export let buttons: Buttons[] = [];
     export let isAction = false;
     export let isStandalone = false;
@@ -65,9 +64,3 @@
         {/if}
     </div>
 </section>
-
-<style lang="scss">
-    .is-inline {
-        background-color: white;
-    }
-</style>

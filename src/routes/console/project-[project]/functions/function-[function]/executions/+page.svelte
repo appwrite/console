@@ -37,7 +37,7 @@
         });
     });
 
-    function showLogs(execution: Models.Execution) {
+    function showLogs(execution: Models.Execution<Record<string, string>>) {
         $log.show = true;
         $log.func = $func;
         $log.data = execution;
@@ -50,7 +50,7 @@
     </div>
     {#if !$func.logging}
         <div class="common-section">
-            <Alert type="info" standalone>
+            <Alert type="info" isStandalone>
                 <svelte:fragment slot="title">Your execution logs are disabled</svelte:fragment>
 
                 To see the latest execution logs, enable them in your
@@ -120,7 +120,7 @@
                 <Button text external href="https://appwrite.io/docs/functions#execute">
                     Documentation
                 </Button>
-                <Create bind:showCreate />
+                <Create bind:showCreateManual={showCreate} />
             </div>
         </EmptySearch>
     {/if}

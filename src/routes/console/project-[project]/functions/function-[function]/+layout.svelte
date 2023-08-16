@@ -36,7 +36,6 @@
         });
     });
 
-
     $: $registerCommands([
         {
             label: 'Create deployment',

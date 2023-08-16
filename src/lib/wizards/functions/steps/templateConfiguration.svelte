@@ -1,12 +1,7 @@
 <script lang="ts">
-    import { page } from '$app/stores';
-    import Alert from '$lib/components/alert.svelte';
-    import CustomId from '$lib/components/customId.svelte';
-    import Button from '$lib/elements/forms/button.svelte';
-    import FormList from '$lib/elements/forms/formList.svelte';
-    import InputSelect from '$lib/elements/forms/inputSelect.svelte';
-    import InputText from '$lib/elements/forms/inputText.svelte';
-    import Pill from '$lib/elements/pill.svelte';
+    import { CustomId } from '$lib/components';
+    import { Pill } from '$lib/elements';
+    import { FormList, InputSelect, InputText } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { template, templateConfig } from '../store';

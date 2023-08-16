@@ -1,54 +1,66 @@
 <script lang="ts">
-    import { Collapsible, CollapsibleItem } from '$lib/components/index.js';
-    import { CARD_LIMIT } from '$lib/constants';
-    import { InputCheckbox } from '$lib/elements/forms';
+    import { goto } from '$app/navigation';
+    import { base } from '$app/paths';
+    import { page } from '$app/stores';
+    import { Collapsible, CollapsibleItem, Pagination } from '$lib/components';
     import { Container } from '$lib/layout';
-    import data from './data.json';
+    import { app } from '$lib/stores/app';
+    import { connectTemplate } from '$lib/wizards/functions/cover.svelte';
 
-    let search = '';
-    let page = 1;
+    export let data;
 
-    const filter = {
-        runtimes: {},
-        useCases: {}
-    };
+    let searchElement: HTMLInputElement;
 
-    const [runtimes, useCases] = data.reduce(
-        ([rt, uc], next) => {
-            next.runtimes.forEach((runtime) => rt.add(runtime.name));
-            next.useCases.forEach((useCase) => uc.add(useCase));
-            return [rt, uc];
-        },
-        [new Set<string>(), new Set<string>()]
-    );
+    function applyFilter(filter: string, value: string, event: Event) {
+        const add = (event.target as EventTarget & HTMLInputElement).checked;
+        const target = new URL($page.url);
+        if (add) {
+            target.searchParams.append(filter, value);
+        } else {
+            const previous = target.searchParams.getAll(filter).filter((n) => n !== value);
+            target.searchParams.delete(filter);
+            previous.forEach((n) => target.searchParams.append(filter, n));
+        }
+        target.searchParams.delete('page');
+        goto(target.toString());
+    }
 
-    $: templates = data
-        .filter((template) => {
-            const hasRuntime = template.runtimes.some(
-                (runtime) => filter.runtimes[runtime.name] ?? false
-            );
-            if (Object.values(filter.runtimes).some((n) => n) && !hasRuntime) {
-                return false;
-            }
+    function applySearch(event: Event) {
+        const value = (event.target as EventTarget & HTMLInputElement).value;
+        const target = new URL($page.url);
 
-            const hasUseCase = template.useCases.some(
-                (useCase) => filter.useCases[useCase] ?? false
-            );
-            if (Object.values(filter.useCases).some((n) => n) && !hasUseCase) {
-                return false;
-            }
+        if (value.length > 0) {
+            target.searchParams.set('search', value);
+        } else {
+            target.searchParams.delete('search');
+        }
+        target.searchParams.delete('page');
+        goto(target.toString(), { keepFocus: true });
+    }
 
-            return template.name.toLowerCase().includes(search.toLowerCase());
-        })
-        .splice((page - 1) * CARD_LIMIT, CARD_LIMIT);
+    function clearSearch() {
+        const target = new URL($page.url);
+        target.searchParams.delete('page');
+        target.searchParams.delete('search');
+        searchElement.value = '';
+        goto(target.toString());
+    }
 
-    /**
-     * Reset filters on pagination
-     */
-    $: {
-        filter;
-        search;
-        page = 1;
+    function getIconFromRuntime(runtime: string) {
+        switch (true) {
+            case runtime.includes('node'):
+                return 'node';
+            case runtime.includes('php'):
+                return 'php';
+            case runtime.includes('ruby'):
+                return 'ruby';
+            case runtime.includes('python'):
+                return 'python';
+            case runtime.includes('dart'):
+                return 'dart';
+            default:
+                return undefined;
+        }
     }
 </script>
 
@@ -59,10 +71,14 @@
             <div
                 class="input-text-wrapper is-with-end-button u-width-full-line u-max-width-500 u-margin-block-start-12"
                 style="--amount-of-buttons:1">
-                <input bind:value={search} type="search" placeholder="Search templates" />
+                <input
+                    bind:this={searchElement}
+                    on:input={applySearch}
+                    type="search"
+                    placeholder="Search templates" />
                 <div class="icon-search" aria-hidden="true" />
                 <button
-                    on:click={() => (search = '')}
+                    on:click={clearSearch}
                     class="button is-text is-only-icon"
                     aria-label="Clear search"
                     style="--button-size:1.5rem;">
@@ -72,20 +88,37 @@
             <Collapsible>
                 <CollapsibleItem>
                     <svelte:fragment slot="title">Use case</svelte:fragment>
-                    {#each [...useCases] as useCase}
-                        <InputCheckbox
-                            id={`useCase-${useCase}`}
-                            label={useCase}
-                            bind:value={filter.useCases[useCase]} />
+                    {#each [...data.useCases] as useCase}
+                        <div class="input-text-wrapper">
+                            <input
+                                id={`useCase-${useCase}`}
+                                type="checkbox"
+                                value={$page.url.searchParams.getAll('useCase').includes(useCase)}
+                                on:change={(e) => applyFilter('useCase', useCase, e)} />
+                            <label for={`useCase-${useCase}`}>{useCase}</label>
+                        </div>
                     {/each}
                 </CollapsibleItem>
                 <CollapsibleItem>
                     <svelte:fragment slot="title">Runtime</svelte:fragment>
-                    {#each [...runtimes] as runtime}
-                        <InputCheckbox
-                            id={`runtime-${runtime}`}
-                            label={runtime}
-                            bind:value={filter.runtimes[runtime]} />
+                    {#each [...data.runtimes] as runtime}
+                        {@const icon = getIconFromRuntime(runtime)}
+                        <div class="u-flex">
+                            <input
+                                id={`runtime-${runtime}`}
+                                type="checkbox"
+                                checked={$page.url.searchParams.getAll('runtime').includes(runtime)}
+                                on:change={(e) => applyFilter('runtime', runtime, e)} />
+                            <div class="avatar is-size-x-small">
+                                <img
+                                    style:--p-text-size="16px"
+                                    src={`${base}/icons/${$app.themeInUse}/color/${icon}.svg`}
+                                    alt={icon}
+                                    aria-hidden="true"
+                                    aria-label={icon} />
+                            </div>
+                            <label for={`runtime-${runtime}`}>{runtime}</label>
+                        </div>
                     {/each}
                 </CollapsibleItem>
             </Collapsible>
@@ -105,24 +138,28 @@
             <ul
                 class="grid-box"
                 style="--grid-item-size:22rem; --grid-item-size-small-screens:19rem">
-                {#each templates as template}
+                {#each data.templates as template}
                     <li>
                         <article class="card">
                             <div class="u-flex u-gap-16">
                                 <h2 class="body-text-1 u-bold u-trim">
                                     {template.name}
                                 </h2>
-
                                 <ul class="avatars-group is-with-border">
                                     {#each template.runtimes as runtime}
-                                        <li class="avatars-group-item">
-                                            <div class="avatar is-size-small">
-                                                <span
-                                                    class={`icon-${runtime.name}`}
-                                                    aria-hidden="true"
-                                                    aria-label="GitHub" />
-                                            </div>
-                                        </li>
+                                        {@const icon = getIconFromRuntime(runtime.name)}
+                                        {#if icon}
+                                            <li class="avatars-group-item">
+                                                <div class="avatar is-size-small">
+                                                    <img
+                                                        style:--p-text-size="20px"
+                                                        src={`${base}/icons/${$app.themeInUse}/color/${icon}.svg`}
+                                                        alt={icon}
+                                                        aria-hidden="true"
+                                                        aria-label={icon} />
+                                                </div>
+                                            </li>
+                                        {/if}
                                     {/each}
                                 </ul>
                             </div>
@@ -132,10 +169,14 @@
                             </p>
 
                             <div class="u-flex u-gap-16 u-main-end u-margin-block-start-24">
-                                <button class="button is-text">
+                                <a
+                                    href={`${base}/console/project-${$page.params.project}/functions/templates/template-${template.id}`}
+                                    class="button is-text">
                                     <span class="text">View details</span>
-                                </button>
-                                <button class="button is-secondary">
+                                </a>
+                                <button
+                                    class="button is-secondary"
+                                    on:click={() => connectTemplate(template)}>
                                     <span class="text">Create function</span>
                                 </button>
                             </div>
@@ -145,24 +186,9 @@
             </ul>
         </section>
     </div>
-    <div class="u-flex common-section u-main-space-between">
-        <p class="text">Total results: {templates.length}</p>
-        <nav class="pagination">
-            <button class="button is-text" aria-label="prev page" on:click={() => page--}>
-                <span class="icon-cheveron-left" aria-hidden="true" />
-                <span class="text">Prev</span>
-            </button>
-            <ol class="pagination-list is-only-desktop">
-                <li class="pagination-item">
-                    <button class="button" aria-label="page">
-                        <span class="text">1</span>
-                    </button>
-                </li>
-            </ol>
-            <button class="button is-text" aria-label="next page" on:click={() => page++}>
-                <span class="text">Next</span>
-                <span class="icon-cheveron-right" aria-hidden="true" />
-            </button>
-        </nav>
+    <div class="u-flex u-margin-block-start-32 u-flex-wrap">
+        <div class="u-margin-inline-start-auto">
+            <Pagination limit={data.limit} offset={data.offset} sum={data.sum} />
+        </div>
     </div>
 </Container>

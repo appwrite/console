@@ -8,6 +8,7 @@ export const marketplace = [
         events: [],
         cron: '',
         timeout: 15,
+        usecases: ['placeholder'],
         runtimes: [
             {
                 name: 'node-18.0',
@@ -64,6 +65,7 @@ export const marketplace = [
         events: [],
         cron: '',
         timeout: 15,
+        usecases: ['placeholder'],
         runtimes: [
             {
                 name: 'node-18.0',
@@ -103,6 +105,7 @@ export const marketplace = [
         events: [],
         cron: '',
         timeout: 15,
+        usecases: ['placeholder'],
         runtimes: [
             {
                 name: 'node-18.0',
@@ -136,6 +139,7 @@ export const marketplace = [
         events: [],
         cron: '',
         timeout: 15,
+        usecases: ['placeholder'],
         runtimes: [
             {
                 name: 'node-18.0',
@@ -168,6 +172,7 @@ export const marketplace = [
         events: [],
         cron: '',
         timeout: 15,
+        usecases: ['placeholder'],
         runtimes: [
             {
                 name: 'node-18.0',
@@ -192,6 +197,7 @@ export const marketplace = [
         events: [],
         cron: '',
         timeout: 15,
+        usecases: ['placeholder'],
         runtimes: [
             {
                 name: 'node-18.0',
@@ -225,6 +231,7 @@ export const marketplace = [
         events: [],
         cron: '',
         timeout: 15,
+        usecases: ['placeholder'],
         runtimes: [
             {
                 name: 'node-18.0',
@@ -264,6 +271,7 @@ export const marketplace = [
         events: [],
         cron: '',
         timeout: 15,
+        usecases: ['placeholder'],
         runtimes: [
             {
                 name: 'node-18.0',
@@ -317,6 +325,7 @@ export const marketplace = [
         events: [],
         cron: '',
         timeout: 15,
+        usecases: ['placeholder'],
         runtimes: [
             {
                 name: 'node-18.0',
@@ -386,6 +395,7 @@ export const marketplace = [
         events: [],
         cron: '',
         timeout: 15,
+        usecases: ['placeholder'],
         runtimes: [
             {
                 name: 'node-18.0',
@@ -461,6 +471,7 @@ export const marketplace = [
         events: [],
         cron: '',
         timeout: 15,
+        usecases: ['placeholder'],
         runtimes: [
             {
                 name: 'node-18.0',
@@ -511,6 +522,7 @@ export const marketplace = [
         events: [],
         cron: '',
         timeout: 15,
+        usecases: ['placeholder'],
         runtimes: [
             {
                 name: 'node-18.0',
@@ -561,6 +573,7 @@ export const marketplace = [
         events: [],
         cron: '',
         timeout: 15,
+        usecases: ['placeholder'],
         runtimes: [
             {
                 name: 'node-18.0',
@@ -641,6 +654,7 @@ export type MarketplaceTemplate = {
     events: string[];
     cron: string;
     timeout: number;
+    usecases: string[];
     runtimes: Runtime[];
     instructions: string;
     vcsProvider: string;

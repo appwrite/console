@@ -10,7 +10,6 @@
         TableCellHead,
         TableCellText,
         TableHeader,
-        TableList,
         TableRow
     } from '$lib/elements/table';
     import { beforeNavigate } from '$app/navigation';
