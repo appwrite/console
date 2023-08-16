@@ -141,7 +141,7 @@
                 {#each data.templates as template}
                     <li>
                         <article class="card">
-                            <div class="u-flex u-gap-16">
+                            <div class="u-flex u-gap-16 u-cross-center">
                                 <h2 class="body-text-1 u-bold u-trim">
                                     {template.name}
                                 </h2>
