@@ -33,6 +33,9 @@
     import { commandCenterKeyDownHandler, disableCommands, registerCommands } from './commands';
     import { RootPanel } from './panels';
     import { addSubPanel, clearSubPanels, subPanels } from './subPanels';
+    import { addNotification } from '$lib/stores/notifications';
+
+    let debugOverlayEnabled = false;
 
     $: $registerCommands([
         {
@@ -40,6 +43,20 @@
             keys: ['k'],
             ctrl: true,
             forceEnable: true
+        },
+        {
+            label: 'Toggle debug overlay',
+            callback: () => {
+                debugOverlayEnabled = !debugOverlayEnabled;
+                addNotification({
+                    title: 'Debug overlay',
+                    message: debugOverlayEnabled ? 'Enabled' : 'Disabled',
+                    type: 'info'
+                });
+            },
+            keys: ['d', 'o'],
+            group: 'misc',
+            disabled: !dev
         }
     ]);
 
@@ -100,7 +117,7 @@
     </div>
 {/if}
 
-{#if dev}
+{#if dev && debugOverlayEnabled}
     <div class="debug-keys" use:portal>
         {#each keys as key, i (i)}
             <kbd class="kbd" transition:fade|local={{ duration: 150 }}>
