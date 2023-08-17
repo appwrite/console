@@ -8,6 +8,7 @@
 
     import { isLanguage, type Language } from '$lib/components/code.svelte';
     import { VARS } from '$lib/system';
+    import { key } from '$routes/console/project-[project]/overview/keys/[key]/store';
 
     const { input, handleSubmit, completion, isLoading, complete } = useCompletion({
         api: VARS.ASSISTANT_ENDPOINT
@@ -97,6 +98,9 @@
               };
           })}
     clearOnCallback={false}
+    on:keydown={(e) => {
+        e.detail.cancel();
+    }}
     --min-height="40rem"
     --max-height="52.5rem">
     <div slot="search">

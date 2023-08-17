@@ -4,7 +4,7 @@
     // This is the template for all panels used in the command center.
     // Use this component when you want to create a new panel.
 
-    import { tick } from 'svelte';
+    import { createEventDispatcher, tick } from 'svelte';
 
     import { getCommandCenterCtx } from '../commandCenter.svelte';
 
@@ -28,8 +28,24 @@
         }
     }
 
+    const dispatch = createEventDispatcher<{
+        keydown: {
+            originalEvent: KeyboardEvent;
+            cancel: () => void;
+            key: string;
+        };
+    }>();
+
     function handleKeyDown(event: KeyboardEvent) {
         if (!open) return;
+
+        let canceled = false;
+        dispatch('keydown', {
+            originalEvent: event,
+            cancel: () => (canceled = true),
+            key: event.key
+        });
+        if (canceled) return;
 
         if (options) {
             if (event.key === 'ArrowDown') {
@@ -177,6 +193,10 @@
         selected = option.index;
     };
 
+    const getOptionBlurHandler = () => () => {
+        selected = -1;
+    };
+
     const castOption = (option: IndexedOption) => option as Option;
 
     function getBreadcrumbs(subPanels: typeof $subPanels) {
@@ -272,6 +292,7 @@
                                 class="option"
                                 on:click={getOptionClickHandler(item)}
                                 on:mouseover={getOptionFocusHandler(item)}
+                                on:mouseleave={getOptionBlurHandler()}
                                 on:focus={getOptionFocusHandler(item)}>
                                 <slot name="option" option={castOption(item)}>
                                     <div class="u-flex u-gap-8 u-cross-center">

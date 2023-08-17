@@ -63,7 +63,6 @@
             group: 'navigation',
             rank: -2
         },
-
         {
             label: 'Create new organization',
             callback: () => {
