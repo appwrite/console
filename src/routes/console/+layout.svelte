@@ -43,7 +43,7 @@
                 addSubPanel(AIPanel);
             },
             keys: ['a', 'i'],
-            icon: 'light-bulb'
+            icon: 'sparkles'
         },
         {
             label: 'Go to account',

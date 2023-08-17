@@ -488,7 +488,7 @@
                     position: absolute;
                     inset: 0;
                     background-color: var(--result-bg);
-                    border-radius: 0.75rem;
+                    border-radius: 0.5rem;
                     translate: 0 -1px;
                 }
 
