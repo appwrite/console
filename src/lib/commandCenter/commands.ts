@@ -288,12 +288,12 @@ export const commandGroupRanks = derived(groupRanksMap, ($groupRankTransformatio
     const initialRanks = {
         ...Object.fromEntries(groups.map((group) => [group, 0])),
         ungrouped: 9999,
-        databases: 4,
-        users: 3,
-        teams: 2,
-        projects: 1,
-        organizations: 0,
-        navigation: -10,
+        databases: 50,
+        users: 40,
+        teams: 30,
+        projects: 20,
+        organizations: 10,
+        navigation: 0,
         help: -20,
         misc: -30
     } as CommandGroupRanks;

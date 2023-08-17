@@ -23,6 +23,14 @@
     import { addSubPanel } from '$lib/commandCenter/subPanels';
     import { addNotification } from '$lib/stores/notifications';
     import { openMigrationWizard } from './(migration-wizard)';
+    import { project } from './project-[project]/store';
+
+    function kebabToSentenceCase(str: string) {
+        return str
+            .split('-')
+            .map((word) => word[0].toUpperCase() + word.slice(1))
+            .join(' ');
+    }
 
     $: $registerCommands([
         {
@@ -35,7 +43,8 @@
             disabled:
                 $page.url.pathname.includes('/console/organization-') &&
                 !$page.url.pathname.endsWith('/members') &&
-                !$page.url.pathname.endsWith('/settings')
+                !$page.url.pathname.endsWith('/settings'),
+            rank: -1
         },
         {
             label: 'Ask the AI',
@@ -52,7 +61,7 @@
             },
             keys: ['i'],
             group: 'navigation',
-            rank: 1
+            rank: -2
         },
 
         {
@@ -63,6 +72,26 @@
             keys: ['c', 'o'],
             group: 'organizations'
         },
+        ...[
+            'users-limit',
+            'session-length',
+            'sessions-limit',
+            'password-history',
+            'password-dictionary',
+            'personal-data'
+        ].map(
+            (heading) =>
+                ({
+                    label: kebabToSentenceCase(heading),
+                    async callback() {
+                        await goto(`/console/project-${$project.$id}/auth/security#${heading}`);
+                        scrollBy({ top: -100 });
+                    },
+                    group: 'security',
+                    icon: 'pencil'
+                } as const)
+        ),
+
         {
             label: 'Open documentation',
             callback: () => {

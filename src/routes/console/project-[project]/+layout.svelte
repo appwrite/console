@@ -28,24 +28,7 @@
 
     $: $registerCommands([
         {
-            label: 'Go to overview',
-            callback: () => {
-                goto(`/console/project-${$project.$id}`);
-            },
-            keys: ['o'],
-            group: 'navigation'
-        },
-
-        {
-            label: 'Go to auth',
-            callback: () => {
-                goto(`/console/project-${$project.$id}/auth`);
-            },
-            keys: ['a'],
-            group: 'navigation'
-        },
-        {
-            label: 'Go to databases',
+            label: 'Go to Databases',
             callback: () => {
                 goto(`/console/project-${$project.$id}/databases`);
             },
@@ -53,7 +36,15 @@
             group: 'navigation'
         },
         {
-            label: 'Go to functions',
+            label: 'Go to Auth',
+            callback: () => {
+                goto(`/console/project-${$project.$id}/auth`);
+            },
+            keys: ['a'],
+            group: 'navigation'
+        },
+        {
+            label: 'Go to Functions',
             callback: () => {
                 goto(`/console/project-${$project.$id}/functions`);
             },
@@ -61,7 +52,7 @@
             group: 'navigation'
         },
         {
-            label: 'Go to storage',
+            label: 'Go to Storage',
             callback: () => {
                 goto(`/console/project-${$project.$id}/storage`);
             },
@@ -74,6 +65,14 @@
                 goto(`/console/project-${$project.$id}/settings`);
             },
             keys: ['p'],
+            group: 'navigation'
+        },
+        {
+            label: 'Go to overview',
+            callback: () => {
+                goto(`/console/project-${$project.$id}`);
+            },
+            keys: ['o'],
             group: 'navigation'
         }
     ]);
