@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Alert, Code } from '$lib/components';
     import { WizardStep } from '$lib/layout';
-    import { Mode, MODE } from '$lib/system';
+    import { isSelfHosted } from '$lib/system';
     import { sdk } from '$lib/stores/sdk';
     import Id from '$lib/components/id.svelte';
 
@@ -30,7 +30,7 @@ let client = Client()
         Before sending any API calls to your new Appwrite project, make sure your device or emulator
         has network access to your Appwrite project's hostname or IP address.
     </p>
-    {#if showAlert && MODE === Mode.SELF_HOSTED}
+    {#if showAlert && isSelfHosted}
         <div class="common-section">
             <Alert type="info" dismissible on:dismiss={() => (showAlert = false)}>
                 <svelte:fragment slot="title">For self-hosted solutions</svelte:fragment>
