@@ -18,7 +18,7 @@
     import { goto } from '$app/navigation';
 
     import { CommandCenter, registerCommands, registerSearchers } from '$lib/commandCenter';
-    import { AIPanel, OrganizationsPanel, ProjectsPanel } from '$lib/commandCenter/panels';
+    import { AIPanel } from '$lib/commandCenter/panels';
     import { orgSearcher, projectsSearcher } from '$lib/commandCenter/searchers';
     import { addSubPanel } from '$lib/commandCenter/subPanels';
     import { addNotification } from '$lib/stores/notifications';
@@ -54,24 +54,7 @@
             group: 'navigation',
             rank: 1
         },
-        {
-            label: 'Find an organization',
-            callback: () => {
-                addSubPanel(OrganizationsPanel);
-            },
-            group: 'organizations',
-            icon: 'search',
-            keys: ['f', 'o']
-        },
-        {
-            label: 'Find a project',
-            callback: () => {
-                addSubPanel(ProjectsPanel);
-            },
-            keys: ['f', 'p'],
-            group: 'projects',
-            icon: 'search'
-        },
+
         {
             label: 'Create new organization',
             callback: () => {
