@@ -6,12 +6,12 @@
 </script>
 
 <script lang="ts">
-    import { DropList, DropListItem, Empty, Heading, Modal } from '$lib/components';
+    import { DropList, DropListItem, Empty, Heading, Modal, Trim } from '$lib/components';
     import {
         TableBody,
         TableCell,
         TableCellHead,
-        TableCellText,
+        TableCellLink,
         TableHeader,
         TableRow,
         TableScroll
@@ -76,16 +76,19 @@
         <TableBody>
             {#each rules.rules as domain, i}
                 <TableRow>
-                    <TableCellText title="Domain">
-                        <a href={`//${domain.domain}`} target="_blank" rel="noopener noreferrer">
-                            {domain.domain}
-                            <span
-                                class="icon-external-link"
-                                aria-hidden="true"
-                                style="color: hsl(var(--color-neutral-50))" />
-                        </a>
-                    </TableCellText>
-                    <TableCellText title="Status">
+                    <TableCellLink
+                        title="Domain"
+                        href={`https://${domain.domain}`}
+                        external
+                        noStyle>
+                        <Trim>
+                            <span class="u-flex u-gap-4 u-cross-center">
+                                <span class="link"> {domain.domain}</span>
+                                <span class="icon-external-link" aria-hidden="true" />
+                            </span>
+                        </Trim>
+                    </TableCellLink>
+                    <TableCell title="Status">
                         {#if domain.status === 'created'}
                             <div class="u-flex u-gap-8 u-cross-center">
                                 <span
@@ -106,8 +109,8 @@
                                 <p class="u-stretch">Verified</p>
                             </div>
                         {/if}
-                    </TableCellText>
-                    <TableCellText title="Name">
+                    </TableCell>
+                    <TableCell title="Name">
                         {#if domain.status === 'unverified'}
                             <div class="u-flex u-gap-8 u-cross-center">
                                 <span
@@ -138,7 +141,7 @@
                                 <p class="u-stretch">Waiting to run</p>
                             </div>
                         {/if}
-                    </TableCellText>
+                    </TableCell>
                     <TableCell>
                         <DropList
                             bind:show={showDomainsDropdown[i]}

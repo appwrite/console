@@ -19,7 +19,8 @@
     {#if showTooltip}
         <span
             use:tooltip={{
-                content: container.innerText
+                content: container.innerText,
+                maxWidth: '30rem'
             }}>
             <slot />
         </span>
