@@ -86,7 +86,7 @@
                 <InputTags
                     id="user-labels"
                     label="Labels"
-                    placeholder="Select or tyype user labels"
+                    placeholder="Select or type user labels"
                     bind:tags={labels} />
                 <li>
                     <Helper type={error ? 'warning' : 'neutral'}
