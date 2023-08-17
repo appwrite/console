@@ -122,21 +122,6 @@ function createServices() {
                     label: 'Users',
                     method: 'users',
                     value: project.serviceStatusForUsers
-                },
-                {
-                    label: 'GraphQL',
-                    method: 'graphql',
-                    value: project.serviceStatusForGraphql
-                },
-                {
-                    label: 'VCS',
-                    method: 'vcs',
-                    value: project.serviceStatusForVcs
-                },
-                {
-                    label: 'Proxy',
-                    method: 'proxy',
-                    value: project.serviceStatusForProxy
                 }
             ];
             set({ list });
