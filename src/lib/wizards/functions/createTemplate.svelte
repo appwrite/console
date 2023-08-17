@@ -15,9 +15,17 @@
     import RepositoryBehaviour from './steps/repositoryBehaviour.svelte';
     import CreateRepository from './steps/createRepository.svelte';
     import TemplateVariables from './steps/templateVariables.svelte';
+    import { scopes } from '$lib/constants';
 
     async function create() {
         const runtimeDetail = $template.runtimes.find((r) => r.name === $templateConfig.runtime);
+
+        const key = await sdk.forConsole.projects.createKey(
+            $page.params.project,
+            'Generated for Template',
+            scopes.map((scope) => scope.scope)
+        );
+        $templateConfig.variables['APPWRITE_API_KEY'] = key.secret;
 
         const response = await sdk.forProject.functions.create(
             $templateConfig.$id || ID.unique(),
@@ -52,29 +60,6 @@
         resetState();
         wizard.hide();
     }
-
-    // async function generateApiKey() {
-    //     try {
-    // const key = await sdk.forConsole.projects.createKey(
-    //             $page.params.project,
-    //             'Generated for Template',
-    //             scopes.map((scope) => scope.scope)
-    //         );
-    //         $templateConfig.variables['APPWRITE_API_KEY'] = key.secret;
-
-    //         addNotification({
-    //             type: 'success',
-    //             message: 'Key generated successfully.'
-    //         });
-    //     } catch (error) {
-    //         addNotification({
-    //             type: 'error',
-    //             message: error.message
-    //         });
-    //     } finally {
-    //         generatingApiKey = false;
-    //     }
-    // }
 
     function resetState() {
         wizard.hide();

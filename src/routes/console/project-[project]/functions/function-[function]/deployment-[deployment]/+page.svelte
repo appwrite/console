@@ -17,6 +17,7 @@
     import { timer } from '$lib/actions/timer';
     import DeploymentSource from '../deploymentSource.svelte';
     import { deployment } from './store';
+    import DeploymentCreatedBy from '../deploymentCreatedBy.svelte';
 
     let logs = '';
 
@@ -75,7 +76,7 @@
                             {calculateTime($deployment.buildTime)}
                         {/if}
                     </p>
-                    <p><b>Created:</b> <deploymentCreatedBy deployment={$deployment} /></p>
+                    <p><b>Created:</b> <DeploymentCreatedBy deployment={$deployment} /></p>
                     <p><b>Size:</b> {fileSize.value + fileSize.unit}</p>
                     <p>
                         <b>Source:</b>

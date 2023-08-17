@@ -17,10 +17,10 @@
     </svelte:fragment>
 
     <ul class="u-flex u-flex-vertical u-gap-24">
-        <li>
-            <label
-                class="card is-allow-focus u-cursor-pointer"
-                style="--card-padding:1rem; --card-border-radius:var(--border-radius-small);">
+        <li
+            class="box is-allow-focus u-cursor-pointer"
+            style="--box-padding:1rem; --box-border-radius:var(--border-radius-small);">
+            <label>
                 <div class="u-flex u-gap-16">
                     <input
                         bind:group={$templateConfig.repositoryBehaviour}
@@ -38,10 +38,10 @@
                 </div>
             </label>
         </li>
-        <li>
-            <label
-                class="card is-allow-focus u-cursor-pointer"
-                style="--card-padding:1rem; --card-border-radius:var(--border-radius-small);">
+        <li
+            class="box is-allow-focus u-cursor-pointer"
+            style="--box-padding:1rem; --box-border-radius:var(--border-radius-small);">
+            <label>
                 <div class="u-flex u-gap-16">
                     <input
                         bind:group={$templateConfig.repositoryBehaviour}
