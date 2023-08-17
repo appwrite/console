@@ -3,10 +3,12 @@
     import { FormItem, Helper, Label } from '.';
     import NullCheckbox from './nullCheckbox.svelte';
     import TextCounter from './textCounter.svelte';
+    import { clickOnEnter } from '$lib/helpers/a11y';
 
     export let label: string;
     export let showLabel = true;
     export let id: string;
+    export let name: string = id;
     export let value = '';
     export let placeholder = '';
     export let required = false;
@@ -60,9 +62,10 @@
         {label}
     </Label>
 
-    <div class="input-text-wrapper">
+    <div class="input-text-wrapper" on:click on:keyup={clickOnEnter}>
         <textarea
             {id}
+            {name}
             {placeholder}
             {disabled}
             {readonly}

@@ -1,3 +1,9 @@
+<script lang="ts" context="module">
+    export function createApiKey() {
+        wizard.start(Wizard);
+    }
+</script>
+
 <script lang="ts">
     import { Empty, Heading } from '$lib/components';
     import { Button } from '$lib/elements/forms';
@@ -15,16 +21,12 @@
     import Wizard from './wizard.svelte';
 
     export let data: PageData;
-
-    function create() {
-        wizard.start(Wizard);
-    }
 </script>
 
 <div class="common-section u-flex u-gap-12">
     <Heading tag="h3" size="7">API Keys</Heading>
     <span class="u-margin-inline-start-auto">
-        <Button on:click={create}>
+        <Button on:click={createApiKey}>
             <span class="icon-plus" aria-hidden="true" />
             <span class="text">Create API key</span>
         </Button>
@@ -59,5 +61,5 @@
         </TableBody>
     </Table>
 {:else}
-    <Empty single href="https://appwrite.io/docs/keys" target="API key" on:click={create} />
+    <Empty single href="https://appwrite.io/docs/keys" target="API key" on:click={createApiKey} />
 {/if}

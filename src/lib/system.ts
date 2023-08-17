@@ -11,6 +11,7 @@ export const VARS = {
     CONSOLE_MODE: import.meta.env?.VITE_CONSOLE_MODE?.toString() as string | undefined,
     VERCEL_ENV: import.meta.env?.VITE_VERCEL_ENV?.toString() as string | undefined,
     GOOGLE_ANALYTICS: import.meta.env?.VITE_GA_PROJECT?.toString() as string | undefined,
+    ASSISTANT_ENDPOINT: import.meta.env?.VITE_ASSISTANT_ENDPOINT?.toString() as string | undefined,
     GOOGLE_TAG: import.meta.env?.VITE_GTM_PROJECT?.toString() as string | undefined
 };
 

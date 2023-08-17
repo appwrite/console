@@ -258,7 +258,7 @@
 
         <Form onSubmit={updatePermissions}>
             <CardGrid>
-                <Heading tag="h6" size="7">Permissions</Heading>
+                <Heading tag="h6" size="7" id="permissions">Permissions</Heading>
                 <p class="text">
                     Choose who can access your buckets and files. For more information, check out
                     the <a
@@ -282,7 +282,7 @@
 
         <Form onSubmit={updateFileSecurity}>
             <CardGrid>
-                <Heading tag="h6" size="7">File security</Heading>
+                <Heading tag="h6" size="7" id="file-security">File security</Heading>
                 <svelte:fragment slot="aside">
                     <FormList>
                         <InputSwitch
@@ -406,7 +406,7 @@
 
         <Form onSubmit={updateAllowedExtensions}>
             <CardGrid>
-                <Heading tag="h6" size="7">File extensions</Heading>
+                <Heading tag="h6" size="7" id="extensions">File Extensions</Heading>
                 <p class="text">
                     Allowed file extensions. A maximum of 100 file extensions can be added. Leave
                     blank to allow all file types.

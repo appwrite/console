@@ -20,15 +20,21 @@
             event: 'teams'
         },
         {
+            href: `${path}/security`,
+            title: 'Security',
+            event: 'security'
+        },
+        {
+            href: `${path}/templates`,
+            title: 'Templates',
+            hasChildren: false,
+            event: 'templates'
+        },
+        {
             href: `${path}/usage`,
             title: 'Usage',
             hasChildren: true,
             event: 'usage'
-        },
-        {
-            href: `${path}/security`,
-            title: 'Security',
-            event: 'security'
         },
         {
             href: `${path}/settings`,

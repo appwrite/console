@@ -8,6 +8,7 @@ import {
     Functions,
     Health,
     Locale,
+    Migrations,
     Projects,
     Project,
     Storage,
@@ -33,7 +34,16 @@ const sdkForProject = {
     project: new Project(clientProject),
     storage: new Storage(clientProject),
     teams: new Teams(clientProject),
-    users: new Users(clientProject)
+    users: new Users(clientProject),
+    migrations: new Migrations(clientProject)
+};
+
+export const getSdkForProject = (projectId: string) => {
+    if (projectId && projectId !== clientProject.config.project) {
+        clientProject.setProject(projectId);
+    }
+
+    return sdkForProject;
 };
 
 export const sdk = {
@@ -46,14 +56,11 @@ export const sdk = {
         locale: new Locale(clientConsole),
         projects: new Projects(clientConsole),
         teams: new Teams(clientConsole),
-        users: new Users(clientConsole)
+        users: new Users(clientConsole),
+        migrations: new Migrations(clientConsole)
     },
     get forProject() {
         const projectId = getProjectId();
-        if (projectId && projectId !== clientProject.config.project) {
-            clientProject.setProject(projectId);
-        }
-
-        return sdkForProject;
+        return getSdkForProject(projectId);
     }
 };
