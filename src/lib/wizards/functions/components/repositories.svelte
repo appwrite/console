@@ -1,7 +1,7 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { EmptySearch } from '$lib/components';
+    import { EmptySearch, PaginationInline } from '$lib/components';
     import { Button, InputSearch, InputSelect } from '$lib/elements/forms';
     import { timeFromNow } from '$lib/helpers/date';
     import { app } from '$lib/stores/app';
@@ -15,6 +15,8 @@
     export let selectedRepository: string = null;
     export let hasInstallations = false;
     export let action: 'button' | 'select' = 'select';
+    let offset = 0;
+    const limit = 1;
 
     $: {
         hasInstallations = $installations?.total > 0;
@@ -114,59 +116,67 @@
         {:then response}
             {#if response?.length}
                 <ul class="table is-remove-outer-styles common-section">
-                    {#each response as repo}
-                        <li class="table-row">
-                            <div class="table-col">
-                                <div
-                                    class="u-flex u-cross-center u-gap-8"
-                                    style="margin-block: .75rem;">
-                                    {#if action === 'select'}
-                                        <input
-                                            class="is-small u-margin-inline-end-8"
-                                            type="radio"
-                                            name="repositories"
-                                            bind:group={selectedRepository}
-                                            on:change={() => repository.set(repo)}
-                                            value={repo.id} />
-                                    {/if}
+                    {#each response as repo, i}
+                        {#if i < offset + limit && i > offset - limit}
+                            <li class="table-row">
+                                <div class="table-col">
                                     <div
-                                        class="avatar is-size-x-small"
-                                        style:--p-text-size="1.25rem"
-                                        class:is-color-empty={!repo.runtime}>
-                                        {#if repo.runtime}
-                                            <img
-                                                src={`${base}/icons/${$app.themeInUse}/color/${
-                                                    repo.runtime.split('-')[0]
-                                                }.svg`}
-                                                alt={repo.name} />
+                                        class="u-flex u-cross-center u-gap-8"
+                                        style="margin-block: .75rem;">
+                                        {#if action === 'select'}
+                                            <input
+                                                class="is-small u-margin-inline-end-8"
+                                                type="radio"
+                                                name="repositories"
+                                                bind:group={selectedRepository}
+                                                on:change={() => repository.set(repo)}
+                                                value={repo.id} />
                                         {/if}
-                                    </div>
-                                    <div class="u-flex u-gap-8">
-                                        <span class="text">{repo.name}</span>
-                                        {#if repo.private}
-                                            <span
-                                                class="icon-lock-closed"
-                                                style="font-size: var(--icon-size-small)"
-                                                aria-hidden="true" />
-                                        {/if}
-                                        <time class="u-color-text-gray" datetime={repo.pushedAt}>
-                                            {timeFromNow(repo.pushedAt)}
-                                        </time>
-                                    </div>
-                                    {#if action === 'button'}
-                                        <div class="u-margin-inline-start-auto">
-                                            <Button
-                                                secondary
-                                                on:click={() => dispatch('connect', repo)}>
-                                                Connect
-                                            </Button>
+                                        <div
+                                            class="avatar is-size-x-small"
+                                            style:--p-text-size="1.25rem"
+                                            class:is-color-empty={!repo.runtime}>
+                                            {#if repo.runtime}
+                                                <img
+                                                    src={`${base}/icons/${$app.themeInUse}/color/${
+                                                        repo.runtime.split('-')[0]
+                                                    }.svg`}
+                                                    alt={repo.name} />
+                                            {/if}
                                         </div>
-                                    {/if}
+                                        <div class="u-flex u-gap-8">
+                                            <span class="text u-trim-1">{repo.name}</span>
+                                            {#if repo.private}
+                                                <span
+                                                    class="icon-lock-closed"
+                                                    style="font-size: var(--icon-size-small)"
+                                                    aria-hidden="true" />
+                                            {/if}
+                                            <time
+                                                class="u-color-text-gray u-trim-1"
+                                                datetime={repo.pushedAt}>
+                                                {timeFromNow(repo.pushedAt)}
+                                            </time>
+                                        </div>
+                                        {#if action === 'button'}
+                                            <div class="u-margin-inline-start-auto">
+                                                <Button
+                                                    secondary
+                                                    on:click={() => dispatch('connect', repo)}>
+                                                    Connect
+                                                </Button>
+                                            </div>
+                                        {/if}
+                                    </div>
                                 </div>
-                            </div>
-                        </li>
+                            </li>
+                        {/if}
                     {/each}
                 </ul>
+                <div class="u-flex u-margin-block-start-32 u-main-space-between">
+                    <p class="text">Total results: {response?.length}</p>
+                    <PaginationInline {limit} bind:offset sum={response?.length} />
+                </div>
             {:else if search}
                 <EmptySearch hidePages>
                     <div class="common-section">
