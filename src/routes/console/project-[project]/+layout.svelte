@@ -76,52 +76,6 @@
             keys: ['p'],
             group: 'navigation'
         }
-        // {
-        //     label: 'Find users',
-        //     callback: () => {
-        //         addSubPanel(UsersPanel);
-        //     },
-        //     group: 'users',
-        //     icon: 'search',
-        //     keys: ['f', 'u'],
-        //     rank: 10
-        // },
-        // {
-        //     label: 'Find teams',
-        //     callback: () => {
-        //         addSubPanel(TeamsPanel);
-        //     },
-        //     group: 'teams',
-        //     icon: 'search',
-        //     keys: ['f', 't']
-        // },
-        // {
-        //     label: 'Find databases',
-        //     callback: () => {
-        //         addSubPanel(DatabasesPanel);
-        //     },
-        //     group: 'databases',
-        //     icon: 'search',
-        //     keys: ['f', 'd']
-        // },
-        // {
-        //     label: 'Find functions',
-        //     callback: () => {
-        //         addSubPanel(FunctionsPanel);
-        //     },
-        //     group: 'functions',
-        //     icon: 'search',
-        //     keys: ['f', 'f']
-        // },
-        // {
-        //     label: 'Find buckets',
-        //     callback: () => {
-        //         addSubPanel(BucketsPanel);
-        //     },
-        //     group: 'buckets',
-        //     icon: 'search',
-        //     keys: ['f', 'b']
-        // }
     ]);
 
     $registerSearchers(userSearcher, teamSearcher, dbSearcher, functionsSearcher, bucketSearcher);
