@@ -116,7 +116,7 @@
                         <div class="u-flex u-gap-12 u-cross-center">
                             <a
                                 class="u-underline u-cursor-pointer"
-                                href={'//' + data.domain.rules[0].domain}
+                                href={`https//${data.domain.rules[0].domain}`}
                                 target="_blank">
                                 {data.domain.rules[0].domain}
                             </a>

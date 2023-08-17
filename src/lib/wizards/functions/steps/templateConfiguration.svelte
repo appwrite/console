@@ -12,12 +12,6 @@
         if (!$templateConfig.runtime) {
             throw new Error('Please select a runtime.');
         }
-
-        for (const variable of $template.variables) {
-            if (!variable.required) {
-                continue;
-            }
-        }
     }
 
     async function loadRuntimes() {

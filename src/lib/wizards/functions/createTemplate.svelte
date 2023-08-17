@@ -53,6 +53,29 @@
         wizard.hide();
     }
 
+    // async function generateApiKey() {
+    //     try {
+    // const key = await sdk.forConsole.projects.createKey(
+    //             $page.params.project,
+    //             'Generated for Template',
+    //             scopes.map((scope) => scope.scope)
+    //         );
+    //         $templateConfig.variables['APPWRITE_API_KEY'] = key.secret;
+
+    //         addNotification({
+    //             type: 'success',
+    //             message: 'Key generated successfully.'
+    //         });
+    //     } catch (error) {
+    //         addNotification({
+    //             type: 'error',
+    //             message: error.message
+    //         });
+    //     } finally {
+    //         generatingApiKey = false;
+    //     }
+    // }
+
     function resetState() {
         wizard.hide();
         templateConfig.set(null);

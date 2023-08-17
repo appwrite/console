@@ -13,6 +13,7 @@ export const templateConfig = writable<{
     repositoryName: string;
     repositoryPrivate: boolean;
     repositoryId: string;
+    appwriteApiKey?: string;
 }>();
 export const repository = writable<Models.ProviderRepository>();
 export const installation = writable<Models.Installation>();

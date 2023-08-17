@@ -26,21 +26,18 @@
     }
 
     beforeNavigate((n) => {
-        if ($log.show) {
-            if (n.type === 'popstate') {
-                n.cancel();
-            }
-            $log.show = false;
+        if (!$log.show) return;
+        if (n.type === 'popstate') {
+            n.cancel();
         }
+        $log.show = false;
     });
 
     $: execution = $log.data;
     $: func = $log.func;
 
-    $: if (execution) {
-        if (execution.errors) {
-            selectedResponse = 'errors';
-        }
+    $: if (execution?.errors) {
+        selectedResponse = 'errors';
     }
 </script>
 
@@ -84,20 +81,13 @@
                             {calculateTime(execution.duration)}
                         </time>
                     </li>
-                    <!-- <li class="text">
-                            <b>Cold-start duration:</b>
-                            <time> ?? </time>
-                        </li> -->
+
                     <li class="text">
                         <b>Created at:</b>
                         <time>
                             {toLocaleDateTime(execution.$createdAt)}
                         </time>
                     </li>
-                    <!-- <li class="text">
-                            <b>Host:</b>
-                            <span> ??</span>
-                        </li> -->
                 </ul>
                 <div class="status u-margin-inline-start-auto">
                     <Status status={execution.status}>{execution.status}</Status>

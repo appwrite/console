@@ -21,7 +21,7 @@
             );
             addNotification({
                 type: 'success',
-                message: `${$func.name} has been redeployed.`
+                message: `Redeploying ${$func.name}`
             });
             trackEvent(Submit.FunctionRedeploy);
 
