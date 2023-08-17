@@ -3,6 +3,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Collapsible, CollapsibleItem, Pagination } from '$lib/components';
+    import { debounce } from '$lib/helpers/debounce';
     import { Container } from '$lib/layout';
     import { app } from '$lib/stores/app';
     import { connectTemplate } from '$lib/wizards/functions/cover.svelte';
@@ -23,19 +24,6 @@
         }
         target.searchParams.delete('page');
         goto(target.toString());
-    }
-
-    function applySearch(event: Event) {
-        const value = (event.target as EventTarget & HTMLInputElement).value;
-        const target = new URL($page.url);
-
-        if (value.length > 0) {
-            target.searchParams.set('search', value);
-        } else {
-            target.searchParams.delete('search');
-        }
-        target.searchParams.delete('page');
-        goto(target.toString(), { keepFocus: true });
     }
 
     function clearSearch() {
@@ -62,6 +50,19 @@
                 return undefined;
         }
     }
+
+    const applySearch = debounce((event: Event) => {
+        const value = (event.target as EventTarget & HTMLInputElement).value;
+        const target = new URL($page.url);
+
+        if (value.length > 0) {
+            target.searchParams.set('search', value);
+        } else {
+            target.searchParams.delete('search');
+        }
+        target.searchParams.delete('page');
+        goto(target.toString(), { keepFocus: true });
+    }, 250);
 </script>
 
 <Container>
