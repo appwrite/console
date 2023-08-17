@@ -96,32 +96,32 @@
         </FormList>
     {:else if $provider.provider === 'firebase'}
         {#if !firebaseProjects?.length}
-            <div class="box u-flex u-flex-vertical u-gap-16 u-cross-center u-margin-block-start-24">
+            <!-- <div class="box u-flex u-flex-vertical u-gap-16 u-cross-center u-margin-block-start-24">
                 <p class="u-text-center u-bold">Sign in with Google to get started</p>
                 <Button secondary href={connectGoogle().toString()}>
                     <SvgIcon name="google" />Sign in
                 </Button>
-            </div>
+            </div> -->
 
-            <button
+            <!-- <button
                 class="tag u-margin-block-start-16"
                 type="button"
                 on:click={() => (showAuth = !showAuth)}
                 class:is-selected={showAuth}>
                 <span class="icon-lock-closed" aria-hidden="true" />
                 <span class="text">Manual authentication</span>
-            </button>
+            </button> -->
 
-            {#if showAuth}
-                <div class="u-margin-block-start-16">
-                    <InputText
-                        id="credentials"
-                        label="Account credentials"
-                        required
-                        bind:value={$provider.serviceAccount}
-                        placeholder="Enter account credentials" />
-                </div>
-            {/if}
+            <!-- {#if showAuth} -->
+            <div class="u-margin-block-start-16">
+                <InputText
+                    id="credentials"
+                    label="Account credentials"
+                    required
+                    bind:value={$provider.serviceAccount}
+                    placeholder="Enter account credentials" />
+            </div>
+            <!-- {/if} -->
         {:else}
             <FormList class="u-margin-block-start-24">
                 <InputSelect
