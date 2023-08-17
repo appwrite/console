@@ -68,6 +68,15 @@
             group: 'navigation',
 
             rank: 10
+        },
+        {
+            label: 'Go to SMTP settings',
+            keys: ['g', 's'],
+            callback: () => {
+                goto(`/console/project-${$project.$id}/settings/smtp`);
+            },
+            disabled: $page.url.pathname.includes('smtp'),
+            group: 'navigation'
         }
     ]);
 
