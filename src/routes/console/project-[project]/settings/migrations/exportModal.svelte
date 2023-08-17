@@ -110,7 +110,6 @@
                 id="endpoint"
                 placeholder="https://[YOUR_APPWRITE_HOSTNAME]"
                 autofocus
-                value="http://localhost:3000/"
                 on:input={(e) => {
                     if (!submitted) return;
                     const input = e.target;
