@@ -16,7 +16,7 @@
     export let hasInstallations = false;
     export let action: 'button' | 'select' = 'select';
     let offset = 0;
-    const limit = 1;
+    const limit = 5;
 
     $: {
         hasInstallations = $installations?.total > 0;

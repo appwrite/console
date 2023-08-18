@@ -168,11 +168,24 @@
                 </svelte:fragment>
             </CardGrid>
         {:else}
-            <Empty
-                single
-                href="https://appwrite.io/docs/functions#createFunction"
-                target="deployment"
-                on:click />
+            <Empty single target="deployment">
+                <div class="u-text-center">
+                    <Heading size="7" tag="h2"
+                        >Create your first deployment to get started.</Heading>
+                    <p class="body-text-2 u-bold u-margin-block-start-4">
+                        Learn more about deployments in our Documentation.
+                    </p>
+                </div>
+                <div class="u-flex u-gap-16 u-main-center">
+                    <Button
+                        external
+                        href="https://appwrite.io/docs/functions#createFunction"
+                        text
+                        event="empty_documentation"
+                        ariaLabel={`create {target}`}>Documentation</Button>
+                    <Create secondary />
+                </div>
+            </Empty>
         {/if}
 
         <div class="common-section">
@@ -202,19 +215,7 @@
                                     warning={status === 'pending'}
                                     success={status === 'completed' || status === 'ready'}
                                     info={status === 'processing' || status === 'building'}>
-                                    {#if deployment.$id === $func.deployment}
-                                        <span
-                                            class="text u-trim"
-                                            use:tooltip={{
-                                                content: 'Active Deployment',
-                                                placement: 'top'
-                                            }}>
-                                            <span class="icon-check-circle" aria-hidden="true" />
-                                            <span>{status}</span>
-                                        </span>
-                                    {:else}
-                                        <span>{status}</span>
-                                    {/if}
+                                    {status}
                                 </Pill>
                             </TableCell>
                             <TableCellText width={70} title="Source">
@@ -306,13 +307,12 @@
                         text
                         event="empty_documentation"
                         ariaLabel={`create {target}`}>Documentation</Button>
-                    <Button secondary on:click>Create deployment</Button>
                     <Create />
                 </div>
             </Empty>
         {/if}
     {:else}
-        <Empty single target="deployment" on:click>
+        <Empty single target="deployment">
             <div class="u-text-center">
                 <Heading size="7" tag="h2">Create your first deployment to get started.</Heading>
                 <p class="body-text-2 u-bold u-margin-block-start-4">

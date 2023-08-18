@@ -9,29 +9,42 @@
     import { wizard } from '$lib/stores/wizard';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
+    import { addNotification } from '$lib/stores/notifications';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
 
     async function createGitHubInstallation() {
-        await sdk.forProject.functions.update(
-            $func.$id,
-            $func.name,
-            $func.runtime,
-            $func.entrypoint || undefined,
-            $func.execute || undefined,
-            $func.events || undefined,
-            $func.schedule || undefined,
-            $func.timeout || undefined,
-            $func.enabled || undefined,
-            $func.logging || undefined,
-            $func.commands || undefined,
-            $installation.$id,
-            $repository.id,
-            $choices.branch,
-            $choices.silentMode,
-            $choices.rootDir
-        );
-        await invalidate(Dependencies.FUNCTION);
-        resetState();
-        wizard.hide();
+        try {
+            await sdk.forProject.functions.update(
+                $func.$id,
+                $func.name,
+                $func.runtime,
+                $func.entrypoint || undefined,
+                $func.execute || undefined,
+                $func.events || undefined,
+                $func.schedule || undefined,
+                $func.timeout || undefined,
+                $func.enabled || undefined,
+                $func.logging || undefined,
+                $func.commands || undefined,
+                $installation.$id,
+                $repository.id,
+                $choices.branch,
+                $choices.silentMode,
+                $choices.rootDir
+            );
+            trackEvent(Submit.FunctionConnectRepo, {
+                customId: !!$func.$id
+            });
+            await invalidate(Dependencies.FUNCTION);
+            resetState();
+            wizard.hide();
+        } catch (error) {
+            addNotification({
+                message: error.message,
+                type: 'error'
+            });
+            trackError(error, Submit.FunctionConnectRepo);
+        }
     }
 
     function resetState() {

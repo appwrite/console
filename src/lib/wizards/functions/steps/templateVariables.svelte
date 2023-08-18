@@ -50,7 +50,7 @@
                                     placeholder={variable.placeholder ?? 'Enter value'}
                                     required={variable.required}
                                     autocomplete={false}
-                                    bind:value={$templateConfig.appwriteApiKey} />
+                                    bind:value={$templateConfig.variables[variable.name]} />
 
                                 <Helper type="neutral">
                                     {@html variable.description}
@@ -109,7 +109,7 @@
                                     placeholder={variable.placeholder ?? 'Enter value'}
                                     required={variable.required}
                                     autocomplete={false}
-                                    bind:value={$templateConfig.appwriteApiKey} />
+                                    bind:value={$templateConfig.variables[variable.name]} />
 
                                 <Helper type="neutral">
                                     {@html variable.description}

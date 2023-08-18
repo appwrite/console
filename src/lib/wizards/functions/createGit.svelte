@@ -7,7 +7,7 @@
     import { goto } from '$app/navigation';
     import { choices, createFunction, installation, repository } from './store';
     import { addNotification } from '$lib/stores/notifications';
-    import { Submit, trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import ExecuteAccess from './steps/executeAccess.svelte';
@@ -15,34 +15,44 @@
     import FunctionConfiguration from './steps/functionConfiguration.svelte';
 
     async function create() {
-        const response = await sdk.forProject.functions.create(
-            $createFunction.$id || ID.unique(),
-            $createFunction.name,
-            $createFunction.runtime,
-            $createFunction.entrypoint,
-            $createFunction.execute || undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            $createFunction.commands || undefined,
-            $installation.$id,
-            $repository.id,
-            $choices.branch,
-            $choices.silentMode || undefined,
-            $choices.rootDir || undefined
-        );
-        goto(`${base}/console/project-${$page.params.project}/functions/function-${response.$id}`);
-        addNotification({
-            message: `${$createFunction.name} has been created`,
-            type: 'success'
-        });
-        trackEvent(Submit.FunctionCreate, {
-            customId: !!$createFunction.$id
-        });
-        resetState();
-        wizard.hide();
+        try {
+            const response = await sdk.forProject.functions.create(
+                $createFunction.$id || ID.unique(),
+                $createFunction.name,
+                $createFunction.runtime,
+                $createFunction.entrypoint,
+                $createFunction.execute || undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                $createFunction.commands || undefined,
+                $installation.$id,
+                $repository.id,
+                $choices.branch,
+                $choices.silentMode || undefined,
+                $choices.rootDir || undefined
+            );
+            goto(
+                `${base}/console/project-${$page.params.project}/functions/function-${response.$id}`
+            );
+            addNotification({
+                message: `${$createFunction.name} has been created`,
+                type: 'success'
+            });
+            trackEvent(Submit.FunctionCreate, {
+                customId: !!$createFunction.$id
+            });
+            resetState();
+            wizard.hide();
+        } catch (error) {
+            addNotification({
+                message: error.message,
+                type: 'error'
+            });
+            trackError(error, Submit.FunctionCreate);
+        }
     }
 
     function resetState() {

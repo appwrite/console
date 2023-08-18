@@ -8,8 +8,8 @@
 </script>
 
 {#if deployment.type === 'vcs'}
-    <span
-        class="u-underline u-cursor-pointer"
+    <button
+        class=" u-cursor-pointer"
         use:tooltip={{
             interactive: true,
             allowHTML: true,
@@ -19,7 +19,7 @@
                     instance.setContent(tooltipContent);
                 });
             }
-        }}><span class="icon-github" aria-hidden="true" /> Git</span>
+        }}><span class="icon-github" aria-hidden="true" /> <span class="link">Git</span></button>
 {:else if deployment.type === 'manual'}
     <span class="icon-code" aria-hidden="true" /> <span>Manual</span>
 {/if}
