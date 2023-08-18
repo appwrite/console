@@ -3,7 +3,7 @@
     import { Button } from '$lib/elements/forms';
     import { deepMap } from '$lib/helpers/object';
     import type { WritableValue } from '$lib/helpers/types';
-    import { sdk } from '$lib/stores/sdk';
+    import type { getSdkForProject } from '$lib/stores/sdk';
 
     import { onMount } from 'svelte';
 
@@ -18,6 +18,7 @@
 
     export let formData: ReturnType<typeof createMigrationFormStore>;
     export let provider: ReturnType<typeof createMigrationProviderStore>;
+    export let projectSdk: ReturnType<typeof getSdkForProject>;
 
     type ValueOf<T> = T[keyof T];
     type FormData = WritableValue<typeof formData>;
@@ -84,7 +85,7 @@
         try {
             switch ($provider.provider) {
                 case 'appwrite': {
-                    const res = await sdk.forProject.migrations.getAppwriteReport(
+                    const res = await projectSdk.migrations.getAppwriteReport(
                         providerResources.appwrite,
                         $provider.endpoint,
                         $provider.projectID,
@@ -94,7 +95,7 @@
                     break;
                 }
                 case 'supabase': {
-                    const res = await sdk.forProject.migrations.getSupabaseReport(
+                    const res = await projectSdk.migrations.getSupabaseReport(
                         providerResources.supabase,
                         $provider.endpoint,
                         $provider.apiKey,
@@ -111,7 +112,7 @@
                         // OAuth
                     } else if ($provider.serviceAccount) {
                         // Manual auth
-                        const res = await sdk.forProject.migrations.getFirebaseReport(
+                        const res = await projectSdk.migrations.getFirebaseReport(
                             providerResources.firebase,
                             $provider.serviceAccount
                         );
@@ -121,7 +122,7 @@
                     break;
                 }
                 case 'nhost': {
-                    const res = await sdk.forProject.migrations.getNHostReport(
+                    const res = await projectSdk.migrations.getNHostReport(
                         providerResources.nhost,
                         $provider.subdomain,
                         $provider.region,

@@ -8,7 +8,7 @@ import {
     Functions,
     Health,
     Locale,
-    // Migrations,
+    Migrations,
     Projects,
     Project,
     Storage,
@@ -35,7 +35,7 @@ const sdkForProject = {
     storage: new Storage(clientProject),
     teams: new Teams(clientProject),
     users: new Users(clientProject),
-    migrations: {}
+    migrations: Migrations
 };
 
 export const getSdkForProject = (projectId: string) => {
