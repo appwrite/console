@@ -210,18 +210,22 @@
     </li>
 </ul>
 
-<ul class="u-flex u-flex-vertical u-gap-32 u-margin-block-start-16">
+<ul class="u-flex u-flex-vertical u-margin-block-start-16">
     {#if resources.includes('user')}
         <li class="checkbox-field">
             <input
                 type="checkbox"
                 bind:checked={$formData.users.root}
                 on:change={handleInputChange('users.root')} />
-            <div class="u-flex u-gap-4">
+            <div class="u-flex u-gap-4 u-cross-center">
                 <span class="u-bold">Users</span>
 
                 {#if $provider.provider !== 'firebase'}
-                    <span class="inline-tag">{report?.user ?? '...'}</span>
+                    {#if report?.user}
+                        <span class="inline-tag">{report.user}</span>
+                    {:else}
+                        <span class="loader is-small u-margin-inline-start-4" />
+                    {/if}
                 {/if}
             </div>
             <div />
@@ -234,10 +238,14 @@
                             type="checkbox"
                             bind:checked={$formData.users.teams}
                             on:change={handleInputChange('users.teams')} />
-                        <div class="u-flex u-gap-4">
+                        <div class="u-flex u-gap-4 u-cross-center">
                             <span class="u-bold">Include teams</span>
                             {#if $provider.provider === 'firebase'}
-                                <span class="inline-tag">{report?.team ?? '...'}</span>
+                                {#if report?.team}
+                                    <span class="inline-tag">{report.team}</span>
+                                {:else}
+                                    <span class="loader is-small u-margin-inline-start-4" />
+                                {/if}
                             {/if}
                         </div>
                         <div />
@@ -254,10 +262,14 @@
                 type="checkbox"
                 bind:checked={$formData.databases.root}
                 on:change={handleInputChange('databases.root')} />
-            <div class="u-flex u-gap-4">
+            <div class="u-flex u-gap-4 u-cross-center">
                 <span class="u-bold">Databases</span>
                 {#if $provider.provider !== 'firebase'}
-                    <span class="inline-tag">{report?.database ?? '...'}</span>
+                    {#if report?.database}
+                        <span class="inline-tag">{report.database}</span>
+                    {:else}
+                        <span class="loader is-small u-margin-inline-start-4" />
+                    {/if}
                 {/if}
             </div>
             <div />
@@ -270,10 +282,14 @@
                             type="checkbox"
                             bind:checked={$formData.databases.documents}
                             on:change={handleInputChange('databases.documents')} />
-                        <div class="u-flex u-gap-4">
+                        <div class="u-flex u-gap-4 u-cross-center">
                             <span class="u-bold">Include documents</span>
                             {#if $provider.provider !== 'firebase'}
-                                <span class="inline-tag">{report?.document ?? '...'}</span>
+                                {#if report?.document}
+                                    <span class="inline-tag">{report.document}</span>
+                                {:else}
+                                    <span class="loader is-small u-margin-inline-start-4" />
+                                {/if}
                             {/if}
                         </div>
                         <div />
@@ -290,10 +306,14 @@
                 type="checkbox"
                 bind:checked={$formData.functions.root}
                 on:change={handleInputChange('functions.root')} />
-            <div class="u-flex u-gap-4">
+            <div class="u-flex u-gap-4 u-cross-center">
                 <span class="u-bold">Functions</span>
                 {#if $provider.provider !== 'firebase'}
-                    <span class="inline-tag">{report?.function ?? '...'}</span>
+                    {#if report?.function}
+                        <span class="inline-tag">{report.function}</span>
+                    {:else}
+                        <span class="loader is-small u-margin-inline-start-4" />
+                    {/if}
                 {/if}
             </div>
             <div />
@@ -335,26 +355,28 @@
                 type="checkbox"
                 bind:checked={$formData.storage.root}
                 on:change={handleInputChange('storage.root')} />
-            <div class="u-flex u-gap-4">
+            <div class="u-flex u-gap-4 u-cross-center">
                 <span class="u-bold">Storage</span>
                 {#if $provider.provider !== 'firebase'}
-                    <span class="inline-tag">
-                        {report?.size ? `${report.size.toFixed(2)}MB` : '...'}
-                    </span>
+                    {#if report?.size}
+                        <span class="inline-tag">{`${report.size.toFixed(2)}MB`}</span>
+                    {:else}
+                        <span class="loader is-small u-margin-inline-start-4" />
+                    {/if}
                 {/if}
             </div>
             <div />
 
-            <span>
+            <p>
                 Import all buckets
-                {#if $provider.provider !== 'firebase'}
-                    <span class="inline-tag">{report?.bucket ?? '...'}</span>
+                {#if $provider.provider !== 'firebase' && report?.bucket}
+                    <span class="inline-tag">{report.bucket}</span>
                 {/if}
                 and files
-                {#if $provider.provider !== 'firebase'}
-                    <span class="inline-tag">{report?.file ?? '...'}</span>
+                {#if $provider.provider !== 'firebase' && report?.file}
+                    <span class="inline-tag">{report.file}</span>
                 {/if}
-            </span>
+            </p>
         </li>
     {/if}
 </ul>
