@@ -184,7 +184,7 @@
                 </Table>
             {:else}
                 <div class="import-box">
-                    <ul class="avatars-group">
+                    <ul class="avatars-group is-with-border">
                         <li class="avatars-group-item">
                             <div class="avatar">
                                 <i class="icon-user-group" />
