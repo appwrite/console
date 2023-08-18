@@ -1,6 +1,7 @@
 <script lang="ts">
     interface $$Props extends Partial<HTMLLabelElement> {
         required?: boolean;
+        hideRequired?: boolean;
         optionalText?: string | undefined;
         hide?: boolean;
         tooltip?: string;
@@ -8,12 +9,17 @@
     }
 
     export let required: $$Props['required'] = false;
+    export let hideRequired: $$Props['hideRequired'] = false;
     export let optionalText: $$Props['optionalText'] = undefined;
     export let hide: $$Props['hide'] = false;
     export let tooltip: $$Props['tooltip'] = null;
 </script>
 
-<label class:is-required={required} class:u-hide={hide} class="label" {...$$restProps}>
+<label
+    class:is-required={required && !hideRequired}
+    class:u-hide={hide}
+    class="label"
+    {...$$restProps}>
     <slot />
 </label>
 

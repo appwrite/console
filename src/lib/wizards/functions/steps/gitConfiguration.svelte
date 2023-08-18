@@ -64,6 +64,8 @@
                         id="branch"
                         label="Select branch"
                         placeholder="main"
+                        tooltip="Every commit pushed to this branch will activate the deployment after a successful build"
+                        hideRequired
                         bind:value={$choices.branch}
                         bind:search={$choices.branch}
                         on:select={(event) => {
@@ -84,7 +86,7 @@
                     <InputChoice
                         id="silent"
                         label="Silent mode"
-                        tooltip="Don't create comments when pushing to this repository"
+                        tooltip="When enabled, comments will not be made on pull requests in this repository"
                         bind:value={$choices.silentMode} />
                 </FormList>
             </div>
