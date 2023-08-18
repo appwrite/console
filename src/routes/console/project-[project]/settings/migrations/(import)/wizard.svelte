@@ -103,4 +103,4 @@
     });
 </script>
 
-<Wizard title="Create Project" {steps} on:exit={onExit} on:finish={onFinish} />
+<Wizard title="Create Migration" {steps} on:exit={onExit} on:finish={onFinish} />
