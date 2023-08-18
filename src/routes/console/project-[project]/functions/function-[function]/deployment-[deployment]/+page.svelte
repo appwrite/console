@@ -76,7 +76,7 @@
                             {calculateTime($deployment.buildTime)}
                         {/if}
                     </p>
-                    <p><b>Created:</b> <DeploymentCreatedBy deployment={$deployment} /></p>
+                    <p><b>Updated:</b> <DeploymentCreatedBy deployment={$deployment} /></p>
                     <p><b>Size:</b> {fileSize.value + fileSize.unit}</p>
                     <p>
                         <b>Source:</b>
@@ -101,9 +101,11 @@
             <section class="code-panel">
                 <header class="code-panel-header u-flex u-main-space-between u-width-full-line">
                     <div class="u-flex u-flex-vertical">
-                        <h4 class="u-bold">Build [{$func.name}]</h4>
+                        <h4 class="u-bold">Build {$func.name}</h4>
                         {#if $deployment.status === 'building'}
                             <span>Building...</span>
+                        {:else}
+                            {$deployment.status}
                         {/if}
                     </div>
 

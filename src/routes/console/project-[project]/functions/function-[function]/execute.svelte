@@ -87,12 +87,12 @@
 <Modal headerDivider={false} bind:show size="big" onSubmit={handleSubmit} on:close={close}>
     <svelte:fragment slot="header">Execute function</svelte:fragment>
     <p class="text">
-        Manually execute your function. Learn more about <a
+        Manually execute your function. <a
             class="link"
             href="https://appwrite.io/docs/functions#execute"
             target="_blank"
             rel="noopener noreferrer">
-            function executions
+            Learn more
         </a>.
     </p>
 
@@ -108,14 +108,18 @@
 
         <Collapsible>
             <CollapsibleItem>
-                <svelte:fragment slot="title">Advanced settings (optional)</svelte:fragment>
+                <svelte:fragment slot="title">Advanced settings</svelte:fragment>
+                <svelte:fragment slot="subtitle">(optional)</svelte:fragment>
                 <FormList>
                     <p class="text">
                         Customize your execution with headers or body. To customize parameters, add
                         them to path.
                     </p>
 
-                    <Label>Headers</Label>
+                    <Label
+                        tooltip="Headers should contain alphanumeric characters (a-z, A-Z, and 0-9) and hyphens only (- and _).">
+                        Headers
+                    </Label>
                     <div class="form u-grid u-gap-16">
                         <ul class="form-list">
                             {#if headers}

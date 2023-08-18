@@ -120,7 +120,7 @@
                 <Button text external href="https://appwrite.io/docs/functions#execute">
                     Documentation
                 </Button>
-                <Create bind:showCreateManual={showCreate} />
+                <Create secondary />
             </div>
         </EmptySearch>
     {/if}
