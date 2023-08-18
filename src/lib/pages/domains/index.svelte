@@ -92,20 +92,18 @@
                         {#if domain.status === 'created'}
                             <div class="u-flex u-gap-8 u-cross-center">
                                 <span
-                                    class="icon-x-circle"
-                                    aria-hidden="true"
-                                    style="color: hsl(var(--color-danger-100))" />
+                                    class="icon-x-circle u-color-text-danger"
+                                    aria-hidden="true" />
                                 <span class="u-text">Failed</span>
-                                <Button text on:click={() => openRetry(domain)}>
+                                <button on:click={() => openRetry(domain)}>
                                     <span class="link">Retry</span>
-                                </Button>
+                                </button>
                             </div>
                         {:else}
                             <div class="u-flex u-gap-8 u-cross-center">
                                 <span
-                                    class="icon-check-circle"
-                                    aria-hidden="true"
-                                    style="color: hsl(var(--color-success-100))" />
+                                    class="icon-check-circle u-color-text-success"
+                                    aria-hidden="true" />
                                 <p class="u-stretch">Verified</p>
                             </div>
                         {/if}
@@ -114,30 +112,25 @@
                         {#if domain.status === 'unverified'}
                             <div class="u-flex u-gap-8 u-cross-center">
                                 <span
-                                    class="icon-x-circle"
-                                    aria-hidden="true"
-                                    style="color: hsl(var(--color-danger-100))" />
+                                    class="icon-x-circle u-color-text-danger"
+                                    aria-hidden="true" />
                                 <p class="u-stretch">Failed</p>
                             </div>
                         {:else if domain.status === 'verified'}
                             <div class="u-flex u-gap-8 u-cross-center">
                                 <span
-                                    class="icon-check-circle"
-                                    aria-hidden="true"
-                                    style="color: hsl(var(--color-success-100))" />
+                                    class="icon-check-circle u-color-text-success"
+                                    aria-hidden="true" />
                                 <span>Generated</span>
                                 {#if domain.renewAt}
-                                    <span style="color: hsl(var(--color-neutral-70));">
+                                    <span class="u-text-color-gray">
                                         Auto-renewal: {toLocaleDate(domain.renewAt)}
                                     </span>
                                 {/if}
                             </div>
                         {:else}
                             <div class="u-flex u-gap-8 u-cross-center">
-                                <span
-                                    class="icon-clock"
-                                    aria-hidden="true"
-                                    style="color: hsl(var(--color-neutral-50))" />
+                                <span class="icon-clock u-text-color-gray" aria-hidden="true" />
                                 <p class="u-stretch">Waiting to run</p>
                             </div>
                         {/if}
