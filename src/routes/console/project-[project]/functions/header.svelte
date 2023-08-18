@@ -16,7 +16,8 @@
         {
             href: `${path}/templates`,
             title: 'Templates',
-            event: 'templates'
+            event: 'templates',
+            experimental: true
         }
     ];
 </script>
@@ -34,6 +35,13 @@
                 event={tab.event}>
                 {tab.title}
             </Tab>
+            {#if tab.experimental}
+                <div class="u-flex u-cross-center">
+                    <div class="tag eyebrow-heading-3">
+                        <span class="text u-x-small">Experimental</span>
+                    </div>
+                </div>
+            {/if}
         {/each}
     </Tabs>
 </Cover>

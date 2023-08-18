@@ -10,23 +10,34 @@
 <Container>
     <div class="grid-300px-1fr">
         <section>
-            <h3 class="body-text-1 u-bold">Use cases</h3>
-            <div class="u-margin-block-start-8 u-flex u-flex-wrap u-gap-8">
-                {#each $template.usecases as useCase}
-                    <Pill>{useCase}</Pill>
-                {/each}
-            </div>
-            <h3 class="body-text-1 u-bold u-margin-block-start-8">Runtimes</h3>
-            <div class="u-margin-block-start-8 u-flex u-flex-wrap u-gap-8">
-                {#each $template.runtimes as runtime}
-                    <Pill>{runtime.name}</Pill>
-                {/each}
-            </div>
-
-            <section class="card u-margin-block-start-24">
-                <h4 class="body-text-1 u-bold">Published by</h4>
-                {$template.providerOwner}
-            </section>
+            <ul class="collapsible">
+                <li class="collapsible-item">
+                    <h3 class="body-text-2 u-bold u-padding-block-12">
+                        Use cases <span class="inline-tag">{$template.usecases.length}</span>
+                    </h3>
+                    <div class="collapsible-content u-flex u-flex-wrap u-gap-8">
+                        {#each $template.usecases as useCase}
+                            <Pill>{useCase}</Pill>
+                        {/each}
+                    </div>
+                </li>
+                <li class="collapsible-item">
+                    <h3 class="body-text-2 u-bold u-padding-block-12">
+                        Runtimes <span class="inline-tag">{$template.runtimes.length}</span>
+                    </h3>
+                    <div class="collapsible-content u-flex u-flex-wrap u-gap-8">
+                        {#each $template.runtimes as runtime}
+                            <Pill>{runtime.name}</Pill>
+                        {/each}
+                    </div>
+                </li>
+                <li class="collapsible-item">
+                    <section class="card u-margin-block-start-24">
+                        <h4 class="body-text-1 u-bold">Published by</h4>
+                        {$template.providerOwner}
+                    </section>
+                </li>
+            </ul>
         </section>
         <section>
             <Card>
