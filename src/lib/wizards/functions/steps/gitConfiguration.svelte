@@ -62,8 +62,8 @@
                     <InputSelectSearch
                         required={true}
                         id="branch"
-                        label="Select branch"
-                        placeholder="main"
+                        label="Production branch"
+                        placeholder="Select branch"
                         tooltip="Every commit pushed to this branch will activate the deployment after a successful build"
                         hideRequired
                         bind:value={$choices.branch}
@@ -71,6 +71,7 @@
                         on:select={(event) => {
                             $choices.branch = event.detail.value;
                         }}
+                        interactiveOutput
                         name="branch"
                         options={branches?.map((branch) => {
                             return {
