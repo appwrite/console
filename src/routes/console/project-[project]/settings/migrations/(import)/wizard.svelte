@@ -40,9 +40,9 @@
                         $provider.endpoint,
                         $provider.apiKey,
                         $provider.host,
-                        $provider.username,
+                        $provider.username || 'postgres',
                         $provider.password,
-                        $provider.port
+                        $provider.port || 5432
                     );
 
                     invalidate(Dependencies.MIGRATIONS);
@@ -67,8 +67,8 @@
                         $provider.subdomain,
                         $provider.region,
                         $provider.adminSecret,
-                        $provider.database,
-                        $provider.username,
+                        $provider.database || $provider.subdomain,
+                        $provider.username || 'postgres',
                         $provider.password
                     );
 

@@ -85,7 +85,7 @@
         <div class="u-margin-block-start-24">
             <Alert
                 isStandalone
-                dismissible
+                dismissible={false}
                 type="info"
                 buttons={[
                     {
