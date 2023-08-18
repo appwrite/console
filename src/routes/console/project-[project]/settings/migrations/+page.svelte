@@ -173,8 +173,10 @@
                                     </div>
                                 </TableCell>
                                 <TableCell title="">
-                                    <Button secondary on:click={() => (details = entry.$id)}
-                                        >Details</Button>
+                                    <div class="u-flex u-main-end">
+                                        <Button secondary on:click={() => (details = entry.$id)}
+                                            >Details</Button>
+                                    </div>
                                 </TableCell>
                             </TableRow>
                         {/each}

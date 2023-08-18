@@ -49,7 +49,7 @@
 
     $: console.log(firebaseProjects);
 
-    let showAuth = false;
+    // let showAuth = false;
 </script>
 
 <WizardStep>

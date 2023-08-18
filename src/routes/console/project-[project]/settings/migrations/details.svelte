@@ -79,7 +79,7 @@
                         </div>
 
                         <div>
-                            <span class="u-capitalize">{entity}</span>
+                            <span class="u-capitalize">{entity + 's'}</span>
                             <span class="inline-tag">{totalItems(entityCounter)}</span>
                         </div>
                     </div>
