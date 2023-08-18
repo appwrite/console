@@ -54,7 +54,7 @@
 
 <WizardStep>
     <svelte:fragment slot="title">Choose provider</svelte:fragment>
-    <div class="u-flex u-flex-vertical u-gap-16">
+    <div class="u-flex u-flex-vertical u-gap-8">
         {#each Object.entries(providers) as [key, value]}
             <label class="u-flex u-cross-center u-cursor-pointer u-gap-8">
                 <input
