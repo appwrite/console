@@ -181,10 +181,6 @@
         }
     }
 
-    [type='checkbox']:where(:checked)::before {
-        content: '\ea38';
-    }
-
     .border-gradient {
         position: relative;
     }
