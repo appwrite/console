@@ -18,7 +18,7 @@
         },
         {
             href: `/console/project-${$project?.$id}/functions/function-${$func?.$id}/deployment-${$deployment?.$id}`,
-            title: 'Build details'
+            title: 'Deployment details'
         }
     ];
 </script>
