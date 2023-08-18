@@ -40,6 +40,7 @@
     import CreateManual from './createManual.svelte';
     import CreateGit from './createGit.svelte';
     import { Button } from '$lib/elements/forms';
+    import { page } from '$app/stores';
 
     let hasInstallations: boolean;
     let selectedRepository: string;
@@ -144,10 +145,11 @@
                             {/if}
                         </ul>
                     {/await}
-                    <Button text class="u-margin-inline-start-auto u-margin-block-start-16">
-                        All starter templates <span
-                            class="icon-cheveron-right"
-                            aria-hidden="true" />
+                    <Button
+                        text
+                        class="u-margin-inline-start-auto u-margin-block-start-16"
+                        href={`${base}/console/project-${$page.params.project}/functions/templates`}>
+                        All templates <span class="icon-cheveron-right" aria-hidden="true" />
                     </Button>
                 </section>
                 <div class="u-sep-block-start common-section" />
@@ -178,7 +180,10 @@
                         {/each}
                     </ul>
                 </section>
-                <Button text class="u-margin-inline-start-auto u-margin-block-start-16">
+                <Button
+                    text
+                    class="u-margin-inline-start-auto u-margin-block-start-16"
+                    href={`${base}/console/project-${$page.params.project}/functions/templates`}>
                     <span> All templates </span>
                     <span class="icon-cheveron-right" aria-hidden="true" />
                 </Button>
