@@ -9,10 +9,11 @@
 
 {#if deployment.type === 'vcs'}
     <button
-        class=" u-cursor-pointer"
+        class="u-cursor-pointer"
         use:tooltip={{
             interactive: true,
             allowHTML: true,
+            trigger: 'click',
             disabled: false,
             onShow(instance) {
                 tick().then(() => {
