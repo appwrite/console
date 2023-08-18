@@ -14,6 +14,7 @@
     } from '$lib/elements/table';
     import { beforeNavigate } from '$app/navigation';
     import Table from '$lib/elements/table/table.svelte';
+    import { Pill } from '$lib/elements';
 
     let selectedRequest = 'parameters';
     let selectedResponse = 'logs';
@@ -90,7 +91,13 @@
                     </li>
                 </ul>
                 <div class="status u-margin-inline-start-auto">
-                    <Status status={execution.status}>{execution.status}</Status>
+                    <Pill
+                        warning={execution.status === 'waiting'}
+                        danger={execution.status === 'failed'}
+                        success={execution.status === 'completed' || execution.status === 'ready'}
+                        info={execution.status === 'processing' || execution.status === 'building'}>
+                        {execution.status}
+                    </Pill>
                 </div>
             </div>
 
@@ -98,24 +105,25 @@
                 <section class="code-panel">
                     <header class="code-panel-header u-flex u-main-space-between u-width-full-line">
                         <div class="u-flex u-gap-24">
-                            <div class="u-flex u-gap-4">
-                                <h4 class="u-bold">Method:</h4>
-                                <span>{execution.requestMethod}</span>
+                            <div class="u-flex u-gap-16">
+                                <h4 class="text u-bold">Method:</h4>
+                                <span class="u-text-color-gray">{execution.requestMethod}</span>
                             </div>
-                            <div class="u-flex u-gap-4">
-                                <h4 class="u-bold">Path:</h4>
-                                <span>{execution.requestPath}</span>
+                            <div class="u-flex u-gap-16">
+                                <h4 class="text u-bold">Path:</h4>
+                                <span class="u-text-color-gray">{execution.requestPath}</span>
                             </div>
                         </div>
 
                         <div class="u-flex u-gap-24">
-                            <div class="u-flex u-gap-4">
-                                <h4 class="u-bold">Triggered by:</h4>
-                                <span>{execution.trigger}</span>
+                            <div class="u-flex u-gap-16">
+                                <h4 class="text u-bold">Triggered by:</h4>
+                                <span class="u-text-color-gray">{execution.trigger}</span>
                             </div>
-                            <div class="u-flex u-gap-4">
-                                <h4 class="u-bold">Status Code:</h4>
-                                <span>{execution.responseStatusCode}</span>
+                            <div class="u-flex u-gap-16">
+                                <h4 class="text u-bold">Status Code:</h4>
+                                <span class="u-text-color-gray"
+                                    >{execution.responseStatusCode}</span>
                             </div>
                         </div>
                     </header>
@@ -179,23 +187,25 @@
                                 </Alert>
 
                                 {#if execution.requestHeaders.length}
-                                    <Table>
-                                        <TableHeader>
-                                            <TableCellHead>Name</TableCellHead>
-                                            <TableCellHead>Value</TableCellHead>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {#each execution.requestHeaders as header}
-                                                <TableRow>
-                                                    <TableCellText title="Name">
-                                                        {header.name}
-                                                    </TableCellText>
-                                                    <TableCellText title="Value"
-                                                        >{header.value}</TableCellText>
-                                                </TableRow>
-                                            {/each}
-                                        </TableBody>
-                                    </Table>
+                                    <div class="u-margin-block-start-24">
+                                        <Table noStyles noMargin>
+                                            <TableHeader>
+                                                <TableCellHead>Name</TableCellHead>
+                                                <TableCellHead>Value</TableCellHead>
+                                            </TableHeader>
+                                            <TableBody>
+                                                {#each execution.requestHeaders as header}
+                                                    <TableRow>
+                                                        <TableCellText title="Name">
+                                                            {header.name}
+                                                        </TableCellText>
+                                                        <TableCellText title="Value"
+                                                            >{header.value}</TableCellText>
+                                                    </TableRow>
+                                                {/each}
+                                            </TableBody>
+                                        </Table>
+                                    </div>
                                 {/if}
                             {:else if selectedRequest === 'body'}
                                 <Alert type="warning">
