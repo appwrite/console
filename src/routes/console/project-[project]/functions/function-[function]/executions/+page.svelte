@@ -69,6 +69,7 @@
                 <TableCellHead width={110}>Status</TableCellHead>
                 <TableCellHead width={140}>Created</TableCellHead>
                 <TableCellHead width={90}>Trigger</TableCellHead>
+                <TableCellHead width={90}>Path</TableCellHead>
                 <TableCellHead width={80}>Duration</TableCellHead>
             </TableHeader>
             <TableBody>
@@ -77,7 +78,7 @@
                         <TableCell width={150} title="Execution ID">
                             <Id value={execution.$id}>{execution.$id}</Id>
                         </TableCell>
-                        <TableCellText width={110} title="Status">
+                        <TableCell width={110} title="Status">
                             {@const status = execution.status}
                             <Pill
                                 danger={status === 'failed'}
@@ -86,14 +87,17 @@
                                 info={status === 'processing' || status === 'building'}>
                                 <span class="text u-trim">{execution.status}</span>
                             </Pill>
-                        </TableCellText>
+                        </TableCell>
                         <TableCellText width={140} title="Created">
                             {toLocaleDateTime(execution.$createdAt)}
                         </TableCellText>
-                        <TableCellText width={90} title="Trigger">
+                        <TableCell width={90} title="Trigger">
                             <Pill>
                                 <span class="text u-trim">{execution.trigger}</span>
                             </Pill>
+                        </TableCell>
+                        <TableCellText width={90} title="Path">
+                            {execution.requestPath}
                         </TableCellText>
                         <TableCellText width={80} title="Duration">
                             {calculateTime(execution.duration)}
