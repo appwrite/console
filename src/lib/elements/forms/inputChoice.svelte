@@ -40,7 +40,7 @@
 
         <div class="choice-item-content">
             <div class:u-hide={!showLabel} class="choice-item-title">{label}</div>
-            {#if $$slots}
+            {#if $$slots.default}
                 <p class="choice-item-paragraph"><slot /></p>
             {/if}
         </div>
