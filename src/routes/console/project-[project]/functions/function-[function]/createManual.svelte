@@ -49,7 +49,17 @@
 </script>
 
 <Modal {error} size="big" bind:show onSubmit={create}>
-    <svelte:fragment slot="header">Create deployment</svelte:fragment>
+    <svelte:fragment slot="header">Create manual deployment</svelte:fragment>
+    <p class="text">
+        Manually deploy a function by uploading a zip file containing the source code and a relative
+        path to the entry point.
+        <a
+            href="https://appwrite.io/docs/functions#deployFunction"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="link">Learn more about function deployments</a
+        >.
+    </p>
     <FormList>
         <InputFile
             label="Gzipped code (tar.gz)"
@@ -64,19 +74,21 @@
             required />
         <Collapsible>
             <CollapsibleItem>
-                <svelte:fragment slot="title">Build commands</svelte:fragment>
+                <svelte:fragment slot="title">Build settings</svelte:fragment>
                 <svelte:fragment slot="subtitle">(optional)</svelte:fragment>
                 <FormList>
                     <InputTextarea
                         label="Commands"
                         placeholder="Enter a build commad (e.g. 'npm install')"
+                        tooltip="Enter a single command or chain multiple commands with the && operator"
                         id="build"
                         bind:value={buildCommand} />
                 </FormList>
             </CollapsibleItem>
         </Collapsible>
         <InputChoice label="Activate deployment after build" id="activate" bind:value={active}>
-            This deployment will be activated after the build is completed.</InputChoice>
+            This deployment will be activated after the build is completed.
+        </InputChoice>
     </FormList>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (show = false)}>Close</Button>

@@ -81,7 +81,7 @@
         </div>
         {#if activeDeployment && !$func.live}
             <div class="u-margin-block-start-8">
-                <Alert type="warning">
+                <Alert type="warning" isStandalone>
                     Some configuration options are not live yet. Redeploy your function to apply
                     latest changes.
                 </Alert>
