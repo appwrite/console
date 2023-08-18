@@ -1,7 +1,7 @@
 <script lang="ts">
     import Template from './template.svelte';
 
-    import { AvatarInitials, Code, SvgIcon } from '$lib/components';
+    import { AvatarInitials, Code, LoadingDots, SvgIcon } from '$lib/components';
     import { user } from '$lib/stores/user';
     import { useCompletion } from 'ai/svelte';
     import { subPanels } from '../subPanels';
@@ -126,7 +126,7 @@
                 </div>
                 <div class="answer">
                     {#if $isLoading && !$completion}
-                        <p>...</p>
+                        <LoadingDots />
                     {:else}
                         {#each answer as part}
                             {#if part.type === 'text'}
