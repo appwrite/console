@@ -39,6 +39,7 @@
 
         // get all code matches
         const codeMatches = Array.from(c.matchAll(/```([a-z]*)(.*?)(```|$)/gs));
+        console.log(codeMatches);
 
         let i = 0;
         let codeIdx = 0;
@@ -56,7 +57,9 @@
 
                 answer.push({
                     type: 'code',
-                    value: nextCodeMatch[2],
+                    value: nextCodeMatch[2].startsWith('\n')
+                        ? nextCodeMatch[2].slice(1)
+                        : nextCodeMatch[2],
                     language: isLanguage(language) ? language : 'js'
                 });
 
@@ -79,7 +82,7 @@
 
     function getInitials(name: string) {
         const [first, last] = name.split(' ');
-        return `${first[0]}${last[0]}`;
+        return `${first?.[0] ?? ''}${last?.[0] ?? ''}`;
     }
 </script>
 
@@ -127,10 +130,14 @@
                     {:else}
                         {#each answer as part}
                             {#if part.type === 'text'}
-                                <p>{part.value}</p>
+                                <p>{part.value.trimStart()}</p>
                             {:else if part.type === 'code'}
                                 {#key part.value}
-                                    <Code language={part.language} code={part.value} />
+                                    <div
+                                        class="u-margin-block-start-8"
+                                        style="margin-block-end: 1rem;">
+                                        <Code language={part.language} code={part.value} noMargin />
+                                    </div>
                                 {/key}
                             {/if}
                         {/each}

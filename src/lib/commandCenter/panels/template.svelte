@@ -106,10 +106,8 @@
         }
     }
 
-    $: if (selected > options.length - 1) {
-        selected = options.length - 1;
-    } else if (selected < 0) {
-        selected = 0;
+    $: if (selected > options?.length - 1) {
+        selected = options?.length - 1;
     }
 
     const commandCenterCtx = getCommandCenterCtx();
