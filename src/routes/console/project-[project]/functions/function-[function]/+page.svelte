@@ -38,7 +38,6 @@
     import Activate from './activate.svelte';
     import { calculateTime } from '$lib/helpers/timeConversion';
     import { Pill } from '$lib/elements';
-    import { tooltip } from '$lib/actions/tooltip';
     import RedeployModal from './redeployModal.svelte';
     import DeploymentSource from './deploymentSource.svelte';
     import DeploymentCreatedBy from './deploymentCreatedBy.svelte';

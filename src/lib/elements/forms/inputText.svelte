@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount } from 'svelte';
-    import { FormItem, Helper, Label } from '.';
+    import { FormItem, FormItemPart, Helper, Label } from '.';
     import NullCheckbox from './nullCheckbox.svelte';
     import TextCounter from './textCounter.svelte';
 
@@ -20,6 +20,7 @@
     export let fullWidth = false;
     export let maxlength: number = null;
     export let tooltip: string = null;
+    export let isMultiple = false;
 
     let element: HTMLInputElement;
     let error: string;
@@ -65,9 +66,11 @@
     type $$Events = {
         input: Event & { target: HTMLInputElement };
     };
+
+    $: wrapper = isMultiple ? FormItemPart : FormItem;
 </script>
 
-<FormItem {fullWidth}>
+<svelte:component this={wrapper} {fullWidth}>
     {#if label}
         <Label {required} {tooltip} {optionalText} hide={!showLabel} for={id}>
             {label}
@@ -110,4 +113,4 @@
     {#if error}
         <Helper type="warning">{error}</Helper>
     {/if}
-</FormItem>
+</svelte:component>
