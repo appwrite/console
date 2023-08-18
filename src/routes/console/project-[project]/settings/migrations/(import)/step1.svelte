@@ -1,7 +1,8 @@
 <script lang="ts">
-    import SvgIcon from '$lib/components/svgIcon.svelte';
+    import { invalidate } from '$app/navigation';
+    import { page } from '$app/stores';
+    import { Dependencies } from '$lib/constants';
     import {
-        Button,
         FormList,
         InputNumber,
         InputPassword,
@@ -10,12 +11,9 @@
     } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
     import type { Provider } from '$lib/stores/migration';
-    import { sdk } from '$lib/stores/sdk';
-    import { page } from '$app/stores';
-    import { provider } from '.';
     import { addNotification } from '$lib/stores/notifications';
-    import { invalidate } from '$app/navigation';
-    import { Dependencies } from '$lib/constants';
+    import { sdk } from '$lib/stores/sdk';
+    import { provider } from '.';
 
     const providers: Record<Provider, string> = {
         appwrite: 'Appwrite Self-hosted',
@@ -24,15 +22,15 @@
         nhost: 'NHost'
     };
 
-    function connectGoogle() {
-        const redirect = new URL($page.url);
-        const target = new URL(
-            `${sdk.forProject.client.config.endpoint}/migrations/firebase/connect`
-        );
-        target.searchParams.set('redirect', redirect.toString());
-        target.searchParams.set('projectId', $page.params.project);
-        return target;
-    }
+    // function connectGoogle() {
+    //     const redirect = new URL($page.url);
+    //     const target = new URL(
+    //         `${sdk.forProject.client.config.endpoint}/migrations/firebase/connect`
+    //     );
+    //     target.searchParams.set('redirect', redirect.toString());
+    //     target.searchParams.set('projectId', $page.params.project);
+    //     return target;
+    // }
 
     function deauthorizeGoogle() {
         sdk.forProject.migrations.deleteFirebaseAuth().then(() => {
