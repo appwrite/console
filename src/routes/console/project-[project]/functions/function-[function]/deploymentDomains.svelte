@@ -9,7 +9,7 @@
 
 <div class="u-flex u-gap-4 u-cross-center">
     <Trim alternativeTrim>
-        <a href={`https://${domain.rules[0].domain}`} target="_blank">
+        <a href={`http://${domain.rules[0].domain}`} target="_blank">
             <span class="link">
                 {domain.rules[0].domain}
             </span> <span class="icon-external-link" aria-hidden="true" />
@@ -23,7 +23,7 @@
             <svelte:fragment slot="list">
                 {#each domain.rules as rule, i}
                     {#if i !== 0}
-                        <DropListLink href={`https://${rule.domain}`} external icon="external-link">
+                        <DropListLink href={`http://${rule.domain}`} external icon="external-link">
                             {rule.domain}
                         </DropListLink>
                     {/if}
