@@ -41,6 +41,7 @@
     import RedeployModal from './redeployModal.svelte';
     import DeploymentSource from './deploymentSource.svelte';
     import DeploymentCreatedBy from './deploymentCreatedBy.svelte';
+    import DeploymentDomains from './deploymentDomains.svelte';
 
     export let data: PageData;
 
@@ -107,19 +108,6 @@
                                 {$func.deployment}
                             </Id>
                         </div>
-
-                        <div class="u-flex u-gap-12 u-cross-center u-margin-block-start-12">
-                            <p><b>Domain</b></p>
-                        </div>
-
-                        <div class="u-flex u-gap-12 u-cross-center">
-                            <a
-                                class="u-underline u-cursor-pointer"
-                                href={`https//${data.domain.rules[0].domain}`}
-                                target="_blank">
-                                {data.domain.rules[0].domain}
-                            </a>
-                        </div>
                     </div>
                 </div>
                 <svelte:fragment slot="aside">
@@ -129,14 +117,20 @@
                         <div>
                             <p><b>Build time:</b> {calculateTime(activeDeployment.buildTime)}</p>
                             <p>
-                                <b>Created:</b>
+                                <b>Updated:</b>
                                 <DeploymentCreatedBy deployment={activeDeployment} />
                             </p>
                             <p><b>Size:</b> {fileSize.value + fileSize.unit}</p>
-                            <p>
+                            <p class="u-flex u-gap-4 u-cross-center">
                                 <b>Source:</b>
                                 <DeploymentSource deployment={activeDeployment} />
                             </p>
+                            {#if data.domain?.rules?.length}
+                                <p class="u-flex u-gap-4 u-cross-center">
+                                    <b>Domains:</b>
+                                    <DeploymentDomains domain={data.domain} />
+                                </p>
+                            {/if}
                         </div>
                         <div class="u-flex u-flex-vertical u-cross-end">
                             <Pill

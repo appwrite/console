@@ -126,7 +126,7 @@
                         </Label>
                     </div>
                     <div class="form u-grid u-gap-16">
-                        <ul class="form-list">
+                        <FormList>
                             {#if headers}
                                 {#each headers as [name, value], index}
                                     <FormItem isMultiple>
@@ -162,7 +162,7 @@
                                     </FormItem>
                                 {/each}
                             {/if}
-                        </ul>
+                        </FormList>
                         <Button
                             noMargin
                             text
