@@ -10,7 +10,8 @@
         TableCellHead,
         TableCellText,
         TableHeader,
-        TableRow
+        TableRow,
+        TableScroll
     } from '$lib/elements/table';
     import { beforeNavigate } from '$app/navigation';
     import Table from '$lib/elements/table/table.svelte';
@@ -175,7 +176,7 @@
                             {#if selectedRequest === 'parameters'}
                                 {#if parameters?.length}
                                     <div class="u-margin-block-start-24">
-                                        <Table noStyles noMargin>
+                                        <TableScroll noMargin>
                                             <TableHeader>
                                                 <TableCellHead>Name</TableCellHead>
                                                 <TableCellHead>Value</TableCellHead>
@@ -192,15 +193,15 @@
                                                     </TableRow>
                                                 {/each}
                                             </TableBody>
-                                        </Table>
+                                        </TableScroll>
                                     </div>
                                 {:else}
                                     <Card isDashed isTile>
                                         <p class="text u-text-center">
                                             Logging parameters data might compromise privacy and
                                             security. To log them intentionally, use <b
-                                                >context.log(context.req.headers)</b
-                                            >.
+                                                >context.log(context.req.headers)</b>
+                                            in your function and make them available in Logs tab.
                                             <a
                                                 href="http://#"
                                                 target="_blank"
@@ -213,7 +214,7 @@
                             {:else if selectedRequest === 'headers'}
                                 {#if execution.requestHeaders.length}
                                     <div class="u-margin-block-start-24">
-                                        <Table noStyles noMargin>
+                                        <TableScroll noMargin>
                                             <TableHeader>
                                                 <TableCellHead>Name</TableCellHead>
                                                 <TableCellHead>Value</TableCellHead>
@@ -230,15 +231,15 @@
                                                     </TableRow>
                                                 {/each}
                                             </TableBody>
-                                        </Table>
+                                        </TableScroll>
                                     </div>
                                 {:else}
                                     <Card isDashed isTile>
                                         <p class="text u-text-center">
                                             Header data is not captured by Appwrite for your user's
                                             security and privacy. To log data intentionally, use <b
-                                                >context.log()</b
-                                            >.
+                                                >context.log()</b>
+                                            in your function and make them available in Logs tab.
                                             <a
                                                 href="http://#"
                                                 target="_blank"
@@ -252,7 +253,8 @@
                                 <Card isDashed isTile>
                                     <p class="text u-text-center">
                                         Logging body might compromise privacy and security. To log
-                                        it intentionally, use <b>context.log()</b>.
+                                        it intentionally, use <b>context.log()</b> in your function
+                                        and make them available in Logs tab.
                                         <a
                                             href="http://#"
                                             target="_blank"
@@ -307,7 +309,7 @@
                                 {/if}
                             {:else if selectedResponse === 'headers'}
                                 {#if execution.responseHeaders.length}
-                                    <Table noMargin noStyles>
+                                    <TableScroll noMargin>
                                         <TableHeader>
                                             <TableCellHead>Name</TableCellHead>
                                             <TableCellHead>Value</TableCellHead>
@@ -323,13 +325,14 @@
                                                 </TableRow>
                                             {/each}
                                         </TableBody>
-                                    </Table>
+                                    </TableScroll>
                                 {:else}
                                     <Card isDashed isTile>
                                         <p class="text u-text-center">
                                             Logging some headers might compromise privacy and
                                             security. We only log well-known public headers. To log
-                                            more headers intentionally, use <b>context.log()</b>.
+                                            more headers intentionally, use <b>context.log()</b> in
+                                            your function and make them available in Logs tab.
                                             <a
                                                 href="http://#"
                                                 target="_blank"
@@ -343,7 +346,8 @@
                                 <Card isDashed isTile>
                                     <p class="text u-text-center">
                                         Logging body might compromise privacy and security. To log
-                                        it intentionally, use <b>context.log()</b>.
+                                        it intentionally, use <b>context.log()</b> in your function
+                                        and make them available in Logs tab.
                                         <a
                                             href="http://#"
                                             target="_blank"
