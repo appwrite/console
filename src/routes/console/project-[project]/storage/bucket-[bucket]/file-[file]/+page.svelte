@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { CardGrid, Box, Heading, Alert, Id } from '$lib/components';
+    import { CardGrid, BoxAvatar, Heading, Alert, Id } from '$lib/components';
     import { Container } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
     import { file } from './store';
@@ -157,14 +157,14 @@
             <Heading tag="h6" size="7">Delete File</Heading>
             <p>The file will be permanently deleted. This action is irreversible.</p>
             <svelte:fragment slot="aside">
-                <Box>
+                <BoxAvatar>
                     <svelte:fragment slot="title">
                         <h6 class="u-bold u-trim-1" data-private>{$file.name}</h6>
                     </svelte:fragment>
                     <p>
                         Last Updated: {toLocaleDateTime($file.$updatedAt)}
                     </p>
-                </Box>
+                </BoxAvatar>
             </svelte:fragment>
 
             <svelte:fragment slot="actions">

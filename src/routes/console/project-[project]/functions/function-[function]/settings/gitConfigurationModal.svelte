@@ -2,7 +2,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { Box, EmptySearch, Modal, PaginationInline } from '$lib/components';
+    import { BoxAvatar, EmptySearch, Modal, PaginationInline } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { InputChoice, InputSearch, InputSelect, InputText, Button } from '$lib/elements/forms';
     import { timeFromNow, toLocaleDateTime } from '$lib/helpers/date';
@@ -238,7 +238,7 @@
         {#await getBranches()}
             Fetching branches..
         {:then}
-            <Box>
+            <BoxAvatar>
                 <svelte:fragment slot="image">
                     <div class="avatar">
                         <span class={getProviderIcon(selectedInstallation.provider)} />
@@ -248,7 +248,7 @@
                     <h6 class="u-bold u-trim-1">{selectedRepo.name}</h6>
                 </svelte:fragment>
                 <p>Last updated: {toLocaleDateTime(selectedRepo.pushedAt)}</p>
-            </Box>
+            </BoxAvatar>
 
             <InputSelectSearch
                 required={true}

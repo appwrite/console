@@ -2,7 +2,7 @@
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { Box, CardGrid, Heading, Modal } from '$lib/components';
+    import { BoxAvatar, CardGrid, Heading, Modal } from '$lib/components';
     import { Button, FormList, InputText } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
@@ -41,12 +41,12 @@
         within it. This action is irreversible.
     </p>
     <svelte:fragment slot="aside">
-        <Box>
+        <BoxAvatar>
             <svelte:fragment slot="title">
                 <h6 class="u-bold u-trim-1">{$project.name}</h6>
             </svelte:fragment>
             <p>Last update: {toLocaleDateTime($project.$updatedAt)}</p>
-        </Box>
+        </BoxAvatar>
     </svelte:fragment>
 
     <svelte:fragment slot="actions">
