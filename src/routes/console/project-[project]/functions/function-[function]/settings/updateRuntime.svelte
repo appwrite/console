@@ -4,7 +4,7 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, Form } from '$lib/elements/forms';
+    import { Button, Form, FormList } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
@@ -67,15 +67,16 @@
         <Heading tag="h6" size="7">Runtime</Heading>
 
         <svelte:fragment slot="aside">
-            <ul>
+            <FormList>
                 <InputSelect
                     label="Runtime"
                     id="runtime"
                     placeholder="Select runtime"
                     bind:value={runtime}
                     {options}
-                    required />
-            </ul>
+                    required
+                    hideRequired />
+            </FormList>
         </svelte:fragment>
 
         <svelte:fragment slot="actions">

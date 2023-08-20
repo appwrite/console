@@ -8,7 +8,7 @@
 <CardGrid>
     <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16">
         <div class="avatar">
-            <SvgIcon name={$func.runtime.split('-')[0]} type="color" size={80} />
+            <SvgIcon name={$func.runtime.split('-')[0]} type="color" size={80} iconSize="large" />
         </div>
         <div class="u-flex-vertical u-gap-4">
             <Heading tag="h6" size="7">{$func.name}</Heading>

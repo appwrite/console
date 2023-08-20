@@ -12,6 +12,7 @@
     export let value = '';
     export let placeholder = '';
     export let required = false;
+    export let hideRequired = false;
     export let nullable = false;
     export let disabled = false;
     export let readonly = false;
@@ -72,7 +73,7 @@
 
 <svelte:component this={wrapper} {fullWidth}>
     {#if label}
-        <Label {required} {tooltip} {optionalText} hide={!showLabel} for={id}>
+        <Label {required} {hideRequired} {tooltip} {optionalText} hide={!showLabel} for={id}>
             {label}
         </Label>
     {/if}

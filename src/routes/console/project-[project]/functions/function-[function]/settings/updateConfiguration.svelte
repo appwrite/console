@@ -2,7 +2,15 @@
     import { invalidate } from '$app/navigation';
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { AvatarGroup, CardGrid, Collapsible, CollapsibleItem, Heading } from '$lib/components';
+    import {
+        AvatarGroup,
+        CardGrid,
+        Collapsible,
+        CollapsibleItem,
+        EyebrowHeading,
+        Heading,
+        SvgIcon
+    } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import {
         Button,
@@ -167,6 +175,7 @@
             <FormList>
                 <InputText
                     required
+                    hideRequired
                     label="Entrypoint"
                     id="Entrypoint"
                     placeholder="Enter an entrypoint (e.g. 'index.js')"
@@ -190,7 +199,11 @@
                         <svelte:fragment slot="title">
                             <span class="u-margin-inline-end-16">Git settings</span>
                             {#if !repository}
-                                <Pill>NOT CONNECTED</Pill>
+                                <Pill>
+                                    <EyebrowHeading tag="h6" size="3" style="line-height: unset">
+                                        NOT CONNECTED
+                                    </EyebrowHeading>
+                                </Pill>
                             {/if}
                         </svelte:fragment>
                         {#if repository}
@@ -200,7 +213,15 @@
                                         <span class={getProviderIcon(repository.provider)} />
                                     </div>
                                     <div class="u-cross-child-center u-line-height-1-5">
-                                        <h6 class="u-bold u-trim-1">{repository.name}</h6>
+                                        <h6 class="u-bold u-trim-1">
+                                            {repository.name}
+                                            {#if repository.private}
+                                                <span
+                                                    class="icon-lock-closed"
+                                                    style="font-size: var(--icon-size-small)"
+                                                    aria-hidden="true" />
+                                            {/if}
+                                        </h6>
                                         <p>Last updated: {toLocaleDateTime(repository.pushedAt)}</p>
                                     </div>
                                 </div>
@@ -211,6 +232,7 @@
                                             id="branch"
                                             label="Branch"
                                             placeholder="main"
+                                            interactiveOutput
                                             bind:value={selectedBranch}
                                             bind:search={selectedBranch}
                                             on:select={(event) => {
@@ -235,9 +257,11 @@
                                             bind:value={silentMode} />
                                     </FormList>
                                 </div>
-                                <div class="u-margin-block-start-24 u-flex u-gap-16 u-main-end">
-                                    <Button text on:click={() => (showDisconnect = true)}
-                                        >Disconnect repository</Button>
+                                <div
+                                    class="u-margin-block-start-24 u-flex u-gap-16 u-main-end u-flex-wrap">
+                                    <Button text on:click={() => (showDisconnect = true)}>
+                                        Disconnect repository
+                                    </Button>
                                     <Button secondary href={getRepositoryLink(repository)} external>
                                         View on {ProviderNames[repository.provider] ??
                                             'unknown provider'}
@@ -250,11 +274,16 @@
                                 <div class="u-flex u-cross-center u-flex-vertical u-gap-32">
                                     <div class="u-flex u-cross-center u-gap-8">
                                         <AvatarGroup
+                                            bordered
                                             icons={['github', 'gitlab', 'bitBucket', 'azure']} />
 
                                         <span class="icon-arrow-narrow-right" />
-
-                                        <div class="avatar"><span class="icon-appwrite" /></div>
+                                        <div class="avatar">
+                                            <SvgIcon
+                                                name={$func.runtime.split('-')[0]}
+                                                type="grayscale"
+                                                size={80} />
+                                        </div>
                                     </div>
                                     <Button
                                         secondary
@@ -273,6 +302,7 @@
                             label="Commands"
                             placeholder="Enter an install commad (e.g. 'npm install')"
                             id="install"
+                            tooltip="Enter a single command or chain multiple commands with the && operator"
                             bind:value={commands} />
                     </FormList>
                 </CollapsibleItem>

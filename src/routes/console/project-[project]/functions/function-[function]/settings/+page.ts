@@ -4,6 +4,7 @@ import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ params, depends }) => {
     depends(Dependencies.VARIABLES);
+    depends(Dependencies.FUNCTIONS);
 
     const [globalVariables, variables] = await Promise.all([
         sdk.forProject.projectApi.listVariables(),
