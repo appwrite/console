@@ -5,6 +5,10 @@
     import CnameTable from './cnameTable.svelte';
     import { createEventDispatcher } from 'svelte';
     import { Box } from '$lib/components';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
+    import { addNotification } from '$lib/stores/notifications';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
 
     let retrying = false;
 
@@ -14,8 +18,15 @@
         try {
             retrying = true;
             $domain = await sdk.forProject.proxy.updateRuleVerification($domain.$id);
+            invalidate(Dependencies.FUNCTION_DOMAINS);
+            addNotification({
+                message: 'Domain has been verified successfully',
+                type: 'success'
+            });
+            trackEvent(Submit.DomainUpdateVerification);
         } catch (error) {
             dispatch('error', error.message);
+            trackError(error, Submit.DomainUpdateVerification);
         } finally {
             retrying = false;
         }
