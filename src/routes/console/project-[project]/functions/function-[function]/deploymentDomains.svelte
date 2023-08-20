@@ -23,7 +23,7 @@
             <svelte:fragment slot="list">
                 {#each domain.rules as rule, i}
                     {#if i !== 0}
-                        <DropListLink href={`https//${rule.domain}`} external icon="external-link">
+                        <DropListLink href={`https://${rule.domain}`} external icon="external-link">
                             {rule.domain}
                         </DropListLink>
                     {/if}
