@@ -1,3 +1,7 @@
+<script lang="ts">
+    export let fullWidth = false;
+</script>
+
 <li class="numeric-list-item">
-    <p class="text u-margin-block-start-8"><slot /></p>
+    <div class="u-margin-block-start-8" class:u-width-full-line={fullWidth}><slot /></div>
 </li>

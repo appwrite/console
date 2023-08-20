@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
-    import { Modal, NumericList, NumericListItem } from '$lib/components';
+    import { Box, Code, Modal, NumericList, NumericListItem } from '$lib/components';
     import { func } from './store';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
@@ -20,16 +20,45 @@
                 class="link">documentation</a
             >.
         </p>
-        <div class="box">
+        <Box>
             <NumericList>
-                <NumericListItem>Checkout your production branch.</NumericListItem>
-                <NumericListItem>Create a new commit</NumericListItem>
-                <NumericListItem>Push your new commit</NumericListItem>
-                <NumericListItem>A new deployment will be triggered automatically.</NumericListItem>
+                <NumericListItem fullWidth>
+                    <span class="text">Checkout your production branch.</span>
+                    <div class="u-margin-block-start-16">
+                        <Code
+                            language="sh"
+                            withCopy
+                            noMargin
+                            code={`git checkout ${$func.providerBranch}`} />
+                    </div>
+                </NumericListItem>
+                <NumericListItem>
+                    <span class="text"> Create a new commit </span>
+                    <div class="u-margin-block-start-16">
+                        <Code
+                            language="sh"
+                            withCopy
+                            noMargin
+                            code={`git commit -m "deploying with Appwrite"`} />
+                    </div>
+                </NumericListItem>
+                <NumericListItem>
+                    <span class="text"> Push your new commit </span>
+                    <div class="u-margin-block-start-16">
+                        <Code
+                            language="sh"
+                            withCopy
+                            noMargin
+                            code={`git push ${$func.providerBranch}`} />
+                    </div>
+                </NumericListItem>
+                <NumericListItem>
+                    <span class="text"> A new deployment will be triggered automatically. </span>
+                </NumericListItem>
             </NumericList>
-        </div>
+        </Box>
     {:else}
-        <div class="box">
+        <Box>
             <div class="u-flex u-gap-16">
                 <span class=" icon-lightning-bolt" aria-hidden="true" />
                 <div class="alert-content" data-private>
@@ -48,7 +77,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </Box>
     {/if}
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (show = false)}>Close</Button>
