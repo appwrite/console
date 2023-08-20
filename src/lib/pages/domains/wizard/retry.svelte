@@ -21,27 +21,29 @@
     }
 </script>
 
-<div class="u-flex u-gap-8 u-cross-center">
-    <span
-        class="icon-exclamation-circle"
-        aria-hidden="true"
-        style="color: hsl(var(--color-danger-100))" />
-    <p class="u-stretch">Verification failed</p>
-    <Button secondary on:click={retry} disabled={retrying}>
-        {#if retrying}
-            <div class="loader" style="color: hsl(var(--color-neutral-50))" />
-        {:else}
-            Retry
-        {/if}
-    </Button>
-</div>
-<div class="u-margin-block-start-24">
-    <p>
-        In order to continue, set the following record on your DNS provider. Find a list of domain
-        providers and their DNS settings in our documentation. Changes may take time to be
-        effective.
-    </p>
-</div>
-<div class="u-margin-block-start-24">
-    <CnameTable />
+<div class="box">
+    <div class="u-flex u-gap-8 u-cross-center">
+        <span
+            class="icon-exclamation-circle"
+            aria-hidden="true"
+            style="color: hsl(var(--color-danger-100))" />
+        <p class="u-stretch">Verification failed</p>
+        <Button secondary on:click={retry} disabled={retrying}>
+            {#if retrying}
+                <div class="loader" style="color: hsl(var(--color-neutral-50))" />
+            {:else}
+                Retry
+            {/if}
+        </Button>
+    </div>
+    <div class="u-margin-block-start-24">
+        <p>
+            In order to continue, set the following record on your DNS provider. Find a list of
+            domain providers and their DNS settings in our documentation. Changes may take time to
+            be effective.
+        </p>
+    </div>
+    <div class="u-margin-block-start-24">
+        <CnameTable />
+    </div>
 </div>

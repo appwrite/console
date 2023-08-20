@@ -8,6 +8,7 @@ import { Query } from '@appwrite.io/console';
 
 export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.FUNCTION);
+    depends(Dependencies.DEPLOYMENTS);
 
     try {
         return {
