@@ -1,11 +1,12 @@
 <script lang="ts">
-    import { afterNavigate, goto } from '$app/navigation';
+    import { afterNavigate, goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import Collapsible from '$lib/components/collapsible.svelte';
     import CollapsibleItem from '$lib/components/collapsibleItem.svelte';
+    import { Dependencies } from '$lib/constants';
     import { Button, FormItem, FormItemPart } from '$lib/elements/forms';
     import { FormList } from '$lib/elements/forms';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
@@ -57,9 +58,12 @@
                 method,
                 headersObject
             );
-            goto(
-                `${base}/console/project-${$page.params.project}/functions/function-${selectedFunction.$id}/executions`
-            );
+            if (!$page.url?.toString()?.includes('/executions')) {
+                await goto(
+                    `${base}/console/project-${$page.params.project}/functions/function-${selectedFunction.$id}/executions`
+                );
+            }
+            invalidate(Dependencies.EXECUTIONS);
             close();
             addNotification({
                 type: 'success',

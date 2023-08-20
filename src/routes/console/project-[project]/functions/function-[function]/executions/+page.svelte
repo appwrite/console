@@ -13,7 +13,7 @@
         TableRowButton,
         TableScroll
     } from '$lib/elements/table';
-    import { timeFromNow, toLocaleDateTime } from '$lib/helpers/date';
+    import { timeFromNow } from '$lib/helpers/date';
     import { calculateTime } from '$lib/helpers/timeConversion';
     import { Container } from '$lib/layout';
     import { log } from '$lib/stores/logs';
@@ -24,10 +24,11 @@
     import type { PageData } from './$types';
     import { project } from '$routes/console/project-[project]/store';
     import Create from '../create.svelte';
+    import Execute from '../execute.svelte';
 
     export let data: PageData;
 
-    // let showCreate = false;
+    let selectedFunction: Models.Function = null;
 
     onMount(() => {
         return sdk.forConsole.client.subscribe('console', (response) => {
@@ -47,6 +48,10 @@
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
         <Heading tag="h2" size="5">Executions</Heading>
+
+        <Button on:click={() => (selectedFunction = $func)} event="execute_function">
+            <span class="text">Execute now</span>
+        </Button>
     </div>
     {#if !$func.logging}
         <div class="common-section">
@@ -133,3 +138,5 @@
         </EmptySearch>
     {/if}
 </Container>
+
+<Execute {selectedFunction} />
