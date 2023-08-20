@@ -21,10 +21,12 @@
             <DropListLink href={deployment.providerBranchUrl} external icon="git-branch">
                 {deployment.providerBranch}
             </DropListLink>
-            <DropListLink href={deployment.providerCommitUrl} external icon="git-commit">
-                {deployment?.providerCommitHash?.substring(0, 7)}
-                {deployment.providerCommitMessage}
-            </DropListLink>
+            {#if deployment?.providerCommitMessage && deployment?.providerCommitHash && deployment?.providerCommitUrl}
+                <DropListLink href={deployment.providerCommitUrl} external icon="git-commit">
+                    {deployment?.providerCommitHash?.substring(0, 7)}
+                    {deployment.providerCommitMessage}
+                </DropListLink>
+            {/if}
         </svelte:fragment>
     </DropList>
 {:else if deployment.type === 'manual'}

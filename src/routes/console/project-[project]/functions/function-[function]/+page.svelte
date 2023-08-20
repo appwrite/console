@@ -25,7 +25,7 @@
         TableRow,
         TableScroll
     } from '$lib/elements/table';
-    import { execute, func } from './store';
+    import { execute, func, proxyRuleList } from './store';
     import { Container } from '$lib/layout';
     import { app } from '$lib/stores/app';
     import { calculateSize, humanFileSize } from '$lib/helpers/sizeConvertion';
@@ -125,10 +125,10 @@
                                 <b>Source:</b>
                                 <DeploymentSource deployment={activeDeployment} />
                             </p>
-                            {#if data.domain?.rules?.length}
+                            {#if $proxyRuleList?.rules?.length}
                                 <p class="u-flex u-gap-4 u-cross-center">
                                     <b>Domains:</b>
-                                    <DeploymentDomains domain={data.domain} />
+                                    <DeploymentDomains domain={$proxyRuleList} />
                                 </p>
                             {/if}
                         </div>

@@ -3,6 +3,10 @@ import { derived, writable, type Writable } from 'svelte/store';
 import type { Models } from '@appwrite.io/console';
 
 export const func = derived(page, ($page) => $page.data.function as Models.Function);
+export const proxyRuleList = derived(
+    page,
+    ($page) => $page.data.proxyRuleList as Models.ProxyRuleList
+);
 export const execute: Writable<Models.Function> = writable();
 export const repositories: Writable<{
     search: string;
