@@ -22,10 +22,7 @@
                 <Retry on:error={onRetryError} />
             {:else}
                 <div class="u-flex u-gap-8 u-cross-center">
-                    <span
-                        class="icon-check"
-                        aria-hidden="true"
-                        style="color: hsl(var(--color-success-100))" />
+                    <span class="icon-check u-color-text-success" aria-hidden="true" />
                     <p class="u-stretch">Domain verified</p>
                 </div>
             {/if}
@@ -38,16 +35,10 @@
                         style="color: hsl(var(--color-neutral-50)); inline-size: 1.25rem; block-size: 1.25rem" />
                     <p class="u-stretch">Generating certificate</p>
                 {:else if $domain.status === 'verified'}
-                    <span
-                        class="icon-check"
-                        aria-hidden="true"
-                        style="color: hsl(var(--color-success-100))" />
+                    <span class="icon-check u-color-text-success" aria-hidden="true" />
                     <p class="u-stretch">Certificate generated</p>
                 {:else}
-                    <span
-                        class="icon-clock"
-                        aria-hidden="true"
-                        style="color: hsl(var(--color-neutral-50))" />
+                    <span class="icon-clock u-text-color-gray" aria-hidden="true" />
                     <p class="u-stretch">
                         Certificate generation will begin after domain verification
                     </p>

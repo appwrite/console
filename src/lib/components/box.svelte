@@ -1,7 +1,7 @@
 <script lang="ts">
     export let radius: keyof typeof radiuses = 'small';
     export let padding = 24;
-    let classes: string = '';
+    let classes = '';
     export { classes as class };
 
     enum radiuses {
