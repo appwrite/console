@@ -9,7 +9,7 @@
 
 <div class="u-flex u-gap-4 u-cross-center">
     <Trim alternativeTrim>
-        <a href={`https//${domain.rules[0].domain}`} target="_blank">
+        <a href={`https://${domain.rules[0].domain}`} target="_blank">
             <span class="link">
                 {domain.rules[0].domain}
             </span> <span class="icon-external-link" aria-hidden="true" />
