@@ -4,6 +4,7 @@
     import { domain } from './store';
     import CnameTable from './cnameTable.svelte';
     import { createEventDispatcher } from 'svelte';
+    import { Box } from '$lib/components';
 
     let retrying = false;
 
@@ -21,7 +22,7 @@
     }
 </script>
 
-<div class="box">
+<Box radius="small">
     <div class="u-flex u-gap-8 u-cross-center">
         <span
             class="icon-exclamation-circle"
@@ -46,4 +47,4 @@
     <div class="u-margin-block-start-24">
         <CnameTable />
     </div>
-</div>
+</Box>
