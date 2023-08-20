@@ -1,7 +1,7 @@
 <script lang="ts">
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { log } from '$lib/stores/logs';
-    import { Alert, Code, Heading, Id, Status, Tab, Tabs } from '../components';
+    import { Alert, Card, Code, Heading, Id, Tab, Tabs } from '../components';
     import { base } from '$app/paths';
     import { app } from '$lib/stores/app';
     import { calculateTime } from '$lib/helpers/timeConversion';
@@ -26,6 +26,21 @@
         }
     }
 
+    function parseUrl(url: string) {
+        if (!url) return;
+        const queryString = url.includes('?') ? url.split('?')[1] : '';
+        const queries: Record<string, string>[] = [];
+        for (const param of queryString.split('&')) {
+            let [key, ...valueArr] = param.split('=');
+            const value = valueArr.join('=');
+
+            if (key) {
+                queries.push({ key, value: value ?? '' });
+            }
+        }
+        return queries;
+    }
+
     beforeNavigate((n) => {
         if (!$log.show) return;
         if (n.type === 'popstate') {
@@ -34,9 +49,9 @@
         $log.show = false;
     });
 
+    $: parameters = parseUrl(execution?.requestPath);
     $: execution = $log.data;
     $: func = $log.func;
-
     $: if (execution?.errors) {
         selectedResponse = 'errors';
     }
@@ -89,6 +104,14 @@
                             {toLocaleDateTime(execution.$createdAt)}
                         </time>
                     </li>
+                    {#if execution?.requestHeaders?.host}
+                        <li class="text">
+                            <b>Host</b>
+                            <span>
+                                {execution.requestHeaders.host}
+                            </span>
+                        </li>
+                    {/if}
                 </ul>
                 <div class="status u-margin-inline-start-auto">
                     <Pill
@@ -150,42 +173,44 @@
                                 </Tabs>
                             </div>
                             {#if selectedRequest === 'parameters'}
-                                <Alert type="info">
-                                    <svelte:fragment slot="title">
-                                        Parameters data is not stored in function executions
-                                    </svelte:fragment>
-                                    <p class="text">
-                                        Logging parameters data might compromise privacy and
-                                        security. To log them intentionally, use <b
-                                            >context.log(context.req.headers)</b>
-                                        in your function and make them available in Logs tab.
-                                        <a
-                                            href="http://#"
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            class="link">Learn more</a
-                                        >.
-                                    </p>
-                                </Alert>
+                                {#if parameters?.length}
+                                    <div class="u-margin-block-start-24">
+                                        <Table noStyles noMargin>
+                                            <TableHeader>
+                                                <TableCellHead>Name</TableCellHead>
+                                                <TableCellHead>Value</TableCellHead>
+                                            </TableHeader>
+                                            <TableBody>
+                                                {#each parameters as param}
+                                                    <TableRow>
+                                                        <TableCellText title="Key">
+                                                            {param.key}
+                                                        </TableCellText>
+                                                        <TableCellText title="Value">
+                                                            {param.value}
+                                                        </TableCellText>
+                                                    </TableRow>
+                                                {/each}
+                                            </TableBody>
+                                        </Table>
+                                    </div>
+                                {:else}
+                                    <Card isDashed isTile>
+                                        <p class="text u-text-center">
+                                            Logging parameters data might compromise privacy and
+                                            security. To log them intentionally, use <b
+                                                >context.log(context.req.headers)</b
+                                            >.
+                                            <a
+                                                href="http://#"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                class="link">Learn more</a
+                                            >.
+                                        </p>
+                                    </Card>
+                                {/if}
                             {:else if selectedRequest === 'headers'}
-                                <Alert type="info">
-                                    <svelte:fragment slot="title">
-                                        Only some request headers are stored
-                                    </svelte:fragment>
-                                    <p class="text">
-                                        Logging some headers might compromise privacy and security.
-                                        We only log well-known public headers. To log more headers
-                                        intentionally, use <b>context.log()</b>
-                                        in your function and make them available in Logs tab.
-                                        <a
-                                            href="http://#"
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            class="link">Learn more</a
-                                        >.
-                                    </p>
-                                </Alert>
-
                                 {#if execution.requestHeaders.length}
                                     <div class="u-margin-block-start-24">
                                         <Table noStyles noMargin>
@@ -199,23 +224,35 @@
                                                         <TableCellText title="Name">
                                                             {header.name}
                                                         </TableCellText>
-                                                        <TableCellText title="Value"
-                                                            >{header.value}</TableCellText>
+                                                        <TableCellText title="Value">
+                                                            {header.value}
+                                                        </TableCellText>
                                                     </TableRow>
                                                 {/each}
                                             </TableBody>
                                         </Table>
                                     </div>
+                                {:else}
+                                    <Card isDashed isTile>
+                                        <p class="text u-text-center">
+                                            Header data is not captured by Appwrite for your user's
+                                            security and privacy. To log data intentionally, use <b
+                                                >context.log()</b
+                                            >.
+                                            <a
+                                                href="http://#"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                class="link">Learn more</a
+                                            >.
+                                        </p>
+                                    </Card>
                                 {/if}
                             {:else if selectedRequest === 'body'}
-                                <Alert type="warning">
-                                    <svelte:fragment slot="title">
-                                        Request body is not stored
-                                    </svelte:fragment>
-                                    <p class="text">
+                                <Card isDashed isTile>
+                                    <p class="text u-text-center">
                                         Logging body might compromise privacy and security. To log
-                                        it intentionally, use <b>context.log()</b>
-                                        in your function and make it available in Logs tab.
+                                        it intentionally, use <b>context.log()</b>.
                                         <a
                                             href="http://#"
                                             target="_blank"
@@ -223,7 +260,7 @@
                                             class="link">Learn more</a
                                         >.
                                     </p>
-                                </Alert>
+                                </Card>
                             {/if}
                         </div>
                         <div class="grid-1-2-col-2 u-flex u-flex-vertical u-gap-16">
@@ -253,30 +290,24 @@
                                 </Tabs>
                             </div>
                             {#if selectedResponse === 'logs'}
-                                <Code withCopy noMargin code={execution.logs} language="sh" />
+                                {#if execution?.logs}
+                                    <Code withCopy noMargin code={execution.logs} language="sh" />
+                                {:else}
+                                    <Card isDashed isTile>
+                                        <p class="text u-text-center">No response was recorded.</p>
+                                    </Card>
+                                {/if}
                             {:else if selectedResponse === 'errors'}
-                                <Code withCopy noMargin code={execution.errors} language="sh" />
+                                {#if execution?.errors}
+                                    <Code withCopy noMargin code={execution.errors} language="sh" />
+                                {:else}
+                                    <Card isDashed isTile>
+                                        <p class="text u-text-center">No response was recorded.</p>
+                                    </Card>
+                                {/if}
                             {:else if selectedResponse === 'headers'}
-                                <Alert type="info">
-                                    <svelte:fragment slot="title">
-                                        Only some response headers are stored
-                                    </svelte:fragment>
-                                    <p class="text">
-                                        Logging some headers might compromise privacy and security.
-                                        We only log well-known public headers. To log more headers
-                                        intentionally, use <b>context.log()</b>
-                                        in your function and make them available in Logs tab.
-                                        <a
-                                            href="http://#"
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            class="link">Learn more</a
-                                        >.
-                                    </p>
-                                </Alert>
-
                                 {#if execution.responseHeaders.length}
-                                    <Table>
+                                    <Table noMargin noStyles>
                                         <TableHeader>
                                             <TableCellHead>Name</TableCellHead>
                                             <TableCellHead>Value</TableCellHead>
@@ -293,16 +324,26 @@
                                             {/each}
                                         </TableBody>
                                     </Table>
+                                {:else}
+                                    <Card isDashed isTile>
+                                        <p class="text u-text-center">
+                                            Logging some headers might compromise privacy and
+                                            security. We only log well-known public headers. To log
+                                            more headers intentionally, use <b>context.log()</b>.
+                                            <a
+                                                href="http://#"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                class="link">Learn more</a
+                                            >.
+                                        </p>
+                                    </Card>
                                 {/if}
                             {:else if selectedResponse === 'body'}
-                                <Alert type="warning">
-                                    <svelte:fragment slot="title">
-                                        Response body is not stored
-                                    </svelte:fragment>
-                                    <p class="text">
+                                <Card isDashed isTile>
+                                    <p class="text u-text-center">
                                         Logging body might compromise privacy and security. To log
-                                        it intentionally, use <b>context.log()</b>
-                                        in your function and make it available in Logs tab.
+                                        it intentionally, use <b>context.log()</b>.
                                         <a
                                             href="http://#"
                                             target="_blank"
@@ -310,7 +351,7 @@
                                             class="link">Learn more</a
                                         >.
                                     </p>
-                                </Alert>
+                                </Card>
                             {/if}
                         </div>
                     </div>

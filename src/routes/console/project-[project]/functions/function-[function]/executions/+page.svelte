@@ -13,7 +13,7 @@
         TableRowButton,
         TableScroll
     } from '$lib/elements/table';
-    import { toLocaleDateTime } from '$lib/helpers/date';
+    import { timeFromNow, toLocaleDateTime } from '$lib/helpers/date';
     import { calculateTime } from '$lib/helpers/timeConversion';
     import { Container } from '$lib/layout';
     import { log } from '$lib/stores/logs';
@@ -37,7 +37,7 @@
         });
     });
 
-    function showLogs(execution: Models.Execution<Record<string, string>>) {
+    function showLogs(execution: Models.Execution) {
         $log.show = true;
         $log.func = $func;
         $log.data = execution;
@@ -69,6 +69,7 @@
                 <TableCellHead width={110}>Status</TableCellHead>
                 <TableCellHead width={140}>Created</TableCellHead>
                 <TableCellHead width={90}>Trigger</TableCellHead>
+                <TableCellHead width={70}>Method</TableCellHead>
                 <TableCellHead width={90}>Path</TableCellHead>
                 <TableCellHead width={80}>Duration</TableCellHead>
             </TableHeader>
@@ -89,13 +90,16 @@
                             </Pill>
                         </TableCell>
                         <TableCellText width={140} title="Created">
-                            {toLocaleDateTime(execution.$createdAt)}
+                            {timeFromNow(execution.$createdAt)}
                         </TableCellText>
                         <TableCell width={90} title="Trigger">
                             <Pill>
                                 <span class="text u-trim">{execution.trigger}</span>
                             </Pill>
                         </TableCell>
+                        <TableCellText width={70} title="Method">
+                            {execution.requestMethod}
+                        </TableCellText>
                         <TableCellText width={90} title="Path">
                             {execution.requestPath}
                         </TableCellText>
