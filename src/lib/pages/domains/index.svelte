@@ -77,12 +77,12 @@
             {#each rules.rules as domain, i}
                 <TableRow>
                     <TableCellLink title="Domain" href={`http://${domain.domain}`} external noStyle>
-                        <Trim>
-                            <span class="u-flex u-gap-4 u-cross-center">
+                        <span class="u-flex u-gap-4 u-cross-center">
+                            <Trim>
                                 <span class="link">{domain.domain}</span>
-                                <span class="icon-external-link" aria-hidden="true" />
-                            </span>
-                        </Trim>
+                            </Trim>
+                            <span class="icon-external-link" aria-hidden="true" />
+                        </span>
                     </TableCellLink>
                     <TableCell title="Status">
                         {#if domain.status === 'created'}

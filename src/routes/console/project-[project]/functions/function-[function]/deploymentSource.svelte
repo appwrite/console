@@ -12,7 +12,7 @@
             on:click={() => (showDropdown = !showDropdown)}
             type="button"
             class="u-flex u-gap-4 u-cross-center">
-            <span class="icon-github" aria-hidden="true" /> <span class="link">Git</span>
+            <span class="icon-github" aria-hidden="true" /> <span class="link">GitHub</span>
         </button>
         <svelte:fragment slot="list">
             <DropListLink href={deployment.providerRepositoryUrl} external icon="github">
