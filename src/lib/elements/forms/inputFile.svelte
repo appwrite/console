@@ -22,7 +22,9 @@
 
         const hasInvalidExt = Array.from(value).some((file) => {
             const fileExtension = file.name.split('.').pop();
-            return !allowedFileExtensions.includes(fileExtension);
+            return allowedFileExtensions?.length
+                ? !allowedFileExtensions.includes(fileExtension)
+                : false;
         });
         if (hasInvalidExt) {
             error = 'Invalid file extension';
