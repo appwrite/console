@@ -152,7 +152,7 @@
                                             >context.log(context.req.headers)</b>
                                         in your function and make them available in Logs tab.
                                         <a
-                                            href="http://#"
+                                            href="https://appwrite.io/docs/functions-develop#logging"
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             class="link">Learn more</a
@@ -170,7 +170,7 @@
                                         intentionally, use <b>context.log()</b>
                                         in your function and make them available in Logs tab.
                                         <a
-                                            href="http://#"
+                                            href="https://appwrite.io/docs/functions-develop#logging"
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             class="link">Learn more</a
@@ -207,7 +207,7 @@
                                         it intentionally, use <b>context.log()</b>
                                         in your function and make it available in Logs tab.
                                         <a
-                                            href="http://#"
+                                            href="https://appwrite.io/docs/functions-develop#logging"
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             class="link">Learn more</a
@@ -257,7 +257,7 @@
                                         intentionally, use <b>context.log()</b>
                                         in your function and make them available in Logs tab.
                                         <a
-                                            href="http://#"
+                                            href="https://appwrite.io/docs/functions-develop#logging"
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             class="link">Learn more</a
@@ -294,7 +294,7 @@
                                         it intentionally, use <b>context.log()</b>
                                         in your function and make it available in Logs tab.
                                         <a
-                                            href="http://#"
+                                            href="https://appwrite.io/docs/functions-develop#logging"
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             class="link">Learn more</a
