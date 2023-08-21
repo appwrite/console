@@ -32,7 +32,7 @@
                             code={`git checkout ${$func.providerBranch}`} />
                     </div>
                 </NumericListItem>
-                <NumericListItem>
+                <NumericListItem fullWidth>
                     <span class="text"> Create a new commit </span>
                     <div class="u-margin-block-start-16">
                         <Code
@@ -42,7 +42,7 @@
                             code={`git commit -m "deploying with Appwrite"`} />
                     </div>
                 </NumericListItem>
-                <NumericListItem>
+                <NumericListItem fullWidth>
                     <span class="text"> Push your new commit </span>
                     <div class="u-margin-block-start-16">
                         <Code
