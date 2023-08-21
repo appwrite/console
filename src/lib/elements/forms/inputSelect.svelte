@@ -8,6 +8,7 @@
     export let value: string | number | boolean;
     export let placeholder = '';
     export let required = false;
+    export let hideRequired = false;
     export let disabled = false;
     export let options: {
         value: string | boolean | number;
@@ -46,7 +47,7 @@
 
 <FormItem>
     {#if label}
-        <Label {required} {optionalText} hide={!showLabel} for={id}>
+        <Label {required} {hideRequired} {optionalText} hide={!showLabel} for={id}>
             {label}
         </Label>
     {/if}

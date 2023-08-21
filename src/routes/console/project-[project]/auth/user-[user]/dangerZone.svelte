@@ -10,7 +10,7 @@
 </script>
 
 <script lang="ts">
-    import { CardGrid, Box, Heading, AvatarInitials } from '$lib/components';
+    import { CardGrid, BoxAvatar, Heading, AvatarInitials } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { writable } from 'svelte/store';
     import DeleteUser from './deleteUser.svelte';
@@ -30,7 +30,7 @@
         action is irreversible.
     </p>
     <svelte:fragment slot="aside">
-        <Box>
+        <BoxAvatar>
             <svelte:fragment slot="image">
                 {#if $user.email || $user.phone}
                     {#if $user.name}
@@ -57,7 +57,7 @@
                     : $user.email || $user.phone}
             </p>
             <p>Last activity: {accessedAt ? toLocaleDate(accessedAt) : 'never'}</p>
-        </Box>
+        </BoxAvatar>
     </svelte:fragment>
 
     <svelte:fragment slot="actions">

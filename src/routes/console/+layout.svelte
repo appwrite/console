@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { beforeNavigate } from '$app/navigation';
     import { page } from '$app/stores';
     import { INTERVAL } from '$lib/constants';
     import { Logs } from '$lib/layout';
@@ -150,10 +149,6 @@
         }
     }
 
-    beforeNavigate(() => {
-        $log.show = false;
-    });
-
     $: if (!$log.show) {
         $log.data = null;
         $log.func = null;
@@ -183,6 +178,8 @@
 
 {#if $wizard.show && $wizard.component}
     <svelte:component this={$wizard.component} />
+{:else if $wizard.cover}
+    <svelte:component this={$wizard.cover} />
 {/if}
 
 <Create bind:show={$newOrgModal} />

@@ -54,7 +54,7 @@
 
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { Box, CardGrid, Heading } from '$lib/components';
+    import { BoxAvatar, CardGrid, Heading } from '$lib/components';
     import { Permissions } from '$lib/components/permissions';
     import { Dependencies } from '$lib/constants';
     import { Pill } from '$lib/elements';
@@ -267,7 +267,7 @@
                         rel="noopener noreferrer"
                         class="link">
                         Permissions guide
-                        </a>.
+                    </a>.
                 </p>
                 <svelte:fragment slot="aside">
                     {#if bucketPermissions}
@@ -451,12 +451,12 @@
                 action is irreversible.
             </p>
             <svelte:fragment slot="aside">
-                <Box>
+                <BoxAvatar>
                     <svelte:fragment slot="title">
                         <h6 class="u-bold u-trim-1">{$bucket.name}</h6>
                     </svelte:fragment>
                     <p class="text">Last updated: {toLocaleDateTime($bucket.$updatedAt)}</p>
-                </Box>
+                </BoxAvatar>
             </svelte:fragment>
 
             <svelte:fragment slot="actions">

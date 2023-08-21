@@ -40,9 +40,9 @@
                         $provider.endpoint,
                         $provider.apiKey,
                         $provider.host,
-                        $provider.username,
+                        $provider.username || 'postgres',
                         $provider.password,
-                        $provider.port
+                        $provider.port || 5432
                     );
 
                     invalidate(Dependencies.MIGRATIONS);
@@ -51,6 +51,10 @@
                 case 'firebase': {
                     if ($provider.projectId) {
                         // OAuth
+                        await sdk.forProject.migrations.createFirebaseOAuthMigration(
+                            resources,
+                            $provider.projectId
+                        );
                     } else if ($provider.serviceAccount) {
                         // Manual auth
                         await sdk.forProject.migrations.createFirebaseMigration(
@@ -67,8 +71,8 @@
                         $provider.subdomain,
                         $provider.region,
                         $provider.adminSecret,
-                        $provider.database,
-                        $provider.username,
+                        $provider.database || $provider.subdomain,
+                        $provider.username || 'postgres',
                         $provider.password
                     );
 
@@ -94,11 +98,11 @@
 
     const steps: WizardStepsType = new Map();
     steps.set(1, {
-        label: 'Choose provider',
+        label: 'Source',
         component: Step1
     });
     steps.set(2, {
-        label: 'Select data',
+        label: 'Resources',
         component: Step2
     });
 </script>

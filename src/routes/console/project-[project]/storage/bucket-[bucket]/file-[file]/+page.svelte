@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { CardGrid, Box, Heading, Alert, Id } from '$lib/components';
+    import { CardGrid, BoxAvatar, Heading, Alert, Id } from '$lib/components';
     import { Container } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
     import { file } from './store';
@@ -46,7 +46,12 @@
 
     async function updatePermissions() {
         try {
-            await sdk.forProject.storage.updateFile($file.bucketId, $file.$id, filePermissions);
+            await sdk.forProject.storage.updateFile(
+                $file.bucketId,
+                $file.$id,
+                $file.name,
+                filePermissions
+            );
             await invalidate(Dependencies.FILE);
             arePermsDisabled = true;
             addNotification({
@@ -152,14 +157,14 @@
             <Heading tag="h6" size="7">Delete file</Heading>
             <p>The file will be permanently deleted. This action is irreversible.</p>
             <svelte:fragment slot="aside">
-                <Box>
+                <BoxAvatar>
                     <svelte:fragment slot="title">
                         <h6 class="u-bold u-trim-1" data-private>{$file.name}</h6>
                     </svelte:fragment>
                     <p>
                         Last updated: {toLocaleDateTime($file.$updatedAt)}
                     </p>
-                </Box>
+                </BoxAvatar>
             </svelte:fragment>
 
             <svelte:fragment slot="actions">

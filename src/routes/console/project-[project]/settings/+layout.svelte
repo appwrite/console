@@ -3,19 +3,9 @@
     import { page } from '$app/stores';
     import { registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import { project } from '../store';
-    import { openCreateDomainWizard } from './domains/+page.svelte';
     import { openWebhooksWizard } from './webhooks/+page.svelte';
 
     $: $registerCommands([
-        {
-            label: 'Create custom domain',
-            icon: 'plus',
-            keys: $page.url.pathname.includes('domains') ? ['c'] : ['c', 'd'],
-            callback: () => {
-                openCreateDomainWizard();
-            },
-            group: 'domains'
-        },
         {
             label: 'Create webhook',
             icon: 'plus',

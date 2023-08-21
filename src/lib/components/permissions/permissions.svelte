@@ -19,8 +19,8 @@
         TableRow
     } from '$lib/elements/table';
     import { symmetricDifference } from '$lib/helpers/array';
-    import { onDestroy, onMount } from 'svelte';
-    import { writable, type Unsubscriber } from 'svelte/store';
+    import { onMount } from 'svelte';
+    import { writable } from 'svelte/store';
     import Actions from './actions.svelte';
     import Row from './row.svelte';
     import Table from '$lib/elements/table/table.svelte';
@@ -32,24 +32,17 @@
     let showTeam = false;
     let showCustom = false;
     let showDropdown = false;
-    let unsubscribe: Unsubscriber;
 
     const groups = writable<Map<string, Permission>>(new Map());
 
     onMount(() => {
         permissions.forEach(fromPermissionString);
-        unsubscribe = groups.subscribe(() => {
+        return groups.subscribe(() => {
             const current = exportRoles();
             if (symmetricDifference(current, permissions).length) {
                 permissions = current;
             }
         });
-    });
-
-    onDestroy(() => {
-        if (unsubscribe) {
-            unsubscribe();
-        }
     });
 
     function create(event: CustomEvent<string[]>) {

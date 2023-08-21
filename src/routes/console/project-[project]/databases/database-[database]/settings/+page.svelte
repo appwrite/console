@@ -2,7 +2,7 @@
     import { invalidate } from '$app/navigation';
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { Box, Card, CardGrid, Heading } from '$lib/components';
+    import { BoxAvatar, Card, CardGrid, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form, Helper, InputText } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
@@ -97,12 +97,12 @@
                 team. This action is irreversible.
             </p>
             <svelte:fragment slot="aside">
-                <Box>
+                <BoxAvatar>
                     <svelte:fragment slot="title">
                         <h6 class="u-bold u-trim-1">{$database.name}</h6>
                         <span>Last updated: {toLocaleDateTime($database.$updatedAt)}</span>
                     </svelte:fragment>
-                </Box>
+                </BoxAvatar>
             </svelte:fragment>
 
             <svelte:fragment slot="actions">

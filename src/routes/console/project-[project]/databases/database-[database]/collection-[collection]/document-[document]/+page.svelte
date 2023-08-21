@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { CardGrid, Box, Heading, Alert } from '$lib/components';
+    import { CardGrid, BoxAvatar, Heading, Alert } from '$lib/components';
     import { Container } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
@@ -116,14 +116,14 @@
             is irreversible.
         </p>
         <svelte:fragment slot="aside">
-            <Box>
+            <BoxAvatar>
                 <svelte:fragment slot="title">
                     <h6 class="u-bold u-trim-1">{$doc.$id}</h6>
                 </svelte:fragment>
                 <p>
                     Last updated: {toLocaleDateTime($doc.$updatedAt)}
                 </p>
-            </Box>
+            </BoxAvatar>
         </svelte:fragment>
 
         <svelte:fragment slot="actions">

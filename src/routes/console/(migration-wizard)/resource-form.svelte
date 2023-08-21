@@ -15,6 +15,7 @@
         resourcesToMigrationForm
     } from '$lib/stores/migration';
     import { addNotification } from '$lib/stores/notifications';
+    import { wizard } from '$lib/stores/wizard';
 
     export let formData: ReturnType<typeof createMigrationFormStore>;
     export let provider: ReturnType<typeof createMigrationProviderStore>;
@@ -109,6 +110,12 @@
                 case 'firebase': {
                     if ($provider.projectId) {
                         // OAuth
+                        const res = await sdk.forProject.migrations.getFirebaseReportOAuth(
+                            providerResources.firebase,
+                            $provider.projectId
+                        );
+
+                        report = res;
                     } else if ($provider.serviceAccount) {
                         // Manual auth
                         const res = await sdk.forProject.migrations.getFirebaseReport(
@@ -148,7 +155,7 @@
 
     $: resources = providerResources[$provider.provider];
 
-    // $: wizard.setNextDisabled(!report);
+    $: wizard.setNextDisabled(!report);
 </script>
 
 <div class="box" style:border-radius="0.5rem">

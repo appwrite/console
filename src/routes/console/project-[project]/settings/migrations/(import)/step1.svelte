@@ -135,10 +135,7 @@
                     }))} />
             </FormList>
             <p class="u-text-center u-margin-block-start-24">
-                Signed in
-                <button class="u-bold" on:click|preventDefault={deauthorizeGoogle}>
-                    Sign Out?
-                </button>
+                <button class="u-bold" on:click|preventDefault={deauthorizeGoogle}>Sign Out</button>
             </p>
         {/if}
     {:else if $provider.provider === 'supabase'}
@@ -151,17 +148,11 @@
                 required
                 placeholder="Enter host"
                 bind:value={$provider.host} />
-            <InputNumber
-                id="port"
-                label="Port"
-                required
-                placeholder="Enter port"
-                bind:value={$provider.port} />
+            <InputNumber id="port" label="Port" placeholder="5432" bind:value={$provider.port} />
             <InputText
                 id="username"
                 label="Username"
-                required
-                placeholder="Enter username"
+                placeholder="postgres"
                 bind:value={$provider.username} />
             <InputPassword
                 id="password"
@@ -203,14 +194,12 @@
             <InputText
                 id="database"
                 label="Database"
-                required
-                placeholder="Enter database"
+                placeholder={$provider.subdomain || 'Enter database'}
                 bind:value={$provider.database} />
             <InputText
                 id="username"
                 label="Username"
-                required
-                placeholder="Enter username"
+                placeholder="postgres"
                 bind:value={$provider.username} />
             <InputPassword
                 id="password"

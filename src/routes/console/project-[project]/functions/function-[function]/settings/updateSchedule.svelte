@@ -22,11 +22,20 @@
             await sdk.forProject.functions.update(
                 functionId,
                 $func.name,
+                $func.runtime,
+                $func.entrypoint || undefined,
                 $func.execute || undefined,
                 $func.events || undefined,
                 functionSchedule,
                 $func.timeout || undefined,
-                $func.enabled
+                $func.enabled || undefined,
+                $func.logging || undefined,
+                $func.commands || undefined,
+                $func.installationId || undefined,
+                $func.providerRepositoryId || undefined,
+                $func.providerBranch || undefined,
+                $func.providerSilentMode || undefined,
+                $func.providerRootDirectory || undefined
             );
             await invalidate(Dependencies.FUNCTION);
             addNotification({
@@ -53,7 +62,8 @@
                 target="_blank"
                 rel="noopener noreferrer"
                 class="link">
-                More details on Cron syntax here.</a>
+                More details on Cron syntax here</a
+            >.
         </p>
         <svelte:fragment slot="aside">
             <FormList>
