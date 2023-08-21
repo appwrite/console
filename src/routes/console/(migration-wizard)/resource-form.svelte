@@ -15,6 +15,7 @@
         resourcesToMigrationForm
     } from '$lib/stores/migration';
     import { addNotification } from '$lib/stores/notifications';
+    import { wizard } from '$lib/stores/wizard';
 
     export let formData: ReturnType<typeof createMigrationFormStore>;
     export let provider: ReturnType<typeof createMigrationProviderStore>;
@@ -137,7 +138,7 @@
         } catch (e) {
             if (!isOpen) return;
             addNotification({
-                message: e.message,
+                message: 'Request failed, please check your crendentials and try again.',
                 type: 'error'
             });
         }
@@ -148,8 +149,7 @@
     });
 
     $: resources = providerResources[$provider.provider];
-
-    // $: wizard.setNextDisabled(!report);
+    $: wizard.setNextDisabled(!report);
 </script>
 
 <div class="box" style:border-radius="0.5rem">

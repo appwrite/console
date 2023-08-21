@@ -7,7 +7,8 @@
         InputNumber,
         InputPassword,
         InputSelect,
-        InputText
+        InputText,
+        InputTextarea
     } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
     import type { Provider } from '$lib/stores/migration';
@@ -112,7 +113,7 @@
 
             <!-- {#if showAuth} -->
             <div class="u-margin-block-start-16">
-                <InputText
+                <InputTextarea
                     id="credentials"
                     label="Account credentials"
                     required
@@ -195,7 +196,9 @@
             <InputText
                 id="database"
                 label="Database"
-                placeholder={$provider.subdomain || 'Enter database'}
+                placeholder={$provider.subdomain
+                    ? `Default: ${$provider.subdomain}`
+                    : 'Enter database'}
                 bind:value={$provider.database} />
             <InputText
                 id="username"
