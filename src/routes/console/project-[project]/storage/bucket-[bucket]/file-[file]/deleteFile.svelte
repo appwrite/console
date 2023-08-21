@@ -39,7 +39,7 @@
     icon="exclamation"
     state="warning"
     headerDivider={false}>
-    <svelte:fragment slot="header">Delete File</svelte:fragment>
+    <svelte:fragment slot="header">Delete file</svelte:fragment>
     <p data-private>Are you sure you want to delete <b>{$file.name}</b>?</p>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)}>Cancel</Button>

@@ -57,7 +57,7 @@
         </ul>
         <div>
             <p>Created: {toLocaleDateTime($collection.$createdAt)}</p>
-            <p>Last Updated: {toLocaleDateTime($collection.$updatedAt)}</p>
+            <p>Last updated: {toLocaleDateTime($collection.$updatedAt)}</p>
         </div>
     </svelte:fragment>
 

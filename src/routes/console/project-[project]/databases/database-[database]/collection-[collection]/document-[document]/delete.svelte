@@ -66,7 +66,7 @@
     onSubmit={handleDelete}
     bind:show={showDelete}
     headerDivider={false}>
-    <svelte:fragment slot="header">Delete Document</svelte:fragment>
+    <svelte:fragment slot="header">Delete document</svelte:fragment>
 
     {#if relAttributes?.length}
         <p class="text">This document contains the following relationships:</p>

@@ -101,4 +101,4 @@
     });
 </script>
 
-<Wizard title="Create Function" steps={stepsComponents} on:finish={create} on:exit={onFinish} />
+<Wizard title="Create function" steps={stepsComponents} on:finish={create} on:exit={onFinish} />

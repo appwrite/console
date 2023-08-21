@@ -39,7 +39,7 @@
     icon="exclamation"
     state="warning"
     headerDivider={false}>
-    <svelte:fragment slot="header">Delete Platform</svelte:fragment>
+    <svelte:fragment slot="header">Delete platform</svelte:fragment>
     <p>The Platform will be permanently deleted. This action is irreversible.</p>
 
     <svelte:fragment slot="footer">

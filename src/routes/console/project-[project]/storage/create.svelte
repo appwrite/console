@@ -46,12 +46,12 @@
 </script>
 
 <Modal {error} onSubmit={create} size="big" bind:show={showCreate}>
-    <svelte:fragment slot="header">Create Bucket</svelte:fragment>
+    <svelte:fragment slot="header">Create bucket</svelte:fragment>
     <FormList>
         <InputText
             id="name"
             label="Name"
-            placeholder="New Bucket"
+            placeholder="New bucket"
             bind:value={name}
             autofocus
             required />

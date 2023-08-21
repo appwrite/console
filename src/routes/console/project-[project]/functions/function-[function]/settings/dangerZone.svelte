@@ -11,7 +11,7 @@
 </script>
 
 <CardGrid danger>
-    <Heading tag="h6" size="7">Delete Function</Heading>
+    <Heading tag="h6" size="7">Delete function</Heading>
     <p>
         The function will be permanently deleted, including all deployments associated with it. This
         action is irreversible.
@@ -21,7 +21,7 @@
             <svelte:fragment slot="title">
                 <h6 class="u-bold u-trim-1">{$func.name}</h6>
             </svelte:fragment>
-            <p>Last Updated: {toLocaleDateTime($func.$updatedAt)}</p>
+            <p>Last updated: {toLocaleDateTime($func.$updatedAt)}</p>
         </BoxAvatar>
     </svelte:fragment>
 

@@ -34,7 +34,7 @@
 
 <CardGrid danger>
     <div>
-        <Heading tag="h6" size="7">Delete Project</Heading>
+        <Heading tag="h6" size="7">Delete project</Heading>
     </div>
     <p>
         The project will be permanently deleted, including all the metadata, resources and stats
@@ -60,7 +60,7 @@
     icon="exclamation"
     state="warning"
     headerDivider={false}>
-    <svelte:fragment slot="header">Delete Project</svelte:fragment>
+    <svelte:fragment slot="header">Delete project</svelte:fragment>
     <p>
         <b>This project will be deleted</b>, along with all of its metadata, stats, and other
         resources. <b>This action is irreversible</b>.

@@ -109,7 +109,6 @@
                     on:click={() => (showTransfer = true)}>Transfer</Button>
             </svelte:fragment>
         </CardGrid>
-
         <DeleteProject />
     {/if}
 </Container>
