@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { EyebrowHeading } from '$lib/components';
+    import { Alert, EyebrowHeading } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { deepMap } from '$lib/helpers/object';
     import type { WritableValue } from '$lib/helpers/types';
@@ -81,6 +81,8 @@
     $: version = report?.version || '0.0.0';
 
     let isOpen = false;
+
+    let error = false;
     onMount(async () => {
         isOpen = true;
         try {
@@ -137,10 +139,7 @@
             }
         } catch (e) {
             if (!isOpen) return;
-            addNotification({
-                message: 'Request failed, please check your crendentials and try again.',
-                type: 'error'
-            });
+            error = true;
         }
 
         return () => {
@@ -200,6 +199,25 @@
     </div>
 </div>
 
+{#if error}
+    <div class="u-margin-block-start-24">
+        <Alert
+            type="error"
+            isStandalone
+            buttons={[
+                {
+                    name: 'Edit credentials',
+                    method() {
+                        wizard.updateStep((p) => p - 1);
+                    }
+                }
+            ]}>
+            <svelte:fragment slot="title">Request failed</svelte:fragment>
+            Please check if your credentials are filled in correctly in the previous step
+        </Alert>
+    </div>
+{/if}
+
 <ul class="buttons-list u-margin-block-start-32 u-main-end">
     <li class="buttons-list-item">
         <Button text on:click={deselectAll}>Deselect all</Button>
@@ -223,7 +241,7 @@
                 {#if $provider.provider !== 'firebase'}
                     {#if report?.user !== undefined}
                         <span class="inline-tag">{report.user}</span>
-                    {:else}
+                    {:else if !error}
                         <span class="loader is-small u-margin-inline-start-4" />
                     {/if}
                 {/if}
@@ -243,7 +261,7 @@
                             {#if $provider.provider === 'firebase'}
                                 {#if report?.team !== undefined}
                                     <span class="inline-tag">{report.team}</span>
-                                {:else}
+                                {:else if !error}
                                     <span class="loader is-small u-margin-inline-start-4" />
                                 {/if}
                             {/if}
@@ -267,7 +285,7 @@
                 {#if $provider.provider !== 'firebase'}
                     {#if report?.database !== undefined}
                         <span class="inline-tag">{report.database}</span>
-                    {:else}
+                    {:else if !error}
                         <span class="loader is-small u-margin-inline-start-4" />
                     {/if}
                 {/if}
@@ -287,7 +305,7 @@
                             {#if $provider.provider !== 'firebase'}
                                 {#if report?.document !== undefined}
                                     <span class="inline-tag">{report.document}</span>
-                                {:else}
+                                {:else if !error}
                                     <span class="loader is-small u-margin-inline-start-4" />
                                 {/if}
                             {/if}
@@ -311,7 +329,7 @@
                 {#if $provider.provider !== 'firebase'}
                     {#if report?.function !== undefined}
                         <span class="inline-tag">{report.function}</span>
-                    {:else}
+                    {:else if !error}
                         <span class="loader is-small u-margin-inline-start-4" />
                     {/if}
                 {/if}
@@ -360,7 +378,7 @@
                 {#if $provider.provider !== 'firebase'}
                     {#if report?.size !== undefined}
                         <span class="inline-tag">{`${report.size.toFixed(2)}MB`}</span>
-                    {:else}
+                    {:else if !error}
                         <span class="loader is-small u-margin-inline-start-4" />
                     {/if}
                 {/if}

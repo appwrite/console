@@ -8,6 +8,7 @@ export type WizardStore = {
     component?: ComponentType;
     interceptor?: () => Promise<void>;
     nextDisabled: boolean;
+    step: number;
 };
 
 function createWizardStore() {
@@ -16,7 +17,8 @@ function createWizardStore() {
         component: null,
         interceptor: null,
         media: null,
-        nextDisabled: false
+        nextDisabled: false,
+        step: 1
     });
 
     return {
@@ -28,6 +30,7 @@ function createWizardStore() {
                 n.component = component;
                 n.interceptor = null;
                 n.media = media;
+                n.step = 1;
                 trackEvent('wizard_start');
                 return n;
             }),
@@ -49,9 +52,22 @@ function createWizardStore() {
                 n.component = null;
                 n.interceptor = null;
                 n.media = null;
+                n.step = 1;
 
                 return n;
-            })
+            }),
+        updateStep: (cb: (prevStep: number) => number) => {
+            update((n) => {
+                n.step = cb(n.step);
+                return n;
+            });
+        },
+        setStep: (step: number) => {
+            update((n) => {
+                n.step = step;
+                return n;
+            });
+        }
     };
 }
 
