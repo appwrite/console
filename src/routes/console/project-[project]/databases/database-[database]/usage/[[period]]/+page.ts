@@ -9,6 +9,10 @@ export const load: PageLoad = async ({ params }) => {
     );
 
     return {
-        collectionsTotal: response.collectionsTotal as unknown as Models.Metric[]
+        count: response.collectionsCount as unknown as Models.Metric[],
+        created: response.collectionsCreate as unknown as Models.Metric[],
+        read: response.collectionsRead as unknown as Models.Metric[],
+        updated: response.collectionsUpdate as unknown as Models.Metric[],
+        deleted: response.collectionsDelete as unknown as Models.Metric[]
     };
 };
