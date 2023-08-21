@@ -1,5 +1,6 @@
 <script lang="ts">
-    import { Modal } from '$lib/components';
+    import { Code, Modal } from '$lib/components';
+    import Button from '$lib/elements/forms/button.svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { parseIfString } from '$lib/helpers/object';
     import type { Models } from '@appwrite.io/console';
@@ -41,6 +42,8 @@
         if (!counter) return 0;
         return Object.values(counter).reduce((acc, curr) => acc + curr, 0);
     };
+
+    let viewLogs = false;
 </script>
 
 <Modal bind:show on:close={() => (migrationId = null)} size="big">
@@ -51,7 +54,9 @@
             Migration details
         {/if}
     </svelte:fragment>
-    {#if details}
+    {#if viewLogs}
+        <Code code={JSON.stringify(details, null, 2)} language="json" allowScroll />
+    {:else}
         <div class="box meta">
             <span>Date</span>
             <span>{toLocaleDateTime(details.$createdAt)}</span>
@@ -87,6 +92,16 @@
             </div>
         {/if}
     {/if}
+
+    <svelte:fragment slot="footer">
+        <Button
+            secondary
+            on:click={() => {
+                viewLogs = !viewLogs;
+            }}>
+            {viewLogs ? 'Hide' : 'View'} logs
+        </Button>
+    </svelte:fragment>
 </Modal>
 
 <style lang="scss">
