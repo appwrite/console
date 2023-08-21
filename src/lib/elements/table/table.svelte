@@ -1,7 +1,7 @@
 <script lang="ts">
     export let noMargin = false;
     export let noStyles = false;
-    export let style: string = '';
+    export let style = '';
 </script>
 
 <div
