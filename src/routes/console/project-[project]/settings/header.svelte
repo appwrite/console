@@ -21,6 +21,16 @@
             href: `${path}/webhooks`,
             title: 'Webhooks',
             event: 'webhooks'
+        },
+        {
+            href: `${path}/migrations`,
+            title: 'Migrations',
+            event: 'migrations'
+        },
+        {
+            href: `${path}/smtp`,
+            title: 'SMTP Settings',
+            event: 'smtp'
         }
     ];
 </script>

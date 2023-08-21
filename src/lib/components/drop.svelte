@@ -79,16 +79,26 @@
                 event.target === element ||
                 element.contains(event.target as Node) ||
                 event.target === tooltip ||
-                tooltip.contains(event.target as Node)
+                tooltip.contains(event.target as Node) ||
+                // Avoid deleted elements triggering blur
+                !document.body.contains(event.target as Node)
             )
         ) {
             show = false;
             dispatch('blur');
         }
     };
+
+    const onKeyDown = (event: KeyboardEvent) => {
+        if (event.key === 'Escape' && show) {
+            event.preventDefault();
+            show = false;
+            dispatch('blur');
+        }
+    };
 </script>
 
-<svelte:window on:click={onBlur} />
+<svelte:window on:click={onBlur} on:keydown={onKeyDown} />
 
 <div class:drop-wrapper={!noStyle} class:u-cross-child-start={childStart} bind:this={element}>
     <slot />

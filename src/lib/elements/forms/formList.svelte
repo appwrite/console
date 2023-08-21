@@ -1,10 +1,12 @@
 <script lang="ts">
     export let isCommonSection = false;
     export let gap = 24;
+    let classes: string = undefined;
+    export { classes as class };
 </script>
 
 <ul
-    class="form-list"
+    class="form-list {classes}"
     class:common-section={isCommonSection}
     style={`--form-list-gap: ${gap / 16}rem;`}>
     <slot />

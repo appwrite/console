@@ -1,3 +1,12 @@
+<script lang="ts" context="module">
+    const langArr = ['js', 'html', 'dart', 'kotlin', 'json', 'sh', 'yml', 'swift'] as const;
+    export type Language = (typeof langArr)[number];
+
+    export function isLanguage(str: string): str is Language {
+        return langArr.includes(str as Language);
+    }
+</script>
+
 <script lang="ts">
     import { Pill } from '$lib/elements';
     import Prism from 'prismjs';
@@ -47,7 +56,6 @@
             </Copy>
         {/if}
     </div>
-
     <pre class={`language-${language}`} class:line-numbers={withLineNumbers}><code
             >{code}</code></pre>
 </section>

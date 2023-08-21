@@ -10,8 +10,8 @@
     import { user } from '$lib/stores/user';
     import { ENV, isCloud } from '$lib/system';
     import * as Sentry from '@sentry/svelte';
-    import LogRocket from 'logrocket';
     import { BrowserTracing } from '@sentry/tracing';
+    import LogRocket from 'logrocket';
     import { onMount } from 'svelte';
     import { onCLS, onFCP, onFID, onINP, onLCP, onTTFB } from 'web-vitals';
     import Loading from './loading.svelte';

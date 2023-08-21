@@ -1,23 +1,25 @@
 <script lang="ts">
+    import { beforeNavigate } from '$app/navigation';
+    import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { Button } from '$lib/elements/forms';
+    import { tooltip } from '$lib/actions/tooltip';
     import {
-        Empty,
         CardContainer,
+        Empty,
         GridItem1,
         Heading,
-        PaginationWithLimit,
-        Id
+        Id,
+        PaginationWithLimit
     } from '$lib/components';
+    import { Button } from '$lib/elements/forms';
+    import { toLocaleDateTime } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
-    import { base } from '$app/paths';
-    import { tooltip } from '$lib/actions/tooltip';
     import { app } from '$lib/stores/app';
     import { wizard } from '$lib/stores/wizard';
-    import { beforeNavigate } from '$app/navigation';
-    import { toLocaleDateTime } from '$lib/helpers/date';
-    import Create from './createFunction.svelte';
     import type { PageData } from './$types';
+    import Create from './createFunction.svelte';
+
+    import { registerCommands } from '$lib/commandCenter';
 
     export let data: PageData;
 
@@ -32,6 +34,16 @@
     beforeNavigate(() => {
         wizard.hide();
     });
+
+    $: $registerCommands([
+        {
+            label: 'Create function',
+            callback: openWizard,
+            keys: ['c'],
+            disabled: $wizard.show,
+            icon: 'plus'
+        }
+    ]);
 </script>
 
 <Container>
