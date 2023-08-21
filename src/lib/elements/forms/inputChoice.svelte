@@ -40,8 +40,10 @@
             on:invalid={handleInvalid} />
 
         <div class="choice-item-content">
-            <div class:u-hide={!showLabel} class="choice-item-title u-flex u-cross-center u-gap-4">
-                {label}
+            <div class="u-flex u-cross-center u-gap-4">
+                <h6 class:u-hide={!showLabel} class="choice-item-title">
+                    {label}
+                </h6>
                 {#if tooltip}
                     <button class="tooltip" aria-label="variables info">
                         <span

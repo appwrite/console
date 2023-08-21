@@ -28,8 +28,7 @@
 
 <script lang="ts">
     import { base } from '$app/paths';
-    import { Heading } from '$lib/components';
-    import { clickOnEnter } from '$lib/helpers/a11y';
+    import { AvatarGroup, Heading } from '$lib/components';
     import WizardCover from '$lib/layout/wizardCover.svelte';
     import { app } from '$lib/stores/app';
     import { wizard } from '$lib/stores/wizard';
@@ -40,6 +39,8 @@
     import Repositories from './components/repositories.svelte';
     import CreateManual from './createManual.svelte';
     import CreateGit from './createGit.svelte';
+    import { Button } from '$lib/elements/forms';
+    import { page } from '$app/stores';
 
     let hasInstallations: boolean;
     let selectedRepository: string;
@@ -77,10 +78,9 @@
                     </div>
                 </div>
                 <p class="u-margin-block-start-16">
-                    You can also create a function <span
+                    You can also create a function <button
                         class="link"
-                        on:keyup={clickOnEnter}
-                        on:click={() => wizard.start(CreateManual)}>manually</span>
+                        on:click={() => wizard.start(CreateManual)}>manually</button>
                     or using the CLI.
                     <a href="https://appwrite.io/docs/functions-deploy" target="_blank" rel="noopener noreferrer" class="link"
                         >Learn more</a
@@ -101,8 +101,9 @@
                     {:then runtimes}
                         <ul
                             class="grid-box u-margin-block-start-16"
-                            style:--grid-gap="1rem"
-                            style:--p-grid-item-size="8rem">
+                            style:--grid-item-size="8rem"
+                            style:--grid-item-size-small-screens="9rem"
+                            style:--grid-gap="1rem">
                             {#each quickStart.runtimes.filter((_template, index) => index < 6) as runtime}
                                 {@const runtimeDetail = runtimes.find(
                                     (r) => r.$id === runtime.name
@@ -132,19 +133,18 @@
                                         class="box u-width-full-line u-flex u-cross-center u-gap-8"
                                         style:--box-padding="1rem"
                                         style:--box-border-radius="var(--border-radius-small)">
-                                        <div class="avatar is-size-small">
-                                            <img
-                                                style:--p-text-size="1.25rem"
-                                                src={`${base}/icons/${$app.themeInUse}/grayscale/dotnet.svg`}
-                                                alt="dotnet-7.0" />
-                                        </div>
-                                        <div class="body-text-2 u-trim">Coming soon</div>
+                                        <AvatarGroup
+                                            icons={['dotnet', 'deno']}
+                                            total={4}
+                                            avatarSize="small"
+                                            bordered />
                                     </div>
                                 </li>
                             {/if}
                         </ul>
                     {/await}
                 </section>
+                <div class="u-sep-block-start common-section" />
                 <section class="common-section">
                     <h2 class="heading-level-6">Templates</h2>
                     <p class="text u-margin-block-start-8">
@@ -155,6 +155,7 @@
                         {#each templates as template}
                             <li class="clickable-list-item">
                                 <button
+                                    type="button"
                                     on:click={() => connectTemplate(template)}
                                     class="clickable-list-button u-width-full-line u-flex u-gap-12">
                                     <div class="avatar is-size-small" style:--p-text-size="1.25rem">
@@ -171,6 +172,13 @@
                         {/each}
                     </ul>
                 </section>
+                <Button
+                    text
+                    class="u-margin-inline-start-auto u-margin-block-start-16"
+                    href={`${base}/console/project-${$page.params.project}/functions/templates`}>
+                    <span> All templates </span>
+                    <span class="icon-cheveron-right" aria-hidden="true" />
+                </Button>
             </div>
         </div>
     </div>

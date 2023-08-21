@@ -2,7 +2,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { Box, EmptySearch, Modal, PaginationInline } from '$lib/components';
+    import { BoxAvatar, EmptySearch, Modal, PaginationInline } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { InputChoice, InputSearch, InputSelect, InputText, Button } from '$lib/elements/forms';
     import { timeFromNow, toLocaleDateTime } from '$lib/helpers/date';
@@ -12,9 +12,10 @@
     import { func, repositories } from '../store';
     import { invalidate } from '$app/navigation';
     import InputSelectSearch from '$lib/elements/forms/inputSelectSearch.svelte';
+    import { sortBranches } from './updateConfiguration.svelte';
+    import { installations } from '$lib/wizards/functions/store';
 
     export let show: boolean;
-    export let installationsList: Models.InstallationList;
 
     const functionId = $page.params.function;
 
@@ -28,8 +29,9 @@
     let selectedBranch: string;
     let selectedDir: string;
     let silentMode = false;
+    let error = '';
 
-    let installationsOptions = installationsList.installations.map((installation) => {
+    let installationsOptions = $installations.installations.map((installation) => {
         return {
             value: installation.$id,
             label: installation.organization
@@ -71,12 +73,9 @@
             });
             trackEvent(Submit.FunctionUpdateConfiguration);
             show = false;
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
-            trackError(error, Submit.FunctionUpdateConfiguration);
+        } catch (e) {
+            error = e.message;
+            trackError(e, Submit.FunctionUpdateConfiguration);
         }
     }
 
@@ -108,13 +107,7 @@
             selectedRepoId
         );
 
-        branchesList.branches = branchesList.branches.sort((a, b) => {
-            if (a.name === 'main' || a.name === 'master') {
-                return -1;
-            }
-
-            return a.name > b.name ? -1 : 1;
-        });
+        branchesList.branches = sortBranches(branchesList.branches);
 
         selectedBranch = branchesList?.branches[0].name;
     }
@@ -126,12 +119,12 @@
 
     $: selectedRepo = (repositoriesList ?? []).find((repo) => repo.id === selectedRepoId) ?? null;
     $: selectedInstallation =
-        (installationsList?.installations ?? []).find(
+        ($installations?.installations ?? []).find(
             (installation) => installation.$id === selectedInstallationId
         ) ?? null;
 </script>
 
-<Modal headerDivider={false} bind:show size="big" onSubmit={handleSubmit}>
+<Modal headerDivider={false} bind:show size="big" bind:error onSubmit={handleSubmit}>
     <svelte:fragment slot="header">Git configuration</svelte:fragment>
     <p class="text">
         Configure a Git repository that will trigger your function deployments when updated.
@@ -238,7 +231,7 @@
         {#await getBranches()}
             Fetching branches..
         {:then}
-            <Box>
+            <BoxAvatar>
                 <svelte:fragment slot="image">
                     <div class="avatar">
                         <span class={getProviderIcon(selectedInstallation.provider)} />
@@ -248,7 +241,7 @@
                     <h6 class="u-bold u-trim-1">{selectedRepo.name}</h6>
                 </svelte:fragment>
                 <p>Last updated: {toLocaleDateTime(selectedRepo.pushedAt)}</p>
-            </Box>
+            </BoxAvatar>
 
             <InputSelectSearch
                 required={true}

@@ -6,12 +6,12 @@
 </script>
 
 <script lang="ts">
-    import { DropList, DropListItem, Empty, Heading, Modal } from '$lib/components';
+    import { DropList, DropListItem, Empty, Heading, Modal, Trim } from '$lib/components';
     import {
         TableBody,
         TableCell,
         TableCellHead,
-        TableCellText,
+        TableCellLink,
         TableHeader,
         TableRow,
         TableScroll
@@ -26,6 +26,7 @@
     import Create from './create.svelte';
     import Delete from './delete.svelte';
     import Retry from './wizard/retry.svelte';
+    import { Pill } from '$lib/elements';
 
     export let rules: Models.ProxyRuleList;
     export let type: ProxyTypes;
@@ -76,69 +77,67 @@
         <TableBody>
             {#each rules.rules as domain, i}
                 <TableRow>
-                    <TableCellText title="Domain">
-                        <a href={`//${domain.domain}`} target="_blank" rel="noopener noreferrer">
-                            {domain.domain}
-                            <span
-                                class="icon-external-link"
-                                aria-hidden="true"
-                                style="color: hsl(var(--color-neutral-50))" />
-                        </a>
-                    </TableCellText>
-                    <TableCellText title="Status">
+                    <TableCellLink title="Domain" href={`http://${domain.domain}`} external noStyle>
+                        <span class="u-flex u-gap-4 u-cross-center">
+                            <Trim>
+                                <span class="link">{domain.domain}</span>
+                            </Trim>
+                            <span class="icon-external-link" aria-hidden="true" />
+                        </span>
+                    </TableCellLink>
+                    <TableCell title="Status">
                         {#if domain.status === 'created'}
                             <div class="u-flex u-gap-8 u-cross-center">
-                                <span
-                                    class="icon-x-circle"
-                                    aria-hidden="true"
-                                    style="color: hsl(var(--color-danger-100))" />
-                                <span class="u-text">Failed</span>
-                                <Button text on:click={() => openRetry(domain)}>
+                                <Pill danger>
+                                    <span
+                                        class="icon-exclamation-circle u-color-text-danger"
+                                        aria-hidden="true" />
+                                    <span class="u-text">Failed</span>
+                                </Pill>
+                                <button on:click={() => openRetry(domain)}>
                                     <span class="link">Retry</span>
-                                </Button>
+                                </button>
                             </div>
                         {:else}
-                            <div class="u-flex u-gap-8 u-cross-center">
+                            <Pill success>
                                 <span
-                                    class="icon-check-circle"
-                                    aria-hidden="true"
-                                    style="color: hsl(var(--color-success-100))" />
-                                <p class="u-stretch">Verified</p>
-                            </div>
+                                    class="icon-check-circle u-color-text-success"
+                                    aria-hidden="true" />
+                                <p class="text">Verified</p>
+                            </Pill>
                         {/if}
-                    </TableCellText>
-                    <TableCellText title="Name">
+                    </TableCell>
+                    <TableCell title="Name">
                         {#if domain.status === 'unverified'}
                             <div class="u-flex u-gap-8 u-cross-center">
                                 <span
-                                    class="icon-x-circle"
-                                    aria-hidden="true"
-                                    style="color: hsl(var(--color-danger-100))" />
-                                <p class="u-stretch">Failed</p>
+                                    class="icon-x-circle u-color-text-danger"
+                                    aria-hidden="true" />
+                                <p class="text">Failed</p>
                             </div>
                         {:else if domain.status === 'verified'}
                             <div class="u-flex u-gap-8 u-cross-center">
-                                <span
-                                    class="icon-check-circle"
-                                    aria-hidden="true"
-                                    style="color: hsl(var(--color-success-100))" />
-                                <span>Generated</span>
+                                <Pill success>
+                                    <span
+                                        class="icon-check-circle u-color-text-success"
+                                        aria-hidden="true" />
+                                    <span>Generated</span>
+                                </Pill>
                                 {#if domain.renewAt}
-                                    <span style="color: hsl(var(--color-neutral-70));">
+                                    <span class="u-text-color-gray">
                                         Auto-renewal: {toLocaleDate(domain.renewAt)}
                                     </span>
                                 {/if}
                             </div>
                         {:else}
                             <div class="u-flex u-gap-8 u-cross-center">
-                                <span
-                                    class="icon-clock"
-                                    aria-hidden="true"
-                                    style="color: hsl(var(--color-neutral-50))" />
-                                <p class="u-stretch">Waiting to run</p>
+                                <Pill>
+                                    <span class="icon-clock u-text-color-gray" aria-hidden="true" />
+                                    <p class="text">Waiting to run</p>
+                                </Pill>
                             </div>
                         {/if}
-                    </TableCellText>
+                    </TableCell>
                     <TableCell>
                         <DropList
                             bind:show={showDomainsDropdown[i]}

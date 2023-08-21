@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { LabelCard } from '$lib/components';
     import { WizardStep } from '$lib/layout';
     import { templateConfig } from '../store';
 
@@ -17,47 +18,13 @@
     </svelte:fragment>
 
     <ul class="u-flex u-flex-vertical u-gap-24">
-        <li>
-            <label
-                class="card is-allow-focus u-cursor-pointer"
-                style="--card-padding:1rem; --card-border-radius:var(--border-radius-small);">
-                <div class="u-flex u-gap-16">
-                    <input
-                        bind:group={$templateConfig.repositoryBehaviour}
-                        class="is-small u-margin-block-start-2"
-                        value="new"
-                        type="radio"
-                        name="repositoryBehaviour" />
-                    <div class="u-flex u-flex-vertical u-gap-4">
-                        <h4 class="body-text-2 u-bold">Create new repository</h4>
-                        <p class="u-color-text-gray">
-                            Clone the template and create a new repository in your selected
-                            organization.
-                        </p>
-                    </div>
-                </div>
-            </label>
-        </li>
-        <li>
-            <label
-                class="card is-allow-focus u-cursor-pointer"
-                style="--card-padding:1rem; --card-border-radius:var(--border-radius-small);">
-                <div class="u-flex u-gap-16">
-                    <input
-                        bind:group={$templateConfig.repositoryBehaviour}
-                        class="is-small u-margin-block-start-2"
-                        value="existing"
-                        type="radio"
-                        name="repositoryBehaviour" />
-                    <div class="u-flex u-flex-vertical u-gap-4">
-                        <h4 class="body-text-2 u-bold">Add to existing repository</h4>
-                        <p class="u-color-text-gray">
-                            Clone the template to an existing repository in your selected
-                            organization.
-                        </p>
-                    </div>
-                </div>
-            </label>
-        </li>
+        <LabelCard name="test" value="new" bind:group={$templateConfig.repositoryBehaviour}>
+            <svelte:fragment slot="title">Create a new repository</svelte:fragment>
+            Clone the template and create a new repository in your selected organization.
+        </LabelCard>
+        <LabelCard name="test" value="new" bind:group={$templateConfig.repositoryBehaviour}>
+            <svelte:fragment slot="title">Add to existing repository</svelte:fragment>
+            Clone the template to an existing repository in your selected organization.
+        </LabelCard>
     </ul>
 </WizardStep>

@@ -5,7 +5,7 @@
     export let deployment: Models.Deployment;
 </script>
 
-{timeFromNow(deployment.$createdAt)}
+{timeFromNow(deployment.$updatedAt)}
 {#if deployment.providerCommitAuthor}
     by <a
         class="u-underline u-cursor-pointer"

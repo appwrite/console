@@ -5,7 +5,16 @@
     export let icons: string[] = [];
     export let total = avatars.length;
     export let size = 40;
+    export let avatarSize: keyof typeof Sizes = 'medium';
     export let bordered = false;
+
+    enum Sizes {
+        xsmall = 'is-size-x-small',
+        small = 'is-size-small',
+        medium = '',
+        large = 'is-size-large',
+        xlarge = 'is-size-x-large'
+    }
 </script>
 
 <ul class="avatars-group" class:is-with-border={bordered}>
@@ -19,13 +28,13 @@
 
     {#each icons as icon}
         <li class="avatars-group-item">
-            <span class="avatar"><span class={`icon-${icon}`} /></span>
+            <span class="avatar {Sizes[avatarSize]}"><span class={`icon-${icon}`} /></span>
         </li>
     {/each}
 
     {#if total > 2}
         <li class="avatars-group-item">
-            <div class="avatar">+{total - 2}</div>
+            <div class="avatar {Sizes[avatarSize]}">+{total - 2}</div>
         </li>
     {/if}
 </ul>

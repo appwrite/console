@@ -13,7 +13,7 @@
         TableRowButton,
         TableScroll
     } from '$lib/elements/table';
-    import { toLocaleDateTime } from '$lib/helpers/date';
+    import { timeFromNow } from '$lib/helpers/date';
     import { calculateTime } from '$lib/helpers/timeConversion';
     import { Container } from '$lib/layout';
     import { log } from '$lib/stores/logs';
@@ -24,10 +24,11 @@
     import type { PageData } from './$types';
     import { project } from '$routes/console/project-[project]/store';
     import Create from '../create.svelte';
+    import Execute from '../execute.svelte';
 
     export let data: PageData;
 
-    let showCreate = false;
+    let selectedFunction: Models.Function = null;
 
     onMount(() => {
         return sdk.forConsole.client.subscribe('console', (response) => {
@@ -37,7 +38,7 @@
         });
     });
 
-    function showLogs(execution: Models.Execution<Record<string, string>>) {
+    function showLogs(execution: Models.Execution) {
         $log.show = true;
         $log.func = $func;
         $log.data = execution;
@@ -47,6 +48,10 @@
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
         <Heading tag="h2" size="5">Executions</Heading>
+
+        <Button on:click={() => (selectedFunction = $func)} event="execute_function">
+            <span class="text">Execute now</span>
+        </Button>
     </div>
     {#if !$func.logging}
         <div class="common-section">
@@ -69,6 +74,8 @@
                 <TableCellHead width={110}>Status</TableCellHead>
                 <TableCellHead width={140}>Created</TableCellHead>
                 <TableCellHead width={90}>Trigger</TableCellHead>
+                <TableCellHead width={70}>Method</TableCellHead>
+                <TableCellHead width={90}>Path</TableCellHead>
                 <TableCellHead width={80}>Duration</TableCellHead>
             </TableHeader>
             <TableBody>
@@ -77,7 +84,7 @@
                         <TableCell width={150} title="Execution ID">
                             <Id value={execution.$id}>{execution.$id}</Id>
                         </TableCell>
-                        <TableCellText width={110} title="Status">
+                        <TableCell width={110} title="Status">
                             {@const status = execution.status}
                             <Pill
                                 danger={status === 'failed'}
@@ -86,14 +93,20 @@
                                 info={status === 'processing' || status === 'building'}>
                                 <span class="text u-trim">{execution.status}</span>
                             </Pill>
-                        </TableCellText>
+                        </TableCell>
                         <TableCellText width={140} title="Created">
-                            {toLocaleDateTime(execution.$createdAt)}
+                            {timeFromNow(execution.$createdAt)}
                         </TableCellText>
-                        <TableCellText width={90} title="Trigger">
+                        <TableCell width={90} title="Trigger">
                             <Pill>
                                 <span class="text u-trim">{execution.trigger}</span>
                             </Pill>
+                        </TableCell>
+                        <TableCellText width={70} title="Method">
+                            {execution.requestMethod}
+                        </TableCellText>
+                        <TableCellText width={90} title="Path">
+                            {execution.requestPath}
                         </TableCellText>
                         <TableCellText width={80} title="Duration">
                             {calculateTime(execution.duration)}
@@ -120,8 +133,10 @@
                 <Button text external href="https://appwrite.io/docs/functions#execute">
                     Documentation
                 </Button>
-                <Create bind:showCreateManual={showCreate} />
+                <Create secondary />
             </div>
         </EmptySearch>
     {/if}
 </Container>
+
+<Execute {selectedFunction} />

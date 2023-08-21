@@ -3,6 +3,7 @@
     import InputSelectSearch from '$lib/elements/forms/inputSelectSearch.svelte';
     import { WizardStep } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
+    import { sortBranches } from '$routes/console/project-[project]/functions/function-[function]/settings/updateConfiguration.svelte';
     import { choices, installation, repository } from '../store';
 
     $choices.rootDir ??= '';
@@ -20,13 +21,7 @@
             $installation.$id,
             $repository.id
         );
-        const sorted = branches.sort((a, b) => {
-            if (a.name === 'main' || a.name === 'master') {
-                return -1;
-            }
-
-            return a.name > b.name ? -1 : 1;
-        });
+        const sorted = sortBranches(branches);
         $choices.branch = sorted[0]?.name ?? null;
 
         if (!$choices.branch) {
@@ -57,25 +52,34 @@
                 <div class="loader u-margin-32" />
             </div>
         {:then branches}
+            {@const options =
+                branches
+                    ?.map((branch) => {
+                        return {
+                            value: branch.name,
+                            label: branch.name
+                        };
+                    })
+                    ?.sort((a, b) => {
+                        return a.label > b.label ? 1 : -1;
+                    }) ?? []}
             <div class="u-margin-block-start-24">
                 <FormList>
                     <InputSelectSearch
                         required={true}
                         id="branch"
-                        label="Select branch"
-                        placeholder="main"
+                        label="Production branch"
+                        placeholder="Select branch"
+                        tooltip="Every commit pushed to this branch will activate the deployment after a successful build"
+                        hideRequired
                         bind:value={$choices.branch}
                         bind:search={$choices.branch}
                         on:select={(event) => {
                             $choices.branch = event.detail.value;
                         }}
+                        interactiveOutput
                         name="branch"
-                        options={branches?.map((branch) => {
-                            return {
-                                value: branch.name,
-                                label: branch.name
-                            };
-                        }) ?? []} />
+                        {options} />
                     <InputText
                         id="root"
                         label="Root directory"
@@ -84,7 +88,7 @@
                     <InputChoice
                         id="silent"
                         label="Silent mode"
-                        tooltip="Don't create comments when pushing to this repository"
+                        tooltip="When enabled, comments will not be made on pull requests in this repository"
                         bind:value={$choices.silentMode} />
                 </FormList>
             </div>
@@ -95,7 +99,7 @@
             href={$repository.html_url}
             target="_blank"
             rel="noopener noreferrer"
-            class="link">{$repository.provider}</a
+            class="link">GitHub</a
         >.
     </p>
 </WizardStep>

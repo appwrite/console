@@ -3,6 +3,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Collapsible, CollapsibleItem, Pagination } from '$lib/components';
+    import { debounce } from '$lib/helpers/debounce';
     import { Container } from '$lib/layout';
     import { app } from '$lib/stores/app';
     import { connectTemplate } from '$lib/wizards/functions/cover.svelte';
@@ -23,19 +24,6 @@
         }
         target.searchParams.delete('page');
         goto(target.toString());
-    }
-
-    function applySearch(event: Event) {
-        const value = (event.target as EventTarget & HTMLInputElement).value;
-        const target = new URL($page.url);
-
-        if (value.length > 0) {
-            target.searchParams.set('search', value);
-        } else {
-            target.searchParams.delete('search');
-        }
-        target.searchParams.delete('page');
-        goto(target.toString(), { keepFocus: true });
     }
 
     function clearSearch() {
@@ -62,6 +50,19 @@
                 return undefined;
         }
     }
+
+    const applySearch = debounce((event: Event) => {
+        const value = (event.target as EventTarget & HTMLInputElement).value;
+        const target = new URL($page.url);
+
+        if (value.length > 0) {
+            target.searchParams.set('search', value);
+        } else {
+            target.searchParams.delete('search');
+        }
+        target.searchParams.delete('page');
+        goto(target.toString(), { keepFocus: true });
+    }, 250);
 </script>
 
 <Container>
@@ -85,50 +86,63 @@
                     <span class="icon-x" aria-hidden="true" />
                 </button>
             </div>
-            <Collapsible>
-                <CollapsibleItem>
-                    <svelte:fragment slot="title">Use case</svelte:fragment>
-                    {#each [...data.useCases] as useCase}
-                        <div class="input-text-wrapper">
-                            <input
-                                id={`useCase-${useCase}`}
-                                type="checkbox"
-                                value={$page.url.searchParams.getAll('useCase').includes(useCase)}
-                                on:change={(e) => applyFilter('useCase', useCase, e)} />
-                            <label for={`useCase-${useCase}`}>{useCase}</label>
-                        </div>
-                    {/each}
-                </CollapsibleItem>
-                <CollapsibleItem>
-                    <svelte:fragment slot="title">Runtime</svelte:fragment>
-                    {#each [...data.runtimes] as runtime}
-                        {@const icon = getIconFromRuntime(runtime)}
-                        <div class="u-flex">
-                            <input
-                                id={`runtime-${runtime}`}
-                                type="checkbox"
-                                checked={$page.url.searchParams.getAll('runtime').includes(runtime)}
-                                on:change={(e) => applyFilter('runtime', runtime, e)} />
-                            <div class="avatar is-size-x-small">
-                                <img
-                                    style:--p-text-size="16px"
-                                    src={`${base}/icons/${$app.themeInUse}/color/${icon}.svg`}
-                                    alt={icon}
-                                    aria-hidden="true"
-                                    aria-label={icon} />
-                            </div>
-                            <label for={`runtime-${runtime}`}>{runtime}</label>
-                        </div>
-                    {/each}
-                </CollapsibleItem>
-            </Collapsible>
+            <div class="u-margin-block-start-24">
+                <Collapsible>
+                    <CollapsibleItem>
+                        <svelte:fragment slot="title">Use case</svelte:fragment>
+                        <ul class="form-list u-row-gap-16">
+                            {#each [...data.useCases] as useCase}
+                                <li class="form-item">
+                                    <label class="u-flex u-cross-center u-gap-16">
+                                        <input
+                                            type="checkbox"
+                                            class="is-small"
+                                            value={$page.url.searchParams
+                                                .getAll('useCase')
+                                                .includes(useCase)}
+                                            on:change={(e) => applyFilter('useCase', useCase, e)} />
+                                        <div class="u-trim-1">{useCase}</div>
+                                    </label>
+                                </li>
+                            {/each}
+                        </ul>
+                    </CollapsibleItem>
+                    <CollapsibleItem>
+                        <svelte:fragment slot="title">Runtime</svelte:fragment>
+                        <ul class="form-list u-row-gap-16">
+                            {#each [...data.runtimes] as runtime}
+                                {@const icon = getIconFromRuntime(runtime)}
+                                <li class="form-item">
+                                    <label class="u-flex u-cross-center u-gap-16">
+                                        <input
+                                            type="checkbox"
+                                            class="is-small"
+                                            checked={$page.url.searchParams
+                                                .getAll('runtime')
+                                                .includes(runtime)}
+                                            on:change={(e) => applyFilter('runtime', runtime, e)} />
+                                        <div class="u-flex u-cross-center u-gap-8">
+                                            <div class="avatar is-size-x-small">
+                                                <img
+                                                    src={`${base}/icons/${$app.themeInUse}/color/${icon}.svg`}
+                                                    alt={icon} />
+                                            </div>
+                                            <div class="u-trim-1">{runtime}</div>
+                                        </div>
+                                    </label>
+                                </li>
+                            {/each}
+                        </ul>
+                    </CollapsibleItem>
+                </Collapsible>
+            </div>
 
             <section class="card u-margin-block-start-24">
                 <h4 class="body-text-1 u-bold">Contribute</h4>
                 <p class="u-margin-block-start-16">
                     Have an idea for a function template? View our <a
                         class="link"
-                        href=""
+                        href="https://github.com/appwrite/templates/blob/main/CONTRIBUTING.md"
                         target="_blank">contribution guidelines</a
                     >.
                 </p>
@@ -141,7 +155,7 @@
                 {#each data.templates as template}
                     <li>
                         <article class="card">
-                            <div class="u-flex u-gap-16">
+                            <div class="u-flex u-gap-16 u-cross-center">
                                 <h2 class="body-text-1 u-bold u-trim">
                                     {template.name}
                                 </h2>

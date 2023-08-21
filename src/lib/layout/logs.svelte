@@ -1,19 +1,18 @@
 <script lang="ts">
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { log } from '$lib/stores/logs';
-    import { Alert, Code, Heading, Id, Status, Tab, Tabs } from '../components';
-    import { base } from '$app/paths';
-    import { app } from '$lib/stores/app';
+    import { Card, Code, Heading, Id, SvgIcon, Tab, Tabs } from '../components';
     import { calculateTime } from '$lib/helpers/timeConversion';
     import {
         TableBody,
         TableCellHead,
         TableCellText,
         TableHeader,
-        TableRow
+        TableRow,
+        TableScroll
     } from '$lib/elements/table';
     import { beforeNavigate } from '$app/navigation';
-    import Table from '$lib/elements/table/table.svelte';
+    import { Pill } from '$lib/elements';
 
     let selectedRequest = 'parameters';
     let selectedResponse = 'logs';
@@ -25,6 +24,21 @@
         }
     }
 
+    function parseUrl(url: string) {
+        if (!url) return;
+        const queryString = url.includes('?') ? url.split('?')[1] : '';
+        const queries: Record<string, string>[] = [];
+        for (const param of queryString.split('&')) {
+            let [key, ...valueArr] = param.split('=');
+            const value = valueArr.join('=');
+
+            if (key) {
+                queries.push({ key, value: value ?? '' });
+            }
+        }
+        return queries;
+    }
+
     beforeNavigate((n) => {
         if (!$log.show) return;
         if (n.type === 'popstate') {
@@ -33,9 +47,9 @@
         $log.show = false;
     });
 
+    $: parameters = parseUrl(execution?.requestPath);
     $: execution = $log.data;
     $: func = $log.func;
-
     $: if (execution?.errors) {
         selectedResponse = 'errors';
     }
@@ -62,13 +76,11 @@
         <div class="cover-frame-content u-flex u-flex-vertical">
             <div class="u-flex u-gap-16">
                 <div class="avatar is-size-large">
-                    <img
-                        height="28"
-                        width="28"
-                        src={`${base}/icons/${$app.themeInUse}/color/${
-                            func.runtime.split('-')[0]
-                        }.svg`}
-                        alt="technology" />
+                    <SvgIcon
+                        size={56}
+                        type="color"
+                        name={func.runtime.split('-')[0]}
+                        iconSize="large" />
                 </div>
                 <div>
                     <h2 class="body-text-2 u-bold">Execution ID:</h2>
@@ -88,9 +100,23 @@
                             {toLocaleDateTime(execution.$createdAt)}
                         </time>
                     </li>
+                    {#if execution?.requestHeaders?.host}
+                        <li class="text">
+                            <b>Host</b>
+                            <span>
+                                {execution.requestHeaders.host}
+                            </span>
+                        </li>
+                    {/if}
                 </ul>
                 <div class="status u-margin-inline-start-auto">
-                    <Status status={execution.status}>{execution.status}</Status>
+                    <Pill
+                        warning={execution.status === 'waiting'}
+                        danger={execution.status === 'failed'}
+                        success={execution.status === 'completed' || execution.status === 'ready'}
+                        info={execution.status === 'processing' || execution.status === 'building'}>
+                        {execution.status}
+                    </Pill>
                 </div>
             </div>
 
@@ -98,24 +124,25 @@
                 <section class="code-panel">
                     <header class="code-panel-header u-flex u-main-space-between u-width-full-line">
                         <div class="u-flex u-gap-24">
-                            <div class="u-flex u-gap-4">
-                                <h4 class="u-bold">Method:</h4>
-                                <span>{execution.requestMethod}</span>
+                            <div class="u-flex u-gap-16">
+                                <h4 class="text u-bold">Method:</h4>
+                                <span class="u-text-color-gray">{execution.requestMethod}</span>
                             </div>
-                            <div class="u-flex u-gap-4">
-                                <h4 class="u-bold">Path:</h4>
-                                <span>{execution.requestPath}</span>
+                            <div class="u-flex u-gap-16">
+                                <h4 class="text u-bold">Path:</h4>
+                                <span class="u-text-color-gray">{execution.requestPath}</span>
                             </div>
                         </div>
 
                         <div class="u-flex u-gap-24">
-                            <div class="u-flex u-gap-4">
-                                <h4 class="u-bold">Triggered by:</h4>
-                                <span>{execution.trigger}</span>
+                            <div class="u-flex u-gap-16">
+                                <h4 class="text u-bold">Triggered by:</h4>
+                                <span class="u-text-color-gray">{execution.trigger}</span>
                             </div>
-                            <div class="u-flex u-gap-4">
-                                <h4 class="u-bold">Status Code:</h4>
-                                <span>{execution.responseStatusCode}</span>
+                            <div class="u-flex u-gap-16">
+                                <h4 class="text u-bold">Status Code:</h4>
+                                <span class="u-text-color-gray"
+                                    >{execution.responseStatusCode}</span>
                             </div>
                         </div>
                     </header>
@@ -142,78 +169,93 @@
                                 </Tabs>
                             </div>
                             {#if selectedRequest === 'parameters'}
-                                <Alert type="info">
-                                    <svelte:fragment slot="title">
-                                        Parameters data is not stored in function executions
-                                    </svelte:fragment>
-                                    <p class="text">
-                                        Logging parameters data might compromise privacy and
-                                        security. To log them intentionally, use <b
-                                            >context.log(context.req.headers)</b>
-                                        in your function and make them available in Logs tab.
-                                        <a
-                                            href="https://appwrite.io/docs/functions-develop#logging"
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            class="link">Learn more</a
-                                        >.
-                                    </p>
-                                </Alert>
-                            {:else if selectedRequest === 'headers'}
-                                <Alert type="info">
-                                    <svelte:fragment slot="title">
-                                        Only some request headers are stored
-                                    </svelte:fragment>
-                                    <p class="text">
-                                        Logging some headers might compromise privacy and security.
-                                        We only log well-known public headers. To log more headers
-                                        intentionally, use <b>context.log()</b>
-                                        in your function and make them available in Logs tab.
-                                        <a
-                                            href="https://appwrite.io/docs/functions-develop#logging"
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            class="link">Learn more</a
-                                        >.
-                                    </p>
-                                </Alert>
-
-                                {#if execution.requestHeaders.length}
-                                    <Table>
-                                        <TableHeader>
-                                            <TableCellHead>Name</TableCellHead>
-                                            <TableCellHead>Value</TableCellHead>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {#each execution.requestHeaders as header}
-                                                <TableRow>
-                                                    <TableCellText title="Name">
-                                                        {header.name}
-                                                    </TableCellText>
-                                                    <TableCellText title="Value"
-                                                        >{header.value}</TableCellText>
-                                                </TableRow>
-                                            {/each}
-                                        </TableBody>
-                                    </Table>
+                                {#if parameters?.length}
+                                    <div class="u-margin-block-start-24">
+                                        <TableScroll noMargin>
+                                            <TableHeader>
+                                                <TableCellHead>Name</TableCellHead>
+                                                <TableCellHead>Value</TableCellHead>
+                                            </TableHeader>
+                                            <TableBody>
+                                                {#each parameters as param}
+                                                    <TableRow>
+                                                        <TableCellText title="Key">
+                                                            {param.key}
+                                                        </TableCellText>
+                                                        <TableCellText title="Value">
+                                                            {param.value}
+                                                        </TableCellText>
+                                                    </TableRow>
+                                                {/each}
+                                            </TableBody>
+                                        </TableScroll>
+                                    </div>
                                 {/if}
+
+                                <p class="text u-text-center u-padding-24">
+                                    {parameters?.length
+                                        ? 'Not all parameters data is'
+                                        : 'Parameters data is not'} captured by Appwrite for your user's
+                                    security and privacy. To display parameters data in the Logs tab,
+                                    use
+                                    <b>context.log()</b>.
+                                    <a
+                                        href="https://appwrite.io/docs/functions-develop#logging"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="link">Learn more</a
+                                    >.
+                                </p>
+                            {:else if selectedRequest === 'headers'}
+                                {#if execution.requestHeaders.length}
+                                    <div class="u-margin-block-start-24">
+                                        <TableScroll noMargin>
+                                            <TableHeader>
+                                                <TableCellHead>Name</TableCellHead>
+                                                <TableCellHead>Value</TableCellHead>
+                                            </TableHeader>
+                                            <TableBody>
+                                                {#each execution.requestHeaders as header}
+                                                    <TableRow>
+                                                        <TableCellText title="Name">
+                                                            {header.name}
+                                                        </TableCellText>
+                                                        <TableCellText title="Value">
+                                                            {header.value}
+                                                        </TableCellText>
+                                                    </TableRow>
+                                                {/each}
+                                            </TableBody>
+                                        </TableScroll>
+                                    </div>
+                                {/if}
+
+                                <p class="text u-text-center u-padding-24">
+                                    {execution.requestHeaders?.length
+                                        ? 'Not all header data is'
+                                        : 'Header data is not'}
+                                    captured by Appwrite for your user's security and privacy. To display
+                                    header data in the Logs tab, use
+                                    <b>context.log()</b>.
+                                    <a
+                                        href="https://appwrite.io/docs/functions-develop#logging"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="link">Learn more</a
+                                    >.
+                                </p>
                             {:else if selectedRequest === 'body'}
-                                <Alert type="warning">
-                                    <svelte:fragment slot="title">
-                                        Request body is not stored
-                                    </svelte:fragment>
-                                    <p class="text">
-                                        Logging body might compromise privacy and security. To log
-                                        it intentionally, use <b>context.log()</b>
-                                        in your function and make it available in Logs tab.
-                                        <a
-                                            href="https://appwrite.io/docs/functions-develop#logging"
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            class="link">Learn more</a
-                                        >.
-                                    </p>
-                                </Alert>
+                                <p class="text u-text-center u-padding-24">
+                                    Body data is not captured by Appwrite for your user's security
+                                    and privacy. To display body data in the Logs tab, use
+                                    <b>context.log()</b>.
+                                    <a
+                                        href="https://appwrite.io/docs/functions-develop#logging"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="link">Learn more</a
+                                    >.
+                                </p>
                             {/if}
                         </div>
                         <div class="grid-1-2-col-2 u-flex u-flex-vertical u-gap-16">
@@ -243,30 +285,24 @@
                                 </Tabs>
                             </div>
                             {#if selectedResponse === 'logs'}
-                                <Code withCopy noMargin code={execution.logs} language="sh" />
+                                {#if execution?.logs}
+                                    <Code withCopy noMargin code={execution.logs} language="sh" />
+                                {:else}
+                                    <Card isDashed isTile>
+                                        <p class="text u-text-center">No response was recorded.</p>
+                                    </Card>
+                                {/if}
                             {:else if selectedResponse === 'errors'}
-                                <Code withCopy noMargin code={execution.errors} language="sh" />
+                                {#if execution?.errors}
+                                    <Code withCopy noMargin code={execution.errors} language="sh" />
+                                {:else}
+                                    <Card isDashed isTile>
+                                        <p class="text u-text-center">No response was recorded.</p>
+                                    </Card>
+                                {/if}
                             {:else if selectedResponse === 'headers'}
-                                <Alert type="info">
-                                    <svelte:fragment slot="title">
-                                        Only some response headers are stored
-                                    </svelte:fragment>
-                                    <p class="text">
-                                        Logging some headers might compromise privacy and security.
-                                        We only log well-known public headers. To log more headers
-                                        intentionally, use <b>context.log()</b>
-                                        in your function and make them available in Logs tab.
-                                        <a
-                                            href="https://appwrite.io/docs/functions-develop#logging"
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            class="link">Learn more</a
-                                        >.
-                                    </p>
-                                </Alert>
-
                                 {#if execution.responseHeaders.length}
-                                    <Table>
+                                    <TableScroll noMargin>
                                         <TableHeader>
                                             <TableCellHead>Name</TableCellHead>
                                             <TableCellHead>Value</TableCellHead>
@@ -282,25 +318,34 @@
                                                 </TableRow>
                                             {/each}
                                         </TableBody>
-                                    </Table>
+                                    </TableScroll>
                                 {/if}
+                                <p class="text u-text-center u-padding-24">
+                                    {execution.responseHeaders?.length
+                                        ? 'Not all header data is'
+                                        : 'Header data is not'}
+                                    captured by Appwrite for your user's security and privacy. To display
+                                    header data in the Logs tab, use
+                                    <b>context.log()</b>.
+                                    <a
+                                        href="https://appwrite.io/docs/functions-develop#logging"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="link">Learn more</a
+                                    >.
+                                </p>
                             {:else if selectedResponse === 'body'}
-                                <Alert type="warning">
-                                    <svelte:fragment slot="title">
-                                        Response body is not stored
-                                    </svelte:fragment>
-                                    <p class="text">
-                                        Logging body might compromise privacy and security. To log
-                                        it intentionally, use <b>context.log()</b>
-                                        in your function and make it available in Logs tab.
-                                        <a
-                                            href="https://appwrite.io/docs/functions-develop#logging"
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            class="link">Learn more</a
-                                        >.
-                                    </p>
-                                </Alert>
+                                <p class="text u-text-center u-padding-24">
+                                    Body data is not captured by Appwrite for your user's security
+                                    and privacy. To display body data in the Logs tab, use
+                                    <b>context.log()</b>.
+                                    <a
+                                        href="https://appwrite.io/docs/functions-develop#logging"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="link">Learn more</a
+                                    >.
+                                </p>
                             {/if}
                         </div>
                     </div>

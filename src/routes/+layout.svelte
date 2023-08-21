@@ -15,13 +15,18 @@
     import { onMount } from 'svelte';
     import { onCLS, onFCP, onFID, onINP, onLCP, onTTFB } from 'web-vitals';
     import Loading from './loading.svelte';
-    import { loading } from './store';
+    import { loading, requestedMigration } from './store';
+    import { parseIfString } from '$lib/helpers/object';
 
     if (browser) {
         window.VERCEL_ANALYTICS_ID = import.meta.env.VERCEL_ANALYTICS_ID?.toString() ?? false;
     }
 
     onMount(async () => {
+        if ($page.url.searchParams.has('migrate')) {
+            const migrateData = $page.url.searchParams.get('migrate');
+            requestedMigration.set(parseIfString(migrateData));
+        }
         /**
          * Reporting Web Vitals.
          */
@@ -179,9 +184,5 @@
             height: 1px;
             background: var(--separator-color);
         }
-    }
-
-    [type='checkbox']:where(:checked)::before {
-        content: '\ea38';
     }
 </style>

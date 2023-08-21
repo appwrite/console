@@ -13,7 +13,7 @@
         repository
     } from './store';
     import { addNotification } from '$lib/stores/notifications';
-    import { Submit, trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import Details from './steps/details.svelte';
@@ -57,6 +57,7 @@
                 message: error.message,
                 type: 'error'
             });
+            trackError(error, Submit.FunctionCreate);
         }
     }
 

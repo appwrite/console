@@ -29,6 +29,7 @@ export { default as AvatarInitials } from './avatarInitials.svelte';
 export { default as AvatarGroup } from './avatarGroup.svelte';
 export { default as Alert } from './alert.svelte';
 export { default as Box } from './box.svelte';
+export { default as BoxAvatar } from './boxAvatar.svelte';
 export { default as Search } from './search.svelte';
 export { default as SearchQuery } from './searchQuery.svelte';
 export { default as GridItem1 } from './gridItem1.svelte';

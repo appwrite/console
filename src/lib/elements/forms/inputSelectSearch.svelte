@@ -16,9 +16,11 @@
     export let label: string;
     export let name = 'elements';
     export let optionalText: string | undefined = undefined;
+    export let tooltip: string | undefined = undefined;
     export let showLabel = true;
     export let placeholder = '';
     export let required = false;
+    export let hideRequired = false;
     export let disabled = false;
     export let fullWidth = false;
     export let autofocus = false;
@@ -84,11 +86,12 @@
         value = option.value;
         search = option.label;
         // It's not working without this line.
-        if ($$slots.output) {
-            search = '';
-        } else {
+        if (!$$slots.output) {
             element.value = search;
+        } else {
+            search = '';
         }
+
         hasFocus = false;
         dispatch('select', option);
     }
@@ -117,7 +120,7 @@
         position="static"
         fullWidth={true}
         fixed>
-        <Label {required} {optionalText} hide={!showLabel} for={id}>
+        <Label {required} {hideRequired} {optionalText} hide={!showLabel} for={id} {tooltip}>
             {label}
         </Label>
 

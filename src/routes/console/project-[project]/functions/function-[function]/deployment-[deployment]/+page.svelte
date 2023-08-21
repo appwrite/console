@@ -7,7 +7,7 @@
     import { calculateTime } from '$lib/helpers/timeConversion';
     import { Container } from '$lib/layout';
     import { app } from '$lib/stores/app';
-    import { func } from '../store';
+    import { func, proxyRuleList } from '../store';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import type { Models } from '@appwrite.io/console';
@@ -17,6 +17,9 @@
     import { timer } from '$lib/actions/timer';
     import DeploymentSource from '../deploymentSource.svelte';
     import { deployment } from './store';
+    import DeploymentCreatedBy from '../deploymentCreatedBy.svelte';
+    import DeploymentDomains from '../deploymentDomains.svelte';
+    import { tooltip } from '$lib/actions/tooltip';
 
     let logs = '';
 
@@ -75,12 +78,29 @@
                             {calculateTime($deployment.buildTime)}
                         {/if}
                     </p>
-                    <p><b>Created:</b> <deploymentCreatedBy deployment={$deployment} /></p>
-                    <p><b>Size:</b> {fileSize.value + fileSize.unit}</p>
+                    <p><b>Updated:</b> <DeploymentCreatedBy deployment={$deployment} /></p>
                     <p>
+                        <b>Size:</b>
+                        {fileSize.value + fileSize.unit}
+                        <span
+                            class="icon-info"
+                            aria-hidden="true"
+                            style="font-size: var(--icon-size-small)"
+                            use:tooltip={{
+                                content:
+                                    'Build size is the size of your code that will run. If your code has been transpiled, it will include your library source code. If it has been compiled, it will include your build output file.'
+                            }} />
+                    </p>
+                    <p class="u-flex u-gap-4 u-cross-center">
                         <b>Source:</b>
                         <DeploymentSource deployment={$deployment} />
                     </p>
+                    {#if $proxyRuleList?.rules?.length}
+                        <p class="u-flex u-gap-4 u-cross-center">
+                            <b>Domains:</b>
+                            <DeploymentDomains domain={$proxyRuleList} />
+                        </p>
+                    {/if}
                 </div>
                 <div class="u-flex u-flex-vertical u-cross-end">
                     <Pill
@@ -100,9 +120,11 @@
             <section class="code-panel">
                 <header class="code-panel-header u-flex u-main-space-between u-width-full-line">
                     <div class="u-flex u-flex-vertical">
-                        <h4 class="u-bold">Build [{$func.name}]</h4>
+                        <h4 class="u-bold">Build {$func.name}</h4>
                         {#if $deployment.status === 'building'}
                             <span>Building...</span>
+                        {:else}
+                            {$deployment.status}
                         {/if}
                     </div>
 

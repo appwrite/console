@@ -8,13 +8,14 @@ import { Query } from '@appwrite.io/console';
 
 export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.FUNCTION);
+    depends(Dependencies.DEPLOYMENTS);
 
     try {
         return {
             header: Header,
             breadcrumbs: Breadcrumbs,
             function: sdk.forProject.functions.get(params.function),
-            domain: sdk.forProject.proxy.listRules([
+            proxyRuleList: sdk.forProject.proxy.listRules([
                 Query.equal('resourceType', 'function'),
                 Query.equal('resourceId', params.function),
                 Query.limit(1)

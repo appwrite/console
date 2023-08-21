@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { beforeNavigate } from '$app/navigation';
     import { DropList, DropListItem } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import CreateCli from './createCli.svelte';
@@ -13,6 +14,8 @@
     let showCreateCli = false;
     let showCreateGit = false;
     let showCreateManual = false;
+
+    beforeNavigate(() => ($showCreateDeployment = false));
 
     $: if ($showCreateDeployment && main) {
         show = true;

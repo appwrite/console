@@ -1,12 +1,13 @@
 <script lang="ts">
-    import { afterNavigate, goto } from '$app/navigation';
+    import { afterNavigate, goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import Collapsible from '$lib/components/collapsible.svelte';
     import CollapsibleItem from '$lib/components/collapsibleItem.svelte';
-    import { Button } from '$lib/elements/forms';
+    import { Dependencies } from '$lib/constants';
+    import { Button, FormItem, FormItemPart } from '$lib/elements/forms';
     import { FormList } from '$lib/elements/forms';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
     import InputText from '$lib/elements/forms/inputText.svelte';
@@ -22,6 +23,7 @@
     let method = 'GET';
     let body = '';
     let headers: [string, string][] = [['', '']];
+    let error: string = null;
 
     const methodOptions = [
         { label: 'GET', value: 'GET' },
@@ -56,21 +58,21 @@
                 method,
                 headersObject
             );
-            goto(
-                `${base}/console/project-${$page.params.project}/functions/function-${selectedFunction.$id}/executions`
-            );
+            if (!$page.url?.toString()?.includes('/executions')) {
+                await goto(
+                    `${base}/console/project-${$page.params.project}/functions/function-${selectedFunction.$id}/executions`
+                );
+            }
+            invalidate(Dependencies.EXECUTIONS);
             close();
             addNotification({
                 type: 'success',
                 message: `Function has been executed`
             });
             trackEvent(Submit.ExecutionCreate);
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
-            trackError(error, Submit.ExecutionCreate);
+        } catch (e) {
+            error = e.message;
+            trackError(e, Submit.ExecutionCreate);
         } finally {
             submitting = false;
         }
@@ -84,15 +86,21 @@
     afterNavigate(close);
 </script>
 
-<Modal headerDivider={false} bind:show size="big" onSubmit={handleSubmit} on:close={close}>
+<Modal
+    headerDivider={false}
+    bind:show
+    size="big"
+    onSubmit={handleSubmit}
+    on:close={close}
+    bind:error>
     <svelte:fragment slot="header">Execute function</svelte:fragment>
     <p class="text">
-        Manually execute your function. Learn more about <a
+        Manually execute your function. <a
             class="link"
             href="https://appwrite.io/docs/functions#execute"
             target="_blank"
             rel="noopener noreferrer">
-            function executions
+            Learn more
         </a>.
     </p>
 
@@ -108,44 +116,39 @@
 
         <Collapsible>
             <CollapsibleItem>
-                <svelte:fragment slot="title">Advanced settings (optional)</svelte:fragment>
+                <svelte:fragment slot="title">Advanced settings</svelte:fragment>
+                <svelte:fragment slot="subtitle">(optional)</svelte:fragment>
                 <FormList>
                     <p class="text">
                         Customize your execution with headers or body. To customize parameters, add
                         them to path.
                     </p>
-
-                    <Label>Headers</Label>
+                    <div>
+                        <Label
+                            tooltip="Headers should contain alphanumeric characters (a-z, A-Z, and 0-9) and hyphens only (- and _).">
+                            Headers
+                        </Label>
+                    </div>
                     <div class="form u-grid u-gap-16">
-                        <ul class="form-list">
+                        <FormList>
                             {#if headers}
                                 {#each headers as [name, value], index}
-                                    <li class="form-item is-multiple">
-                                        <div class="form-item-part u-stretch">
-                                            <label class="label" for={`key-${index}`}>Name</label>
-                                            <div class="input-text-wrapper">
-                                                <input
-                                                    id={`key-${name}`}
-                                                    placeholder="Enter Name"
-                                                    type="text"
-                                                    class="input-text"
-                                                    bind:value={name} />
-                                            </div>
-                                        </div>
-                                        <div class="form-item-part u-stretch">
-                                            <label class="label" for={`value-${index}`}>
-                                                Value
-                                            </label>
-                                            <div class="input-text-wrapper">
-                                                <input
-                                                    id={`value-${value}`}
-                                                    placeholder="Enter value"
-                                                    type="text"
-                                                    class="input-text"
-                                                    bind:value />
-                                            </div>
-                                        </div>
-                                        <div class="form-item-part u-cross-child-end">
+                                    <FormItem isMultiple>
+                                        <InputText
+                                            isMultiple
+                                            fullWidth
+                                            label="Name"
+                                            placeholder="Enter Name"
+                                            id={`key-${index}`}
+                                            bind:value={name} />
+                                        <InputText
+                                            isMultiple
+                                            fullWidth
+                                            label="Value"
+                                            placeholder="Enter value"
+                                            id={`value-${index}`}
+                                            bind:value />
+                                        <FormItemPart alignEnd>
                                             <Button
                                                 text
                                                 disabled={(!name || !value) && index === 0}
@@ -159,11 +162,11 @@
                                                 }}>
                                                 <span class="icon-x" aria-hidden="true" />
                                             </Button>
-                                        </div>
-                                    </li>
+                                        </FormItemPart>
+                                    </FormItem>
                                 {/each}
                             {/if}
-                        </ul>
+                        </FormList>
                         <Button
                             noMargin
                             text

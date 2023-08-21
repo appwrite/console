@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Alert, Code } from '$lib/components';
     import { WizardStep } from '$lib/layout';
-    import { Mode, MODE } from '$lib/system';
+    import { isSelfHosted } from '$lib/system';
     import { sdk } from '$lib/stores/sdk';
     import Id from '$lib/components/id.svelte';
 
@@ -30,12 +30,9 @@ client
         Before sending any API calls to your new Appwrite project, make sure your device or emulator
         has network access to your Appwrite project's hostname or IP address.
     </p>
-    {#if showAlert}
+    {#if showAlert && isSelfHosted}
         <div class="common-section">
-            <Alert
-                type="info"
-                dismissible={MODE === Mode.CLOUD}
-                on:dismiss={() => (showAlert = false)}>
+            <Alert type="info" on:dismiss={() => (showAlert = false)}>
                 <svelte:fragment slot="title">For self-hosted solutions</svelte:fragment>
                 When connecting to a locally hosted Appwrite project from an emulator or a mobile device,
                 you should use the private IP of the device running your Appwrite project as the hostname

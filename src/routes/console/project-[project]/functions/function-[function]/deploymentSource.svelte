@@ -1,54 +1,34 @@
 <script lang="ts">
-    import { tooltip } from '$lib/actions/tooltip';
+    import { DropList, DropListLink } from '$lib/components';
     import type { Models } from '@appwrite.io/console';
-    import { tick } from 'svelte';
 
     export let deployment: Models.Deployment;
-    let tooltipContent: HTMLDivElement;
+    let showDropdown = false;
 </script>
 
 {#if deployment.type === 'vcs'}
-    <span
-        class="u-underline u-cursor-pointer"
-        use:tooltip={{
-            interactive: true,
-            allowHTML: true,
-            disabled: false,
-            onShow(instance) {
-                tick().then(() => {
-                    instance.setContent(tooltipContent);
-                });
-            }
-        }}><span class="icon-github" aria-hidden="true" /> Git</span>
+    <DropList bind:show={showDropdown}>
+        <button
+            on:click={() => (showDropdown = !showDropdown)}
+            type="button"
+            class="u-flex u-gap-4 u-cross-center">
+            <span class="icon-github" aria-hidden="true" /> <span class="link">GitHub</span>
+        </button>
+        <svelte:fragment slot="list">
+            <DropListLink href={deployment.providerRepositoryUrl} external icon="github">
+                {deployment.providerRepositoryOwner}/{deployment.providerRepositoryName}
+            </DropListLink>
+            <DropListLink href={deployment.providerBranchUrl} external icon="git-branch">
+                {deployment.providerBranch}
+            </DropListLink>
+            {#if deployment?.providerCommitMessage && deployment?.providerCommitHash && deployment?.providerCommitUrl}
+                <DropListLink href={deployment.providerCommitUrl} external icon="git-commit">
+                    {deployment?.providerCommitHash?.substring(0, 7)}
+                    {deployment.providerCommitMessage}
+                </DropListLink>
+            {/if}
+        </svelte:fragment>
+    </DropList>
 {:else if deployment.type === 'manual'}
     <span class="icon-code" aria-hidden="true" /> <span>Manual</span>
 {/if}
-
-<div class="u-hide">
-    <div bind:this={tooltipContent} class="u-flex u-flex-vertical u-gap-2">
-        <span
-            ><span class="icon-github" aria-hidden="true" />
-            <a
-                class="u-underline u-cursor-pointer"
-                target="_blank"
-                href={deployment.providerRepositoryUrl}
-                >{deployment.providerRepositoryOwner}/{deployment.providerRepositoryName}</a
-            ></span>
-        <span
-            ><span class="icon-git-branch" aria-hidden="true" />
-            <a
-                class="u-underline u-cursor-pointer"
-                target="_blank"
-                href={deployment.providerBranchUrl}>{deployment.providerBranch}</a
-            ></span>
-        <span
-            ><span class="icon-git-commit" aria-hidden="true" />
-            <a
-                class="u-underline u-cursor-pointer"
-                target="_blank"
-                href={deployment.providerCommitUrl}
-                >{deployment?.providerCommitHash?.substring(0, 7)}
-                {deployment.providerCommitMessage}</a
-            ></span>
-    </div>
-</div>
