@@ -42,7 +42,7 @@ export const marketplace = [
                 providerRootDirectory: 'dart/starter'
             }
         ],
-        instructions: `For documentation and instructions check out [README.md](https://github.com/appwrite/templates/tree/main/node/starter) file.`,
+        instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/starter">file</a>.`,
         vcsProvider: 'github',
         providerRepositoryId: 'templates',
         providerOwner: 'appwrite',
@@ -75,7 +75,7 @@ export const marketplace = [
                 providerRootDirectory: 'node/prompt-chatgpt'
             }
         ],
-        instructions: `For documentation and instructions check out [README.md](https://github.com/appwrite/templates/tree/main/node/prompt-chatgpt) file.`,
+        instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/prompt-chatgpt">file</a>.`,
         vcsProvider: 'github',
         providerRepositoryId: 'templates',
         providerOwner: 'appwrite',
@@ -115,7 +115,7 @@ export const marketplace = [
                 providerRootDirectory: 'node/analyze-with-perspectiveapi'
             }
         ],
-        instructions: `For documentation and instructions check out [README.md](https://github.com/appwrite/templates/tree/main/node/analyze-with-perspectiveapi) file.`,
+        instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/analyze-with-perspectiveapi">file</a>.`,
         vcsProvider: 'github',
         providerRepositoryId: 'templates',
         providerOwner: 'appwrite',
@@ -149,7 +149,7 @@ export const marketplace = [
                 providerRootDirectory: 'node/censor-with-redact'
             }
         ],
-        instructions: `For documentation and instructions check out [README.md](https://github.com/appwrite/templates/tree/main/node/censor-with-redact) file.`,
+        instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/censor-with-redact">file</a>.`,
         vcsProvider: 'github',
         providerRepositoryId: 'templates',
         providerOwner: 'appwrite',
@@ -182,7 +182,7 @@ export const marketplace = [
                 providerRootDirectory: 'node/generate-pdf'
             }
         ],
-        instructions: `For documentation and instructions check out [README.md](https://github.com/appwrite/templates/tree/main/node/generate-pdf) file.`,
+        instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/generate-pdf">file</a>.`,
         vcsProvider: 'github',
         providerRepositoryId: 'templates',
         providerOwner: 'appwrite',
@@ -207,7 +207,7 @@ export const marketplace = [
                 providerRootDirectory: 'node/discord-command-bot'
             }
         ],
-        instructions: `For documentation and instructions check out [README.md](https://github.com/appwrite/templates/tree/main/node/discord-command-bot) file.`,
+        instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/discord-command-bot">file</a>.`,
         vcsProvider: 'github',
         providerRepositoryId: 'templates',
         providerOwner: 'appwrite',
@@ -241,7 +241,7 @@ export const marketplace = [
                 providerRootDirectory: 'node/github-issue-bot'
             }
         ],
-        instructions: `For documentation and instructions check out [README.md](https://github.com/appwrite/templates/tree/main/node/github-issue-bot) file.`,
+        instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/github-issue-bot">file</a>.`,
         vcsProvider: 'github',
         providerRepositoryId: 'templates',
         providerOwner: 'appwrite',
@@ -281,7 +281,7 @@ export const marketplace = [
                 providerRootDirectory: 'node/url-shortener'
             }
         ],
-        instructions: `For documentation and instructions check out [README.md](https://github.com/appwrite/templates/tree/main/node/url-shortener) file.`,
+        instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/url-shortener">file</a>.`,
         vcsProvider: 'github',
         providerRepositoryId: 'templates',
         providerOwner: 'appwrite',
@@ -335,7 +335,7 @@ export const marketplace = [
                 providerRootDirectory: 'node/sync-with-algolia'
             }
         ],
-        instructions: `For documentation and instructions check out [README.md](https://github.com/appwrite/templates/tree/main/node/sync-with-algolia) file.`,
+        instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/sync-with-algolia">file</a>.`,
         vcsProvider: 'github',
         providerRepositoryId: 'templates',
         providerOwner: 'appwrite',
@@ -405,7 +405,7 @@ export const marketplace = [
                 providerRootDirectory: 'node/sync-with-meilisearch'
             }
         ],
-        instructions: `For documentation and instructions check out [README.md](https://github.com/appwrite/templates/tree/main/node/sync-with-meilisearch) file.`,
+        instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/sync-with-meilisearch">file</a>.`,
         vcsProvider: 'github',
         providerRepositoryId: 'templates',
         providerOwner: 'appwrite',
@@ -481,7 +481,7 @@ export const marketplace = [
                 providerRootDirectory: 'node/whatsapp-with-vonage'
             }
         ],
-        instructions: `For documentation and instructions check out [README.md](https://github.com/appwrite/templates/tree/main/node/whatsapp-with-vonage) file.`,
+        instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/whatsapp-with-vonage">file</a>.`,
         vcsProvider: 'github',
         providerRepositoryId: 'templates',
         providerOwner: 'appwrite',
@@ -532,7 +532,7 @@ export const marketplace = [
                 providerRootDirectory: 'node/push-notification-with-fcm'
             }
         ],
-        instructions: `For documentation and instructions check out [README.md](https://github.com/appwrite/templates/tree/main/node/push-notification-with-fcm) file.`,
+        instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/push-notification-with-fcm">file</a>.`,
         vcsProvider: 'github',
         providerRepositoryId: 'templates',
         providerOwner: 'appwrite',
@@ -583,7 +583,7 @@ export const marketplace = [
                 providerRootDirectory: 'node/email-contact-form'
             }
         ],
-        instructions: `For documentation and instructions check out [README.md](https://github.com/appwrite/templates/tree/main/node/email-contact-form) file.`,
+        instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/email-contact-form">file</a>.`,
         vcsProvider: 'github',
         providerRepositoryId: 'templates',
         providerOwner: 'appwrite',

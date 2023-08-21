@@ -66,7 +66,7 @@
                     </Button>
                 </div>
             </Card>
-            <Card>{$template.instructions}</Card>
+            <Card>{@html $template.instructions}</Card>
         </section>
     </div>
 </Container>
