@@ -221,7 +221,7 @@
                 <span class="u-bold">Users</span>
 
                 {#if $provider.provider !== 'firebase'}
-                    {#if report?.user}
+                    {#if report?.user !== undefined}
                         <span class="inline-tag">{report.user}</span>
                     {:else}
                         <span class="loader is-small u-margin-inline-start-4" />
@@ -241,7 +241,7 @@
                         <div class="u-flex u-gap-4 u-cross-center">
                             <span class="u-bold">Include teams</span>
                             {#if $provider.provider === 'firebase'}
-                                {#if report?.team}
+                                {#if report?.team !== undefined}
                                     <span class="inline-tag">{report.team}</span>
                                 {:else}
                                     <span class="loader is-small u-margin-inline-start-4" />
@@ -265,7 +265,7 @@
             <div class="u-flex u-gap-4 u-cross-center">
                 <span class="u-bold">Databases</span>
                 {#if $provider.provider !== 'firebase'}
-                    {#if report?.database}
+                    {#if report?.database !== undefined}
                         <span class="inline-tag">{report.database}</span>
                     {:else}
                         <span class="loader is-small u-margin-inline-start-4" />
@@ -285,7 +285,7 @@
                         <div class="u-flex u-gap-4 u-cross-center">
                             <span class="u-bold">Include documents</span>
                             {#if $provider.provider !== 'firebase'}
-                                {#if report?.document}
+                                {#if report?.document !== undefined}
                                     <span class="inline-tag">{report.document}</span>
                                 {:else}
                                     <span class="loader is-small u-margin-inline-start-4" />
@@ -309,7 +309,7 @@
             <div class="u-flex u-gap-4 u-cross-center">
                 <span class="u-bold">Functions</span>
                 {#if $provider.provider !== 'firebase'}
-                    {#if report?.function}
+                    {#if report?.function !== undefined}
                         <span class="inline-tag">{report.function}</span>
                     {:else}
                         <span class="loader is-small u-margin-inline-start-4" />
@@ -358,7 +358,7 @@
             <div class="u-flex u-gap-4 u-cross-center">
                 <span class="u-bold">Storage</span>
                 {#if $provider.provider !== 'firebase'}
-                    {#if report?.size}
+                    {#if report?.size !== undefined}
                         <span class="inline-tag">{`${report.size.toFixed(2)}MB`}</span>
                     {:else}
                         <span class="loader is-small u-margin-inline-start-4" />
