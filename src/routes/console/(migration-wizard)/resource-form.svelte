@@ -14,7 +14,6 @@
         providerResources,
         resourcesToMigrationForm
     } from '$lib/stores/migration';
-    import { addNotification } from '$lib/stores/notifications';
     import { wizard } from '$lib/stores/wizard';
 
     export let formData: ReturnType<typeof createMigrationFormStore>;
@@ -198,6 +197,26 @@
         {/if}
     </div>
 </div>
+
+{#if report && !isVersionAtLeast(version, '1.4.0')}
+    <div class="u-margin-block-start-24">
+        <Alert
+            type="warning"
+            isStandalone
+            buttons={[
+                {
+                    name: 'Learn more',
+                    method() {
+                        wizard.updateStep((p) => p - 1);
+                    }
+                }
+            ]}>
+            <svelte:fragment slot="title">Functions not available for import</svelte:fragment>
+            To migrate your functions, update the version of the Appwrite instance you're importing from
+            to a version newer than 1.4
+        </Alert>
+    </div>
+{/if}
 
 {#if error}
     <div class="u-margin-block-start-24">
