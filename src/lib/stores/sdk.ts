@@ -13,7 +13,9 @@ import {
     Project,
     Storage,
     Teams,
-    Users
+    Users,
+    Console,
+    Assistant
 } from '@appwrite.io/console';
 
 const endpoint = VARS.APPWRITE_ENDPOINT ?? `${globalThis?.location?.origin}/v1`;
@@ -57,7 +59,9 @@ export const sdk = {
         projects: new Projects(clientConsole),
         teams: new Teams(clientConsole),
         users: new Users(clientConsole),
-        migrations: new Migrations(clientConsole)
+        migrations: new Migrations(clientConsole),
+        console: new Console(clientConsole),
+        assistant: new Assistant(clientConsole)
     },
     get forProject() {
         const projectId = getProjectId();

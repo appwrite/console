@@ -24,6 +24,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { openMigrationWizard } from './(migration-wizard)';
     import { project } from './project-[project]/store';
+    import { sdk } from '$lib/stores/sdk';
 
     function kebabToSentenceCase(str: string) {
         return str
@@ -32,6 +33,11 @@
             .join(' ');
     }
 
+    let isAssistantEnabled = false;
+    onMount(async () => {
+        const vars = sdk.forConsole.console.variables();
+        isAssistantEnabled = vars._APP_ASSISTANT_ENABLED === true;
+    });
     $: $registerCommands([
         {
             label: 'Go to projects',
@@ -52,7 +58,8 @@
                 addSubPanel(AIPanel);
             },
             keys: ['a', 'i'],
-            icon: 'sparkles'
+            icon: 'sparkles',
+            disabled: !isAssistantEnabled
         },
         {
             label: 'Go to account',
