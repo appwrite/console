@@ -29,7 +29,7 @@
                 $installation.$id,
                 $repository.id,
                 $choices.branch,
-                $choices.silentMode,
+                $choices.silentMode || undefined,
                 $choices.rootDir
             );
             trackEvent(Submit.FunctionConnectRepo, {
