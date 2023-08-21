@@ -12,9 +12,10 @@
     import { func, repositories } from '../store';
     import { invalidate } from '$app/navigation';
     import InputSelectSearch from '$lib/elements/forms/inputSelectSearch.svelte';
+    import { sortBranches } from './updateConfiguration.svelte';
+    import { installations } from '$lib/wizards/functions/store';
 
     export let show: boolean;
-    export let installationsList: Models.InstallationList;
 
     const functionId = $page.params.function;
 
@@ -29,7 +30,7 @@
     let selectedDir: string;
     let silentMode = false;
 
-    let installationsOptions = installationsList.installations.map((installation) => {
+    let installationsOptions = $installations.installations.map((installation) => {
         return {
             value: installation.$id,
             label: installation.organization
@@ -108,13 +109,7 @@
             selectedRepoId
         );
 
-        branchesList.branches = branchesList.branches.sort((a, b) => {
-            if (a.name === 'main' || a.name === 'master') {
-                return -1;
-            }
-
-            return a.name > b.name ? -1 : 1;
-        });
+        branchesList.branches = sortBranches(branchesList.branches);
 
         selectedBranch = branchesList?.branches[0].name;
     }
@@ -126,7 +121,7 @@
 
     $: selectedRepo = (repositoriesList ?? []).find((repo) => repo.id === selectedRepoId) ?? null;
     $: selectedInstallation =
-        (installationsList?.installations ?? []).find(
+        ($installations?.installations ?? []).find(
             (installation) => installation.$id === selectedInstallationId
         ) ?? null;
 </script>

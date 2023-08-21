@@ -3,6 +3,7 @@
     import InputSelectSearch from '$lib/elements/forms/inputSelectSearch.svelte';
     import { WizardStep } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
+    import { sortBranches } from '$routes/console/project-[project]/functions/function-[function]/settings/updateConfiguration.svelte';
     import { choices, installation, repository } from '../store';
 
     $choices.rootDir ??= '';
@@ -20,13 +21,7 @@
             $installation.$id,
             $repository.id
         );
-        const sorted = branches.sort((a, b) => {
-            if (a.name === 'main' || a.name === 'master') {
-                return -1;
-            }
-
-            return a.name > b.name ? -1 : 1;
-        });
+        const sorted = sortBranches(branches);
         $choices.branch = sorted[0]?.name ?? null;
 
         if (!$choices.branch) {
@@ -57,6 +52,17 @@
                 <div class="loader u-margin-32" />
             </div>
         {:then branches}
+            {@const options =
+                branches
+                    ?.map((branch) => {
+                        return {
+                            value: branch.name,
+                            label: branch.name
+                        };
+                    })
+                    ?.sort((a, b) => {
+                        return a.label > b.label ? 1 : -1;
+                    }) ?? []}
             <div class="u-margin-block-start-24">
                 <FormList>
                     <InputSelectSearch
@@ -73,12 +79,7 @@
                         }}
                         interactiveOutput
                         name="branch"
-                        options={branches?.map((branch) => {
-                            return {
-                                value: branch.name,
-                                label: branch.name
-                            };
-                        }) ?? []} />
+                        {options} />
                     <InputText
                         id="root"
                         label="Root directory"

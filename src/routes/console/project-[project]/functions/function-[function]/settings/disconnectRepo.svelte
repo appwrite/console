@@ -7,10 +7,14 @@
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
+    import { createEventDispatcher } from 'svelte';
     import { func } from '../store';
 
     export let show = false;
     const functionId = $page.params.function;
+    let error = '';
+
+    const dispatch = createEventDispatcher();
 
     const handleSubmit = async () => {
         try {
@@ -33,23 +37,31 @@
                 ''
             );
             await invalidate(Dependencies.FUNCTION);
+            dispatch('success');
             addNotification({
                 type: 'success',
                 message: `Repository has been disconnected from your function`
             });
             trackEvent(Submit.FunctionDisconnectRepo);
             show = false;
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
-            trackError(error, Submit.FunctionDisconnectRepo);
+        } catch (e) {
+            error = e.message;
+            trackError(e, Submit.FunctionDisconnectRepo);
         }
     };
+
+    $: if (!show) {
+        error = '';
+    }
 </script>
 
-<Modal bind:show onSubmit={handleSubmit} icon="exclamation" state="warning" headerDivider={false}>
+<Modal
+    bind:show
+    bind:error
+    onSubmit={handleSubmit}
+    icon="exclamation"
+    state="warning"
+    headerDivider={false}>
     <svelte:fragment slot="header">Disconnect Git repository</svelte:fragment>
     <p data-private>
         Are you sure you want to disconnect {$func.name}? This will affect future deployments to

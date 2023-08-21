@@ -1,9 +1,22 @@
+<script context="module" lang="ts">
+    export function sortBranches(branches: Models.Branch[]) {
+        return branches.sort((a, b) => {
+            if (a.name === 'main' || a.name === 'master') {
+                return -1;
+            }
+
+            return a.name > b.name ? 1 : -1;
+        });
+    }
+</script>
+
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import {
         AvatarGroup,
+        Box,
         CardGrid,
         Collapsible,
         CollapsibleItem,
@@ -33,8 +46,8 @@
     import { wizard } from '$lib/stores/wizard';
     import ConnectExisting from '$lib/wizards/functions/connectExisting.svelte';
     import InputSelectSearch from '$lib/elements/forms/inputSelectSearch.svelte';
+    import { installations } from '$lib/wizards/functions/store';
 
-    export let installations: Models.InstallationList;
     const functionId = $page.params.function;
 
     let entrypoint: string;
@@ -141,13 +154,7 @@
 
     async function getBranches(installation: string, repo: string) {
         branchesList = await sdk.forProject.vcs.listRepositoryBranches(installation, repo);
-        branchesList.branches = branchesList.branches.sort((a, b) => {
-            if (a.name === 'main' || a.name === 'master') {
-                return -1;
-            }
-
-            return a.name > b.name ? -1 : 1;
-        });
+        branchesList.branches = sortBranches(branchesList.branches);
 
         selectedBranch = $func?.providerBranch ?? branchesList.branches[0].name;
     }
@@ -207,7 +214,7 @@
                             {/if}
                         </svelte:fragment>
                         {#if repository}
-                            <div class="box" style:--box-border-radius="var(--border-radius-small)">
+                            <Box radius="small">
                                 <div class="u-flex u-gap-16">
                                     <div class="avatar is-size-x-small">
                                         <span class={getProviderIcon(repository.provider)} />
@@ -268,7 +275,7 @@
                                         <span class="icon-external-link" />
                                     </Button>
                                 </div>
-                            </div>
+                            </Box>
                         {:else}
                             <article class="card-git card is-border-dashed is-no-shadow">
                                 <div class="u-flex u-cross-center u-flex-vertical u-gap-32">
@@ -315,10 +322,10 @@
     </CardGrid>
 </Form>
 
-{#if !installations?.total && showGit}
+{#if !$installations?.total && showGit}
     <GitInstallationModal bind:showGitInstall={showGit} />
 {:else}
-    <GitConfigurationModal bind:show={showGit} installationsList={installations} />
+    <GitConfigurationModal bind:show={showGit} />
 {/if}
 
-<DisconnectRepo bind:show={showDisconnect} />
+<DisconnectRepo bind:show={showDisconnect} on:success={loadRepository} />
