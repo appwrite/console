@@ -3,7 +3,7 @@
     import { WizardStep } from '$lib/layout';
     import { template, templateConfig } from '../store';
     import { FormList, Helper, InputChoice } from '$lib/elements/forms';
-    import { Collapsible, CollapsibleItem } from '$lib/components';
+    import { Card, Collapsible, CollapsibleItem } from '$lib/components';
 
     async function beforeSubmit() {
         for (const variable of $template.variables) {
@@ -120,5 +120,7 @@
                 </CollapsibleItem>
             </Collapsible>
         {/if}
+    {:else}
+        <Card isDashed>There are no environment variables to configure.</Card>
     {/if}
 </WizardStep>
