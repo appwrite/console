@@ -95,6 +95,8 @@
             </Collapsible>
         {/if}
     {:else}
-        <Card isDashed>There are no environment variables to configure.</Card>
+        <Card isDashed>
+            <p class="text u-text-center">There are no environment variables to configure.</p>
+        </Card>
     {/if}
 </WizardStep>
