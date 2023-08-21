@@ -82,7 +82,7 @@
                         class="link"
                         on:click={() => wizard.start(CreateManual)}>manually</button>
                     or using the CLI.
-                    <a href="http://#" target="_blank" rel="noopener noreferrer" class="link"
+                    <a href="https://appwrite.io/docs/functions-deploy" target="_blank" rel="noopener noreferrer" class="link"
                         >Learn more</a
                     >.
                 </p>

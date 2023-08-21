@@ -1,9 +1,7 @@
 <script lang="ts">
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { log } from '$lib/stores/logs';
-    import { Alert, Card, Code, Heading, Id, SvgIcon, Tab, Tabs } from '../components';
-    import { base } from '$app/paths';
-    import { app } from '$lib/stores/app';
+    import { Card, Code, Heading, Id, SvgIcon, Tab, Tabs } from '../components';
     import { calculateTime } from '$lib/helpers/timeConversion';
     import {
         TableBody,
@@ -14,7 +12,6 @@
         TableScroll
     } from '$lib/elements/table';
     import { beforeNavigate } from '$app/navigation';
-    import Table from '$lib/elements/table/table.svelte';
     import { Pill } from '$lib/elements';
 
     let selectedRequest = 'parameters';
@@ -203,7 +200,7 @@
                                     use
                                     <b>context.log()</b>.
                                     <a
-                                        href="http://#"
+                                        href="https://appwrite.io/docs/functions-develop#logging"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         class="link">Learn more</a
@@ -241,7 +238,7 @@
                                     header data in the Logs tab, use
                                     <b>context.log()</b>.
                                     <a
-                                        href="http://#"
+                                        href="https://appwrite.io/docs/functions-develop#logging"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         class="link">Learn more</a
@@ -253,7 +250,7 @@
                                     and privacy. To display body data in the Logs tab, use
                                     <b>context.log()</b>.
                                     <a
-                                        href="http://#"
+                                        href="https://appwrite.io/docs/functions-develop#logging"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         class="link">Learn more</a
@@ -331,7 +328,7 @@
                                     header data in the Logs tab, use
                                     <b>context.log()</b>.
                                     <a
-                                        href="http://#"
+                                        href="https://appwrite.io/docs/functions-develop#logging"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         class="link">Learn more</a
@@ -343,7 +340,7 @@
                                     and privacy. To display body data in the Logs tab, use
                                     <b>context.log()</b>.
                                     <a
-                                        href="http://#"
+                                        href="https://appwrite.io/docs/functions-develop#logging"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         class="link">Learn more</a
