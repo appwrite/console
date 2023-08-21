@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { Box } from '$lib/components';
     import { FormList, Helper, InputChoice, InputText } from '$lib/elements/forms';
     import type { Variable } from '$lib/stores/marketplace';
     import { templateConfig } from '../store';
@@ -6,7 +7,7 @@
     export let appwriteVariable: Variable;
 </script>
 
-<div class="box" style:--box-padding="1rem" style:--box-border-radius="var(--border-radius-small)">
+<Box radius="small" padding={16}>
     <FormList>
         <div>
             <InputText
@@ -34,4 +35,4 @@
             your project and applied to this function once it's created.
         </InputChoice>
     </FormList>
-</div>
+</Box>

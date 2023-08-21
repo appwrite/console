@@ -28,7 +28,7 @@
 
 <script lang="ts">
     import { base } from '$app/paths';
-    import { Heading } from '$lib/components';
+    import { AvatarGroup, Heading } from '$lib/components';
     import WizardCover from '$lib/layout/wizardCover.svelte';
     import { app } from '$lib/stores/app';
     import { wizard } from '$lib/stores/wizard';
@@ -133,24 +133,16 @@
                                         class="box u-width-full-line u-flex u-cross-center u-gap-8"
                                         style:--box-padding="1rem"
                                         style:--box-border-radius="var(--border-radius-small)">
-                                        <div class="avatar is-size-small">
-                                            <img
-                                                style:--p-text-size="1.25rem"
-                                                src={`${base}/icons/${$app.themeInUse}/grayscale/dotnet.svg`}
-                                                alt="dotnet-7.0" />
-                                        </div>
-                                        <div class="body-text-2 u-trim">Soon</div>
+                                        <AvatarGroup
+                                            icons={['dotnet', 'deno']}
+                                            total={4}
+                                            avatarSize="small"
+                                            bordered />
                                     </div>
                                 </li>
                             {/if}
                         </ul>
                     {/await}
-                    <Button
-                        text
-                        class="u-margin-inline-start-auto u-margin-block-start-16"
-                        href={`${base}/console/project-${$page.params.project}/functions/templates`}>
-                        All templates <span class="icon-cheveron-right" aria-hidden="true" />
-                    </Button>
                 </section>
                 <div class="u-sep-block-start common-section" />
                 <section class="common-section">
