@@ -29,6 +29,7 @@
     let selectedBranch: string;
     let selectedDir: string;
     let silentMode = false;
+    let error = '';
 
     let installationsOptions = $installations.installations.map((installation) => {
         return {
@@ -72,12 +73,9 @@
             });
             trackEvent(Submit.FunctionUpdateConfiguration);
             show = false;
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
-            trackError(error, Submit.FunctionUpdateConfiguration);
+        } catch (e) {
+            error = e.message;
+            trackError(e, Submit.FunctionUpdateConfiguration);
         }
     }
 
@@ -126,7 +124,7 @@
         ) ?? null;
 </script>
 
-<Modal headerDivider={false} bind:show size="big" onSubmit={handleSubmit}>
+<Modal headerDivider={false} bind:show size="big" bind:error onSubmit={handleSubmit}>
     <svelte:fragment slot="header">Git configuration</svelte:fragment>
     <p class="text">
         Configure a Git repository that will trigger your function deployments when updated.
