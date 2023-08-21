@@ -98,7 +98,7 @@
             href={$repository.html_url}
             target="_blank"
             rel="noopener noreferrer"
-            class="link">{$repository.provider}</a
+            class="link">GitHub</a
         >.
     </p>
 </WizardStep>
