@@ -1,7 +1,7 @@
 <script lang="ts">
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { log } from '$lib/stores/logs';
-    import { Alert, Card, Code, Heading, Id, Tab, Tabs } from '../components';
+    import { Alert, Card, Code, Heading, Id, SvgIcon, Tab, Tabs } from '../components';
     import { base } from '$app/paths';
     import { app } from '$lib/stores/app';
     import { calculateTime } from '$lib/helpers/timeConversion';
@@ -79,13 +79,11 @@
         <div class="cover-frame-content u-flex u-flex-vertical">
             <div class="u-flex u-gap-16">
                 <div class="avatar is-size-large">
-                    <img
-                        height="28"
-                        width="28"
-                        src={`${base}/icons/${$app.themeInUse}/color/${
-                            func.runtime.split('-')[0]
-                        }.svg`}
-                        alt="technology" />
+                    <SvgIcon
+                        size={56}
+                        type="color"
+                        name={func.runtime.split('-')[0]}
+                        iconSize="large" />
                 </div>
                 <div>
                     <h2 class="body-text-2 u-bold">Execution ID:</h2>
@@ -195,22 +193,22 @@
                                             </TableBody>
                                         </TableScroll>
                                     </div>
-                                {:else}
-                                    <Card isDashed isTile>
-                                        <p class="text u-text-center">
-                                            Logging parameters data might compromise privacy and
-                                            security. To log them intentionally, use <b
-                                                >context.log(context.req.headers)</b>
-                                            in your function and make them available in Logs tab.
-                                            <a
-                                                href="http://#"
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                class="link">Learn more</a
-                                            >.
-                                        </p>
-                                    </Card>
                                 {/if}
+
+                                <p class="text u-text-center u-padding-24">
+                                    {parameters?.length
+                                        ? 'Not all parameters data is'
+                                        : 'Parameters data is not'} captured by Appwrite for your user's
+                                    security and privacy. To display parameters data in the Logs tab,
+                                    use
+                                    <b>context.log()</b>.
+                                    <a
+                                        href="http://#"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="link">Learn more</a
+                                    >.
+                                </p>
                             {:else if selectedRequest === 'headers'}
                                 {#if execution.requestHeaders.length}
                                     <div class="u-margin-block-start-24">
@@ -233,36 +231,34 @@
                                             </TableBody>
                                         </TableScroll>
                                     </div>
-                                {:else}
-                                    <Card isDashed isTile>
-                                        <p class="text u-text-center">
-                                            Header data is not captured by Appwrite for your user's
-                                            security and privacy. To log data intentionally, use <b
-                                                >context.log()</b>
-                                            in your function and make them available in Logs tab.
-                                            <a
-                                                href="http://#"
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                class="link">Learn more</a
-                                            >.
-                                        </p>
-                                    </Card>
                                 {/if}
+
+                                <p class="text u-text-center u-padding-24">
+                                    {execution.requestHeaders?.length
+                                        ? 'Not all header data is'
+                                        : 'Header data is not'}
+                                    captured by Appwrite for your user's security and privacy. To display
+                                    header data in the Logs tab, use
+                                    <b>context.log()</b>.
+                                    <a
+                                        href="http://#"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="link">Learn more</a
+                                    >.
+                                </p>
                             {:else if selectedRequest === 'body'}
-                                <Card isDashed isTile>
-                                    <p class="text u-text-center">
-                                        Logging body might compromise privacy and security. To log
-                                        it intentionally, use <b>context.log()</b> in your function
-                                        and make them available in Logs tab.
-                                        <a
-                                            href="http://#"
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            class="link">Learn more</a
-                                        >.
-                                    </p>
-                                </Card>
+                                <p class="text u-text-center u-padding-24">
+                                    Body data is not captured by Appwrite for your user's security
+                                    and privacy. To display body data in the Logs tab, use
+                                    <b>context.log()</b>.
+                                    <a
+                                        href="http://#"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="link">Learn more</a
+                                    >.
+                                </p>
                             {/if}
                         </div>
                         <div class="grid-1-2-col-2 u-flex u-flex-vertical u-gap-16">
@@ -326,36 +322,33 @@
                                             {/each}
                                         </TableBody>
                                     </TableScroll>
-                                {:else}
-                                    <Card isDashed isTile>
-                                        <p class="text u-text-center">
-                                            Logging some headers might compromise privacy and
-                                            security. We only log well-known public headers. To log
-                                            more headers intentionally, use <b>context.log()</b> in
-                                            your function and make them available in Logs tab.
-                                            <a
-                                                href="http://#"
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                class="link">Learn more</a
-                                            >.
-                                        </p>
-                                    </Card>
                                 {/if}
+                                <p class="text u-text-center u-padding-24">
+                                    {execution.responseHeaders?.length
+                                        ? 'Not all header data is'
+                                        : 'Header data is not'}
+                                    captured by Appwrite for your user's security and privacy. To display
+                                    header data in the Logs tab, use
+                                    <b>context.log()</b>.
+                                    <a
+                                        href="http://#"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="link">Learn more</a
+                                    >.
+                                </p>
                             {:else if selectedResponse === 'body'}
-                                <Card isDashed isTile>
-                                    <p class="text u-text-center">
-                                        Logging body might compromise privacy and security. To log
-                                        it intentionally, use <b>context.log()</b> in your function
-                                        and make them available in Logs tab.
-                                        <a
-                                            href="http://#"
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            class="link">Learn more</a
-                                        >.
-                                    </p>
-                                </Card>
+                                <p class="text u-text-center u-padding-24">
+                                    Body data is not captured by Appwrite for your user's security
+                                    and privacy. To display body data in the Logs tab, use
+                                    <b>context.log()</b>.
+                                    <a
+                                        href="http://#"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="link">Learn more</a
+                                    >.
+                                </p>
                             {/if}
                         </div>
                     </div>
