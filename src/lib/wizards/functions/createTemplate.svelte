@@ -22,14 +22,16 @@
             const runtimeDetail = $template.runtimes.find(
                 (r) => r.name === $templateConfig.runtime
             );
-
-            const key = await sdk.forConsole.projects.createKey(
-                $page.params.project,
-                'Generated for Template',
-                scopes.map((scope) => scope.scope)
-            );
-            $templateConfig.variables['APPWRITE_API_KEY'] = key.secret;
-
+            if ($templateConfig.appwriteApiKey) {
+                $templateConfig.variables['APPWRITE_API_KEY'] = $templateConfig.appwriteApiKey;
+            } else if ($templateConfig?.generateKey) {
+                const key = await sdk.forConsole.projects.createKey(
+                    $page.params.project,
+                    'Generated for Template',
+                    scopes.map((scope) => scope.scope)
+                );
+                $templateConfig.variables['APPWRITE_API_KEY'] = key.secret;
+            }
             const response = await sdk.forProject.functions.create(
                 $templateConfig.$id || ID.unique(),
                 $templateConfig.name,

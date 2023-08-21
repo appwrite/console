@@ -631,14 +631,14 @@ export const marketplace = [
     }
 ];
 
-type Runtime = {
+export type Runtime = {
     name: string;
     commands: string;
     entrypoint: string;
     providerRootDirectory: string;
 };
 
-type Variable = {
+export type Variable = {
     name: string;
     description: string;
     value?: string;
