@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Code, Modal, Tab } from '$lib/components';
+    import { Alert, Code, Modal, Tab } from '$lib/components';
     import Tabs from '$lib/components/tabs.svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { parseIfString } from '$lib/helpers/object';
@@ -68,6 +68,21 @@
             <span>Source</span>
             <span>{details.source}</span>
         </div>
+
+        {#if Object.values(statusCounters).some(hasError)}
+            <Alert
+                type="error"
+                buttons={[
+                    {
+                        name: 'View logs',
+                        method() {
+                            tab = 'logs';
+                        }
+                    }
+                ]}>
+                There was an error migrating some of the project's entities.
+            </Alert>
+        {/if}
 
         {#if Object.keys(statusCounters).length}
             <div class="box">
