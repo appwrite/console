@@ -72,7 +72,7 @@
         disabled={internalDisabled}
         class={resolvedClasses}
         aria-label={ariaLabel}
-        type={submit === false ? 'button' : undefined}
+        type={submit ? 'submit' : 'button'}
         use:multiAction={actions}>
         <slot />
     </button>
