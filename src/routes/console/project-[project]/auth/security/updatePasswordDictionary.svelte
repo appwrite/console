@@ -35,13 +35,14 @@
 
 <Form onSubmit={updatePasswordDictionary}>
     <CardGrid>
-        <Heading tag="h2" size="7" id="password-dictionary">Password Dictionary</Heading>
+        <Heading tag="h2" size="7" id="password-dictionary">Password dictionary</Heading>
+
         <svelte:fragment slot="aside">
             <FormList>
                 <InputSwitch
                     bind:value={passwordDictionary}
                     id="passwordDictionary"
-                    label="Password Dictionary" />
+                    label="Password dictionary" />
             </FormList>
             <p class="text">
                 Enabling this option prevent users from setting insecure passwords by comparing the

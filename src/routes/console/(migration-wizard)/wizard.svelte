@@ -37,11 +37,11 @@
 
     const steps: WizardStepsType = new Map();
     steps.set(1, {
-        label: 'Select project',
+        label: 'Project',
         component: Step1
     });
     steps.set(2, {
-        label: 'Select data',
+        label: 'Resources',
         component: Step2
     });
 </script>

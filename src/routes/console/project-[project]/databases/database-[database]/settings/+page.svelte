@@ -56,7 +56,7 @@
                 </div>
                 <div class="grid-1-2-col-2">
                     <p>Created: {toLocaleDateTime($database.$createdAt)}</p>
-                    <p>Last Updated: {toLocaleDateTime($database.$updatedAt)}</p>
+                    <p>Last updated: {toLocaleDateTime($database.$updatedAt)}</p>
                 </div>
             </div>
         </Card>
@@ -89,7 +89,7 @@
 
         <CardGrid danger>
             <div>
-                <Heading tag="h6" size="7">Delete Database</Heading>
+                <Heading tag="h6" size="7">Delete database</Heading>
             </div>
 
             <p>
@@ -100,7 +100,7 @@
                 <BoxAvatar>
                     <svelte:fragment slot="title">
                         <h6 class="u-bold u-trim-1">{$database.name}</h6>
-                        <span>Last Updated: {toLocaleDateTime($database.$updatedAt)}</span>
+                        <span>Last updated: {toLocaleDateTime($database.$updatedAt)}</span>
                     </svelte:fragment>
                 </BoxAvatar>
             </svelte:fragment>

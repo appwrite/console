@@ -40,7 +40,7 @@
             trackEvent(Submit.KeyUpdateName);
             addNotification({
                 type: 'success',
-                message: 'API Key name has been updated'
+                message: 'API key name has been updated'
             });
         } catch (error) {
             addNotification({
@@ -66,7 +66,7 @@
             });
             addNotification({
                 type: 'success',
-                message: 'API Key scopes have been updated'
+                message: 'API key scopes have been updated'
             });
         } catch (error) {
             addNotification({
@@ -79,7 +79,7 @@
 </script>
 
 <svelte:head>
-    <title>API Key - Appwrite</title>
+    <title>API key - Appwrite</title>
 </svelte:head>
 
 <Container>
@@ -97,7 +97,7 @@
     </CardGrid>
 
     <CardGrid>
-        <Heading tag="h6" size="7">API Key Secret</Heading>
+        <Heading tag="h6" size="7">API key secret</Heading>
         <svelte:fragment slot="aside">
             <Secret copyEvent="key" bind:value={secret} />
         </svelte:fragment>
@@ -150,9 +150,9 @@
 
     <CardGrid danger>
         <div>
-            <Heading tag="h6" size="7">Delete API Key</Heading>
+            <Heading tag="h6" size="7">Delete API key</Heading>
         </div>
-        <p>The API Key will be permanently deleted. This action is irreversible.</p>
+        <p>The API key will be permanently deleted. This action is irreversible.</p>
         <svelte:fragment slot="aside">
             <div class="box">
                 <div class="u-flex u-gap-16">

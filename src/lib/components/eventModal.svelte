@@ -246,7 +246,7 @@
 </script>
 
 <Modal bind:show onSubmit={create} size="big">
-    <svelte:fragment slot="header">Create Event</svelte:fragment>
+    <svelte:fragment slot="header">Create event</svelte:fragment>
     <slot />
     <div>
         <p class="u-text">Choose a service</p>

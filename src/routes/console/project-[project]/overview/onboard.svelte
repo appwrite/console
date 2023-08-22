@@ -47,7 +47,7 @@
 <div class="card">
     <header class="card-header common-section grid-1-2">
         <div class="grid-1-2-col-1">
-            <h2 class="heading-level-5">Getting Started Guide</h2>
+            <h2 class="heading-level-5">Getting started guide</h2>
             <p class="u-line-height-1-5 u-margin-block-start-12">
                 Here are some next steps to start building
             </p>
@@ -59,7 +59,7 @@
 
     <section class="common-section card-separator grid-1-2">
         <div class="grid-1-2-col-1">
-            <h3 class="heading-level-7">Add a Platform</h3>
+            <h3 class="heading-level-7">Add a platform</h3>
             <p class="u-line-height-1-5 u-margin-block-start-16">
                 Our SDKs make it possible to easily integrate with any platform.
             </p>
@@ -97,7 +97,7 @@
 
     <section class="common-section grid-1-2">
         <div class="grid-1-2-col-1">
-            <h3 class="heading-level-7">Integrate With Your Server</h3>
+            <h3 class="heading-level-7">Integrate with your server</h3>
             <p class="u-line-height-1-5 u-margin-block-start-16">
                 Appwrite is designed to adapt to your existing backend. Integrate Appwrite with your
                 backend code base using Server SDKs or Webhooks.
@@ -113,7 +113,7 @@
                                     src={`/icons/${$app.themeInUse}/grayscale/code.svg`}
                                     alt="technology" />
                             </div>
-                            <span class="text">API Key</span>
+                            <span class="text">API key</span>
                             <span
                                 class="icon-plus u-margin-inline-start-auto"
                                 style="font-size: var(--icon-size-large);"

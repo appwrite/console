@@ -57,11 +57,11 @@
 
     const stepsComponents: WizardStepsType = new Map();
     stepsComponents.set(1, {
-        label: 'Add your webhook',
+        label: 'Configure',
         component: Step1
     });
     stepsComponents.set(2, {
-        label: 'Webhook events',
+        label: 'Events',
         component: Step2
     });
     stepsComponents.set(3, {

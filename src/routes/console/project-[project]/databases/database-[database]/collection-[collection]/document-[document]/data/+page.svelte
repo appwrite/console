@@ -13,31 +13,38 @@
     import { collection, type Attributes } from '../../store';
     import { Container } from '$lib/layout';
     import AttributeItem from '../attributeItem.svelte';
-    import { difference, symmetricDifference } from '$lib/helpers/array';
+    import { symmetricDifference } from '$lib/helpers/array';
     import { isRelationship, isRelationshipToMany } from '../attributes/store';
+    import { deepClone } from '$lib/helpers/object';
 
     const databaseId = $page.params.database;
     const collectionId = $page.params.collection;
     const documentId = $page.params.document;
     const editing = true;
 
-    const work = writable(
-        Object.keys($doc)
-            .filter((key) => {
-                return ![
-                    '$id',
-                    '$collection',
-                    '$collectionId',
-                    '$databaseId',
-                    '$createdAt',
-                    '$updatedAt'
-                ].includes(key);
-            })
-            .reduce((obj, key) => {
-                obj[key] = $doc[key];
-                return obj;
-            }, {}) as Models.Document
-    );
+    function initWork() {
+        const prohibitedKeys = [
+            '$id',
+            '$collection',
+            '$collectionId',
+            '$databaseId',
+            '$createdAt',
+            '$updatedAt'
+        ];
+
+        const filteredKeys = Object.keys($doc).filter((key) => {
+            return !prohibitedKeys.includes(key);
+        });
+
+        const result = filteredKeys.reduce((obj, key) => {
+            obj[key] = $doc[key];
+            return obj;
+        }, {});
+
+        return writable(deepClone(result as Models.Document));
+    }
+
+    const work = initWork();
 
     async function updateData() {
         try {
@@ -77,7 +84,7 @@
         const docAttribute = $doc?.[attribute.key];
 
         if (attribute.array) {
-            return !difference(Array.from(workAttribute), Array.from(docAttribute)).length;
+            return !symmetricDifference(Array.from(workAttribute), Array.from(docAttribute)).length;
         }
 
         if (isRelationship(attribute)) {

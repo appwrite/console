@@ -19,7 +19,7 @@
                 disabled={!!$templateConfig.generateKey} />
             <Helper type="neutral">
                 This API key will allow you to interact with the Appwrite server APIs. <a
-                    href="http://#"
+                    href="https://appwrite.io/docs/keys"
                     target="_blank"
                     rel="noopener noreferrer"
                     class="link">Learn more</a

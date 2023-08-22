@@ -76,11 +76,11 @@
 
     const stepsComponents: WizardStepsType = new Map();
     stepsComponents.set(1, {
-        label: 'Details',
+        label: 'Configuration',
         component: Step1
     });
     stepsComponents.set(2, {
-        label: 'Execute access',
+        label: 'Permissions',
         component: Step2,
         optional: true
     });
@@ -101,4 +101,4 @@
     });
 </script>
 
-<Wizard title="Create Function" steps={stepsComponents} on:finish={create} on:exit={onFinish} />
+<Wizard title="Create function" steps={stepsComponents} on:finish={create} on:exit={onFinish} />

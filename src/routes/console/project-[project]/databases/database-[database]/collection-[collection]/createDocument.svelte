@@ -70,11 +70,11 @@
 
     const stepsComponents: WizardStepsType = new Map();
     stepsComponents.set(1, {
-        label: 'Create data',
+        label: 'Data',
         component: Step1
     });
     stepsComponents.set(2, {
-        label: 'Set permissions',
+        label: 'Permissions',
         component: Step2,
         optional: true
     });

@@ -24,7 +24,7 @@
 
 <Form onSubmit={updateMaxSize}>
     <CardGrid>
-        <Heading tag="h2" size="7">Maximum File Size</Heading>
+        <Heading tag="h2" size="7">Maximum file size</Heading>
         <p class="text">Set the maximum file size allowed in the bucket.</p>
         <svelte:fragment slot="aside">
             <ul class="u-flex u-gap-12">
