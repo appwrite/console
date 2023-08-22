@@ -28,7 +28,7 @@
 {/if}
 
 {#if tooltip}
-    <button class="tooltip" aria-label="input tooltip">
+    <button type="button" on:click|preventDefault class="tooltip" aria-label="input tooltip">
         <span class="icon-info" aria-hidden="true" style="font-size: var(--icon-size-small)" />
         <span class="tooltip-popup" role="tooltip">
             <p class="text">
