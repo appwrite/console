@@ -173,10 +173,10 @@
                         {/if}
                     {/each}
                 </ul>
-                <div class="u-flex u-margin-block-start-32 u-main-space-between">
+                <!-- <div class="u-flex u-margin-block-start-32 u-main-space-between">
                     <p class="text">Total results: {response?.length}</p>
                     <PaginationInline {limit} bind:offset sum={response?.length} />
-                </div>
+                </div> -->
             {:else if search}
                 <EmptySearch hidePages>
                     <div class="common-section">
