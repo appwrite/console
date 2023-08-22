@@ -1,7 +1,7 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { EmptySearch, PaginationInline } from '$lib/components';
+    import { EmptySearch } from '$lib/components';
     import { Button, InputSearch, InputSelect } from '$lib/elements/forms';
     import { timeFromNow } from '$lib/helpers/date';
     import { app } from '$lib/stores/app';
