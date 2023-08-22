@@ -35,7 +35,7 @@
 
 <Form onSubmit={updatePersonalDataCheck}>
     <CardGrid>
-        <Heading tag="h2" size="7">Personal Data</Heading>
+        <Heading tag="h2" size="7">Personal data</Heading>
         <svelte:fragment slot="aside">
             <FormList>
                 <InputSwitch
@@ -44,7 +44,7 @@
                     label="Disallow Personal Data" />
             </FormList>
             <p class="text">
-                Do now allow passwords that contain any part of the user's personal data. This
+                Do not allow passwords that contain any part of the user's personal data. This
                 includes the user's <code>name</code>, <code>email</code>, or <code>phone</code>.
             </p>
         </svelte:fragment>
