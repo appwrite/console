@@ -24,7 +24,7 @@
 </script>
 
 <TableCell>
-    <div class="touch-area" on:click={handleClick} on:keypress={handleClick} />
+    <div on:click={handleClick} on:keypress={handleClick} />
     <InputCheckbox
         bind:element={el}
         id="select-{id}"
@@ -32,9 +32,9 @@
         on:click={handleClick} />
 </TableCell>
 
-<style lang="scss">
+<!-- <style lang="scss">
     .touch-area {
         position: absolute;
         inset: 0;
     }
-</style>
+</style> -->
