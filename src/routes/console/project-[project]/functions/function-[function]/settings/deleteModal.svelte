@@ -37,7 +37,7 @@
     icon="exclamation"
     state="warning"
     headerDivider={false}>
-    <svelte:fragment slot="header">Delete Function</svelte:fragment>
+    <svelte:fragment slot="header">Delete function</svelte:fragment>
     <p data-private>
         Are you sure you want to delete this function and all associated deployments from your
         project?

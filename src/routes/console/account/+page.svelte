@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Button, Form, FormList, InputText, InputPassword } from '$lib/elements/forms';
-    import { CardGrid, Box, Heading, AvatarInitials } from '$lib/components';
+    import { CardGrid, BoxAvatar, Heading, AvatarInitials } from '$lib/components';
     import { Container } from '$lib/layout';
     import { onMount } from 'svelte';
     import { user } from '$lib/stores/user';
@@ -155,21 +155,21 @@
     </Form>
     <CardGrid danger>
         <div>
-            <Heading tag="h6" size="7">Delete Account</Heading>
+            <Heading tag="h6" size="7">Delete account</Heading>
         </div>
         <p>
             Your account will be permanently deleted and access will be lost to any of your teams
             and data. This action is irreversible.
         </p>
         <svelte:fragment slot="aside">
-            <Box>
+            <BoxAvatar>
                 <svelte:fragment slot="image">
                     <AvatarInitials size={48} name={$user.name} />
                 </svelte:fragment>
                 <svelte:fragment slot="title">
                     <h6 class="u-bold u-trim-1">{$user.name}</h6>
                 </svelte:fragment>
-            </Box>
+            </BoxAvatar>
         </svelte:fragment>
 
         <svelte:fragment slot="actions">

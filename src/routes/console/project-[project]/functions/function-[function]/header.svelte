@@ -16,15 +16,20 @@
             hasChildren: true
         },
         {
-            href: `${path}/usage`,
-            title: 'Usage',
-            event: 'sage',
-            hasChildren: true
-        },
-        {
             href: `${path}/executions`,
             title: 'Executions',
             event: 'executions',
+            hasChildren: true
+        },
+        {
+            href: `${path}/domains`,
+            title: 'Domains',
+            event: 'domains'
+        },
+        {
+            href: `${path}/usage`,
+            title: 'Usage',
+            event: 'sage',
             hasChildren: true
         },
         {

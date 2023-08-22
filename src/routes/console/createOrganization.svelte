@@ -43,7 +43,7 @@
 </script>
 
 <Modal {error} onSubmit={create} size="big" bind:show>
-    <svelte:fragment slot="header">Create New Organization</svelte:fragment>
+    <svelte:fragment slot="header">Create new organization</svelte:fragment>
     <FormList>
         <InputText
             id="organization-name"

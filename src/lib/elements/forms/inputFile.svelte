@@ -2,7 +2,7 @@
     import { Trim } from '$lib/components';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { onMount } from 'svelte';
-    import { Helper } from '.';
+    import { Helper, Label } from '.';
 
     export let label: string = null;
     export let files: FileList;
@@ -10,6 +10,8 @@
     export let allowedFileExtensions: string[] = [];
     export let maxSize: number = null;
     export let required = false;
+    export let optionalText: string = null;
+    export let tooltip: string = null;
     export let error: string = null;
 
     let input: HTMLInputElement;
@@ -91,11 +93,14 @@
 
 <div>
     {#if label}
-        <p class="text">{label}</p>
+        <Label {required} {optionalText} {tooltip} hide={!label}>
+            {label}
+        </Label>
     {/if}
     <div
         class="box is-no-shadow u-padding-24"
         style="--box-border-radius:var(--border-radius-xsmall); z-index: 1"
+        class:u-margin-block-start-8={!!label}
         class:is-border-dashed={!hovering}
         class:is-hover-with-file={hovering}
         on:drop|preventDefault={dropHandler}

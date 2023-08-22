@@ -30,6 +30,7 @@
                 $createFunction.id ?? ID.unique(),
                 $createFunction.name,
                 $createFunction.runtime,
+                $createFunction.entrypoint || undefined,
                 $createFunction.execute || undefined,
                 $createFunction.events || undefined,
                 $createFunction.schedule || undefined,
@@ -41,7 +42,7 @@
                 )
             );
             await invalidate(Dependencies.FUNCTIONS);
-            goto(`${base}/console/project-${projectId}/functions/function-${response.$id}`);
+            await goto(`${base}/console/project-${projectId}/functions/function-${response.$id}`);
             addNotification({
                 message: `${$createFunction.name} has been created`,
                 type: 'success'
@@ -62,6 +63,7 @@
     onDestroy(() => {
         $createFunction = {
             id: null,
+            entrypoint: null,
             name: null,
             execute: [],
             runtime: null,
@@ -74,11 +76,11 @@
 
     const stepsComponents: WizardStepsType = new Map();
     stepsComponents.set(1, {
-        label: 'Details',
+        label: 'Configuration',
         component: Step1
     });
     stepsComponents.set(2, {
-        label: 'Execute access',
+        label: 'Permissions',
         component: Step2,
         optional: true
     });
@@ -99,4 +101,4 @@
     });
 </script>
 
-<Wizard title="Create Function" steps={stepsComponents} on:finish={create} on:exit={onFinish} />
+<Wizard title="Create function" steps={stepsComponents} on:finish={create} on:exit={onFinish} />

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { CardGrid, Box, AvatarGroup, Heading } from '$lib/components';
+    import { CardGrid, BoxAvatar, AvatarGroup, Heading } from '$lib/components';
     import { InputText, Form, Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
@@ -64,14 +64,14 @@
 
         <CardGrid danger>
             <div>
-                <Heading tag="h6" size="7">Delete Organization</Heading>
+                <Heading tag="h6" size="7">Delete organization</Heading>
             </div>
             <p>
                 The organization will be permanently deleted, including all projects and data
                 associated with this organization. This action is irreversible.
             </p>
             <svelte:fragment slot="aside">
-                <Box>
+                <BoxAvatar>
                     <svelte:fragment slot="image">
                         <AvatarGroup {avatars} total={$members.total} />
                     </svelte:fragment>
@@ -79,7 +79,7 @@
                         <h6 class="u-bold u-trim-1">{$organization.name}</h6>
                     </svelte:fragment>
                     <p>{$organization.total} members</p>
-                </Box>
+                </BoxAvatar>
             </svelte:fragment>
 
             <svelte:fragment slot="actions">

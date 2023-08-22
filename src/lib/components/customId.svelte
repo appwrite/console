@@ -7,6 +7,7 @@
     export let name: string;
     export let id: string;
     export let autofocus = true;
+    export let fullWidth = false;
 
     $: if (!show) {
         id = null;
@@ -21,7 +22,7 @@
     }
 </script>
 
-<InnerModal bind:show>
+<InnerModal bind:show {fullWidth}>
     <svelte:fragment slot="title">{name} ID</svelte:fragment>
     <svelte:fragment slot="subtitle">
         Enter a custom {name} ID. Leave blank for a randomly generated one.

@@ -55,7 +55,7 @@
 
 <Form onSubmit={updateDisplayName}>
     <CardGrid>
-        <Heading tag="h6" size="7">Display Name</Heading>
+        <Heading tag="h6" size="7">Display name</Heading>
         <p class="text">
             Select string attributes as display names for your documents. The selected names will be
             used as short forms to identify documents in the Appwrite console, like when creating

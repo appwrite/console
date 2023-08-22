@@ -3,11 +3,12 @@
 
     export let show = false;
     export let closable = true;
+    export let fullWidth = false;
 </script>
 
 {#if show}
     <FormItem>
-        <section class="modal is-inner-modal">
+        <section class="modal is-inner-modal" class:u-width-full-line={fullWidth}>
             <div class="modal-form">
                 <header class="modal-header">
                     <div class="u-flex u-main-space-between u-cross-center u-gap-16">

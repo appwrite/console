@@ -26,7 +26,7 @@
             trackEvent(Submit.KeyUpdateExpire);
             addNotification({
                 type: 'success',
-                message: 'API Key expiration has been updated'
+                message: 'API key expiration has been updated'
             });
         } catch (error) {
             addNotification({
@@ -46,11 +46,11 @@
 <Form onSubmit={updateExpire}>
     <CardGrid>
         <Heading tag="h6" size="7">Expiration Date</Heading>
-        <p class="text">Set a date after which your API Key will expire.</p>
+        <p class="text">Set a date after which your API key will expire.</p>
         <svelte:fragment slot="aside">
             {#if isExpired}
                 <Alert type="error" dismissible on:dismiss={() => (alertsDismissed = true)}>
-                    <span slot="title">Your API Key has expired</span>
+                    <span slot="title">Your API key has expired</span>
                     <p>
                         For security reasons, we recommend you delete your expired key and create a
                         new one.
@@ -58,7 +58,7 @@
                 </Alert>
             {:else if isExpiring}
                 <Alert type="warning" dismissible on:dismiss={() => (alertsDismissed = true)}>
-                    <span slot="title">Your API Key is about to expire</span>
+                    <span slot="title">Your API key is about to expire</span>
                     <p>Update the expiration date to keep the key active</p>
                 </Alert>
             {/if}
