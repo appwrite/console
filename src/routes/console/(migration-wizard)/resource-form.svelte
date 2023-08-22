@@ -3,7 +3,7 @@
     import { Button } from '$lib/elements/forms';
     import { deepMap } from '$lib/helpers/object';
     import type { WritableValue } from '$lib/helpers/types';
-    import type { getSdkForProject } from '$lib/stores/sdk';
+    import { sdk, type getSdkForProject } from '$lib/stores/sdk';
 
     import { onMount } from 'svelte';
 
