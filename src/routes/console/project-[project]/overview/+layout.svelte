@@ -82,7 +82,7 @@
             <Onboard {projectId} />
         {:else}
             {#if $usage}
-                {@const storage = humanFileSize(totalMetrics($usage.files) ?? 0)}
+                {@const storage = humanFileSize(totalMetrics($usage.storage) ?? 0)}
                 <section class="common-section">
                     <div class="grid-dashboard-1s-2m-6l">
                         <div class="card is-2-columns-medium-screen is-3-columns-large-screen">
