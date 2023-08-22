@@ -57,8 +57,8 @@ type KeyedCommand = BaseCommand & {
     alt?: boolean;
 };
 
-function isKeyedCommand(command: Command): command is KeyedCommand {
-    return 'keys' in command;
+export function isKeyedCommand(command: Command): command is KeyedCommand {
+    return 'keys' in command && Array.isArray((command as KeyedCommand).keys);
 }
 
 export type Command = KeyedCommand | BaseCommand;
@@ -83,7 +83,7 @@ function isInputEvent(event: KeyboardEvent) {
 function getCommandRank(command: KeyedCommand) {
     const { keys, ctrl: meta, shift, alt } = command;
     const modifiers = [meta, shift, alt].filter(Boolean).length;
-    return keys.length + modifiers * 10;
+    return (keys?.length || 0) + modifiers * 10;
 }
 
 function hasDisputing(command: KeyedCommand, allCommands: Command[]) {
@@ -95,7 +95,7 @@ function hasDisputing(command: KeyedCommand, allCommands: Command[]) {
             return false;
         }
         const keysString = command.keys.join('+');
-        const otherKeysString = otherCommand.keys.join('+');
+        const otherKeysString = otherCommand?.keys?.join('+');
 
         const cmdRank = getCommandRank(command);
         const otherCmdRank = getCommandRank(otherCommand);
@@ -195,8 +195,10 @@ export const commandCenterKeyDownHandler = derived(
                 const isShiftPressed = shift ? event.shiftKey : !event.shiftKey;
                 const isAltPressed = alt ? event.altKey : !event.altKey;
 
-                const commandKeyCodes = keys.map((key) => key.toUpperCase().charCodeAt(0));
-                const allKeysPressed = recentKeyCodes.join('').includes(commandKeyCodes.join(''));
+                const commandKeyCodes = keys?.map((key) => key.toUpperCase().charCodeAt(0));
+                const allKeysPressed = commandKeyCodes
+                    ? recentKeyCodes.join('').includes(commandKeyCodes.join(''))
+                    : false;
 
                 if (allKeysPressed && isMetaPressed && isShiftPressed && isAltPressed) {
                     event.preventDefault();

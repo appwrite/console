@@ -38,6 +38,11 @@
         const vars = sdk.forConsole.console.variables();
         isAssistantEnabled = vars._APP_ASSISTANT_ENABLED === true;
     });
+
+    $: isOnSettingsLayout = $project?.$id
+        ? $page.url.pathname.includes(`project-${$project.$id}/settings`)
+        : false;
+
     $: $registerCommands([
         {
             label: 'Go to projects',
@@ -78,26 +83,6 @@
             keys: ['c', 'o'],
             group: 'organizations'
         },
-        ...[
-            'users-limit',
-            'session-length',
-            'sessions-limit',
-            'password-history',
-            'password-dictionary',
-            'personal-data'
-        ].map(
-            (heading) =>
-                ({
-                    label: kebabToSentenceCase(heading),
-                    async callback() {
-                        await goto(`/console/project-${$project.$id}/auth/security#${heading}`);
-                        scrollBy({ top: -100 });
-                    },
-                    group: 'security',
-                    icon: 'pencil'
-                } as const)
-        ),
-
         {
             label: 'Open documentation',
             callback: () => {
@@ -145,7 +130,82 @@
                 icon: 'switch-horizontal',
                 keys: ['t', theme[0]]
             } as const;
-        })
+        }),
+        // Auth
+        ...[
+            'users-limit',
+            'session-length',
+            'sessions-limit',
+            'password-history',
+            'password-dictionary',
+            'personal-data'
+        ].map(
+            (heading) =>
+                ({
+                    label: kebabToSentenceCase(heading),
+                    async callback() {
+                        await goto(`/console/project-${$project.$id}/auth/security#${heading}`);
+                        scrollBy({ top: -100 });
+                    },
+                    group: 'security',
+                    icon: 'pencil'
+                } as const)
+        ),
+        // Settings
+        {
+            label: 'Go to settings overview',
+
+            keys: isOnSettingsLayout ? ['g', 'o'] : undefined,
+            callback: () => {
+                goto(`/console/project-${$project.$id}/settings`);
+            },
+            disabled: isOnSettingsLayout && $page.url.pathname.endsWith('settings'),
+            group: 'navigation',
+            rank: isOnSettingsLayout ? 40 : -1
+        },
+        {
+            label: 'Go to custom domains',
+
+            keys: isOnSettingsLayout ? ['g', 'd'] : undefined,
+            callback: () => {
+                goto(`/console/project-${$project.$id}/settings/domains`);
+            },
+            disabled: isOnSettingsLayout && $page.url.pathname.includes('domains'),
+            group: 'navigation',
+            rank: isOnSettingsLayout ? 30 : -1
+        },
+        {
+            label: 'Go to webhooks',
+            keys: isOnSettingsLayout ? ['g', 'w'] : undefined,
+            callback: () => {
+                goto(`/console/project-${$project.$id}/settings/webhooks`);
+            },
+            disabled: isOnSettingsLayout && $page.url.pathname.includes('webhooks'),
+            group: 'navigation',
+
+            rank: isOnSettingsLayout ? 20 : -1
+        },
+        {
+            label: 'Go to migrations',
+            keys: isOnSettingsLayout ? ['g', 'm'] : undefined,
+            callback: () => {
+                goto(`/console/project-${$project.$id}/settings/migrations`);
+            },
+            disabled: isOnSettingsLayout && $page.url.pathname.includes('migrations'),
+            group: 'navigation',
+
+            rank: isOnSettingsLayout ? 10 : -1
+        },
+        {
+            label: 'Go to SMTP settings',
+            keys: isOnSettingsLayout ? ['g', 's'] : undefined,
+            callback: () => {
+                goto(`/console/project-${$project.$id}/settings/smtp`);
+            },
+            disabled: isOnSettingsLayout && $page.url.pathname.includes('smtp'),
+            group: 'navigation',
+            rank: -1
+        }
     ]);
     let isOpen = false;
 
