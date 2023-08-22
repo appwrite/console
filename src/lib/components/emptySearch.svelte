@@ -4,6 +4,7 @@
     import Dark from '$lib/images/search-dark.svg';
     import PaginationInline from './paginationInline.svelte';
 
+    export let hidePagination = false;
     export let hidePages = false;
 </script>
 
@@ -18,7 +19,9 @@
     </div>
 </article>
 
-<div class="u-flex u-margin-block-start-32 u-main-space-between">
-    <p class="text">Total results: 0</p>
-    <PaginationInline limit={1} offset={0} sum={0} {hidePages} />
-</div>
+{#if !hidePagination}
+    <div class="u-flex u-margin-block-start-32 u-main-space-between">
+        <p class="text">Total results: 0</p>
+        <PaginationInline limit={1} offset={0} sum={0} {hidePages} />
+    </div>
+{/if}
