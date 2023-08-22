@@ -161,16 +161,6 @@
 </div>
 
 <style lang="scss">
-    .dropped {
-        border-radius: 0.5rem;
-        box-shadow: 0px 16px 32px 0px rgba(55, 59, 77, 0.04);
-
-        padding: 1rem;
-        margin-top: 0.5rem;
-
-        width: 37.5rem;
-    }
-
     .selects {
         :global(> *) {
             flex: 1;
@@ -181,14 +171,5 @@
         :global(b) {
             font-weight: bold;
         }
-    }
-
-    hr {
-        height: 1px;
-        width: calc(100% + 2rem);
-        background-color: hsl(var(--color-border));
-
-        margin-block-start: 1rem;
-        margin-inline: -1rem;
     }
 </style>

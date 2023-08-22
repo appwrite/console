@@ -10,7 +10,7 @@
     export let required = false;
     export let disabled = false;
 
-    export let element: HTMLInputElement;
+    export let element: HTMLInputElement | undefined = undefined;
     let error: string;
 
     const handleInvalid = (event: Event) => {

@@ -195,6 +195,7 @@
         border-radius: var(--border-radius);
         border: var(--border-size) solid transparent;
         background: var(--border-gradient) border-box;
+        mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
         -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
         -webkit-mask-composite: destination-out;
         mask-composite: exclude;
