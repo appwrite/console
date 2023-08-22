@@ -181,17 +181,17 @@
                 services are not accessible to client SDKs but remain accessible to server SDKs.
             </p>
             <svelte:fragment slot="aside">
-                <ul class="buttons-list u-main-end">
-                    <li class="buttons-list-item">
-                        <Button text={true} on:click={() => toggleAllServices(true)}
-                            >Enable all</Button>
-                    </li>
-                    <li class="buttons-list-item">
-                        <Button text={true} on:click={() => toggleAllServices(false)}
-                            >Disable all</Button>
-                    </li>
-                </ul>
-                <FormList>
+                <div>
+                    <ul class="buttons-list u-main-end">
+                        <li class="buttons-list-item">
+                            <Button text={true} on:click={() => toggleAllServices(true)}
+                                >Enable all</Button>
+                        </li>
+                        <li class="buttons-list-item">
+                            <Button text={true} on:click={() => toggleAllServices(false)}
+                                >Disable all</Button>
+                        </li>
+                    </ul>
                     <form class="form card-separator">
                         <ul class="form-list is-multiple">
                             {#each $services.list as service}
@@ -205,7 +205,7 @@
                             {/each}
                         </ul>
                     </form>
-                </FormList>
+                </div>
             </svelte:fragment>
         </CardGrid>
         <CardGrid>
