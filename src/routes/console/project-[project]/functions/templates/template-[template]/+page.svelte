@@ -134,24 +134,62 @@
             @extend .u-margin-block-start-8;
         }
 
-        > :global(table) {
-            outline: 2px solid red;
+        :global(.markdown-body table) {
             @extend .table;
+            @extend .u-margin-block-start-16;
+        }
+        :global(.markdown-body thead) {
+            @extend .table-thead;
+        }
+        :global(.markdown-body tbody) {
+            @extend .table-tbody;
+        }
+        :global(.markdown-body th) {
+            @extend .table-thead-col;
+            @extend .u-padding-12;
+            @extend .body-text-2;
+            @extend .u-bold;
+        }
+        :global(.markdown-body tr) {
+            // outline: 1px solid red;
+            @extend .table-row;
+        }
+        :global(.markdown-body td) {
+            // outline: 1px solid red;
+            @extend .table-col;
+            @extend .u-padding-12;
         }
     }
 
     /* svelte-ignore css-unused-selector */
     :global(.theme-dark) {
-        :global(.inline-code) {
-            --p-bg-color-inline-code: red;
-            --p-text-color-inline-code: var(--color-neutral-30);
-        }
         :global(.highlight),
         :global(.snippet-clipboard-content) {
             --p-box-text-color: var(--color-neutral-5);
             --p-box-background-color-default: var(--color-neutral-200);
             --p-box-background-color-hover: var(--color-neutral-150);
             --p-box-border-color: var(--color-neutral-150);
+        }
+
+        :global(.markdown-body table) {
+            /* global variable */
+            --heading-text-color: var(--color-neutral-50);
+
+            /* local variable */
+            --p-table-bg-color: var(--color-neutral-300);
+            --p-table-bg-color-focus: var(--color-neutral-400);
+            --p-table-border-color: var(--color-neutral-200);
+            --p-tbody-color-text: var(--color-neutral-30);
+        }
+        :global(p),
+        :global(h1),
+        :global(h2),
+        :global(h3),
+        :global(td) {
+            :global(code) {
+                --p-bg-color-inline-code: var(--color-neutral-400);
+                --p-text-color-inline-code: var(--color-neutral-30);
+            }
         }
     }
 </style>
