@@ -28,7 +28,7 @@
     <div>
         <div class="heading-level-4">
             {bandwith.value}
-            <span class="body-text-2 u-bold">{bandwith.unit}</span>
+            <span class="body-text-2">{bandwith.unit}</span>
         </div>
         <div>Bandwidth</div>
     </div>
