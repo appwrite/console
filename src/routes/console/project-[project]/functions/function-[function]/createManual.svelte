@@ -28,7 +28,13 @@
 
     async function create() {
         try {
-            await sdk.forProject.functions.createDeployment(functionId, files[0], active);
+            await sdk.forProject.functions.createDeployment(
+                functionId,
+                files[0],
+                active,
+                entrypoint,
+                buildCommand
+            );
             await invalidate(Dependencies.DEPLOYMENTS);
             files = undefined;
             active = false;
