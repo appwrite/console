@@ -30,7 +30,7 @@
 </script>
 
 <Modal
-    title="Delete Account"
+    title="Delete account"
     bind:show={showDelete}
     onSubmit={deleteAccount}
     icon="exclamation"

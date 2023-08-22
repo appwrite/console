@@ -74,51 +74,6 @@
             group: 'navigation',
             rank: 1,
             disabled: $page.url.pathname.endsWith('settings')
-        },
-        {
-            label: 'Users limit',
-            async callback() {
-                await goto(`/console/project-${$project.$id}/auth/security#users-limit`);
-                scrollBy({ top: -100 });
-            },
-            group: 'security',
-            icon: 'pencil'
-        },
-        {
-            label: 'Session length',
-            async callback() {
-                await goto(`/console/project-${$project.$id}/auth/security#session-length`);
-                scrollBy({ top: -100 });
-            },
-            group: 'security',
-            icon: 'pencil'
-        },
-        {
-            label: 'Sessions limit',
-            async callback() {
-                await goto(`/console/project-${$project.$id}/auth/security#sessions-limit`);
-                scrollBy({ top: -100 });
-            },
-            group: 'security',
-            icon: 'pencil'
-        },
-        {
-            label: 'Password history',
-            async callback() {
-                await goto(`/console/project-${$project.$id}/auth/security#password-history`);
-                scrollBy({ top: -100 });
-            },
-            group: 'security',
-            icon: 'pencil'
-        },
-        {
-            label: 'Password dictionary',
-            async callback() {
-                await goto(`/console/project-${$project.$id}/auth/security#password-dictionary`);
-                scrollBy({ top: -100 });
-            },
-            group: 'security',
-            icon: 'pencil'
         }
     ]);
 

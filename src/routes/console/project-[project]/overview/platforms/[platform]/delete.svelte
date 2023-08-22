@@ -34,7 +34,7 @@
 </script>
 
 <Modal
-    title="Delete Platform"
+    title="Delete platform"
     bind:show={showDelete}
     onSubmit={handleDelete}
     icon="exclamation"

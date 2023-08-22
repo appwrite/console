@@ -3,9 +3,11 @@
     import { getContext, hasContext } from 'svelte';
     import { readable } from 'svelte/store';
     import type { FormContext } from './form.svelte';
+    import { multiAction, type MultiActionArray } from '$lib/actions/multi-actions';
 
     export let submit = false;
     export let secondary = false;
+    export let github = false;
     export let text = false;
     export let danger = false;
     export let disabled = false;
@@ -18,6 +20,7 @@
     export let event: string = null;
     let classes: string = undefined;
     export { classes as class };
+    export let actions: MultiActionArray = [];
 
     const isSubmitting = hasContext('form')
         ? getContext<FormContext>('form').isSubmitting
@@ -40,6 +43,7 @@
         disabled && 'is-disabled',
         round && 'is-only-icon',
         secondary && 'is-secondary',
+        github && 'is-github',
         text && 'is-text',
         danger && 'is-danger',
         fullWidth && 'is-full-width',
@@ -57,7 +61,8 @@
         target={external ? '_blank' : ''}
         rel={external ? 'noopener noreferrer' : ''}
         class={resolvedClasses}
-        aria-label={ariaLabel}>
+        aria-label={ariaLabel}
+        use:multiAction={actions}>
         <slot />
     </a>
 {:else}
@@ -67,7 +72,22 @@
         disabled={internalDisabled}
         class={resolvedClasses}
         aria-label={ariaLabel}
-        type={submit === false ? 'button' : undefined}>
+        type={submit === false ? 'button' : undefined}
+        use:multiAction={actions}>
         <slot />
     </button>
 {/if}
+
+<style lang="scss">
+    .is-github {
+        background-color: #373b4d;
+
+        &:hover {
+            background-color: lighten($color: #373b4d, $amount: 2.5);
+        }
+
+        &:active {
+            background-color: darken($color: #373b4d, $amount: 5);
+        }
+    }
+</style>

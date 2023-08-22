@@ -40,7 +40,7 @@
 </script>
 
 <Modal
-    title="Delete Index"
+    title="Delete index"
     icon="exclamation"
     state="warning"
     onSubmit={handleDelete}

@@ -1,17 +1,21 @@
 <script lang="ts">
     import Template from './template.svelte';
 
-    import { AvatarInitials, Code } from '$lib/components';
+    import { AvatarInitials, Code, LoadingDots, SvgIcon } from '$lib/components';
     import { user } from '$lib/stores/user';
     import { useCompletion } from 'ai/svelte';
     import { subPanels } from '../subPanels';
 
     import { isLanguage, type Language } from '$lib/components/code.svelte';
-    import CoolerAppwrite from '$lib/images/appwrite-cooler.svg';
     import { VARS } from '$lib/system';
 
+    const endpoint = VARS.APPWRITE_ENDPOINT ?? `${globalThis?.location?.origin}/v1`;
+
     const { input, handleSubmit, completion, isLoading, complete } = useCompletion({
-        api: VARS.ASSISTANT_ENDPOINT
+        api: endpoint + '/console/assistant',
+        headers: {
+            'content-type': 'application/json'
+        }
     });
 
     const examples = [
@@ -57,7 +61,9 @@
 
                 answer.push({
                     type: 'code',
-                    value: nextCodeMatch[2],
+                    value: nextCodeMatch[2].startsWith('\n')
+                        ? nextCodeMatch[2].slice(1)
+                        : nextCodeMatch[2],
                     language: isLanguage(language) ? language : 'js'
                 });
 
@@ -77,6 +83,11 @@
     }
 
     $: answer = parseCompletion($completion);
+
+    function getInitials(name: string) {
+        const [first, last] = name.split(' ');
+        return `${first?.[0] ?? ''}${last?.[0] ?? ''}`;
+    }
 </script>
 
 <Template
@@ -93,9 +104,14 @@
               };
           })}
     clearOnCallback={false}
-    fullheight
-    --command-panel-max-height="40rem">
-    <div slot="search" />
+    on:keydown={(e) => {
+        e.detail.cancel();
+    }}
+    --min-height="40rem"
+    --max-height="52.5rem">
+    <div slot="search">
+        <span class="experimental border-gradient">EXPERIMENTAL</span>
+    </div>
 
     <div slot="option" let:option class="u-flex u-cross-center u-gap-8">
         <i class="icon-question-mark-circle" />
@@ -104,20 +120,28 @@
 
     {#if $isLoading || answer}
         <div class="content">
-            <div class="u-flex u-gap-8">
+            <div class="u-flex u-gap-8 u-cross-center">
+                <div class="avatar is-size-x-small">{getInitials($user.name)}</div>
+                <p class="u-opacity-75">{$input}</p>
+            </div>
+            <div class="u-flex u-gap-8 u-margin-block-start-24">
                 <div class="logo">
-                    <img src={CoolerAppwrite} alt="Appwrite logo" />
+                    <SvgIcon name="sparkles" type="color" />
                 </div>
                 <div class="answer">
                     {#if $isLoading && !$completion}
-                        <p>...</p>
+                        <LoadingDots />
                     {:else}
                         {#each answer as part}
                             {#if part.type === 'text'}
-                                <p>{part.value}</p>
+                                <p>{part.value.trimStart()}</p>
                             {:else if part.type === 'code'}
                                 {#key part.value}
-                                    <Code language={part.language} code={part.value} />
+                                    <div
+                                        class="u-margin-block-start-8"
+                                        style="margin-block-end: 1rem;">
+                                        <Code language={part.language} code={part.value} noMargin />
+                                    </div>
                                 {/key}
                             {/if}
                         {/each}
@@ -169,8 +193,16 @@
 </Template>
 
 <style lang="scss">
+    :global(.theme-dark) .content {
+        --logo-bg: #282a3b;
+    }
+
+    :global(.theme-light) .content {
+        --logo-bg: #f2f2f8;
+    }
+
     .content {
-        overflow-y: auto;
+        overflow: auto;
         padding: 1rem;
 
         .logo {
@@ -182,7 +214,7 @@
             flex-shrink: 0;
 
             border-radius: 0.25rem;
-            background: #282a3b;
+            background: var(--logo-bg);
         }
 
         .answer {
@@ -190,29 +222,6 @@
 
             p {
                 white-space: pre-wrap;
-            }
-        }
-
-        h2 {
-            color: hsl(var(--color-neutral-70));
-        }
-
-        .examples {
-            display: flex;
-            flex-direction: column;
-
-            li {
-                padding: 0.59375rem 0.5rem;
-
-                button {
-                    &:hover {
-                        opacity: 0.75;
-                    }
-
-                    i {
-                        color: hsl(var(--color-neutral-70));
-                    }
-                }
             }
         }
     }
@@ -223,5 +232,36 @@
             height: 1.5rem;
             background-color: hsl(var(--color-neutral-150));
         }
+    }
+
+    .experimental {
+        display: flex;
+        padding: 0.09375rem 0.25rem;
+        align-items: center;
+
+        color: var(--light-neutrals-30, #e8e9f0);
+        text-align: center;
+        font-family: Inter;
+        font-size: 0.625rem;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 150%; /* 0.9375rem */
+        letter-spacing: 0.075rem;
+        text-transform: uppercase;
+
+        background: rgba(240, 46, 101, 0.24);
+        --border-gradient: linear-gradient(
+                to bottom,
+                rgba(240, 46, 101, 0.48) 0%,
+                rgba(240, 46, 101, 0) 150%
+            )
+            border-box;
+        --border-size: 0.03rem;
+        --border-radius: 0.25rem;
+        border-radius: var(--border-radius);
+    }
+
+    :global(.theme-light) .experimental {
+        color: rgba(240, 46, 101, 1);
     }
 </style>

@@ -29,7 +29,7 @@
 </script>
 
 <Modal
-    title="Delete Team"
+    title="Delete team"
     bind:show={showDelete}
     onSubmit={deleteTeam}
     icon="exclamation"

@@ -14,22 +14,22 @@
 
     const platforms = [
         {
-            title: 'Web App',
+            title: 'Web',
             icon: 'grayscale/code',
             platform: Platform.Web
         },
         {
-            title: 'Flutter App',
+            title: 'Flutter',
             icon: 'color/flutter',
             platform: Platform.Flutter
         },
         {
-            title: 'Apple App',
+            title: 'Apple',
             icon: 'color/apple',
             platform: Platform.Apple
         },
         {
-            title: 'Android App',
+            title: 'Android',
             icon: 'color/android',
             platform: Platform.Android
         }
@@ -47,8 +47,10 @@
 <div class="card">
     <header class="card-header common-section grid-1-2">
         <div class="grid-1-2-col-1">
-            <h2 class="heading-level-5">Getting Started Guide</h2>
-            <p class="u-line-height-1-5">Let's get your project up and running</p>
+            <h2 class="heading-level-5">Getting started guide</h2>
+            <p class="u-line-height-1-5 u-margin-block-start-12">
+                Here are some next steps to start building
+            </p>
         </div>
         <div class="grid-1-2-col-2 u-flex u-main-end u-cross-end is-not-mobile">
             <img src={onBoardIntro} alt="" class="card-header-image" />
@@ -57,9 +59,9 @@
 
     <section class="common-section card-separator grid-1-2">
         <div class="grid-1-2-col-1">
-            <h3 class="heading-level-7">Add a Platform</h3>
-            <p class="u-line-height-1-5">
-                Our SDK's make it possible to easily add any platform that you want to use.
+            <h3 class="heading-level-7">Add a platform</h3>
+            <p class="u-line-height-1-5 u-margin-block-start-16">
+                Our SDKs make it possible to easily integrate with any platform.
             </p>
         </div>
         <div class="grid-1-2-col-2">
@@ -95,9 +97,10 @@
 
     <section class="common-section grid-1-2">
         <div class="grid-1-2-col-1">
-            <h3 class="heading-level-7">Integrate With Your Server</h3>
-            <p class="u-line-height-1-5">
-                Our SDK's make it possible to easily add any platform that you want to use.
+            <h3 class="heading-level-7">Integrate with your server</h3>
+            <p class="u-line-height-1-5 u-margin-block-start-16">
+                Appwrite is designed to adapt to your existing backend. Integrate Appwrite with your
+                backend code base using Server SDKs or Webhooks.
             </p>
         </div>
         <div class="grid-1-2-col-2">
@@ -110,7 +113,7 @@
                                     src={`/icons/${$app.themeInUse}/grayscale/code.svg`}
                                     alt="technology" />
                             </div>
-                            <span class="text">API Key</span>
+                            <span class="text">API key</span>
                             <span
                                 class="icon-plus u-margin-inline-start-auto"
                                 style="font-size: var(--icon-size-large);"
@@ -144,15 +147,15 @@
 
 <article
     class="card u-grid u-width-full-line common-section onboard-cover"
-    style={`background-image: url(${onBoardImage1});`}>
+    style={`background-image: url(${onBoardImage1}); box-shadow: none !important`}>
     <div class="u-flex u-flex-vertical u-cross-center">
         <div class="avatar">
             <i class="icon-lock-closed" />
         </div>
         <div class="common-section">
-            <h7 class="heading-level-7">Add a Platform to View Data About Your Project</h7>
+            <h7 class="heading-level-7">Add a platform to view data about your project</h7>
         </div>
-        <div class="common-section">
+        <div class="u-margin-block-start-16 u-text-center" style:max-width="550px">
             Get insights on bandwidth usage, requests, realtime connections and more after making
             your first API call
         </div>

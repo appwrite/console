@@ -37,7 +37,7 @@
 </script>
 
 <Modal
-    title="Delete Organization"
+    title="Delete organization"
     onSubmit={deleteOrg}
     bind:show={showDelete}
     icon="exclamation"

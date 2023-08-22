@@ -77,7 +77,7 @@
             );
 
             addNotification({
-                message: 'Index has been created',
+                message: 'Creating index',
                 type: 'success'
             });
             trackEvent(Submit.IndexCreate);
@@ -99,7 +99,7 @@
     }
 </script>
 
-<Modal title="Create Index" bind:error size="big" onSubmit={create} bind:show={showCreateIndex}>
+<Modal title="Create index" bind:error size="big" onSubmit={create} bind:show={showCreateIndex}>
     <FormList>
         <InputText id="key" label="Index Key" placeholder="Enter Key" bind:value={key} autofocus />
         <InputSelect options={types} id="type" label="Index type" bind:value={selectedType} />

@@ -38,7 +38,7 @@
 </script>
 
 <Modal
-    title="Delete Collection"
+    title="Delete collection"
     icon="exclamation"
     state="warning"
     bind:show={showDelete}

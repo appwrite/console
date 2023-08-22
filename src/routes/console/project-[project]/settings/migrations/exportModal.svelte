@@ -2,6 +2,7 @@
     import { Alert, Modal } from '$lib/components';
     import { Button, InputText, InputTextarea } from '$lib/elements/forms';
     import { getFormData } from '$lib/helpers/form';
+    import { feedback } from '$lib/stores/feedback';
     import { sdk } from '$lib/stores/sdk';
     import { project } from '../../store';
 
@@ -48,7 +49,9 @@
         const formData = getFormData<{ endpoint: string; feedback: string }>(e);
 
         // TODO: Send feedback somewhere
-        const { endpoint, feedback: _feedback } = formData;
+        const { endpoint, feedback: message } = formData;
+
+        await feedback.submitFeedback(`feedback-${$feedback.type}`, message);
 
         if (!isValidEndpoint(endpoint)) {
             const endpointInput = document.getElementById('endpoint') as HTMLInputElement;
@@ -94,7 +97,10 @@
     };
 </script>
 
-<Modal title="API key creation" bind:show {onSubmit}>
+<Modal title="Export to self-hosted instance" bind:show {onSubmit}>
+    <div class="modal-contents">
+        <Alert isStandalone>
+            <svelte:fragment slot="title">API key creation</svelte:fragment>
             By initiating the transfer, an API key will be automatically generated in the background,
             which you can delete after completion
         </Alert>
@@ -106,7 +112,6 @@
                 id="endpoint"
                 placeholder="https://[YOUR_APPWRITE_HOSTNAME]"
                 autofocus
-                value="http://localhost:3000/"
                 on:input={(e) => {
                     if (!submitted) return;
                     const input = e.target;

@@ -44,7 +44,7 @@
     }
 </script>
 
-<Modal title="Create Membership" {error} onSubmit={create} size="big" bind:show={showCreate}>
+<Modal title="Create membership" {error} onSubmit={create} size="big" bind:show={showCreate}>
     <FormList>
         <InputEmail
             id="email"

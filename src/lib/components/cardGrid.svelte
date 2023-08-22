@@ -19,3 +19,10 @@
         </div>
     {/if}
 </Card>
+
+<style lang="scss">
+    .grid-1-2 > * {
+        width: 100%;
+        overflow: hidden;
+    }
+</style>

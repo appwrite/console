@@ -245,7 +245,7 @@
     }
 </script>
 
-<Modal title="Create Event" bind:show onSubmit={create} size="big">
+<Modal title="Create event" bind:show onSubmit={create} size="big">
     <slot />
     <div>
         <p class="u-text">Choose a service</p>

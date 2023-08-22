@@ -34,13 +34,13 @@
 </script>
 
 <Modal
-    title="Delete API Key"
+    title="Delete API key"
     bind:show={showDelete}
     onSubmit={handleDelete}
     icon="exclamation"
     state="warning"
     headerDivider={false}>
-    <p>The API Key will be permanently deleted. This action is irreversible.</p>
+    <p>The API key will be permanently deleted. This action is irreversible.</p>
 
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)}>Cancel</Button>

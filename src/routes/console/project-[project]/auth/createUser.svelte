@@ -58,7 +58,7 @@
     }
 </script>
 
-<Modal title="Create User" {error} size="big" bind:show={showCreate} onSubmit={create}>
+<Modal title="Create user" {error} size="big" bind:show={showCreate} onSubmit={create}>
     <FormList>
         <InputText
             id="name"

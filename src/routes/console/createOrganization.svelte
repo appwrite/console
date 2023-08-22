@@ -42,7 +42,7 @@
     }
 </script>
 
-<Modal title="Create New Organization" {error} onSubmit={create} size="big" bind:show>
+<Modal title="Create new organization" {error} onSubmit={create} size="big" bind:show>
     <FormList>
         <InputText
             id="organization-name"

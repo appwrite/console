@@ -13,6 +13,8 @@
     function apply() {
         queries.apply();
         applied = $tags.length;
+        showFiltersDesktop = false;
+        showFiltersMobile = false;
     }
 
     function clearAll() {

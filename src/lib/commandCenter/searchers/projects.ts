@@ -8,7 +8,7 @@ import type { Searcher } from '../commands';
 export const projectsSearcher = (async (query: string) => {
     const { projects } = await sdk.forConsole.projects.list([
         Query.equal('teamId', get(organization).$id),
-        Query.orderDesc('$createdAt')
+        Query.orderDesc('')
     ]);
 
     return projects

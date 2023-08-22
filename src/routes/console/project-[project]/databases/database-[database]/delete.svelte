@@ -33,7 +33,7 @@
 </script>
 
 <Modal
-    title="Delete Database"
+    title="Delete database"
     icon="exclamation"
     state="warning"
     bind:show={showDelete}

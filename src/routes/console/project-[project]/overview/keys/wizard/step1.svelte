@@ -6,13 +6,13 @@
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">Create an API Key</svelte:fragment>
-    <svelte:fragment slot="subtitle">Let's create an API Key.</svelte:fragment>
+    <svelte:fragment slot="title">Create an API key</svelte:fragment>
+    <svelte:fragment slot="subtitle">Let's create an API key.</svelte:fragment>
     <FormList>
         <InputText
             id="name"
             label="Name"
-            placeholder="API Key Name"
+            placeholder="API key name"
             required
             bind:value={$key.name} />
         <ExpirationInput bind:value={$key.expire} />

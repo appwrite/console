@@ -1,22 +1,7 @@
-<script context="module" lang="ts">
-    const formatter = Intl.NumberFormat('en', {
-        notation: 'compact'
-    });
-
-    // TODO: metric type is wrong
-    export function last(set: Array<unknown>): Models.Metric | null {
-        if (!set) return null;
-        return (set as Models.Metric[]).slice(-1)[0] ?? null;
-    }
-
-    // TODO: metric type is wrong
-    export function total(set: Array<unknown>): number {
+<script lang="ts" context="module">
+    export function totalMetrics(set: Array<unknown>): number {
         if (!set) return 0;
-        return (set as Models.Metric[]).reduce((prev, curr) => prev + curr.value, 0);
-    }
-
-    export function format(number: number): string {
-        return formatter.format(number);
+        return total((set as Models.Metric[]).map((c) => c.value));
     }
 </script>
 
@@ -38,6 +23,8 @@
     import Realtime from './realtime.svelte';
     import Requests from './requests.svelte';
     import { usage } from './store';
+    import { formatNum } from '$lib/helpers/string';
+    import { total } from '$lib/helpers/array';
 
     $: projectId = $page.params.project;
     $: path = `/console/project-${projectId}/overview`;
@@ -47,7 +34,7 @@
     afterNavigate(handle);
 
     async function handle() {
-        const promise = usage.load(projectId, period);
+        const promise = usage.load(period);
 
         if ($usage) {
             await promise;
@@ -56,7 +43,7 @@
 
     function changePeriod(newPeriod: UsagePeriods) {
         period = newPeriod;
-        usage.load(projectId, period);
+        usage.load(period);
     }
 
     $: $registerCommands([
@@ -95,7 +82,7 @@
             <Onboard {projectId} />
         {:else}
             {#if $usage}
-                {@const storage = humanFileSize(total($usage.storage) ?? 0)}
+                {@const storage = humanFileSize(totalMetrics($usage.filesStorage) ?? 0)}
                 <section class="common-section">
                     <div class="grid-dashboard-1s-2m-6l">
                         <div class="card is-2-columns-medium-screen is-3-columns-large-screen">
@@ -119,14 +106,16 @@
 
                                 <div class="grid-item-1-end-start">
                                     <div class="heading-level-4">
-                                        {format(total($usage.documents) ?? 0)}
+                                        {formatNum(totalMetrics($usage.documentsTotal) ?? 0)}
                                     </div>
                                     <div>Documents</div>
                                 </div>
 
                                 <div class="grid-item-1-end-end">
                                     <div class="text">
-                                        Databases: {format(total($usage.databases) ?? 0)}
+                                        Databases: {formatNum(
+                                            totalMetrics($usage.databasesTotal) ?? 0
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -154,7 +143,7 @@
 
                                 <div class="grid-item-1-end-end">
                                     <div class="text">
-                                        Buckets: {format(total($usage.buckets) ?? 0)}
+                                        Buckets: {formatNum(totalMetrics($usage.bucketsTotal) ?? 0)}
                                     </div>
                                 </div>
                             </div>
@@ -174,7 +163,7 @@
 
                                 <div class="grid-item-1-end-start">
                                     <div class="heading-level-4">
-                                        {format(total($usage.users) ?? 0)}
+                                        {formatNum(totalMetrics($usage.usersTotal) ?? 0)}
                                     </div>
                                     <div>Users</div>
                                 </div>
@@ -195,7 +184,7 @@
 
                                 <div class="grid-item-1-end-start">
                                     <div class="heading-level-4">
-                                        {format(total($usage.executions) ?? 0)}
+                                        {formatNum(totalMetrics($usage.executionsTotal) ?? 0)}
                                     </div>
                                     <div>Executions</div>
                                 </div>

@@ -45,12 +45,12 @@
     }
 </script>
 
-<Modal title="Create Bucket" {error} onSubmit={create} size="big" bind:show={showCreate}>
+<Modal title="Create bucket" {error} onSubmit={create} size="big" bind:show={showCreate}>
     <FormList>
         <InputText
             id="name"
             label="Name"
-            placeholder="New Bucket"
+            placeholder="New bucket"
             bind:value={name}
             autofocus
             required />

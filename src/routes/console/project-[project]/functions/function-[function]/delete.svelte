@@ -35,7 +35,7 @@
 </script>
 
 <Modal
-    title="Delete Deployment"
+    title="Delete deployment"
     bind:show={showDelete}
     onSubmit={handleSubmit}
     icon="exclamation"

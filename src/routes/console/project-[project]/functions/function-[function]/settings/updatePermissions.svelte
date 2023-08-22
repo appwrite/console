@@ -26,11 +26,20 @@
             await sdk.forProject.functions.update(
                 functionId,
                 $func.name,
+                $func.runtime,
+                $func.entrypoint || undefined,
                 permissions,
                 $func.events || undefined,
                 $func.schedule || undefined,
                 $func.timeout || undefined,
-                $func.enabled
+                $func.enabled || undefined,
+                $func.logging || undefined,
+                $func.commands || undefined,
+                $func.installationId || undefined,
+                $func.providerRepositoryId || undefined,
+                $func.providerBranch || undefined,
+                $func.providerSilentMode || undefined,
+                $func.providerRootDirectory || undefined
             );
             await invalidate(Dependencies.FUNCTION);
             addNotification({
@@ -64,7 +73,7 @@
                 target="_blank"
                 rel="noopener noreferrer"
                 class="link">
-                Permissions Guide
+                Permissions guide
             </a>.
         </p>
         <svelte:fragment slot="aside">

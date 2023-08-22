@@ -32,7 +32,7 @@
 </script>
 
 <Modal
-    title="Delete Function"
+    title="Delete function"
     bind:show={showDelete}
     onSubmit={handleSubmit}
     icon="exclamation"

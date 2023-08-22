@@ -24,56 +24,58 @@
 
             switch ($provider.provider) {
                 case 'appwrite': {
-                    const res = await sdk.forProject.migrations.createAppwriteMigration(
+                    await sdk.forProject.migrations.createAppwriteMigration(
                         resources,
                         $provider.endpoint,
                         $provider.projectID,
                         $provider.apiKey
                     );
-                    console.log('appwrite', res);
+
                     invalidate(Dependencies.MIGRATIONS);
                     break;
                 }
                 case 'supabase': {
-                    const res = await sdk.forProject.migrations.createSupabaseMigration(
+                    await sdk.forProject.migrations.createSupabaseMigration(
                         resources,
                         $provider.endpoint,
                         $provider.apiKey,
                         $provider.host,
-                        $provider.username,
+                        $provider.username || 'postgres',
                         $provider.password,
-                        $provider.port
+                        $provider.port || 5432
                     );
-                    console.log('Supabase', res);
+
                     invalidate(Dependencies.MIGRATIONS);
                     break;
                 }
                 case 'firebase': {
-                    console.log('firebase', $provider.serviceAccount);
                     if ($provider.projectId) {
                         // OAuth
+                        await sdk.forProject.migrations.createFirebaseOAuthMigration(
+                            resources,
+                            $provider.projectId
+                        );
                     } else if ($provider.serviceAccount) {
                         // Manual auth
-                        const res = await sdk.forProject.migrations.createFirebaseMigration(
+                        await sdk.forProject.migrations.createFirebaseMigration(
                             resources,
                             $provider.serviceAccount
                         );
-                        console.log('Firebase', res);
                     }
                     invalidate(Dependencies.MIGRATIONS);
                     break;
                 }
                 case 'nhost': {
-                    const res = await sdk.forProject.migrations.createNHostMigration(
+                    await sdk.forProject.migrations.createNHostMigration(
                         resources,
                         $provider.subdomain,
                         $provider.region,
                         $provider.adminSecret,
-                        $provider.database,
-                        $provider.username,
+                        $provider.database || $provider.subdomain,
+                        $provider.username || 'postgres',
                         $provider.password
                     );
-                    console.log('nhost', res);
+
                     invalidate(Dependencies.MIGRATIONS);
                     break;
                 }
@@ -96,13 +98,13 @@
 
     const steps: WizardStepsType = new Map();
     steps.set(1, {
-        label: 'Choose provider',
+        label: 'Source',
         component: Step1
     });
     steps.set(2, {
-        label: 'Select data',
+        label: 'Resources',
         component: Step2
     });
 </script>
 
-<Wizard title="Create Project" {steps} on:exit={onExit} on:finish={onFinish} />
+<Wizard title="Create Migration" {steps} on:exit={onExit} on:finish={onFinish} />

@@ -34,7 +34,7 @@
 </script>
 
 <Modal
-    title="Delete Webhook"
+    title="Delete webhook"
     bind:show={showDelete}
     onSubmit={handleDelete}
     icon="exclamation"

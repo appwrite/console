@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Wizard } from '$lib/layout';
-    import { beforeNavigate, invalidate } from '$app/navigation';
+    import { invalidate } from '$app/navigation';
     import { wizard } from '$lib/stores/wizard';
     import { createPlatform } from './wizard/store';
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
@@ -20,35 +20,31 @@
         wizard.hide();
     }
 
-    beforeNavigate(() => {
-        wizard.hide();
-    });
-
     const stepsComponents: WizardStepsType = new Map();
     stepsComponents.set(1, {
-        label: 'Register your app',
+        label: 'Settings',
         component: Step1
     });
     stepsComponents.set(2, {
-        label: 'Get the SDK',
+        label: 'Install',
         component: Step2,
         optional: true
     });
     stepsComponents.set(3, {
-        label: "Let's get coding",
+        label: 'Import',
         component: Step3,
         optional: true
     });
     stepsComponents.set(4, {
-        label: 'All set',
+        label: 'Build',
         component: Step4,
         optional: true
     });
 </script>
 
 <Wizard
-    title="Add a Flutter Project"
+    title="Add a Flutter platform"
     steps={stepsComponents}
     on:finish={onFinish}
     on:exit={onFinish}
-    finalAction="Take me to my Dashboard" />
+    finalAction="Go to dashboard" />

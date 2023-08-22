@@ -11,7 +11,12 @@
 </script>
 
 <Container>
-    <GridHeader title="Collections" {columns} view={data.view}>
+    <GridHeader
+        title="Collections"
+        {columns}
+        view={data.view}
+        hideColumns={!data.collections.total}
+        hideView={!data.collections.total}>
         <Button on:click={() => ($showCreate = true)} event="create_collection">
             <span class="icon-plus" aria-hidden="true" />
             <span class="text">Create collection</span>

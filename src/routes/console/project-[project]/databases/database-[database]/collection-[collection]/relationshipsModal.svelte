@@ -12,7 +12,10 @@
     const databaseId = $page.params.database;
     const limit = 10;
 
-    $: args = preferences.getDisplayNames()?.[selectedRelationship?.relatedCollection] ?? [];
+    $: args =
+        preferences
+            .getDisplayNames()
+            ?.[selectedRelationship?.relatedCollection]?.filter((p) => p !== '$id') ?? [];
 
     $: if (!show) {
         data = null;

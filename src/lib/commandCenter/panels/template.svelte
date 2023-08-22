@@ -4,13 +4,13 @@
     // This is the template for all panels used in the command center.
     // Use this component when you want to create a new panel.
 
-    import { tick } from 'svelte';
+    import { createEventDispatcher, tick } from 'svelte';
 
     import { getCommandCenterCtx } from '../commandCenter.svelte';
 
     import { clearSubPanels, popSubPanel, subPanels } from '../subPanels';
 
-    type Option = $$Generic<Command>;
+    type Option = $$Generic<Omit<Command, 'group'> & { group?: string }>;
     export let options: Option[] | null = null;
     export let search = '';
     export let searchPlaceholder = 'Search...';
@@ -18,6 +18,7 @@
     export let clearOnCallback = true;
 
     let selected = 0;
+    let usingKeyboard = false;
     let contentEl: HTMLElement;
 
     async function triggerOption(option: Option) {
@@ -28,8 +29,25 @@
         }
     }
 
+    const dispatch = createEventDispatcher<{
+        keydown: {
+            originalEvent: KeyboardEvent;
+            cancel: () => void;
+            key: string;
+        };
+    }>();
+
     function handleKeyDown(event: KeyboardEvent) {
         if (!open) return;
+        usingKeyboard = true;
+
+        let canceled = false;
+        dispatch('keydown', {
+            originalEvent: event,
+            cancel: () => (canceled = true),
+            key: event.key
+        });
+        if (canceled) return;
 
         if (options) {
             if (event.key === 'ArrowDown') {
@@ -90,8 +108,9 @@
         }
     }
 
-    $: {
-        options;
+    $: if (selected > options?.length - 1) {
+        selected = options?.length - 1;
+    } else if (usingKeyboard && selected < 0 && options?.length) {
         selected = 0;
     }
 
@@ -173,13 +192,30 @@
         triggerOption(option);
     };
 
-    const getOptionFocusHandler = (option: IndexedOption) => () => {
-        selected = option.index;
+    const getOptionFocusHandler =
+        (option: IndexedOption, hover = false) =>
+        () => {
+            selected = option.index;
+            usingKeyboard = hover ? false : usingKeyboard;
+        };
+
+    const getOptionBlurHandler = () => () => {
+        selected = -1;
+        usingKeyboard = false;
     };
 
     const castOption = (option: IndexedOption) => option as Option;
 
-    $: breadcrumbs = $subPanels.filter((panel) => panel.name !== 'root').map((panel) => panel.name);
+    function getBreadcrumbs(subPanels: typeof $subPanels) {
+        return subPanels.filter((panel) => panel.name !== 'root').map((panel) => panel.name);
+    }
+
+    let breadcrumbs = getBreadcrumbs($subPanels);
+
+    // Avoid clearing subpanels before the closing transition is finished
+    $: if ($subPanels.length) {
+        breadcrumbs = getBreadcrumbs($subPanels);
+    }
 
     const handleCrumbClick = (index: number) => {
         if (index === breadcrumbs.length - 1) {
@@ -262,7 +298,8 @@
                             <button
                                 class="option"
                                 on:click={getOptionClickHandler(item)}
-                                on:mouseover={getOptionFocusHandler(item)}
+                                on:mouseover={getOptionFocusHandler(item, true)}
+                                on:mouseleave={getOptionBlurHandler()}
                                 on:focus={getOptionFocusHandler(item)}>
                                 <slot name="option" option={castOption(item)}>
                                     <div class="u-flex u-gap-8 u-cross-center">
@@ -350,6 +387,9 @@
 
         --result-bg: hsl(var(--color-neutral-10));
         --footer-bg: linear-gradient(180deg, #fff 0%, #e8e9f0 100%);
+
+        --icon-color: hsl(var(--color-neutral-50));
+        --label-color: hsl(var(--color-neutral-100));
     }
 
     :global(.theme-dark) .card {
@@ -364,15 +404,19 @@
 
         --result-bg: hsl(var(--color-neutral-200));
         --footer-bg: linear-gradient(180deg, #1b1b28 0%, #282a3b 100%);
+
+        --icon-color: hsl(var(--color-neutral-70));
+        --label-color: hsl(var(--color-neutral-30));
     }
 
     // Elements
     .card {
         display: flex;
         flex-direction: column;
-        width: var(--command-panel-width, 42.5rem);
+        width: var(--width, 42.5rem);
         max-width: 100%;
-        max-height: var(--command-panel-max-height, 32rem);
+        min-height: var(--min-height);
+        max-height: var(--max-height, 32rem);
         overflow: hidden;
         padding: 0;
 
@@ -388,7 +432,7 @@
         backdrop-filter: blur(6px);
 
         &.fullheight {
-            height: var(--command-panel-max-height, 32rem);
+            height: var(--max-height, 32rem);
         }
 
         :global(.kbd) {
@@ -458,6 +502,8 @@
                 position: relative;
                 z-index: 10;
 
+                font-size: 10px !important;
+
                 &:not(:first-child) {
                     margin-block-start: 1rem;
                 }
@@ -470,17 +516,35 @@
                     position: absolute;
                     inset: 0;
                     background-color: var(--result-bg);
-                    border-radius: 0.75rem;
+                    border-radius: 0.5rem;
                     translate: 0 -1px;
                 }
 
                 .option {
-                    padding: 0.5rem 0.75rem;
+                    padding: 0.5rem 9.5px;
+                    font-size: 14px;
                     position: relative;
                     z-index: 10;
                     width: 100%;
 
                     box-shadow: none !important;
+
+                    color: var(--label-color);
+
+                    :global(i[class^='icon-']) {
+                        font-size: 1rem !important;
+                        width: 1rem !important;
+                        height: 1rem !important;
+                        color: var(--icon-color);
+                        position: relative;
+                    }
+
+                    :global(i[class^='icon-']::before) {
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        translate: -50% -50%;
+                    }
                 }
 
                 &.nested {

@@ -32,7 +32,7 @@
 </script>
 
 <Modal
-    title="Delete Bucket"
+    title="Delete bucket"
     bind:show={showDelete}
     onSubmit={deleteUser}
     icon="exclamation"

@@ -40,7 +40,12 @@
 </script>
 
 <Container>
-    <GridHeader title="Databases" {columns} view={data.view}>
+    <GridHeader
+        title="Databases"
+        {columns}
+        view={data.view}
+        hideColumns={!data.databases.total}
+        hideView={!data.databases.total}>
         <Button on:click={() => (showCreate = true)} event="create_database">
             <span class="icon-plus" aria-hidden="true" />
             <span class="text">Create database</span>

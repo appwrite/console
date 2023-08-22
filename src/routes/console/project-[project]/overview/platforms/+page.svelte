@@ -121,7 +121,7 @@
                     <div class="grid-item-1-end-start">
                         <div class="u-flex u-gap-16 u-flex-wrap">
                             <div class="grid-item-1-end-start">
-                                <p class="eyebrow-heading-3">Last Updated</p>
+                                <p class="eyebrow-heading-3">Last updated</p>
                                 <p>{toLocaleDateTime(platform.$updatedAt)}</p>
                             </div>
                         </div>
@@ -156,7 +156,7 @@
                         <svelte:fragment slot="list">
                             <DropListItem on:click={() => addPlatform(Platform.Web)}>
                                 Web App
-                            </DropListItem>
+                            </DropListItem>Ï
                             <DropListItem on:click={() => addPlatform(Platform.Flutter)}>
                                 Flutter App
                             </DropListItem>

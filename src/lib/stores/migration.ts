@@ -20,6 +20,7 @@ const initialFormData = {
         root: false
     }
 };
+
 export type MigrationFormData = typeof initialFormData;
 
 export const createMigrationFormStore = () => {

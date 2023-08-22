@@ -44,7 +44,7 @@
     }
 </script>
 
-<Modal title="Create Project" {error} onSubmit={create} size="big" bind:show>
+<Modal title="Create project" {error} onSubmit={create} size="big" bind:show>
     <FormList>
         <InputText id="name" label="Name" bind:value={name} required autofocus={true} />
         {#if !showCustomId}

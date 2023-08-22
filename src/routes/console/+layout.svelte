@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { beforeNavigate } from '$app/navigation';
     import { page } from '$app/stores';
     import { INTERVAL } from '$lib/constants';
     import { Logs } from '$lib/layout';
@@ -18,20 +17,53 @@
     import { goto } from '$app/navigation';
 
     import { CommandCenter, registerCommands, registerSearchers } from '$lib/commandCenter';
-    import { AIPanel, OrganizationsPanel, ProjectsPanel } from '$lib/commandCenter/panels';
+    import { AIPanel } from '$lib/commandCenter/panels';
     import { orgSearcher, projectsSearcher } from '$lib/commandCenter/searchers';
     import { addSubPanel } from '$lib/commandCenter/subPanels';
     import { addNotification } from '$lib/stores/notifications';
     import { openMigrationWizard } from './(migration-wizard)';
+    import { project } from './project-[project]/store';
+    import { sdk } from '$lib/stores/sdk';
+
+    function kebabToSentenceCase(str: string) {
+        return str
+            .split('-')
+            .map((word) => word[0].toUpperCase() + word.slice(1))
+            .join(' ');
+    }
+
+    let isAssistantEnabled = false;
+    onMount(async () => {
+        const vars = sdk.forConsole.console.variables();
+        isAssistantEnabled = vars._APP_ASSISTANT_ENABLED === true;
+    });
+
+    $: isOnSettingsLayout = $project?.$id
+        ? $page.url.pathname.includes(`project-${$project.$id}/settings`)
+        : false;
 
     $: $registerCommands([
         {
-            label: 'Ask AI',
+            label: 'Go to projects',
+            callback: () => {
+                goto('/console');
+            },
+            keys: ['g', 'p'],
+            group: 'navigation',
+            disabled:
+                $page.url.pathname.includes('/console/organization-') &&
+                !$page.url.pathname.endsWith('/members') &&
+                !$page.url.pathname.endsWith('/settings'),
+            rank: -1
+        },
+        {
+            label: 'Ask the AI',
             callback: () => {
                 addSubPanel(AIPanel);
             },
             keys: ['a', 'i'],
-            icon: 'light-bulb'
+            icon: 'sparkles',
+            disabled: !isAssistantEnabled
         },
         {
             label: 'Go to account',
@@ -39,25 +71,8 @@
                 goto('/console/account');
             },
             keys: ['i'],
-            group: 'navigation'
-        },
-        {
-            label: 'Find an organization',
-            callback: () => {
-                addSubPanel(OrganizationsPanel);
-            },
-            group: 'organizations',
-            icon: 'search',
-            keys: ['f', 'o']
-        },
-        {
-            label: 'Find a project',
-            callback: () => {
-                addSubPanel(ProjectsPanel);
-            },
-            keys: ['f', 'p'],
-            group: 'projects',
-            icon: 'search'
+            group: 'navigation',
+            rank: -2
         },
         {
             label: 'Create new organization',
@@ -66,14 +81,6 @@
             },
             keys: ['c', 'o'],
             group: 'organizations'
-        },
-        {
-            label: 'Go to home',
-            callback: () => {
-                goto('/console');
-            },
-            keys: ['h'],
-            group: 'navigation'
         },
         {
             label: 'Open documentation',
@@ -107,24 +114,96 @@
             group: 'help',
             icon: 'discord'
         },
+        ...(['auto', 'dark', 'light'] as const).map((theme) => {
+            return {
+                label: `Set theme to ${theme}`,
+                callback: () => {
+                    $app.theme = theme;
+                    addNotification({
+                        title: 'Theme changed',
+                        message: `Theme changed to ${$app.theme}`,
+                        type: 'success'
+                    });
+                },
+                group: 'misc',
+                icon: 'switch-horizontal',
+                keys: ['t', theme[0]]
+            } as const;
+        }),
+        // Auth
+        ...[
+            'users-limit',
+            'session-length',
+            'sessions-limit',
+            'password-history',
+            'password-dictionary',
+            'personal-data'
+        ].map(
+            (heading) =>
+                ({
+                    label: kebabToSentenceCase(heading),
+                    async callback() {
+                        await goto(`/console/project-${$project.$id}/auth/security#${heading}`);
+                        scrollBy({ top: -100 });
+                    },
+                    group: 'security',
+                    icon: 'pencil'
+                } as const)
+        ),
+        // Settings
         {
-            label: 'Toggle theme',
+            label: 'Go to settings overview',
+
+            keys: isOnSettingsLayout ? ['g', 'o'] : undefined,
             callback: () => {
-                if ($app.theme === 'auto') {
-                    $app.theme = 'light';
-                } else if ($app.theme === 'light') {
-                    $app.theme = 'dark';
-                } else {
-                    $app.theme = 'auto';
-                }
-                addNotification({
-                    title: 'Theme changed',
-                    message: `Theme changed to ${$app.theme}`,
-                    type: 'success'
-                });
+                goto(`/console/project-${$project.$id}/settings`);
             },
-            group: 'misc',
-            icon: 'switch-horizontal'
+            disabled: isOnSettingsLayout && $page.url.pathname.endsWith('settings'),
+            group: 'navigation',
+            rank: isOnSettingsLayout ? 40 : -1
+        },
+        {
+            label: 'Go to custom domains',
+
+            keys: isOnSettingsLayout ? ['g', 'd'] : undefined,
+            callback: () => {
+                goto(`/console/project-${$project.$id}/settings/domains`);
+            },
+            disabled: isOnSettingsLayout && $page.url.pathname.includes('domains'),
+            group: 'navigation',
+            rank: isOnSettingsLayout ? 30 : -1
+        },
+        {
+            label: 'Go to webhooks',
+            keys: isOnSettingsLayout ? ['g', 'w'] : undefined,
+            callback: () => {
+                goto(`/console/project-${$project.$id}/settings/webhooks`);
+            },
+            disabled: isOnSettingsLayout && $page.url.pathname.includes('webhooks'),
+            group: 'navigation',
+
+            rank: isOnSettingsLayout ? 20 : -1
+        },
+        {
+            label: 'Go to migrations',
+            keys: isOnSettingsLayout ? ['g', 'm'] : undefined,
+            callback: () => {
+                goto(`/console/project-${$project.$id}/settings/migrations`);
+            },
+            disabled: isOnSettingsLayout && $page.url.pathname.includes('migrations'),
+            group: 'navigation',
+
+            rank: isOnSettingsLayout ? 10 : -1
+        },
+        {
+            label: 'Go to SMTP settings',
+            keys: isOnSettingsLayout ? ['g', 's'] : undefined,
+            callback: () => {
+                goto(`/console/project-${$project.$id}/settings/smtp`);
+            },
+            disabled: isOnSettingsLayout && $page.url.pathname.includes('smtp'),
+            group: 'navigation',
+            rank: -1
         }
     ]);
     let isOpen = false;
@@ -150,10 +229,6 @@
         }
     }
 
-    beforeNavigate(() => {
-        $log.show = false;
-    });
-
     $: if (!$log.show) {
         $log.data = null;
         $log.func = null;
@@ -173,6 +248,7 @@
     showSideNavigation={$page.url.pathname !== '/console' &&
         !$page?.params.organization &&
         !$page.url.pathname.includes('/console/account') &&
+        !$page.url.pathname.includes('/console/card') &&
         !$page.url.pathname.includes('/console/onboarding')}>
     <Header slot="header" />
     <SideNavigation slot="side" bind:isOpen />
@@ -182,6 +258,8 @@
 
 {#if $wizard.show && $wizard.component}
     <svelte:component this={$wizard.component} />
+{:else if $wizard.cover}
+    <svelte:component this={$wizard.cover} />
 {/if}
 
 <Create bind:show={$newOrgModal} />

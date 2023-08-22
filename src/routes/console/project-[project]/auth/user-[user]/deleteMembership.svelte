@@ -40,7 +40,7 @@
 </script>
 
 <Modal
-    title="Delete Member"
+    title="Delete member"
     bind:show={showDelete}
     onSubmit={deleteMembership}
     icon="exclamation"

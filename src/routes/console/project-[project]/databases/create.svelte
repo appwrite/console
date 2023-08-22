@@ -39,7 +39,7 @@
     };
 </script>
 
-<Modal title="Create Database" size="big" onSubmit={create} bind:show={showCreate}>
+<Modal title="Create database" size="big" onSubmit={create} bind:show={showCreate}>
     <FormList>
         <InputText
             id="name"

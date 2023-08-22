@@ -1,21 +1,20 @@
 <script lang="ts">
-    import SvgIcon from '$lib/components/svgIcon.svelte';
+    import { invalidate } from '$app/navigation';
+    import { page } from '$app/stores';
+    import { Dependencies } from '$lib/constants';
     import {
-        Button,
         FormList,
         InputNumber,
         InputPassword,
         InputSelect,
-        InputText
+        InputText,
+        InputTextarea
     } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
     import type { Provider } from '$lib/stores/migration';
-    import { sdk } from '$lib/stores/sdk';
-    import { page } from '$app/stores';
-    import { provider } from '.';
     import { addNotification } from '$lib/stores/notifications';
-    import { invalidate } from '$app/navigation';
-    import { Dependencies } from '$lib/constants';
+    import { sdk } from '$lib/stores/sdk';
+    import { provider } from '.';
 
     const providers: Record<Provider, string> = {
         appwrite: 'Appwrite Self-hosted',
@@ -24,15 +23,15 @@
         nhost: 'NHost'
     };
 
-    function connectGoogle() {
-        const redirect = new URL($page.url);
-        const target = new URL(
-            `${sdk.forProject.client.config.endpoint}/migrations/firebase/connect`
-        );
-        target.searchParams.set('redirect', redirect.toString());
-        target.searchParams.set('projectId', $page.params.project);
-        return target;
-    }
+    // function connectGoogle() {
+    //     const redirect = new URL($page.url);
+    //     const target = new URL(
+    //         `${sdk.forProject.client.config.endpoint}/migrations/firebase/connect`
+    //     );
+    //     target.searchParams.set('redirect', redirect.toString());
+    //     target.searchParams.set('projectId', $page.params.project);
+    //     return target;
+    // }
 
     function deauthorizeGoogle() {
         sdk.forProject.migrations.deleteFirebaseAuth().then(() => {
@@ -51,12 +50,12 @@
 
     $: console.log(firebaseProjects);
 
-    let showAuth = false;
+    // let showAuth = false;
 </script>
 
 <WizardStep>
     <svelte:fragment slot="title">Choose provider</svelte:fragment>
-    <div class="u-flex u-flex-vertical u-gap-16">
+    <div class="u-flex u-flex-vertical u-gap-8">
         {#each Object.entries(providers) as [key, value]}
             <label class="u-flex u-cross-center u-cursor-pointer u-gap-8">
                 <input
@@ -96,32 +95,32 @@
         </FormList>
     {:else if $provider.provider === 'firebase'}
         {#if !firebaseProjects?.length}
-            <div class="box u-flex u-flex-vertical u-gap-16 u-cross-center u-margin-block-start-24">
+            <!-- <div class="box u-flex u-flex-vertical u-gap-16 u-cross-center u-margin-block-start-24">
                 <p class="u-text-center u-bold">Sign in with Google to get started</p>
                 <Button secondary href={connectGoogle().toString()}>
                     <SvgIcon name="google" />Sign in
                 </Button>
-            </div>
+            </div> -->
 
-            <button
+            <!-- <button
                 class="tag u-margin-block-start-16"
                 type="button"
                 on:click={() => (showAuth = !showAuth)}
                 class:is-selected={showAuth}>
                 <span class="icon-lock-closed" aria-hidden="true" />
                 <span class="text">Manual authentication</span>
-            </button>
+            </button> -->
 
-            {#if showAuth}
-                <div class="u-margin-block-start-16">
-                    <InputText
-                        id="credentials"
-                        label="Account credentials"
-                        required
-                        bind:value={$provider.serviceAccount}
-                        placeholder="Enter account credentials" />
-                </div>
-            {/if}
+            <!-- {#if showAuth} -->
+            <div class="u-margin-block-start-16">
+                <InputTextarea
+                    id="credentials"
+                    label="Account credentials"
+                    required
+                    bind:value={$provider.serviceAccount}
+                    placeholder="Enter account credentials" />
+            </div>
+            <!-- {/if} -->
         {:else}
             <FormList class="u-margin-block-start-24">
                 <InputSelect
@@ -135,10 +134,7 @@
                     }))} />
             </FormList>
             <p class="u-text-center u-margin-block-start-24">
-                Signed in
-                <button class="u-bold" on:click|preventDefault={deauthorizeGoogle}>
-                    Sign Out?
-                </button>
+                <button class="u-bold" on:click|preventDefault={deauthorizeGoogle}>Sign Out</button>
             </p>
         {/if}
     {:else if $provider.provider === 'supabase'}
@@ -151,17 +147,11 @@
                 required
                 placeholder="Enter host"
                 bind:value={$provider.host} />
-            <InputNumber
-                id="port"
-                label="Port"
-                required
-                placeholder="Enter port"
-                bind:value={$provider.port} />
+            <InputNumber id="port" label="Port" placeholder="5432" bind:value={$provider.port} />
             <InputText
                 id="username"
                 label="Username"
-                required
-                placeholder="Enter username"
+                placeholder="postgres"
                 bind:value={$provider.username} />
             <InputPassword
                 id="password"
@@ -203,14 +193,14 @@
             <InputText
                 id="database"
                 label="Database"
-                required
-                placeholder="Enter database"
+                placeholder={$provider.subdomain
+                    ? `Default: ${$provider.subdomain}`
+                    : 'Enter database'}
                 bind:value={$provider.database} />
             <InputText
                 id="username"
                 label="Username"
-                required
-                placeholder="Enter username"
+                placeholder="postgres"
                 bind:value={$provider.username} />
             <InputPassword
                 id="password"

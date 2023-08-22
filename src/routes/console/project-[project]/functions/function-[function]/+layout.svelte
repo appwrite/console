@@ -1,11 +1,40 @@
 <script lang="ts">
-    import { execute, func } from './store';
-    import Execute from './execute.svelte';
-    import { registerCommands } from '$lib/commandCenter';
-    import { goto } from '$app/navigation';
-    import { project } from '../../store';
+    import { onMount } from 'svelte';
     import { page } from '$app/stores';
-    import { showCreateDeployment } from './+page.svelte';
+    import { sdk } from '$lib/stores/sdk';
+    import { Dependencies } from '$lib/constants';
+    import { invalidate, goto } from '$app/navigation';
+    import { registerCommands } from '$lib/commandCenter';
+    import { execute, func, showCreateDeployment } from './store';
+    import { project } from '../../store';
+    import type { Models } from '@appwrite.io/console';
+    import Execute from './execute.svelte';
+
+    onMount(() => {
+        let previousStatus = null;
+        return sdk.forConsole.client.subscribe<Models.Deployment>('console', (message) => {
+            if (previousStatus === message.payload.status) {
+                return;
+            }
+            previousStatus = message.payload.status;
+            if (message.events.includes('functions.*.deployments.*.create')) {
+                invalidate(Dependencies.DEPLOYMENTS);
+
+                return;
+            }
+            if (message.events.includes('functions.*.deployments.*.update')) {
+                invalidate(Dependencies.DEPLOYMENTS);
+                invalidate(Dependencies.FUNCTION);
+
+                return;
+            }
+            if (message.events.includes('functions.*.deployments.*.delete')) {
+                invalidate(Dependencies.DEPLOYMENTS);
+
+                return;
+            }
+        });
+    });
 
     $: $registerCommands([
         {
@@ -14,7 +43,7 @@
                 if (!$page.url.pathname.endsWith($func.$id)) {
                     await goto(`/console/project-${$project.$id}/functions/function-${$func.$id}`);
                 }
-                showCreateDeployment();
+                showCreateDeployment.set(true);
             },
             keys: $page.url.pathname.endsWith($func.$id) ? ['c'] : ['c', 'd'],
             group: 'functions',

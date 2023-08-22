@@ -32,7 +32,7 @@
 </script>
 
 <Modal
-    title="Delete All Sessions"
+    title="Delete all sessions"
     bind:show={showDeleteAll}
     onSubmit={deleteAllSessions}
     icon="exclamation"

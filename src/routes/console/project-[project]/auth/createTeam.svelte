@@ -41,7 +41,7 @@
     }
 </script>
 
-<Modal title="Create Team" {error} size="big" bind:show={showCreate} onSubmit={create}>
+<Modal title="Create team" {error} size="big" bind:show={showCreate} onSubmit={create}>
     <FormList>
         <InputText
             id="name"

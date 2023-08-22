@@ -54,7 +54,7 @@
 
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { Box, CardGrid, Heading } from '$lib/components';
+    import { BoxAvatar, CardGrid, Heading } from '$lib/components';
     import { Permissions } from '$lib/components/permissions';
     import { Dependencies } from '$lib/constants';
     import { Pill } from '$lib/elements';
@@ -224,7 +224,7 @@
                                 bind:value={enabled} />
                         </FormList>
                         <p class="text">Created: {toLocaleDateTime($bucket.$createdAt)}</p>
-                        <p class="text">Last Updated: {toLocaleDateTime($bucket.$updatedAt)}</p>
+                        <p class="text">Last updated: {toLocaleDateTime($bucket.$updatedAt)}</p>
                     </div>
                 </svelte:fragment>
 
@@ -266,7 +266,7 @@
                         target="_blank"
                         rel="noopener noreferrer"
                         class="link">
-                        Permissions Guide
+                        Permissions guide
                     </a>.
                 </p>
                 <svelte:fragment slot="aside">
@@ -282,13 +282,13 @@
 
         <Form onSubmit={updateFileSecurity}>
             <CardGrid>
-                <Heading tag="h6" size="7" id="file-security">File Security</Heading>
+                <Heading tag="h6" size="7" id="file-security">File security</Heading>
                 <svelte:fragment slot="aside">
                     <FormList>
                         <InputSwitch
                             bind:value={bucketFileSecurity}
                             id="security"
-                            label="File Security" />
+                            label="File security" />
                     </FormList>
                     <p class="text">
                         When file security is enabled, users will be able to access files for which
@@ -310,7 +310,7 @@
 
         <Form onSubmit={updateSecurity}>
             <CardGrid>
-                <Heading tag="h2" size="7">Security Settings</Heading>
+                <Heading tag="h2" size="7">Security settings</Heading>
                 <p class="text">
                     Enable or disable security services for the bucket including <b>Ecryption</b>
                     and <b>Antivirus scanning.</b>
@@ -445,18 +445,18 @@
         </Form>
 
         <CardGrid danger>
-            <Heading tag="h6" size="7">Delete Bucket</Heading>
+            <Heading tag="h6" size="7">Delete bucket</Heading>
             <p class="text">
                 The bucket will be permanently deleted, including all the files within it. This
                 action is irreversible.
             </p>
             <svelte:fragment slot="aside">
-                <Box>
+                <BoxAvatar>
                     <svelte:fragment slot="title">
                         <h6 class="u-bold u-trim-1">{$bucket.name}</h6>
                     </svelte:fragment>
-                    <p class="text">Last Updated: {toLocaleDateTime($bucket.$updatedAt)}</p>
-                </Box>
+                    <p class="text">Last updated: {toLocaleDateTime($bucket.$updatedAt)}</p>
+                </BoxAvatar>
             </svelte:fragment>
 
             <svelte:fragment slot="actions">

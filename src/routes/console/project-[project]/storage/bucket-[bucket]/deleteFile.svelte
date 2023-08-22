@@ -33,7 +33,7 @@
 </script>
 
 <Modal
-    title="Delete File"
+    title="Delete file"
     bind:show={showDelete}
     onSubmit={deleteFile}
     icon="exclamation"

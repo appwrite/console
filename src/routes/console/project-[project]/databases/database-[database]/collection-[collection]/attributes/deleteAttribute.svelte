@@ -47,7 +47,7 @@
 </script>
 
 <Modal
-    title="Delete Attribute"
+    title="Delete attribute"
     icon="exclamation"
     state="warning"
     headerDivider={false}
