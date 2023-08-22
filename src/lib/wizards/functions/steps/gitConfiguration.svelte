@@ -95,8 +95,8 @@
         {/await}
     </div>
     <p class="text u-margin-block-start-8">
-        View your configuration in <a
-            href={$repository.html_url}
+        Visit your repository on <a
+            href={`https://github.com/${$repository.organization}/${$repository.name}`}
             target="_blank"
             rel="noopener noreferrer"
             class="link">GitHub</a

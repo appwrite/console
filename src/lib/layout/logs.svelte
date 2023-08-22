@@ -53,6 +53,7 @@
     $: if (execution?.errors) {
         selectedResponse = 'errors';
     }
+    $: host = execution?.requestHeaders?.find((header) => header.name === 'host')?.value;
 </script>
 
 <svelte:window on:keydown={handleKeydown} />
@@ -100,11 +101,11 @@
                             {toLocaleDateTime(execution.$createdAt)}
                         </time>
                     </li>
-                    {#if execution?.requestHeaders?.host}
+                    {#if host}
                         <li class="text">
-                            <b>Host</b>
+                            <b>Host:</b>
                             <span>
-                                {execution.requestHeaders.host}
+                                {host}
                             </span>
                         </li>
                     {/if}

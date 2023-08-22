@@ -34,7 +34,7 @@
 
     let isAssistantEnabled = false;
     onMount(async () => {
-        const vars = sdk.forConsole.console.variables();
+        const vars = await sdk.forConsole.console.variables();
         isAssistantEnabled = vars._APP_ASSISTANT_ENABLED === true;
     });
 

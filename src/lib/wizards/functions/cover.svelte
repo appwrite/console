@@ -48,7 +48,7 @@
     const quickStart = marketplace.find((template) => template.id === 'starter');
     const templates = marketplace.filter((template) => template.id !== 'starter').slice(0, 3);
 
-    function connect(event: CustomEvent<Models.Repository>) {
+    function connect(event: CustomEvent<Models.ProviderRepository>) {
         repository.set(event.detail);
         wizard.start(CreateGit);
     }
