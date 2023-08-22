@@ -1,8 +1,6 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
     import { page } from '$app/stores';
     import { registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
-    import { project } from '../store';
     import { openCreateDomainWizard } from './domains/+page.svelte';
     import { openWebhooksWizard } from './webhooks/+page.svelte';
 
@@ -24,59 +22,6 @@
                 openWebhooksWizard();
             },
             group: 'webhooks'
-        },
-        {
-            label: 'Go to settings overview',
-
-            keys: ['g', 'o'],
-            callback: () => {
-                goto(`/console/project-${$project.$id}/settings`);
-            },
-            disabled: $page.url.pathname.endsWith('settings'),
-            group: 'navigation',
-            rank: 40
-        },
-        {
-            label: 'Go to custom domains',
-
-            keys: ['g', 'd'],
-            callback: () => {
-                goto(`/console/project-${$project.$id}/settings/domains`);
-            },
-            disabled: $page.url.pathname.includes('domains'),
-            group: 'navigation',
-            rank: 30
-        },
-        {
-            label: 'Go to webhooks',
-            keys: ['g', 'w'],
-            callback: () => {
-                goto(`/console/project-${$project.$id}/settings/webhooks`);
-            },
-            disabled: $page.url.pathname.includes('webhooks'),
-            group: 'navigation',
-
-            rank: 20
-        },
-        {
-            label: 'Go to migrations',
-            keys: ['g', 'm'],
-            callback: () => {
-                goto(`/console/project-${$project.$id}/settings/migrations`);
-            },
-            disabled: $page.url.pathname.includes('migrations'),
-            group: 'navigation',
-
-            rank: 10
-        },
-        {
-            label: 'Go to SMTP settings',
-            keys: ['g', 's'],
-            callback: () => {
-                goto(`/console/project-${$project.$id}/settings/smtp`);
-            },
-            disabled: $page.url.pathname.includes('smtp'),
-            group: 'navigation'
         }
     ]);
 

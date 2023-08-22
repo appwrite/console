@@ -18,6 +18,7 @@
     export let clearOnCallback = true;
 
     let selected = 0;
+    let usingKeyboard = false;
     let contentEl: HTMLElement;
 
     async function triggerOption(option: Option) {
@@ -38,6 +39,7 @@
 
     function handleKeyDown(event: KeyboardEvent) {
         if (!open) return;
+        usingKeyboard = true;
 
         let canceled = false;
         dispatch('keydown', {
@@ -108,6 +110,8 @@
 
     $: if (selected > options?.length - 1) {
         selected = options?.length - 1;
+    } else if (usingKeyboard && selected < 0 && options?.length) {
+        selected = 0;
     }
 
     const commandCenterCtx = getCommandCenterCtx();
@@ -188,12 +192,16 @@
         triggerOption(option);
     };
 
-    const getOptionFocusHandler = (option: IndexedOption) => () => {
-        selected = option.index;
-    };
+    const getOptionFocusHandler =
+        (option: IndexedOption, hover = false) =>
+        () => {
+            selected = option.index;
+            usingKeyboard = hover ? false : usingKeyboard;
+        };
 
     const getOptionBlurHandler = () => () => {
         selected = -1;
+        usingKeyboard = false;
     };
 
     const castOption = (option: IndexedOption) => option as Option;
@@ -290,7 +298,7 @@
                             <button
                                 class="option"
                                 on:click={getOptionClickHandler(item)}
-                                on:mouseover={getOptionFocusHandler(item)}
+                                on:mouseover={getOptionFocusHandler(item, true)}
                                 on:mouseleave={getOptionBlurHandler()}
                                 on:focus={getOptionFocusHandler(item)}>
                                 <slot name="option" option={castOption(item)}>
