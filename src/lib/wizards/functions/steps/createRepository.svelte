@@ -11,9 +11,9 @@
     import Repositories from '../components/repositories.svelte';
     import { installation, repository, templateConfig } from '../store';
 
-    let selectedInstallationId;
-    let hasInstallations;
-    let selectedRepository;
+    let selectedInstallationId: string;
+    let hasInstallations: boolean;
+    let selectedRepository: string;
 
     async function beforeSubmit() {
         if (!hasInstallations || !$installation) {
@@ -76,6 +76,7 @@
     </svelte:fragment>
 
     {#if $templateConfig.repositoryBehaviour === 'existing'}
+        console.log('test');
         <Repositories bind:hasInstallations bind:selectedRepository />
     {:else}
         {#await loadInstallations()}

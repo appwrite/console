@@ -2,8 +2,8 @@
     import { WizardStep } from '$lib/layout';
     import Repositories from '../components/repositories.svelte';
 
-    let hasInstallations;
-    let selectedRepository;
+    let hasInstallations: boolean;
+    let selectedRepository: string;
     async function beforeSubmit() {
         if (!hasInstallations) {
             throw new Error('Please connect a Git provider');
