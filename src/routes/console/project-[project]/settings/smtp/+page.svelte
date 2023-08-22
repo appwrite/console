@@ -1,6 +1,13 @@
 <script lang="ts">
     import { CardGrid, Heading } from '$lib/components';
-    import { Button, Form, FormList, InputText, InputChoice } from '$lib/elements/forms';
+    import {
+        Button,
+        Form,
+        FormList,
+        InputText,
+        InputChoice,
+        InputEmail
+    } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { project } from '../../store';
     import { onMount } from 'svelte/internal';
@@ -100,7 +107,7 @@
                     </InputChoice>
 
                     {#if enabled}
-                        <InputText
+                        <InputEmail
                             id="senderEmail"
                             label="Sender email"
                             bind:value={sender}
