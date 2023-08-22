@@ -26,6 +26,7 @@
     import Create from './create.svelte';
     import Delete from './delete.svelte';
     import Retry from './wizard/retry.svelte';
+    import { Pill } from '$lib/elements';
 
     export let rules: Models.ProxyRuleList;
     export let type: ProxyTypes;
@@ -84,40 +85,49 @@
                             <span class="icon-external-link" aria-hidden="true" />
                         </span>
                     </TableCellLink>
-                    <TableCell title="Status">
+                    <TableCell title="Verification">
                         {#if domain.status === 'created'}
                             <div class="u-flex u-gap-8 u-cross-center">
-                                <span
-                                    class="icon-x-circle u-color-text-danger"
-                                    aria-hidden="true" />
-                                <span class="u-text">Failed</span>
-                                <button on:click={() => openRetry(domain)}>
+                                <Pill danger>
+                                    <span
+                                        class="icon-exclamation-circle u-color-text-danger"
+                                        aria-hidden="true" />
+                                    <span class="u-text">Failed</span>
+                                </Pill>
+                                <button type="button" on:click={() => openRetry(domain)}>
                                     <span class="link">Retry</span>
                                 </button>
                             </div>
                         {:else}
-                            <div class="u-flex u-gap-8 u-cross-center">
+                            <Pill success>
                                 <span
                                     class="icon-check-circle u-color-text-success"
                                     aria-hidden="true" />
-                                <p class="u-stretch">Verified</p>
-                            </div>
+                                <p class="text">Verified</p>
+                            </Pill>
                         {/if}
                     </TableCell>
-                    <TableCell title="Name">
+                    <TableCell title="Cartificate">
                         {#if domain.status === 'unverified'}
                             <div class="u-flex u-gap-8 u-cross-center">
-                                <span
-                                    class="icon-x-circle u-color-text-danger"
-                                    aria-hidden="true" />
-                                <p class="u-stretch">Failed</p>
+                                <Pill danger>
+                                    <span
+                                        class="icon-exclamation-circle u-color-text-danger"
+                                        aria-hidden="true" />
+                                    <span class="u-text">Failed</span>
+                                </Pill>
+                                <button type="button" on:click={() => openRetry(domain)}>
+                                    <span class="link">Retry</span>
+                                </button>
                             </div>
                         {:else if domain.status === 'verified'}
                             <div class="u-flex u-gap-8 u-cross-center">
-                                <span
-                                    class="icon-check-circle u-color-text-success"
-                                    aria-hidden="true" />
-                                <span>Generated</span>
+                                <Pill success>
+                                    <span
+                                        class="icon-check-circle u-color-text-success"
+                                        aria-hidden="true" />
+                                    <span>Generated</span>
+                                </Pill>
                                 {#if domain.renewAt}
                                     <span class="u-text-color-gray">
                                         Auto-renewal: {toLocaleDate(domain.renewAt)}
@@ -126,8 +136,10 @@
                             </div>
                         {:else}
                             <div class="u-flex u-gap-8 u-cross-center">
-                                <span class="icon-clock u-text-color-gray" aria-hidden="true" />
-                                <p class="u-stretch">Waiting to run</p>
+                                <Pill>
+                                    <span class="icon-clock u-text-color-gray" aria-hidden="true" />
+                                    <p class="text">Waiting to run</p>
+                                </Pill>
                             </div>
                         {/if}
                     </TableCell>
@@ -145,7 +157,9 @@
                             </Button>
                             <svelte:fragment slot="list">
                                 <DropListItem icon="refresh" on:click={() => openRetry(domain, i)}>
-                                    Retry
+                                    {domain.status === 'unverfied'
+                                        ? 'Retry generation'
+                                        : 'Retry verification'}
                                 </DropListItem>
                                 <DropListItem
                                     icon="trash"
@@ -172,8 +186,10 @@
 {/if}
 
 <Delete bind:showDelete bind:selectedDomain {dependency} />
-<Modal bind:show={showRetry} headerDivider={false} bind:error={retryError}>
-    <svelte:fragment slot="header">Retry verification</svelte:fragment>
+<Modal bind:show={showRetry} headerDivider={false} bind:error={retryError} size="big">
+    <svelte:fragment slot="title">
+        Retry {$domain.status === 'unverfied' ? 'certificate generation' : 'verification'}
+    </svelte:fragment>
     <Retry on:error={(e) => (retryError = e.detail)} />
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showRetry = false)}>Close</Button>

@@ -9,7 +9,7 @@
 
 <CardGrid danger>
     <div>
-        <Heading tag="h6" size="7">Delete Team</Heading>
+        <Heading tag="h6" size="7">Delete team</Heading>
     </div>
 
     <p>

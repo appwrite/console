@@ -61,8 +61,9 @@
 </script>
 
 <Modal headerDivider={false} bind:show onSubmit={handleSubmit} bind:error>
-    <svelte:fragment slot="header"
-        >Import new {isGlobal ? 'global' : 'environment'} variables</svelte:fragment>
+    <svelte:fragment slot="title">
+        Import new {isGlobal ? 'global' : 'environment'} variables
+    </svelte:fragment>
     <div class="u-flex u-flex-vertical u-gap-24">
         <p>
             Import new {isGlobal ? 'global' : 'environment'} variables from .env file that will be passed

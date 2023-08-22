@@ -93,7 +93,7 @@
 
     <CardGrid danger>
         <div>
-            <Heading tag="h6" size="7">Delete Platform</Heading>
+            <Heading tag="h6" size="7">Delete platform</Heading>
         </div>
         <p>The Platform will be permanently deleted. This action is irreversible.</p>
         <svelte:fragment slot="aside">

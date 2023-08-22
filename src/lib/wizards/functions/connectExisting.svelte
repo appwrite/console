@@ -29,7 +29,7 @@
                 $installation.$id,
                 $repository.id,
                 $choices.branch,
-                $choices.silentMode,
+                $choices.silentMode || undefined,
                 $choices.rootDir
             );
             trackEvent(Submit.FunctionConnectRepo, {
@@ -59,11 +59,11 @@
 
     const stepsComponents: WizardStepsType = new Map();
     stepsComponents.set(1, {
-        label: 'Select repository',
+        label: 'Repository',
         component: SelectRepository
     });
     stepsComponents.set(2, {
-        label: 'Git configuration',
+        label: 'Git',
         component: GitConfiguration
     });
 </script>

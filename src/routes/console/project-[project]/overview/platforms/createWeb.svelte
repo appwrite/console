@@ -22,21 +22,21 @@
 
     const stepsComponents: WizardStepsType = new Map();
     stepsComponents.set(1, {
-        label: 'Register your platform',
+        label: 'Settings',
         component: Step1
     });
     stepsComponents.set(2, {
-        label: 'Get the SDK',
+        label: 'Install',
         component: Step2,
         optional: true
     });
     stepsComponents.set(3, {
-        label: 'Initialize SDK',
+        label: 'Import',
         component: Step3,
         optional: true
     });
     stepsComponents.set(4, {
-        label: 'All set',
+        label: 'Build',
         component: Step4,
         optional: true
     });

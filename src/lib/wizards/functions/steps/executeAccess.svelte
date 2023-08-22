@@ -5,7 +5,7 @@
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">Execute access</svelte:fragment>
+    <svelte:fragment slot="title">Execution permissions</svelte:fragment>
     <svelte:fragment slot="subtitle">
         Choose who can execute this function using the client API. For more information, check out
         the <a

@@ -48,7 +48,7 @@
     const quickStart = marketplace.find((template) => template.id === 'starter');
     const templates = marketplace.filter((template) => template.id !== 'starter').slice(0, 3);
 
-    function connect(event: CustomEvent<Models.Repository>) {
+    function connect(event: CustomEvent<Models.ProviderRepository>) {
         repository.set(event.detail);
         wizard.start(CreateGit);
     }
@@ -82,8 +82,11 @@
                         class="link"
                         on:click={() => wizard.start(CreateManual)}>manually</button>
                     or using the CLI.
-                    <a href="http://#" target="_blank" rel="noopener noreferrer" class="link"
-                        >Learn more</a
+                    <a
+                        href="https://appwrite.io/docs/functions-deploy"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="link">Learn more</a
                     >.
                 </p>
             </div>

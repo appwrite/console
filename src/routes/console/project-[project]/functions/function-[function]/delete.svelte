@@ -35,12 +35,12 @@
 </script>
 
 <Modal
+    title="Delete deployment"
     bind:show={showDelete}
     onSubmit={handleSubmit}
     icon="exclamation"
     state="warning"
     headerDivider={false}>
-    <svelte:fragment slot="header">Delete Deployment</svelte:fragment>
     <p data-private>Are you sure you want to delete this deployment?</p>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)}>Cancel</Button>

@@ -51,7 +51,12 @@
         equal: {
             toQuery: Query.equal,
             toTag: (attribute, input) => `**${attribute}** equal to **${input}**`,
-            types: ['string', 'integer', 'double']
+            types: ['string', 'integer', 'double', 'boolean']
+        },
+        'not equal to': {
+            toQuery: Query.notEqual,
+            toTag: (attribute, input) => `**${attribute}** not equal to **${input}**`,
+            types: ['string', 'integer', 'double', 'boolean']
         },
         'not null': {
             toQuery: Query.isNotNull,
@@ -108,7 +113,7 @@
 
 <div>
     <form on:submit|preventDefault={addFilter}>
-        <div class="selects u-flex u-gap-12 u-margin-block-start-16">
+        <div class="selects u-flex u-gap-8 u-margin-block-start-16">
             <InputSelect
                 id="column"
                 options={$columns.map((c) => ({
@@ -125,7 +130,7 @@
                 bind:value={operatorKey} />
         </div>
         {#if column && operator && !operator?.hideInput}
-            <div class="u-margin-block-start-16">
+            <div class="u-margin-block-start-8">
                 {#if column.type === 'integer' || column.type === 'double'}
                     <InputNumber id="value" bind:value placeholder="Enter value" />
                 {:else}
@@ -133,7 +138,7 @@
                 {/if}
             </div>
         {/if}
-        <Button text disabled={isDisabled} class="u-margin-block-start-12" submit>
+        <Button text disabled={isDisabled} class="u-margin-block-start-4" submit>
             <i class="icon-plus" />
             Add filter
         </Button>
@@ -156,16 +161,6 @@
 </div>
 
 <style lang="scss">
-    .dropped {
-        border-radius: 0.5rem;
-        box-shadow: 0px 16px 32px 0px rgba(55, 59, 77, 0.04);
-
-        padding: 1rem;
-        margin-top: 0.5rem;
-
-        width: 37.5rem;
-    }
-
     .selects {
         :global(> *) {
             flex: 1;
@@ -176,14 +171,5 @@
         :global(b) {
             font-weight: bold;
         }
-    }
-
-    hr {
-        height: 1px;
-        width: calc(100% + 2rem);
-        background-color: hsl(var(--color-border));
-
-        margin-block-start: 1rem;
-        margin-inline: -1rem;
     }
 </style>

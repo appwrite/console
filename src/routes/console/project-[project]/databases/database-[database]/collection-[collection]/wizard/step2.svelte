@@ -14,7 +14,7 @@
             target="_blank"
             rel="noopener noreferrer"
             class="link">
-            Permissions Guide
+            Permissions guide
         </a>.
     </svelte:fragment>
     {#if $collection.documentSecurity}
@@ -22,7 +22,7 @@
             <Alert type="info">
                 <svelte:fragment slot="title">Document security is enabled</svelte:fragment>
                 Users will be able to access this document if they have been granted
-                <b>either Document or Collection permissions</b>.
+                <b>either document or collection permissions</b>.
             </Alert>
         </div>
         <div class="common-section">
@@ -32,7 +32,7 @@
         <Alert type="info">
             <svelte:fragment slot="title">Document security is disabled</svelte:fragment>
             If you want to assign document permissions, navigate to Collection settings and enable document
-            security. Otherwise, only Collection permissions will be used.
+            security. Otherwise, only collection permissions will be used.
         </Alert>
     {/if}
 </WizardStep>

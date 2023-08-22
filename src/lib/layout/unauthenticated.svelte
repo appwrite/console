@@ -146,7 +146,9 @@
         class:is-cloud={isCloud}
         style:--url={`url(${AppwriteCloudBg})`}
         style:--url-mobile={`url(${AppwriteCloudBgMobile})`}>
-        <div class="container u-flex u-flex-vertical u-cross-center" class:cloud-contents={isCloud}>
+        <div
+            class="container u-flex u-flex-vertical u-cross-center u-main-center"
+            class:cloud-contents={isCloud}>
             {#if isCloud}
                 <a class="mobile-logo is-only-mobile" href={user ? '/console' : '/'}>
                     <img

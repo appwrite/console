@@ -31,6 +31,7 @@ export const load: PageLoad = async ({ params, depends }) => {
 
     return {
         variables,
-        globalVariables
+        globalVariables,
+        installations: sdk.forProject.vcs.listInstallations()
     };
 };

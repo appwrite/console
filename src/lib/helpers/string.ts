@@ -40,3 +40,11 @@ export function camelize(str: string): string {
             return firstChar.toLowerCase();
         });
 }
+
+const formatter = Intl.NumberFormat('en', {
+    notation: 'compact'
+});
+
+export function formatNum(number: number): string {
+    return formatter.format(number);
+}

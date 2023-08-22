@@ -105,7 +105,7 @@
                         <p class="text">
                             Click to copy variables for the fields below. Learn more <a
                                 class="link"
-                                href="/#">here</a
+                                href="https://appwrite.io/docs/email-and-sms-templates">here</a
                             >.
                             <!-- TODO: add link to docs -->
                         </p>

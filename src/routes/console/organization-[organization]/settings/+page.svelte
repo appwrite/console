@@ -64,7 +64,7 @@
 
         <CardGrid danger>
             <div>
-                <Heading tag="h6" size="7">Delete Organization</Heading>
+                <Heading tag="h6" size="7">Delete organization</Heading>
             </div>
             <p>
                 The organization will be permanently deleted, including all projects and data

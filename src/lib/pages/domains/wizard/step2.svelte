@@ -17,16 +17,14 @@
     <svelte:fragment slot="title">{$domain.domain}</svelte:fragment>
 
     <div class="boxes-wrapper u-margin-block-start-24">
-        <div class="box">
-            {#if $domain.status === 'created'}
-                <Retry on:error={onRetryError} />
-            {:else}
-                <div class="u-flex u-gap-8 u-cross-center">
-                    <span class="icon-check u-color-text-success" aria-hidden="true" />
-                    <p class="u-stretch">Domain verified</p>
-                </div>
-            {/if}
-        </div>
+        {#if $domain.status === 'created'}
+            <Retry on:error={onRetryError} />
+        {:else}
+            <div class="u-flex u-gap-8 u-cross-center">
+                <span class="icon-check u-color-text-success" aria-hidden="true" />
+                <p class="u-stretch">Domain verified</p>
+            </div>
+        {/if}
         <div class="box">
             <div class="u-flex u-gap-8 u-cross-center">
                 {#if $domain.status === 'verifying'}

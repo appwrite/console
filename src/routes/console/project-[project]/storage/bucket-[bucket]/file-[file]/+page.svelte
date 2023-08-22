@@ -102,7 +102,7 @@
                     <p>MIME Type: {$file.mimeType}</p>
                     <p>Size: {calculateSize($file.sizeOriginal)}</p>
                     <p>Created: {toLocaleDate($file.$createdAt)}</p>
-                    <p>Last Updated: {toLocaleDate($file.$updatedAt)}</p>
+                    <p>Last updated: {toLocaleDate($file.$updatedAt)}</p>
                 </div>
             </svelte:fragment>
 
@@ -116,7 +116,7 @@
         <CardGrid>
             <Heading tag="h6" size="7">Permissions</Heading>
             <p>
-                Assign read or write permissions at the Bucket Level or File Level. If Bucket Level
+                Assign read or write permissions at the bucket level or file level. If bucket level
                 permissions are enabled, file permissions will be ignored.
             </p>
             <svelte:fragment slot="aside">
@@ -154,7 +154,7 @@
         </CardGrid>
 
         <CardGrid danger>
-            <Heading tag="h6" size="7">Delete File</Heading>
+            <Heading tag="h6" size="7">Delete file</Heading>
             <p>The file will be permanently deleted. This action is irreversible.</p>
             <svelte:fragment slot="aside">
                 <BoxAvatar>
@@ -162,7 +162,7 @@
                         <h6 class="u-bold u-trim-1" data-private>{$file.name}</h6>
                     </svelte:fragment>
                     <p>
-                        Last Updated: {toLocaleDateTime($file.$updatedAt)}
+                        Last updated: {toLocaleDateTime($file.$updatedAt)}
                     </p>
                 </BoxAvatar>
             </svelte:fragment>

@@ -29,6 +29,7 @@
     export let withLineNumbers = false;
     export let withCopy = false;
     export let noMargin = false;
+    export let allowScroll = false;
 
     Prism.plugins.customClass.prefix('prism-');
 
@@ -56,8 +57,10 @@
             </Copy>
         {/if}
     </div>
-    <pre class={`language-${language}`} class:line-numbers={withLineNumbers}><code
-            >{code}</code></pre>
+    <pre
+        class:with-scroll={allowScroll}
+        class={`language-${language}`}
+        class:line-numbers={withLineNumbers}><code>{code}</code></pre>
 </section>
 
 <style lang="scss" global>
@@ -74,6 +77,11 @@
         .controls {
             z-index: 2;
         }
+    }
+
+    .with-scroll {
+        height: 100%;
+        overflow: auto;
     }
 
     code,
@@ -108,7 +116,7 @@
     :not(pre) > code[class*='language-'],
     pre[class*='language-'] {
         background: hsl(var(--p-box-background-color));
-        padding: 0;
+        padding-block-start: 4%;
         margin: 0;
     }
     .prism-token {

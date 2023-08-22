@@ -81,7 +81,7 @@
 
     const stepsComponents: WizardStepsType = new Map();
     stepsComponents.set(1, {
-        label: 'Template configuration',
+        label: 'Configuration',
         component: TemplateConfiguration
     });
     stepsComponents.set(2, {
@@ -89,15 +89,15 @@
         component: TemplateVariables
     });
     stepsComponents.set(3, {
-        label: 'Repository behaviour',
+        label: 'Connect',
         component: RepositoryBehaviour
     });
     stepsComponents.set(4, {
-        label: 'Select repository',
+        label: 'Repository',
         component: CreateRepository
     });
     stepsComponents.set(5, {
-        label: 'Git configuration',
+        label: 'Branch',
         component: GitConfiguration
     });
 </script>

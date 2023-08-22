@@ -1,7 +1,7 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { EmptySearch, PaginationInline } from '$lib/components';
+    import { EmptySearch } from '$lib/components';
     import { Button, InputSearch, InputSelect } from '$lib/elements/forms';
     import { timeFromNow } from '$lib/helpers/date';
     import { app } from '$lib/stores/app';
@@ -173,10 +173,10 @@
                         {/if}
                     {/each}
                 </ul>
-                <div class="u-flex u-margin-block-start-32 u-main-space-between">
+                <!-- <div class="u-flex u-margin-block-start-32 u-main-space-between">
                     <p class="text">Total results: {response?.length}</p>
                     <PaginationInline {limit} bind:offset sum={response?.length} />
-                </div>
+                </div> -->
             {:else if search}
                 <EmptySearch hidePages>
                     <div class="common-section">

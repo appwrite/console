@@ -2,21 +2,23 @@ import { getProjectId } from '$lib/helpers/project';
 import { VARS } from '$lib/system';
 import {
     Account,
+    Assistant,
     Avatars,
     Client,
+    Console,
     Databases,
     Functions,
     Health,
     Locale,
     Migrations,
-    Projects,
     Project,
+    Project as ProjectApi,
+    Projects,
+    Proxy,
     Storage,
     Teams,
     Users,
-    Project as ProjectApi,
-    Vcs,
-    Proxy
+    Vcs
 } from '@appwrite.io/console';
 
 const endpoint = VARS.APPWRITE_ENDPOINT ?? `${globalThis?.location?.origin}/v1`;
@@ -63,7 +65,9 @@ export const sdk = {
         projects: new Projects(clientConsole),
         teams: new Teams(clientConsole),
         users: new Users(clientConsole),
-        migrations: new Migrations(clientConsole)
+        migrations: new Migrations(clientConsole),
+        console: new Console(clientConsole),
+        assistant: new Assistant(clientConsole)
     },
     get forProject() {
         const projectId = getProjectId();
