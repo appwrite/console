@@ -156,9 +156,11 @@
                     style="--grid-item-size:22rem; --grid-item-size-small-screens:19rem">
                     {#each data.templates as template}
                         <li>
-                            <article class="card">
+                            <article class="card u-min-height-100-percent">
                                 <div class="u-flex u-gap-16 u-cross-center">
-                                    <h2 class="body-text-1 u-bold u-trim">
+                                    <h2
+                                        class="body-text-1 u-bold u-trim"
+                                        style:break-word="break-word">
                                         {template.name}
                                     </h2>
                                     <ul class="avatars-group is-with-border">
@@ -180,7 +182,7 @@
                                     </ul>
                                 </div>
 
-                                <p class="u-margin-block-start-20">
+                                <p class="u-margin-block-start-20 u-trim-2 u-break-word">
                                     {template.tagline}
                                 </p>
 
