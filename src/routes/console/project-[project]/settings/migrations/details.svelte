@@ -1,8 +1,10 @@
 <script lang="ts">
     import { Alert, Code, Modal, Tab } from '$lib/components';
     import Tabs from '$lib/components/tabs.svelte';
+    import { total } from '$lib/helpers/array';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { parseIfString } from '$lib/helpers/object';
+    import { formatNum } from '$lib/helpers/string';
     import type { Models } from '@appwrite.io/console';
 
     export let migrations: Models.Migration[] = [];
@@ -40,7 +42,7 @@
 
     const totalItems = (counter: StatusCounter) => {
         if (!counter) return 0;
-        return Object.values(counter).reduce((acc, curr) => acc + curr, 0);
+        return formatNum(total(Object.values(counter)));
     };
 
     let tab = 'details' as 'details' | 'logs';
