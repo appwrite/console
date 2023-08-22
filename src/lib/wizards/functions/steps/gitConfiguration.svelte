@@ -33,7 +33,7 @@
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">Git configuration</svelte:fragment>
+    <svelte:fragment slot="title">Git</svelte:fragment>
     <svelte:fragment slot="subtitle">
         Configure the Git repository that will trigger your function deployments when updated.
     </svelte:fragment>
