@@ -40,25 +40,24 @@
             on:invalid={handleInvalid} />
 
         <div class="choice-item-content">
-            <div class="u-flex u-cross-center u-gap-4">
-                <h6 class:u-hide={!showLabel} class="choice-item-title">
-                    {label}
-                </h6>
-                {#if tooltip}
-                    <button class="tooltip" aria-label="variables info">
-                        <span
-                            class="icon-info"
-                            aria-hidden="true"
-                            style="font-size: var(--icon-size-small)" />
-                        <span class="tooltip-popup" role="tooltip">
-                            <p class="text">
-                                {tooltip}
-                            </p>
-                        </span>
-                    </button>
-                {/if}
-            </div>
-            {#if $$slots}
+            <h6 class:u-hide={!showLabel} class="choice-item-title">
+                {label}
+            </h6>
+            {#if tooltip}
+                <button class="tooltip" aria-label="variables info">
+                    <span
+                        class="icon-info"
+                        aria-hidden="true"
+                        style="font-size: var(--icon-size-small)" />
+                    <span class="tooltip-popup" role="tooltip">
+                        <p class="text">
+                            {tooltip}
+                        </p>
+                    </span>
+                </button>
+            {/if}
+
+            {#if $$slots.default}
                 <p class="choice-item-paragraph"><slot /></p>
             {/if}
         </div>

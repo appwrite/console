@@ -1,7 +1,10 @@
 <script lang="ts">
-    import { Modal } from '$lib/components';
+    import { Alert, Code, Modal, Tab } from '$lib/components';
+    import Tabs from '$lib/components/tabs.svelte';
+    import { total } from '$lib/helpers/array';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { parseIfString } from '$lib/helpers/object';
+    import { formatNum } from '$lib/helpers/string';
     import type { Models } from '@appwrite.io/console';
 
     export let migrations: Models.Migration[] = [];
@@ -39,8 +42,10 @@
 
     const totalItems = (counter: StatusCounter) => {
         if (!counter) return 0;
-        return Object.values(counter).reduce((acc, curr) => acc + curr, 0);
+        return formatNum(total(Object.values(counter)));
     };
+
+    let tab = 'details' as 'details' | 'logs';
 </script>
 
 <Modal bind:show on:close={() => (migrationId = null)} size="big">
@@ -51,13 +56,35 @@
             Migration details
         {/if}
     </svelte:fragment>
-    {#if details}
+    <Tabs>
+        <Tab selected={tab === 'details'} on:click={() => (tab = 'details')}>Details</Tab>
+        <Tab selected={tab === 'logs'} on:click={() => (tab = 'logs')}>Logs</Tab>
+    </Tabs>
+
+    {#if tab === 'logs'}
+        <Code code={JSON.stringify(details, null, 2)} language="json" allowScroll />
+    {:else if tab === 'details'}
         <div class="box meta">
             <span>Date</span>
             <span>{toLocaleDateTime(details.$createdAt)}</span>
             <span>Source</span>
             <span>{details.source}</span>
         </div>
+
+        {#if Object.values(statusCounters).some(hasError)}
+            <Alert
+                type="error"
+                buttons={[
+                    {
+                        name: 'View logs',
+                        method() {
+                            tab = 'logs';
+                        }
+                    }
+                ]}>
+                There was an error migrating some of the project's entities.
+            </Alert>
+        {/if}
 
         {#if Object.keys(statusCounters).length}
             <div class="box">
@@ -79,7 +106,7 @@
                         </div>
 
                         <div>
-                            <span class="u-capitalize">{entity}</span>
+                            <span class="u-capitalize">{entity + 's'}</span>
                             <span class="inline-tag">{totalItems(entityCounter)}</span>
                         </div>
                     </div>

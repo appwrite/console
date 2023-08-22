@@ -44,7 +44,7 @@
     };
     export let editing = false;
 
-    $: if (data.required || data.array) {
+    $: if (data.array) {
         data.default = null;
     }
 </script>

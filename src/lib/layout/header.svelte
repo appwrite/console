@@ -3,10 +3,12 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackEvent } from '$lib/actions/analytics';
+    import { tooltip } from '$lib/actions/tooltip';
     import { toggleCommandCenter } from '$lib/commandCenter/commandCenter.svelte';
     import { AvatarInitials, DropList, DropListItem, DropListLink } from '$lib/components';
     import { Feedback } from '$lib/components/feedback';
     import Button from '$lib/elements/forms/button.svelte';
+    import { isMac } from '$lib/helpers/platform';
     import AppwriteLogo from '$lib/images/appwrite-gray-light.svg';
     import DarkMode from '$lib/images/mode/dark-mode.svg';
     import LightMode from '$lib/images/mode/light-mode.svg';
@@ -95,7 +97,18 @@
             class="button is-small is-text">
             <span class="text">Support</span>
         </a>
-        <Button text class="is-small" on:click={toggleCommandCenter}>
+        <Button
+            actions={[
+                (node) => {
+                    return tooltip(node, {
+                        content: isMac() ? '⌘ + K' : 'Ctrl + K',
+                        placement: 'bottom'
+                    });
+                }
+            ]}
+            text
+            class="is-small"
+            on:click={toggleCommandCenter}>
             <i class="icon-search" />
         </Button>
     </nav>

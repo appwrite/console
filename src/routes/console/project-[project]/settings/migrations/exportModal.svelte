@@ -2,6 +2,7 @@
     import { Alert, Modal } from '$lib/components';
     import { Button, InputText, InputTextarea } from '$lib/elements/forms';
     import { getFormData } from '$lib/helpers/form';
+    import { feedback } from '$lib/stores/feedback';
     import { sdk } from '$lib/stores/sdk';
     import { project } from '../../store';
 
@@ -48,7 +49,9 @@
         const formData = getFormData<{ endpoint: string; feedback: string }>(e);
 
         // TODO: Send feedback somewhere
-        const { endpoint, feedback: _feedback } = formData;
+        const { endpoint, feedback: message } = formData;
+
+        await feedback.submitFeedback(`feedback-${$feedback.type}`, message);
 
         if (!isValidEndpoint(endpoint)) {
             const endpointInput = document.getElementById('endpoint') as HTMLInputElement;

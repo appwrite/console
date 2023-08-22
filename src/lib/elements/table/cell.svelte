@@ -7,7 +7,7 @@
 
 <div
     style={width ? `--p-col-width:${width?.toString()}` : ''}
-    class="table-col"
+    class="table-col u-position-relative"
     class:u-overflow-visible={showOverflow}
     class:is-only-desktop={onlyDesktop}
     data-title={title}

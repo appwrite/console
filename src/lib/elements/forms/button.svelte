@@ -3,6 +3,7 @@
     import { getContext, hasContext } from 'svelte';
     import { readable } from 'svelte/store';
     import type { FormContext } from './form.svelte';
+    import { multiAction, type MultiActionArray } from '$lib/actions/multi-actions';
 
     export let submit = false;
     export let secondary = false;
@@ -19,6 +20,7 @@
     export let event: string = null;
     let classes: string = undefined;
     export { classes as class };
+    export let actions: MultiActionArray = [];
 
     const isSubmitting = hasContext('form')
         ? getContext<FormContext>('form').isSubmitting
@@ -59,7 +61,8 @@
         target={external ? '_blank' : ''}
         rel={external ? 'noopener noreferrer' : ''}
         class={resolvedClasses}
-        aria-label={ariaLabel}>
+        aria-label={ariaLabel}
+        use:multiAction={actions}>
         <slot />
     </a>
 {:else}
@@ -69,7 +72,8 @@
         disabled={internalDisabled}
         class={resolvedClasses}
         aria-label={ariaLabel}
-        type={submit === false ? 'button' : undefined}>
+        type={submit === false ? 'button' : undefined}
+        use:multiAction={actions}>
         <slot />
     </button>
 {/if}

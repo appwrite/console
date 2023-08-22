@@ -234,14 +234,21 @@
     <div class="u-flex u-cross-center u-main-space-between actions">
         <div class="u-flex u-cross-center u-gap-8">
             <span class="indicator body-text-2 u-bold">{selectedDb.length}</span>
-            <span>
-                {selected.length > 1 ? 'documents' : 'document'} selected
-            </span>
+            <p>
+                <span class="is-only-desktop">
+                    {selectedDb.length > 1 ? 'documents' : 'document'}
+                </span>
+                selected
+            </p>
         </div>
 
         <div class="u-flex u-cross-center u-gap-8">
-            <Button text on:click={() => (selected = [])}>Cancel</Button>
-            <Button secondary on:click={() => (showDelete = true)}>Delete selection</Button>
+            <Button text on:click={() => (selectedDb = [])}>Cancel</Button>
+            <Button secondary on:click={() => (showDelete = true)}>
+                <p>
+                    Delete <span class="is-only-desktop">selection</span>
+                </p>
+            </Button>
         </div>
     </div>
 </FloatingActionBar>
@@ -312,8 +319,6 @@
 
 <style lang="scss">
     .actions {
-        width: 31.25rem;
-
         .indicator {
             border-radius: 0.25rem;
             background: hsl(var(--color-information-100));

@@ -21,6 +21,8 @@
 
         border-radius: 0.5rem;
         padding: 0.75rem 1rem;
+
+        width: clamp(0px, calc(100vw - 4rem), 32.5rem);
     }
 
     :global(.theme-dark) .floating-action-bar {
