@@ -38,8 +38,7 @@
     }
 </script>
 
-<Modal size="big" bind:show onSubmit={redeploy} headerDivider={false}>
-    <svelte:fragment slot="header">Redeploy function</svelte:fragment>
+<Modal title="Redeploy function" size="big" bind:show onSubmit={redeploy} headerDivider={false}>
     <p class="text">
         Are you sure you want to redeploy <b>{$func.name}</b>? Redeploying may affect your
         production code.

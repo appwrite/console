@@ -97,8 +97,7 @@
     };
 </script>
 
-<Modal bind:show {onSubmit}>
-    <svelte:fragment slot="header">Export to self-hosted instance</svelte:fragment>
+<Modal title="Export to self-hosted instance" bind:show {onSubmit}>
     <div class="modal-contents">
         <Alert isStandalone>
             <svelte:fragment slot="title">API key creation</svelte:fragment>

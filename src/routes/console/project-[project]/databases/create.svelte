@@ -39,8 +39,7 @@
     };
 </script>
 
-<Modal size="big" onSubmit={create} bind:show={showCreate}>
-    <svelte:fragment slot="header">Create database</svelte:fragment>
+<Modal title="Create database" size="big" onSubmit={create} bind:show={showCreate}>
     <FormList>
         <InputText
             id="name"

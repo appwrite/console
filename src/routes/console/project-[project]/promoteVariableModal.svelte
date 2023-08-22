@@ -19,8 +19,9 @@
     icon="exclamation"
     state="warning"
     headerDivider={false}>
-    <svelte:fragment slot="header"
-        >{isConflicting ? 'Overwrite global variable' : 'Promote variable'}</svelte:fragment>
+    <svelte:fragment slot="title">
+        {isConflicting ? 'Overwrite global variable' : 'Promote variable'}
+    </svelte:fragment>
     {#if isConflicting}
         <p data-private>
             Promoting this variable will overwrite your global variable with the same name. Are you

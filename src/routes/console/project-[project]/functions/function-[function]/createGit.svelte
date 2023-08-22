@@ -8,8 +8,7 @@
     export let show = false;
 </script>
 
-<Modal size="big" bind:show headerDivider={false}>
-    <svelte:fragment slot="header">Create git deployment</svelte:fragment>
+<Modal title="Create git deployment" size="big" bind:show headerDivider={false}>
     {#if $func.installationId && $func.providerRepositoryId}
         <p class="text">
             Deploy your function from the Git provider of your choice by following the steps below.

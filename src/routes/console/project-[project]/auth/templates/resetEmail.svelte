@@ -45,7 +45,7 @@
     {error}
     bind:show
     headerDivider={false}>
-    <svelte:fragment slot="header">Reset Email Template?</svelte:fragment>
+    <svelte:fragment slot="title">Reset Email Template?</svelte:fragment>
     <p class="text">
         Are you sure you want to reset the email template?
         <b>Default values will be set in all inputs.</b>

@@ -15,6 +15,8 @@
     export let onSubmit: (e: SubmitEvent) => Promise<void> | void = function () {
         return;
     };
+    export let title = '';
+    export let description = '';
 
     let dialog: HTMLDialogElement;
     let alert: HTMLElement;
@@ -102,8 +104,11 @@
                                 <span class={`icon-${icon}`} aria-hidden="true" />
                             </div>
                         {/if}
+
                         <h4 class="modal-title heading-level-5">
-                            <slot name="header" />
+                            <slot name="title">
+                                {title}
+                            </slot>
                         </h4>
                     </div>
                     {#if closable}
@@ -122,6 +127,11 @@
                         </button>
                     {/if}
                 </div>
+                <p>
+                    <slot name="description">
+                        {description}
+                    </slot>
+                </p>
             </header>
             <div class="modal-content">
                 {#if error}

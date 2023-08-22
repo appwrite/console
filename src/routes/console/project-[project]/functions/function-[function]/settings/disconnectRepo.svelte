@@ -56,13 +56,13 @@
 </script>
 
 <Modal
+    title="Disconnect Git repository"
     bind:show
     bind:error
     onSubmit={handleSubmit}
     icon="exclamation"
     state="warning"
     headerDivider={false}>
-    <svelte:fragment slot="header">Disconnect Git repository</svelte:fragment>
     <p data-private>
         Are you sure you want to disconnect {$func.name}? This will affect future deployments to
         this function.

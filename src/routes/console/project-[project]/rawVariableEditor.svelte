@@ -110,8 +110,12 @@
     }
 </script>
 
-<Modal headerDivider={false} bind:show={showEditor} onSubmit={handleSubmit} size="big">
-    <svelte:fragment slot="header">Editor</svelte:fragment>
+<Modal
+    title="Editor"
+    headerDivider={false}
+    bind:show={showEditor}
+    onSubmit={handleSubmit}
+    size="big">
     <p>
         Edit {isGlobal ? 'global' : 'environment'} variables below or download as a
         <span class="inline-code">.{tab}</span> file.

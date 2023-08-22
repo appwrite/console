@@ -8,8 +8,7 @@
     //TODO: add error message when index failed
 </script>
 
-<Modal size="big" bind:show={showOverview}>
-    <svelte:fragment slot="header">Overview</svelte:fragment>
+<Modal title="Overview" size="big" bind:show={showOverview}>
     <FormList>
         <InputText
             id="key"

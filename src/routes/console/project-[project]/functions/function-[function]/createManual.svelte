@@ -48,8 +48,7 @@
     }
 </script>
 
-<Modal {error} size="big" bind:show onSubmit={create}>
-    <svelte:fragment slot="header">Create manual deployment</svelte:fragment>
+<Modal title="Create manual deployment" {error} size="big" bind:show onSubmit={create}>
     <p class="text">
         Manually deploy a function by uploading a zip file containing the source code and a relative
         path to the entry point.
