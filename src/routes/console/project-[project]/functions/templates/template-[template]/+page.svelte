@@ -97,6 +97,7 @@
         :global(.anchor) {
             display: none;
         }
+
         :global(h1) {
             @extend .heading-level-4;
             @extend .common-section;
@@ -111,6 +112,14 @@
         }
         :global(p) {
             @extend .u-margin-block-start-8;
+        }
+        :global(ul) {
+            @extend .u-margin-block-start-8;
+            @extend .list;
+        }
+        :global(li) {
+            // @extend .u-margin-block-start-8;
+            @extend .list-item;
         }
         :global(strong) {
             @extend .u-bold;
@@ -190,6 +199,9 @@
                 --p-bg-color-inline-code: var(--color-neutral-400);
                 --p-text-color-inline-code: var(--color-neutral-30);
             }
+        }
+        :global(ul) {
+            --p-list-text-color: var(--color-neutral-50);
         }
     }
 </style>
