@@ -11,7 +11,7 @@
 </script>
 
 <WizardStep {beforeSubmit}>
-    <svelte:fragment slot="title">Repository behaviour</svelte:fragment>
+    <svelte:fragment slot="title">Connect</svelte:fragment>
     <svelte:fragment slot="subtitle">
         Connect function to a new repository or to an existing one within a selected Git
         organization.

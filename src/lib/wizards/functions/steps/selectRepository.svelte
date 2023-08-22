@@ -15,7 +15,7 @@
 </script>
 
 <WizardStep {beforeSubmit}>
-    <svelte:fragment slot="title">Select repository</svelte:fragment>
+    <svelte:fragment slot="title">Repository</svelte:fragment>
     <svelte:fragment slot="subtitle">
         Select a Git repository that will trigger your function deployments when updated.
     </svelte:fragment>

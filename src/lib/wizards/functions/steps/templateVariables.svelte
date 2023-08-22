@@ -23,7 +23,7 @@
 </script>
 
 <WizardStep {beforeSubmit}>
-    <svelte:fragment slot="title">Environment variables</svelte:fragment>
+    <svelte:fragment slot="title">Variables</svelte:fragment>
     <svelte:fragment slot="subtitle">
         Edit the values of the environment variables that will be passed to your function at
         runtime.
