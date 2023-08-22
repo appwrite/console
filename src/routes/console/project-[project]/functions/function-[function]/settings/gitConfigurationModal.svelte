@@ -124,8 +124,13 @@
         ) ?? null;
 </script>
 
-<Modal headerDivider={false} bind:show size="big" bind:error onSubmit={handleSubmit}>
-    <svelte:fragment slot="header">Git configuration</svelte:fragment>
+<Modal
+    title="Git configuration"
+    headerDivider={false}
+    bind:show
+    size="big"
+    bind:error
+    onSubmit={handleSubmit}>
     <p class="text">
         Configure a Git repository that will trigger your function deployments when updated.
     </p>

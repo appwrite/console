@@ -83,8 +83,7 @@
     }
 </script>
 
-<Modal size="big" bind:show>
-    <svelte:fragment slot="header">Create CLI deployment</svelte:fragment>
+<Modal title="Create CLI deployment" size="big" bind:show>
     <p class="text">
         Deploy your function using the Appwrite CLI by running the following command inside your
         function's folder.

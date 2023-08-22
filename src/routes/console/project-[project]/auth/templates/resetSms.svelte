@@ -45,7 +45,7 @@
     {error}
     bind:show
     headerDivider={false}>
-    <svelte:fragment slot="header">Reset SMS Template?</svelte:fragment>
+    <svelte:fragment slot="title">Reset SMS Template?</svelte:fragment>
     <p class="text">
         Are you sure you want to reset the SMS template?
         <b>Default values will be set in all inputs.</b>
