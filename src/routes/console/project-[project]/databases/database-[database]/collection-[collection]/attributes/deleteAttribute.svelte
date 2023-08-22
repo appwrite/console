@@ -52,7 +52,7 @@
     headerDivider={false}
     bind:show={showDelete}
     onSubmit={handleDelete}>
-    <svelte:fragment slot="header">Delete Attribute</svelte:fragment>
+    <svelte:fragment slot="header">Delete attribute</svelte:fragment>
     <p class="text" data-private>
         Are you sure you want to delete <b data-private>{selectedAttribute?.key}</b> from
         <b data-private>{$collection?.name}</b>?

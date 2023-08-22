@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { beforeNavigate } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { tooltip } from '$lib/actions/tooltip';
@@ -16,24 +15,25 @@
     import { Container } from '$lib/layout';
     import { app } from '$lib/stores/app';
     import { wizard } from '$lib/stores/wizard';
-    import type { PageData } from './$types';
-    import Create from './createFunction.svelte';
-
+    import { onMount } from 'svelte';
+    import Initial from '$lib/wizards/functions/cover.svelte';
     import { registerCommands } from '$lib/commandCenter';
 
-    export let data: PageData;
+    export let data;
 
     let offset = 0;
 
     const project = $page.params.project;
 
-    function openWizard() {
-        wizard.start(Create);
-    }
-
-    beforeNavigate(() => {
-        wizard.hide();
+    onMount(() => {
+        if ($page.url.searchParams.has('github-installed')) {
+            openWizard();
+        }
     });
+
+    function openWizard() {
+        wizard.showCover(Initial);
+    }
 
     $: $registerCommands([
         {
@@ -50,7 +50,8 @@
     <div class="u-flex u-gap-12 common-section u-main-space-between">
         <Heading tag="h2" size="5">Functions</Heading>
         <Button on:click={openWizard} event="create_function">
-            <span class="icon-plus" aria-hidden="true" /> <span class="text">Create function</span>
+            <span class="icon-plus" aria-hidden="true" />
+            <span class="text">Create function</span>
         </Button>
     </div>
 

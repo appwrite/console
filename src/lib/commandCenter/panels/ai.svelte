@@ -9,8 +9,13 @@
     import { isLanguage, type Language } from '$lib/components/code.svelte';
     import { VARS } from '$lib/system';
 
+    const endpoint = VARS.APPWRITE_ENDPOINT ?? `${globalThis?.location?.origin}/v1`;
+
     const { input, handleSubmit, completion, isLoading, complete } = useCompletion({
-        api: VARS.ASSISTANT_ENDPOINT
+        api: endpoint + '/console/assistant',
+        headers: {
+            'content-type': 'application/json'
+        }
     });
 
     const examples = [

@@ -5,7 +5,6 @@
 </script>
 
 <script lang="ts">
-    import { beforeNavigate } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Empty } from '$lib/components';
@@ -32,10 +31,6 @@
     function openWizard() {
         wizard.start(Create);
     }
-
-    beforeNavigate(() => {
-        wizard.hide();
-    });
 
     const projectId = $page.params.project;
 

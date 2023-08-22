@@ -39,7 +39,7 @@
     icon="exclamation"
     state="warning"
     headerDivider={false}>
-    <svelte:fragment slot="header">Delete Webhook</svelte:fragment>
+    <svelte:fragment slot="header">Delete webhook</svelte:fragment>
     <p data-private>
         Are you sure you want to delete <b>{$webhook.name}</b> from '{$project.name}'?
     </p>

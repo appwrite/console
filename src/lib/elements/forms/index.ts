@@ -1,5 +1,6 @@
 export { default as Form } from './form.svelte';
 export { default as FormItem } from './formItem.svelte';
+export { default as FormItemPart } from './formItemPart.svelte';
 export { default as FormList } from './formList.svelte';
 export { default as Button } from './button.svelte';
 export { default as InputDomain } from './inputDomain.svelte';

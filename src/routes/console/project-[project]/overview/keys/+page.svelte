@@ -28,7 +28,7 @@
     <span class="u-margin-inline-start-auto">
         <Button on:click={createApiKey}>
             <span class="icon-plus" aria-hidden="true" />
-            <span class="text">Create API Key</span>
+            <span class="text">Create API key</span>
         </Button>
     </span>
 </div>
@@ -61,5 +61,5 @@
         </TableBody>
     </Table>
 {:else}
-    <Empty single href="https://appwrite.io/docs/keys" target="API Key" on:click={createApiKey} />
+    <Empty single href="https://appwrite.io/docs/keys" target="API key" on:click={createApiKey} />
 {/if}

@@ -31,7 +31,6 @@
     import { project } from '../../store';
     import { addNotification } from '$lib/stores/notifications';
     import { onMount } from 'svelte';
-    import type { PageData } from './$types';
     import EmailVerificationTemplate from './emailVerificationTemplate.svelte';
     import EmailMagicUrlTemplate from './emailMagicUrlTemplate.svelte';
     import EmailRecoveryTemplate from './emailRecoveryTemplate.svelte';
@@ -41,7 +40,7 @@
     import { baseEmailTemplate, baseSmsTemplate, emailTemplate, smsTemplate } from './store';
     import { Button } from '$lib/elements/forms';
 
-    export let data: PageData;
+    export let data;
     const projectId = $page.params.project;
 
     let emailOpen = 'verification';
@@ -77,7 +76,7 @@
     <div class="u-flex u-gap-8 u-cross-center">
         <Heading tag="h2" size="5">Templates</Heading>
         <div class="tag eyebrow-heading-3">
-            <span class="text u-x-small">Beta</span>
+            <span class="text u-x-small">Experimental</span>
         </div>
     </div>
 

@@ -112,6 +112,12 @@
                 case 'firebase': {
                     if ($provider.projectId) {
                         // OAuth
+                        const res = await sdk.forProject.migrations.getFirebaseReportOAuth(
+                            providerResources.firebase,
+                            $provider.projectId
+                        );
+
+                        report = res;
                     } else if ($provider.serviceAccount) {
                         // Manual auth
                         const res = await projectSdk.migrations.getFirebaseReport(

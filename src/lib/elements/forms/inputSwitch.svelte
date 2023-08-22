@@ -43,6 +43,7 @@
         </div>
         <div class="choice-item-content">
             <div class="choice-item-title">{label}</div>
+            <slot name="description" />
         </div>
     </label>
     {#if error}

@@ -11,7 +11,9 @@
             <slot name="beforetitle" />
             <div>
                 <span class="text"><slot name="title" /></span>
-                <span class="collapsible-button-optional"><slot name="subtitle" /></span>
+                {#if $$slots.subtitle}
+                    <span class="collapsible-button-optional"><slot name="subtitle" /></span>
+                {/if}
             </div>
             <div class="icon">
                 <span class="icon-cheveron-down" aria-hidden="true" />

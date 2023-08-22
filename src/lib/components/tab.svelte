@@ -22,7 +22,6 @@
 
             await goto(href);
             await waitUntil(() => {
-                console.log('tickUntil', el);
                 return el.classList.contains('is-selected');
             }, 1000);
             el.focus();

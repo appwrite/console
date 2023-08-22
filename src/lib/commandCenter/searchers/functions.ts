@@ -5,7 +5,7 @@ import { get } from 'svelte/store';
 import type { Searcher } from '../commands';
 import type { Models } from '@appwrite.io/console';
 import { page } from '$app/stores';
-import { showCreateDeployment } from '$routes/console/project-[project]/functions/function-[function]/+page.svelte';
+import { showCreateDeployment } from '$routes/console/project-[project]/functions/function-[function]/store';
 
 const getFunctionCommand = (fn: Models.Function, projectId: string) => {
     return {
@@ -37,7 +37,7 @@ export const functionsSearcher = (async (query: string) => {
                     if (!$page.url.pathname.endsWith(func.$id)) {
                         await goto(`/console/project-${projectId}/functions/function-${func.$id}`);
                     }
-                    showCreateDeployment();
+                    showCreateDeployment.set(true);
                 },
                 group: 'functions',
                 icon: 'plus'
