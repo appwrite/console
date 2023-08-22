@@ -39,7 +39,6 @@
 
         // get all code matches
         const codeMatches = Array.from(c.matchAll(/```([a-z]*)(.*?)(```|$)/gs));
-        console.log(codeMatches);
 
         let i = 0;
         let codeIdx = 0;
