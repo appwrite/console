@@ -411,19 +411,20 @@
 
     // Elements
     .card {
+        position: absolute;
+        --top: clamp(64px, 10vh, 400px);
+        top: var(--top);
+        left: 50%;
+        translate: -50%;
+
         display: flex;
         flex-direction: column;
         width: var(--width, 42.5rem);
         max-width: 100%;
         min-height: var(--min-height);
-        max-height: var(--max-height, 32rem);
+        max-height: min(calc(100vh - var(--top) - 4rem), var(--max-height, 32rem));
         overflow: hidden;
         padding: 0;
-
-        position: absolute;
-        top: clamp(128px, 15vh, 400px);
-        left: 50%;
-        translate: -50%;
 
         border-radius: 0.5rem;
         border: 1px solid var(--cmd-center-border);
