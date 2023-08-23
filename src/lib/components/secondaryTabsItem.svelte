@@ -13,7 +13,8 @@
                 class="secondary-tabs-button"
                 class:u-width-full-line={fullWidth}
                 class:u-text-center={center}
-                disabled>
+                disabled
+                type="button">
                 <span class="text"><slot /></span>
             </button>
         {:else}
@@ -30,6 +31,7 @@
             class="secondary-tabs-button"
             class:u-width-full-line={fullWidth}
             class:u-text-center={center}
+            type="button"
             {disabled}
             on:click>
             <span class="text"><slot /></span>
