@@ -29,7 +29,7 @@
         },
         {
             href: `${path}/smtp`,
-            title: 'SMTP Settings',
+            title: 'SMTP',
             event: 'smtp'
         }
     ];
