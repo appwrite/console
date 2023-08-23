@@ -35,9 +35,10 @@
     import EmailMagicUrlTemplate from './emailMagicUrlTemplate.svelte';
     import EmailRecoveryTemplate from './emailRecoveryTemplate.svelte';
     import EmailInviteTemplate from './emailInviteTemplate.svelte';
-    import SmsVerificationTemplate from './smsVerificationTemplate.svelte';
-    import SmsLoginTemplate from './smsLoginTemplate.svelte';
-    import { baseEmailTemplate, baseSmsTemplate, emailTemplate, smsTemplate } from './store';
+    // import SmsVerificationTemplate from './smsVerificationTemplate.svelte';
+    // import SmsLoginTemplate from './smsLoginTemplate.svelte';
+    // import { baseEmailTemplate, baseSmsTemplate, emailTemplate, smsTemplate } from './store';
+    import { baseEmailTemplate, emailTemplate } from './store';
     import { Button } from '$lib/elements/forms';
 
     export let data;
@@ -49,14 +50,14 @@
     $: emailResetPassword = emailOpen === 'recovery';
     $: emailInviteUser = emailOpen === 'invitation';
 
-    let smsOpen = 'verification';
-    $: smsVerificationOpen = smsOpen === 'verification';
-    $: smsLoginOpen = smsOpen === 'login';
-    $: smsInvitationOpen = smsOpen === 'invitation';
+    // let smsOpen = 'verification';
+    // $: smsVerificationOpen = smsOpen === 'verification';
+    // $: smsLoginOpen = smsOpen === 'login';
+    // $: smsInvitationOpen = smsOpen === 'invitation';
 
     onMount(async () => {
         openEmail('verification');
-        openSms('verification');
+        // openSms('verification');
     });
 
     async function openEmail(type: string) {
@@ -65,11 +66,11 @@
         $baseEmailTemplate = { ...$emailTemplate };
     }
 
-    async function openSms(type: string) {
-        type === smsOpen ? (smsOpen = null) : (smsOpen = type);
-        $smsTemplate = await loadSmsTemplate(projectId, type, 'en');
-        $baseSmsTemplate = { ...$smsTemplate };
-    }
+    // async function openSms(type: string) {
+    //     type === smsOpen ? (smsOpen = null) : (smsOpen = type);
+    //     $smsTemplate = await loadSmsTemplate(projectId, type, 'en');
+    //     $baseSmsTemplate = { ...$smsTemplate };
+    // }
 </script>
 
 <Container>
@@ -170,14 +171,13 @@
         </svelte:fragment>
     </CardGrid>
 
-    <CardGrid>
+    <!-- <CardGrid>
         <Heading size="7" tag="h3">SMS templates</Heading>
         <p class="text">
             Use templates to send and process account management mobile messages. <a
                 href="https://appwrite.io/docs"
                 class="link">
                 Learn more about SMS templates</a
-            >. <!-- TODO Docs link -->
         </p>
 
         <svelte:fragment slot="aside">
@@ -218,5 +218,5 @@
                 </CollapsibleItem>
             </Collapsible>
         </svelte:fragment>
-    </CardGrid>
+    </CardGrid>-->
 </Container>
