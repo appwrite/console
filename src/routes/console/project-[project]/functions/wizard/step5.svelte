@@ -45,7 +45,7 @@
 <WizardStep>
     <svelte:fragment slot="title">Variables</svelte:fragment>
     <svelte:fragment slot="subtitle">
-        Create the environment variables or secret keys that will be passed to your function
+        Create the environment variables or secret keys that will be passed to your function.
     </svelte:fragment>
     {#if $createFunction.vars.length}
         <Table noStyles>
