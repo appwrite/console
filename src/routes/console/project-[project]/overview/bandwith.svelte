@@ -17,7 +17,7 @@
         date: number;
         value: number;
     }>;
-    $: bandwith = humanFileSize(total($usage.network));
+    $: bandwith = humanFileSize(total($usage?.network));
 
     $: if (period) {
         showPeriod = false;

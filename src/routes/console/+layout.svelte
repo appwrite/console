@@ -55,6 +55,7 @@
     showSideNavigation={$page.url.pathname !== '/console' &&
         !$page?.params.organization &&
         !$page.url.pathname.includes('/console/account') &&
+        !$page.url.pathname.includes('/console/card') &&
         !$page.url.pathname.includes('/console/onboarding')}>
     <svelte:fragment slot="alert">
         {#if $failedInvoice}

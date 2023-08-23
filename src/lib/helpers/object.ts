@@ -36,3 +36,14 @@ export function deepEqual<T>(obj1: T, obj2: T): boolean {
 
     return true;
 }
+
+/**
+ * Creates a deep clone of the given object. This function uses the JSON methods for cloning,
+ * so it may not be suitable for objects with functions, symbols, or other non-JSON-safe data.
+ *
+ * @param obj the object to be cloned
+ * @returns a deep clone of the provided object
+ */
+export function deepClone<T>(obj: T): T {
+    return JSON.parse(JSON.stringify(obj));
+}
