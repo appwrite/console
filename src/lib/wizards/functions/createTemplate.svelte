@@ -77,6 +77,7 @@
         wizard.hide();
         templateConfig.set(null);
         template.set(null);
+        installation.set(null);
     }
 
     const stepsComponents: WizardStepsType = new Map();
