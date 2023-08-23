@@ -9,12 +9,14 @@
 <WizardStep>
     <svelte:fragment slot="title">Select source</svelte:fragment>
     <svelte:fragment slot="subtitle">
-        Select the resources you need to migrate to Appwrite. Some resources can be migrated, but with limitations. <a
-        href="https://appwrite.io/docs/client/teams"
-        target="_blank"
-        rel="noopener noreferrer">
-        Learn about which resources are supported</a
-    >.
+        Select the resources you need to migrate to Appwrite. Some resources can be migrated, but
+        with limitations. <a
+            class="link"
+            href="https://appwrite.io/docs/migrations"
+            target="_blank"
+            rel="noopener noreferrer">
+            Learn about which resources are supported</a
+        >.
     </svelte:fragment>
     <ResourceForm {formData} {provider} projectSdk={sdk.forProject} />
 </WizardStep>

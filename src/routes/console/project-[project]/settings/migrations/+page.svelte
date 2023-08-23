@@ -140,7 +140,7 @@
 
     <CardGrid>
         <Heading tag="h3" size="7">Import project data</Heading>
-        <p class="text">Import data from other products or from a different Appwrite instance</p>
+        <p class="text">Import data from other products or from a different Appwrite instance.</p>
         <svelte:fragment slot="aside">
             {#if data.migrations.length}
                 <div class="u-flex">

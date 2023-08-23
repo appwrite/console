@@ -7,8 +7,8 @@
 <WizardStep>
     <svelte:fragment slot="title">Permissions</svelte:fragment>
     <svelte:fragment slot="subtitle">
-        Choose which users have permission to execute this function using Client SDKs. For more information, check out
-        the <a
+        Choose which users have permission to execute this function using Client SDKs. For more
+        information, check out the <a
             href="https://appwrite.io/docs/permissions"
             target="_blank"
             rel="noopener noreferrer"

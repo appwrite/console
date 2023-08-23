@@ -4,7 +4,7 @@ We would ❤️ for you to contribute to Appwrite and help make it better! We wa
 
 ## How to Start?
 
-If you are worried about or don’t know where to start, check out the next section that explains what kind of help is needed and how you can get involved. You can reach out with any questions on our [Discord](https://appwrite.io/discord) server. You can also submit an issue and a maintainer can guide you!
+If you are worried about or don't know where to start, check out the next section that explains what kind of help is needed and how you can get involved. You can reach out with any questions on our [Discord](https://appwrite.io/discord) server. You can also submit an issue and a maintainer can guide you!
 
 ## Repo Structure
 
@@ -242,7 +242,7 @@ When blogging, speaking about, or creating tutorials about one of Appwrite's man
 
 ### Presenting at Meetups
 
-Presenting at meetups and conferences about your Appwrite projects is another excellent way to get the word out about Appwrite. Your unique challenges and successes in building things with Appwrite can provide great speaking material. We’d love to review your talk abstract/CFP, so get in touch with us if you’d like some help!
+Presenting at meetups and conferences about your Appwrite projects is another excellent way to get the word out about Appwrite. Your unique challenges and successes in building things with Appwrite can provide great speaking material. We'd love to review your talk abstract/CFP, so get in touch with us if you'd like some help!
 
 ### Sending Feedback & Reporting Bugs
 

@@ -20,12 +20,12 @@
     <svelte:fragment slot="title">Events</svelte:fragment>
     <svelte:fragment slot="subtitle">
         Set the events that will trigger your function. Maximum 100 events allowed.<a
-        href="https://appwrite.io/docs/events"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="link">
-        Learn more about events.
-    </a>.
+            href="https://appwrite.io/docs/events"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="link">
+            Learn more about events.
+        </a>.
     </svelte:fragment>
 
     {#if $createFunction?.events?.length}
