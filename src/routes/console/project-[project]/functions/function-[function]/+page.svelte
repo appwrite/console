@@ -189,12 +189,12 @@
                 <TableScroll noMargin>
                     <TableHeader>
                         <TableCellHead width={150}>Deployment ID</TableCellHead>
-                        <TableCellHead width={100}>Status</TableCellHead>
-                        <TableCellHead width={70}>Source</TableCellHead>
+                        <TableCellHead width={80}>Status</TableCellHead>
+                        <TableCellHead width={80}>Source</TableCellHead>
                         <TableCellHead width={180}>Updated</TableCellHead>
-                        <TableCellHead width={100}>Build Time</TableCellHead>
-                        <TableCellHead width={70}>Size</TableCellHead>
-                        <TableCellHead width={25} />
+                        <TableCellHead width={80}>Build Time</TableCellHead>
+                        <TableCellHead width={80}>Size</TableCellHead>
+                        <TableCellHead width={40} />
                     </TableHeader>
                     <TableBody>
                         {#each data.deployments.deployments as deployment, index}
@@ -203,7 +203,7 @@
                                 <TableCell width={150} title="Deployment ID">
                                     <Id value={deployment.$id}>{deployment.$id}</Id>
                                 </TableCell>
-                                <TableCell width={100} title="Status">
+                                <TableCell title="Status">
                                     <Pill
                                         danger={status === 'failed'}
                                         warning={status === 'pending'}
@@ -212,13 +212,13 @@
                                         {status}
                                     </Pill>
                                 </TableCell>
-                                <TableCellText width={70} title="Source">
+                                <TableCellText title="Source">
                                     <DeploymentSource {deployment} /></TableCellText>
-                                <TableCellText width={140} title="Created">
+                                <TableCellText width={180} title="Updated">
                                     <DeploymentCreatedBy {deployment} />
                                 </TableCellText>
 
-                                <TableCellText width={100} title="Build Time">
+                                <TableCellText title="Build Time">
                                     {#if ['processing', 'building'].includes(deployment.status)}
                                         <span use:timer={{ start: deployment.$createdAt }} />
                                     {:else}
@@ -226,11 +226,11 @@
                                     {/if}
                                 </TableCellText>
 
-                                <TableCellText width={70} title="Size">
+                                <TableCellText title="Size">
                                     {calculateSize(deployment.size)}
                                 </TableCellText>
 
-                                <TableCell width={25} showOverflow>
+                                <TableCell width={40} showOverflow>
                                     <DropList
                                         bind:show={showDropdown[index]}
                                         placement="bottom-start"
