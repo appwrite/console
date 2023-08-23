@@ -16,10 +16,10 @@
     export let sdkUpdateVariable: (variableId: string, key: string, value: string) => Promise<any>;
     export let sdkDeleteVariable: (variableId: string) => Promise<any>;
 
+    let error = '';
     let envCode = variableList.variables
         .map((variable) => `${variable.key}=${variable.value}`)
         .join('\n');
-    const baseEnvCode = envCode;
     let jsonCode = JSON.stringify(
         JSON.parse(
             `{${variableList.variables
@@ -29,6 +29,7 @@
         null,
         2
     );
+    const baseEnvCode = envCode;
     const baseJsonCode = jsonCode;
 
     if (jsonCode === '{}') {
@@ -78,15 +79,9 @@
             });
 
             trackEvent(Submit.VariableEditor);
-        } catch (error) {
-            showEditor = false;
-
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
-
-            trackError(error, Submit.VariableEditor);
+        } catch (e) {
+            error = e.message;
+            trackError(e, Submit.VariableEditor);
         }
     }
 
@@ -120,6 +115,7 @@
     headerDivider={false}
     bind:show={showEditor}
     onSubmit={handleSubmit}
+    bind:error
     size="big">
     <p>
         Edit {isGlobal ? 'global' : 'environment'} variables below or download as a
