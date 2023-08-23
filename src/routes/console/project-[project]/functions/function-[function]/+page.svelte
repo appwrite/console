@@ -264,7 +264,7 @@
                                             <DropListLink
                                                 icon="terminal"
                                                 href={`/console/project-${$page.params.project}/functions/function-${$page.params.function}/deployment-${deployment.$id}`}>
-                                                Output
+                                                Logs
                                             </DropListLink>
                                             <DropListItem
                                                 icon="trash"
