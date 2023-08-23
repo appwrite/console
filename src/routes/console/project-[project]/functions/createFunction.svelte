@@ -30,11 +30,13 @@
                 $createFunction.id ?? ID.unique(),
                 $createFunction.name,
                 $createFunction.runtime,
-                $createFunction.entrypoint || undefined,
                 $createFunction.execute || undefined,
                 $createFunction.events || undefined,
                 $createFunction.schedule || undefined,
-                $createFunction.timeout || undefined
+                $createFunction.timeout || undefined,
+                undefined,
+                undefined,
+                $createFunction.entrypoint || undefined
             );
             await Promise.all(
                 $createFunction.vars.map((v) =>
