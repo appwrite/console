@@ -98,7 +98,7 @@
                             }.svg`}
                             alt="technology" />
                     </div>
-                    <div class="u-flex-vertical u-gap-4">
+                    <div class="u-grid-equal-row-size u-gap-4 u-line-height-1">
                         <p><b>Deployment ID</b></p>
 
                         <Id value={$func.deployment}>
@@ -110,7 +110,7 @@
                     {@const status = activeDeployment.status}
                     {@const fileSize = humanFileSize(activeDeployment.size)}
                     <div class="u-flex u-main-space-between">
-                        <div class="u-flex-vertical u-gap-4">
+                        <div class="u-grid-equal-row-size u-gap-4 u-line-height-1">
                             <p><b>Build time:</b> {calculateTime(activeDeployment.buildTime)}</p>
                             <p>
                                 <b>Updated:</b>
