@@ -98,23 +98,19 @@
                             }.svg`}
                             alt="technology" />
                     </div>
-                    <div>
-                        <div class="u-flex u-gap-12 u-cross-center">
-                            <p><b>Deployment ID</b></p>
-                        </div>
+                    <div class="u-flex-vertical u-gap-4">
+                        <p><b>Deployment ID</b></p>
 
-                        <div class="u-flex u-gap-12 u-cross-center">
-                            <Id value={$func.deployment}>
-                                {$func.deployment}
-                            </Id>
-                        </div>
+                        <Id value={$func.deployment}>
+                            {$func.deployment}
+                        </Id>
                     </div>
                 </div>
                 <svelte:fragment slot="aside">
                     {@const status = activeDeployment.status}
                     {@const fileSize = humanFileSize(activeDeployment.size)}
                     <div class="u-flex u-main-space-between">
-                        <div>
+                        <div class="u-flex-vertical u-gap-4">
                             <p><b>Build time:</b> {calculateTime(activeDeployment.buildTime)}</p>
                             <p>
                                 <b>Updated:</b>
@@ -152,6 +148,7 @@
                     </Button>
                     <Button
                         text
+                        class="u-margin-inline-end-16"
                         on:click={() => {
                             selectedDeployment = activeDeployment;
                             showRedeploy = true;
