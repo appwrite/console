@@ -68,7 +68,7 @@
                     </p>
                     <div class="alert-buttons u-flex u-margin-inline-start-auto">
                         <!-- TODO: add link to docs -->
-                        <Button text href="#/" external>Learn more</Button>
+                        <Button text href="https://appwrite.io/docs/docs/functions-deploy#vcs" external>Learn more</Button>
                         <Button
                             href={`${base}/console/project-${$page.params.project}/functions/function-${$page.params.function}/settings`}>
                             Install Git
