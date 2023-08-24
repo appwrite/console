@@ -159,7 +159,7 @@
                 goto(`/console/project-${$project.$id}/settings`);
             },
             disabled: isOnSettingsLayout && $page.url.pathname.endsWith('settings'),
-            group: 'navigation',
+            group: isOnSettingsLayout ? 'navigation' : 'settings',
             rank: isOnSettingsLayout ? 40 : -1
         },
         {
@@ -170,7 +170,7 @@
                 goto(`/console/project-${$project.$id}/settings/domains`);
             },
             disabled: isOnSettingsLayout && $page.url.pathname.includes('domains'),
-            group: 'navigation',
+            group: isOnSettingsLayout ? 'navigation' : 'settings',
             rank: isOnSettingsLayout ? 30 : -1
         },
         {
@@ -180,7 +180,7 @@
                 goto(`/console/project-${$project.$id}/settings/webhooks`);
             },
             disabled: isOnSettingsLayout && $page.url.pathname.includes('webhooks'),
-            group: 'navigation',
+            group: isOnSettingsLayout ? 'navigation' : 'settings',
 
             rank: isOnSettingsLayout ? 20 : -1
         },
@@ -191,7 +191,7 @@
                 goto(`/console/project-${$project.$id}/settings/migrations`);
             },
             disabled: isOnSettingsLayout && $page.url.pathname.includes('migrations'),
-            group: 'navigation',
+            group: isOnSettingsLayout ? 'navigation' : 'settings',
 
             rank: isOnSettingsLayout ? 10 : -1
         },
@@ -202,7 +202,7 @@
                 goto(`/console/project-${$project.$id}/settings/smtp`);
             },
             disabled: isOnSettingsLayout && $page.url.pathname.includes('smtp'),
-            group: 'navigation',
+            group: isOnSettingsLayout ? 'navigation' : 'settings',
             rank: -1
         }
     ]);
