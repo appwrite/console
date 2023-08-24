@@ -8,12 +8,17 @@
     import { WizardStep } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
+    import { onMount } from 'svelte';
     import Repositories from '../components/repositories.svelte';
     import { installation, repository, template, templateConfig } from '../store';
 
     let selectedInstallationId: string;
     let hasInstallations: boolean;
     let selectedRepository: string;
+
+    onMount(() => {
+        $templateConfig.repositoryPrivate = true;
+    });
 
     async function beforeSubmit() {
         if (!hasInstallations || !$installation) {
