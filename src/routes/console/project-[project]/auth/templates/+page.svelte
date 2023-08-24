@@ -89,7 +89,7 @@
                 type="info"
                 buttons={[
                     {
-                        name: 'Add SMTP server',
+                        name: 'SMTP settings',
                         method: () => {
                             goto(`${base}/console/project-${$project.$id}/settings/smtp`);
                         }
@@ -166,7 +166,7 @@
         </svelte:fragment>
         <svelte:fragment slot="actions">
             <Button href={`${base}/console/project-${$project.$id}/settings/smtp`} secondary>
-                Add SMTP server
+                SMTP settings
             </Button>
         </svelte:fragment>
     </CardGrid>
