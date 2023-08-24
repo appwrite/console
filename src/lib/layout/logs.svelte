@@ -83,11 +83,11 @@
                         name={func.runtime.split('-')[0]}
                         iconSize="large" />
                 </div>
-                <div>
+                <div class="u-grid-equal-row-size u-gap-4 u-line-height-1">
                     <h2 class="body-text-2 u-bold">Execution ID:</h2>
                     <Id value={execution.$id}>{execution.$id}</Id>
                 </div>
-                <ul>
+                <ul class="u-grid-equal-row-size u-gap-4 u-line-height-1">
                     <li class="text">
                         <b>Duration: </b>
                         <time>
