@@ -217,7 +217,6 @@
                     <div class="common-section">
                         <div class="u-text-center common-section">
                             <p class="text u-line-height-1-5">You have no repositories.</p>
-                            <!-- TODO: add link to docs -->
                             <p class="text u-line-height-1-5">
                                 Need a hand? Learn more in our <a
                                     href="https://appwrite.io/docs/docs/functions-deploy#vcs"
