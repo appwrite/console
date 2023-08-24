@@ -48,8 +48,6 @@
 
     $: firebaseProjects = $page.data.firebaseProjects;
 
-    $: console.log(firebaseProjects);
-
     // let showAuth = false;
 </script>
 

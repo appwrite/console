@@ -40,7 +40,6 @@ export const load: PageLoad = async ({ url, route }) => {
         if (search) {
             return template.name.toLowerCase().includes(search.toLowerCase());
         } else {
-            console.log(template.name);
             return true;
         }
     });

@@ -17,14 +17,21 @@
         organization.
     </svelte:fragment>
 
-    <ul class="u-flex u-flex-vertical u-gap-24">
-        <LabelCard name="behaviour" value="new" bind:group={$templateConfig.repositoryBehaviour}>
+    <ul class="u-flex u-flex-vertical u-gap-16">
+        <LabelCard
+            name="behaviour"
+            value="new"
+            backgroundColor="var(--color-neutral-5)"
+            backgroundColorHover="var(--color-neutral-10)"
+            bind:group={$templateConfig.repositoryBehaviour}>
             <svelte:fragment slot="title">Create a new repository</svelte:fragment>
             Clone the template and create a new repository in your selected organization.
         </LabelCard>
         <LabelCard
             name="behaviour"
             value="existing"
+            backgroundColor="var(--color-neutral-5)"
+            backgroundColorHover="var(--color-neutral-10)"
             bind:group={$templateConfig.repositoryBehaviour}>
             <svelte:fragment slot="title">Add to existing repository</svelte:fragment>
             Clone the template to an existing repository in your selected organization.

@@ -84,8 +84,6 @@
 
     $: sortedSteps = [...steps].sort(([a], [b]) => (a > b ? 1 : -1));
     $: isLastStep = $wizard.step === steps.size;
-
-    $: console.log({ sortedSteps, current: $wizard.step });
 </script>
 
 <svelte:window on:keydown={handleKeydown} />

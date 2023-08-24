@@ -19,7 +19,7 @@
             variables,
             repositoryBehaviour: 'new',
             repositoryName: template.id,
-            repositoryPrivate: false,
+            repositoryPrivate: true,
             repositoryId: null
         });
         wizard.start(CreateTemplate);
@@ -46,7 +46,7 @@
     let selectedRepository: string;
 
     const quickStart = marketplace.find((template) => template.id === 'starter');
-    const templates = marketplace.filter((template) => template.id !== 'starter').slice(0, 3);
+    const templates = marketplace.filter((template) => template.id !== 'starter').slice(0, 2);
 
     function connect(event: CustomEvent<Models.ProviderRepository>) {
         repository.set(event.detail);
@@ -60,7 +60,7 @@
 </script>
 
 <WizardCover>
-    <svelte:fragment slot="title">Create function</svelte:fragment>
+    <svelte:fragment slot="title">Create Function</svelte:fragment>
     <div class="wizard-container container">
         <div class="grid-1-1 u-gap-24">
             <div>
@@ -74,6 +74,10 @@
                             bind:hasInstallations
                             bind:selectedRepository
                             action="button"
+                            callbackState={{
+                                from: 'github',
+                                to: 'cover'
+                            }}
                             on:connect={connect} />
                     </div>
                 </div>
@@ -125,7 +129,9 @@
                                                 }.svg`}
                                                 alt={runtime.name} />
                                         </div>
-                                        <div class="body-text-2">{runtimeDetail.name}</div>
+                                        <div class="body-text-2">
+                                            {runtimeDetail.name}
+                                        </div>
                                     </button>
                                 </li>
                             {/each}

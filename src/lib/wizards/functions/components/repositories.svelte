@@ -12,9 +12,11 @@
 
     const dispatch = createEventDispatcher();
 
+    export let callbackState: Record<string, string> = null;
     export let selectedRepository: string = null;
     export let hasInstallations = false;
     export let action: 'button' | 'select' = 'select';
+
     let offset = 0;
     const limit = 5;
 
@@ -57,7 +59,11 @@
 
     function connectGitHub() {
         const redirect = new URL($page.url);
-        redirect.searchParams.append('github-installed', 'true');
+        if (callbackState) {
+            Object.keys(callbackState).forEach((key) => {
+                redirect.searchParams.append(key, callbackState[key]);
+            });
+        }
         const target = new URL(`${sdk.forProject.client.config.endpoint}/vcs/github/authorize`);
         target.searchParams.set('projectId', $page.params.project);
         target.searchParams.set('success', redirect.toString());

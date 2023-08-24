@@ -2,7 +2,14 @@
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { Collapsible, CollapsibleItem, EmptySearch, Pagination } from '$lib/components';
+    import { tooltip } from '$lib/actions/tooltip.js';
+    import {
+        Collapsible,
+        CollapsibleItem,
+        EmptySearch,
+        Heading,
+        Pagination
+    } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { debounce } from '$lib/helpers/debounce';
     import { Container } from '$lib/layout';
@@ -67,9 +74,14 @@
 </script>
 
 <Container>
-    <div class="grid-300px-1fr">
+    <div class="u-flex u-gap-8 u-cross-center">
+        <Heading tag="h2" size="5">Templates</Heading>
+        <div class="tag eyebrow-heading-3">
+            <span class="text u-x-small">Experimental</span>
+        </div>
+    </div>
+    <div class="grid-300px-1fr u-margin-block-start-24">
         <section>
-            <h3 class="body-text-1 u-bold">Filter templates</h3>
             <div
                 class="input-text-wrapper is-with-end-button u-width-full-line u-max-width-500 u-margin-block-start-12"
                 style="--amount-of-buttons:1">
@@ -155,6 +167,8 @@
                     class="grid-box"
                     style="--grid-item-size:22rem; --grid-item-size-small-screens:19rem">
                     {#each data.templates as template}
+                        {@const displayed = template.runtimes.slice(0, 2)}
+                        {@const hidden = template.runtimes.slice(2, -1)}
                         <li>
                             <article class="card u-min-height-100-percent">
                                 <div class="u-flex u-gap-16 u-cross-center">
@@ -164,7 +178,7 @@
                                         {template.name}
                                     </h2>
                                     <ul class="avatars-group is-with-border">
-                                        {#each template.runtimes as runtime}
+                                        {#each displayed as runtime}
                                             {@const icon = getIconFromRuntime(runtime.name)}
                                             {#if icon}
                                                 <li class="avatars-group-item">
@@ -179,6 +193,19 @@
                                                 </li>
                                             {/if}
                                         {/each}
+                                        {#if hidden.length}
+                                            <li class="avatars-group-item">
+                                                <div
+                                                    class="avatar is-size-small"
+                                                    use:tooltip={{
+                                                        content: hidden
+                                                            .map((n) => n.name)
+                                                            .join(', ')
+                                                    }}>
+                                                    +{hidden.length}
+                                                </div>
+                                            </li>
+                                        {/if}
                                     </ul>
                                 </div>
 
