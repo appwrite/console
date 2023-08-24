@@ -36,7 +36,7 @@
         if (from === 'github') {
             const to = $page.url.searchParams.get('to');
             switch (to) {
-                case 'template':
+                case 'template': {
                     const step = $page.url.searchParams.get('step');
                     const template = $page.url.searchParams.get('template');
                     const templateConfig = $page.url.searchParams.get('templateConfig');
@@ -45,7 +45,7 @@
                     wizard.start(CreateTemplate);
                     wizard.setStep(Number(step));
                     break;
-
+                }
                 case 'cover':
                     openWizard();
                     break;
