@@ -322,9 +322,12 @@
             </div>
         </Empty>
     {/if}
-    {@const sum = data.deployments.total ? data.deployments.total - 1 : 0}
 
-    <PaginationWithLimit name="Deployments" limit={data.limit} offset={data.offset} total={sum} />
+    <PaginationWithLimit
+        name="Deployments"
+        limit={data.limit}
+        offset={data.offset}
+        total={data.deployments.total} />
 </Container>
 
 {#if selectedDeployment}
