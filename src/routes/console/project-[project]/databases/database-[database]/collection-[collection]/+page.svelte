@@ -89,8 +89,8 @@
             <EmptySearch hidePages>
                 <div class="common-section">
                     <div class="u-text-center common-section">
-                        <b class="body-text-2 u-bold">Sorry we couldn't find ""</b>
-                        <p>There are no Users that match your search.</p>
+                        <b class="body-text-2 u-bold">Sorry, we couldn't find any documents.</b>
+                        <p>There are no documents that match your filters.</p>
                     </div>
                     <div class="u-flex common-section u-main-center">
                         <Button
