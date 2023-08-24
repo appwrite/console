@@ -81,4 +81,10 @@ export const queriesAreDirty = derived([queries, page], ([$queries, $page]) => {
     return !deepEqual($queries, parsedQueries);
 });
 
+export const hasPageQueries = derived(page, ($page) => {
+    const paramQueries = $page.url.searchParams.get('query');
+    const parsedQueries = queryParamToMap(paramQueries || '[]');
+    return parsedQueries.size > 0;
+});
+
 export const tags = derived(queries, ($queries) => Array.from($queries.keys()));
