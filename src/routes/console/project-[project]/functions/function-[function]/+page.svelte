@@ -90,7 +90,7 @@
         {/if}
         {#if activeDeployment}
             <CardGrid>
-                <div class="grid-1-2-col-1 u-flex u-cross-start u-gap-16">
+                <div class="u-flex u-cross-start u-gap-16">
                     <div class="avatar is-medium" aria-hidden="true">
                         <img
                             src={`${base}/icons/${$app.themeInUse}/color/${
@@ -141,20 +141,22 @@
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">
-                    <Button
-                        text
-                        href={`/console/project-${$page.params.project}/functions/function-${$page.params.function}/deployment-${activeDeployment.$id}`}>
-                        Build logs
-                    </Button>
-                    <Button
-                        text
-                        class="u-margin-inline-end-16"
-                        on:click={() => {
-                            selectedDeployment = activeDeployment;
-                            showRedeploy = true;
-                        }}>Redeploy</Button>
+                    <div class="u-flex u-flex-wrap">
+                        <Button
+                            text
+                            href={`/console/project-${$page.params.project}/functions/function-${$page.params.function}/deployment-${activeDeployment.$id}`}>
+                            Build logs
+                        </Button>
+                        <Button
+                            text
+                            class="u-margin-inline-end-16"
+                            on:click={() => {
+                                selectedDeployment = activeDeployment;
+                                showRedeploy = true;
+                            }}>Redeploy</Button>
 
-                    <Button secondary on:click={() => ($execute = $func)}>Execute now</Button>
+                        <Button secondary on:click={() => ($execute = $func)}>Execute now</Button>
+                    </div>
                 </svelte:fragment>
             </CardGrid>
         {:else}
