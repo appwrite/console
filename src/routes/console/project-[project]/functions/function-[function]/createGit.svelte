@@ -67,7 +67,7 @@
                         you push to that repository, your function will be deployed.
                     </p>
                     <div class="alert-buttons u-flex u-margin-inline-start-auto">
-                        <Button text href="https://appwrite.io/docs/docs/functions-deploy#vcs" external>Learn more</Button>
+                        <Button text href="https://appwrite.io/docs/functions-deploy#vcs" external>Learn more</Button>
                         <Button
                             href={`${base}/console/project-${$page.params.project}/functions/function-${$page.params.function}/settings`}>
                             Install Git
