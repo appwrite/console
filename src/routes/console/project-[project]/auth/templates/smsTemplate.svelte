@@ -5,7 +5,7 @@
     import { baseSmsTemplate, smsTemplate } from './store';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { deepEqual } from '$lib/helpers/object';
+    import deepEqual from 'deep-equal';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
 
     export let loading = false;

@@ -2,7 +2,7 @@
     import { Drop, Modal } from '$lib/components';
     import Content from './content.svelte';
     import { Button } from '$lib/elements/forms';
-    import { queries, tags } from './store';
+    import { queries, queriesAreDirty, tags } from './store';
 
     // We need to separate them so we don't trigger Drop's handlers
     let showFiltersDesktop = false;
@@ -19,8 +19,6 @@
 
     function clearAll() {
         queries.clearAll();
-        queries.apply();
-        applied = 0;
     }
 </script>
 
@@ -44,7 +42,7 @@
                 <hr />
                 <div class="u-flex u-margin-block-start-16 u-main-end u-gap-8">
                     <Button text on:click={clearAll}>Clear all</Button>
-                    <Button on:click={apply}>Apply</Button>
+                    <Button on:click={apply} disabled={!$queriesAreDirty}>Apply</Button>
                 </div>
             </div>
         </svelte:fragment>
@@ -70,7 +68,7 @@
         <Content on:apply={(e) => (applied = e.detail.applied)} on:clear={() => (applied = 0)} />
         <svelte:fragment slot="footer">
             <Button text on:click={clearAll}>Clear all</Button>
-            <Button on:click={apply}>Apply</Button></svelte:fragment>
+            <Button on:click={apply} disabled={!$queriesAreDirty}>Apply</Button></svelte:fragment>
     </Modal>
 </div>
 

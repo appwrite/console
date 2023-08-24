@@ -2,6 +2,8 @@ import { goto } from '$app/navigation';
 
 import { derived, get, writable, type Writable } from 'svelte/store';
 import type { columns } from '../store';
+import { page } from '$app/stores';
+import deepEqual from 'deep-equal';
 
 const columnTypes = ['string', 'integer', 'double', 'boolean', 'datetime', 'relationship'] as const;
 type ColumnType = (typeof columnTypes)[number];
@@ -71,4 +73,12 @@ function initQueries(initialValue = new Map<string, string>()) {
 }
 
 export const queries = initQueries();
+export const queriesAreDirty = derived([queries, page], ([$queries, $page]) => {
+    const paramQueries = $page.url.searchParams.get('query');
+    const parsedQueries = queryParamToMap(paramQueries || '[]');
+    console.log({ $queries, parsedQueries, notDirty: deepEqual($queries, parsedQueries) });
+
+    return !deepEqual($queries, parsedQueries);
+});
+
 export const tags = derived(queries, ($queries) => Array.from($queries.keys()));

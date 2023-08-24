@@ -107,7 +107,7 @@
     }
 
     $: isDisabled = (function getDisabled() {
-        return !operator || (!operator?.hideInput && !value);
+        return !operator || (!operator?.hideInput && !value)
     })();
 </script>
 
