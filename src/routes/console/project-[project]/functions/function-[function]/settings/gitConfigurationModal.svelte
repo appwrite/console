@@ -220,7 +220,7 @@
                             <!-- TODO: add link to docs -->
                             <p class="text u-line-height-1-5">
                                 Need a hand? Learn more in our <a
-                                    href="https://appwrite.io/docs/docs/functions-deploy#vcs"
+                                    href="https://appwrite.io/docs/functions-deploy#vcs"
                                     target="_blank"
                                     rel="noopener noreferrer">
                                     documentation</a
