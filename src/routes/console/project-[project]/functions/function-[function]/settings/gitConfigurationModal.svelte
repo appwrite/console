@@ -207,7 +207,7 @@
                             <p>There are no repositories that match your search.</p>
                         </div>
                         <div class="u-flex u-gap-16 common-section u-main-center">
-                            <Button external href="https://appwrite.io/docs/docs/functions-deploy#vcs" text>Documentation</Button>
+                            <Button external href="https://appwrite.io/docs/functions-deploy#vcs" text>Documentation</Button>
                             <Button secondary on:click={() => (search = '')}>Clear search</Button>
                         </div>
                     </div>
