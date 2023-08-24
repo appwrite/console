@@ -9,7 +9,7 @@
 </script>
 
 <article class="card u-grid u-cross-center u-width-full-line common-section">
-    <div class="u-flex u-flex-vertical u-cross-center u-gap-24">
+    <div class="u-flex u-flex-vertical u-cross-center u-gap-24 u-overflow-hidden">
         {#if $app.themeInUse === 'dark'}
             <img src={Dark} alt="create" aria-hidden="true" />
         {:else}
