@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { SecondaryTabs, SecondaryTabsItem } from '$lib/components';
     import Copy from '$lib/components/copy.svelte';
     import Modal from '$lib/components/modal.svelte';
     import Button from '$lib/elements/forms/button.svelte';
@@ -15,10 +16,10 @@
     export let sdkUpdateVariable: (variableId: string, key: string, value: string) => Promise<any>;
     export let sdkDeleteVariable: (variableId: string) => Promise<any>;
 
+    let error = '';
     let envCode = variableList.variables
         .map((variable) => `${variable.key}=${variable.value}`)
         .join('\n');
-
     let jsonCode = JSON.stringify(
         JSON.parse(
             `{${variableList.variables
@@ -28,6 +29,8 @@
         null,
         2
     );
+    const baseEnvCode = envCode;
+    const baseJsonCode = jsonCode;
 
     if (jsonCode === '{}') {
         jsonCode = '';
@@ -76,15 +79,9 @@
             });
 
             trackEvent(Submit.VariableEditor);
-        } catch (error) {
-            showEditor = false;
-
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
-
-            trackError(error, Submit.VariableEditor);
+        } catch (e) {
+            error = e.message;
+            trackError(e, Submit.VariableEditor);
         }
     }
 
@@ -108,6 +105,9 @@
         document.body.removeChild(link);
         window.URL.revokeObjectURL(url);
     }
+
+    $: isButtonDisabled =
+        (tab === 'env' && baseEnvCode === envCode) || (tab === 'json' && baseJsonCode === jsonCode);
 </script>
 
 <Modal
@@ -115,6 +115,7 @@
     headerDivider={false}
     bind:show={showEditor}
     onSubmit={handleSubmit}
+    bind:error
     size="big">
     <p>
         Edit {isGlobal ? 'global' : 'environment'} variables below or download as a
@@ -122,37 +123,44 @@
     </p>
 
     <div class="editor-border">
-        <ul class="secondary-tabs is-large u-sep-block-end u-padding-8">
-            <li class="secondary-tabs-item u-stretch">
-                <button
-                    type="button"
-                    on:click={() => (tab = 'env')}
-                    class="secondary-tabs-button u-width-full-line u-text-center"
-                    disabled={tab === 'env'}><span class="text">ENV</span></button>
-            </li>
-            <li class="secondary-tabs-item u-stretch">
-                <button
-                    type="button"
-                    on:click={() => (tab = 'json')}
-                    class="secondary-tabs-button u-width-full-line u-text-center"
-                    disabled={tab === 'json'}><span class="text">JSON</span></button>
-            </li>
-        </ul>
+        <SecondaryTabs large class="u-sep-block-end u-padding-8">
+            <SecondaryTabsItem
+                stretch
+                fullWidth
+                center
+                on:click={() => (tab = 'env')}
+                disabled={tab === 'env'}>
+                ENV
+            </SecondaryTabsItem>
+            <SecondaryTabsItem
+                stretch
+                fullWidth
+                center
+                on:click={() => (tab = 'json')}
+                disabled={tab === 'json'}>
+                JSON
+            </SecondaryTabsItem>
+        </SecondaryTabs>
 
-        {#if tab === 'env'}
-            <textarea
-                placeholder={`SECRET_KEY=dQw4w9WgXcQ...`}
-                class="input-text u-border-width-0"
-                bind:value={envCode} />
-        {:else if tab === 'json'}
-            <textarea
-                placeholder={`{\n  "SECRET_KEY": "dQw4w9WgXcQ..."\n}`}
-                class="input-text u-border-width-0"
-                bind:value={jsonCode} />
-        {/if}
-
-        <div class="u-flex u-width-full-line u-main-end u-padding-12">
-            <ul class="buttons-list">
+        <div class="input-text-wrapper">
+            {#if tab === 'env'}
+                <textarea
+                    placeholder={`SECRET_KEY=dQw4w9WgXcQ...`}
+                    class="input-text u-border-width-0"
+                    bind:value={envCode}
+                    style:--amount-of-buttons={0.25}
+                    style:border-radius="var(--border-radius-small)" />
+            {:else if tab === 'json'}
+                <textarea
+                    placeholder={`{\n  "SECRET_KEY": "dQw4w9WgXcQ..."\n}`}
+                    class="input-text u-border-width-0"
+                    bind:value={jsonCode}
+                    style:--amount-of-buttons={0.25}
+                    style:border-radius="var(--border-radius-small)" />
+            {/if}
+            <ul
+                class="buttons-list u-gap-8 u-cross-center u-position-absolute d u-inset-block-end-1 u-inset-inline-end-1 u-padding-block-8 u-padding-inline-12"
+                style="border-end-end-radius:0.0625rem;">
                 <li class="buttons-list-item">
                     <div class="tooltip" aria-label={`Download .${tab} file`}>
                         <button
@@ -162,7 +170,9 @@
                             aria-label={`Download .${tab} file`}>
                             <span class="icon-download" aria-hidden="true" />
                         </button>
-                        <span class="tooltip-popup" role="tooltip"> Download .{tab} file. </span>
+                        <span class="tooltip-popup" role="tooltip">
+                            Download .{tab} file.
+                        </span>
                     </div>
                 </li>
                 <li class="buttons-list-item">
@@ -185,7 +195,7 @@
 
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (showEditor = false)}>Cancel</Button>
-        <Button submit>Save</Button>
+        <Button submit disabled={isButtonDisabled}>Save</Button>
     </svelte:fragment>
 </Modal>
 
@@ -193,9 +203,5 @@
     .editor-border {
         border: solid 0.0625rem hsl(var(--color-border));
         border-radius: var(--border-radius-small);
-
-        textarea {
-            border-radius: var(--border-radius-small);
-        }
     }
 </style>

@@ -17,6 +17,7 @@
     import { Dependencies } from '$lib/constants';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { ID } from '@appwrite.io/console';
+    import { isCloud } from '$lib/system';
 
     let name: string, mail: string, pass: string, disabled: boolean;
     let terms = false;
@@ -95,13 +96,15 @@
                 <FormItem>
                     <Button fullWidth submit {disabled}>Sign up</Button>
                 </FormItem>
-                <span class="with-separators eyebrow-heading-3">or</span>
-                <FormItem>
-                    <Button github fullWidth on:click={onGithubLogin} {disabled}>
-                        <span class="icon-github" aria-hidden="true" />
-                        <span class="text">Sign up with GitHub</span>
-                    </Button>
-                </FormItem>
+                {#if isCloud}
+                    <span class="with-separators eyebrow-heading-3">or</span>
+                    <FormItem>
+                        <Button github fullWidth on:click={onGithubLogin} {disabled}>
+                            <span class="icon-github" aria-hidden="true" />
+                            <span class="text">Sign up with GitHub</span>
+                        </Button>
+                    </FormItem>
+                {/if}
             </FormList>
         </Form>
     </svelte:fragment>

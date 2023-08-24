@@ -53,23 +53,19 @@
                     }.svg`}
                     alt="technology" />
             </div>
-            <div>
-                <div class="u-flex u-gap-12 u-cross-center">
-                    <p><b>Deployment ID</b></p>
-                </div>
+            <div class="u-grid-equal-row-size u-gap-4 u-line-height-1">
+                <p><b>Deployment ID</b></p>
 
-                <div class="u-flex u-gap-12 u-cross-center">
-                    <Id value={$deployment.$id}>
-                        {$deployment.$id}
-                    </Id>
-                </div>
+                <Id value={$deployment.$id}>
+                    {$deployment.$id}
+                </Id>
             </div>
         </div>
         <svelte:fragment slot="aside">
             {@const status = $deployment.status}
             {@const fileSize = humanFileSize($deployment.size)}
             <div class="u-flex u-main-space-between">
-                <div>
+                <div class="u-grid-equal-row-size u-gap-4 u-line-height-1">
                     <p>
                         <b>Build time:</b>
                         {#if ['processing', 'building'].includes($deployment.status)}
@@ -116,7 +112,7 @@
     </CardGrid>
 
     <Card>
-        <div class="u-stretch u-margin-block-start-32 u-overflow-hidden">
+        <div class="u-stretch u-overflow-hidden">
             <section class="code-panel">
                 <header class="code-panel-header u-flex u-main-space-between u-width-full-line">
                     <div class="u-flex u-flex-vertical">

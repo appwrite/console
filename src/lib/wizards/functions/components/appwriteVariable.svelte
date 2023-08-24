@@ -14,7 +14,7 @@
                 id={appwriteVariable.name}
                 label={appwriteVariable.name}
                 placeholder={appwriteVariable.placeholder ?? 'Enter value'}
-                required={appwriteVariable.required}
+                required={appwriteVariable.required && !$templateConfig.generateKey}
                 bind:value={$templateConfig.appwriteApiKey}
                 disabled={!!$templateConfig.generateKey} />
             <Helper type="neutral">
