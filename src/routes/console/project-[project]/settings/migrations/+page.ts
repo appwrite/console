@@ -20,7 +20,6 @@ export async function load({ depends }) {
     try {
         const { migrations } = await sdk.forProject.migrations.list();
 
-        console.log('migrations', migrations);
         return {
             migrations,
             firebaseProjects: getFirebaseProjects()

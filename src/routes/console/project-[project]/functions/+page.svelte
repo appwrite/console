@@ -18,6 +18,12 @@
     import { onMount } from 'svelte';
     import Initial from '$lib/wizards/functions/cover.svelte';
     import { registerCommands } from '$lib/commandCenter';
+    import CreateTemplate from '$lib/wizards/functions/createTemplate.svelte';
+    import {
+        templateConfig as templateConfigStore,
+        template as templateStore
+    } from '$lib/wizards/functions/store.js';
+    import { marketplace } from '$lib/stores/marketplace.js';
 
     export let data;
 
@@ -26,8 +32,24 @@
     const project = $page.params.project;
 
     onMount(() => {
-        if ($page.url.searchParams.has('github-installed')) {
-            openWizard();
+        const from = $page.url.searchParams.get('from');
+        if (from === 'github') {
+            const to = $page.url.searchParams.get('to');
+            switch (to) {
+                case 'template':
+                    const step = $page.url.searchParams.get('step');
+                    const template = $page.url.searchParams.get('template');
+                    const templateConfig = $page.url.searchParams.get('templateConfig');
+                    templateStore.set(marketplace.find((item) => item.id === template));
+                    templateConfigStore.set(JSON.parse(templateConfig));
+                    wizard.start(CreateTemplate);
+                    wizard.setStep(Number(step));
+                    break;
+
+                case 'cover':
+                    openWizard();
+                    break;
+            }
         }
     });
 
