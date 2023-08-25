@@ -107,7 +107,6 @@
                                 class="link"
                                 href="https://appwrite.io/docs/email-and-sms-templates">here</a
                             >.
-                            <!-- TODO: add link to docs -->
                         </p>
                         <div class="u-margin-block-start-16 u-flex u-gap-8">
                             <slot />
