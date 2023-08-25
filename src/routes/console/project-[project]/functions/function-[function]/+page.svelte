@@ -42,7 +42,6 @@
     import DeploymentSource from './deploymentSource.svelte';
     import DeploymentCreatedBy from './deploymentCreatedBy.svelte';
     import DeploymentDomains from './deploymentDomains.svelte';
-    import { deployment } from './deployment-[deployment]/store';
 
     export let data: PageData;
 
