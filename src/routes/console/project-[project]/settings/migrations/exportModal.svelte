@@ -51,7 +51,14 @@
         // TODO: Send feedback somewhere
         const { endpoint, feedback: message } = formData;
 
-        await feedback.submitFeedback(`feedback-${$feedback.type}`, message);
+        try {
+            await feedback.submitFeedback(`feedback-${$feedback.type}`, message);
+        } catch (error) {
+            console.error(
+                'Feedback cound bot be submitted, but we continue to reditect to do export.'
+            );
+            console.error(error);
+        }
 
         if (!isValidEndpoint(endpoint)) {
             const endpointInput = document.getElementById('endpoint') as HTMLInputElement;
