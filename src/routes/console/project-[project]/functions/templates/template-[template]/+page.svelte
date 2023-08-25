@@ -5,18 +5,97 @@
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { connectTemplate } from '$lib/wizards/functions/cover.svelte';
+    import { afterUpdate, onMount } from 'svelte';
     import { template } from './store';
+
+    let html = '';
+    let container: HTMLDivElement;
+    onMount(async () => {
+        html = await fetchReadme();
+    });
+
+    afterUpdate(() => {
+        container.querySelectorAll('.anchor')?.forEach((e) => {
+            e.classList.add('u-hide');
+        });
+        container.querySelectorAll('h1').forEach((e) => {
+            e.classList.add('heading-level-4', 'common-section');
+        });
+        container.querySelectorAll('h2').forEach((e) => {
+            e.classList.add('heading-level-5', 'u-margin-block-start-16');
+        });
+        container.querySelectorAll('h3').forEach((e) => {
+            e.classList.add('heading-level-6', 'u-margin-block-start-16');
+        });
+        container.querySelectorAll('h4').forEach((e) => {
+            e.classList.add('heading-level-7', 'u-margin-block-start-8');
+        });
+        container.querySelectorAll('p').forEach((e) => {
+            e.classList.add('u-margin-block-start-8');
+        });
+        container.querySelectorAll('ul').forEach((e) => {
+            e.classList.add('u-margin-block-start-8', 'list');
+        });
+        container.querySelectorAll('li').forEach((e) => {
+            e.classList.add('list-item');
+        });
+        container.querySelectorAll('strong').forEach((e) => {
+            e.classList.add('u-bold');
+        });
+
+        container.querySelectorAll('.snippet-clipboard-content').forEach((e) => {
+            e.classList.add('box', 'u-margin-block-start-8', 'u-min-width-0');
+        });
+        container.querySelectorAll('.highlight').forEach((e) => {
+            e.classList.add('box', 'u-margin-block-start-8', 'u-min-width-0');
+        });
+        const table = container.querySelectorAll('table');
+
+        table.forEach((e) => {
+            e.classList.add('table');
+
+            const div1 = document.createElement('div');
+            const div2 = document.createElement('div');
+            div1.classList.add('table-with-scroll', 'u-margin-block-start-16');
+            div2.classList.add('table-wrapper');
+            e.parentNode.insertBefore(div1, e);
+            e.parentNode.insertBefore(div2, e.nextSibling);
+            div1.appendChild(div2);
+            div2.appendChild(e);
+        });
+
+        container.querySelectorAll('thead').forEach((e) => {
+            e.classList.add('table-thead');
+        });
+        container.querySelectorAll('tbody').forEach((e) => {
+            e.classList.add('table-tbody');
+        });
+        container.querySelectorAll('th').forEach((e) => {
+            e.classList.add('table-thead-col', 'eyebrow-heading-3');
+            e.style.cssText = '--p-col-width: 70;';
+        });
+        container.querySelectorAll('tr').forEach((e) => {
+            e.classList.add('table-row');
+        });
+        container.querySelectorAll('td').forEach((e) => {
+            e.classList.add('table-col');
+            e.style.cssText = '--p-col-width: 70;';
+        });
+        container.querySelectorAll('code:not(pre code)').forEach((e) => {
+            e.classList.add('inline-code');
+        });
+    });
 
     async function fetchReadme() {
         const runtime = $template.runtimes[0];
         const url = `https://api.github.com/repos/${$template.providerOwner}/${$template.providerRepositoryId}/contents/${runtime.providerRootDirectory}/README.md`;
-        console.log(url);
 
         const response = await fetch(url, {
             headers: {
                 Accept: 'application/vnd.github.html'
             }
         });
+
         const readmeHTML = await response.text();
         return readmeHTML;
     }
@@ -86,127 +165,11 @@
                 </div>
             </Card>
             <Card>{@html $template.instructions}</Card>
-            {#await fetchReadme() then readmeHTML}
-                <Card>
-                    {@html readmeHTML}
-                </Card>
-            {/await}
+            <Card>
+                <div bind:this={container}>
+                    {@html html}
+                </div>
+            </Card>
         </section>
     </div>
 </Container>
-
-<style lang="scss">
-    /* svelte-ignore css-unused-selector */
-    :global(.md) {
-        @import './node_modules/@appwrite.io/pink/src/_index.scss';
-        :global(.anchor) {
-            display: none;
-        }
-
-        :global(h1) {
-            @extend .heading-level-4;
-            @extend .common-section;
-        }
-        :global(h2) {
-            @extend .u-margin-block-start-16;
-            @extend .heading-level-5;
-        }
-        :global(h3) {
-            @extend .u-margin-block-start-16;
-            @extend .heading-level-6;
-        }
-        :global(p) {
-            @extend .u-margin-block-start-8;
-        }
-        :global(ul) {
-            @extend .u-margin-block-start-8;
-            @extend .list;
-        }
-        :global(li) {
-            // @extend .u-margin-block-start-8;
-            @extend .list-item;
-        }
-        :global(strong) {
-            @extend .u-bold;
-        }
-        :global(p),
-        :global(h1),
-        :global(h2),
-        :global(h3),
-        :global(td) {
-            :global(code) {
-                @extend .inline-code;
-            }
-        }
-        :global(.snippet-clipboard-content) {
-            @extend .box;
-            @extend .u-margin-block-start-8;
-        }
-
-        :global(.highlight) {
-            @extend .box;
-            @extend .u-margin-block-start-8;
-        }
-
-        :global(.markdown-body table) {
-            @extend .table;
-            @extend .u-margin-block-start-16;
-        }
-        :global(.markdown-body thead) {
-            @extend .table-thead;
-        }
-        :global(.markdown-body tbody) {
-            @extend .table-tbody;
-        }
-        :global(.markdown-body th) {
-            @extend .table-thead-col;
-            @extend .u-padding-12;
-            @extend .body-text-2;
-            @extend .u-bold;
-        }
-        :global(.markdown-body tr) {
-            // outline: 1px solid red;
-            @extend .table-row;
-        }
-        :global(.markdown-body td) {
-            // outline: 1px solid red;
-            @extend .table-col;
-            @extend .u-padding-12;
-        }
-    }
-
-    /* svelte-ignore css-unused-selector */
-    :global(.theme-dark) {
-        :global(.highlight),
-        :global(.snippet-clipboard-content) {
-            --p-box-text-color: var(--color-neutral-5);
-            --p-box-background-color-default: var(--color-neutral-200);
-            --p-box-background-color-hover: var(--color-neutral-150);
-            --p-box-border-color: var(--color-neutral-150);
-        }
-
-        :global(.markdown-body table) {
-            /* global variable */
-            --heading-text-color: var(--color-neutral-50);
-
-            /* local variable */
-            --p-table-bg-color: var(--color-neutral-300);
-            --p-table-bg-color-focus: var(--color-neutral-400);
-            --p-table-border-color: var(--color-neutral-200);
-            --p-tbody-color-text: var(--color-neutral-30);
-        }
-        :global(p),
-        :global(h1),
-        :global(h2),
-        :global(h3),
-        :global(td) {
-            :global(code) {
-                --p-bg-color-inline-code: var(--color-neutral-400);
-                --p-text-color-inline-code: var(--color-neutral-30);
-            }
-        }
-        :global(ul) {
-            --p-list-text-color: var(--color-neutral-50);
-        }
-    }
-</style>
