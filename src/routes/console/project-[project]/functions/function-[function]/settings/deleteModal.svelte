@@ -32,12 +32,12 @@
 </script>
 
 <Modal
+    title="Delete function"
     bind:show={showDelete}
     onSubmit={handleSubmit}
     icon="exclamation"
     state="warning"
     headerDivider={false}>
-    <svelte:fragment slot="header">Delete function</svelte:fragment>
     <p data-private>
         Are you sure you want to delete this function and all associated deployments from your
         project?

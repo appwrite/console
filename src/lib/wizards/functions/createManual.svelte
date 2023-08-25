@@ -26,13 +26,13 @@
                 $createFunction.$id || ID.unique(),
                 $createFunction.name,
                 $createFunction.runtime,
-                $createFunction.entrypoint,
                 $createFunction.execute || undefined,
                 undefined,
                 undefined,
                 undefined,
                 undefined,
                 undefined,
+                $createFunction.entrypoint,
                 $createFunction.commands || undefined
             );
             await sdk.forProject.functions.createDeployment(

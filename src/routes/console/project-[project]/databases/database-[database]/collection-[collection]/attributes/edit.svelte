@@ -59,7 +59,7 @@
 
 {#if selectedAttribute}
     <Modal {error} size="big" bind:show={showEdit} onSubmit={submit} icon={option?.icon}>
-        <svelte:fragment slot="header">
+        <svelte:fragment slot="title">
             <div class="u-flex u-cross-center u-gap-8">
                 {option?.name}
                 {#if option?.type === 'relationship'}

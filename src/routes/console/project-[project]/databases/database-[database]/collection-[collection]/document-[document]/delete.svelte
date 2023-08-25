@@ -61,12 +61,17 @@
 </script>
 
 <Modal
+    title="Delete document"
     icon="exclamation"
     state="warning"
     onSubmit={handleDelete}
     bind:show={showDelete}
     headerDivider={false}>
-    <svelte:fragment slot="header">Delete document</svelte:fragment>
+    <p data-private>
+        Are you sure you want to delete <b
+            >the document from <span data-private>{$collection.name}</span></b
+        >?
+    </p>
 
     {#if relAttributes?.length}
         <p class="text">This document contains the following relationships:</p>

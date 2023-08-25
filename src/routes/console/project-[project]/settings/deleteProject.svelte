@@ -55,12 +55,12 @@
 </CardGrid>
 
 <Modal
+    title="Delete project"
     bind:show={showDelete}
     onSubmit={handleDelete}
     icon="exclamation"
     state="warning"
     headerDivider={false}>
-    <svelte:fragment slot="header">Delete project</svelte:fragment>
     <p>
         <b>This project will be deleted</b>, along with all of its metadata, stats, and other
         resources. <b>This action is irreversible</b>.

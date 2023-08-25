@@ -2,27 +2,16 @@
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
     import {
-        addSubPanel,
         registerCommands,
         registerSearchers,
         updateCommandGroupRanks
     } from '$lib/commandCenter';
-    import { FilesPanel } from '$lib/commandCenter/panels';
     import { fileSearcher } from '$lib/commandCenter/searchers';
     import { project } from '../../store';
     import { showCreateFile } from './+page.svelte';
     import { bucket } from './store';
 
     $: $registerCommands([
-        {
-            label: 'Search files',
-            callback() {
-                addSubPanel(FilesPanel);
-            },
-            keys: ['f', 'l'],
-            group: 'files',
-            icon: 'search'
-        },
         {
             label: 'Create file',
             async callback() {

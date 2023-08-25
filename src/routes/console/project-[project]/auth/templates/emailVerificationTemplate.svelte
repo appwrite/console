@@ -1,7 +1,6 @@
 <script lang="ts">
     import EmailTemplate from './emailTemplate.svelte';
     import LocaleOptions from './localeOptions.svelte';
-    import type { Models } from '@appwrite.io/console';
     import { loadEmailTemplate } from './+page.svelte';
     import { baseEmailTemplate, emailTemplate } from './store';
     import { page } from '$app/stores';
@@ -9,7 +8,6 @@
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
 
-    export let localeCodes: Models.LocaleCode[];
     const projectId = $page.params.project;
 
     let locale = 'en';
@@ -38,7 +36,7 @@
 </script>
 
 <div class="boxes-wrapper u-margin-block-start-16">
-    <LocaleOptions {localeCodes} on:select={onLocaleChange} bind:value={locale} />
+    <LocaleOptions on:select={onLocaleChange} bind:value={locale} />
 
     <EmailTemplate bind:loading>
         <Id value={'{{team}}'}>{'{{team}}'}</Id>

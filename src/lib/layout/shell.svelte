@@ -30,7 +30,9 @@
      * Cancel navigation when wizard is open and triggered by popstate
      */
     beforeNavigate((n) => {
-        if (!$wizard.show || !$wizard.cover) return;
+        const external = n.to.url.hostname !== globalThis.location.hostname;
+        if (external) return;
+        if (!($wizard.show || $wizard.cover)) return;
         if (n.type === 'popstate') {
             n.cancel();
         }

@@ -14,6 +14,7 @@
     import { Unauthenticated } from '$lib/layout';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { isCloud } from '$lib/system';
 
     let mail: string, pass: string, disabled: boolean;
 
@@ -75,13 +76,15 @@
                 <FormItem>
                     <Button fullWidth submit {disabled}>Sign in</Button>
                 </FormItem>
-                <span class="with-separators eyebrow-heading-3">or</span>
-                <FormItem>
-                    <Button github fullWidth on:click={onGithubLogin} {disabled}>
-                        <span class="icon-github" aria-hidden="true" />
-                        <span class="text">Sign in with GitHub</span>
-                    </Button>
-                </FormItem>
+                {#if isCloud}
+                    <span class="with-separators eyebrow-heading-3">or</span>
+                    <FormItem>
+                        <Button github fullWidth on:click={onGithubLogin} {disabled}>
+                            <span class="icon-github" aria-hidden="true" />
+                            <span class="text">Sign in with GitHub</span>
+                        </Button>
+                    </FormItem>
+                {/if}
             </FormList>
         </Form>
     </svelte:fragment>

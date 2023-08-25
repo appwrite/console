@@ -32,12 +32,12 @@
 </script>
 
 <Modal
+    title="Delete bucket"
     bind:show={showDelete}
     onSubmit={deleteUser}
     icon="exclamation"
     state="warning"
     headerDivider={false}>
-    <svelte:fragment slot="header">Delete bucket</svelte:fragment>
     <p data-private>Are you sure you want to delete <b>{$bucket.name}</b>?</p>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)}>Cancel</Button>

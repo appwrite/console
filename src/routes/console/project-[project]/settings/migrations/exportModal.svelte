@@ -1,7 +1,8 @@
 <script lang="ts">
-    import { Alert, Modal } from '$lib/components';
+    import { Alert, Box, Modal } from '$lib/components';
     import { Button, InputText, InputTextarea } from '$lib/elements/forms';
     import { getFormData } from '$lib/helpers/form';
+    import { feedback } from '$lib/stores/feedback';
     import { sdk } from '$lib/stores/sdk';
     import { project } from '../../store';
 
@@ -48,7 +49,9 @@
         const formData = getFormData<{ endpoint: string; feedback: string }>(e);
 
         // TODO: Send feedback somewhere
-        const { endpoint, feedback: _feedback } = formData;
+        const { endpoint, feedback: message } = formData;
+
+        await feedback.submitFeedback(`feedback-${$feedback.type}`, message);
 
         if (!isValidEndpoint(endpoint)) {
             const endpointInput = document.getElementById('endpoint') as HTMLInputElement;
@@ -94,8 +97,7 @@
     };
 </script>
 
-<Modal bind:show {onSubmit}>
-    <svelte:fragment slot="header">Export to self-hosted instance</svelte:fragment>
+<Modal title="Export to self-hosted instance" bind:show {onSubmit}>
     <div class="modal-contents">
         <Alert isStandalone>
             <svelte:fragment slot="title">API key creation</svelte:fragment>
@@ -124,7 +126,7 @@
                 }} />
         </div>
 
-        <div class="box u-margin-block-start-24">
+        <Box class="u-margin-block-start-24">
             <p class="u-bold">
                 Share your feedback: why our self-hosted solution works better for you
             </p>
@@ -137,7 +139,7 @@
             <div class="u-margin-block-start-24">
                 <InputTextarea id="feedback" label="Your feedback" placeholder="Type here..." />
             </div>
-        </div>
+        </Box>
     </div>
 
     <div class="u-flex u-gap-16 u-cross-center" slot="footer">

@@ -1,10 +1,11 @@
 <script lang="ts">
     import { Card, DropList, DropListItem } from '$lib/components';
-    import { format, total } from './+layout.svelte';
+    import { totalMetrics } from './+layout.svelte';
     import { usage } from './store';
     import type { UsagePeriods } from '$lib/layout';
     import { createEventDispatcher } from 'svelte';
     import { LineChart } from '$lib/charts';
+    import { formatNum } from '$lib/helpers/string';
 
     export let period: UsagePeriods;
 
@@ -12,7 +13,7 @@
 
     const dispatch = createEventDispatcher();
 
-    $: requests = $usage?.requestsTotal as unknown as Array<{
+    $: requests = $usage?.requests as unknown as Array<{
         date: number;
         value: number;
     }>;
@@ -25,7 +26,7 @@
 <div class="u-flex u-gap-16 u-main-space-between">
     <div>
         <div class="heading-level-4">
-            {format(total($usage?.requestsTotal))}
+            {formatNum(totalMetrics($usage?.requests))}
         </div>
         <div>Requests</div>
     </div>
@@ -41,20 +42,20 @@
         </svelte:fragment>
     </DropList>
 </div>
-{#if total($usage?.requestsTotal) !== 0}
+{#if totalMetrics($usage?.requests) !== 0}
     <div style="height: 12rem;">
         <LineChart
             options={{
                 yAxis: {
                     axisLabel: {
-                        formatter: format
+                        formatter: formatNum
                     }
                 }
             }}
             series={[
                 {
                     name: 'Requests',
-                    data: [...(requests?.map((e) => [e.date, e.value]) ?? [])]
+                    data: [...requests.map((e) => [e.date, e.value])]
                 }
             ]} />
     </div>

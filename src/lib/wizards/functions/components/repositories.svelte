@@ -1,7 +1,7 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { EmptySearch, PaginationInline } from '$lib/components';
+    import { EmptySearch } from '$lib/components';
     import { Button, InputSearch, InputSelect } from '$lib/elements/forms';
     import { timeFromNow } from '$lib/helpers/date';
     import { app } from '$lib/stores/app';
@@ -12,9 +12,11 @@
 
     const dispatch = createEventDispatcher();
 
+    export let callbackState: Record<string, string> = null;
     export let selectedRepository: string = null;
     export let hasInstallations = false;
     export let action: 'button' | 'select' = 'select';
+
     let offset = 0;
     const limit = 5;
 
@@ -57,7 +59,11 @@
 
     function connectGitHub() {
         const redirect = new URL($page.url);
-        redirect.searchParams.append('github-installed', 'true');
+        if (callbackState) {
+            Object.keys(callbackState).forEach((key) => {
+                redirect.searchParams.append(key, callbackState[key]);
+            });
+        }
         const target = new URL(`${sdk.forProject.client.config.endpoint}/vcs/github/authorize`);
         target.searchParams.set('projectId', $page.params.project);
         target.searchParams.set('success', redirect.toString());
@@ -173,10 +179,10 @@
                         {/if}
                     {/each}
                 </ul>
-                <div class="u-flex u-margin-block-start-32 u-main-space-between">
+                <!-- <div class="u-flex u-margin-block-start-32 u-main-space-between">
                     <p class="text">Total results: {response?.length}</p>
                     <PaginationInline {limit} bind:offset sum={response?.length} />
-                </div>
+                </div> -->
             {:else if search}
                 <EmptySearch hidePages>
                     <div class="common-section">

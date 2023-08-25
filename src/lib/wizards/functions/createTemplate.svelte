@@ -36,13 +36,13 @@
                 $templateConfig.$id || ID.unique(),
                 $templateConfig.name,
                 $templateConfig.runtime,
-                runtimeDetail.entrypoint,
                 $template.permissions || undefined,
                 $template.events || undefined,
                 $template.cron || undefined,
                 $template.timeout || undefined,
                 undefined,
                 undefined,
+                runtimeDetail.entrypoint,
                 runtimeDetail.commands || undefined,
                 $installation.$id,
                 $repository.id,
@@ -77,6 +77,7 @@
         wizard.hide();
         templateConfig.set(null);
         template.set(null);
+        installation.set(null);
     }
 
     const stepsComponents: WizardStepsType = new Map();

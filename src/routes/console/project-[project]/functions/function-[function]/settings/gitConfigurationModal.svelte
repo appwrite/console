@@ -52,13 +52,13 @@
                 functionId,
                 $func.name,
                 $func.runtime,
-                $func.entrypoint,
                 $func.execute || undefined,
                 $func.events || undefined,
                 $func.schedule || undefined,
                 $func.timeout || undefined,
                 $func.enabled || undefined,
                 $func.logging || undefined,
+                $func.entrypoint,
                 $func.commands || undefined,
                 selectedInstallationId,
                 selectedRepoId,
@@ -124,8 +124,13 @@
         ) ?? null;
 </script>
 
-<Modal headerDivider={false} bind:show size="big" bind:error onSubmit={handleSubmit}>
-    <svelte:fragment slot="header">Git configuration</svelte:fragment>
+<Modal
+    title="Git configuration"
+    headerDivider={false}
+    bind:show
+    size="big"
+    bind:error
+    onSubmit={handleSubmit}>
     <p class="text">
         Configure a Git repository that will trigger your function deployments when updated.
     </p>
@@ -202,8 +207,10 @@
                             <p>There are no repositories that match your search.</p>
                         </div>
                         <div class="u-flex u-gap-16 common-section u-main-center">
-                            <!-- TODO: add link to docs -->
-                            <Button external href="#/" text>Documentation</Button>
+                            <Button
+                                external
+                                href="https://appwrite.io/docs/functions-deploy#vcs"
+                                text>Documentation</Button>
                             <Button secondary on:click={() => (search = '')}>Clear search</Button>
                         </div>
                     </div>
@@ -213,10 +220,9 @@
                     <div class="common-section">
                         <div class="u-text-center common-section">
                             <p class="text u-line-height-1-5">You have no repositories.</p>
-                            <!-- TODO: add link to docs -->
                             <p class="text u-line-height-1-5">
                                 Need a hand? Learn more in our <a
-                                    href="#/"
+                                    href="https://appwrite.io/docs/functions-deploy#vcs"
                                     target="_blank"
                                     rel="noopener noreferrer">
                                     documentation</a

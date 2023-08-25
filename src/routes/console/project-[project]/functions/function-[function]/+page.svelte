@@ -67,8 +67,6 @@
     function handleActivate() {
         invalidate(Dependencies.DEPLOYMENTS);
     }
-
-    $: activeDeployment = data.deployments.deployments.find((d) => d.$id === $func?.deployment);
 </script>
 
 <Container>
@@ -90,7 +88,7 @@
         {/if}
         {#if activeDeployment}
             <CardGrid>
-                <div class="grid-1-2-col-1 u-flex u-cross-start u-gap-16">
+                <div class="u-flex u-cross-start u-gap-16">
                     <div class="avatar is-medium" aria-hidden="true">
                         <img
                             src={`${base}/icons/${$app.themeInUse}/color/${
@@ -98,23 +96,19 @@
                             }.svg`}
                             alt="technology" />
                     </div>
-                    <div>
-                        <div class="u-flex u-gap-12 u-cross-center">
-                            <p><b>Deployment ID</b></p>
-                        </div>
+                    <div class="u-grid-equal-row-size u-gap-4 u-line-height-1">
+                        <p><b>Deployment ID</b></p>
 
-                        <div class="u-flex u-gap-12 u-cross-center">
-                            <Id value={$func.deployment}>
-                                {$func.deployment}
-                            </Id>
-                        </div>
+                        <Id value={$func.deployment}>
+                            {$func.deployment}
+                        </Id>
                     </div>
                 </div>
                 <svelte:fragment slot="aside">
                     {@const status = activeDeployment.status}
                     {@const fileSize = humanFileSize(activeDeployment.size)}
                     <div class="u-flex u-main-space-between">
-                        <div>
+                        <div class="u-grid-equal-row-size u-gap-4 u-line-height-1">
                             <p><b>Build time:</b> {calculateTime(activeDeployment.buildTime)}</p>
                             <p>
                                 <b>Updated:</b>
@@ -145,26 +139,30 @@
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">
-                    <Button
-                        text
-                        href={`/console/project-${$page.params.project}/functions/function-${$page.params.function}/deployment-${activeDeployment.$id}`}>
-                        Build logs
-                    </Button>
-                    <Button
-                        text
-                        on:click={() => {
-                            selectedDeployment = activeDeployment;
-                            showRedeploy = true;
-                        }}>Redeploy</Button>
+                    <div class="u-flex u-flex-wrap">
+                        <Button
+                            text
+                            href={`/console/project-${$page.params.project}/functions/function-${$page.params.function}/deployment-${activeDeployment.$id}`}>
+                            Build logs
+                        </Button>
+                        <Button
+                            text
+                            class="u-margin-inline-end-16"
+                            on:click={() => {
+                                selectedDeployment = activeDeployment;
+                                showRedeploy = true;
+                            }}>Redeploy</Button>
 
-                    <Button secondary on:click={() => ($execute = $func)}>Execute now</Button>
+                        <Button secondary on:click={() => ($execute = $func)}>Execute now</Button>
+                    </div>
                 </svelte:fragment>
             </CardGrid>
         {:else}
             <Empty single target="deployment">
                 <div class="u-text-center">
-                    <Heading size="7" tag="h2"
-                        >Create your first deployment to get started.</Heading>
+                    <Heading size="7" tag="h2">
+                        Create your first deployment to get started.
+                    </Heading>
                     <p class="body-text-2 u-bold u-margin-block-start-4">
                         Learn more about deployments in our Documentation.
                     </p>
@@ -189,12 +187,12 @@
                 <TableScroll noMargin>
                     <TableHeader>
                         <TableCellHead width={150}>Deployment ID</TableCellHead>
-                        <TableCellHead width={100}>Status</TableCellHead>
-                        <TableCellHead width={70}>Source</TableCellHead>
+                        <TableCellHead width={80}>Status</TableCellHead>
+                        <TableCellHead width={80}>Source</TableCellHead>
                         <TableCellHead width={180}>Updated</TableCellHead>
-                        <TableCellHead width={100}>Build Time</TableCellHead>
-                        <TableCellHead width={70}>Size</TableCellHead>
-                        <TableCellHead width={25} />
+                        <TableCellHead width={80}>Build Time</TableCellHead>
+                        <TableCellHead width={80}>Size</TableCellHead>
+                        <TableCellHead width={40} />
                     </TableHeader>
                     <TableBody>
                         {#each data.deployments.deployments as deployment, index}
@@ -203,22 +201,26 @@
                                 <TableCell width={150} title="Deployment ID">
                                     <Id value={deployment.$id}>{deployment.$id}</Id>
                                 </TableCell>
-                                <TableCell width={100} title="Status">
-                                    <Pill
-                                        danger={status === 'failed'}
-                                        warning={status === 'pending'}
-                                        success={status === 'completed' || status === 'ready'}
-                                        info={status === 'processing' || status === 'building'}>
-                                        {status}
-                                    </Pill>
+                                <TableCell title="Status">
+                                    {#if activeDeployment?.$id === deployment?.$id}
+                                        <Pill success>active</Pill>
+                                    {:else}
+                                        <Pill
+                                            danger={status === 'failed'}
+                                            warning={status === 'pending'}
+                                            success={status === 'completed' || status === 'ready'}
+                                            info={status === 'processing' || status === 'building'}>
+                                            {status}
+                                        </Pill>
+                                    {/if}
                                 </TableCell>
-                                <TableCellText width={70} title="Source">
+                                <TableCellText title="Source">
                                     <DeploymentSource {deployment} /></TableCellText>
-                                <TableCellText width={140} title="Created">
+                                <TableCellText width={180} title="Updated">
                                     <DeploymentCreatedBy {deployment} />
                                 </TableCellText>
 
-                                <TableCellText width={100} title="Build Time">
+                                <TableCellText title="Build Time">
                                     {#if ['processing', 'building'].includes(deployment.status)}
                                         <span use:timer={{ start: deployment.$createdAt }} />
                                     {:else}
@@ -226,11 +228,11 @@
                                     {/if}
                                 </TableCellText>
 
-                                <TableCellText width={70} title="Size">
+                                <TableCellText title="Size">
                                     {calculateSize(deployment.size)}
                                 </TableCellText>
 
-                                <TableCell width={25} showOverflow>
+                                <TableCell width={40} showOverflow>
                                     <DropList
                                         bind:show={showDropdown[index]}
                                         placement="bottom-start"
@@ -267,7 +269,7 @@
                                             <DropListLink
                                                 icon="terminal"
                                                 href={`/console/project-${$page.params.project}/functions/function-${$page.params.function}/deployment-${deployment.$id}`}>
-                                                Output
+                                                Logs
                                             </DropListLink>
                                             <DropListItem
                                                 icon="trash"
@@ -289,8 +291,9 @@
         {:else}
             <Empty single target="deployment" on:click>
                 <div class="u-text-center">
-                    <Heading size="7" tag="h2"
-                        >You have no deployments. Create one to see it here.</Heading>
+                    <Heading size="7" tag="h2">
+                        You have no deployments. Create one to see it here.
+                    </Heading>
                     <p class="body-text-2 u-bold u-margin-block-start-4">
                         Learn more about deployments in our Documentation.
                     </p>
@@ -325,9 +328,12 @@
             </div>
         </Empty>
     {/if}
-    {@const sum = data.deployments.total ? data.deployments.total - 1 : 0}
 
-    <PaginationWithLimit name="Deployments" limit={data.limit} offset={data.offset} total={sum} />
+    <PaginationWithLimit
+        name="Deployments"
+        limit={data.limit}
+        offset={data.offset}
+        total={data.deployments.total} />
 </Container>
 
 {#if selectedDeployment}
