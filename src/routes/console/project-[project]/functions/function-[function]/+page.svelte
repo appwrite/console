@@ -42,6 +42,7 @@
     import DeploymentSource from './deploymentSource.svelte';
     import DeploymentCreatedBy from './deploymentCreatedBy.svelte';
     import DeploymentDomains from './deploymentDomains.svelte';
+    import { deployment } from './deployment-[deployment]/store';
 
     export let data: PageData;
 
@@ -67,8 +68,6 @@
     function handleActivate() {
         invalidate(Dependencies.DEPLOYMENTS);
     }
-
-    $: activeDeployment = data.deployments.deployments.find((d) => d.$id === $func?.deployment);
 </script>
 
 <Container>
@@ -162,8 +161,9 @@
         {:else}
             <Empty single target="deployment">
                 <div class="u-text-center">
-                    <Heading size="7" tag="h2"
-                        >Create your first deployment to get started.</Heading>
+                    <Heading size="7" tag="h2">
+                        Create your first deployment to get started.
+                    </Heading>
                     <p class="body-text-2 u-bold u-margin-block-start-4">
                         Learn more about deployments in our Documentation.
                     </p>
@@ -203,13 +203,17 @@
                                     <Id value={deployment.$id}>{deployment.$id}</Id>
                                 </TableCell>
                                 <TableCell title="Status">
-                                    <Pill
-                                        danger={status === 'failed'}
-                                        warning={status === 'pending'}
-                                        success={status === 'completed' || status === 'ready'}
-                                        info={status === 'processing' || status === 'building'}>
-                                        {status}
-                                    </Pill>
+                                    {#if activeDeployment?.$id === deployment?.$id}
+                                        <Pill success>active</Pill>
+                                    {:else}
+                                        <Pill
+                                            danger={status === 'failed'}
+                                            warning={status === 'pending'}
+                                            success={status === 'completed' || status === 'ready'}
+                                            info={status === 'processing' || status === 'building'}>
+                                            {status}
+                                        </Pill>
+                                    {/if}
                                 </TableCell>
                                 <TableCellText title="Source">
                                     <DeploymentSource {deployment} /></TableCellText>
@@ -288,8 +292,9 @@
         {:else}
             <Empty single target="deployment" on:click>
                 <div class="u-text-center">
-                    <Heading size="7" tag="h2"
-                        >You have no deployments. Create one to see it here.</Heading>
+                    <Heading size="7" tag="h2">
+                        You have no deployments. Create one to see it here.
+                    </Heading>
                     <p class="body-text-2 u-bold u-margin-block-start-4">
                         Learn more about deployments in our Documentation.
                     </p>

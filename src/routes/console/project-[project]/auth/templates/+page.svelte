@@ -41,7 +41,6 @@
     import { baseEmailTemplate, emailTemplate } from './store';
     import { Button } from '$lib/elements/forms';
 
-    export let data;
     const projectId = $page.params.project;
 
     let emailOpen = 'verification';
