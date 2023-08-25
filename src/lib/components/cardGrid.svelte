@@ -2,10 +2,11 @@
     import { Card } from './';
 
     export let danger = false;
+    export let hideOverflow = false;
 </script>
 
 <Card {danger}>
-    <div class="common-section grid-1-2">
+    <div class="common-section grid-1-2" class:hideOverflow>
         <div class="grid-1-2-col-1 u-flex u-flex-vertical u-gap-16">
             <slot />
         </div>
@@ -21,7 +22,7 @@
 </Card>
 
 <style lang="scss">
-    .grid-1-2 > * {
+    .hideOverflow > * {
         width: 100%;
         overflow: hidden;
     }
