@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Alert, Modal } from '$lib/components';
+    import { Alert, Box, Modal } from '$lib/components';
     import { Button, InputText, InputTextarea } from '$lib/elements/forms';
     import { getFormData } from '$lib/helpers/form';
     import { feedback } from '$lib/stores/feedback';
@@ -126,7 +126,7 @@
                 }} />
         </div>
 
-        <div class="box u-margin-block-start-24">
+        <Box class="u-margin-block-start-24">
             <p class="u-bold">
                 Share your feedback: why our self-hosted solution works better for you
             </p>
@@ -139,7 +139,7 @@
             <div class="u-margin-block-start-24">
                 <InputTextarea id="feedback" label="Your feedback" placeholder="Type here..." />
             </div>
-        </div>
+        </Box>
     </div>
 
     <div class="u-flex u-gap-16 u-cross-center" slot="footer">
