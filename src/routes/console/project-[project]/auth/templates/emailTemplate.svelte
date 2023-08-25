@@ -14,6 +14,7 @@
     import { baseEmailTemplate, emailTemplate } from './store';
     import { deepEqual } from '$lib/helpers/object';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { Box } from '$lib/components';
 
     export let loading = false;
     let openResetModal = false;
@@ -77,7 +78,7 @@
     $: isButtonDisabled = deepEqual($emailTemplate, $baseEmailTemplate);
 </script>
 
-<div class="box u-position-relative">
+<Box class="u-position-relative">
     {#if loading}
         <div
             class="u-position-absolute u-width-full-line u-flex u-flex-vertical u-main-center u-cross-center u-gap-16 u-margin-block-start-32"
@@ -133,6 +134,6 @@
             </div>
         </Form>
     </div>
-</div>
+</Box>
 
 <ResetEmail bind:show={openResetModal} />

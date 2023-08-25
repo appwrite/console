@@ -129,7 +129,7 @@
                         Send a verification email to users that sign in with their email and
                         password.
                     </p>
-                    <EmailVerificationTemplate localeCodes={data.localeCodes} />
+                    <EmailVerificationTemplate />
                 </CollapsibleItem>
                 <CollapsibleItem
                     bind:open={emailMagicSessionOpen}
@@ -139,7 +139,7 @@
                     }}>
                     <svelte:fragment slot="title">Magic URL</svelte:fragment>
                     <p class="text">Send an email to users that sign in with a magic URL.</p>
-                    <EmailMagicUrlTemplate localeCodes={data.localeCodes} />
+                    <EmailMagicUrlTemplate />
                 </CollapsibleItem>
                 <CollapsibleItem
                     bind:open={emailResetPassword}
@@ -149,7 +149,7 @@
                     }}>
                     <svelte:fragment slot="title">Reset password</svelte:fragment>
                     <p class="text">Send a recovery email to users that forget their password.</p>
-                    <EmailRecoveryTemplate localeCodes={data.localeCodes} />
+                    <EmailRecoveryTemplate />
                 </CollapsibleItem>
                 <CollapsibleItem
                     bind:open={emailInviteUser}
@@ -159,7 +159,7 @@
                     }}>
                     <svelte:fragment slot="title">Invite user</svelte:fragment>
                     <p class="text">Send an invitation email to become a member of your project.</p>
-                    <EmailInviteTemplate localeCodes={data.localeCodes} />
+                    <EmailInviteTemplate />
                 </CollapsibleItem>
             </Collapsible>
         </svelte:fragment>
@@ -191,7 +191,7 @@
                     <p class="text">
                         Send a verification SMS to users that sign in with their phone
                     </p>
-                    <SmsVerificationTemplate localeCodes={data.localeCodes} />
+                    <SmsVerificationTemplate />
                 </CollapsibleItem>
                 <CollapsibleItem
                     bind:open={smsLoginOpen}
@@ -203,7 +203,7 @@
                     <p class="text">
                         Send a one-time passcode to users' mobile phones to allow them to sign in.
                     </p>
-                    <SmsLoginTemplate localeCodes={data.localeCodes} />
+                    <SmsLoginTemplate />
                 </CollapsibleItem>
                 <CollapsibleItem
                     bind:open={smsInvitationOpen}
@@ -213,7 +213,7 @@
                     }}>
                     <svelte:fragment slot="title">Invitation</svelte:fragment>
                     <p class="text">Send an invitation SMS to become a member of your project.</p>
-                    <SmsLoginTemplate localeCodes={data.localeCodes} />
+                    <SmsLoginTemplate />
                 </CollapsibleItem>
             </Collapsible>
         </svelte:fragment>
