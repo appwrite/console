@@ -174,6 +174,8 @@
         selectedDir !== $func?.providerRootDirectory;
 
     $: isVcsEnabled = $consoleVariables?._APP_VCS_ENABLED === true;
+
+    $: console.log($consoleVariables);
 </script>
 
 <Form onSubmit={updateConfiguration}>

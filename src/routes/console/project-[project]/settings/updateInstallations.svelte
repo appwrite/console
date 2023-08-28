@@ -78,6 +78,8 @@
     }
 
     $: isVcsEnabled = $consoleVariables?._APP_VCS_ENABLED === true;
+
+    $: console.log($consoleVariables, isVcsEnabled);
 </script>
 
 <CardGrid>
