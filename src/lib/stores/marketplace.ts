@@ -98,6 +98,39 @@ export const marketplace = [
         ]
     },
     {
+        icon: 'icon-discord',
+        id: 'discord-command-bot',
+        name: 'Discord Command Bot',
+        tagline: 'Simple command using Discord Interactions.',
+        permissions: ['any'],
+        events: [],
+        cron: '',
+        timeout: 15,
+        usecases: ['placeholder'],
+        runtimes: [
+            {
+                name: 'node-18.0',
+                commands: 'npm install && npm run setup',
+                entrypoint: 'src/main.js',
+                providerRootDirectory: 'node/discord-command-bot'
+            }
+        ],
+        instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/discord-command-bot">file</a>.`,
+        vcsProvider: 'github',
+        providerRepositoryId: 'templates',
+        providerOwner: 'appwrite',
+        providerBranch: 'main',
+        variables: [
+            {
+                name: 'DISCORD_PUBLIC_KEY',
+                description: `Discord Public Key to verify request signature. <a class="u-bold" target="_blank" href="https://discord.com/developers/docs/tutorials/hosting-on-cloudflare-workers#creating-an-app-on-discord">Learn more</a>.`,
+                value: '',
+                placeholder: 'd1efb...aec35',
+                required: true
+            }
+        ]
+    },
+    {
         icon: 'icon-perspective-api',
         id: 'analyze-with-perspectiveapi',
         name: 'Analyze with PerspectiveAPI',
@@ -188,39 +221,6 @@ export const marketplace = [
         providerOwner: 'appwrite',
         providerBranch: 'main',
         variables: []
-    },
-    {
-        icon: 'icon-discord',
-        id: 'discord-command-bot',
-        name: 'Discord command bot',
-        tagline: 'Simple command using Discord Interactions.',
-        permissions: ['any'],
-        events: [],
-        cron: '',
-        timeout: 15,
-        usecases: ['placeholder'],
-        runtimes: [
-            {
-                name: 'node-18.0',
-                commands: 'npm install && npm run setup',
-                entrypoint: 'src/main.js',
-                providerRootDirectory: 'node/discord-command-bot'
-            }
-        ],
-        instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/discord-command-bot">file</a>.`,
-        vcsProvider: 'github',
-        providerRepositoryId: 'templates',
-        providerOwner: 'appwrite',
-        providerBranch: 'main',
-        variables: [
-            {
-                name: 'DISCORD_PUBLIC_KEY',
-                description: `Discord Public Key to verify request signature. <a class="u-bold" target="_blank" href="https://discord.com/developers/docs/tutorials/hosting-on-cloudflare-workers#creating-an-app-on-discord">Learn more</a>.`,
-                value: '',
-                placeholder: 'd1efb...aec35',
-                required: true
-            }
-        ]
     },
     {
         icon: 'icon-github',
