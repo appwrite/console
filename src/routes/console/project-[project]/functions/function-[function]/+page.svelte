@@ -129,9 +129,8 @@
                         <div class="u-flex u-flex-vertical u-cross-end">
                             <Pill
                                 danger={status === 'failed'}
-                                warning={status === 'pending'}
-                                success={status === 'completed' || status === 'ready'}
-                                info={status === 'processing' || status === 'building'}>
+                                warning={status === 'building'}
+                                info={status === 'ready'}>
                                 <span class="text u-trim">{activeDeployment.status}</span>
                             </Pill>
                         </div>
@@ -207,9 +206,8 @@
                                     {:else}
                                         <Pill
                                             danger={status === 'failed'}
-                                            warning={status === 'pending'}
-                                            success={status === 'completed' || status === 'ready'}
-                                            info={status === 'processing' || status === 'building'}>
+                                            warning={status === 'building'}
+                                            info={status === 'ready'}>
                                             {status}
                                         </Pill>
                                     {/if}

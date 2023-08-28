@@ -86,12 +86,12 @@
                         </TableCell>
                         <TableCell width={110} title="Status">
                             {@const status = execution.status}
+
                             <Pill
+                                warning={status === 'waiting' || status === 'building'}
                                 danger={status === 'failed'}
-                                warning={status === 'pending'}
-                                success={status === 'completed' || status === 'ready'}
-                                info={status === 'processing' || status === 'building'}>
-                                <span class="text u-trim">{execution.status}</span>
+                                info={status === 'completed' || status === 'ready'}>
+                                {status}
                             </Pill>
                         </TableCell>
                         <TableCellText width={140} title="Created">

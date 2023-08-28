@@ -117,12 +117,10 @@
                     </ul>
                     <div class="status u-margin-inline-start-auto">
                         <Pill
-                            warning={execution.status === 'waiting'}
+                            warning={execution.status === 'waiting' ||
+                                execution.status === 'building'}
                             danger={execution.status === 'failed'}
-                            success={execution.status === 'completed' ||
-                                execution.status === 'ready'}
-                            info={execution.status === 'processing' ||
-                                execution.status === 'building'}>
+                            info={execution.status === 'completed' || execution.status === 'ready'}>
                             {execution.status}
                         </Pill>
                     </div>

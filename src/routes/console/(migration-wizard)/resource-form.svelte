@@ -424,6 +424,7 @@
     {/if}
 </ul>
 
+<!-- svelte-ignore css-unused-selector -->
 <style lang="scss">
     .box :global(.eyebrow) {
         font-weight: 500;
