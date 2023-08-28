@@ -107,7 +107,7 @@
     <FormList>
         {#if selectedFunction?.version !== 'v3'}
             <Alert type="info">
-                <svelte:fragment>
+                <svelte:fragment slot="title">
                     Customizable execution data now available for functions v3.0
                 </svelte:fragment>
                 Update your function version to make use of new features including customizable HTTP
