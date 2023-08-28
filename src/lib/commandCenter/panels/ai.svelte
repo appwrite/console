@@ -1,12 +1,14 @@
 <script lang="ts">
     import Template from './template.svelte';
 
-    import { AvatarInitials, Code, LoadingDots, SvgIcon } from '$lib/components';
+    import { Alert, AvatarInitials, Code, LoadingDots, SvgIcon } from '$lib/components';
     import { user } from '$lib/stores/user';
     import { useCompletion } from 'ai/svelte';
     import { subPanels } from '../subPanels';
 
     import { isLanguage, type Language } from '$lib/components/code.svelte';
+    import { preferences } from '$lib/stores/preferences';
+    import { sdk } from '$lib/stores/sdk';
     import { VARS } from '$lib/system';
 
     const endpoint = VARS.APPWRITE_ENDPOINT ?? `${globalThis?.location?.origin}/v1`;
@@ -119,7 +121,21 @@
         <i class="icon-question-mark-circle" />
         <span>{option.label}</span>
     </div>
-    <p>cool</p>
+
+    {#if !$preferences.hideAiDisclaimer}
+        <div style="padding: 1rem; padding-block-end: 0;">
+            <Alert
+                type="default"
+                dismissible
+                on:dismiss={() => {
+                    $preferences.hideAiDisclaimer = true;
+                }}>
+                <span slot="title">
+                    We collect user responses to refine our experimental AI feature.
+                </span>
+            </Alert>
+        </div>
+    {/if}
 
     {#if $isLoading || answer}
         <div class="content">
