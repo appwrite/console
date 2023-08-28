@@ -9,8 +9,12 @@
     export let isGlobal: boolean;
     export let show = false;
     export let variableList: Models.VariableList;
-    export let sdkCreateVariable: (key: string, value: string) => Promise<any>;
-    export let sdkUpdateVariable: (variableId: string, key: string, value: string) => Promise<any>;
+    export let sdkCreateVariable: (key: string, value: string) => Promise<unknown>;
+    export let sdkUpdateVariable: (
+        variableId: string,
+        key: string,
+        value: string
+    ) => Promise<unknown>;
 
     let files: FileList;
     let error: string;

@@ -76,7 +76,6 @@ export const queries = initQueries();
 export const queriesAreDirty = derived([queries, page], ([$queries, $page]) => {
     const paramQueries = $page.url.searchParams.get('query');
     const parsedQueries = queryParamToMap(paramQueries || '[]');
-    console.log({ $queries, parsedQueries, notDirty: deepEqual($queries, parsedQueries) });
 
     return !deepEqual($queries, parsedQueries);
 });

@@ -12,9 +12,13 @@
     export let showEditor = false;
     export let variableList: Models.VariableList;
 
-    export let sdkCreateVariable: (key: string, value: string) => Promise<any>;
-    export let sdkUpdateVariable: (variableId: string, key: string, value: string) => Promise<any>;
-    export let sdkDeleteVariable: (variableId: string) => Promise<any>;
+    export let sdkCreateVariable: (key: string, value: string) => Promise<unknown>;
+    export let sdkUpdateVariable: (
+        variableId: string,
+        key: string,
+        value: string
+    ) => Promise<unknown>;
+    export let sdkDeleteVariable: (variableId: string) => Promise<unknown>;
 
     let error = '';
     let envCode = variableList.variables

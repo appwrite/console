@@ -6,7 +6,8 @@
     import { WizardStep } from '$lib/layout';
     import { onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
-    import { choices, createFunction, installation, repository, runtimes } from '../store';
+    import { choices, createFunction, installation, repository } from '../store';
+    import { runtimes } from '$routes/console/project-[project]/functions/store';
 
     let showCustomId = false;
 

@@ -23,8 +23,8 @@
     import { addNotification } from '$lib/stores/notifications';
     import { openMigrationWizard } from './(migration-wizard)';
     import { project } from './project-[project]/store';
-    import { sdk } from '$lib/stores/sdk';
     import { feedback } from '$lib/stores/feedback';
+    import { consoleVariables } from './store';
 
     function kebabToSentenceCase(str: string) {
         return str
@@ -35,8 +35,7 @@
 
     let isAssistantEnabled = false;
     onMount(async () => {
-        const vars = await sdk.forConsole.console.variables();
-        isAssistantEnabled = vars._APP_ASSISTANT_ENABLED === true;
+        isAssistantEnabled = (await $consoleVariables)?._APP_ASSISTANT_ENABLED === true;
     });
 
     $: isOnSettingsLayout = $project?.$id

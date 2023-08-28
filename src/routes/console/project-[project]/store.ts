@@ -4,7 +4,6 @@ import type { BarSeriesOption } from 'echarts/charts';
 import { derived, writable } from 'svelte/store';
 
 export const project = derived(page, ($page) => $page.data.project as Models.Project);
-
 export const onboarding = derived(
     project,
     ($project) => $project?.platforms?.length === 0 && $project?.keys?.length === 0

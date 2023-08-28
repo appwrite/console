@@ -4,7 +4,8 @@
     import { InputText, InputSelect, FormList } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
     import { onMount } from 'svelte';
-    import { createFunction, runtimes } from '../store';
+    import { createFunction } from '../store';
+    import { runtimes } from '$routes/console/project-[project]/functions/store';
 
     let showCustomId = false;
 
