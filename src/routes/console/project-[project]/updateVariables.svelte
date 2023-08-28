@@ -58,7 +58,9 @@
             showVariablesModal = false;
             addNotification({
                 type: 'success',
-                message: `${$project.name} global variable has been created.`
+                message: `${$project.name} ${
+                    isGlobal ? 'global variable' : 'variable'
+                } has been created.`
             });
             trackEvent(Submit.VariableCreate);
         } catch (error) {
@@ -78,7 +80,9 @@
             showVariablesModal = false;
             addNotification({
                 type: 'success',
-                message: `${$project.name} global variable has been updated.`
+                message: `${$project.name} ${
+                    isGlobal ? 'global variable' : 'variable'
+                } has been updated.`
             });
             trackEvent(Submit.VariableUpdate);
         } catch (error) {
@@ -95,7 +99,9 @@
             await sdkDeleteVariable(variable.$id);
             addNotification({
                 type: 'success',
-                message: `${$project.name} global variable has been deleted.`
+                message: `${$project.name} ${
+                    isGlobal ? 'global variable' : 'variable'
+                } has been deleted.`
             });
             trackEvent(Submit.VariableDelete);
         } catch (error) {

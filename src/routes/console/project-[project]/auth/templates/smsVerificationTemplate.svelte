@@ -1,15 +1,12 @@
 <script lang="ts">
     import SmsTemplate from './smsTemplate.svelte';
     import LocaleOptions from './localeOptions.svelte';
-    import type { Models } from '@appwrite.io/console';
     import { page } from '$app/stores';
     import { loadSmsTemplate } from './+page.svelte';
     import { baseSmsTemplate, smsTemplate } from './store';
     import { Id } from '$lib/components';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-
-    export let localeCodes: Models.LocaleCode[];
 
     const projectId = $page.params.project;
     let locale = 'en';
@@ -38,7 +35,7 @@
 </script>
 
 <div class="boxes-wrapper u-margin-block-start-16">
-    <LocaleOptions {localeCodes} on:select={onLocaleChange} bind:value={locale} />
+    <LocaleOptions on:select={onLocaleChange} bind:value={locale} />
     <SmsTemplate bind:loading>
         <Id value={'{{team}}'}>{'{{team}}'}</Id>
         <Id value={'{{user}}'}>{'{{user}}'}</Id>

@@ -1,5 +1,8 @@
+import { page } from '$app/stores';
 import type { Models } from '@appwrite.io/console';
-import { writable } from 'svelte/store';
+import { derived, writable } from 'svelte/store';
+
+export const localeCodes = derived(page, ($page) => $page.data.localeCodes as Models.LocaleCode[]);
 
 export const emailTemplate = writable<Models.EmailTemplate>({
     type: null,

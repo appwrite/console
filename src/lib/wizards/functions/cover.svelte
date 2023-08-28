@@ -19,7 +19,7 @@
             variables,
             repositoryBehaviour: 'new',
             repositoryName: template.id,
-            repositoryPrivate: false,
+            repositoryPrivate: true,
             repositoryId: null
         });
         wizard.start(CreateTemplate);
@@ -28,7 +28,7 @@
 
 <script lang="ts">
     import { base } from '$app/paths';
-    import { AvatarGroup, Heading } from '$lib/components';
+    import { AvatarGroup, Box, Heading } from '$lib/components';
     import WizardCover from '$lib/layout/wizardCover.svelte';
     import { app } from '$lib/stores/app';
     import { wizard } from '$lib/stores/wizard';
@@ -46,7 +46,7 @@
     let selectedRepository: string;
 
     const quickStart = marketplace.find((template) => template.id === 'starter');
-    const templates = marketplace.filter((template) => template.id !== 'starter').slice(0, 3);
+    const templates = marketplace.filter((template) => template.id !== 'starter').slice(0, 2);
 
     function connect(event: CustomEvent<Models.ProviderRepository>) {
         repository.set(event.detail);
@@ -60,7 +60,7 @@
 </script>
 
 <WizardCover>
-    <svelte:fragment slot="title">Create function</svelte:fragment>
+    <svelte:fragment slot="title">Create Function</svelte:fragment>
     <div class="wizard-container container">
         <div class="grid-1-1 u-gap-24">
             <div>
@@ -74,6 +74,10 @@
                             bind:hasInstallations
                             bind:selectedRepository
                             action="button"
+                            callbackState={{
+                                from: 'github',
+                                to: 'cover'
+                            }}
                             on:connect={connect} />
                     </div>
                 </div>
@@ -125,23 +129,25 @@
                                                 }.svg`}
                                                 alt={runtime.name} />
                                         </div>
-                                        <div class="body-text-2">{runtimeDetail.name}</div>
+                                        <div class="body-text-2">
+                                            {runtimeDetail.name}
+                                        </div>
                                     </button>
                                 </li>
                             {/each}
 
                             {#if quickStart.runtimes.length < 6}
                                 <li>
-                                    <div
-                                        class="box u-width-full-line u-flex u-cross-center u-gap-8"
-                                        style:--box-padding="1rem"
-                                        style:--box-border-radius="var(--border-radius-small)">
+                                    <Box
+                                        class="u-width-full-line u-flex u-cross-center u-gap-8"
+                                        padding={16}
+                                        radius="small">
                                         <AvatarGroup
                                             icons={['dotnet', 'deno']}
                                             total={4}
                                             avatarSize="small"
                                             bordered />
-                                    </div>
+                                    </Box>
                                 </li>
                             {/if}
                         </ul>

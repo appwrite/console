@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { beforeNavigate } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { trackEvent } from '$lib/actions/analytics';
@@ -37,10 +36,6 @@
         isOpen = false;
         wizard.start(Create);
     }
-
-    beforeNavigate(() => {
-        wizard.hide();
-    });
 </script>
 
 <svelte:window on:keydown={handleKeyDown} />

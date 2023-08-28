@@ -3,6 +3,7 @@
     import { domain } from './store';
     import Retry from './retry.svelte';
     import { addNotification } from '$lib/stores/notifications';
+    import { Box } from '$lib/components';
 
     function onRetryError(event: CustomEvent<string>) {
         addNotification({
@@ -25,7 +26,7 @@
                 <p class="u-stretch">Domain verified</p>
             </div>
         {/if}
-        <div class="box">
+        <Box>
             <div class="u-flex u-gap-8 u-cross-center">
                 {#if $domain.status === 'verifying'}
                     <div
@@ -42,6 +43,6 @@
                     </p>
                 {/if}
             </div>
-        </div>
+        </Box>
     </div>
 </WizardStep>
