@@ -170,7 +170,8 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h6" size="7">{isGlobal ? 'Global Variables' : 'Environment Variables'}</Heading>
+    <Heading tag="h6" size="7" id="variables"
+        >{isGlobal ? 'Global Variables' : 'Environment Variables'}</Heading>
     {#if isGlobal}
         <p>
             Set the environment variables or secret keys that will be passed to all functions within
@@ -180,7 +181,7 @@
         <p>
             Set the environment variables or secret keys that will be passed to your function.
             Global variables can be found in <a
-                href={`${base}/console/project-${$project.$id}/settings/variables`}
+                href={`${base}/console/project-${$project.$id}/settings#variables`}
                 title="Project settings"
                 class="link">
                 project settings</a
