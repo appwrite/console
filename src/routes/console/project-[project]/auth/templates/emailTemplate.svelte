@@ -46,12 +46,12 @@
             }
             await sdk.forConsole.projects.updateEmailTemplate(
                 $project.$id,
-                $emailTemplate.type,
-                $emailTemplate.locale,
-                $emailTemplate.subject,
-                $emailTemplate.message,
-                $emailTemplate.senderName,
-                $emailTemplate.senderEmail,
+                $emailTemplate.type ?? undefined,
+                $emailTemplate.locale ?? undefined,
+                $emailTemplate.subject ?? undefined,
+                $emailTemplate.message ?? undefined,
+                $emailTemplate.senderName ?? undefined,
+                $emailTemplate.senderEmail ?? undefined,
                 $emailTemplate.replyTo ? $emailTemplate.replyTo : undefined
             );
 
