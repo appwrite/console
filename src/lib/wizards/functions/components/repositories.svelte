@@ -130,8 +130,10 @@
         {:then response}
             {#if response?.length}
                 <ul class="table is-remove-outer-styles common-section">
-                    {#each response as repo}
-                        <li class="table-row">
+                    {#each response as repo, i}
+                        <li
+                            class="table-row"
+                            style:border-block-end={i === response.length - 1 ? 'none' : null}>
                             <div class="table-col">
                                 <div
                                     class="u-flex u-cross-center u-gap-8"

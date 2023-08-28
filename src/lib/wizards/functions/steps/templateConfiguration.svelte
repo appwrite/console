@@ -41,9 +41,14 @@
             bind:value={$templateConfig.name}
             required />
         {#await loadRuntimes()}
-            <div class="avatar is-size-x-small">
-                <div class="loader u-margin-16" />
-            </div>
+            <InputSelect
+                label="Runtime"
+                id="runtime"
+                placeholder="Loading runtimes..."
+                required
+                disabled
+                options={[]}
+                value={null} />
         {:then options}
             <InputSelect
                 label="Runtime"
