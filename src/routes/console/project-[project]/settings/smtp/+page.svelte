@@ -45,17 +45,27 @@
 
     async function updateSmtp() {
         try {
+            if (!enabled) {
+                enabled = undefined;
+                senderName = undefined;
+                senderEmail = undefined;
+                replyTo = undefined;
+                host = undefined;
+                port = undefined;
+                username = undefined;
+                password = undefined;
+            }
             await sdk.forConsole.projects.updateSmtpConfiguration(
                 $project.$id,
                 enabled,
-                enabled ? senderName : undefined,
-                enabled ? senderEmail : undefined,
-                enabled ? replyTo : undefined,
-                enabled ? host : undefined,
-                enabled ? port : undefined,
-                enabled ? username : undefined,
-                enabled ? password : undefined,
-                enabled ? (secure ? 'tls' : '') : undefined
+                senderName ?? undefined,
+                senderEmail ?? undefined,
+                replyTo ?? undefined,
+                host ?? undefined,
+                port ?? undefined,
+                username ?? undefined,
+                password ?? undefined,
+                secure ? 'tls' : undefined
             );
 
             invalidate(Dependencies.PROJECT);
