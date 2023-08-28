@@ -290,8 +290,12 @@
                                     When installing Git in a locally hosted Appwrite project, you must
                                     first configure your environment variables.
                                     <svelte:fragment slot="buttons">
-                                        <!-- TODO: add link to docs -->
-                                        <Button href="#/" external text>Learn more</Button>
+                                        <Button
+                                            href="https://appwrite.io/docs/environment-variables#vcs_(version_control_system)"
+                                            external
+                                            text>
+                                            Learn more
+                                        </Button>
                                     </svelte:fragment>
                                 </Alert>
                             {/if}
