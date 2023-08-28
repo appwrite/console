@@ -51,7 +51,7 @@
             $repository = $repositories.repositories[0];
         }
 
-        return $repositories.repositories;
+        return $repositories.repositories.slice(0, 4);
     }
 
     function connectGitHub() {

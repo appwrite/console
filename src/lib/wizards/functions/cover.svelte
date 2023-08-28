@@ -86,7 +86,7 @@
                         class="grid-box u-margin-block-start-16"
                         style:--grid-item-size="8rem"
                         style:--grid-item-size-small-screens="9rem"
-                        style:--grid-gap="1rem">
+                        style:--grid-gap=".5rem">
                         {#await $runtimes}
                             {#each Array(6) as _i}
                                 <li>
@@ -175,7 +175,7 @@
                 </section>
                 <Button
                     text
-                    class="u-margin-inline-start-auto u-margin-block-start-32"
+                    class="u-margin-inline-start-auto u-margin-block-start-16"
                     href={`${base}/console/project-${$page.params.project}/functions/templates`}>
                     <span> All templates </span>
                     <span class="icon-cheveron-right" aria-hidden="true" />
