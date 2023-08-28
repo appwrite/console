@@ -29,6 +29,7 @@
     import GitDisconnectModal from './GitDisconnectModal.svelte';
     import dayjs from 'dayjs';
     import { isSelfHosted } from '$lib/system';
+    import { consoleVariables } from '$lib/stores/variables';
 
     export let total: number;
     export let limit: number;
@@ -75,6 +76,8 @@
             noScroll: true
         });
     }
+
+    $: isVcsEnabled = $consoleVariables?._APP_VCS_ENABLED === true;
 </script>
 
 <CardGrid>
@@ -178,7 +181,7 @@
                     bind:offset />
             </div>
         {:else}
-            {#if isSelfHosted}
+            {#if isSelfHosted && !isVcsEnabled}
                 <Alert type="info">
                     <svelte:fragment slot="title">
                         Installing Git to a self-hosted instance

@@ -16,6 +16,7 @@ export const load: PageLoad = async ({ depends, url }) => {
         installations: await sdk.forProject.vcs.listInstallations([
             Query.limit(limit),
             Query.offset(offset)
-        ])
+        ]),
+        consoleVariables: sdk.forConsole.console.variables()
     };
 };
