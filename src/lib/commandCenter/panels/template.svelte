@@ -374,7 +374,7 @@
         --crumb-color: hsl(var(--color-neutral-100));
 
         --result-bg: hsl(var(--color-neutral-10));
-        --footer-bg: linear-gradient(180deg, #fff 0%, #e8e9f0 100%);
+        --footer-bg: linear-gradient(180deg, #fff 49.38%, #e8e9f0 100%);
 
         --icon-color: hsl(var(--color-neutral-50));
         --label-color: hsl(var(--color-neutral-100));
