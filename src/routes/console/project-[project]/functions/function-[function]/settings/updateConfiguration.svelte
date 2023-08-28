@@ -15,6 +15,7 @@
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import {
+        Alert,
         AvatarGroup,
         Box,
         CardGrid,
@@ -47,6 +48,8 @@
     import ConnectExisting from '$lib/wizards/functions/connectExisting.svelte';
     import InputSelectSearch from '$lib/elements/forms/inputSelectSearch.svelte';
     import { installations } from '$lib/wizards/functions/store';
+    import { isSelfHosted } from '$lib/system';
+    import { consoleVariables } from '$lib/stores/variables';
 
     const functionId = $page.params.function;
 
@@ -169,6 +172,8 @@
         selectedBranch !== $func?.providerBranch ||
         silentMode !== $func?.providerSilentMode ||
         selectedDir !== $func?.providerRootDirectory;
+
+    $: isVcsEnabled = $consoleVariables?._APP_VCS_ENABLED === true;
 </script>
 
 <Form onSubmit={updateConfiguration}>
@@ -277,7 +282,21 @@
                                 </div>
                             </Box>
                         {:else}
-                            <article class="card-git card is-border-dashed is-no-shadow">
+                            {#if isSelfHosted && !isVcsEnabled}
+                                <Alert class="common-section" type="info">
+                                    <svelte:fragment slot="title">
+                                        Installing Git to a self-hosted instance
+                                    </svelte:fragment>
+                                    When installing Git in a locally hosted Appwrite project, you must
+                                    first configure your environment variables.
+                                    <svelte:fragment slot="buttons">
+                                        <!-- TODO: add link to docs -->
+                                        <Button href="#/" external text>Learn more</Button>
+                                    </svelte:fragment>
+                                </Alert>
+                            {/if}
+                            <article
+                                class="card-git card is-border-dashed is-no-shadow common-section">
                                 <div class="u-flex u-cross-center u-flex-vertical u-gap-32">
                                     <div class="u-flex u-cross-center u-gap-8">
                                         <AvatarGroup

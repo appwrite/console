@@ -18,6 +18,7 @@ export const load: PageLoad = async ({ params, depends, url, route, parent }) =>
             Query.limit(limit),
             Query.offset(offset),
             Query.orderDesc('')
-        ])
+        ]),
+        consoleVariables: sdk.forConsole.console.variables()
     };
 };

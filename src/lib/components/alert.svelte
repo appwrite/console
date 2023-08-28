@@ -7,12 +7,14 @@
     export let buttons: Buttons[] = [];
     export let isAction = false;
     export let isStandalone = false;
+    let classes = '';
+    export { classes as class };
 
     const dispatch = createEventDispatcher();
 </script>
 
 <section
-    class="alert"
+    class="alert {classes}"
     class:is-action={isAction}
     class:is-standalone={isStandalone}
     class:is-success={type === 'success'}
