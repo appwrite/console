@@ -43,23 +43,27 @@
                 </h6>
             {/if}
             <p class="alert-message"><slot /></p>
-            {#if buttons?.length && !isAction}
+            {#if ($$slots.buttons || buttons?.length) && !isAction}
                 <div class="alert-buttons u-flex">
-                    {#each buttons as button}
-                        <button class="button is-text" on:click={button.method}>
-                            <span class="text">{button.name}</span>
-                        </button>
-                    {/each}
+                    <slot name="buttons">
+                        {#each buttons as button}
+                            <button type="button" class="button is-text" on:click={button.method}>
+                                <span class="text">{button.name}</span>
+                            </button>
+                        {/each}
+                    </slot>
                 </div>
             {/if}
         </div>
-        {#if buttons?.length && isAction}
+        {#if ($$slots.buttons || buttons?.length) && isAction}
             <div class="alert-buttons u-flex u-gap-16 u-cross-child-center">
-                {#each buttons as button}
-                    <button class="button is-text" on:click={button.method}>
-                        <span class="text">{button.name}</span>
-                    </button>
-                {/each}
+                <slot name="buttons">
+                    {#each buttons as button}
+                        <button type="button" class="button is-text" on:click={button.method}>
+                            <span class="text">{button.name}</span>
+                        </button>
+                    {/each}
+                </slot>
             </div>
         {/if}
     </div>

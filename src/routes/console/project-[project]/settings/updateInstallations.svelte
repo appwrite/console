@@ -2,6 +2,7 @@
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
     import {
+        Alert,
         AvatarGroup,
         CardGrid,
         DropList,
@@ -27,6 +28,7 @@
     import GitInstallationModal from './GitInstallationModal.svelte';
     import GitDisconnectModal from './GitDisconnectModal.svelte';
     import dayjs from 'dayjs';
+    import { isSelfHosted } from '$lib/system';
 
     export let total: number;
     export let limit: number;
@@ -176,6 +178,19 @@
                     bind:offset />
             </div>
         {:else}
+            {#if isSelfHosted}
+                <Alert type="info">
+                    <svelte:fragment slot="title">
+                        Installing Git to a self-hosted instance
+                    </svelte:fragment>
+                    When installing Git in a locally hosted Appwrite project, you must first configure
+                    your environment variables.
+                    <svelte:fragment slot="buttons">
+                        <!-- TODO: add link to docs -->
+                        <Button href="#/" external text>Learn more</Button>
+                    </svelte:fragment>
+                </Alert>
+            {/if}
             <article class="card-git card is-border-dashed is-no-shadow">
                 <div class="u-flex u-cross-center u-flex-vertical u-gap-32">
                     <div class="u-flex u-cross-center u-flex-vertical u-gap-8">
