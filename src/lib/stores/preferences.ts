@@ -6,7 +6,6 @@ import { get, writable } from 'svelte/store';
 import { sdk } from './sdk';
 import type { Models } from '@appwrite.io/console';
 import { organization } from './organization';
-import { onDestroy } from 'svelte';
 
 type Preferences = {
     limit?: number;

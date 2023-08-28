@@ -18,6 +18,7 @@
             return;
         }
         const vars = await sdk.forConsole.console.variables();
+        //@ts-expect-error needs an sdk release
         isDomainsEnabled = vars?._APP_DOMAIN_ENABLED === true;
     });
 
