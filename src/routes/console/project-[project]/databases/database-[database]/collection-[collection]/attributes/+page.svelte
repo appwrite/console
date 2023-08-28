@@ -40,7 +40,7 @@
         ip = 'location-marker',
         url = 'link',
         email = 'mail',
-        enum = 'list'
+        enum = 'view-list'
     }
 </script>
 
