@@ -46,7 +46,8 @@
         <Alert type="warning" dismissible class="u-margin-block-start-24">
             <svelte:fragment slot="title">Your function is outdated</svelte:fragment>
             Update your function version to make use of new features including build commands and HTTP
-            data in your executions. To update, follow the steps outlined in our documentation.
+            data in your executions. To update, follow the steps outlined in our
+            <a href="#/" target="_blank" rel="noopener noreferrer" class="link">documentation</a>.
             <svelte:fragment slot="buttons">
                 <!-- TODO: Add link to docs -->
                 <Button href="#/" external text>Learn more</Button>

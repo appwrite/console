@@ -49,7 +49,7 @@
     import InputSelectSearch from '$lib/elements/forms/inputSelectSearch.svelte';
     import { installations } from '$lib/wizards/functions/store';
     import { isSelfHosted } from '$lib/system';
-    import { consoleVariables } from '$lib/stores/variables';
+    import { consoleVariables } from '$lib/stores/consoleVariables';
 
     const functionId = $page.params.function;
 
@@ -174,8 +174,6 @@
         selectedDir !== $func?.providerRootDirectory;
 
     $: isVcsEnabled = $consoleVariables?._APP_VCS_ENABLED === true;
-
-    $: console.log($consoleVariables);
 </script>
 
 <Form onSubmit={updateConfiguration}>

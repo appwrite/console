@@ -7,13 +7,14 @@
         InputTextarea,
         InputText
     } from '$lib/elements/forms';
-    import { Collapsible, CollapsibleItem, Modal } from '$lib/components';
+    import { Alert, Collapsible, CollapsibleItem, Modal } from '$lib/components';
     import { sdk } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
     import { page } from '$app/stores';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { func } from './store';
 
     export let show = false;
 
@@ -77,20 +78,32 @@
             placeholder="Entrypoint"
             bind:value={entrypoint}
             required />
-        <Collapsible>
-            <CollapsibleItem>
-                <svelte:fragment slot="title">Build settings</svelte:fragment>
-                <svelte:fragment slot="subtitle">(optional)</svelte:fragment>
-                <FormList>
-                    <InputTextarea
-                        label="Commands"
-                        placeholder="Enter a build commad (e.g. 'npm install')"
-                        tooltip="Enter a single command or chain multiple commands with the && operator"
-                        id="build"
-                        bind:value={buildCommand} />
-                </FormList>
-            </CollapsibleItem>
-        </Collapsible>
+        {#if $func.version !== 'v3'}
+            <Alert type="info">
+                <svelte:fragment slot="title"
+                    >Build commands now available for functions v3.0</svelte:fragment>
+                Update your function version to make use of new features including build commands.
+                <svelte:fragment slot="buttons">
+                    <!-- TODO: add link to docs -->
+                    <Button href="#/" external text>Learn more</Button>
+                </svelte:fragment>
+            </Alert>
+        {:else}
+            <Collapsible>
+                <CollapsibleItem>
+                    <svelte:fragment slot="title">Build settings</svelte:fragment>
+                    <svelte:fragment slot="subtitle">(optional)</svelte:fragment>
+                    <FormList>
+                        <InputTextarea
+                            label="Commands"
+                            placeholder="Enter a build commad (e.g. 'npm install')"
+                            tooltip="Enter a single command or chain multiple commands with the && operator"
+                            id="build"
+                            bind:value={buildCommand} />
+                    </FormList>
+                </CollapsibleItem>
+            </Collapsible>
+        {/if}
         <InputChoice label="Activate deployment after build" id="activate" bind:value={active}>
             This deployment will be activated after the build is completed.
         </InputChoice>

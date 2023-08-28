@@ -4,7 +4,7 @@
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
-    import { consoleVariables } from '$lib/stores/variables';
+    import { consoleVariables } from '$lib/stores/consoleVariables';
     import { isSelfHosted } from '$lib/system';
     import { connectTemplate } from '$lib/wizards/functions/cover.svelte';
     import { template } from './store';

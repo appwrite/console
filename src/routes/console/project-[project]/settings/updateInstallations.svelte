@@ -29,7 +29,7 @@
     import GitDisconnectModal from './GitDisconnectModal.svelte';
     import dayjs from 'dayjs';
     import { isSelfHosted } from '$lib/system';
-    import { consoleVariables } from '$lib/stores/variables';
+    import { consoleVariables } from '$lib/stores/consoleVariables';
 
     export let total: number;
     export let limit: number;
@@ -78,8 +78,6 @@
     }
 
     $: isVcsEnabled = $consoleVariables?._APP_VCS_ENABLED === true;
-
-    $: console.log($consoleVariables, isVcsEnabled);
 </script>
 
 <CardGrid>
