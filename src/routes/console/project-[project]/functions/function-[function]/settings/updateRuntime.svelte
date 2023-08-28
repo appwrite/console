@@ -19,7 +19,7 @@
     onMount(async () => {
         runtime ??= $func.runtime;
 
-        let runtimes = await sdk.forProject.functions.listRuntimes();
+        let runtimes = await $page.data.runtimes;
         options = runtimes.runtimes.map((runtime) => ({
             label: `${runtime.name} - ${runtime.version}`,
             value: runtime.$id
