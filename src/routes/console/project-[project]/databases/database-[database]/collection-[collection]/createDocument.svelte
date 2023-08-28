@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { beforeNavigate, invalidate } from '$app/navigation';
+    import { invalidate } from '$app/navigation';
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Dependencies } from '$lib/constants';
@@ -68,17 +68,13 @@
         $createDocument.permissions = [];
     });
 
-    beforeNavigate(() => {
-        wizard.hide();
-    });
-
     const stepsComponents: WizardStepsType = new Map();
     stepsComponents.set(1, {
-        label: 'Create data',
+        label: 'Data',
         component: Step1
     });
     stepsComponents.set(2, {
-        label: 'Set permissions',
+        label: 'Permissions',
         component: Step2,
         optional: true
     });

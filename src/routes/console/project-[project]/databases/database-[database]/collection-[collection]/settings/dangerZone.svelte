@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Box, CardGrid, Heading } from '$lib/components';
+    import { BoxAvatar, CardGrid, Heading } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { collection } from '../store';
@@ -9,18 +9,18 @@
 </script>
 
 <CardGrid danger>
-    <Heading tag="h6" size="7">Delete Collection</Heading>
+    <Heading tag="h6" size="7">Delete collection</Heading>
     <p>
         The collection will be permanently deleted, including all the documents within it. This
         action is irreversible.
     </p>
     <svelte:fragment slot="aside">
-        <Box>
+        <BoxAvatar>
             <svelte:fragment slot="title">
                 <h6 class="u-bold u-trim-1">{$collection.name}</h6>
             </svelte:fragment>
-            <p>Last Updated: {toLocaleDateTime($collection.$updatedAt)}</p>
-        </Box>
+            <p>Last updated: {toLocaleDateTime($collection.$updatedAt)}</p>
+        </BoxAvatar>
     </svelte:fragment>
 
     <svelte:fragment slot="actions">

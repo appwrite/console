@@ -46,7 +46,7 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h2" size="7">Users Limit</Heading>
+    <Heading tag="h2" size="7" id="users-limit">Users limit</Heading>
     <p>
         Limit new users from signing up for your project, regardless of authentication method. You
         can still create users and team memberships from your Appwrite console.

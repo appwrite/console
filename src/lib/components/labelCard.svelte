@@ -7,6 +7,8 @@
     export let icon: string = null;
     export let fullHeight = true;
     export let borderRadius: 'xsmall' | 'small' | 'medium' | 'large' = 'small';
+    export let backgroundColor: string = null;
+    export let backgroundColorHover: string = null;
 
     enum Radius {
         xsmall = '--border-radius-xsmall',
@@ -20,8 +22,10 @@
     class="card is-allow-focus u-cursor-pointer"
     class:u-height-100-percent={fullHeight}
     style:--card-padding={`${padding}rem`}
-    style:--card-border-radius={`var(${Radius[borderRadius]})`}>
-    <div class="u-flex u-gap-16">
+    style:--card-border-radius={`var(${Radius[borderRadius]})`}
+    style:--p-card-bg-color-default={backgroundColor}
+    style:--p-card-bg-color-hover={backgroundColorHover}>
+    <div class="u-flex u-gap-8">
         <input
             class="is-small u-margin-block-start-2"
             type="radio"
@@ -31,10 +35,14 @@
             bind:group
             on:click />
         <div class="u-flex u-flex-vertical u-gap-4">
-            <h4 class="body-text-2 u-bold"><slot name="title" /></h4>
-            <p class="u-color-text-gray u-small">
-                <slot />
-            </p>
+            {#if $$slots.title}
+                <h4 class="body-text-2 u-bold"><slot name="title" /></h4>
+            {/if}
+            {#if $$slots.default}
+                <p class="u-color-text-gray u-small">
+                    <slot />
+                </p>
+            {/if}
         </div>
         {#if icon}
             <span class={`icon-${icon} u-margin-inline-start-auto`} aria-hidden="true" />

@@ -1,44 +1,82 @@
 <script lang="ts">
+    import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { Button } from '$lib/elements/forms';
+    import { tooltip } from '$lib/actions/tooltip';
     import {
-        Empty,
         CardContainer,
+        Empty,
         GridItem1,
         Heading,
-        PaginationWithLimit,
-        Id
+        Id,
+        PaginationWithLimit
     } from '$lib/components';
+    import { Button } from '$lib/elements/forms';
+    import { toLocaleDateTime } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
-    import { base } from '$app/paths';
-    import { tooltip } from '$lib/actions/tooltip';
     import { app } from '$lib/stores/app';
     import { wizard } from '$lib/stores/wizard';
-    import { beforeNavigate } from '$app/navigation';
-    import { toLocaleDateTime } from '$lib/helpers/date';
-    import Create from './createFunction.svelte';
-    import type { PageData } from './$types';
+    import { onMount } from 'svelte';
+    import Initial from '$lib/wizards/functions/cover.svelte';
+    import { registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
+    import CreateTemplate from '$lib/wizards/functions/createTemplate.svelte';
+    import {
+        templateConfig as templateConfigStore,
+        template as templateStore
+    } from '$lib/wizards/functions/store.js';
+    import { marketplace } from '$lib/stores/marketplace.js';
 
-    export let data: PageData;
+    export let data;
 
     let offset = 0;
 
     const project = $page.params.project;
 
+    onMount(() => {
+        const from = $page.url.searchParams.get('from');
+        if (from === 'github') {
+            const to = $page.url.searchParams.get('to');
+            switch (to) {
+                case 'template': {
+                    const step = $page.url.searchParams.get('step');
+                    const template = $page.url.searchParams.get('template');
+                    const templateConfig = $page.url.searchParams.get('templateConfig');
+                    templateStore.set(marketplace.find((item) => item.id === template));
+                    templateConfigStore.set(JSON.parse(templateConfig));
+                    wizard.start(CreateTemplate);
+                    wizard.setStep(Number(step));
+                    break;
+                }
+                case 'cover':
+                    openWizard();
+                    break;
+            }
+        }
+    });
+
     function openWizard() {
-        wizard.start(Create);
+        wizard.showCover(Initial);
     }
 
-    beforeNavigate(() => {
-        wizard.hide();
-    });
+    $: $registerCommands([
+        {
+            label: 'Create function',
+            callback: openWizard,
+            keys: ['c'],
+            disabled: $wizard.show,
+            icon: 'plus',
+            group: 'functions'
+        }
+    ]);
+
+    $updateCommandGroupRanks({ functions: 1000 });
 </script>
 
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
         <Heading tag="h2" size="5">Functions</Heading>
         <Button on:click={openWizard} event="create_function">
-            <span class="icon-plus" aria-hidden="true" /> <span class="text">Create function</span>
+            <span class="icon-plus" aria-hidden="true" />
+            <span class="text">Create function</span>
         </Button>
     </div>
 

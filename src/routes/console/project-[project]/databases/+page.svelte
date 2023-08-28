@@ -1,16 +1,18 @@
 <script lang="ts">
-    import { page } from '$app/stores';
     import { goto } from '$app/navigation';
-    import { Button } from '$lib/elements/forms';
-    import { Empty, PaginationWithLimit } from '$lib/components';
-    import { Container, GridHeader } from '$lib/layout';
     import { base } from '$app/paths';
+    import { page } from '$app/stores';
+    import { Empty, PaginationWithLimit } from '$lib/components';
+    import { Button } from '$lib/elements/forms';
+    import { Container, GridHeader } from '$lib/layout';
+    import type { Models } from '@appwrite.io/console';
+
+    import type { PageData } from './$types';
     import Create from './create.svelte';
     import Grid from './grid.svelte';
-    import Table from './table.svelte';
-    import type { Models } from '@appwrite.io/console';
-    import type { PageData } from './$types';
     import { columns } from './store';
+    import Table from './table.svelte';
+    import { registerCommands } from '$lib/commandCenter';
 
     export let data: PageData;
 
@@ -21,6 +23,20 @@
         showCreate = false;
         await goto(`${base}/console/project-${project}/databases/database-${event.detail.$id}`);
     }
+
+    $: $registerCommands([
+        {
+            label: 'Create database',
+            callback: () => {
+                showCreate = true;
+            },
+            keys: ['c'],
+            disabled: showCreate,
+            icon: 'plus',
+            group: 'databases',
+            rank: 10
+        }
+    ]);
 </script>
 
 <Container>
@@ -38,7 +54,7 @@
 
     {#if data.databases.total}
         {#if data.view === 'grid'}
-            <Grid {data} />
+            <Grid {data} bind:showCreate />
         {:else}
             <Table {data} />
         {/if}

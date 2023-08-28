@@ -1,3 +1,11 @@
+<script lang="ts" context="module">
+    let showCreate = writable(false);
+
+    export const showCreateFile = () => {
+        showCreate.set(true);
+    };
+</script>
+
 <script lang="ts">
     import { page } from '$app/stores';
     import { sdk } from '$lib/stores/sdk';
@@ -36,10 +44,10 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { writable } from 'svelte/store';
 
     export let data: PageData;
 
-    let showCreate = false;
     let showDelete = false;
     let showDropdown = [];
     let selectedFile: Models.File = null;
@@ -50,7 +58,7 @@
         sdk.forProject.storage.getFilePreview(bucketId, fileId, 32, 32).toString() + '&mode=admin';
 
     async function fileCreated() {
-        showCreate = false;
+        $showCreate = false;
         await invalidate(Dependencies.FILES);
     }
 
@@ -78,7 +86,7 @@
 
 <Container>
     <SearchQuery search={data.search} placeholder="Search by filename">
-        <Button on:click={() => (showCreate = true)} event="create_file">
+        <Button on:click={() => ($showCreate = true)} event="create_file">
             <span class="icon-plus" aria-hidden="true" /> <span class="text">Create file</span>
         </Button>
     </SearchQuery>
@@ -211,11 +219,11 @@
             single
             href="https://appwrite.io/docs/storage#createFile"
             target="file"
-            on:click={() => (showCreate = true)} />
+            on:click={() => ($showCreate = true)} />
     {/if}
 </Container>
 
-<Create bind:showCreate on:created={fileCreated} />
+<Create bind:showCreate={$showCreate} on:created={fileCreated} />
 {#if selectedFile}
     <Delete file={selectedFile} bind:showDelete on:deleted={fileDeleted} />
 {/if}

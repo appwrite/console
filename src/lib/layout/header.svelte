@@ -1,21 +1,25 @@
 <script lang="ts">
+    import { goto } from '$app/navigation';
     import { base } from '$app/paths';
+    import { page } from '$app/stores';
+    import { Submit, trackEvent } from '$lib/actions/analytics';
+    import { tooltip } from '$lib/actions/tooltip';
+    import { toggleCommandCenter } from '$lib/commandCenter/commandCenter.svelte';
     import { AvatarInitials, DropList, DropListItem, DropListLink } from '$lib/components';
-    import { app } from '$lib/stores/app';
-    import { user } from '$lib/stores/user';
-    import { organizationList, organization, newOrgModal } from '$lib/stores/organization';
+    import { Feedback } from '$lib/components/feedback';
+    import Button from '$lib/elements/forms/button.svelte';
+    import { isMac } from '$lib/helpers/platform';
     import AppwriteLogo from '$lib/images/appwrite-gray-light.svg';
     import DarkMode from '$lib/images/mode/dark-mode.svg';
     import LightMode from '$lib/images/mode/light-mode.svg';
     import SystemMode from '$lib/images/mode/system-mode.svg';
-    import { slide } from 'svelte/transition';
-    import { page } from '$app/stores';
-    import { Submit, trackEvent } from '$lib/actions/analytics';
-    import { sdk } from '$lib/stores/sdk';
-    import { goto } from '$app/navigation';
+    import { app } from '$lib/stores/app';
     import { feedback } from '$lib/stores/feedback';
-    import { Feedback } from '$lib/components/feedback';
+    import { newOrgModal, organization, organizationList } from '$lib/stores/organization';
+    import { sdk } from '$lib/stores/sdk';
+    import { user } from '$lib/stores/user';
     import { isCloud } from '$lib/system';
+    import { slide } from 'svelte/transition';
 
     let showDropdown = false;
     let droplistElement: HTMLDivElement;
@@ -93,6 +97,20 @@
             class="button is-small is-text">
             <span class="text">Support</span>
         </a>
+        <Button
+            actions={[
+                (node) => {
+                    return tooltip(node, {
+                        content: isMac() ? '⌘ + K' : 'Ctrl + K',
+                        placement: 'bottom'
+                    });
+                }
+            ]}
+            text
+            class="is-small"
+            on:click={toggleCommandCenter}>
+            <i class="icon-search" />
+        </Button>
     </nav>
     <nav class="u-flex u-height-100-percent u-sep-inline-start">
         {#if $user}
@@ -155,7 +173,7 @@
                         </section>
                         <section class="drop-section">
                             <ul class="u-flex u-gap-12">
-                                <li>
+                                <li class="u-stretch">
                                     <label class="image-radio">
                                         <img src={LightMode} alt="light mode" />
                                         <input
@@ -170,7 +188,7 @@
                                             value="light" />
                                     </label>
                                 </li>
-                                <li>
+                                <li class="u-stretch">
                                     <label class="image-radio">
                                         <img src={DarkMode} alt="dark mode" />
                                         <input
@@ -185,7 +203,7 @@
                                             value="dark" />
                                     </label>
                                 </li>
-                                <li>
+                                <li class="u-stretch">
                                     <label class="image-radio">
                                         <img src={SystemMode} alt="system mode" />
                                         <input

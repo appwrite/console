@@ -22,11 +22,20 @@
             await sdk.forProject.functions.update(
                 functionId,
                 functionName,
+                $func.runtime,
                 $func.execute || undefined,
                 $func.events || undefined,
                 $func.schedule || undefined,
                 $func.timeout || undefined,
-                $func.enabled
+                $func.enabled || undefined,
+                $func.logging || undefined,
+                $func.entrypoint || undefined,
+                $func.commands || undefined,
+                $func.installationId || undefined,
+                $func.providerRepositoryId || undefined,
+                $func.providerBranch || undefined,
+                $func.providerSilentMode || undefined,
+                $func.providerRootDirectory || undefined
             );
             await invalidate(Dependencies.FUNCTION);
             addNotification({

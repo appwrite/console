@@ -1,0 +1,253 @@
+<script lang="ts">
+    import { goto } from '$app/navigation';
+    import { base } from '$app/paths';
+    import { page } from '$app/stores';
+    import { tooltip } from '$lib/actions/tooltip.js';
+    import {
+        Collapsible,
+        CollapsibleItem,
+        EmptySearch,
+        Heading,
+        Pagination
+    } from '$lib/components';
+    import { Button } from '$lib/elements/forms';
+    import { debounce } from '$lib/helpers/debounce';
+    import { Container } from '$lib/layout';
+    import { app } from '$lib/stores/app';
+    import { connectTemplate } from '$lib/wizards/functions/cover.svelte';
+
+    export let data;
+
+    let searchElement: HTMLInputElement;
+
+    function applyFilter(filter: string, value: string, event: Event) {
+        const add = (event.target as EventTarget & HTMLInputElement).checked;
+        const target = new URL($page.url);
+        if (add) {
+            target.searchParams.append(filter, value);
+        } else {
+            const previous = target.searchParams.getAll(filter).filter((n) => n !== value);
+            target.searchParams.delete(filter);
+            previous.forEach((n) => target.searchParams.append(filter, n));
+        }
+        target.searchParams.delete('page');
+        goto(target.toString());
+    }
+
+    function clearSearch() {
+        const target = new URL($page.url);
+        target.searchParams.delete('page');
+        target.searchParams.delete('search');
+        searchElement.value = '';
+        goto(target.toString());
+    }
+
+    function getIconFromRuntime(runtime: string) {
+        switch (true) {
+            case runtime.includes('node'):
+                return 'node';
+            case runtime.includes('php'):
+                return 'php';
+            case runtime.includes('ruby'):
+                return 'ruby';
+            case runtime.includes('python'):
+                return 'python';
+            case runtime.includes('dart'):
+                return 'dart';
+            default:
+                return undefined;
+        }
+    }
+
+    const applySearch = debounce((event: Event) => {
+        const value = (event.target as EventTarget & HTMLInputElement).value;
+        const target = new URL($page.url);
+
+        if (value.length > 0) {
+            target.searchParams.set('search', value);
+        } else {
+            target.searchParams.delete('search');
+        }
+        target.searchParams.delete('page');
+        goto(target.toString(), { keepFocus: true });
+    }, 250);
+</script>
+
+<Container>
+    <div class="u-flex u-gap-8 u-cross-center">
+        <Heading tag="h2" size="5">Templates</Heading>
+        <div class="tag eyebrow-heading-3">
+            <span class="text u-x-small">Experimental</span>
+        </div>
+    </div>
+    <div class="grid-300px-1fr u-margin-block-start-24">
+        <section>
+            <div
+                class="input-text-wrapper is-with-end-button u-width-full-line u-max-width-500 u-margin-block-start-12"
+                style="--amount-of-buttons:1">
+                <input
+                    bind:this={searchElement}
+                    on:input={applySearch}
+                    type="search"
+                    placeholder="Search templates" />
+                <div class="icon-search" aria-hidden="true" />
+                <button
+                    on:click={clearSearch}
+                    class="button is-text is-only-icon"
+                    aria-label="Clear search"
+                    style="--button-size:1.5rem;">
+                    <span class="icon-x" aria-hidden="true" />
+                </button>
+            </div>
+            <div class="u-margin-block-start-24">
+                <Collapsible>
+                    <CollapsibleItem>
+                        <svelte:fragment slot="title">Use case</svelte:fragment>
+                        <ul class="form-list u-row-gap-16">
+                            {#each [...data.useCases] as useCase}
+                                <li class="form-item">
+                                    <label class="u-flex u-cross-center u-gap-16">
+                                        <input
+                                            type="checkbox"
+                                            class="is-small"
+                                            value={$page.url.searchParams
+                                                .getAll('useCase')
+                                                .includes(useCase)}
+                                            on:change={(e) => applyFilter('useCase', useCase, e)} />
+                                        <div class="u-trim-1">{useCase}</div>
+                                    </label>
+                                </li>
+                            {/each}
+                        </ul>
+                    </CollapsibleItem>
+                    <CollapsibleItem>
+                        <svelte:fragment slot="title">Runtime</svelte:fragment>
+                        <ul class="form-list u-row-gap-16">
+                            {#each [...data.runtimes] as runtime}
+                                {@const icon = getIconFromRuntime(runtime)}
+                                <li class="form-item">
+                                    <label class="u-flex u-cross-center u-gap-16">
+                                        <input
+                                            type="checkbox"
+                                            class="is-small"
+                                            checked={$page.url.searchParams
+                                                .getAll('runtime')
+                                                .includes(runtime)}
+                                            on:change={(e) => applyFilter('runtime', runtime, e)} />
+                                        <div class="u-flex u-cross-center u-gap-8">
+                                            <div class="avatar is-size-x-small">
+                                                <img
+                                                    src={`${base}/icons/${$app.themeInUse}/color/${icon}.svg`}
+                                                    alt={icon} />
+                                            </div>
+                                            <div class="u-trim-1">{runtime}</div>
+                                        </div>
+                                    </label>
+                                </li>
+                            {/each}
+                        </ul>
+                    </CollapsibleItem>
+                </Collapsible>
+            </div>
+
+            <section class="card u-margin-block-start-24">
+                <h4 class="body-text-1 u-bold">Contribute</h4>
+                <p class="u-margin-block-start-16">
+                    Have an idea for a function template? View our <a
+                        class="link"
+                        href="https://github.com/appwrite/templates/blob/main/CONTRIBUTING.md"
+                        target="_blank">contribution guidelines</a
+                    >.
+                </p>
+            </section>
+        </section>
+        <section>
+            {#if data.templates.length > 0}
+                <ul
+                    class="grid-box"
+                    style="--grid-item-size:22rem; --grid-item-size-small-screens:19rem">
+                    {#each data.templates as template}
+                        {@const displayed = template.runtimes.slice(0, 2)}
+                        {@const hidden = template.runtimes.slice(2, -1)}
+                        <li>
+                            <article class="card u-min-height-100-percent">
+                                <div class="u-flex u-gap-16 u-cross-center">
+                                    <h2
+                                        class="body-text-1 u-bold u-trim"
+                                        style:break-word="break-word">
+                                        {template.name}
+                                    </h2>
+                                    <ul class="avatars-group is-with-border">
+                                        {#each displayed as runtime}
+                                            {@const icon = getIconFromRuntime(runtime.name)}
+                                            {#if icon}
+                                                <li class="avatars-group-item">
+                                                    <div class="avatar is-size-small">
+                                                        <img
+                                                            style:--p-text-size="20px"
+                                                            src={`${base}/icons/${$app.themeInUse}/color/${icon}.svg`}
+                                                            alt={icon}
+                                                            aria-hidden="true"
+                                                            aria-label={icon} />
+                                                    </div>
+                                                </li>
+                                            {/if}
+                                        {/each}
+                                        {#if hidden.length}
+                                            <li class="avatars-group-item">
+                                                <div
+                                                    class="avatar is-size-small"
+                                                    use:tooltip={{
+                                                        content: hidden
+                                                            .map((n) => n.name)
+                                                            .join(', ')
+                                                    }}>
+                                                    +{hidden.length}
+                                                </div>
+                                            </li>
+                                        {/if}
+                                    </ul>
+                                </div>
+
+                                <p class="u-margin-block-start-20 u-trim-2 u-break-word">
+                                    {template.tagline}
+                                </p>
+
+                                <div class="u-flex u-gap-16 u-main-end u-margin-block-start-24">
+                                    <a
+                                        href={`${base}/console/project-${$page.params.project}/functions/templates/template-${template.id}`}
+                                        class="button is-text">
+                                        <span class="text">View details</span>
+                                    </a>
+                                    <button
+                                        class="button is-secondary"
+                                        on:click={() => connectTemplate(template)}>
+                                        <span class="text">Create function</span>
+                                    </button>
+                                </div>
+                            </article>
+                        </li>
+                    {/each}
+                </ul>
+            {:else}
+                <EmptySearch hidePagination>
+                    <div class="common-section">
+                        <div class="u-text-center common-section">
+                            <b class="body-text-2 u-bold"
+                                >Sorry we couldn't find "{$page.url.searchParams.get('search')}"</b>
+                            <p>There are no templates that match your search.</p>
+                        </div>
+                        <div class="u-flex u-gap-16 common-section u-main-center">
+                            <Button secondary on:click={clearSearch}>Clear search</Button>
+                        </div>
+                    </div>
+                </EmptySearch>
+            {/if}
+        </section>
+    </div>
+    <div class="u-flex u-margin-block-start-32 u-flex-wrap">
+        <div class="u-margin-inline-start-auto">
+            <Pagination limit={data.limit} offset={data.offset} sum={data.sum} />
+        </div>
+    </div>
+</Container>

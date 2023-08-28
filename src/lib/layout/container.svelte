@@ -1,6 +1,6 @@
 <script lang="ts">
     export let overlapCover = false;
-    export let size: 'small' | 'medium' | 'large' | 'xl' = null;
+    export let size: 'small' | 'medium' | 'large' | 'xl' | 'xxl' | 'xxxl' = null;
 
     $: style = size
         ? `--p-container-max-size: var(--container-max-size, var(--container-size-${size}))`

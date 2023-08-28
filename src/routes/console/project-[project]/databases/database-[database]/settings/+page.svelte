@@ -2,7 +2,7 @@
     import { invalidate } from '$app/navigation';
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { Box, Card, CardGrid, Heading } from '$lib/components';
+    import { BoxAvatar, Card, CardGrid, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form, Helper, InputText } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
@@ -56,7 +56,7 @@
                 </div>
                 <div class="grid-1-2-col-2">
                     <p>Created: {toLocaleDateTime($database.$createdAt)}</p>
-                    <p>Last Updated: {toLocaleDateTime($database.$updatedAt)}</p>
+                    <p>Last updated: {toLocaleDateTime($database.$updatedAt)}</p>
                 </div>
             </div>
         </Card>
@@ -89,7 +89,7 @@
 
         <CardGrid danger>
             <div>
-                <Heading tag="h6" size="7">Delete Database</Heading>
+                <Heading tag="h6" size="7">Delete database</Heading>
             </div>
 
             <p>
@@ -97,12 +97,12 @@
                 team. This action is irreversible.
             </p>
             <svelte:fragment slot="aside">
-                <Box>
+                <BoxAvatar>
                     <svelte:fragment slot="title">
                         <h6 class="u-bold u-trim-1">{$database.name}</h6>
-                        <span>Last Updated: {toLocaleDateTime($database.$updatedAt)}</span>
+                        <span>Last updated: {toLocaleDateTime($database.$updatedAt)}</span>
                     </svelte:fragment>
-                </Box>
+                </BoxAvatar>
             </svelte:fragment>
 
             <svelte:fragment slot="actions">

@@ -1,11 +1,11 @@
 <script lang="ts">
     import { DropList, DropListItem } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import { options } from './store';
+    import { attributeOptions, type Option } from './store';
 
     export let showCreateDropdown = false;
 
-    export let selectedOption: string = null;
+    export let selectedOption: Option['name'] = null;
     export let showCreate = false;
 </script>
 
@@ -19,7 +19,7 @@
         </Button>
     </slot>
     <svelte:fragment slot="list">
-        {#each options as attribute}
+        {#each attributeOptions as attribute}
             <DropListItem
                 icon={attribute.icon}
                 on:click={() => {

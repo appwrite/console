@@ -1,53 +1,54 @@
 <script lang="ts">
-    import { Button } from '$lib/elements/forms';
+    import { invalidate } from '$app/navigation';
+    import { base } from '$app/paths';
+    import { page } from '$app/stores';
+    import { timer } from '$lib/actions/timer';
     import {
         CardGrid,
         DropList,
         DropListItem,
+        DropListLink,
         Empty,
-        Status,
         Heading,
+        Id,
         PaginationWithLimit,
-        Id
+        Alert
     } from '$lib/components';
+    import { Dependencies } from '$lib/constants';
+    import { Button } from '$lib/elements/forms';
     import {
-        TableHeader,
         TableBody,
-        TableRow,
-        TableCellHead,
         TableCell,
+        TableCellHead,
         TableCellText,
+        TableHeader,
+        TableRow,
         TableScroll
     } from '$lib/elements/table';
-    import { execute, func } from './store';
+    import { execute, func, proxyRuleList } from './store';
     import { Container } from '$lib/layout';
-    import { base } from '$app/paths';
     import { app } from '$lib/stores/app';
-    import { calculateSize } from '$lib/helpers/sizeConvertion';
-    import { toLocaleDateTime } from '$lib/helpers/date';
-    import { log } from '$lib/stores/logs';
-    import { invalidate } from '$app/navigation';
-    import { Dependencies } from '$lib/constants';
+    import { calculateSize, humanFileSize } from '$lib/helpers/sizeConvertion';
     import { Query, type Models } from '@appwrite.io/console';
     import type { PageData } from './$types';
     import Delete from './delete.svelte';
     import Create from './create.svelte';
-    import Rebuild from './rebuild.svelte';
-    import Activate from './activate.svelte';
-    import { browser } from '$app/environment';
-    import { sdk } from '$lib/stores/sdk';
-    import { page } from '$app/stores';
-    import { calculateTime } from '$lib/helpers/timeConversion';
-    import { timer } from '$lib/actions/timer';
     import { onMount } from 'svelte';
+    import { sdk } from '$lib/stores/sdk';
+    import Activate from './activate.svelte';
+    import { calculateTime } from '$lib/helpers/timeConversion';
+    import { Pill } from '$lib/elements';
+    import RedeployModal from './redeployModal.svelte';
+    import DeploymentSource from './deploymentSource.svelte';
+    import DeploymentCreatedBy from './deploymentCreatedBy.svelte';
+    import DeploymentDomains from './deploymentDomains.svelte';
 
     export let data: PageData;
 
-    let showCreate = false;
     let showDropdown = [];
     let showDelete = false;
     let showActivate = false;
-    let showRebuild = false;
+    let showRedeploy = false;
 
     let selectedDeployment: Models.Deployment = null;
     let activeDeployment: Models.Deployment = null;
@@ -66,50 +67,28 @@
     function handleActivate() {
         invalidate(Dependencies.DEPLOYMENTS);
     }
-
-    function handleRebuild() {
-        invalidate(Dependencies.DEPLOYMENTS);
-    }
-
-    $: activeDeployment = data.deployments.deployments.find((d) => d.$id === $func?.deployment);
-
-    if (browser) {
-        sdk.forConsole.client.subscribe<Models.Deployment>('console', (message) => {
-            if (message.events.includes('functions.*.deployments.*.create')) {
-                invalidate(Dependencies.DEPLOYMENTS);
-
-                return;
-            }
-            if (message.events.includes('functions.*.deployments.*.update')) {
-                invalidate(Dependencies.DEPLOYMENTS);
-                invalidate(Dependencies.FUNCTION);
-
-                return;
-            }
-            if (message.events.includes('functions.*.deployments.*.delete')) {
-                invalidate(Dependencies.DEPLOYMENTS);
-
-                return;
-            }
-        });
-    }
 </script>
 
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
         <Heading tag="h2" size="5">Deployments</Heading>
-        <Button on:click={() => (showCreate = true)} event="create_deployment">
-            <span class="icon-plus" aria-hidden="true" />
-            <span class="text">Create deployment</span>
-        </Button>
+        <Create main />
     </div>
     {#if data.deployments.total}
         <div class="common-section">
             <Heading tag="h3" size="7">Active</Heading>
         </div>
+        {#if activeDeployment && !$func.live}
+            <div class="u-margin-block-start-8">
+                <Alert type="warning" isStandalone>
+                    Some configuration options are not live yet. Redeploy your function to apply
+                    latest changes.
+                </Alert>
+            </div>
+        {/if}
         {#if activeDeployment}
             <CardGrid>
-                <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16">
+                <div class="u-flex u-cross-start u-gap-16">
                     <div class="avatar is-medium" aria-hidden="true">
                         <img
                             src={`${base}/icons/${$app.themeInUse}/color/${
@@ -117,90 +96,129 @@
                             }.svg`}
                             alt="technology" />
                     </div>
-                    <div>
-                        <div class="u-flex u-gap-12 u-cross-center">
-                            <p><b>Function ID: </b></p>
-                            <Id value={$func.$id}><b>{$func.$id}</b></Id>
-                        </div>
+                    <div class="u-grid-equal-row-size u-gap-4 u-line-height-1">
+                        <p><b>Deployment ID</b></p>
 
-                        <div class="u-flex u-gap-12 u-cross-center">
-                            <p>Deployment ID:</p>
-                            <Id value={$func.deployment}>
-                                {$func.deployment}
-                            </Id>
-                        </div>
+                        <Id value={$func.deployment}>
+                            {$func.deployment}
+                        </Id>
                     </div>
                 </div>
                 <svelte:fragment slot="aside">
+                    {@const status = activeDeployment.status}
+                    {@const fileSize = humanFileSize(activeDeployment.size)}
                     <div class="u-flex u-main-space-between">
-                        <div>
-                            <p>Created at: {toLocaleDateTime($func.$createdAt)}</p>
-                            <p>Updated at: {toLocaleDateTime($func.$updatedAt)}</p>
-                            <p>Entrypoint: {activeDeployment?.entrypoint}</p>
+                        <div class="u-grid-equal-row-size u-gap-4 u-line-height-1">
+                            <p><b>Build time:</b> {calculateTime(activeDeployment.buildTime)}</p>
+                            <p>
+                                <b>Updated:</b>
+                                <DeploymentCreatedBy deployment={activeDeployment} />
+                            </p>
+                            <p><b>Size:</b> {fileSize.value + fileSize.unit}</p>
+                            <p class="u-flex u-gap-4 u-cross-center">
+                                <b>Source:</b>
+                                <DeploymentSource deployment={activeDeployment} />
+                            </p>
+                            {#if $proxyRuleList?.rules?.length}
+                                <p class="u-flex u-gap-4 u-cross-center">
+                                    <b>Domains:</b>
+                                    <DeploymentDomains domain={$proxyRuleList} />
+                                </p>
+                            {/if}
                         </div>
                         <div class="u-flex u-flex-vertical u-cross-end">
-                            <Status status={activeDeployment.status}>
-                                {activeDeployment.status}
-                            </Status>
-                            <p class="text">
-                                {calculateTime(activeDeployment.buildTime)}
-                            </p>
+                            <Pill
+                                danger={status === 'failed'}
+                                warning={status === 'building'}
+                                info={status === 'ready'}>
+                                <span class="text u-trim">{activeDeployment.status}</span>
+                            </Pill>
                         </div>
                     </div>
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">
-                    <Button
-                        text
-                        on:click={() => {
-                            $log.show = true;
-                            $log.func = $func;
-                            $log.data = activeDeployment;
-                        }}>
-                        Build logs
-                    </Button>
-                    <Button secondary on:click={() => execute.set($func)}>Execute now</Button>
+                    <div class="u-flex u-flex-wrap">
+                        <Button
+                            text
+                            href={`/console/project-${$page.params.project}/functions/function-${$page.params.function}/deployment-${activeDeployment.$id}`}>
+                            Build logs
+                        </Button>
+                        <Button
+                            text
+                            class="u-margin-inline-end-16"
+                            on:click={() => {
+                                selectedDeployment = activeDeployment;
+                                showRedeploy = true;
+                            }}>Redeploy</Button>
+
+                        <Button secondary on:click={() => ($execute = $func)}>Execute now</Button>
+                    </div>
                 </svelte:fragment>
             </CardGrid>
         {:else}
-            <Empty
-                single
-                href="https://appwrite.io/docs/functions#createFunction"
-                target="deployment"
-                on:click={() => (showCreate = true)} />
+            <Empty single target="deployment">
+                <div class="u-text-center">
+                    <Heading size="7" tag="h2">
+                        Create your first deployment to get started.
+                    </Heading>
+                    <p class="body-text-2 u-bold u-margin-block-start-4">
+                        Learn more about deployments in our Documentation.
+                    </p>
+                </div>
+                <div class="u-flex u-gap-16 u-main-center">
+                    <Button
+                        external
+                        href="https://appwrite.io/docs/functions#createFunction"
+                        text
+                        event="empty_documentation"
+                        ariaLabel={`create {target}`}>Documentation</Button>
+                    <Create secondary />
+                </div>
+            </Empty>
         {/if}
 
         <div class="common-section">
-            <Heading tag="h3" size="7">Inactive</Heading>
+            <Heading tag="h3" size="7">All</Heading>
         </div>
-        {#if data.deployments.total > 1 || (!activeDeployment && data.deployments.total === 1)}
-            <TableScroll>
-                <TableHeader>
-                    <TableCellHead width={150}>Deployment ID</TableCellHead>
-                    <TableCellHead width={140}>Created</TableCellHead>
-                    <TableCellHead width={100}>Status</TableCellHead>
-                    <TableCellHead width={100}>Build Time</TableCellHead>
-                    <TableCellHead width={70}>Size</TableCellHead>
-                    <TableCellHead width={25} />
-                </TableHeader>
-                <TableBody>
-                    {#each data.deployments.deployments as deployment, index}
-                        {#if deployment.$id !== $func.deployment}
+        {#if data.deployments.total > 0}
+            <div class="u-margin-block-start-24">
+                <TableScroll noMargin>
+                    <TableHeader>
+                        <TableCellHead width={150}>Deployment ID</TableCellHead>
+                        <TableCellHead width={80}>Status</TableCellHead>
+                        <TableCellHead width={80}>Source</TableCellHead>
+                        <TableCellHead width={180}>Updated</TableCellHead>
+                        <TableCellHead width={80}>Build Time</TableCellHead>
+                        <TableCellHead width={80}>Size</TableCellHead>
+                        <TableCellHead width={40} />
+                    </TableHeader>
+                    <TableBody>
+                        {#each data.deployments.deployments as deployment, index}
+                            {@const status = deployment.status}
                             <TableRow>
                                 <TableCell width={150} title="Deployment ID">
                                     <Id value={deployment.$id}>{deployment.$id}</Id>
                                 </TableCell>
-                                <TableCellText width={140} title="Created">
-                                    {toLocaleDateTime(deployment.$createdAt)}
+                                <TableCell title="Status">
+                                    {#if activeDeployment?.$id === deployment?.$id}
+                                        <Pill success>active</Pill>
+                                    {:else}
+                                        <Pill
+                                            danger={status === 'failed'}
+                                            warning={status === 'building'}
+                                            info={status === 'ready'}>
+                                            {status}
+                                        </Pill>
+                                    {/if}
+                                </TableCell>
+                                <TableCellText title="Source">
+                                    <DeploymentSource {deployment} /></TableCellText>
+                                <TableCellText width={180} title="Updated">
+                                    <DeploymentCreatedBy {deployment} />
                                 </TableCellText>
 
-                                <TableCell width={100} title="Status">
-                                    <Status status={deployment.status}>
-                                        {deployment.status}
-                                    </Status>
-                                </TableCell>
-
-                                <TableCellText width={100} title="Build Time">
+                                <TableCellText title="Build Time">
                                     {#if ['processing', 'building'].includes(deployment.status)}
                                         <span use:timer={{ start: deployment.$createdAt }} />
                                     {:else}
@@ -208,11 +226,11 @@
                                     {/if}
                                 </TableCellText>
 
-                                <TableCellText width={70} title="Size">
+                                <TableCellText title="Size">
                                     {calculateSize(deployment.size)}
                                 </TableCellText>
 
-                                <TableCell width={25} showOverflow>
+                                <TableCell width={40} showOverflow>
                                     <DropList
                                         bind:show={showDropdown[index]}
                                         placement="bottom-start"
@@ -227,35 +245,30 @@
                                         </button>
                                         <svelte:fragment slot="list">
                                             <DropListItem
-                                                icon="lightning-bolt"
+                                                icon="refresh"
                                                 on:click={() => {
                                                     selectedDeployment = deployment;
-                                                    showActivate = true;
+                                                    showRedeploy = true;
                                                     showDropdown = [];
                                                 }}>
-                                                Activate
+                                                Redeploy
                                             </DropListItem>
-                                            {#if 'failed' === deployment.status}
+                                            {#if deployment.status === 'ready' && deployment.$id !== $func.deployment}
                                                 <DropListItem
-                                                    icon="refresh"
+                                                    icon="lightning-bolt"
                                                     on:click={() => {
                                                         selectedDeployment = deployment;
-                                                        showRebuild = true;
+                                                        showActivate = true;
                                                         showDropdown = [];
                                                     }}>
-                                                    Retry Build
+                                                    Activate
                                                 </DropListItem>
                                             {/if}
-                                            <DropListItem
+                                            <DropListLink
                                                 icon="terminal"
-                                                on:click={() => {
-                                                    $log.show = true;
-                                                    $log.func = $func;
-                                                    $log.data = deployment;
-                                                    showDropdown = [];
-                                                }}>
-                                                Output
-                                            </DropListItem>
+                                                href={`/console/project-${$page.params.project}/functions/function-${$page.params.function}/deployment-${deployment.$id}`}>
+                                                Logs
+                                            </DropListLink>
                                             <DropListItem
                                                 icon="trash"
                                                 on:click={() => {
@@ -269,15 +282,16 @@
                                     </DropList>
                                 </TableCell>
                             </TableRow>
-                        {/if}
-                    {/each}
-                </TableBody>
-            </TableScroll>
+                        {/each}
+                    </TableBody>
+                </TableScroll>
+            </div>
         {:else}
-            <Empty single target="deployment" on:click={() => (showCreate = true)}>
+            <Empty single target="deployment" on:click>
                 <div class="u-text-center">
-                    <Heading size="7" tag="h2"
-                        >You have no inactive deployments. Create one to see it here.</Heading>
+                    <Heading size="7" tag="h2">
+                        You have no deployments. Create one to see it here.
+                    </Heading>
                     <p class="body-text-2 u-bold u-margin-block-start-4">
                         Learn more about deployments in our Documentation.
                     </p>
@@ -289,28 +303,39 @@
                         text
                         event="empty_documentation"
                         ariaLabel={`create {target}`}>Documentation</Button>
-                    <Button secondary on:click={() => (showCreate = true)}>
-                        Create deployment
-                    </Button>
+                    <Create />
                 </div>
             </Empty>
         {/if}
     {:else}
-        <Empty
-            single
-            target="deployment"
-            href="https://appwrite.io/docs/functions#createFunction"
-            on:click={() => (showCreate = true)} />
+        <Empty single target="deployment">
+            <div class="u-text-center">
+                <Heading size="7" tag="h2">Create your first deployment to get started.</Heading>
+                <p class="body-text-2 u-bold u-margin-block-start-4">
+                    Learn more about deployments in our Documentation.
+                </p>
+            </div>
+            <div class="u-flex u-gap-16 u-main-center">
+                <Button
+                    external
+                    href="https://appwrite.io/docs/functions#createFunction"
+                    text
+                    event="empty_documentation"
+                    ariaLabel={`create {target}`}>Documentation</Button>
+                <Create secondary />
+            </div>
+        </Empty>
     {/if}
-    {@const sum = data.deployments.total ? data.deployments.total - 1 : 0}
 
-    <PaginationWithLimit name="Deployments" limit={data.limit} offset={data.offset} total={sum} />
+    <PaginationWithLimit
+        name="Deployments"
+        limit={data.limit}
+        offset={data.offset}
+        total={data.deployments.total} />
 </Container>
-
-<Create bind:showCreate />
 
 {#if selectedDeployment}
     <Delete {selectedDeployment} bind:showDelete />
     <Activate {selectedDeployment} bind:showActivate on:activated={handleActivate} />
-    <Rebuild {selectedDeployment} bind:showRebuild on:rebuild={handleRebuild} />
+    <RedeployModal {selectedDeployment} bind:show={showRedeploy} />
 {/if}

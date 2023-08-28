@@ -15,6 +15,7 @@
     export let readonly = false;
     export let autofocus = false;
     export let autocomplete = false;
+    export let tooltip: string = null;
 
     let element: HTMLInputElement;
     let error: string;
@@ -55,7 +56,7 @@
 </script>
 
 <FormItem>
-    <Label {required} {optionalText} hide={!showLabel} for={id}>
+    <Label {required} {optionalText} {tooltip} hide={!showLabel} for={id}>
         {label}
     </Label>
 

@@ -3,6 +3,7 @@
     import { Alert } from '$lib/components';
     import { trackEvent } from '$lib/actions/analytics';
     import { Form } from '$lib/elements/forms';
+    import { disableCommands } from '$lib/commandCenter';
 
     export let show = false;
     export let size: 'small' | 'big' = null;
@@ -11,9 +12,11 @@
     export let error: string = null;
     export let closable = true;
     export let headerDivider = true;
-    export let onSubmit: () => Promise<void> | void = function () {
+    export let onSubmit: (e: SubmitEvent) => Promise<void> | void = function () {
         return;
     };
+    export let title = '';
+    export let description = '';
 
     let dialog: HTMLDialogElement;
     let alert: HTMLElement;
@@ -70,6 +73,8 @@
         closeModal();
     }
 
+    $: $disableCommands(show);
+
     $: if (error) {
         alert?.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
     }
@@ -99,8 +104,11 @@
                                 <span class={`icon-${icon}`} aria-hidden="true" />
                             </div>
                         {/if}
+
                         <h4 class="modal-title heading-level-5">
-                            <slot name="header" />
+                            <slot name="title">
+                                {title}
+                            </slot>
                         </h4>
                     </div>
                     {#if closable}
@@ -119,6 +127,11 @@
                         </button>
                     {/if}
                 </div>
+                <p>
+                    <slot name="description">
+                        {description}
+                    </slot>
+                </p>
             </header>
             <div class="modal-content">
                 {#if error}

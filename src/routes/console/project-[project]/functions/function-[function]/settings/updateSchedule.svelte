@@ -22,11 +22,20 @@
             await sdk.forProject.functions.update(
                 functionId,
                 $func.name,
+                $func.runtime,
                 $func.execute || undefined,
                 $func.events || undefined,
                 functionSchedule,
                 $func.timeout || undefined,
-                $func.enabled
+                $func.enabled || undefined,
+                $func.logging || undefined,
+                $func.entrypoint || undefined,
+                $func.commands || undefined,
+                $func.installationId || undefined,
+                $func.providerRepositoryId || undefined,
+                $func.providerBranch || undefined,
+                $func.providerSilentMode || undefined,
+                $func.providerRootDirectory || undefined
             );
             await invalidate(Dependencies.FUNCTION);
             addNotification({
@@ -46,14 +55,15 @@
 
 <Form onSubmit={updateSchedule}>
     <CardGrid>
-        <Heading tag="h6" size="7">Schedule</Heading>
+        <Heading tag="h6" size="7" id="schedule">Schedule</Heading>
         <p>
             Set a Cron schedule to trigger your function. Leave blank for no schedule. <a
                 href="https://appwrite.io/docs/functions#scheduled-execution"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="link">
-                More details on Cron syntax here.</a>
+                More details on Cron syntax here</a
+            >.
         </p>
         <svelte:fragment slot="aside">
             <FormList>

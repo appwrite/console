@@ -1,7 +1,6 @@
 <script lang="ts">
     import { Wizard } from '$lib/layout';
-    import { beforeNavigate, goto, invalidate } from '$app/navigation';
-    import { wizard } from '$lib/stores/wizard';
+    import { goto, invalidate } from '$app/navigation';
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
     import Step1 from './wizard/step1.svelte';
     import Step2 from './wizard/step2.svelte';
@@ -42,10 +41,6 @@
         key.reset();
     });
 
-    beforeNavigate(() => {
-        wizard.hide();
-    });
-
     const stepsComponents: WizardStepsType = new Map();
     stepsComponents.set(1, {
         label: 'Details',
@@ -57,4 +52,4 @@
     });
 </script>
 
-<Wizard title="Create an API Key" steps={stepsComponents} on:finish={onFinish} />
+<Wizard title="Create an API key" steps={stepsComponents} on:finish={onFinish} />

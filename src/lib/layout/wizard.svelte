@@ -26,7 +26,6 @@
 
     const dispatch = createEventDispatcher();
 
-    let currentStep = 1;
     let showExitModal = false;
 
     function handleKeydown(event: KeyboardEvent) {
@@ -55,8 +54,8 @@
 
     function handleStepClick(e: CustomEvent<number>) {
         const step = e.detail;
-        if (step < currentStep) {
-            currentStep = step;
+        if (step < $wizard.step) {
+            $wizard.step = step;
         }
     }
 
@@ -79,12 +78,12 @@
             dispatch('finish');
         } else {
             trackEvent('wizard_next');
-            currentStep++;
+            $wizard.step++;
         }
     }
 
     $: sortedSteps = [...steps].sort(([a], [b]) => (a > b ? 1 : -1));
-    $: isLastStep = currentStep === steps.size;
+    $: isLastStep = $wizard.step === steps.size;
 </script>
 
 <svelte:window on:keydown={handleKeydown} />
@@ -114,7 +113,7 @@
                 text: label,
                 optional
             }))}
-            {currentStep} />
+            currentStep={$wizard.step} />
     </aside>
     <div class="wizard-media">
         {#if $wizard.media}
@@ -124,33 +123,30 @@
     <div class="wizard-main">
         <Form noStyle onSubmit={submit}>
             {#each sortedSteps as [step, { component }]}
-                {#if currentStep === step}
+                {#if $wizard.step === step}
                     <svelte:component this={component} />
                 {/if}
             {/each}
             <div class="form-footer">
                 <div class="u-flex u-main-end u-gap-12">
-                    {#if !isLastStep && sortedSteps[currentStep - 1][1].optional}
+                    {#if !isLastStep && sortedSteps[$wizard.step - 1]?.[1]?.optional}
                         <Button text on:click={() => dispatch('finish')}>
                             Skip optional steps
                         </Button>
                     {/if}
-                    {#if currentStep === 1}
+
+                    {#if $wizard.step === 1}
                         <Button secondary on:click={handleExit}>Cancel</Button>
-                        <Button submit>Next</Button>
-                    {:else if isLastStep}
-                        <Button
-                            secondary
-                            on:click={() => currentStep--}
-                            on:click={() => trackEvent('wizard_back')}>Back</Button>
-                        <Button submit>{finalAction}</Button>
                     {:else}
                         <Button
                             secondary
-                            on:click={() => currentStep--}
+                            on:click={() => $wizard.step--}
                             on:click={() => trackEvent('wizard_back')}>Back</Button>
-                        <Button submit>Next</Button>
                     {/if}
+
+                    <Button submit disabled={$wizard.nextDisabled}>
+                        {isLastStep ? finalAction : 'Next'}
+                    </Button>
                 </div>
             </div>
         </Form>

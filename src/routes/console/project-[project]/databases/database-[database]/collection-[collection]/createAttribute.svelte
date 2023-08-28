@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Modal } from '$lib/components';
-    import { option, options } from './attributes/store';
+    import { option, attributeOptions, type Option } from './attributes/store';
     import { Button, InputText, FormList } from '$lib/elements/forms';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
@@ -13,7 +13,7 @@
     import { feedback } from '$lib/stores/feedback';
 
     export let showCreate = false;
-    export let selectedOption: string = null;
+    export let selectedOption: Option['name'] = null;
     const databaseId = $page.params.database;
     $: collectionId = $page.params.collection;
 
@@ -82,7 +82,7 @@
     }
 
     $: if (selectedOption) {
-        $option = options.find((option) => option.name === selectedOption);
+        $option = attributeOptions.find((option) => option.name === selectedOption);
     }
 
     $: if (!showCreate) {
@@ -99,7 +99,7 @@
 </script>
 
 <Modal {error} size="big" bind:show={showCreate} onSubmit={submit} icon={$option?.icon}>
-    <svelte:fragment slot="header">
+    <svelte:fragment slot="title">
         {#if selectedOption === 'Relationship'}
             <span class="u-flex u-gap-16 u-cross-center">
                 {selectedOption}
