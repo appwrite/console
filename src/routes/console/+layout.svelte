@@ -6,7 +6,7 @@
     import Header from '$lib/layout/header.svelte';
     import SideNavigation from '$lib/layout/navigation.svelte';
     import Shell from '$lib/layout/shell.svelte';
-    import { app, feedback } from '$lib/stores/app';
+    import { app } from '$lib/stores/app';
     import { log } from '$lib/stores/logs';
     import { newOrgModal } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
@@ -24,6 +24,7 @@
     import { openMigrationWizard } from './(migration-wizard)';
     import { project } from './project-[project]/store';
     import { sdk } from '$lib/stores/sdk';
+    import { feedback } from '$lib/stores/feedback';
 
     function kebabToSentenceCase(str: string) {
         return str
