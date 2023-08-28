@@ -22,19 +22,25 @@
     import deepEqual from 'deep-equal';
 
     let enabled = false;
-    let sender: string;
+    let senderName: string;
+    let senderEmail: string;
+    let replyTo: string;
     let host: string;
     let port: number;
     let username: string;
     let password: string;
+    let secure = false;
 
     onMount(() => {
         enabled = $project.smtpEnabled ?? false;
-        sender = $project.smtpSender;
+        senderName = $project.smtpSenderName;
+        senderEmail = $project.smtpSenderEmail;
+        replyTo = $project.smtpReplyTo;
         host = $project.smtpHost;
         port = $project.smtpPort;
         username = $project.smtpUsername;
         password = $project.smtpPassword;
+        secure = $project.smtpSecure === 'tls';
     });
 
     async function updateSmtp() {
@@ -42,11 +48,14 @@
             await sdk.forConsole.projects.updateSmtpConfiguration(
                 $project.$id,
                 enabled,
-                sender,
-                host,
-                port,
-                username,
-                password
+                enabled ? senderName : undefined,
+                enabled ? senderEmail : undefined,
+                enabled ? replyTo : undefined,
+                enabled ? host : undefined,
+                enabled ? port : undefined,
+                enabled ? username : undefined,
+                enabled ? password : undefined,
+                enabled ? (secure ? 'tls' : '') : undefined
             );
 
             invalidate(Dependencies.PROJECT);
@@ -65,23 +74,29 @@
     }
 
     $: isButtonDisabled = deepEqual(
-        { enabled, sender, host, port, username, password },
+        { enabled, senderName, senderEmail, replyTo, host, port, username, password, secure },
         {
             enabled: $project.smtpEnabled,
-            sender: $project.smtpSender,
+            senderName: $project.smtpSenderName,
+            senderEmail: $project.smtpSenderEmail,
+            replyTo: $project.smtpReplyTo,
             host: $project.smtpHost,
             port: $project.smtpPort,
             username: $project.smtpUsername,
-            password: $project.smtpPassword
+            password: $project.smtpPassword,
+            secure: $project.smtpSecure === 'tls'
         }
     );
 
     $: if (!enabled) {
-        sender = undefined;
+        senderName = undefined;
+        senderEmail = undefined;
+        replyTo = undefined;
         host = undefined;
         port = undefined;
         username = undefined;
         password = undefined;
+        secure = false;
     }
 </script>
 
@@ -107,11 +122,22 @@
                     </InputChoice>
 
                     {#if enabled}
+                        <InputText
+                            id="senderName"
+                            label="Sender name"
+                            bind:value={senderName}
+                            required
+                            placeholder="Enter sender name" />
                         <InputEmail
                             id="senderEmail"
                             label="Sender email"
-                            bind:value={sender}
+                            bind:value={senderEmail}
                             required
+                            placeholder="user@example.io" />
+                        <InputEmail
+                            id="replyTo"
+                            label="Reply to"
+                            bind:value={replyTo}
                             placeholder="user@example.io" />
                         <InputText
                             id="serverHost"
@@ -139,7 +165,7 @@
                             required
                             placeholder="Enter password" />
 
-                        <InputChoice id="tls" label="TLS secure protocol">
+                        <InputChoice bind:value={secure} id="tls" label="TLS secure protocol">
                             Enable if TLS is supported on your SMTP server.
                         </InputChoice>
                     {/if}
