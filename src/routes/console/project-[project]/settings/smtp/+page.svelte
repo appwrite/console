@@ -19,7 +19,7 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import InputNumber from '$lib/elements/forms/inputNumber.svelte';
     import { base } from '$app/paths';
-    import { deepEqual } from '$lib/helpers/object';
+    import deepEqual from 'deep-equal';
 
     let enabled = false;
     let sender: string;

@@ -457,10 +457,10 @@
         grid-template-columns: auto 1fr;
         gap: 0.25rem 1rem;
         align-items: center;
+        padding-block-end: 1rem;
 
         ul {
             grid-column-start: 2;
-            padding-block-end: 2rem;
 
             li {
                 margin-block-start: 1rem;
