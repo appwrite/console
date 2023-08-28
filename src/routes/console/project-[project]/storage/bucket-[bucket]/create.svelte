@@ -48,8 +48,7 @@
     }
 </script>
 
-<Modal size="big" {error} bind:show={showCreate} onSubmit={create}>
-    <svelte:fragment slot="header">Create file</svelte:fragment>
+<Modal title="Create file" size="big" {error} bind:show={showCreate} onSubmit={create}>
     <FormList>
         <div>
             <InputFile
@@ -78,7 +77,7 @@
                 rel="noopener noreferrer"
                 class="link">
                 Permissions guide
-                </a>.
+            </a>.
         </p>
         {#if $bucket.fileSecurity}
             <div class="common-section">

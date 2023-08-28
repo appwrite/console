@@ -4,7 +4,7 @@
 <script lang="ts">
     import { debounce } from '$lib/helpers/debounce';
     import { isMac } from '$lib/helpers/platform';
-    import { commands, searchers, type Command } from '../commands';
+    import { commands, searchers, type Command, isKeyedCommand } from '../commands';
     import Template from './template.svelte';
 
     let search = '';
@@ -69,7 +69,7 @@
             {#if hasAlt(command)}
                 <kbd class="kbd"> {isMac() ? '⌥' : 'Alt'} </kbd>
             {/if}
-            {#if 'keys' in command}
+            {#if isKeyedCommand(command)}
                 {#each command.keys as key, i}
                     {@const hasNext = command.keys.length - 1 !== i}
 

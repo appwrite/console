@@ -21,7 +21,7 @@
     import CreateAttributeDropdown from './createAttributeDropdown.svelte';
     import Delete from './deleteAttribute.svelte';
     import Edit from './edit.svelte';
-    import { attributeOptions } from './store';
+    import { attributeOptions, type Option } from './store';
 
     const projectId = $page.params.project;
     const databaseId = $page.params.database;
@@ -29,7 +29,7 @@
     let showCreateDropdown = false;
     let showEmptyCreateDropdown = false;
     let showDropdown = [];
-    let selectedOption: string = null;
+    let selectedOption: Option['name'] = null;
     let selectedAttribute: Attributes = null;
     let showCreate = false;
     let showDelete = false;

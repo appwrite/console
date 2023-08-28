@@ -18,8 +18,7 @@
     }
 </script>
 
-<Modal headerDivider={false} bind:show={showGitInstall} size="big">
-    <svelte:fragment slot="header">Install</svelte:fragment>
+<Modal title="Install" headerDivider={false} bind:show={showGitInstall} size="big">
     <p>Select a provider to import an existing git repositories.</p>
 
     <div class="u-flex u-cross-center u-flex-vertical u-gap-16">

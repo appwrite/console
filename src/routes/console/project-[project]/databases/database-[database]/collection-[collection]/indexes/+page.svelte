@@ -19,6 +19,7 @@
     import type { Models } from '@appwrite.io/console';
     import { Button } from '$lib/elements/forms';
     import CreateAttributeDropdown from '../attributes/createAttributeDropdown.svelte';
+    import type { Option } from '../attributes/store';
 
     let showDropdown = [];
     let selectedIndex: Models.Index = null;
@@ -27,7 +28,7 @@
     let showDelete = false;
     let showCreateAttribute = false;
     let showCreateDropdown = false;
-    let selectedAttribute: string = null;
+    let selectedAttribute: Option['name'] = null;
 </script>
 
 <Container>

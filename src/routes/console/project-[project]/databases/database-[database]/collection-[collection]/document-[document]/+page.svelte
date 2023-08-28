@@ -69,8 +69,8 @@
         <Heading tag="h6" size="7">Permissions</Heading>
         <p>
             Assign read or write permissions at the <b>collection level</b> or
-            <b>document level</b>. If collection level permissions are assigned, permissions
-            applied to individual documents are ignored.
+            <b>document level</b>. If collection level permissions are assigned, permissions applied
+            to individual documents are ignored.
         </p>
 
         <svelte:fragment slot="aside">

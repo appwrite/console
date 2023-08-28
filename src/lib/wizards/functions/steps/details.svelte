@@ -21,7 +21,7 @@
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">Function details</svelte:fragment>
+    <svelte:fragment slot="title">Details</svelte:fragment>
     <svelte:fragment slot="subtitle">Create and deploy your function manually.</svelte:fragment>
     <FormList>
         <InputText

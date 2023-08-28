@@ -11,7 +11,10 @@
             if (!variable.required) {
                 continue;
             }
-
+            if (variable.name === 'APPWRITE_API_KEY') {
+                if ($templateConfig.appwriteApiKey || $templateConfig.generateKey) continue;
+                else throw new Error(`Please set ${variable.name} variable or generate it.`);
+            }
             if (!$templateConfig.variables[variable.name]) {
                 throw new Error(`Please set ${variable.name} variable.`);
             }
@@ -23,7 +26,7 @@
 </script>
 
 <WizardStep {beforeSubmit}>
-    <svelte:fragment slot="title">Environment variables</svelte:fragment>
+    <svelte:fragment slot="title">Variables</svelte:fragment>
     <svelte:fragment slot="subtitle">
         Edit the values of the environment variables that will be passed to your function at
         runtime.

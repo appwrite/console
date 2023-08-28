@@ -1,8 +1,9 @@
 <script lang="ts">
+    import { beforeNavigate } from '$app/navigation';
     import { Drop, Modal } from '$lib/components';
-    import Content from './content.svelte';
     import { Button } from '$lib/elements/forms';
-    import { queries, tags } from './store';
+    import Content from './content.svelte';
+    import { queries, queriesAreDirty, tags } from './store';
 
     // We need to separate them so we don't trigger Drop's handlers
     let showFiltersDesktop = false;
@@ -10,16 +11,11 @@
 
     let applied = $tags.length;
 
-    function apply() {
-        queries.apply();
+    beforeNavigate(() => {
         applied = $tags.length;
-    }
-
-    function clearAll() {
-        queries.clearAll();
-        queries.apply();
-        applied = 0;
-    }
+        showFiltersDesktop = false;
+        showFiltersMobile = false;
+    });
 </script>
 
 <div class="is-not-mobile">
@@ -41,8 +37,8 @@
                     on:clear={() => (applied = 0)} />
                 <hr />
                 <div class="u-flex u-margin-block-start-16 u-main-end u-gap-8">
-                    <Button text on:click={clearAll}>Clear all</Button>
-                    <Button on:click={apply}>Apply</Button>
+                    <Button text on:click={queries.clearAll}>Clear all</Button>
+                    <Button on:click={queries.apply} disabled={!$queriesAreDirty}>Apply</Button>
                 </div>
             </div>
         </svelte:fragment>
@@ -60,12 +56,16 @@
         {/if}
     </Button>
 
-    <Modal bind:show={showFiltersMobile} size="big">
-        <svelte:fragment slot="header">Filters</svelte:fragment>
+    <Modal
+        title="Filters"
+        description="Apply filter rules to refine the table view"
+        bind:show={showFiltersMobile}
+        size="big">
         <Content on:apply={(e) => (applied = e.detail.applied)} on:clear={() => (applied = 0)} />
         <svelte:fragment slot="footer">
-            <Button text on:click={clearAll}>Clear all</Button>
-            <Button on:click={apply}>Apply</Button></svelte:fragment>
+            <Button text on:click={queries.clearAll}>Clear all</Button>
+            <Button on:click={queries.apply} disabled={!$queriesAreDirty}>Apply</Button
+            ></svelte:fragment>
     </Modal>
 </div>
 

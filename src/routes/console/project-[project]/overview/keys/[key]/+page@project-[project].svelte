@@ -1,7 +1,7 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { CardGrid, Heading, Secret } from '$lib/components';
+    import { Box, CardGrid, Heading, Secret } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form, FormList, InputText } from '$lib/elements/forms';
     import { symmetricDifference } from '$lib/helpers/array';
@@ -154,14 +154,14 @@
         </div>
         <p>The API key will be permanently deleted. This action is irreversible.</p>
         <svelte:fragment slot="aside">
-            <div class="box">
+            <Box>
                 <div class="u-flex u-gap-16">
                     <div class="u-cross-child-center u-line-height-1-5">
                         <h6 class="u-bold">{$key.name}</h6>
                         <p>Last accessed: {accessedAt}</p>
                     </div>
                 </div>
-            </div>
+            </Box>
         </svelte:fragment>
 
         <svelte:fragment slot="actions">

@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { EyebrowHeading } from '$lib/components';
+    import { Alert, Box, EyebrowHeading } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { deepMap } from '$lib/helpers/object';
     import type { WritableValue } from '$lib/helpers/types';
-    import { sdk } from '$lib/stores/sdk';
+    import { sdk, type getSdkForProject } from '$lib/stores/sdk';
 
     import { onMount } from 'svelte';
 
@@ -14,11 +14,11 @@
         providerResources,
         resourcesToMigrationForm
     } from '$lib/stores/migration';
-    import { addNotification } from '$lib/stores/notifications';
     import { wizard } from '$lib/stores/wizard';
 
     export let formData: ReturnType<typeof createMigrationFormStore>;
     export let provider: ReturnType<typeof createMigrationProviderStore>;
+    export let projectSdk: ReturnType<typeof getSdkForProject>;
 
     type ValueOf<T> = T[keyof T];
     type FormData = WritableValue<typeof formData>;
@@ -80,12 +80,14 @@
     $: version = report?.version || '0.0.0';
 
     let isOpen = false;
+
+    let error = false;
     onMount(async () => {
         isOpen = true;
         try {
             switch ($provider.provider) {
                 case 'appwrite': {
-                    const res = await sdk.forProject.migrations.getAppwriteReport(
+                    const res = await projectSdk.migrations.getAppwriteReport(
                         providerResources.appwrite,
                         $provider.endpoint,
                         $provider.projectID,
@@ -95,7 +97,7 @@
                     break;
                 }
                 case 'supabase': {
-                    const res = await sdk.forProject.migrations.getSupabaseReport(
+                    const res = await projectSdk.migrations.getSupabaseReport(
                         providerResources.supabase,
                         $provider.endpoint,
                         $provider.apiKey,
@@ -118,7 +120,7 @@
                         report = res;
                     } else if ($provider.serviceAccount) {
                         // Manual auth
-                        const res = await sdk.forProject.migrations.getFirebaseReport(
+                        const res = await projectSdk.migrations.getFirebaseReport(
                             providerResources.firebase,
                             $provider.serviceAccount
                         );
@@ -128,7 +130,7 @@
                     break;
                 }
                 case 'nhost': {
-                    const res = await sdk.forProject.migrations.getNHostReport(
+                    const res = await projectSdk.migrations.getNHostReport(
                         providerResources.nhost,
                         $provider.subdomain,
                         $provider.region,
@@ -142,10 +144,7 @@
             }
         } catch (e) {
             if (!isOpen) return;
-            addNotification({
-                message: e.message,
-                type: 'error'
-            });
+            error = true;
         }
 
         return () => {
@@ -154,11 +153,10 @@
     });
 
     $: resources = providerResources[$provider.provider];
-
     $: wizard.setNextDisabled(!report);
 </script>
 
-<div class="box" style:border-radius="0.5rem">
+<Box radius="small">
     <div class="u-flex u-flex-vertical u-gap-16">
         <EyebrowHeading class="eyebrow" tag="h3" size={3}>Good to know</EyebrowHeading>
         <div class="u-flex u-gap-16">
@@ -204,7 +202,46 @@
             </div>
         {/if}
     </div>
-</div>
+</Box>
+
+{#if report && !isVersionAtLeast(version, '1.4.0')}
+    <div class="u-margin-block-start-24">
+        <Alert
+            type="warning"
+            isStandalone
+            buttons={[
+                {
+                    name: 'Learn more',
+                    method() {
+                        wizard.updateStep((p) => p - 1);
+                    }
+                }
+            ]}>
+            <svelte:fragment slot="title">Functions not available for import</svelte:fragment>
+            To migrate your functions, update the version of the Appwrite instance you're importing from
+            to a version newer than 1.4
+        </Alert>
+    </div>
+{/if}
+
+{#if error}
+    <div class="u-margin-block-start-24">
+        <Alert
+            type="error"
+            isStandalone
+            buttons={[
+                {
+                    name: 'Edit credentials',
+                    method() {
+                        wizard.updateStep((p) => p - 1);
+                    }
+                }
+            ]}>
+            <svelte:fragment slot="title">Request failed</svelte:fragment>
+            Please check if your credentials are filled in correctly in the previous step
+        </Alert>
+    </div>
+{/if}
 
 <ul class="buttons-list u-margin-block-start-32 u-main-end">
     <li class="buttons-list-item">
@@ -216,18 +253,22 @@
     </li>
 </ul>
 
-<ul class="u-flex u-flex-vertical u-gap-32 u-margin-block-start-16">
+<ul class="u-flex u-flex-vertical u-margin-block-start-16">
     {#if resources.includes('user')}
         <li class="checkbox-field">
             <input
                 type="checkbox"
                 bind:checked={$formData.users.root}
                 on:change={handleInputChange('users.root')} />
-            <div class="u-flex u-gap-4">
+            <div class="u-flex u-gap-4 u-cross-center">
                 <span class="u-bold">Users</span>
 
                 {#if $provider.provider !== 'firebase'}
-                    <span class="inline-tag">{report?.user ?? '...'}</span>
+                    {#if report?.user !== undefined}
+                        <span class="inline-tag">{report.user}</span>
+                    {:else if !error}
+                        <span class="loader is-small u-margin-inline-start-4" />
+                    {/if}
                 {/if}
             </div>
             <div />
@@ -240,10 +281,14 @@
                             type="checkbox"
                             bind:checked={$formData.users.teams}
                             on:change={handleInputChange('users.teams')} />
-                        <div class="u-flex u-gap-4">
+                        <div class="u-flex u-gap-4 u-cross-center">
                             <span class="u-bold">Include teams</span>
                             {#if $provider.provider === 'firebase'}
-                                <span class="inline-tag">{report?.team ?? '...'}</span>
+                                {#if report?.team !== undefined}
+                                    <span class="inline-tag">{report.team}</span>
+                                {:else if !error}
+                                    <span class="loader is-small u-margin-inline-start-4" />
+                                {/if}
                             {/if}
                         </div>
                         <div />
@@ -260,10 +305,14 @@
                 type="checkbox"
                 bind:checked={$formData.databases.root}
                 on:change={handleInputChange('databases.root')} />
-            <div class="u-flex u-gap-4">
+            <div class="u-flex u-gap-4 u-cross-center">
                 <span class="u-bold">Databases</span>
                 {#if $provider.provider !== 'firebase'}
-                    <span class="inline-tag">{report?.database ?? '...'}</span>
+                    {#if report?.database !== undefined}
+                        <span class="inline-tag">{report.database}</span>
+                    {:else if !error}
+                        <span class="loader is-small u-margin-inline-start-4" />
+                    {/if}
                 {/if}
             </div>
             <div />
@@ -276,10 +325,14 @@
                             type="checkbox"
                             bind:checked={$formData.databases.documents}
                             on:change={handleInputChange('databases.documents')} />
-                        <div class="u-flex u-gap-4">
+                        <div class="u-flex u-gap-4 u-cross-center">
                             <span class="u-bold">Include documents</span>
                             {#if $provider.provider !== 'firebase'}
-                                <span class="inline-tag">{report?.document ?? '...'}</span>
+                                {#if report?.document !== undefined}
+                                    <span class="inline-tag">{report.document}</span>
+                                {:else if !error}
+                                    <span class="loader is-small u-margin-inline-start-4" />
+                                {/if}
                             {/if}
                         </div>
                         <div />
@@ -296,10 +349,14 @@
                 type="checkbox"
                 bind:checked={$formData.functions.root}
                 on:change={handleInputChange('functions.root')} />
-            <div class="u-flex u-gap-4">
+            <div class="u-flex u-gap-4 u-cross-center">
                 <span class="u-bold">Functions</span>
                 {#if $provider.provider !== 'firebase'}
-                    <span class="inline-tag">{report?.function ?? '...'}</span>
+                    {#if report?.function !== undefined}
+                        <span class="inline-tag">{report.function}</span>
+                    {:else if !error}
+                        <span class="loader is-small u-margin-inline-start-4" />
+                    {/if}
                 {/if}
             </div>
             <div />
@@ -341,26 +398,28 @@
                 type="checkbox"
                 bind:checked={$formData.storage.root}
                 on:change={handleInputChange('storage.root')} />
-            <div class="u-flex u-gap-4">
+            <div class="u-flex u-gap-4 u-cross-center">
                 <span class="u-bold">Storage</span>
                 {#if $provider.provider !== 'firebase'}
-                    <span class="inline-tag">
-                        {report?.size ? `${report.size.toFixed(2)}MB` : '...'}
-                    </span>
+                    {#if report?.size !== undefined}
+                        <span class="inline-tag">{`${report.size.toFixed(2)}MB`}</span>
+                    {:else if !error}
+                        <span class="loader is-small u-margin-inline-start-4" />
+                    {/if}
                 {/if}
             </div>
             <div />
 
-            <span>
+            <p>
                 Import all buckets
-                {#if $provider.provider !== 'firebase'}
-                    <span class="inline-tag">{report?.bucket ?? '...'}</span>
+                {#if $provider.provider !== 'firebase' && report?.bucket}
+                    <span class="inline-tag">{report.bucket}</span>
                 {/if}
                 and files
-                {#if $provider.provider !== 'firebase'}
-                    <span class="inline-tag">{report?.file ?? '...'}</span>
+                {#if $provider.provider !== 'firebase' && report?.file}
+                    <span class="inline-tag">{report.file}</span>
                 {/if}
-            </span>
+            </p>
         </li>
     {/if}
 </ul>
@@ -398,10 +457,10 @@
         grid-template-columns: auto 1fr;
         gap: 0.25rem 1rem;
         align-items: center;
+        padding-block-end: 1rem;
 
         ul {
             grid-column-start: 2;
-            padding-block-end: 2rem;
 
             li {
                 margin-block-start: 1rem;

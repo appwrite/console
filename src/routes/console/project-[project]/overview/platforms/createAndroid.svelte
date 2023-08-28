@@ -31,7 +31,7 @@
         optional: true
     });
     stepsComponents.set(3, {
-        label: "Import",
+        label: 'Import',
         component: Step3,
         optional: true
     });

@@ -8,12 +8,18 @@
     import { WizardStep } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
+    import { onMount } from 'svelte';
     import Repositories from '../components/repositories.svelte';
-    import { installation, repository, templateConfig } from '../store';
+    import { installation, repository, template, templateConfig } from '../store';
+    import { Box } from '$lib/components';
 
-    let selectedInstallationId;
-    let hasInstallations;
-    let selectedRepository;
+    let selectedInstallationId: string;
+    let hasInstallations: boolean;
+    let selectedRepository: string;
+
+    onMount(() => {
+        $templateConfig.repositoryPrivate = true;
+    });
 
     async function beforeSubmit() {
         if (!hasInstallations || !$installation) {
@@ -41,7 +47,19 @@
 
     function connectGitHub() {
         const redirect = new URL($page.url);
-        redirect.searchParams.append('github-installed', 'true');
+        const callbackState = {
+            from: 'github',
+            to: 'template',
+            step: '4',
+            template: $template.id,
+            templateConfig: JSON.stringify($templateConfig)
+        };
+
+        if (callbackState) {
+            Object.keys(callbackState).forEach((key) => {
+                redirect.searchParams.append(key, callbackState[key]);
+            });
+        }
         const target = new URL(`${sdk.forProject.client.config.endpoint}/vcs/github/authorize`);
         target.searchParams.set('projectId', $page.params.project);
         target.searchParams.set('success', redirect.toString());
@@ -70,7 +88,7 @@
 </script>
 
 <WizardStep {beforeSubmit}>
-    <svelte:fragment slot="title">Select repository</svelte:fragment>
+    <svelte:fragment slot="title">Repository</svelte:fragment>
     <svelte:fragment slot="subtitle">
         Select a Git repository that will trigger your function deployments when updated.
     </svelte:fragment>
@@ -107,7 +125,7 @@
                 <div class="u-flex u-cross-center u-flex-vertical u-gap-16">
                     <Button href={connectGitHub().toString()} fullWidth secondary>
                         <span class="icon-github" aria-hidden="true" />
-                        <span class="text">Continue with GitHub</span>
+                        <span class="text">GitHub</span>
                     </Button>
                     <Button disabled fullWidth secondary>
                         <span class="icon-gitlab" aria-hidden="true" />
@@ -123,36 +141,33 @@
                     </Button>
                 </div>
             {/if}
+            {#if $installation}
+                <Box radius="small" class="u-margin-block-start-20">
+                    <div class="u-flex u-gap-16">
+                        <div class="avatar is-size-x-small">
+                            <span class={getProviderIcon($installation.provider)} />
+                        </div>
+                        <div class="u-cross-child-center u-line-height-1-5">
+                            <h6 class="u-bold u-trim-1">
+                                {$installation.organization}/{$templateConfig.repositoryName}
+                            </h6>
+                        </div>
+                    </div>
+                    <div class="u-margin-block-start-24">
+                        <FormList>
+                            <InputText
+                                id="repositoryName"
+                                label="Repository name"
+                                placeholder="my-repository"
+                                bind:value={$templateConfig.repositoryName} />
+                            <InputChoice
+                                id="repositoryPrivate"
+                                label="Keep repository private"
+                                bind:value={$templateConfig.repositoryPrivate} />
+                        </FormList>
+                    </div>
+                </Box>
+            {/if}
         {/await}
-
-        {#if $installation}
-            <div
-                class="box u-margin-block-start-20"
-                style:--box-border-radius="var(--border-radius-small)">
-                <div class="u-flex u-gap-16">
-                    <div class="avatar is-size-x-small">
-                        <span class={getProviderIcon($installation.provider)} />
-                    </div>
-                    <div class="u-cross-child-center u-line-height-1-5">
-                        <h6 class="u-bold u-trim-1">
-                            {$installation.organization}/{$templateConfig.repositoryName}
-                        </h6>
-                    </div>
-                </div>
-                <div class="u-margin-block-start-24">
-                    <FormList>
-                        <InputText
-                            id="repositoryName"
-                            label="Repository name"
-                            placeholder="my-repository"
-                            bind:value={$templateConfig.repositoryName} />
-                        <InputChoice
-                            id="repositoryPrivate"
-                            label="Keep repository private"
-                            bind:value={$templateConfig.repositoryPrivate} />
-                    </FormList>
-                </div>
-            </div>
-        {/if}
     {/if}
 </WizardStep>

@@ -46,13 +46,13 @@
 </script>
 
 <Modal
+    title="Disconnect installation"
     icon="exclamation"
     state="warning"
     headerDivider={false}
     bind:show={showGitDisconnect}
     onSubmit={handleSubmit}
     size="big">
-    <svelte:fragment slot="header">Disconnect installation</svelte:fragment>
     <p>
         Are you sure you want to disconnect this git installation? This will affect future
         deployments to the following functions:

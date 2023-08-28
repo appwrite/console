@@ -55,7 +55,7 @@ export function empty(arr: unknown[]): boolean {
 export function at(array: readonly [], index: number): undefined;
 export function at<T>(array: readonly T[], index: number): T;
 export function at<T>(array: readonly T[] | [], index: number): T | undefined {
-    const len = array.length;
+    const len = array?.length;
     if (!len) return undefined;
 
     if (index < 0) index += len;
@@ -95,4 +95,10 @@ export function toggle<T>(arr: T[], elem: T): T[] {
     }
     arr.push(elem);
     return arr;
+}
+
+// TODO: metric type is wrong
+export function total(set: Array<number>): number {
+    if (!set) return 0;
+    return set.reduce((prev, curr) => prev + curr, 0);
 }

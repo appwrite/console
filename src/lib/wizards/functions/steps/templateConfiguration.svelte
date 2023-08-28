@@ -51,9 +51,10 @@
                 label="Runtime"
                 id="runtime"
                 placeholder="Select runtime"
-                bind:value={$templateConfig.runtime}
+                required
+                disabled={options.length <= 1}
                 {options}
-                required />
+                bind:value={$templateConfig.runtime} />
         {/await}
     </FormList>
 

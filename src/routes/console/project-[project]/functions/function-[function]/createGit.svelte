@@ -8,8 +8,7 @@
     export let show = false;
 </script>
 
-<Modal size="big" bind:show headerDivider={false}>
-    <svelte:fragment slot="header">Create git deployment</svelte:fragment>
+<Modal title="Create git deployment" size="big" bind:show headerDivider={false}>
     {#if $func.installationId && $func.providerRepositoryId}
         <p class="text">
             Deploy your function from the Git provider of your choice by following the steps below.
@@ -68,8 +67,9 @@
                         you push to that repository, your function will be deployed.
                     </p>
                     <div class="alert-buttons u-flex u-margin-inline-start-auto">
-                        <!-- TODO: add link to docs -->
-                        <Button text href="#/" external>Learn more</Button>
+                        <Button text href="https://appwrite.io/docs/functions-deploy#vcs" external>
+                            Learn more
+                        </Button>
                         <Button
                             href={`${base}/console/project-${$page.params.project}/functions/function-${$page.params.function}/settings`}>
                             Install Git

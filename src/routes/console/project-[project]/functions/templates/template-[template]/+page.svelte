@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { base } from '$app/paths';
     import { Card, Heading } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
@@ -34,7 +35,11 @@
                 <li class="collapsible-item">
                     <section class="card u-margin-block-start-24">
                         <h4 class="body-text-1 u-bold">Published by</h4>
-                        {$template.providerOwner}
+                        <img
+                            class="u-margin-block-start-8"
+                            width="130"
+                            src={`${base}/logos/appwrite-full.svg`}
+                            alt="" />
                     </section>
                 </li>
             </ul>

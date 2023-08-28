@@ -58,8 +58,7 @@
     }
 </script>
 
-<Modal {error} size="big" bind:show={showCreate} onSubmit={create}>
-    <svelte:fragment slot="header">Create user</svelte:fragment>
+<Modal title="Create user" {error} size="big" bind:show={showCreate} onSubmit={create}>
     <FormList>
         <InputText
             id="name"

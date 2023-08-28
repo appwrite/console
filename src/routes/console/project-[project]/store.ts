@@ -7,7 +7,7 @@ export const project = derived(page, ($page) => $page.data.project as Models.Pro
 
 export const onboarding = derived(
     project,
-    ($project) => $project.platforms.length === 0 && $project.keys.length === 0
+    ($project) => $project?.platforms?.length === 0 && $project?.keys?.length === 0
 );
 
 function createStats() {

@@ -87,13 +87,13 @@
 </script>
 
 <Modal
+    title="Execute function"
     headerDivider={false}
     bind:show
     size="big"
     onSubmit={handleSubmit}
     on:close={close}
     bind:error>
-    <svelte:fragment slot="header">Execute function</svelte:fragment>
     <p class="text">
         Manually execute your function. <a
             class="link"

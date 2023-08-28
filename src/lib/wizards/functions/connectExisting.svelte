@@ -18,13 +18,13 @@
                 $func.$id,
                 $func.name,
                 $func.runtime,
-                $func.entrypoint || undefined,
                 $func.execute || undefined,
                 $func.events || undefined,
                 $func.schedule || undefined,
                 $func.timeout || undefined,
                 $func.enabled || undefined,
                 $func.logging || undefined,
+                $func.entrypoint || undefined,
                 $func.commands || undefined,
                 $installation.$id,
                 $repository.id,
@@ -59,11 +59,11 @@
 
     const stepsComponents: WizardStepsType = new Map();
     stepsComponents.set(1, {
-        label: 'Select repository',
+        label: 'Repository',
         component: SelectRepository
     });
     stepsComponents.set(2, {
-        label: 'Git configuration',
+        label: 'Git',
         component: GitConfiguration
     });
 </script>

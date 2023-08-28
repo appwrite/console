@@ -6,7 +6,7 @@
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, FormList, InputText } from '$lib/elements/forms';
-    import { deepEqual } from '$lib/helpers/object';
+    import deepEqual from 'deep-equal';
     import { addNotification } from '$lib/stores/notifications';
     import type { Attributes } from '../store';
     import { attributeOptions, type Option } from './store';
@@ -59,7 +59,7 @@
 
 {#if selectedAttribute}
     <Modal {error} size="big" bind:show={showEdit} onSubmit={submit} icon={option?.icon}>
-        <svelte:fragment slot="header">
+        <svelte:fragment slot="title">
             <div class="u-flex u-cross-center u-gap-8">
                 {option?.name}
                 {#if option?.type === 'relationship'}

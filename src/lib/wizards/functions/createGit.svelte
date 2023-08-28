@@ -20,13 +20,13 @@
                 $createFunction.$id || ID.unique(),
                 $createFunction.name,
                 $createFunction.runtime,
-                $createFunction.entrypoint,
                 $createFunction.execute || undefined,
                 undefined,
                 undefined,
                 undefined,
                 undefined,
                 undefined,
+                $createFunction.entrypoint,
                 $createFunction.commands || undefined,
                 $installation.$id,
                 $repository.id,
@@ -67,11 +67,11 @@
 
     const stepsComponents: WizardStepsType = new Map();
     stepsComponents.set(1, {
-        label: 'Git configuration',
+        label: 'Git',
         component: GitConfiguration
     });
     stepsComponents.set(2, {
-        label: 'Function configuration',
+        label: 'Configuration',
         component: FunctionConfiguration
     });
     stepsComponents.set(3, {

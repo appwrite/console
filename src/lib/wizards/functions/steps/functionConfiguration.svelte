@@ -51,7 +51,7 @@
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">Function configuration</svelte:fragment>
+    <svelte:fragment slot="title">Configuration</svelte:fragment>
     <svelte:fragment slot="subtitle">
         Set your deployment configuration and any build commands here.
     </svelte:fragment>

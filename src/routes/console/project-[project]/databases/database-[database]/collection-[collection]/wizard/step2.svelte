@@ -15,7 +15,7 @@
             rel="noopener noreferrer"
             class="link">
             Permissions guide
-            </a>.
+        </a>.
     </svelte:fragment>
     {#if $collection.documentSecurity}
         <div class="common-section">

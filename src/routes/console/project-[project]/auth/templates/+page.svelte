@@ -35,12 +35,12 @@
     import EmailMagicUrlTemplate from './emailMagicUrlTemplate.svelte';
     import EmailRecoveryTemplate from './emailRecoveryTemplate.svelte';
     import EmailInviteTemplate from './emailInviteTemplate.svelte';
-    import SmsVerificationTemplate from './smsVerificationTemplate.svelte';
-    import SmsLoginTemplate from './smsLoginTemplate.svelte';
-    import { baseEmailTemplate, baseSmsTemplate, emailTemplate, smsTemplate } from './store';
+    // import SmsVerificationTemplate from './smsVerificationTemplate.svelte';
+    // import SmsLoginTemplate from './smsLoginTemplate.svelte';
+    // import { baseEmailTemplate, baseSmsTemplate, emailTemplate, smsTemplate } from './store';
+    import { baseEmailTemplate, emailTemplate } from './store';
     import { Button } from '$lib/elements/forms';
 
-    export let data;
     const projectId = $page.params.project;
 
     let emailOpen = 'verification';
@@ -49,14 +49,14 @@
     $: emailResetPassword = emailOpen === 'recovery';
     $: emailInviteUser = emailOpen === 'invitation';
 
-    let smsOpen = 'verification';
-    $: smsVerificationOpen = smsOpen === 'verification';
-    $: smsLoginOpen = smsOpen === 'login';
-    $: smsInvitationOpen = smsOpen === 'invitation';
+    // let smsOpen = 'verification';
+    // $: smsVerificationOpen = smsOpen === 'verification';
+    // $: smsLoginOpen = smsOpen === 'login';
+    // $: smsInvitationOpen = smsOpen === 'invitation';
 
     onMount(async () => {
         openEmail('verification');
-        openSms('verification');
+        // openSms('verification');
     });
 
     async function openEmail(type: string) {
@@ -65,11 +65,11 @@
         $baseEmailTemplate = { ...$emailTemplate };
     }
 
-    async function openSms(type: string) {
-        type === smsOpen ? (smsOpen = null) : (smsOpen = type);
-        $smsTemplate = await loadSmsTemplate(projectId, type, 'en');
-        $baseSmsTemplate = { ...$smsTemplate };
-    }
+    // async function openSms(type: string) {
+    //     type === smsOpen ? (smsOpen = null) : (smsOpen = type);
+    //     $smsTemplate = await loadSmsTemplate(projectId, type, 'en');
+    //     $baseSmsTemplate = { ...$smsTemplate };
+    // }
 </script>
 
 <Container>
@@ -88,7 +88,7 @@
                 type="info"
                 buttons={[
                     {
-                        name: 'Add SMTP server',
+                        name: 'SMTP settings',
                         method: () => {
                             goto(`${base}/console/project-${$project.$id}/settings/smtp`);
                         }
@@ -107,11 +107,10 @@
         <Heading size="7" tag="h3">Email templates</Heading>
         <p class="text">
             Use templates to send and process account management emails. <a
-                href="https://appwrite.io/docs"
+                href="https://appwrite.io/docs/email-and-sms-templates"
                 class="link">
                 Learn more about email templates.
             </a>
-            <!-- TODO Docs link -->
         </p>
 
         <svelte:fragment slot="aside">
@@ -129,7 +128,7 @@
                         Send a verification email to users that sign in with their email and
                         password.
                     </p>
-                    <EmailVerificationTemplate localeCodes={data.localeCodes} />
+                    <EmailVerificationTemplate />
                 </CollapsibleItem>
                 <CollapsibleItem
                     bind:open={emailMagicSessionOpen}
@@ -139,7 +138,7 @@
                     }}>
                     <svelte:fragment slot="title">Magic URL</svelte:fragment>
                     <p class="text">Send an email to users that sign in with a magic URL.</p>
-                    <EmailMagicUrlTemplate localeCodes={data.localeCodes} />
+                    <EmailMagicUrlTemplate />
                 </CollapsibleItem>
                 <CollapsibleItem
                     bind:open={emailResetPassword}
@@ -149,7 +148,7 @@
                     }}>
                     <svelte:fragment slot="title">Reset password</svelte:fragment>
                     <p class="text">Send a recovery email to users that forget their password.</p>
-                    <EmailRecoveryTemplate localeCodes={data.localeCodes} />
+                    <EmailRecoveryTemplate />
                 </CollapsibleItem>
                 <CollapsibleItem
                     bind:open={emailInviteUser}
@@ -159,25 +158,24 @@
                     }}>
                     <svelte:fragment slot="title">Invite user</svelte:fragment>
                     <p class="text">Send an invitation email to become a member of your project.</p>
-                    <EmailInviteTemplate localeCodes={data.localeCodes} />
+                    <EmailInviteTemplate />
                 </CollapsibleItem>
             </Collapsible>
         </svelte:fragment>
         <svelte:fragment slot="actions">
             <Button href={`${base}/console/project-${$project.$id}/settings/smtp`} secondary>
-                Add SMTP server
+                SMTP settings
             </Button>
         </svelte:fragment>
     </CardGrid>
 
-    <CardGrid>
+    <!-- <CardGrid>
         <Heading size="7" tag="h3">SMS templates</Heading>
         <p class="text">
             Use templates to send and process account management mobile messages. <a
                 href="https://appwrite.io/docs"
                 class="link">
                 Learn more about SMS templates</a
-            >. <!-- TODO Docs link -->
         </p>
 
         <svelte:fragment slot="aside">
@@ -192,7 +190,7 @@
                     <p class="text">
                         Send a verification SMS to users that sign in with their phone
                     </p>
-                    <SmsVerificationTemplate localeCodes={data.localeCodes} />
+                    <SmsVerificationTemplate />
                 </CollapsibleItem>
                 <CollapsibleItem
                     bind:open={smsLoginOpen}
@@ -204,7 +202,7 @@
                     <p class="text">
                         Send a one-time passcode to users' mobile phones to allow them to sign in.
                     </p>
-                    <SmsLoginTemplate localeCodes={data.localeCodes} />
+                    <SmsLoginTemplate />
                 </CollapsibleItem>
                 <CollapsibleItem
                     bind:open={smsInvitationOpen}
@@ -214,9 +212,9 @@
                     }}>
                     <svelte:fragment slot="title">Invitation</svelte:fragment>
                     <p class="text">Send an invitation SMS to become a member of your project.</p>
-                    <SmsLoginTemplate localeCodes={data.localeCodes} />
+                    <SmsLoginTemplate />
                 </CollapsibleItem>
             </Collapsible>
         </svelte:fragment>
-    </CardGrid>
+    </CardGrid>-->
 </Container>

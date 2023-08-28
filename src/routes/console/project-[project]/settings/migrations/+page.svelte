@@ -21,6 +21,8 @@
     import { openImportWizard } from './(import)';
     import Details from './details.svelte';
     import ExportModal from './exportModal.svelte';
+    import Status from '$lib/components/status.svelte';
+    import { capitalize } from '$lib/helpers/string';
 
     export let data;
     let details: string | null = null;
@@ -28,12 +30,12 @@
 
     const getStatus = (status: string) => {
         if (status === 'failed') {
-            return { text: 'Failed', icon: 'exclamation', iconColor: 'danger' };
+            return 'failed';
         } else if (status === 'completed') {
-            return { text: 'Completed', icon: 'check', iconColor: 'success' };
+            return 'completed';
         }
 
-        return { text: 'Pending', icon: 'clock', iconColor: 'blue' };
+        return 'pending';
     };
 
     onMount(async () => {
@@ -165,16 +167,15 @@
                                 </TableCell>
                                 <TableCell title="Source">{entry.source}</TableCell>
                                 <TableCell title="Status">
-                                    <div class="u-flex u-gap-4 u-cross-center">
-                                        <i
-                                            class="icon-{status.icon}"
-                                            style="color: hsl(var(--color-text-{status.iconColor}))" />
-                                        <span>{status.text}</span>
-                                    </div>
+                                    <Status {status}>
+                                        {capitalize(status)}
+                                    </Status>
                                 </TableCell>
                                 <TableCell title="">
-                                    <Button secondary on:click={() => (details = entry.$id)}
-                                        >Details</Button>
+                                    <div class="u-flex u-main-end">
+                                        <Button secondary on:click={() => (details = entry.$id)}
+                                            >Details</Button>
+                                    </div>
                                 </TableCell>
                             </TableRow>
                         {/each}
@@ -182,7 +183,7 @@
                 </Table>
             {:else}
                 <div class="import-box">
-                    <ul class="avatars-group">
+                    <ul class="avatars-group is-with-border">
                         <li class="avatars-group-item">
                             <div class="avatar">
                                 <i class="icon-user-group" />

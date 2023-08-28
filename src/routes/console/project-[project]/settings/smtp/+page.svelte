@@ -1,6 +1,13 @@
 <script lang="ts">
     import { CardGrid, Heading } from '$lib/components';
-    import { Button, Form, FormList, InputText, InputChoice } from '$lib/elements/forms';
+    import {
+        Button,
+        Form,
+        FormList,
+        InputText,
+        InputChoice,
+        InputEmail
+    } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { project } from '../../store';
     import { onMount } from 'svelte/internal';
@@ -12,7 +19,7 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import InputNumber from '$lib/elements/forms/inputNumber.svelte';
     import { base } from '$app/paths';
-    import { deepEqual } from '$lib/helpers/object';
+    import deepEqual from 'deep-equal';
 
     let enabled = false;
     let sender: string;
@@ -100,7 +107,7 @@
                     </InputChoice>
 
                     {#if enabled}
-                        <InputText
+                        <InputEmail
                             id="senderEmail"
                             label="Sender email"
                             bind:value={sender}
