@@ -17,7 +17,7 @@
     import { wizard } from '$lib/stores/wizard';
     import { onMount } from 'svelte';
     import Initial from '$lib/wizards/functions/cover.svelte';
-    import { registerCommands } from '$lib/commandCenter';
+    import { registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import CreateTemplate from '$lib/wizards/functions/createTemplate.svelte';
     import {
         templateConfig as templateConfigStore,
@@ -63,9 +63,12 @@
             callback: openWizard,
             keys: ['c'],
             disabled: $wizard.show,
-            icon: 'plus'
+            icon: 'plus',
+            group: 'functions'
         }
     ]);
+
+    $updateCommandGroupRanks({ functions: 1000 });
 </script>
 
 <Container>

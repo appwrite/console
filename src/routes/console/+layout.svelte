@@ -211,14 +211,16 @@
             callback: () => {
                 addSubPanel(OrganizationsPanel);
             },
-            group: 'organizations'
+            group: 'organizations',
+            rank: -1
         },
         {
             label: 'Find projects',
             callback: () => {
                 addSubPanel(ProjectsPanel);
             },
-            group: 'projects'
+            group: 'projects',
+            rank: -1
         }
     ]);
     let isOpen = false;
