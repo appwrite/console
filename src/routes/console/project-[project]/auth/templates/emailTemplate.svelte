@@ -48,10 +48,10 @@
                 $project.$id,
                 $emailTemplate.type,
                 $emailTemplate.locale,
-                $emailTemplate.senderName,
-                $emailTemplate.senderEmail,
                 $emailTemplate.subject,
                 $emailTemplate.message,
+                $emailTemplate.senderName,
+                $emailTemplate.senderEmail,
                 $emailTemplate.replyTo ? $emailTemplate.replyTo : undefined
             );
 
@@ -94,12 +94,16 @@
                     id="senderName"
                     label="Sender name"
                     bind:value={$emailTemplate.senderName}
-                    placeholder={'{{project}}'} />
+                    tooltip="Set up an SMTP server to edit the sender name"
+                    placeholder={'{{project}}'}
+                    readonly={!$project.smtpEnabled} />
                 <InputEmail
                     bind:value={$emailTemplate.senderEmail}
                     id="senderEmail"
                     label="Sender email"
-                    placeholder="Enter sender email" />
+                    tooltip="Set up an SMTP server to edit the sender email"
+                    placeholder="Enter sender email"
+                    readonly={!$project.smtpEnabled} />
                 <InputEmail id="replyTo" label="Reply to" placeholder="noreply@appwrite.io" />
                 {#if $$slots.default}
                     <li style="margin-block: 1rem;">
