@@ -29,6 +29,7 @@
     export let withLineNumbers = false;
     export let withCopy = false;
     export let noMargin = false;
+    export let noBoxPadding = false;
     export let allowScroll = false;
 
     Prism.plugins.customClass.prefix('prism-');
@@ -38,7 +39,7 @@
     });
 </script>
 
-<section class="box u-overflow-hidden" class:common-section={!noMargin}>
+<section class="box u-overflow-hidden" class:common-section={!noMargin} class:noBoxPadding>
     <div
         class="controls u-position-absolute u-inset-inline-end-8 u-inset-block-start-8 u-flex u-gap-8">
         {#if label}
@@ -79,9 +80,17 @@
         }
     }
 
+    .noBoxPadding {
+        padding: 0 !important;
+    }
+
     .with-scroll {
         height: 100%;
         overflow: auto;
+    }
+
+    pre {
+        padding-inline-end: 7rem !important; // Add space for label and copy btn
     }
 
     code,
@@ -116,7 +125,7 @@
     :not(pre) > code[class*='language-'],
     pre[class*='language-'] {
         background: hsl(var(--p-box-background-color));
-        padding-block-start: 4%;
+
         margin: 0;
     }
     .prism-token {

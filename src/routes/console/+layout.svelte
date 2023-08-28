@@ -17,7 +17,7 @@
     import { goto } from '$app/navigation';
 
     import { CommandCenter, registerCommands, registerSearchers } from '$lib/commandCenter';
-    import { AIPanel } from '$lib/commandCenter/panels';
+    import { AIPanel, OrganizationsPanel, ProjectsPanel } from '$lib/commandCenter/panels';
     import { orgSearcher, projectsSearcher } from '$lib/commandCenter/searchers';
     import { addSubPanel } from '$lib/commandCenter/subPanels';
     import { addNotification } from '$lib/stores/notifications';
@@ -204,6 +204,23 @@
             },
             disabled: isOnSettingsLayout && $page.url.pathname.includes('smtp'),
             group: isOnSettingsLayout ? 'navigation' : 'settings',
+            rank: -1
+        },
+        // Searcher panels
+        {
+            label: 'Find organizations',
+            callback: () => {
+                addSubPanel(OrganizationsPanel);
+            },
+            group: 'organizations',
+            rank: -1
+        },
+        {
+            label: 'Find projects',
+            callback: () => {
+                addSubPanel(ProjectsPanel);
+            },
+            group: 'projects',
             rank: -1
         }
     ]);

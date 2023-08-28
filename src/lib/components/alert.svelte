@@ -3,7 +3,7 @@
     import type { Buttons } from '../stores/notifications';
 
     export let dismissible = false;
-    export let type: 'info' | 'success' | 'warning' | 'error' = 'info';
+    export let type: 'info' | 'success' | 'warning' | 'error' | 'default' = 'info';
     export let buttons: Buttons[] = [];
     export let isAction = false;
     export let isStandalone = false;
@@ -33,7 +33,7 @@
             </button>
         {/if}
         <span
-            class:icon-info={type === 'info'}
+            class:icon-info={type === 'info' || type === 'default'}
             class:icon-check-circle={type === 'success'}
             class:icon-exclamation={type === 'warning'}
             class:icon-exclamation-circle={type === 'error'}
@@ -44,7 +44,9 @@
                     <slot name="title" />
                 </h6>
             {/if}
-            <p class="alert-message"><slot /></p>
+            {#if $$slots.default}
+                <p class="alert-message"><slot /></p>
+            {/if}
             {#if ($$slots.buttons || buttons?.length) && !isAction}
                 <div class="alert-buttons u-flex">
                     <slot name="buttons">
