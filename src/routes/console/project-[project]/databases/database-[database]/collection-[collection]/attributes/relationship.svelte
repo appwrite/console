@@ -38,7 +38,7 @@
     import { InputText, InputSelect, InputSelectSearch } from '$lib/elements/forms';
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
-    import { LabelCard } from '$lib/components';
+    import { Box, LabelCard } from '$lib/components';
     import { collection } from '../store';
     import arrowOne from './arrow-one.svg';
     import arrowTwo from './arrow-two.svg';
@@ -219,7 +219,7 @@
         options={relationshipType}
         disabled={editing} />
     <div class="u-flex u-flex-vertical u-gap-16">
-        <div class="box">
+        <Box>
             <div class="u-flex u-align u-cross-center u-main-center u-gap-32">
                 <span data-private>{camelize($collection.name)}</span>
                 {#if data.twoWay}
@@ -229,7 +229,7 @@
                 {/if}
                 <span>{data.key}</span>
             </div>
-        </div>
+        </Box>
         {#if data.relationType}
             <div>
                 <p class="u-text-center">

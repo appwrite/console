@@ -11,6 +11,7 @@
     import { onMount } from 'svelte';
     import Repositories from '../components/repositories.svelte';
     import { installation, repository, template, templateConfig } from '../store';
+    import { Box } from '$lib/components';
 
     let selectedInstallationId: string;
     let hasInstallations: boolean;
@@ -141,9 +142,7 @@
                 </div>
             {/if}
             {#if $installation}
-                <div
-                    class="box u-margin-block-start-20"
-                    style:--box-border-radius="var(--border-radius-small)">
+                <Box radius="small" class="u-margin-block-start-20">
                     <div class="u-flex u-gap-16">
                         <div class="avatar is-size-x-small">
                             <span class={getProviderIcon($installation.provider)} />
@@ -167,7 +166,7 @@
                                 bind:value={$templateConfig.repositoryPrivate} />
                         </FormList>
                     </div>
-                </div>
+                </Box>
             {/if}
         {/await}
     {/if}

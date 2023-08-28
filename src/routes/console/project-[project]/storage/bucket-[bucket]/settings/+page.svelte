@@ -257,7 +257,7 @@
         </Form>
 
         <Form onSubmit={updatePermissions}>
-            <CardGrid>
+            <CardGrid hideOverflow>
                 <Heading tag="h6" size="7" id="permissions">Permissions</Heading>
                 <p class="text">
                     Choose who can access your buckets and files. For more information, check out
@@ -405,7 +405,7 @@
         <UpdateMaxFileSize />
 
         <Form onSubmit={updateAllowedExtensions}>
-            <CardGrid>
+            <CardGrid hideOverflow>
                 <Heading tag="h6" size="7" id="extensions">File Extensions</Heading>
                 <p class="text">
                     Allowed file extensions. A maximum of 100 file extensions can be added. Leave

@@ -28,7 +28,7 @@
 
 <script lang="ts">
     import { base } from '$app/paths';
-    import { AvatarGroup, Heading } from '$lib/components';
+    import { AvatarGroup, Box, Heading } from '$lib/components';
     import WizardCover from '$lib/layout/wizardCover.svelte';
     import { app } from '$lib/stores/app';
     import { wizard } from '$lib/stores/wizard';
@@ -138,16 +138,16 @@
 
                             {#if quickStart.runtimes.length < 6}
                                 <li>
-                                    <div
-                                        class="box u-width-full-line u-flex u-cross-center u-gap-8"
-                                        style:--box-padding="1rem"
-                                        style:--box-border-radius="var(--border-radius-small)">
+                                    <Box
+                                        class="u-width-full-line u-flex u-cross-center u-gap-8"
+                                        padding={16}
+                                        radius="small">
                                         <AvatarGroup
                                             icons={['dotnet', 'deno']}
                                             total={4}
                                             avatarSize="small"
                                             bordered />
-                                    </div>
+                                    </Box>
                                 </li>
                             {/if}
                         </ul>

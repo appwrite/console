@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { Box } from '$lib/components';
     import { FormList, InputChoice, InputText } from '$lib/elements/forms';
     import InputSelectSearch from '$lib/elements/forms/inputSelectSearch.svelte';
     import { WizardStep } from '$lib/layout';
@@ -38,7 +39,7 @@
         Configure the Git repository that will trigger your function deployments when updated.
     </svelte:fragment>
 
-    <div class="box" style:--box-border-radius="var(--border-radius-small)">
+    <Box radius="small">
         <div class="u-flex u-gap-16">
             <div class="avatar is-size-x-small">
                 <span class={getProviderIcon($repository.provider)} />
@@ -93,7 +94,7 @@
                 </FormList>
             </div>
         {/await}
-    </div>
+    </Box>
     <p class="text u-margin-block-start-8">
         Visit your repository on <a
             href={`https://github.com/${$repository.organization}/${$repository.name}`}

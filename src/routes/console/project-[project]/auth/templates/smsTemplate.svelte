@@ -5,8 +5,9 @@
     import { baseSmsTemplate, smsTemplate } from './store';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { deepEqual } from '$lib/helpers/object';
+    import deepEqual from 'deep-equal';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { Box } from '$lib/components';
 
     export let loading = false;
     const projectId = $page.params.project;
@@ -63,7 +64,7 @@
     $: isButtonDisabled = deepEqual($smsTemplate, $baseSmsTemplate);
 </script>
 
-<div class="box u-position-relative">
+<Box class="u-position-relative">
     {#if loading}
         <div
             class="u-position-absolute u-width-full-line u-flex u-flex-vertical u-main-center u-cross-center u-gap-16 u-margin-block-start-32"
@@ -90,5 +91,6 @@
             </div>
         </Form>
     </div>
-</div>
+</Box>
+
 <ResetSms bind:show={openResetModal} />

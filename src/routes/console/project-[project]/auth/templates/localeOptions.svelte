@@ -1,14 +1,14 @@
 <script lang="ts">
+    import { Box } from '$lib/components';
     import { InputSelectSearch } from '$lib/elements/forms';
-    import type { Models } from '@appwrite.io/console';
+    import { localeCodes } from './store';
 
-    export let localeCodes: Models.LocaleCode[];
     export let value = 'en';
 
     let search = 'English';
 
     $: options =
-        localeCodes
+        $localeCodes
             ?.map((code) => ({
                 label: code.name,
                 value: code.code
@@ -17,7 +17,7 @@
         [];
 </script>
 
-<div class="box u-flex u-gap-16" style:--box-border-radius="var(--border-radius-small)">
+<Box radius="small" class="u-flex u-gap-16">
     <div class="u-un-break-text">
         <span class="icon-translate" />
         <span class="text">Template language</span>
@@ -36,4 +36,4 @@
         showLabel={false}
         interactiveOutput
         {options} />
-</div>
+</Box>
