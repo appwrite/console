@@ -159,7 +159,13 @@
                                     <div
                                         class="u-margin-block-start-8"
                                         style="margin-block-end: 1rem;">
-                                        <Code language={part.language} code={part.value} noMargin />
+                                        <Code
+                                            label={part.language}
+                                            language={part.language}
+                                            code={part.value}
+                                            noMargin
+                                            noBoxPadding
+                                            withCopy />
                                     </div>
                                 {/key}
                             {/if}
