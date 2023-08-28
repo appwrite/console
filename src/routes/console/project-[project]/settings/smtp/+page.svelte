@@ -58,13 +58,13 @@
             await sdk.forConsole.projects.updateSmtpConfiguration(
                 $project.$id,
                 enabled,
-                senderName ?? undefined,
-                senderEmail ?? undefined,
-                replyTo ?? undefined,
-                host ?? undefined,
-                port ?? undefined,
-                username ?? undefined,
-                password ?? undefined,
+                senderName ? senderName : undefined,
+                senderEmail ? senderEmail : undefined,
+                replyTo ? replyTo : undefined,
+                host ? host : undefined,
+                port ? port : undefined,
+                username ? username : undefined,
+                password ? password : undefined,
                 secure ? 'tls' : undefined
             );
 
