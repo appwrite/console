@@ -8,12 +8,11 @@
 
     import { isLanguage, type Language } from '$lib/components/code.svelte';
     import { preferences } from '$lib/stores/preferences';
-    import { sdk } from '$lib/stores/sdk';
     import { VARS } from '$lib/system';
 
     const endpoint = VARS.APPWRITE_ENDPOINT ?? `${globalThis?.location?.origin}/v1`;
 
-    const { input, handleSubmit, completion, isLoading, complete } = useCompletion({
+    const { input, handleSubmit, completion, isLoading, complete, error } = useCompletion({
         api: endpoint + '/console/assistant',
         headers: {
             'content-type': 'application/json'
@@ -173,6 +172,18 @@
                     {/if}
                 </div>
             </div>
+        </div>
+    {/if}
+
+    {#if $error}
+        <div style="padding: 1rem; padding-block-end: 0;">
+            <Alert type="error">
+                <span slot="title">Something went wrong</span>
+                <p>
+                    An unexpected error occurred while handling your request. Please try again
+                    later.
+                </p>
+            </Alert>
         </div>
     {/if}
 
