@@ -105,7 +105,9 @@
           })}
     clearOnCallback={false}
     on:keydown={(e) => {
-        e.detail.cancel();
+        if (e.detail.key !== 'Escape') {
+            e.detail.cancel();
+        }
     }}
     --min-height="40rem"
     --max-height="52.5rem">
@@ -117,6 +119,7 @@
         <i class="icon-question-mark-circle" />
         <span>{option.label}</span>
     </div>
+    <p>cool</p>
 
     {#if $isLoading || answer}
         <div class="content">
