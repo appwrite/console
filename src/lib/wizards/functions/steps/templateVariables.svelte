@@ -83,6 +83,7 @@
                                         placeholder={variable.placeholder ?? 'Enter value'}
                                         required={variable.required}
                                         autocomplete={false}
+                                        minlength={variable.type === 'password' ? 0 : null}
                                         showPasswordButton={variable.type === 'password'}
                                         bind:value={$templateConfig.variables[variable.name]} />
                                     <Helper type="neutral">
