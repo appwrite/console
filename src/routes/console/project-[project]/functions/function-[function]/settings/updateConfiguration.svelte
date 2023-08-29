@@ -317,6 +317,7 @@
                                     </div>
                                     <Button
                                         secondary
+                                        disabled={isSelfHosted && !isVcsEnabled}
                                         on:click={() => wizard.start(ConnectExisting)}>
                                         <span class="text">Connect Git</span>
                                     </Button>

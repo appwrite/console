@@ -87,7 +87,10 @@
                         View source
                         <span class="icon-external-link" />
                     </Button>
-                    <Button secondary on:click={() => connectTemplate($template)}>
+                    <Button
+                        disabled={isSelfHosted && !isVcsEnabled}
+                        secondary
+                        on:click={() => connectTemplate($template)}>
                         Create function
                     </Button>
                 </div>
