@@ -68,8 +68,12 @@
                         In order to clone a template to a locally hosted Appwrite project, you must set
                         up a Git integration and configure your environment variables.
                         <svelte:fragment slot="buttons">
-                            <!-- TODO: add link to docs -->
-                            <Button href="#/" external text>Learn more</Button>
+                            <Button
+                                href="https://appwrite.io/docs/environment-variables"
+                                external
+                                text>
+                                Learn more
+                            </Button>
                         </svelte:fragment>
                     </Alert>
                 {/if}
@@ -81,7 +85,10 @@
                         View source
                         <span class="icon-external-link" />
                     </Button>
-                    <Button secondary on:click={() => connectTemplate($template)}>
+                    <Button
+                        disabled={isSelfHosted && !isVcsEnabled}
+                        secondary
+                        on:click={() => connectTemplate($template)}>
                         Create function
                     </Button>
                 </div>

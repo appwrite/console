@@ -47,11 +47,16 @@
             <svelte:fragment slot="title">Your function is outdated</svelte:fragment>
             Update your function version to make use of new features including build commands and HTTP
             data in your executions. To update, follow the steps outlined in our
-            <!-- TODO: Add link to docs -->
-            <a href="#/" target="_blank" rel="noopener noreferrer" class="link">documentation</a>.
+            <a
+                href="https://appwrite.io/docs/functions-develop#upgrade"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="link">documentation</a
+            >.
             <svelte:fragment slot="buttons">
-                <!-- TODO: Add link to docs -->
-                <Button href="#/" external text>Learn more</Button>
+                <Button href="https://appwrite.io/docs/functions-develop#upgrade" external text>
+                    Learn more
+                </Button>
             </svelte:fragment>
         </Alert>
     {/if}
