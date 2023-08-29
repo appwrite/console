@@ -52,7 +52,16 @@
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">Choose provider</svelte:fragment>
+    <svelte:fragment slot="title">Select source</svelte:fragment>
+    <svelte:fragment slot="subtitle">
+        Select a source platform with the project you want to migrate. <a
+            class="link"
+            href="https://appwrite.io/docs/migrations"
+            target="_blank"
+            rel="noopener noreferrer">
+            Learn about which platforms are supported</a
+        >.
+    </svelte:fragment>
     <div class="u-flex u-flex-vertical u-gap-8">
         {#each Object.entries(providers) as [key, value]}
             <label class="u-flex u-cross-center u-cursor-pointer u-gap-8">
