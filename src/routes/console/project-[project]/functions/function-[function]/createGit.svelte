@@ -23,7 +23,7 @@
             <NumericList>
                 <NumericListItem fullWidth>
                     <span class="text">Checkout your production branch.</span>
-                    <div class="u-margin-block-start-16 u-min-width-0">
+                    <div class="u-margin-block-start-16">
                         <Code
                             language="sh"
                             withCopy
@@ -34,13 +34,13 @@
                 </NumericListItem>
                 <NumericListItem fullWidth>
                     <span class="text"> Add your changes</span>
-                    <div class="u-margin-block-start-16 u-min-width-0">
+                    <div class="u-margin-block-start-16">
                         <Code language="sh" withCopy noMargin noBoxPadding code={`git add .`} />
                     </div>
                 </NumericListItem>
                 <NumericListItem fullWidth>
                     <span class="text"> Create a new commit </span>
-                    <div class="u-margin-block-start-16 u-min-width-0">
+                    <div class="u-margin-block-start-16 u-min-width-0 u-grid">
                         <Code
                             language="sh"
                             withCopy
@@ -51,7 +51,7 @@
                 </NumericListItem>
                 <NumericListItem fullWidth>
                     <span class="text"> Push your new commit</span>
-                    <div class="u-margin-block-start-16 u-min-width-0">
+                    <div class="u-margin-block-start-16">
                         <Code
                             language="sh"
                             withCopy
