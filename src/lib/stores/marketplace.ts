@@ -204,6 +204,18 @@ export const marketplace = [
                 commands: 'npm install',
                 entrypoint: 'src/main.js',
                 providerRootDirectory: 'node/censor-with-redact'
+            },
+            {
+                name: 'python-3.9',
+                commands: 'pip install -r requirements.txt',
+                entrypoint: 'src/main.py',
+                providerRootDirectory: 'python/censor_with_redact'
+            },
+            {
+                name: 'dart-2.17',
+                commands: 'dart pub get',
+                entrypoint: 'lib/main.dart',
+                providerRootDirectory: 'dart/censor_with_redact'
             }
         ],
         instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/censor-with-redact">file</a>.`,
@@ -338,6 +350,12 @@ export const marketplace = [
                 value: 'urls',
                 placeholder: 'urls',
                 required: false
+            },
+            {
+                name: 'SHORT_BASE_URL',
+                description: `The domain to use for the short URLs. You can use your functions subdomain or a custom domain.`,
+                value: '',
+                placeholder: 'https://shortdomain.io'
             }
         ]
     },
@@ -363,6 +381,12 @@ export const marketplace = [
                 commands: 'pip install -r requirements.txt',
                 entrypoint: 'src/main.py',
                 providerRootDirectory: 'python/sync_with_algolia'
+            },
+            {
+                name: 'php-8.0',
+                commands: 'composer install',
+                entrypoint: 'src/index.php',
+                providerRootDirectory: 'php/sync-with-algolia'
             }
         ],
         instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/sync-with-algolia">file</a>.`,
@@ -399,7 +423,7 @@ export const marketplace = [
             {
                 name: 'ALGOLIA_INDEX_ID',
                 description: `The ID of the index in Algolia where the documents are to be synced. <a class="u-bold" target="_blank" href="https://www.algolia.com/doc/api-client/methods/indexing/">Learn more</a>.`,
-                placeholder: 'appwrite_index',
+                placeholder: 'my_index',
                 required: true
             },
             {
@@ -611,6 +635,18 @@ export const marketplace = [
                 commands: 'npm install',
                 entrypoint: 'src/main.js',
                 providerRootDirectory: 'node/email-contact-form'
+            },
+            {
+                name: 'python-3.9',
+                commands: 'pip install -r requirements.txt',
+                entrypoint: 'src/main.py',
+                providerRootDirectory: 'python/email_contact_form'
+            },
+            {
+                name: 'php-8.0',
+                commands: 'composer install',
+                entrypoint: 'src/index.php',
+                providerRootDirectory: 'php/email-contact-form'
             }
         ],
         instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/email-contact-form">file</a>.`,
