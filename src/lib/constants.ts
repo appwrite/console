@@ -40,7 +40,9 @@ export enum Dependencies {
     WEBHOOK = 'dependency:webhook',
     WEBHOOKS = 'dependency:webhooks',
     MIGRATIONS = 'dependency:migrations',
-    COLLECTIONS = 'dependency:collections'
+    COLLECTIONS = 'dependency:collections',
+    RUNTIMES = 'dependency:runtimes',
+    CONSOLE_VARIABLES = 'dependency:console_variables'
 }
 
 export const scopes: {

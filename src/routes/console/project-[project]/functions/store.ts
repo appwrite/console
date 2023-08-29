@@ -2,7 +2,7 @@ import { page } from '$app/stores';
 import { derived } from 'svelte/store';
 import type { Models } from '@appwrite.io/console';
 
-export const consoleVariables = derived(
+export const runtimes = derived(
     page,
-    ($page) => $page.data.consoleVariables as Models.ConsoleVariables
+    async ($page) => (await $page.data.runtimes) as Models.RuntimeList
 );

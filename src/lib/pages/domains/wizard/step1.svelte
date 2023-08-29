@@ -9,6 +9,7 @@
     import { onMount } from 'svelte';
     import { ProxyTypes } from '../index.svelte';
     import { domain, typeStore } from './store';
+    import { consoleVariables } from '$routes/console/store';
 
     let error = null;
     let isDomainsEnabled = false;
@@ -17,9 +18,8 @@
         if (!isSelfHosted) {
             return;
         }
-        const vars = await sdk.forConsole.console.variables();
-        //@ts-expect-error needs an sdk release
-        isDomainsEnabled = vars?._APP_DOMAIN_ENABLED === true;
+
+        isDomainsEnabled = (await $consoleVariables)?._APP_DOMAIN_ENABLED === true;
     });
 
     async function createDomain() {

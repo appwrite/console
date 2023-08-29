@@ -45,7 +45,7 @@ export function deepMap<T, U>(
     return result;
 }
 
-export function parseIfString(value: unknown): any {
+export function parseIfString(value: unknown): unknown {
     if (typeof value === 'string') {
         try {
             return JSON.parse(value);

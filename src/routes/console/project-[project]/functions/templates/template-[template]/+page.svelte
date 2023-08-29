@@ -4,12 +4,10 @@
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
-    import { consoleVariables } from '$lib/stores/consoleVariables';
     import { isSelfHosted } from '$lib/system';
     import { connectTemplate } from '$lib/wizards/functions/cover.svelte';
+    import { consoleVariables, isVcsEnabled } from '$routes/console/store';
     import { template } from './store';
-
-    $: isVcsEnabled = $consoleVariables?._APP_VCS_ENABLED === true;
 </script>
 
 <Container>
@@ -62,7 +60,7 @@
                     </span>
                 </Heading>
                 <p class="u-margin-block-start-24">{$template.tagline}</p>
-                {#if isSelfHosted && !isVcsEnabled}
+                {#if isSelfHosted && !isVcsEnabled($consoleVariables)}
                     <Alert class="u-margin-block-start-24" type="info">
                         <svelte:fragment slot="title">
                             Cloning templates to a self-hosted instance

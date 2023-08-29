@@ -7,4 +7,4 @@ export const loading = writable(true);
 export const organizations = derived(page, ($page) => {
     return $page.data.organizations as Models.TeamList<Models.Preferences>;
 });
-export const requestedMigration = writable<Record<string, any> | null>(null);
+export const requestedMigration = writable<Record<string, string> | null>(null);

@@ -15,6 +15,7 @@
         resourcesToMigrationForm
     } from '$lib/stores/migration';
     import { wizard } from '$lib/stores/wizard';
+    import type { Models } from '@appwrite.io/console';
 
     export let formData: ReturnType<typeof createMigrationFormStore>;
     export let provider: ReturnType<typeof createMigrationProviderStore>;
@@ -76,7 +77,7 @@
         $formData = resourcesToMigrationForm(resources, version);
     }
 
-    let report: any;
+    let report: Models.MigrationReport;
     $: version = report?.version || '0.0.0';
 
     let isOpen = false;
@@ -86,18 +87,16 @@
         isOpen = true;
         try {
             switch ($provider.provider) {
-                case 'appwrite': {
-                    const res = await projectSdk.migrations.getAppwriteReport(
+                case 'appwrite':
+                    report = await projectSdk.migrations.getAppwriteReport(
                         providerResources.appwrite,
                         $provider.endpoint,
                         $provider.projectID,
                         $provider.apiKey
                     );
-                    report = res;
                     break;
-                }
-                case 'supabase': {
-                    const res = await projectSdk.migrations.getSupabaseReport(
+                case 'supabase':
+                    report = await projectSdk.migrations.getSupabaseReport(
                         providerResources.supabase,
                         $provider.endpoint,
                         $provider.apiKey,
@@ -106,31 +105,25 @@
                         $provider.password,
                         $provider.port
                     );
-                    report = res;
                     break;
-                }
-                case 'firebase': {
+                case 'firebase':
                     if ($provider.projectId) {
                         // OAuth
-                        const res = await sdk.forProject.migrations.getFirebaseReportOAuth(
+                        report = await sdk.forProject.migrations.getFirebaseReportOAuth(
                             providerResources.firebase,
                             $provider.projectId
                         );
-
-                        report = res;
                     } else if ($provider.serviceAccount) {
                         // Manual auth
-                        const res = await projectSdk.migrations.getFirebaseReport(
+                        report = await projectSdk.migrations.getFirebaseReport(
                             providerResources.firebase,
                             $provider.serviceAccount
                         );
-                        report = res;
                     }
 
                     break;
-                }
-                case 'nhost': {
-                    const res = await projectSdk.migrations.getNHostReport(
+                case 'nhost':
+                    report = await projectSdk.migrations.getNHostReport(
                         providerResources.nhost,
                         $provider.subdomain,
                         $provider.region,
@@ -139,8 +132,6 @@
                         $provider.username,
                         $provider.password
                     );
-                    report = res;
-                }
             }
         } catch (e) {
             if (!isOpen) return;
