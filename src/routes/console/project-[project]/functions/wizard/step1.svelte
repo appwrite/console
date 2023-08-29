@@ -5,7 +5,7 @@
     import { WizardStep } from '$lib/layout';
     import { onMount } from 'svelte';
     import { createFunction } from './store';
-    import { runtimes } from '$lib/wizards/functions/store';
+    import { runtimes } from '../store';
 
     let showCustomId = false;
 
@@ -20,8 +20,8 @@
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">Create your function</svelte:fragment>
-    <svelte:fragment slot="subtitle">Let's create a function.</svelte:fragment>
+    <svelte:fragment slot="title">Configuration function</svelte:fragment>
+    <svelte:fragment slot="subtitle">Create your new Appwrite Function.</svelte:fragment>
     <FormList>
         <InputText
             label="Name"

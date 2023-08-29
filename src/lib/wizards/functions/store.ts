@@ -33,11 +33,6 @@ export const installations = derived(
     ($page) => $page.data.installations as Models.InstallationList
 );
 
-export const runtimes = derived(
-    page,
-    ($page) => $page.data.runtimes as Promise<Models.RuntimeList>
-);
-
 const initialCreateFunction: Partial<Models.Function> = {
     $id: null,
     name: null,

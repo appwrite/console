@@ -29,7 +29,7 @@
     import GitDisconnectModal from './GitDisconnectModal.svelte';
     import dayjs from 'dayjs';
     import { isSelfHosted } from '$lib/system';
-    import { consoleVariables } from '$lib/stores/consoleVariables';
+    import { consoleVariables, isVcsEnabled } from '$routes/console/store';
 
     export let total: number;
     export let limit: number;
@@ -76,8 +76,6 @@
             noScroll: true
         });
     }
-
-    $: isVcsEnabled = $consoleVariables?._APP_VCS_ENABLED === true;
 </script>
 
 <CardGrid>
@@ -181,7 +179,7 @@
                     bind:offset />
             </div>
         {:else}
-            {#if isSelfHosted && !isVcsEnabled}
+            {#if isSelfHosted && !isVcsEnabled($consoleVariables)}
                 <Alert type="info">
                     <svelte:fragment slot="title">
                         Installing Git to a self-hosted instance
@@ -189,8 +187,12 @@
                     When installing Git in a locally hosted Appwrite project, you must first configure
                     your environment variables.
                     <svelte:fragment slot="buttons">
-                        <!-- TODO: add link to docs -->
-                        <Button href="#/" external text>Learn more</Button>
+                        <Button
+                            href="https://appwrite.io/docs/environment-variables#vcs_(version_control_system)"
+                            external
+                            text>
+                            Learn more
+                        </Button>
                     </svelte:fragment>
                 </Alert>
             {/if}
@@ -202,7 +204,10 @@
 
                         <div class="avatar"><SvgIcon name="appwrite" type="color" size={80} /></div>
                     </div>
-                    <Button on:click={() => (showGitIstall = true)} secondary>
+                    <Button
+                        disabled={isSelfHosted && !isVcsEnabled($consoleVariables)}
+                        on:click={() => (showGitIstall = true)}
+                        secondary>
                         <span class="text">Add Installation</span>
                     </Button>
                 </div>

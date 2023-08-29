@@ -49,7 +49,7 @@
     import InputSelectSearch from '$lib/elements/forms/inputSelectSearch.svelte';
     import { installations } from '$lib/wizards/functions/store';
     import { isSelfHosted } from '$lib/system';
-    import { consoleVariables } from '$lib/stores/consoleVariables';
+    import { consoleVariables, isVcsEnabled } from '$routes/console/store';
 
     const functionId = $page.params.function;
 
@@ -172,8 +172,6 @@
         selectedBranch !== $func?.providerBranch ||
         silentMode !== $func?.providerSilentMode ||
         selectedDir !== $func?.providerRootDirectory;
-
-    $: isVcsEnabled = $consoleVariables?._APP_VCS_ENABLED === true;
 </script>
 
 <Form onSubmit={updateConfiguration}>
@@ -282,7 +280,7 @@
                                 </div>
                             </Box>
                         {:else}
-                            {#if isSelfHosted && !isVcsEnabled}
+                            {#if isSelfHosted && !isVcsEnabled($consoleVariables)}
                                 <Alert class="common-section" type="info">
                                     <svelte:fragment slot="title">
                                         Installing Git to a self-hosted instance
@@ -290,8 +288,12 @@
                                     When installing Git in a locally hosted Appwrite project, you must
                                     first configure your environment variables.
                                     <svelte:fragment slot="buttons">
-                                        <!-- TODO: add link to docs -->
-                                        <Button href="#/" external text>Learn more</Button>
+                                        <Button
+                                            href="https://appwrite.io/docs/environment-variables#vcs_(version_control_system)"
+                                            external
+                                            text>
+                                            Learn more
+                                        </Button>
                                     </svelte:fragment>
                                 </Alert>
                             {/if}
@@ -313,6 +315,7 @@
                                     </div>
                                     <Button
                                         secondary
+                                        disabled={isSelfHosted && !isVcsEnabled}
                                         on:click={() => wizard.start(ConnectExisting)}>
                                         <span class="text">Connect Git</span>
                                     </Button>

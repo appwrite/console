@@ -4,12 +4,10 @@
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
-    import { consoleVariables } from '$lib/stores/consoleVariables';
     import { isSelfHosted } from '$lib/system';
     import { connectTemplate } from '$lib/wizards/functions/cover.svelte';
+    import { consoleVariables, isVcsEnabled } from '$routes/console/store';
     import { template } from './store';
-
-    $: isVcsEnabled = $consoleVariables?._APP_VCS_ENABLED === true;
 </script>
 
 <Container>
@@ -62,7 +60,7 @@
                     </span>
                 </Heading>
                 <p class="u-margin-block-start-24">{$template.tagline}</p>
-                {#if isSelfHosted && !isVcsEnabled}
+                {#if isSelfHosted && !isVcsEnabled($consoleVariables)}
                     <Alert class="u-margin-block-start-24" type="info">
                         <svelte:fragment slot="title">
                             Cloning templates to a self-hosted instance
@@ -70,8 +68,12 @@
                         In order to clone a template to a locally hosted Appwrite project, you must set
                         up a Git integration and configure your environment variables.
                         <svelte:fragment slot="buttons">
-                            <!-- TODO: add link to docs -->
-                            <Button href="#/" external text>Learn more</Button>
+                            <Button
+                                href="https://appwrite.io/docs/environment-variables"
+                                external
+                                text>
+                                Learn more
+                            </Button>
                         </svelte:fragment>
                     </Alert>
                 {/if}
@@ -83,7 +85,10 @@
                         View source
                         <span class="icon-external-link" />
                     </Button>
-                    <Button secondary on:click={() => connectTemplate($template)}>
+                    <Button
+                        disabled={isSelfHosted && !isVcsEnabled}
+                        secondary
+                        on:click={() => connectTemplate($template)}>
                         Create function
                     </Button>
                 </div>

@@ -9,6 +9,7 @@
     import { onMount } from 'svelte';
     import { ProxyTypes } from '../index.svelte';
     import { domain, typeStore } from './store';
+    import { consoleVariables } from '$routes/console/store';
 
     let error = null;
     let isDomainsEnabled = false;
@@ -17,9 +18,8 @@
         if (!isSelfHosted) {
             return;
         }
-        const vars = await sdk.forConsole.console.variables();
-        //@ts-expect-error needs an sdk release
-        isDomainsEnabled = vars?._APP_DOMAIN_ENABLED === true;
+
+        isDomainsEnabled = (await $consoleVariables)?._APP_DOMAIN_ENABLED === true;
     });
 
     async function createDomain() {
@@ -78,8 +78,12 @@
             To add a domain to a locally hosted Appwrite project, you must first configure your server
             domain.
             <svelte:fragment slot="buttons">
-                <!-- TODO: add link to docs -->
-                <Button href="#/" external text>Learn more</Button>
+                <Button
+                    href="https://appwrite.io/docs/environment-variables#vcs_(version_control_system)"
+                    external
+                    text>
+                    Learn more
+                </Button>
             </svelte:fragment>
         </Alert>
     {/if}

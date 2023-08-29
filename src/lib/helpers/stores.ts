@@ -9,7 +9,7 @@ import { deepClone, objectEntries } from './object';
  *
  * @export
  */
-export function createConservative<Obj extends Record<string, any>>(obj: Obj) {
+export function createConservative<Obj extends Record<string, unknown>>(obj: Obj) {
     const stores = Object.fromEntries(
         objectEntries(obj).map(([key, value]) => [key, writable(value)])
     ) as {

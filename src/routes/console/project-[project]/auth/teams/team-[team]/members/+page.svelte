@@ -95,7 +95,7 @@
     {:else if data.search}
         <EmptySearch>
             <div class="u-text-center">
-                <b>Sorry, we couldn’t find ‘{data.search}’</b>
+                <b>Sorry, we couldn't find ‘{data.search}'</b>
                 <p>There are no members that match your search.</p>
             </div>
             <Button

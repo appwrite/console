@@ -37,9 +37,13 @@
     export let globalVariableList: Models.VariableList | undefined = undefined;
 
     export let isGlobal: boolean;
-    export let sdkCreateVariable: (key: string, value: string) => Promise<any>;
-    export let sdkUpdateVariable: (variableId: string, key: string, value: string) => Promise<any>;
-    export let sdkDeleteVariable: (variableId: string) => Promise<any>;
+    export let sdkCreateVariable: (key: string, value: string) => Promise<unknown>;
+    export let sdkUpdateVariable: (
+        variableId: string,
+        key: string,
+        value: string
+    ) => Promise<unknown>;
+    export let sdkDeleteVariable: (variableId: string) => Promise<unknown>;
 
     let showVariablesDropdown = [];
     let selectedVar: Models.Variable = null;

@@ -34,7 +34,7 @@
                     `functions.${$page.params.function}.deployments.${$page.params.deployment}.update`
                 )
             ) {
-                logs = (message.payload as any).logs as string;
+                logs = message.payload.buildLogs;
                 if (message.payload.status === 'ready') {
                     invalidate(Dependencies.DEPLOYMENT);
                 }
