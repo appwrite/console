@@ -9,7 +9,7 @@ export const marketplace: MarketplaceTemplate[] = [
         events: [],
         cron: '',
         timeout: 15,
-        usecases: ['starter'],
+        usecases: ['Starter'],
         runtimes: [
             {
                 name: 'node-18.0',
@@ -66,7 +66,7 @@ export const marketplace: MarketplaceTemplate[] = [
         events: [],
         cron: '',
         timeout: 15,
-        usecases: ['ai', 'chatbot'],
+        usecases: ['AI'],
         runtimes: [
             {
                 name: 'node-18.0',
@@ -124,7 +124,7 @@ export const marketplace: MarketplaceTemplate[] = [
         events: [],
         cron: '',
         timeout: 15,
-        usecases: ['bot', 'discord'],
+        usecases: ['Messaging'],
         runtimes: [
             {
                 name: 'node-18.0',
@@ -163,7 +163,7 @@ export const marketplace: MarketplaceTemplate[] = [
         events: [],
         cron: '',
         timeout: 15,
-        usecases: ['ai', 'moderation'],
+        usecases: ['AI'],
         runtimes: [
             {
                 name: 'node-18.0',
@@ -197,7 +197,7 @@ export const marketplace: MarketplaceTemplate[] = [
         events: [],
         cron: '',
         timeout: 15,
-        usecases: ['ai', 'moderation'],
+        usecases: ['ai'],
         runtimes: [
             {
                 name: 'node-18.0',
@@ -242,7 +242,7 @@ export const marketplace: MarketplaceTemplate[] = [
         events: [],
         cron: '',
         timeout: 15,
-        usecases: ['pdf', 'invoice'],
+        usecases: ['Utilities'],
         runtimes: [
             {
                 name: 'node-18.0',
@@ -268,7 +268,7 @@ export const marketplace: MarketplaceTemplate[] = [
         events: [],
         cron: '',
         timeout: 15,
-        usecases: ['github', 'bot'],
+        usecases: ['Dev Tools'],
         runtimes: [
             {
                 name: 'node-18.0',
@@ -308,7 +308,7 @@ export const marketplace: MarketplaceTemplate[] = [
         events: [],
         cron: '',
         timeout: 15,
-        usecases: ['url', 'link'],
+        usecases: ['Utilities'],
         runtimes: [
             {
                 name: 'node-18.0',
@@ -369,7 +369,7 @@ export const marketplace: MarketplaceTemplate[] = [
         events: [],
         cron: '',
         timeout: 15,
-        usecases: ['search', 'algolia'],
+        usecases: ['Databases'],
         runtimes: [
             {
                 name: 'node-18.0',
@@ -451,7 +451,7 @@ export const marketplace: MarketplaceTemplate[] = [
         events: [],
         cron: '',
         timeout: 15,
-        usecases: ['search', 'meilisearch'],
+        usecases: ['Databases'],
         runtimes: [
             {
                 name: 'node-18.0',
@@ -527,7 +527,7 @@ export const marketplace: MarketplaceTemplate[] = [
         events: [],
         cron: '',
         timeout: 15,
-        usecases: ['sms', 'whatsapp', 'vonage'],
+        usecases: ['Messaging'],
         runtimes: [
             {
                 name: 'node-18.0',
@@ -578,7 +578,7 @@ export const marketplace: MarketplaceTemplate[] = [
         events: [],
         cron: '',
         timeout: 15,
-        usecases: ['notification', 'fcm', 'firebase'],
+        usecases: ['Messaging'],
         runtimes: [
             {
                 name: 'node-18.0',
@@ -629,7 +629,7 @@ export const marketplace: MarketplaceTemplate[] = [
         events: [],
         cron: '',
         timeout: 15,
-        usecases: ['form', 'email'],
+        usecases: ['Utilities'],
         runtimes: [
             {
                 name: 'node-18.0',
