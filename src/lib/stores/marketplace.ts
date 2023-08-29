@@ -9,7 +9,7 @@ export const marketplace = [
         events: [],
         cron: '',
         timeout: 15,
-        usecases: ['placeholder'],
+        usecases: ['starter'],
         runtimes: [
             {
                 name: 'node-18.0',
@@ -66,13 +66,31 @@ export const marketplace = [
         events: [],
         cron: '',
         timeout: 15,
-        usecases: ['placeholder'],
+        usecases: ['ai', 'chatbot'],
         runtimes: [
             {
                 name: 'node-18.0',
                 commands: 'npm install',
                 entrypoint: 'src/main.js',
                 providerRootDirectory: 'node/prompt-chatgpt'
+            },
+            {
+                name: 'python-3.9',
+                commands: 'pip install -r requirements.txt',
+                entrypoint: 'src/main.py',
+                providerRootDirectory: 'python/prompt_chatgpt'
+            },
+            {
+                name: 'php-8.0',
+                commands: 'composer install',
+                entrypoint: 'src/index.php',
+                providerRootDirectory: 'php/prompt-chatgpt'
+            },
+            {
+                name: 'dart-2.17',
+                commands: 'dart pub get',
+                entrypoint: 'lib/main.dart',
+                providerRootDirectory: 'dart/prompt_chatgpt'
             }
         ],
         instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/prompt-chatgpt">file</a>.`,
@@ -106,13 +124,19 @@ export const marketplace = [
         events: [],
         cron: '',
         timeout: 15,
-        usecases: ['placeholder'],
+        usecases: ['chatbot', 'discord'],
         runtimes: [
             {
                 name: 'node-18.0',
                 commands: 'npm install && npm run setup',
-                entrypoint: 'src/main.js',
+                entrypoint: 'src/main.js && npm run setup',
                 providerRootDirectory: 'node/discord-command-bot'
+            },
+            {
+                name: 'python-3.9',
+                commands: 'pip install -r requirements.txt && python src/setup.py',
+                entrypoint: 'src/main.py',
+                providerRootDirectory: 'python/discord_command_bot'
             }
         ],
         instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/discord-command-bot">file</a>.`,
@@ -139,7 +163,7 @@ export const marketplace = [
         events: [],
         cron: '',
         timeout: 15,
-        usecases: ['placeholder'],
+        usecases: ['ai', 'moderation'],
         runtimes: [
             {
                 name: 'node-18.0',
@@ -173,7 +197,7 @@ export const marketplace = [
         events: [],
         cron: '',
         timeout: 15,
-        usecases: ['placeholder'],
+        usecases: ['ai', 'moderation'],
         runtimes: [
             {
                 name: 'node-18.0',
@@ -206,7 +230,7 @@ export const marketplace = [
         events: [],
         cron: '',
         timeout: 15,
-        usecases: ['placeholder'],
+        usecases: ['pdf', 'invoice'],
         runtimes: [
             {
                 name: 'node-18.0',
@@ -232,7 +256,7 @@ export const marketplace = [
         events: [],
         cron: '',
         timeout: 15,
-        usecases: ['placeholder'],
+        usecases: ['github'],
         runtimes: [
             {
                 name: 'node-18.0',
@@ -272,7 +296,7 @@ export const marketplace = [
         events: [],
         cron: '',
         timeout: 15,
-        usecases: ['placeholder'],
+        usecases: ['url', 'link'],
         runtimes: [
             {
                 name: 'node-18.0',
@@ -326,13 +350,19 @@ export const marketplace = [
         events: [],
         cron: '',
         timeout: 15,
-        usecases: ['placeholder'],
+        usecases: ['search', 'algolia'],
         runtimes: [
             {
                 name: 'node-18.0',
                 commands: 'npm install',
                 entrypoint: 'src/main.js',
                 providerRootDirectory: 'node/sync-with-algolia'
+            }, 
+            {
+                name: 'python-3.9',
+                commands: 'pip install -r requirements.txt',
+                entrypoint: 'src/main.py',
+                providerRootDirectory: 'python/sync_with_algolia'
             }
         ],
         instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/sync-with-algolia">file</a>.`,
@@ -396,7 +426,7 @@ export const marketplace = [
         events: [],
         cron: '',
         timeout: 15,
-        usecases: ['placeholder'],
+        usecases: ['search', 'meilisearch'],
         runtimes: [
             {
                 name: 'node-18.0',
@@ -472,7 +502,7 @@ export const marketplace = [
         events: [],
         cron: '',
         timeout: 15,
-        usecases: ['placeholder'],
+        usecases: ['sms', 'whatsapp', 'vonage'],
         runtimes: [
             {
                 name: 'node-18.0',
@@ -523,7 +553,7 @@ export const marketplace = [
         events: [],
         cron: '',
         timeout: 15,
-        usecases: ['placeholder'],
+        usecases: ['notification', 'fcm'],
         runtimes: [
             {
                 name: 'node-18.0',
@@ -574,7 +604,7 @@ export const marketplace = [
         events: [],
         cron: '',
         timeout: 15,
-        usecases: ['placeholder'],
+        usecases: ['form', 'email'],
         runtimes: [
             {
                 name: 'node-18.0',
