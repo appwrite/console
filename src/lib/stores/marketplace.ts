@@ -197,7 +197,7 @@ export const marketplace: MarketplaceTemplate[] = [
         events: [],
         cron: '',
         timeout: 15,
-        usecases: ['ai'],
+        usecases: ['AI'],
         runtimes: [
             {
                 name: 'node-18.0',
