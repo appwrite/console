@@ -19,7 +19,6 @@
             return;
         }
 
-        //@ts-expect-error needs an sdk release
         isDomainsEnabled = (await $consoleVariables)?._APP_DOMAIN_ENABLED === true;
     });
 
