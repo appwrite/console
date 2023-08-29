@@ -89,10 +89,6 @@
         overflow: auto;
     }
 
-    pre {
-        padding-inline-end: 7rem !important; // Add space for label and copy btn
-    }
-
     code,
     pre {
         &[class*='language-'] {

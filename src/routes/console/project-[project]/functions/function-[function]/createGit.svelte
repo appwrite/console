@@ -23,31 +23,40 @@
             <NumericList>
                 <NumericListItem fullWidth>
                     <span class="text">Checkout your production branch.</span>
-                    <div class="u-margin-block-start-16">
+                    <div class="u-margin-block-start-16 u-min-width-0">
                         <Code
                             language="sh"
                             withCopy
                             noMargin
+                            noBoxPadding
                             code={`git checkout ${$func.providerBranch}`} />
                     </div>
                 </NumericListItem>
                 <NumericListItem fullWidth>
+                    <span class="text"> Add your changes</span>
+                    <div class="u-margin-block-start-16 u-min-width-0">
+                        <Code language="sh" withCopy noMargin noBoxPadding code={`git add .`} />
+                    </div>
+                </NumericListItem>
+                <NumericListItem fullWidth>
                     <span class="text"> Create a new commit </span>
-                    <div class="u-margin-block-start-16">
+                    <div class="u-margin-block-start-16 u-min-width-0">
                         <Code
                             language="sh"
                             withCopy
                             noMargin
+                            noBoxPadding
                             code={`git commit -m "deploying with Appwrite"`} />
                     </div>
                 </NumericListItem>
                 <NumericListItem fullWidth>
-                    <span class="text"> Push your new commit </span>
-                    <div class="u-margin-block-start-16">
+                    <span class="text"> Push your new commit</span>
+                    <div class="u-margin-block-start-16 u-min-width-0">
                         <Code
                             language="sh"
                             withCopy
                             noMargin
+                            noBoxPadding
                             code={`git push ${$func.providerBranch}`} />
                     </div>
                 </NumericListItem>
