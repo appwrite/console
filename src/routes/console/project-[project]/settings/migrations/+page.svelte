@@ -140,7 +140,15 @@
 
     <CardGrid>
         <Heading tag="h3" size="7">Import project data</Heading>
-        <p class="text">Import data from other products or from a different Appwrite instance</p>
+        <p class="text">
+            Import data from another platform or from a different Appwrite instance. <a
+                class="link"
+                href="https://appwrite.io/docs/migrations"
+                target="_blank"
+                rel="noopener noreferrer">
+                Learn about which platforms are supported</a
+            >.
+        </p>
         <svelte:fragment slot="aside">
             {#if data.migrations.length}
                 <div class="u-flex">
@@ -224,7 +232,14 @@
     {#if isSelfHosted}
         <CardGrid>
             <Heading tag="h3" size="7">Deploy to Cloud</Heading>
-            <p class="text">Export data from your project to Appwrite Cloud</p>
+            <p class="text">
+                Export data from your project to Appwrite Cloud. <a
+                    class="link"
+                    href="https://appwrite.io/docs/migrations-local-to-cloud"
+                    target="_blank"
+                    rel="noopener noreferrer">
+                    Learn more in our documentation.</a>
+            </p>
             <svelte:fragment slot="aside">
                 <div class="import-box">
                     <div class="u-flex u-cross-center u-gap-8">
@@ -244,7 +259,14 @@
     {:else}
         <CardGrid>
             <Heading tag="h3" size="7">Export to self-hosted instance</Heading>
-            <p class="text">Export data from your project to a self-hosted instance</p>
+            <p class="text">
+                Export data from your project to a self-hosted instance. <a
+                    class="link"
+                    href="https://appwrite.io/docs/migrations-cloud-to-local"
+                    target="_blank"
+                    rel="noopener noreferrer">
+                    Learn more in our documentation.</a>
+            </p>
             <svelte:fragment slot="aside">
                 <div class="import-box">
                     <div class="u-flex u-cross-center u-gap-8">

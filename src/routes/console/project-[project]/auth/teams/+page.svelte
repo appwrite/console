@@ -79,7 +79,7 @@
     {:else if data.search}
         <EmptySearch>
             <div class="u-text-center">
-                <b>Sorry, we couldn’t find ‘{data.search}’</b>
+                <b>Sorry, we couldn't find ‘{data.search}'</b>
                 <p>There are no teams that match your search.</p>
             </div>
             <Button secondary href={`/console/project-${$page.params.project}/auth/teams`}>
