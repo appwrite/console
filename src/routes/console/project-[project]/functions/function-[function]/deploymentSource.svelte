@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { DropList, DropListLink } from '$lib/components';
+    import { DropList, DropListLink, Trim } from '$lib/components';
     import type { Models } from '@appwrite.io/console';
 
     export let deployment: Models.Deployment;
@@ -23,8 +23,10 @@
             </DropListLink>
             {#if deployment?.providerCommitMessage && deployment?.providerCommitHash && deployment?.providerCommitUrl}
                 <DropListLink href={deployment.providerCommitUrl} external icon="git-commit">
-                    {deployment?.providerCommitHash?.substring(0, 7)}
-                    {deployment.providerCommitMessage}
+                    <Trim alternativeTrim>
+                        {deployment?.providerCommitHash?.substring(0, 7)}
+                        {deployment.providerCommitMessage}
+                    </Trim>
                 </DropListLink>
             {/if}
         </svelte:fragment>

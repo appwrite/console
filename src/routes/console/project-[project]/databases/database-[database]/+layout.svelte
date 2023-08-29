@@ -3,6 +3,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import {
+        addSubPanel,
         registerCommands,
         registerSearchers,
         updateCommandGroupRanks
@@ -12,6 +13,7 @@
     import type { Models } from '@appwrite.io/console';
     import CreateCollection from './createCollection.svelte';
     import { showCreate } from './store';
+    import { CollectionsPanel } from '$lib/commandCenter/panels';
 
     const project = $page.params.project;
     const databaseId = $page.params.database;
@@ -69,6 +71,14 @@
                 $page.url.pathname.includes('collection-'),
             keys: ['g', 's'],
             group: 'collections'
+        },
+        {
+            label: 'Find collections',
+            callback: () => {
+                addSubPanel(CollectionsPanel);
+            },
+            group: 'collections',
+            rank: -1
         }
     ]);
 

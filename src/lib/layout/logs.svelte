@@ -75,53 +75,59 @@
         </header>
 
         <div class="cover-frame-content u-flex u-flex-vertical">
-            <div class="u-flex u-gap-16">
-                <div class="avatar is-size-large">
-                    <SvgIcon
-                        size={56}
-                        type="color"
-                        name={func.runtime.split('-')[0]}
-                        iconSize="large" />
+            <div class="grid-1-2">
+                <div class="grid-1-2-col-1">
+                    <div class="u-flex u-gap-16">
+                        <div class="avatar is-size-large">
+                            <SvgIcon
+                                size={56}
+                                type="color"
+                                name={func.runtime.split('-')[0]}
+                                iconSize="large" />
+                        </div>
+                        <div class="u-grid-equal-row-size u-gap-4 u-line-height-1">
+                            <h2 class="body-text-2 u-bold">Execution ID:</h2>
+                            <Id value={execution.$id}>{execution.$id}</Id>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    <h2 class="body-text-2 u-bold">Execution ID:</h2>
-                    <Id value={execution.$id}>{execution.$id}</Id>
-                </div>
-                <ul>
-                    <li class="text">
-                        <b>Duration: </b>
-                        <time>
-                            {calculateTime(execution.duration)}
-                        </time>
-                    </li>
-
-                    <li class="text">
-                        <b>Created at:</b>
-                        <time>
-                            {toLocaleDateTime(execution.$createdAt)}
-                        </time>
-                    </li>
-                    {#if host}
+                <div class="grid-1-2-col-2 u-flex u-main-space-between">
+                    <ul class="u-grid-equal-row-size u-gap-4 u-line-height-1">
                         <li class="text">
-                            <b>Host:</b>
-                            <span>
-                                {host}
-                            </span>
+                            <b>Duration: </b>
+                            <time>
+                                {calculateTime(execution.duration)}
+                            </time>
                         </li>
-                    {/if}
-                </ul>
-                <div class="status u-margin-inline-start-auto">
-                    <Pill
-                        warning={execution.status === 'waiting'}
-                        danger={execution.status === 'failed'}
-                        success={execution.status === 'completed' || execution.status === 'ready'}
-                        info={execution.status === 'processing' || execution.status === 'building'}>
-                        {execution.status}
-                    </Pill>
+
+                        <li class="text">
+                            <b>Created at:</b>
+                            <time>
+                                {toLocaleDateTime(execution.$createdAt)}
+                            </time>
+                        </li>
+                        {#if host}
+                            <li class="text">
+                                <b>Host:</b>
+                                <span>
+                                    {host}
+                                </span>
+                            </li>
+                        {/if}
+                    </ul>
+                    <div class="status u-margin-inline-start-auto">
+                        <Pill
+                            warning={execution.status === 'waiting' ||
+                                execution.status === 'building'}
+                            danger={execution.status === 'failed'}
+                            info={execution.status === 'completed' || execution.status === 'ready'}>
+                            {execution.status}
+                        </Pill>
+                    </div>
                 </div>
             </div>
 
-            <div class="theme-dark u-stretch u-margin-block-start-32 u-overflow-hidden">
+            <div class="u-stretch u-margin-block-start-32 u-overflow-hidden">
                 <section class="code-panel">
                     <header class="code-panel-header u-flex u-main-space-between u-width-full-line">
                         <div class="u-flex u-gap-24">
@@ -259,7 +265,7 @@
                                 </p>
                             {/if}
                         </div>
-                        <div class="grid-1-2-col-2 u-flex u-flex-vertical u-gap-16">
+                        <div class="grid-1-2-col-2 u-flex u-flex-vertical u-gap-16 u-min-width-0">
                             <Heading tag="h3" size="6">Response</Heading>
                             <div class="u-sep-block-end">
                                 <Tabs>

@@ -1,17 +1,18 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { Empty, Heading, PaginationWithLimit } from '$lib/components';
+    import { Empty, EmptySearch, Heading, PaginationWithLimit } from '$lib/components';
     import ViewSelector from '$lib/components/viewSelector.svelte';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { preferences } from '$lib/stores/preferences';
     import { wizard } from '$lib/stores/wizard';
     import type { PageData } from './$types';
+    import Filters from './(filters)/filters.svelte';
+    import { hasPageQueries, queries } from './(filters)/store';
     import CreateAttributeDropdown from './attributes/createAttributeDropdown.svelte';
     import type { Option } from './attributes/store';
     import CreateAttribute from './createAttribute.svelte';
     import Create from './createDocument.svelte';
-    import Filters from './(filters)/filters.svelte';
     import { collection, columns } from './store';
     import Table from './table.svelte';
 
@@ -84,6 +85,25 @@
                 limit={data.limit}
                 offset={data.offset}
                 total={data.documents.total} />
+        {:else if $hasPageQueries}
+            <EmptySearch hidePages>
+                <div class="common-section">
+                    <div class="u-text-center common-section">
+                        <b class="body-text-2 u-bold">Sorry, we couldn't find any documents.</b>
+                        <p>There are no documents that match your filters.</p>
+                    </div>
+                    <div class="u-flex common-section u-main-center">
+                        <Button
+                            secondary
+                            on:click={() => {
+                                queries.clearAll();
+                                queries.apply();
+                            }}>
+                            Clear filters
+                        </Button>
+                    </div>
+                </div>
+            </EmptySearch>
         {:else}
             <Empty
                 single

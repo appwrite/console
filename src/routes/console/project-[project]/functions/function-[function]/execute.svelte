@@ -3,7 +3,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { Modal } from '$lib/components';
+    import { Alert, Modal } from '$lib/components';
     import Collapsible from '$lib/components/collapsible.svelte';
     import CollapsibleItem from '$lib/components/collapsibleItem.svelte';
     import { Dependencies } from '$lib/constants';
@@ -105,98 +105,117 @@
     </p>
 
     <FormList>
-        <InputText label="Path" id="path" placeholder="/" bind:value={path} required />
+        {#if selectedFunction?.version !== 'v3'}
+            <Alert type="info">
+                <svelte:fragment slot="title">
+                    Customizable execution data now available for functions v3.0
+                </svelte:fragment>
+                Update your function version to make use of new features including customizable HTTP
+                data in your executions.
+                <svelte:fragment slot="buttons">
+                    <Button href="https://appwrite.io/docs/functions-develop#upgrade" external text>
+                        Learn more
+                    </Button>
+                </svelte:fragment>
+            </Alert>
+            <InputTextarea
+                label="Body"
+                placeholder={`{ "myKey": "myValue" }`}
+                id="body"
+                bind:value={body} />
+        {:else}
+            <InputText label="Path" id="path" placeholder="/" bind:value={path} required />
 
-        <InputSelect
-            required
-            id="method"
-            label="Method"
-            options={methodOptions}
-            bind:value={method} />
+            <InputSelect
+                required
+                id="method"
+                label="Method"
+                options={methodOptions}
+                bind:value={method} />
 
-        <Collapsible>
-            <CollapsibleItem>
-                <svelte:fragment slot="title">Advanced settings</svelte:fragment>
-                <svelte:fragment slot="subtitle">(optional)</svelte:fragment>
-                <FormList>
-                    <p class="text">
-                        Customize your execution with headers or body. To customize parameters, add
-                        them to path.
-                    </p>
-                    <div>
-                        <Label
-                            tooltip="Headers should contain alphanumeric characters (a-z, A-Z, and 0-9) and hyphens only (- and _).">
-                            Headers
-                        </Label>
-                    </div>
-                    <div class="form u-grid u-gap-16">
-                        <FormList>
-                            {#if headers}
-                                {#each headers as [name, value], index}
-                                    <FormItem isMultiple>
-                                        <InputText
-                                            isMultiple
-                                            fullWidth
-                                            label="Name"
-                                            placeholder="Enter Name"
-                                            id={`key-${index}`}
-                                            bind:value={name} />
-                                        <InputText
-                                            isMultiple
-                                            fullWidth
-                                            label="Value"
-                                            placeholder="Enter value"
-                                            id={`value-${index}`}
-                                            bind:value />
-                                        <FormItemPart alignEnd>
-                                            <Button
-                                                text
-                                                disabled={(!name || !value) && index === 0}
-                                                on:click={() => {
-                                                    if (index === 0) {
-                                                        headers = [['', '']];
-                                                    } else {
-                                                        headers.splice(index, 1);
-                                                        headers = headers;
-                                                    }
-                                                }}>
-                                                <span class="icon-x" aria-hidden="true" />
-                                            </Button>
-                                        </FormItemPart>
-                                    </FormItem>
-                                {/each}
-                            {/if}
-                        </FormList>
-                        <Button
-                            noMargin
-                            text
-                            disabled={headers?.length &&
-                            headers[headers.length - 1][0] &&
-                            headers[headers.length - 1][1]
-                                ? false
-                                : true}
-                            on:click={() => {
-                                if (
-                                    headers[headers.length - 1][0] &&
-                                    headers[headers.length - 1][1]
-                                ) {
-                                    headers.push(['', '']);
-                                    headers = headers;
-                                }
-                            }}>
-                            <span class="icon-plus" aria-hidden="true" />
-                            <span class="text">Add Header</span>
-                        </Button>
-                    </div>
-
-                    <InputTextarea
-                        label="Body"
-                        placeholder={`{ "myKey": "myValue" }`}
-                        id="body"
-                        bind:value={body} />
-                </FormList>
-            </CollapsibleItem>
-        </Collapsible>
+            <Collapsible>
+                <CollapsibleItem>
+                    <svelte:fragment slot="title">Advanced settings</svelte:fragment>
+                    <svelte:fragment slot="subtitle">(optional)</svelte:fragment>
+                    <FormList>
+                        <p class="text">
+                            Customize your execution with headers or body. To customize parameters,
+                            add them to path.
+                        </p>
+                        <div>
+                            <Label
+                                tooltip="Headers should contain alphanumeric characters (a-z, A-Z, and 0-9) and hyphens only (- and _).">
+                                Headers
+                            </Label>
+                        </div>
+                        <div class="form u-grid u-gap-16">
+                            <FormList>
+                                {#if headers}
+                                    {#each headers as [name, value], index}
+                                        <FormItem isMultiple>
+                                            <InputText
+                                                isMultiple
+                                                fullWidth
+                                                label="Name"
+                                                placeholder="Enter Name"
+                                                id={`key-${index}`}
+                                                bind:value={name} />
+                                            <InputText
+                                                isMultiple
+                                                fullWidth
+                                                label="Value"
+                                                placeholder="Enter value"
+                                                id={`value-${index}`}
+                                                bind:value />
+                                            <FormItemPart alignEnd>
+                                                <Button
+                                                    text
+                                                    disabled={(!name || !value) && index === 0}
+                                                    on:click={() => {
+                                                        if (index === 0) {
+                                                            headers = [['', '']];
+                                                        } else {
+                                                            headers.splice(index, 1);
+                                                            headers = headers;
+                                                        }
+                                                    }}>
+                                                    <span class="icon-x" aria-hidden="true" />
+                                                </Button>
+                                            </FormItemPart>
+                                        </FormItem>
+                                    {/each}
+                                {/if}
+                            </FormList>
+                            <Button
+                                noMargin
+                                text
+                                disabled={headers?.length &&
+                                headers[headers.length - 1][0] &&
+                                headers[headers.length - 1][1]
+                                    ? false
+                                    : true}
+                                on:click={() => {
+                                    if (
+                                        headers[headers.length - 1][0] &&
+                                        headers[headers.length - 1][1]
+                                    ) {
+                                        headers.push(['', '']);
+                                        headers = headers;
+                                    }
+                                }}>
+                                <span class="icon-plus" aria-hidden="true" />
+                                <span class="text">Add Header</span>
+                            </Button>
+                        </div>
+                        <InputTextarea
+                            label="Body"
+                            placeholder={`{ "myKey": "myValue" }`}
+                            id="body"
+                            bind:value={body} />
+                    </FormList>
+                </CollapsibleItem>
+            </Collapsible>
+        {/if}
     </FormList>
 
     <svelte:fragment slot="footer">

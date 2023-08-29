@@ -43,9 +43,30 @@
         default: null
     };
 
-    $: if (data.required || data.array) {
-        data.default = null;
+    import { createConservative } from '$lib/helpers/stores';
+
+    let savedDefault = data.default;
+
+    function handleDefaultState(hideDefault: boolean) {
+        if (hideDefault) {
+            savedDefault = data.default;
+            data.default = null;
+        } else {
+            data.default = savedDefault;
+        }
     }
+
+    const {
+        stores: { required, array },
+        listen
+    } = createConservative<Partial<Models.AttributeBoolean>>({
+        required: false,
+        array: false,
+        ...data
+    });
+    $: listen(data);
+
+    $: handleDefaultState($required || $array);
 </script>
 
 <InputSelect

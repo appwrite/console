@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Alert, EyebrowHeading } from '$lib/components';
+    import { Alert, Box, EyebrowHeading } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { deepMap } from '$lib/helpers/object';
     import type { WritableValue } from '$lib/helpers/types';
@@ -156,7 +156,7 @@
     $: wizard.setNextDisabled(!report);
 </script>
 
-<div class="box" style:border-radius="0.5rem">
+<Box radius="small">
     <div class="u-flex u-flex-vertical u-gap-16">
         <EyebrowHeading class="eyebrow" tag="h3" size={3}>Good to know</EyebrowHeading>
         <div class="u-flex u-gap-16">
@@ -202,7 +202,7 @@
             </div>
         {/if}
     </div>
-</div>
+</Box>
 
 {#if report && !isVersionAtLeast(version, '1.4.0')}
     <div class="u-margin-block-start-24">
@@ -424,6 +424,7 @@
     {/if}
 </ul>
 
+<!-- svelte-ignore css-unused-selector -->
 <style lang="scss">
     .box :global(.eyebrow) {
         font-weight: 500;
@@ -457,10 +458,10 @@
         grid-template-columns: auto 1fr;
         gap: 0.25rem 1rem;
         align-items: center;
+        padding-block-end: 1rem;
 
         ul {
             grid-column-start: 2;
-            padding-block-end: 2rem;
 
             li {
                 margin-block-start: 1rem;

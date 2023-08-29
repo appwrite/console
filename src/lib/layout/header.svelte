@@ -173,7 +173,7 @@
                         </section>
                         <section class="drop-section">
                             <ul class="u-flex u-gap-12">
-                                <li>
+                                <li class="u-stretch">
                                     <label class="image-radio">
                                         <img src={LightMode} alt="light mode" />
                                         <input
@@ -188,7 +188,7 @@
                                             value="light" />
                                     </label>
                                 </li>
-                                <li>
+                                <li class="u-stretch">
                                     <label class="image-radio">
                                         <img src={DarkMode} alt="dark mode" />
                                         <input
@@ -203,7 +203,7 @@
                                             value="dark" />
                                     </label>
                                 </li>
-                                <li>
+                                <li class="u-stretch">
                                     <label class="image-radio">
                                         <img src={SystemMode} alt="system mode" />
                                         <input

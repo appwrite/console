@@ -31,7 +31,8 @@ const groups = [
     'security',
     'buckets',
     'files',
-    'misc'
+    'misc',
+    'settings'
 ] as const;
 
 export type CommandGroup = (typeof groups)[number];

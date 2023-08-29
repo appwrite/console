@@ -67,8 +67,6 @@
     function handleActivate() {
         invalidate(Dependencies.DEPLOYMENTS);
     }
-
-    $: activeDeployment = data.deployments.deployments.find((d) => d.$id === $func?.deployment);
 </script>
 
 <Container>
@@ -90,7 +88,7 @@
         {/if}
         {#if activeDeployment}
             <CardGrid>
-                <div class="grid-1-2-col-1 u-flex u-cross-start u-gap-16">
+                <div class="u-flex u-cross-start u-gap-16">
                     <div class="avatar is-medium" aria-hidden="true">
                         <img
                             src={`${base}/icons/${$app.themeInUse}/color/${
@@ -131,9 +129,8 @@
                         <div class="u-flex u-flex-vertical u-cross-end">
                             <Pill
                                 danger={status === 'failed'}
-                                warning={status === 'pending'}
-                                success={status === 'completed' || status === 'ready'}
-                                info={status === 'processing' || status === 'building'}>
+                                warning={status === 'building'}
+                                info={status === 'ready'}>
                                 <span class="text u-trim">{activeDeployment.status}</span>
                             </Pill>
                         </div>
@@ -141,27 +138,30 @@
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">
-                    <Button
-                        text
-                        href={`/console/project-${$page.params.project}/functions/function-${$page.params.function}/deployment-${activeDeployment.$id}`}>
-                        Build logs
-                    </Button>
-                    <Button
-                        text
-                        class="u-margin-inline-end-16"
-                        on:click={() => {
-                            selectedDeployment = activeDeployment;
-                            showRedeploy = true;
-                        }}>Redeploy</Button>
+                    <div class="u-flex u-flex-wrap">
+                        <Button
+                            text
+                            href={`/console/project-${$page.params.project}/functions/function-${$page.params.function}/deployment-${activeDeployment.$id}`}>
+                            Build logs
+                        </Button>
+                        <Button
+                            text
+                            class="u-margin-inline-end-16"
+                            on:click={() => {
+                                selectedDeployment = activeDeployment;
+                                showRedeploy = true;
+                            }}>Redeploy</Button>
 
-                    <Button secondary on:click={() => ($execute = $func)}>Execute now</Button>
+                        <Button secondary on:click={() => ($execute = $func)}>Execute now</Button>
+                    </div>
                 </svelte:fragment>
             </CardGrid>
         {:else}
             <Empty single target="deployment">
                 <div class="u-text-center">
-                    <Heading size="7" tag="h2"
-                        >Create your first deployment to get started.</Heading>
+                    <Heading size="7" tag="h2">
+                        Create your first deployment to get started.
+                    </Heading>
                     <p class="body-text-2 u-bold u-margin-block-start-4">
                         Learn more about deployments in our Documentation.
                     </p>
@@ -201,13 +201,16 @@
                                     <Id value={deployment.$id}>{deployment.$id}</Id>
                                 </TableCell>
                                 <TableCell title="Status">
-                                    <Pill
-                                        danger={status === 'failed'}
-                                        warning={status === 'pending'}
-                                        success={status === 'completed' || status === 'ready'}
-                                        info={status === 'processing' || status === 'building'}>
-                                        {status}
-                                    </Pill>
+                                    {#if activeDeployment?.$id === deployment?.$id}
+                                        <Pill success>active</Pill>
+                                    {:else}
+                                        <Pill
+                                            danger={status === 'failed'}
+                                            warning={status === 'building'}
+                                            info={status === 'ready'}>
+                                            {status}
+                                        </Pill>
+                                    {/if}
                                 </TableCell>
                                 <TableCellText title="Source">
                                     <DeploymentSource {deployment} /></TableCellText>
@@ -286,8 +289,9 @@
         {:else}
             <Empty single target="deployment" on:click>
                 <div class="u-text-center">
-                    <Heading size="7" tag="h2"
-                        >You have no deployments. Create one to see it here.</Heading>
+                    <Heading size="7" tag="h2">
+                        You have no deployments. Create one to see it here.
+                    </Heading>
                     <p class="body-text-2 u-bold u-margin-block-start-4">
                         Learn more about deployments in our Documentation.
                     </p>
@@ -322,9 +326,12 @@
             </div>
         </Empty>
     {/if}
-    {@const sum = data.deployments.total ? data.deployments.total - 1 : 0}
 
-    <PaginationWithLimit name="Deployments" limit={data.limit} offset={data.offset} total={sum} />
+    <PaginationWithLimit
+        name="Deployments"
+        limit={data.limit}
+        offset={data.offset}
+        total={data.deployments.total} />
 </Container>
 
 {#if selectedDeployment}

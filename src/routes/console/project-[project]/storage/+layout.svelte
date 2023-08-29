@@ -1,7 +1,8 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
-    import { registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
+    import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
+    import { BucketsPanel } from '$lib/commandCenter/panels';
     import { project } from '../store';
     import { showCreateBucket } from './+page.svelte';
 
@@ -28,6 +29,14 @@
                 $page.url.pathname.endsWith('usage') || $page.url.pathname.includes('bucket-'),
             group: 'navigation',
             rank: 10
+        },
+        {
+            label: 'Find buckets',
+            callback: () => {
+                addSubPanel(BucketsPanel);
+            },
+            group: 'storage',
+            rank: -1
         }
     ]);
 
