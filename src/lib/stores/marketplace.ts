@@ -1,4 +1,4 @@
-export const marketplace = [
+export const marketplace: MarketplaceTemplate[] = [
     {
         icon: 'icon-lightning-bolt',
         id: 'starter',
@@ -355,7 +355,8 @@ export const marketplace = [
                 name: 'SHORT_BASE_URL',
                 description: `The domain to use for the short URLs. You can use your functions subdomain or a custom domain.`,
                 value: '',
-                placeholder: 'https://shortdomain.io'
+                placeholder: 'https://shortdomain.io',
+                required: true
             }
         ]
     },
