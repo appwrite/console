@@ -357,7 +357,7 @@ export const marketplace = [
                 commands: 'npm install',
                 entrypoint: 'src/main.js',
                 providerRootDirectory: 'node/sync-with-algolia'
-            }, 
+            },
             {
                 name: 'python-3.9',
                 commands: 'pip install -r requirements.txt',
