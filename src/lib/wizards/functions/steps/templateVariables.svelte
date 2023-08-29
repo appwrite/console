@@ -1,8 +1,7 @@
 <script lang="ts">
-    import InputText from '$lib/elements/forms/inputText.svelte';
     import { WizardStep } from '$lib/layout';
     import { template, templateConfig } from '../store';
-    import { FormList, Helper } from '$lib/elements/forms';
+    import { FormList, Helper, InputPassword } from '$lib/elements/forms';
     import { Card, Collapsible, CollapsibleItem } from '$lib/components';
     import AppwriteVariable from '../components/appwriteVariable.svelte';
 
@@ -46,10 +45,11 @@
                                 <AppwriteVariable appwriteVariable={variable} />
                             {:else}
                                 <div>
-                                    <InputText
+                                    <InputPassword
                                         id={variable.name}
                                         label={variable.name}
                                         placeholder={variable.placeholder ?? 'Enter value'}
+                                        showPasswordButton
                                         required={variable.required}
                                         autocomplete={false}
                                         bind:value={$templateConfig.variables[variable.name]} />
@@ -79,9 +79,10 @@
                                 <AppwriteVariable appwriteVariable={variable} />
                             {:else}
                                 <div>
-                                    <InputText
+                                    <InputPassword
                                         id={variable.name}
                                         label={variable.name}
+                                        showPasswordButton
                                         placeholder={variable.placeholder ?? 'Enter value'}
                                         required={variable.required}
                                         autocomplete={false}
