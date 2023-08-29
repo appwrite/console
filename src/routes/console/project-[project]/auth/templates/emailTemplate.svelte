@@ -97,7 +97,7 @@
                     label="Sender name"
                     bind:value={$emailTemplate.senderName}
                     tooltip="Set up an SMTP server to edit the sender name"
-                    placeholder={'{{project}}'}
+                    placeholder="Enter sender name"
                     readonly={!isSmtpEnabled} />
                 <InputEmail
                     bind:value={$emailTemplate.senderEmail}
