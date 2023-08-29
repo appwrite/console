@@ -205,7 +205,7 @@
                         <div class="avatar"><SvgIcon name="appwrite" type="color" size={80} /></div>
                     </div>
                     <Button
-                        disabled={isSelfHosted && !isVcsEnabled}
+                        disabled={isSelfHosted && !isVcsEnabled($consoleVariables)}
                         on:click={() => (showGitIstall = true)}
                         secondary>
                         <span class="text">Add Installation</span>
