@@ -80,12 +80,13 @@
             required />
         {#if $func.version !== 'v3'}
             <Alert type="info">
-                <svelte:fragment slot="title"
-                    >Build commands now available for functions v3.0</svelte:fragment>
+                <svelte:fragment slot="title">
+                    Build commands now available for functions v3.0
+                </svelte:fragment>
                 Update your function version to make use of new features including build commands.
                 <svelte:fragment slot="buttons">
-                    <!-- TODO: add link to docs -->
-                    <Button href="#/" external text>Learn more</Button>
+                    <Button href="https://appwrite.io/docs/functions-develop#upgrade" external text
+                        >Learn more</Button>
                 </svelte:fragment>
             </Alert>
         {:else}
