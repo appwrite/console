@@ -32,6 +32,7 @@
                 );
                 $templateConfig.variables['APPWRITE_API_KEY'] = key.secret;
             }
+
             const response = await sdk.forProject.functions.create(
                 $templateConfig.$id || ID.unique(),
                 $templateConfig.name,
@@ -54,6 +55,15 @@
                 runtimeDetail.providerRootDirectory,
                 $template.providerBranch
             );
+
+            if ($templateConfig.variables) {
+                const promises = Object.entries($templateConfig.variables).map(([key, value]) =>
+                    sdk.forProject.functions.createVariable(response.$id, key, value?.toString())
+                );
+
+                await Promise.all(promises);
+            }
+
             goto(
                 `${base}/console/project-${$page.params.project}/functions/function-${response.$id}`
             );
