@@ -8,7 +8,7 @@ export const templateConfig = writable<{
     $id: string;
     name: string;
     runtime: string;
-    variables: { [key: string]: string };
+    variables: { [key: string]: unknown };
     repositoryBehaviour: 'new' | 'existing';
     repositoryName: string;
     repositoryPrivate: boolean;

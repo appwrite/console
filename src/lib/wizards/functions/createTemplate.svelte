@@ -58,7 +58,11 @@
 
             if ($templateConfig.variables) {
                 for (const [key, value] of Object.entries($templateConfig.variables)) {
-                    await sdk.forProject.functions.createVariable(response.$id, key, value);
+                    await sdk.forProject.functions.createVariable(
+                        response.$id,
+                        key,
+                        value?.toString()
+                    );
                 }
             }
 
