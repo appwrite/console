@@ -124,7 +124,7 @@ export const marketplace = [
         events: [],
         cron: '',
         timeout: 15,
-        usecases: ['chatbot', 'discord'],
+        usecases: ['bot', 'discord'],
         runtimes: [
             {
                 name: 'node-18.0',
@@ -268,7 +268,7 @@ export const marketplace = [
         events: [],
         cron: '',
         timeout: 15,
-        usecases: ['github'],
+        usecases: ['github', 'bot'],
         runtimes: [
             {
                 name: 'node-18.0',
@@ -577,7 +577,7 @@ export const marketplace = [
         events: [],
         cron: '',
         timeout: 15,
-        usecases: ['notification', 'fcm'],
+        usecases: ['notification', 'fcm', 'firebase'],
         runtimes: [
             {
                 name: 'node-18.0',
