@@ -7,7 +7,7 @@
     import { onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
     import { choices, createFunction, installation, repository } from '../store';
-    import { runtimes } from '$routes/console/project-[project]/functions/store';
+    import { runtimesList } from '$routes/console/project-[project]/functions/store';
 
     let showCustomId = false;
 
@@ -29,7 +29,7 @@
     let options = [];
 
     onMount(async () => {
-        options = (await $runtimes).runtimes.map((runtime) => ({
+        options = (await $runtimesList).runtimes.map((runtime) => ({
             label: `${runtime.name} - ${runtime.version}`,
             value: runtime.$id
         }));
