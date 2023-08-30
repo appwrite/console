@@ -19,6 +19,8 @@
         }
     });
 
+    let question = $input;
+
     const examples = [
         'How to add platform in the console?',
         'How can I manage users, permissions, and access control in Appwrite?',
@@ -140,7 +142,7 @@
         <div class="content">
             <div class="u-flex u-gap-8 u-cross-center">
                 <div class="avatar is-size-x-small">{getInitials($user.name)}</div>
-                <p class="u-opacity-75">{$input}</p>
+                <p class="u-opacity-75">{question}</p>
             </div>
             <div class="u-flex u-gap-8 u-margin-block-start-24">
                 <div class="logo">
@@ -193,7 +195,10 @@
             <form
                 class="input-text-wrapper u-width-full-line"
                 style="--amount-of-buttons: 1;"
-                on:submit|preventDefault={handleSubmit}>
+                on:submit|preventDefault={(e) => {
+                    question = $input;
+                    handleSubmit(e);
+                }}>
                 <!--  svelte-ignore a11y-autofocus -->
                 <input
                     type="text"
