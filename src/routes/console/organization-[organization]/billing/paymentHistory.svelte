@@ -149,7 +149,7 @@
                 <PaginationInline {limit} bind:offset sum={invoiceList?.total} hidePages />
             </div>
         {:else}
-            <EmptySearch cardOnly>
+            <EmptySearch hidePagination>
                 <p class="text u-text-center">
                     You have no payment history. After you receive your first invoice, you'll see it
                     here.
