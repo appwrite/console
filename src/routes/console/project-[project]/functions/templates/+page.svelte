@@ -214,16 +214,15 @@
                                 </p>
 
                                 <div class="u-flex u-gap-16 u-main-end u-margin-block-start-24">
-                                    <a
+                                    <Button
                                         href={`${base}/console/project-${$page.params.project}/functions/templates/template-${template.id}`}
-                                        class="button is-text">
+                                        text>
                                         <span class="text">View details</span>
-                                    </a>
-                                    <button
-                                        class="button is-secondary"
-                                        on:click={() => connectTemplate(template)}>
+                                    </Button>
+
+                                    <Button secondary on:click={() => connectTemplate(template)}>
                                         <span class="text">Create function</span>
-                                    </button>
+                                    </Button>
                                 </div>
                             </article>
                         </li>
