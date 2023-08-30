@@ -13,15 +13,15 @@
     export let noMargin = false;
     export let noStyle = false;
     export let isModal = false;
-    export let onSubmit: () => Promise<void> | void;
+    export let onSubmit: (e: SubmitEvent) => Promise<void> | void;
 
     const { isSubmitting } = setContext<FormContext>('form', {
         isSubmitting: writable(false)
     });
 
-    async function submit() {
+    async function submit(e: SubmitEvent) {
         isSubmitting.set(true);
-        await onSubmit();
+        await onSubmit(e);
         isSubmitting.set(false);
     }
 </script>

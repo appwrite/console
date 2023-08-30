@@ -1,3 +1,12 @@
+<script lang="ts" context="module">
+    const langArr = ['js', 'html', 'dart', 'kotlin', 'json', 'sh', 'yml', 'swift'] as const;
+    export type Language = (typeof langArr)[number];
+
+    export function isLanguage(str: string): str is Language {
+        return langArr.includes(str as Language);
+    }
+</script>
+
 <script lang="ts">
     import { Pill } from '$lib/elements';
     import Prism from 'prismjs';
@@ -20,6 +29,8 @@
     export let withLineNumbers = false;
     export let withCopy = false;
     export let noMargin = false;
+    export let noBoxPadding = false;
+    export let allowScroll = false;
 
     Prism.plugins.customClass.prefix('prism-');
 
@@ -28,7 +39,7 @@
     });
 </script>
 
-<section class="box u-overflow-hidden" class:common-section={!noMargin}>
+<section class="box u-overflow-hidden" class:common-section={!noMargin} class:noBoxPadding>
     <div
         class="controls u-position-absolute u-inset-inline-end-8 u-inset-block-start-8 u-flex u-gap-8">
         {#if label}
@@ -47,9 +58,10 @@
             </Copy>
         {/if}
     </div>
-
-    <pre class={`language-${language}`} class:line-numbers={withLineNumbers}><code
-            >{code}</code></pre>
+    <pre
+        class:with-scroll={allowScroll}
+        class={`language-${language}`}
+        class:line-numbers={withLineNumbers}><code>{code}</code></pre>
 </section>
 
 <style lang="scss" global>
@@ -66,6 +78,15 @@
         .controls {
             z-index: 2;
         }
+    }
+
+    .noBoxPadding {
+        padding: 0 !important;
+    }
+
+    .with-scroll {
+        height: 100%;
+        overflow: auto;
     }
 
     code,
@@ -100,7 +121,7 @@
     :not(pre) > code[class*='language-'],
     pre[class*='language-'] {
         background: hsl(var(--p-box-background-color));
-        padding-block-start: 4%;
+
         margin: 0;
     }
     .prism-token {

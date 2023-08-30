@@ -1,5 +1,8 @@
+<script lang="ts" context="module">
+    export let showCreateBucket = writable(false);
+</script>
+
 <script lang="ts">
-    import { page } from '$app/stores';
     import { goto } from '$app/navigation';
     import { Empty, GridItem1, CardContainer, PaginationWithLimit, Id } from '$lib/components';
     import { Pill } from '$lib/elements';
@@ -7,17 +10,17 @@
     import { Container, ContainerHeader } from '$lib/layout';
     import { base } from '$app/paths';
     import { tooltip } from '$lib/actions/tooltip';
+    import { page } from '$app/stores';
     import type { Models } from '@appwrite.io/console';
+    import { writable } from 'svelte/store';
     import type { PageData } from './$types';
 
     export let data: PageData;
 
-    let showCreate = false;
-
     const project = $page.params.project;
 
     async function bucketCreated(event: CustomEvent<Models.Bucket>) {
-        showCreate = false;
+        $showCreateBucket = false;
         await goto(`${base}/console/project-${project}/storage/bucket-${event.detail.$id}`);
     }
 </script>
@@ -28,15 +31,14 @@
         total={data.buckets.total}
         buttonText="Create bucket"
         buttonEvent="create_bucket"
-        buttonMethod={() => (showCreate = true)} />
-
+        buttonMethod={() => ($showCreateBucket = true)} />
     {#if data.buckets.total}
         <CardContainer
             total={data.buckets.total}
             offset={data.offset}
             event="bucket"
             service="buckets"
-            on:click={() => (showCreate = true)}>
+            on:click={() => ($showCreateBucket = true)}>
             {#each data.buckets.buckets as bucket}
                 <GridItem1 href={`${base}/console/project-${project}/storage/bucket-${bucket.$id}`}>
                     <svelte:fragment slot="title">{bucket.name}</svelte:fragment>
@@ -89,8 +91,8 @@
             single
             href="https://appwrite.io/docs/storage"
             target="bucket"
-            on:click={() => (showCreate = true)} />
+            on:click={() => ($showCreateBucket = true)} />
     {/if}
 </Container>
 
-<Create bind:showCreate on:created={bucketCreated} />
+<Create bind:showCreate={$showCreateBucket} on:created={bucketCreated} />

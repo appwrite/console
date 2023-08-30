@@ -1,3 +1,7 @@
+<script lang="ts" context="module">
+    export let showCreateTeam = writable(false);
+</script>
+
 <script lang="ts">
     import { page } from '$app/stores';
     import {
@@ -26,10 +30,9 @@
     import type { PageData } from './$types';
     import { getServiceLimit } from '$lib/stores/billing';
     import { tooltip } from '$lib/actions/tooltip';
+    import { writable } from 'svelte/store';
 
     export let data: PageData;
-
-    let showCreate = false;
 
     const project = $page.params.project;
     const teamCreated = async (event: CustomEvent<Models.Team<Record<string, unknown>>>) => {
@@ -46,7 +49,7 @@
                     disabled: data.teams.total < getServiceLimit('teams')?.amount
                 }}>
                 <Button
-                    on:click={() => (showCreate = true)}
+                    on:click={() => ($showCreateTeam = true)}
                     event="create_team"
                     disabled={data.teams.total >= getServiceLimit('teams')?.amount}>
                     <span class="icon-plus" aria-hidden="true" />
@@ -55,6 +58,7 @@
             </div>
         </SearchQuery>
     </ContainerHeader>
+
     {#if data.teams.total}
         <Table>
             <TableHeader>
@@ -90,7 +94,7 @@
     {:else if data.search}
         <EmptySearch>
             <div class="u-text-center">
-                <b>Sorry, we couldn’t find ‘{data.search}’</b>
+                <b>Sorry, we couldn't find ‘{data.search}'</b>
                 <p>There are no teams that match your search.</p>
             </div>
             <Button secondary href={`/console/project-${$page.params.project}/auth/teams`}>
@@ -100,10 +104,10 @@
     {:else}
         <Empty
             single
-            on:click={() => (showCreate = true)}
+            on:click={() => ($showCreateTeam = true)}
             href="https://appwrite.io/docs/client/teams"
             target="team" />
     {/if}
 </Container>
 
-<Create bind:showCreate on:created={teamCreated} />
+<Create bind:showCreate={$showCreateTeam} on:created={teamCreated} />

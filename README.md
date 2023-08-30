@@ -31,7 +31,7 @@ Console 2.0 is designed to be accessible, from design to code. Console 2.0 is al
 
 ### Scalability and Collaboration
 
-The new console is more maintainable and welcoming to community contributions. Console 2.0 is built using Svelte instead of our own library. It’s better documented and well-known, making it easier for developers to contribute to Appwrite.
+The new console is more maintainable and welcoming to community contributions. Console 2.0 is built using Svelte instead of our own library. It's better documented and well-known, making it easier for developers to contribute to Appwrite.
 
 ## Contributing
 

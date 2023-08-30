@@ -1,15 +1,19 @@
 <script lang="ts">
+    import { clickOnEnter } from '$lib/helpers/a11y';
+
     export let withIndentation = false;
     export let open = false;
 </script>
 
 <li class="collapsible-item">
     <details class="collapsible-wrapper" {open}>
-        <summary class="collapsible-button">
+        <summary class="collapsible-button" on:keyup={clickOnEnter} on:click>
             <slot name="beforetitle" />
             <div>
                 <span class="text"><slot name="title" /></span>
-                <span class="collapsible-button-optional"><slot name="subtitle" /></span>
+                {#if $$slots.subtitle}
+                    <span class="collapsible-button-optional"><slot name="subtitle" /></span>
+                {/if}
             </div>
             <div class="icon">
                 <span class="icon-cheveron-down" aria-hidden="true" />

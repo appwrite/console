@@ -1,12 +1,20 @@
-<div class="box">
-    <div class="u-flex u-gap-16">
-        <slot name="image" />
-        <div class="u-cross-child-center u-line-height-1-5">
-            <slot name="title" />
-            <slot />
-        </div>
-        {#if $$slots?.end}
-            <div class="u-margin-inline-start-auto"><slot name="end" /></div>
-        {/if}
-    </div>
+<script lang="ts">
+    export let radius: keyof typeof radiuses = 'small';
+    export let padding = 24;
+    let classes = '';
+    export { classes as class };
+
+    enum radiuses {
+        xsmall = '--border-radius-extra-large',
+        small = '--border-radius-small',
+        medium = '--border-radius-medium',
+        large = '--border-radius-large'
+    }
+</script>
+
+<div
+    class="box {classes}"
+    style:--box-border-radius={`var(${radiuses[radius]})`}
+    style:--box-padding={`${padding / 16}rem`}>
+    <slot />
 </div>

@@ -1,26 +1,36 @@
+<script lang="ts" context="module">
+    import { get } from 'svelte/store';
+
+    let showDelete = writable(false);
+
+    export const promptDeleteUser = (id: string) => {
+        showDelete.set(true);
+        goto(`/console/project-${get(project).$id}/auth/user-${id}`);
+    };
+</script>
+
 <script lang="ts">
-    import { CardGrid, Box, Heading, AvatarInitials } from '$lib/components';
+    import { CardGrid, BoxAvatar, Heading, AvatarInitials } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import { toLocaleDate } from '$lib/helpers/date';
+    import { writable } from 'svelte/store';
     import DeleteUser from './deleteUser.svelte';
     import { user } from './store';
-
-    let showDelete = false;
-
-    // TODO: Remove this when the console SDK is updated
+    import { goto } from '$app/navigation';
+    import { project } from '../../store';
+    import { toLocaleDate } from '$lib/helpers/date';
     $: accessedAt = ($user as unknown as { accessedAt: string }).accessedAt;
 </script>
 
 <CardGrid danger>
     <div>
-        <Heading tag="h6" size="7">Delete User</Heading>
+        <Heading tag="h6" size="7">Delete user</Heading>
     </div>
     <p>
         The user will be permanently deleted, including all data associated with this user. This
         action is irreversible.
     </p>
     <svelte:fragment slot="aside">
-        <Box>
+        <BoxAvatar>
             <svelte:fragment slot="image">
                 {#if $user.email || $user.phone}
                     {#if $user.name}
@@ -47,12 +57,12 @@
                     : $user.email || $user.phone}
             </p>
             <p>Last activity: {accessedAt ? toLocaleDate(accessedAt) : 'never'}</p>
-        </Box>
+        </BoxAvatar>
     </svelte:fragment>
 
     <svelte:fragment slot="actions">
-        <Button secondary on:click={() => (showDelete = true)} event="delete_user">Delete</Button>
+        <Button secondary on:click={() => ($showDelete = true)} event="delete_user">Delete</Button>
     </svelte:fragment>
 </CardGrid>
 
-<DeleteUser bind:showDelete />
+<DeleteUser bind:showDelete={$showDelete} />

@@ -38,7 +38,7 @@
     {#if data.sessions.total}
         <Table>
             <TableHeader>
-                <TableCellHead width={140}>Browser and Device</TableCellHead>
+                <TableCellHead width={140}>Browser and device</TableCellHead>
                 <TableCellHead width={140}>Session</TableCellHead>
                 <TableCellHead width={140}>Location</TableCellHead>
                 <TableCellHead width={140}>IP</TableCellHead>

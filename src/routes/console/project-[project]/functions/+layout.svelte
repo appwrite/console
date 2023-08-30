@@ -1,24 +1,17 @@
 <script lang="ts">
-    import { onDestroy, onMount } from 'svelte';
-    import { sdk } from '$lib/stores/sdk';
-    import { Dependencies } from '$lib/constants';
-    import { invalidate } from '$app/navigation';
+    import { addSubPanel, registerCommands } from '$lib/commandCenter';
+    import { FunctionsPanel } from '$lib/commandCenter/panels';
 
-    let unsubscribe: { (): void };
-
-    onMount(() => {
-        unsubscribe = sdk.forConsole.client.subscribe('console', (response) => {
-            if (response.events.includes('functions.*.deployments.*')) {
-                invalidate(Dependencies.DEPLOYMENTS);
-            }
-        });
-    });
-
-    onDestroy(() => {
-        if (unsubscribe) {
-            unsubscribe();
+    $registerCommands([
+        {
+            label: 'Find functions',
+            callback: () => {
+                addSubPanel(FunctionsPanel);
+            },
+            group: 'functions',
+            rank: -1
         }
-    });
+    ]);
 </script>
 
 <svelte:head>

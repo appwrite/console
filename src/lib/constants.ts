@@ -9,6 +9,8 @@ export enum Dependencies {
     PAYMENT_METHODS = 'dependency:paymentMethods',
     ORGANIZATION = 'dependency:organization',
     PROJECT = 'dependency:project',
+    PROJECT_VARIABLES = 'dependency:project_variables',
+    PROJECT_INSTALLATIONS = 'dependency:project_installations',
     PROJECTS = 'dependency:projects',
     ACCOUNT = 'dependency:account',
     ACCOUNT_SESSIONS = 'dependency:account_sessions',
@@ -27,8 +29,11 @@ export enum Dependencies {
     FILE = 'dependency:file',
     FILES = 'dependency:files',
     FUNCTION = 'dependency:function',
+    FUNCTION_DOMAINS = 'dependency:function_domains',
+    FUNCTION_INSTALLATIONS = 'dependency:function_installations',
     FUNCTIONS = 'dependency:functions',
     VARIABLES = 'dependency:variables',
+    DEPLOYMENT = 'dependency:deployment',
     DEPLOYMENTS = 'dependency:deployments',
     EXECUTIONS = 'dependency:executions',
     PLATFORM = 'dependency:platform',
@@ -37,7 +42,11 @@ export enum Dependencies {
     KEYS = 'dependency:keys',
     DOMAINS = 'dependency:domains',
     WEBHOOK = 'dependency:webhook',
-    WEBHOOKS = 'dependency:webhooks'
+    WEBHOOKS = 'dependency:webhooks',
+    MIGRATIONS = 'dependency:migrations',
+    COLLECTIONS = 'dependency:collections',
+    RUNTIMES = 'dependency:runtimes',
+    CONSOLE_VARIABLES = 'dependency:console_variables'
 }
 
 export const scopes: {
@@ -171,6 +180,16 @@ export const scopes: {
     {
         scope: 'health.read',
         description: "Access to read your project's health status",
+        category: 'Other'
+    },
+    {
+        scope: 'migrations.read',
+        description: "Access to read your project's migration status",
+        category: 'Other'
+    },
+    {
+        scope: 'migrations.write',
+        description: 'Access to create migrations',
         category: 'Other'
     }
 ];

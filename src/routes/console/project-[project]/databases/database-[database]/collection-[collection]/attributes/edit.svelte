@@ -6,10 +6,10 @@
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, FormList, InputText } from '$lib/elements/forms';
-    import { deepEqual } from '$lib/helpers/object';
+    import deepEqual from 'deep-equal';
     import { addNotification } from '$lib/stores/notifications';
     import type { Attributes } from '../store';
-    import { options, type Option } from './store';
+    import { attributeOptions, type Option } from './store';
 
     export let showEdit = false;
     export let selectedAttribute: Attributes;
@@ -20,7 +20,7 @@
     let error: string;
     let currentAttr: Attributes;
 
-    $: option = options.find((option) => {
+    $: option = attributeOptions.find((option) => {
         if (selectedAttribute) {
             if ('format' in selectedAttribute && selectedAttribute.format) {
                 return option?.format === selectedAttribute?.format;
@@ -59,7 +59,7 @@
 
 {#if selectedAttribute}
     <Modal {error} size="big" bind:show={showEdit} onSubmit={submit} icon={option?.icon}>
-        <svelte:fragment slot="header">
+        <svelte:fragment slot="title">
             <div class="u-flex u-cross-center u-gap-8">
                 {option?.name}
                 {#if option?.type === 'relationship'}

@@ -1,3 +1,11 @@
+import { browser } from '$app/environment';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+
+if (browser) {
+    dayjs.extend(relativeTime);
+}
+
 export const toLocaleDate = (datetime: string) => {
     const date = new Date(datetime);
 
@@ -49,3 +57,7 @@ export const diffDays = (date1: Date, date2: Date) => {
     const diffTime = Math.abs(date2.getTime() - date1.getTime());
     return Math.floor(diffTime / (1000 * 60 * 60 * 24));
 };
+
+export function timeFromNow(datetime: string): string {
+    return dayjs().to(dayjs(datetime));
+}

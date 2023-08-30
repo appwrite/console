@@ -34,7 +34,7 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h2" size="7">Session Length</Heading>
+    <Heading tag="h2" size="7" id="session-length">Session length</Heading>
 
     <p>
         If you reduce the limit, users who are currently logged in will be logged out of the

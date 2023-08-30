@@ -11,7 +11,7 @@
     import AppleWatchOs from './appleWatchOS.svelte';
     import AppleTvos from './appleTvOS.svelte';
     import Android from './android.svelte';
-    import { CardGrid, Heading } from '$lib/components';
+    import { Box, CardGrid, Heading } from '$lib/components';
     import { Button, Form, FormList, InputText } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
@@ -93,18 +93,18 @@
 
     <CardGrid danger>
         <div>
-            <Heading tag="h6" size="7">Delete Platform</Heading>
+            <Heading tag="h6" size="7">Delete platform</Heading>
         </div>
         <p>The Platform will be permanently deleted. This action is irreversible.</p>
         <svelte:fragment slot="aside">
-            <div class="box">
+            <Box>
                 <div class="u-flex u-gap-16">
                     <div class="u-cross-child-center u-line-height-1-5">
                         <h6 class="u-bold">{$platform.name}</h6>
                         <p>{$platform.hostname}</p>
                     </div>
                 </div>
-            </div>
+            </Box>
         </svelte:fragment>
 
         <svelte:fragment slot="actions">

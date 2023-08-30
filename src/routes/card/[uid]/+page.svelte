@@ -199,8 +199,7 @@
     </div>
 </div>
 
-<Modal bind:show={showEmbedCode}>
-    <svelte:fragment slot="header">Get Embed Code</svelte:fragment>
+<Modal title="Get Embed Code" bind:show={showEmbedCode}>
     <div class="u-overflow-hidden">
         <Code language="html" code={embedCode} noMargin />
     </div>

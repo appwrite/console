@@ -37,12 +37,12 @@
 </script>
 
 <Modal
+    title="Delete organization"
     onSubmit={deleteOrg}
     bind:show={showDelete}
     icon="exclamation"
     state="warning"
     headerDivider={false}>
-    <svelte:fragment slot="header">Delete Organization</svelte:fragment>
     <p>
         Are you sure you want to delete <b>{$organization.name}</b>? All projects ({$organization.total})
         and data associated with this organization will be deleted. This action is irreversible.

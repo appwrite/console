@@ -10,18 +10,23 @@
     import { user } from '$lib/stores/user';
     import { ENV, isCloud } from '$lib/system';
     import * as Sentry from '@sentry/svelte';
-    import LogRocket from 'logrocket';
     import { BrowserTracing } from '@sentry/tracing';
+    import LogRocket from 'logrocket';
     import { onMount } from 'svelte';
     import { onCLS, onFCP, onFID, onINP, onLCP, onTTFB } from 'web-vitals';
     import Loading from './loading.svelte';
-    import { loading } from './store';
+    import { loading, requestedMigration } from './store';
+    import { parseIfString } from '$lib/helpers/object';
 
     if (browser) {
         window.VERCEL_ANALYTICS_ID = import.meta.env.VERCEL_ANALYTICS_ID?.toString() ?? false;
     }
 
     onMount(async () => {
+        if ($page.url.searchParams.has('migrate')) {
+            const migrateData = $page.url.searchParams.get('migrate');
+            requestedMigration.set(parseIfString(migrateData) as Record<string, string>);
+        }
         /**
          * Reporting Web Vitals.
          */
@@ -59,7 +64,7 @@
         /**
          * Handle initial load.
          */
-        if (!$page.url.pathname.startsWith('/auth')) {
+        if (!$page.url.pathname.startsWith('/auth') && !$page.url.pathname.startsWith('/git')) {
             const acceptedRoutes = [
                 '/login',
                 '/register',
@@ -181,7 +186,24 @@
         }
     }
 
-    [type='checkbox']:where(:checked)::before {
-        content: '\ea38';
+    .border-gradient {
+        position: relative;
+    }
+
+    .border-gradient::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-radius: var(--border-radius);
+        border: var(--border-size) solid transparent;
+        background: var(--border-gradient) border-box;
+        mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+        -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: destination-out;
+        mask-composite: exclude;
+        pointer-events: none;
     }
 </style>

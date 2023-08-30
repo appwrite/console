@@ -3,6 +3,7 @@
 
     export let value: string;
     export let event: string = null;
+    export let centered = true;
 
     function truncateText(node: HTMLElement) {
         const MAX_TRIES = 100;
@@ -49,6 +50,7 @@
 <Copy {value} {event}>
     <div
         class="interactive-text-output is-buttons-on-top"
+        class:u-text-center={centered}
         style:min-inline-size="0"
         style:display="inline-flex">
         <span

@@ -35,8 +35,7 @@
     };
 </script>
 
-<Modal bind:show={showActivate} onSubmit={handleSubmit}>
-    <svelte:fragment slot="header">Activate Deployment</svelte:fragment>
+<Modal title="Activate Deployment" bind:show={showActivate} onSubmit={handleSubmit}>
     <p>Are you sure you want to activate this deployment?</p>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showActivate = false)}>Cancel</Button>

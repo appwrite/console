@@ -5,15 +5,15 @@
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">Execute access</svelte:fragment>
+    <svelte:fragment slot="title">Permissions</svelte:fragment>
     <svelte:fragment slot="subtitle">
-        Choose who can execute this function using the client API. For more information, check out
-        the <a
+        Choose which users have permission to execute this function using Client SDKs. For more
+        information, check out the <a
             href="https://appwrite.io/docs/permissions"
             target="_blank"
             rel="noopener noreferrer"
             class="link">
-            Permissions Guide
+            permissions documentation
         </a>.
     </svelte:fragment>
 

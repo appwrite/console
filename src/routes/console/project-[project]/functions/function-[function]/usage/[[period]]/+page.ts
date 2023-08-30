@@ -10,7 +10,8 @@ export const load: PageLoad = async ({ params }) => {
             params.period ?? '30d'
         );
         return {
-            executionsTotal: response.executionsTotal as unknown as Models.Metric[]
+            count: response.executionsTotal as unknown as Models.Metric[],
+            errors: response.executionsFailure as unknown as Models.Metric[]
         };
     } catch (e) {
         throw error(e.code, e.message);

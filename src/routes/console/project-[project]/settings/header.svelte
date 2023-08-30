@@ -27,6 +27,16 @@
             title: 'Usage',
             event: 'usage',
             hasChildren: true
+        },
+        {
+            href: `${path}/migrations`,
+            title: 'Migrations',
+            event: 'migrations'
+        },
+        {
+            href: `${path}/smtp`,
+            title: 'SMTP',
+            event: 'smtp'
         }
     ];
 </script>

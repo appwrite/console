@@ -27,7 +27,6 @@
 
     const dispatch = createEventDispatcher();
 
-    let currentStep = 1;
     let showExitModal = false;
 
     function handleKeydown(event: KeyboardEvent) {
@@ -56,8 +55,8 @@
 
     function handleStepClick(e: CustomEvent<number>) {
         const step = e.detail;
-        if (step < currentStep) {
-            currentStep = step;
+        if (step < $wizard.step) {
+            $wizard.step = step;
         }
     }
 
@@ -79,25 +78,26 @@
             trackEvent('wizard_finish');
             dispatch('finish');
         } else {
-            if (steps.get(currentStep + 1)?.disabled) {
-                currentStep++;
-                while (steps.get(currentStep)?.disabled) {
-                    currentStep++;
+            if (steps.get($wizard.step + 1)?.disabled) {
+                $wizard.step++;
+                while (steps.get($wizard.step)?.disabled) {
+                    $wizard.step++;
                 }
             } else {
-                currentStep++;
+                $wizard.step++;
             }
             trackEvent('wizard_next');
+            $wizard.step++;
         }
     }
 
     function previousStep() {
         trackEvent('wizard_back');
-        currentStep--;
+        $wizard.step--;
     }
 
     $: sortedSteps = [...steps].sort(([a], [b]) => (a > b ? 1 : -1));
-    $: isLastStep = currentStep === steps.size;
+    $: isLastStep = $wizard.step === steps.size;
 </script>
 
 <svelte:window on:keydown={handleKeydown} />
@@ -129,7 +129,7 @@
                     optional,
                     disabled
                 }))}
-                {currentStep} />
+                currentStep={$wizard.step} />
         </slot>
     </aside>
     <div class="wizard-media">
@@ -140,18 +140,19 @@
     <div class="wizard-main">
         <Form noStyle onSubmit={submit}>
             {#each sortedSteps as [step, { component }]}
-                {#if currentStep === step}
+                {#if $wizard.step === step}
                     <svelte:component this={component} />
                 {/if}
             {/each}
             <div class="form-footer">
                 <div class="u-flex u-main-end u-gap-12">
-                    {#if !isLastStep && sortedSteps[currentStep - 1][1].optional}
+                    {#if !isLastStep && sortedSteps[$wizard.step - 1]?.[1]?.optional}
                         <Button text on:click={() => dispatch('finish')}>
                             Skip optional steps
                         </Button>
                     {/if}
-                    {#if currentStep === 1}
+
+                    {#if $wizard.step === 1}
                         <Button secondary on:click={handleExit}>Cancel</Button>
                         <Button submit>Next</Button>
                     {:else if isLastStep}
@@ -161,6 +162,10 @@
                         <Button secondary on:click={previousStep}>Back</Button>
                         <Button submit>Next</Button>
                     {/if}
+
+                    <Button submit disabled={$wizard.nextDisabled}>
+                        {isLastStep ? finalAction : 'Next'}
+                    </Button>
                 </div>
             </div>
         </Form>

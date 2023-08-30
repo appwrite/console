@@ -1,6 +1,6 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { EmptySearch, Id, PaginationWithLimit, Status } from '$lib/components';
+    import { Alert, EmptySearch, Id, PaginationWithLimit } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
@@ -10,44 +10,38 @@
         TableCellHead,
         TableCellText,
         TableHeader,
-        TableRow,
+        TableRowButton,
         TableScroll
     } from '$lib/elements/table';
-    import { toLocaleDateTime } from '$lib/helpers/date';
+    import { timeFromNow } from '$lib/helpers/date';
     import { calculateTime } from '$lib/helpers/timeConversion';
     import { Container, ContainerHeader } from '$lib/layout';
     import { log } from '$lib/stores/logs';
     import { sdk } from '$lib/stores/sdk';
-    import { onDestroy, onMount } from 'svelte';
+    import { onMount } from 'svelte';
     import { func } from '../store';
-    import CreateDeployment from '../create.svelte';
     import type { Models } from '@appwrite.io/console';
-    import type { PageData } from './$types';
     import { organization } from '$lib/stores/organization';
     import { tierToPlan, type Tier, getServiceLimit } from '$lib/stores/billing';
     import { wizard } from '$lib/stores/wizard';
     import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
     import { isCloud } from '$lib/system';
     import UsageRates from '$routes/console/wizard/cloudOrganization/usageRates.svelte';
+    import { project } from '$routes/console/project-[project]/store';
+    import Create from '../create.svelte';
+    import Execute from '../execute.svelte';
 
-    export let data: PageData;
+    export let data;
 
-    let showCreate = false;
     let showRates = false;
-    let unsubscribe: { (): void };
+    let selectedFunction: Models.Function = null;
 
     onMount(() => {
-        unsubscribe = sdk.forConsole.client.subscribe('console', (response) => {
+        return sdk.forConsole.client.subscribe('console', (response) => {
             if (response.events.includes('functions.*.executions.*')) {
                 invalidate(Dependencies.EXECUTIONS);
             }
         });
-    });
-
-    onDestroy(() => {
-        if (unsubscribe) {
-            unsubscribe();
-        }
     });
 
     function showLogs(execution: Models.Execution) {
@@ -62,7 +56,11 @@
 </script>
 
 <Container>
-    <ContainerHeader title="Executions">
+    <ContainerHeader
+        title="Executions"
+        buttonText="Execute now"
+        buttonEvent="execute_function"
+        buttonMethod={() => (selectedFunction = $func)}>
         <svelte:fragment slot="tooltip">
             <p class="u-bold">The {tier} plan has limits</p>
             <ul>
@@ -94,47 +92,66 @@
             {/if}
         </svelte:fragment>
     </ContainerHeader>
+
+    {#if !$func.logging}
+        <div class="common-section">
+            <Alert type="info" isStandalone>
+                <svelte:fragment slot="title">Your execution logs are disabled</svelte:fragment>
+
+                To see the latest execution logs, enable them in your
+                <a
+                    href={`/console/project-${$project.$id}/functions/function-${$func.$id}/settings`}
+                    class="link">
+                    Function settings</a
+                >.
+            </Alert>
+        </div>
+    {/if}
     {#if data.executions.total}
         <TableScroll>
             <TableHeader>
                 <TableCellHead width={150}>Execution ID</TableCellHead>
-                <TableCellHead width={140}>Created</TableCellHead>
                 <TableCellHead width={110}>Status</TableCellHead>
+                <TableCellHead width={140}>Created</TableCellHead>
                 <TableCellHead width={90}>Trigger</TableCellHead>
+                <TableCellHead width={70}>Method</TableCellHead>
+                <TableCellHead width={90}>Path</TableCellHead>
                 <TableCellHead width={80}>Duration</TableCellHead>
-                <TableCellHead width={50} />
             </TableHeader>
             <TableBody>
                 {#each data.executions.executions as execution}
-                    <TableRow>
+                    <TableRowButton on:click={() => showLogs(execution)}>
                         <TableCell width={150} title="Execution ID">
                             <Id value={execution.$id}>{execution.$id}</Id>
                         </TableCell>
+                        <TableCell width={110} title="Status">
+                            {@const status = execution.status}
+
+                            <Pill
+                                warning={status === 'waiting' || status === 'building'}
+                                danger={status === 'failed'}
+                                info={status === 'completed' || status === 'ready'}>
+                                {status}
+                            </Pill>
+                        </TableCell>
                         <TableCellText width={140} title="Created">
-                            {toLocaleDateTime(execution.$createdAt)}
+                            {timeFromNow(execution.$createdAt)}
                         </TableCellText>
-                        <TableCellText width={110} title="Status">
-                            <Status status={execution.status}>
-                                {execution.status}
-                            </Status>
-                        </TableCellText>
-                        <TableCellText width={90} title="Trigger">
+                        <TableCell width={90} title="Trigger">
                             <Pill>
                                 <span class="text u-trim">{execution.trigger}</span>
                             </Pill>
+                        </TableCell>
+                        <TableCellText width={70} title="Method">
+                            {execution.requestMethod}
+                        </TableCellText>
+                        <TableCellText width={90} title="Path">
+                            {execution.requestPath}
                         </TableCellText>
                         <TableCellText width={80} title="Duration">
                             {calculateTime(execution.duration)}
                         </TableCellText>
-                        <TableCell width={50}>
-                            <Button
-                                secondary
-                                event="view_logs"
-                                on:click={() => showLogs(execution)}>
-                                Logs
-                            </Button>
-                        </TableCell>
-                    </TableRow>
+                    </TableRowButton>
                 {/each}
             </TableBody>
         </TableScroll>
@@ -156,14 +173,15 @@
                 <Button text external href="https://appwrite.io/docs/functions#execute">
                     Documentation
                 </Button>
-                <Button secondary on:click={() => (showCreate = true)}>Create deployment</Button>
+                <Create secondary />
             </div>
         </EmptySearch>
     {/if}
 </Container>
 
-<CreateDeployment bind:showCreate />
+<!-- <CreateDeployment bind:showCreate /> -->
 
 {#if isCloud}
     <UsageRates bind:show={showRates} tier={$organization?.billingPlan} />
 {/if}
+<Execute {selectedFunction} />

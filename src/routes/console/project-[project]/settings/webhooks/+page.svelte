@@ -1,5 +1,10 @@
+<script lang="ts" context="module">
+    export function openWebhooksWizard() {
+        wizard.start(Create);
+    }
+</script>
+
 <script lang="ts">
-    import { beforeNavigate } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Empty } from '$lib/components';
@@ -17,6 +22,7 @@
     import { wizard } from '$lib/stores/wizard';
     import type { PageData } from './$types';
     import Create from './createWebhook.svelte';
+    import { updateCommandGroupRanks } from '$lib/commandCenter';
 
     export let data: PageData;
 
@@ -24,11 +30,9 @@
         wizard.start(Create);
     }
 
-    beforeNavigate(() => {
-        wizard.hide();
-    });
-
     const projectId = $page.params.project;
+
+    $: $updateCommandGroupRanks({ webhooks: 20, domains: 10 });
 </script>
 
 <svelte:head>

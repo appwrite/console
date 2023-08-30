@@ -27,31 +27,39 @@ type PreferencesStore = {
             [key: string]: TeamPreferences['names'];
         };
     };
-};
+} & { hideAiDisclaimer?: boolean };
 
 function createPreferences() {
     const { subscribe, set, update } = writable<PreferencesStore>({});
+    let preferences: PreferencesStore = {};
+
     if (browser) {
         set(JSON.parse(globalThis.localStorage.getItem('preferences') ?? '{}'));
     }
+
+    subscribe((v) => {
+        preferences = v;
+        if (browser) {
+            globalThis.localStorage.setItem('preferences', JSON.stringify(v));
+        }
+    });
+
     return {
         subscribe,
-        get: (route: Page['route']): Preferences => {
-            let preferences: PreferencesStore;
-            subscribe((n) => (preferences = n))();
-
+        set,
+        update,
+        get: (route?: Page['route']): Preferences => {
+            const parsedRoute = route ?? get(page).route;
             return (
-                preferences[sdk.forProject.client.config.project]?.[route.id] ?? {
+                preferences[sdk.forProject.client.config.project]?.[parsedRoute.id] ?? {
                     limit: null,
                     view: null,
                     columns: null
                 }
             );
         },
-        getCustomCollectionColumns: (collectionId: string): Preferences['columns'] => {
-            let preferences: PreferencesStore;
-            subscribe((n) => (preferences = n))();
 
+        getCustomCollectionColumns: (collectionId: string): Preferences['columns'] => {
             return (
                 preferences[sdk.forProject.client.config.project]?.collections?.[collectionId] ??
                 null
@@ -122,9 +130,7 @@ function createPreferences() {
         getDisplayNames: () => {
             const id = get(organization)?.$id;
             if (!id) return {};
-            let preferences: PreferencesStore;
 
-            subscribe((n) => (preferences = n))();
             return preferences?.[id]?.displayNames ?? {};
         },
         setDisplayNames: async (collectionId: string, names: TeamPreferences['names']) => {
@@ -147,7 +153,3 @@ function createPreferences() {
 }
 
 export const preferences = createPreferences();
-
-if (browser) {
-    preferences.subscribe((n) => globalThis.localStorage.setItem('preferences', JSON.stringify(n)));
-}
