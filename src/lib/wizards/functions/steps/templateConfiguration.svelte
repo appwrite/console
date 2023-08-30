@@ -3,7 +3,7 @@
     import { Pill } from '$lib/elements';
     import { FormList, InputSelect, InputText } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
-    import { runtimes } from '$routes/console/project-[project]/functions/store';
+    import { runtimesList } from '$routes/console/project-[project]/functions/store';
     import { template, templateConfig } from '../store';
 
     let showCustomId = false;
@@ -15,7 +15,7 @@
     }
 
     async function loadRuntimes() {
-        const options = (await $runtimes).runtimes
+        const options = (await $runtimesList).runtimes
             .map((runtime) => ({
                 label: `${runtime.name} - ${runtime.version}`,
                 value: runtime.$id

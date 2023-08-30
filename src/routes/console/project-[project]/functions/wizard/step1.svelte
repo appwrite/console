@@ -5,14 +5,14 @@
     import { WizardStep } from '$lib/layout';
     import { onMount } from 'svelte';
     import { createFunction } from './store';
-    import { runtimes } from '../store';
+    import { runtimesList } from '../store';
 
     let showCustomId = false;
 
     let options = [];
 
     onMount(async () => {
-        options = (await $runtimes).runtimes.map((runtime) => ({
+        options = (await $runtimesList).runtimes.map((runtime) => ({
             label: `${runtime.name} - ${runtime.version}`,
             value: runtime.$id
         }));
