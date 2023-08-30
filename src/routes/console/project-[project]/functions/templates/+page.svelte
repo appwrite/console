@@ -168,7 +168,7 @@
                     style="--grid-item-size:22rem; --grid-item-size-small-screens:19rem">
                     {#each data.templates as template}
                         {@const displayed = template.runtimes.slice(0, 2)}
-                        {@const hidden = template.runtimes.slice(2, -1)}
+                        {@const hidden = template.runtimes.slice(1, -1)}
                         <li>
                             <article class="card u-min-height-100-percent">
                                 <div class="u-flex u-gap-16 u-cross-center">
