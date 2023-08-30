@@ -61,9 +61,10 @@
             });
         }
         const target = new URL(`${sdk.forProject.client.config.endpoint}/vcs/github/authorize`);
-        target.searchParams.set('projectId', $page.params.project);
+        target.searchParams.set('project', $page.params.project);
         target.searchParams.set('success', redirect.toString());
         target.searchParams.set('failure', redirect.toString());
+        target.searchParams.set('mode', 'admin');
         return target;
     }
 
