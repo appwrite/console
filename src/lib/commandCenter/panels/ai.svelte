@@ -180,8 +180,8 @@
             <Alert type="error">
                 <span slot="title">Something went wrong</span>
                 <p>
-                    An unexpected error occurred while handling your request. Please try again
-                    later.
+                    An unexpected error occurred while handling your request. For more information,
+                    please check the status of our APIs and contact support.
                 </p>
             </Alert>
         </div>
