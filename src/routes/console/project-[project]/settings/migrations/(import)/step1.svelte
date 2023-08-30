@@ -29,7 +29,8 @@
     //         `${sdk.forProject.client.config.endpoint}/migrations/firebase/connect`
     //     );
     //     target.searchParams.set('redirect', redirect.toString());
-    //     target.searchParams.set('projectId', $page.params.project);
+    //     target.searchParams.set('project', $page.params.project);
+    //     target.searchParams.set('mode', 'admin');
     //     return target;
     // }
 
