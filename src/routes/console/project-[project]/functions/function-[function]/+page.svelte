@@ -80,7 +80,7 @@
         </div>
         {#if activeDeployment && !$func.live}
             <div class="u-margin-block-start-8">
-                <Alert type="warning" isStandalone>
+                <Alert type="warning" isStandalone dismissible>
                     Some configuration options are not live yet. Redeploy your function to apply
                     latest changes.
                 </Alert>
@@ -150,7 +150,9 @@
                             on:click={() => {
                                 selectedDeployment = activeDeployment;
                                 showRedeploy = true;
-                            }}>Redeploy</Button>
+                            }}>
+                            Redeploy
+                        </Button>
 
                         <Button secondary on:click={() => ($execute = $func)}>Execute now</Button>
                     </div>

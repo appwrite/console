@@ -69,9 +69,9 @@
 {#if rules.total}
     <TableScroll>
         <TableHeader>
-            <TableCellHead>Name</TableCellHead>
-            <TableCellHead width={180}>Verification Status</TableCellHead>
-            <TableCellHead>Certificate Status</TableCellHead>
+            <TableCellHead width={150}>Name</TableCellHead>
+            <TableCellHead width={120}>Verification Status</TableCellHead>
+            <TableCellHead width={180}>Certificate Status</TableCellHead>
             <TableCellHead width={40} />
         </TableHeader>
         <TableBody>
@@ -138,7 +138,7 @@
                             <div class="u-flex u-gap-8 u-cross-center">
                                 <Pill>
                                     <span class="icon-clock u-text-color-gray" aria-hidden="true" />
-                                    <p class="text">Waiting to run</p>
+                                    <p class="text">Waiting for verification</p>
                                 </Pill>
                             </div>
                         {/if}
