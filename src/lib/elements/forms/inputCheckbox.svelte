@@ -41,6 +41,7 @@
             {disabled}
             {required}
             {indeterminate}
+            {...$$props}
             type="checkbox"
             bind:this={element}
             bind:checked={value}

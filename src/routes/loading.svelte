@@ -3,7 +3,7 @@
     import AppwriteLogo from '$lib/images/appwrite-gray-light.svg';
 </script>
 
-<div class="load-screen" out:fade>
+<div class="load-screen" out:fade|global>
     <div class="animation">
         <div />
         <div />

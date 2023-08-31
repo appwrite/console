@@ -151,7 +151,7 @@
     </div>
     <div class="cbc-wrapper">
         {#if !cardActive}
-            <div class="cbc-confetti" transition:fade|local>
+            <div class="cbc-confetti" transition:fade>
                 <Confetti
                     x={[-1.75, 1.85]}
                     y={[-1.875, 1]}
@@ -174,7 +174,10 @@
             on:keydown={() => {
                 /* no-op */
             }}
-            transition:fade|local />
+            transition:fade
+            role="button"
+            tabindex="0"
+            />
     {/if}
     <div class="controls" class:invisible={!cardActive}>
         <button

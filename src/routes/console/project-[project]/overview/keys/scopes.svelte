@@ -4,6 +4,7 @@
     import { scopes as allScopes } from '$lib/constants';
     import { onMount } from 'svelte';
     import { symmetricDifference } from '$lib/helpers/array';
+    import Checkbox from './checkbox.svelte';
 
     export let scopes: string[];
 
@@ -49,12 +50,12 @@
     }
 
     function onCategoryChange(
-        event: Event & { currentTarget: EventTarget & HTMLInputElement },
+        event: Event,
         category: Category
     ) {
         allScopes.forEach((s) => {
             if (s.category === category) {
-                activeScopes[s.scope] = event.currentTarget.checked;
+                activeScopes[s.scope] = (event.currentTarget as EventTarget & HTMLInputElement ).checked;
             }
         });
     }
@@ -91,8 +92,7 @@
         {@const checked = categoryState(category, scopes)}
         <CollapsibleItem withIndentation>
             <svelte:fragment slot="beforetitle">
-                <input
-                    type="checkbox"
+                <Checkbox
                     {checked}
                     indeterminate={checked === null ? true : false}
                     on:change={(e) => onCategoryChange(e, category)} />

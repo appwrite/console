@@ -5,7 +5,7 @@
     export let noMargin = false;
     let isOverflowing = false;
 
-    const hasOverflow: Action<HTMLDivElement> = (node) => {
+    const hasOverflow: Action<HTMLDivElement, any> = (node) => {
         const observer = new ResizeObserver((entries) => {
             for (const entry of entries) {
                 let overflowing = false;

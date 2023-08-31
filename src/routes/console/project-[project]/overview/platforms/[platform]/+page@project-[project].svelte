@@ -22,7 +22,7 @@
     import { Dependencies } from '$lib/constants';
     import { invalidate } from '$app/navigation';
 
-    const types: Record<string, typeof SvelteComponent> = {
+    const types: Record<string, typeof SvelteComponent<any>> = {
         web: Web,
         android: Android,
         'apple-ios': AppleiOs,

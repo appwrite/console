@@ -39,7 +39,7 @@
     };
 
     onMount(async () => {
-        return sdk.forConsole.client.subscribe(['project', 'console'], (response) => {
+         sdk.forConsole.client.subscribe(['project', 'console'], (response) => {
             if (response.events.includes('migrations.*')) {
                 invalidate(Dependencies.MIGRATIONS);
             }

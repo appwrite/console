@@ -24,7 +24,7 @@ export type FeedbackOption = {
     type: Feedback['type'];
     title: string;
     desc: string;
-    component: typeof SvelteComponent;
+    component: typeof SvelteComponent<any>;
 };
 
 export const feedbackOptions: FeedbackOption[] = [

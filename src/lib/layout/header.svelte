@@ -132,7 +132,7 @@
                 {#if showDropdown}
                     <div
                         class="drop is-no-arrow is-block-end is-inline-end"
-                        transition:slideFade={{ duration: 150 }}>
+                        transition:slideFade|global={{ duration: 150 }}>
                         {#if $organizationList?.total}
                             <section class="drop-section u-overflow-y-auto u-max-height-200">
                                 <ul class="drop-list">
