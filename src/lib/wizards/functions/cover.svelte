@@ -93,7 +93,7 @@
                         style:--grid-item-size-small-screens="9rem"
                         style:--grid-gap=".5rem">
                         {#await $runtimesList}
-                            {#each Array(6) as _i}
+                            {#each Array(6) as _}
                                 <li>
                                     <button
                                         disabled

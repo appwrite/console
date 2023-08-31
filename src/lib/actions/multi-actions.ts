@@ -1,6 +1,8 @@
 import type { Action } from 'svelte/action';
 
-export type MultiActionArray = Array<(node: HTMLElement) => ReturnType<Action<HTMLElement, any>>>;
+export type MultiActionArray = Array<
+    (node: HTMLElement) => ReturnType<Action<HTMLElement, unknown>>
+>;
 
 export function multiAction(node: HTMLElement, arr: MultiActionArray) {
     const destroyFns = arr.map((fn) => {

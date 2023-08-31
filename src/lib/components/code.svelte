@@ -64,6 +64,7 @@
         class:line-numbers={withLineNumbers}><code>{code}</code></pre>
 </section>
 
+<!-- svelte-ignore css-unused-selector -->
 <style lang="scss" global>
     @import 'prismjs/themes/prism.css';
     @import 'prismjs/plugins/line-numbers/prism-line-numbers.css';

@@ -132,6 +132,7 @@
 
 <Progress />
 
+<!-- svelte-ignore css-unused-selector -->
 <style lang="scss" global>
     .tippy-box {
         --p-tooltip-text-color: var(--color-neutral-10);

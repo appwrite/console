@@ -24,7 +24,7 @@ export type Option = {
         | 'URL'
         | 'Enum'
         | 'Relationship';
-    component: typeof SvelteComponent<any>;
+    component: typeof SvelteComponent<unknown>;
     type: 'string' | 'integer' | 'double' | 'boolean' | 'datetime' | 'relationship';
     create: (
         databaseId: string,
