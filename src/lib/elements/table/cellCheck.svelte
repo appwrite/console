@@ -33,7 +33,7 @@
     <InputCheckbox
         bind:element={el}
         id="select-{id}"
-        value={selectedIds.includes(id)}
+        checked={selectedIds.includes(id)}
         on:click={handleClick} />
 </TableCell>
 
