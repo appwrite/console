@@ -7,7 +7,13 @@
 
 <li class="collapsible-item">
     <details class="collapsible-wrapper" {open}>
-        <summary class="collapsible-button" on:keyup={clickOnEnter} on:click>
+        <!-- svelte-ignore a11y-no-redundant-roles -->
+        <summary
+            class="collapsible-button"
+            on:keyup={clickOnEnter}
+            on:click
+            role="button"
+            tabindex="0">
             <slot name="beforetitle" />
             <div>
                 <span class="text"><slot name="title" /></span>
