@@ -4,6 +4,7 @@
     import { createEventDispatcher, onMount } from 'svelte';
     import { Label } from '.';
 
+    /* eslint no-undef: "off" */
     type Option = $$Generic<{
         value: string | boolean | number;
         label: string;

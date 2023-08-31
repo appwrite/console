@@ -9,6 +9,7 @@
 
     import { clearSubPanels, popSubPanel, subPanels } from '../subPanels';
 
+    /* eslint no-undef: "off" */
     type Option = $$Generic<Omit<Command, 'group'> & { group?: string }>;
     export let options: Option[] | null = null;
     export let search = '';

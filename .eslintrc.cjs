@@ -27,7 +27,10 @@ module.exports = {
         '@typescript-eslint/no-duplicate-enum-values': 'off',
         'svelte/no-at-html-tags': 'off',
         'no-unused-vars': 'off', // This rule is handled by `@typescript-eslint/no-unused-vars` so it needs to be disabled to avoid conflicts.
-        '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }]
+        '@typescript-eslint/no-unused-vars': [
+            'error',
+            { argsIgnorePattern: '^_', varsIgnorePattern: '^(_|\\$\\$)' } // Ignore unused variables starting with `_` or `$$`.
+        ]
     },
     env: {
         browser: true,

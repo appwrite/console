@@ -174,7 +174,7 @@
                                 <div class="u-flex u-gap-16 u-cross-center">
                                     <h2
                                         class="body-text-1 u-bold u-trim"
-                                        style:break-word="break-word">
+                                        style:word-break="break-word">
                                         {template.name}
                                     </h2>
                                     <ul class="avatars-group is-with-border">
