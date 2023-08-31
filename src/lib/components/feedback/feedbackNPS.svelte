@@ -2,6 +2,8 @@
     import { FormList, InputTextarea, InputText, InputEmail } from '$lib/elements/forms';
     import { feedbackData } from '$lib/stores/feedback';
     import Evaluation from './evaluation.svelte';
+
+    $: console.log($feedbackData);
 </script>
 
 <Evaluation bind:value={$feedbackData.value}>

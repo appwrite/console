@@ -62,7 +62,7 @@
         {label}
     </Label>
 
-    <div class="input-text-wrapper" on:click on:keyup={clickOnEnter}>
+    <div class="input-text-wrapper" on:click on:keyup={clickOnEnter} role="textbox" tabindex="-1">
         <textarea
             {id}
             {name}
