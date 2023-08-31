@@ -90,8 +90,7 @@
                     on:click={() => (isLimited = true)}
                     on:keyup|self={clickOnEnter}
                     role="button"
-                    tabindex="0"
-                    >
+                    tabindex="0">
                     <input
                         type="number"
                         name="limit"

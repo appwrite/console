@@ -176,8 +176,7 @@
             }}
             transition:fade
             role="button"
-            tabindex="0"
-            />
+            tabindex="0" />
     {/if}
     <div class="controls" class:invisible={!cardActive}>
         <button

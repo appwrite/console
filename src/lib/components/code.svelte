@@ -189,9 +189,14 @@
                 color: #62aed2;
             }
         }
-        &.prism-regex,
         &.prism-important,
         &.prism-variable {
+            color: #a1c4ff;
+            body.theme-light & {
+                color: #62aed2;
+            }
+        }
+        &.prism-regex {
             color: #a1c4ff;
             body.theme-light & {
                 color: #62aed2;

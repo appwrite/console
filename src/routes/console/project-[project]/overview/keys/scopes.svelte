@@ -49,13 +49,12 @@
         }
     }
 
-    function onCategoryChange(
-        event: Event,
-        category: Category
-    ) {
+    function onCategoryChange(event: Event, category: Category) {
         allScopes.forEach((s) => {
             if (s.category === category) {
-                activeScopes[s.scope] = (event.currentTarget as EventTarget & HTMLInputElement ).checked;
+                activeScopes[s.scope] = (
+                    event.currentTarget as EventTarget & HTMLInputElement
+                ).checked;
             }
         });
     }
