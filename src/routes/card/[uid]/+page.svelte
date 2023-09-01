@@ -91,7 +91,7 @@
                         delay={i === 0 ? [500, 500] : [0, 100]}
                         x={[0.5, 2]}
                         y={[0, 1.5]}
-                        amount="30"
+                        amount={30}
                         fallDistance="50px"
                         colorArray={confettiColors} />
                 {/each}
@@ -156,7 +156,7 @@
                     x={[-1.75, 1.85]}
                     y={[-1.875, 1]}
                     amount={100}
-                    size="10"
+                    size={10}
                     infinite
                     delay={[2000, 7000]}
                     colorArray={confettiColors}
