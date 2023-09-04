@@ -107,7 +107,7 @@
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
-                <Button secondary href={downloadFile()} event="download_file">
+                <Button secondary href={downloadFile()} event="download_file" external>
                     <span class="icon-download" aria-hidden="true" />
                     <span class="text"> Download</span></Button>
             </svelte:fragment>
