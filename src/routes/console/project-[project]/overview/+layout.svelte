@@ -82,7 +82,7 @@
             <Onboard {projectId} />
         {:else}
             {#if $usage}
-                {@const storage = humanFileSize(totalMetrics($usage.storage) ?? 0)}
+                {@const storage = humanFileSize(totalMetrics($usage.filesStorage) ?? 0)}
                 <section class="common-section">
                     <div class="grid-dashboard-1s-2m-6l">
                         <div class="card is-2-columns-medium-screen is-3-columns-large-screen">
@@ -106,14 +106,16 @@
 
                                 <div class="grid-item-1-end-start">
                                     <div class="heading-level-4">
-                                        {formatNum(totalMetrics($usage.documents) ?? 0)}
+                                        {formatNum(totalMetrics($usage.documentsTotal) ?? 0)}
                                     </div>
                                     <div>Documents</div>
                                 </div>
 
                                 <div class="grid-item-1-end-end">
                                     <div class="text">
-                                        Databases: {formatNum(totalMetrics($usage.databases) ?? 0)}
+                                        Databases: {formatNum(
+                                            totalMetrics($usage.databasesTotal) ?? 0
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -141,7 +143,7 @@
 
                                 <div class="grid-item-1-end-end">
                                     <div class="text">
-                                        Buckets: {formatNum(totalMetrics($usage.buckets) ?? 0)}
+                                        Buckets: {formatNum(totalMetrics($usage.bucketsTotal) ?? 0)}
                                     </div>
                                 </div>
                             </div>
@@ -161,7 +163,7 @@
 
                                 <div class="grid-item-1-end-start">
                                     <div class="heading-level-4">
-                                        {formatNum(totalMetrics($usage.users) ?? 0)}
+                                        {formatNum(totalMetrics($usage.usersTotal) ?? 0)}
                                     </div>
                                     <div>Users</div>
                                 </div>
@@ -182,7 +184,7 @@
 
                                 <div class="grid-item-1-end-start">
                                     <div class="heading-level-4">
-                                        {formatNum(totalMetrics($usage.executions) ?? 0)}
+                                        {formatNum(totalMetrics($usage.executionsTotal) ?? 0)}
                                     </div>
                                     <div>Executions</div>
                                 </div>
