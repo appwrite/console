@@ -10,6 +10,7 @@
     import { onMount } from 'svelte';
     import { func } from '../store';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
+    import { runtimesList } from '../../store';
 
     const functionId = $page.params.function;
     let runtime: string = null;
@@ -19,8 +20,7 @@
     onMount(async () => {
         runtime ??= $func.runtime;
 
-        let runtimes = await $page.data.runtimes;
-        options = runtimes.runtimes.map((runtime) => ({
+        options = (await $runtimesList).runtimes.map((runtime) => ({
             label: `${runtime.name} - ${runtime.version}`,
             value: runtime.$id
         }));
