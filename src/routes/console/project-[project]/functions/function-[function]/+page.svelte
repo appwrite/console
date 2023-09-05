@@ -130,8 +130,11 @@
                             <Pill
                                 danger={status === 'failed'}
                                 warning={status === 'building'}
-                                info={status === 'ready'}>
-                                <span class="text u-trim">{activeDeployment.status}</span>
+                                success={status === 'ready'}>
+                                <span class="text u-trim"
+                                    >{activeDeployment.status === 'ready'
+                                        ? 'active'
+                                        : activeDeployment.status}</span>
                             </Pill>
                         </div>
                     </div>
