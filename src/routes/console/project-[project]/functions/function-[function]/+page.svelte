@@ -199,7 +199,7 @@
                 <TableScroll noMargin>
                     <TableHeader>
                         <TableCellHead width={150}>Deployment ID</TableCellHead>
-                        <TableCellHead width={90}>Status</TableCellHead>
+                        <TableCellHead width={100}>Status</TableCellHead>
                         <TableCellHead width={80}>Source</TableCellHead>
                         <TableCellHead width={180}>Updated</TableCellHead>
                         <TableCellHead width={80}>Build Time</TableCellHead>
