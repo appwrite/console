@@ -42,6 +42,7 @@
     import Repositories from './components/repositories.svelte';
     import CreateManual from './createManual.svelte';
     import CreateGit from './createGit.svelte';
+    import { tooltip } from '$lib/actions/tooltip';
 
     let hasInstallations: boolean;
     let selectedRepository: string;
@@ -141,7 +142,10 @@
                             {/each}
 
                             {#if quickStart.runtimes.length < 6}
-                                <li>
+                                <li
+                                    use:tooltip={{
+                                        content: 'More runtimes coming soon'
+                                    }}>
                                     <Box
                                         class="u-width-full-line u-flex u-cross-center u-gap-8"
                                         padding={16}
@@ -180,7 +184,7 @@
                                     <div class="avatar is-size-small" style:--p-text-size="1.25rem">
                                         <span class={template.icon} />
                                     </div>
-                                    <div>
+                                    <div class="u-flex u-flex-vertical u-gap-4">
                                         <div class="body-text-2 u-bold u-trim">{template.name}</div>
                                         <div class="u-trim-1 u-color-text-gray">
                                             {template.tagline}
