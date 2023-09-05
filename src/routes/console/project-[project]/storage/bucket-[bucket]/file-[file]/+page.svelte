@@ -26,7 +26,7 @@
     let arePermsDisabled = true;
 
     const getPreview = (fileId: string) =>
-        sdk.forProject.storage.getFilePreview($file.bucketId, fileId, 205, 125).toString() +
+        sdk.forProject.storage.getFilePreview($file.bucketId, fileId, 410, 250).toString() +
         '&mode=admin';
     const getView = (fileId: string) =>
         sdk.forProject.storage.getFileView($file.bucketId, fileId).toString() + '&mode=admin';
