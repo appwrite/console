@@ -85,9 +85,7 @@
             <div class="card u-height-100-percent">
                 <section class="common-section">
                     <h2 class="heading-level-6">Quick start</h2>
-                    <p class="u-margin-block-start-8">
-                        Use a starter templates to begin with the basics.
-                    </p>
+                    <p class="u-margin-block-start-8">Use a starter template.</p>
                     <ul
                         class="grid-box u-margin-block-start-16"
                         style:--grid-item-size="8rem"
@@ -154,6 +152,7 @@
                                             icons={['dotnet', 'deno']}
                                             total={4}
                                             avatarSize="small"
+                                            color="u-color-text-gray"
                                             bordered />
                                     </Box>
                                 </li>
@@ -197,6 +196,7 @@
                 </section>
                 <Button
                     text
+                    noMargin
                     class="u-margin-inline-start-auto u-margin-block-start-16"
                     href={`${base}/console/project-${$page.params.project}/functions/templates`}>
                     <span> All templates </span>
