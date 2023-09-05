@@ -76,8 +76,7 @@
             label="Entrypoint"
             id="entrypoint"
             placeholder="Entrypoint"
-            bind:value={entrypoint}
-            required />
+            bind:value={entrypoint} />
         {#if $func.version !== 'v3'}
             <Alert type="info">
                 <svelte:fragment slot="title">
