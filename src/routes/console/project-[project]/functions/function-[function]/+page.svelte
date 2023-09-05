@@ -81,7 +81,7 @@
         <Heading tag="h2" size="5">Deployments</Heading>
         <Create main />
     </div>
-    {#if $deploymentList.total}
+    {#if $deploymentList?.total}
         <div class="common-section">
             <Heading tag="h3" size="7">Active</Heading>
         </div>
@@ -344,7 +344,7 @@
         name="Deployments"
         limit={data.limit}
         offset={data.offset}
-        total={$deploymentList.total} />
+        total={$deploymentList?.total} />
 </Container>
 
 {#if selectedDeployment}
