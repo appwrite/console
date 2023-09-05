@@ -84,13 +84,11 @@
                     </Button>
                     <Button
                         disabled={isSelfHosted && !isVcsEnabled}
-                        secondary
                         on:click={() => connectTemplate($template)}>
                         Create function
                     </Button>
                 </div>
             </Card>
-            <Card>{@html $template.instructions}</Card>
         </section>
     </div>
 </Container>
