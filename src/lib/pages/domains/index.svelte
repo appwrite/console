@@ -138,7 +138,7 @@
                             <div class="u-flex u-gap-8 u-cross-center">
                                 <Pill>
                                     <span class="icon-clock u-text-color-gray" aria-hidden="true" />
-                                    <p class="text">Waiting for verification</p>
+                                    <p class="text">Blocked by verification</p>
                                 </Pill>
                             </div>
                         {/if}
