@@ -8,10 +8,10 @@
         CollapsibleItem,
         EmptySearch,
         Heading,
-        Pagination
+        Pagination,
+        SvgIcon
     } from '$lib/components';
     import { Button, InputSearch } from '$lib/elements/forms';
-    import { debounce } from '$lib/helpers/debounce';
     import { Container } from '$lib/layout';
     import { app } from '$lib/stores/app';
     import { connectTemplate } from '$lib/wizards/functions/cover.svelte';
@@ -120,11 +120,11 @@
                                             on:change={(e) => applyFilter('runtime', runtime, e)} />
                                         <div class="u-flex u-cross-center u-gap-8">
                                             <div class="avatar is-size-x-small">
-                                                <img
-                                                    src={`${base}/icons/${$app.themeInUse}/color/${icon}.svg`}
-                                                    alt={icon} />
+                                                <SvgIcon name={icon} iconSize="small" />
                                             </div>
-                                            <div class="u-trim-1">{runtime}</div>
+                                            <div class="u-trim-1 u-capitalize">
+                                                {runtime?.split('-')?.join(' ')}
+                                            </div>
                                         </div>
                                     </label>
                                 </li>
@@ -155,10 +155,8 @@
                         {@const hidden = template.runtimes.slice(1, -1)}
                         <li>
                             <article class="card u-min-height-100-percent">
-                                <div class="u-flex u-gap-16 u-cross-center">
-                                    <h2
-                                        class="body-text-1 u-bold u-trim"
-                                        style:break-word="break-word">
+                                <div class="u-flex u-gap-16 u-cross-center u-main-space-between">
+                                    <h2 class="body-text-1 u-bold u-trim-1">
                                         {template.name}
                                     </h2>
                                     <ul class="avatars-group is-with-border">
@@ -226,11 +224,10 @@
                     </div>
                 </EmptySearch>
             {/if}
+            <div class="u-flex u-margin-block-start-32 u-main-space-between u-cross-center">
+                <p class="text">Total templates: {data.sum}</p>
+                <Pagination limit={data.limit} offset={data.offset} sum={data.sum} />
+            </div>
         </section>
-    </div>
-    <div class="u-flex u-margin-block-start-32 u-flex-wrap">
-        <div class="u-margin-inline-start-auto">
-            <Pagination limit={data.limit} offset={data.offset} sum={data.sum} />
-        </div>
     </div>
 </Container>

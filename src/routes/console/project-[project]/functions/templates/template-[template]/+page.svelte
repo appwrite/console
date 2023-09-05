@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { Alert, Card, Heading } from '$lib/components';
+    import { Alert, Card, Collapsible, Heading } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
@@ -13,7 +13,7 @@
 <Container>
     <div class="grid-300px-1fr">
         <section>
-            <ul class="collapsible">
+            <Collapsible>
                 <li class="collapsible-item">
                     <h3 class="body-text-2 u-bold u-padding-block-12">
                         Use cases <span class="inline-tag">{$template.usecases.length}</span>
@@ -44,7 +44,7 @@
                             alt="" />
                     </section>
                 </li>
-            </ul>
+            </Collapsible>
         </section>
         <section>
             <Card>
@@ -74,7 +74,7 @@
                         </svelte:fragment>
                     </Alert>
                 {/if}
-                <div class="u-flex u-gap-16 u-main-end u-margin-block-start-24">
+                <div class="u-flex u-gap-16 u-main-end u-margin-block-start-24 u-flex-wrap">
                     <Button
                         text
                         href={`https://github.com/${$template.providerOwner}/${$template.providerRepositoryId}`}
