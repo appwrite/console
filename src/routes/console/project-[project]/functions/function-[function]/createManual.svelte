@@ -33,8 +33,8 @@
                 functionId,
                 files[0],
                 active,
-                entrypoint,
-                buildCommand
+                entrypoint || undefined,
+                buildCommand || undefined
             );
             await invalidate(Dependencies.DEPLOYMENTS);
             files = undefined;
