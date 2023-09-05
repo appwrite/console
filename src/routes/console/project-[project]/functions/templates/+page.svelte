@@ -10,15 +10,13 @@
         Heading,
         Pagination
     } from '$lib/components';
-    import { Button } from '$lib/elements/forms';
+    import { Button, InputSearch } from '$lib/elements/forms';
     import { debounce } from '$lib/helpers/debounce';
     import { Container } from '$lib/layout';
     import { app } from '$lib/stores/app';
     import { connectTemplate } from '$lib/wizards/functions/cover.svelte';
 
     export let data;
-
-    let searchElement: HTMLInputElement;
 
     function applyFilter(filter: string, value: string, event: Event) {
         const add = (event.target as EventTarget & HTMLInputElement).checked;
@@ -38,7 +36,6 @@
         const target = new URL($page.url);
         target.searchParams.delete('page');
         target.searchParams.delete('search');
-        searchElement.value = '';
         goto(target.toString());
     }
 
@@ -59,8 +56,8 @@
         }
     }
 
-    const applySearch = debounce((event: Event) => {
-        const value = (event.target as EventTarget & HTMLInputElement).value;
+    function applySearch(event: CustomEvent<string>) {
+        const value = event.detail;
         const target = new URL($page.url);
 
         if (value.length > 0) {
@@ -70,7 +67,7 @@
         }
         target.searchParams.delete('page');
         goto(target.toString(), { keepFocus: true });
-    }, 250);
+    }
 </script>
 
 <Container>
@@ -82,23 +79,10 @@
     </div>
     <div class="grid-300px-1fr u-margin-block-start-24">
         <section>
-            <div
-                class="input-text-wrapper is-with-end-button u-width-full-line u-max-width-500 u-margin-block-start-12"
-                style="--amount-of-buttons:1">
-                <input
-                    bind:this={searchElement}
-                    on:input={applySearch}
-                    type="search"
-                    placeholder="Search templates" />
-                <div class="icon-search" aria-hidden="true" />
-                <button
-                    on:click={clearSearch}
-                    class="button is-text is-only-icon"
-                    aria-label="Clear search"
-                    style="--button-size:1.5rem;">
-                    <span class="icon-x" aria-hidden="true" />
-                </button>
-            </div>
+            <InputSearch
+                placeholder="Search templates"
+                on:clear={clearSearch}
+                on:change={applySearch} />
             <div class="u-margin-block-start-24">
                 <Collapsible>
                     <CollapsibleItem>
