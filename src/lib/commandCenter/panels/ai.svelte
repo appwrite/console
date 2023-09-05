@@ -16,7 +16,8 @@
         api: endpoint + '/console/assistant',
         headers: {
             'content-type': 'application/json'
-        }
+        },
+        credentials: 'include'
     });
 
     let question = $input;
