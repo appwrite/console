@@ -52,8 +52,9 @@
     let activeDeployment: Models.Deployment = null;
 
     async function getActiveDeployment() {
+        if (!$func?.deployment) return null;
         const list = await sdk.forProject.functions.listDeployments($page.params.function, [
-            Query.equal('$id', $func?.deployment)
+            Query.equal('$id', $func.deployment)
         ]);
         return list?.deployments?.[0];
     }
@@ -64,13 +65,15 @@
 
     deploymentList.subscribe((list: Models.DeploymentList | null) => {
         if (list?.deployments) {
-            let active = list.deployments.find((deployment) => deployment.$id === $func.deployment);
-            if (!active) {
+            let activeDep = list.deployments.find(
+                (deployment) => deployment.$id === $func.deployment
+            );
+            if (!activeDep) {
                 getActiveDeployment().then((deployment) => {
                     activeDeployment = deployment;
                 });
             } else {
-                activeDeployment = active;
+                activeDeployment = activeDep;
             }
         }
     });
