@@ -15,7 +15,6 @@
     const { input, handleSubmit, completion, isLoading, complete, error } = useCompletion({
         api: endpoint + '/console/assistant',
         headers: {
-            'x-appwrite-mode': 'admin',
             'content-type': 'application/json'
         }
     });
