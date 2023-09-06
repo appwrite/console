@@ -74,8 +74,13 @@
 
         wizard.setInterceptor(null);
         if (isLastStep) {
+            $wizard.nextDisabled = true;
             trackEvent('wizard_finish');
             dispatch('finish');
+            //Reactivate button in case there are errors
+            setTimeout(() => {
+                $wizard.nextDisabled = false;
+            }, 2000);
         } else {
             trackEvent('wizard_next');
             $wizard.step++;
