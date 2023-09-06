@@ -45,7 +45,12 @@
 <WizardStep beforeSubmit={createDomain}>
     <svelte:fragment slot="title">Add function domain</svelte:fragment>
     <svelte:fragment slot="subtitle">
-        Use your self-owned domain as the endpoint of your Appwrite API.
+        Use your self-owned domain as the endpoint of your Appwrite API. <a
+            href="https://appwrite.io/docs/custom-domains"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="link">Learn more</a
+        >.
     </svelte:fragment>
 
     <FormList>

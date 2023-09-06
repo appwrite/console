@@ -8,17 +8,15 @@
         CollapsibleItem,
         EmptySearch,
         Heading,
-        Pagination
+        Pagination,
+        SvgIcon
     } from '$lib/components';
-    import { Button } from '$lib/elements/forms';
-    import { debounce } from '$lib/helpers/debounce';
+    import { Button, InputSearch } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { app } from '$lib/stores/app';
     import { connectTemplate } from '$lib/wizards/functions/cover.svelte';
 
     export let data;
-
-    let searchElement: HTMLInputElement;
 
     function applyFilter(filter: string, value: string, event: Event) {
         const add = (event.target as EventTarget & HTMLInputElement).checked;
@@ -38,7 +36,6 @@
         const target = new URL($page.url);
         target.searchParams.delete('page');
         target.searchParams.delete('search');
-        searchElement.value = '';
         goto(target.toString());
     }
 
@@ -59,8 +56,8 @@
         }
     }
 
-    const applySearch = debounce((event: Event) => {
-        const value = (event.target as EventTarget & HTMLInputElement).value;
+    function applySearch(event: CustomEvent<string>) {
+        const value = event.detail;
         const target = new URL($page.url);
 
         if (value.length > 0) {
@@ -70,7 +67,7 @@
         }
         target.searchParams.delete('page');
         goto(target.toString(), { keepFocus: true });
-    }, 250);
+    }
 </script>
 
 <Container>
@@ -82,23 +79,10 @@
     </div>
     <div class="grid-300px-1fr u-margin-block-start-24">
         <section>
-            <div
-                class="input-text-wrapper is-with-end-button u-width-full-line u-max-width-500 u-margin-block-start-12"
-                style="--amount-of-buttons:1">
-                <input
-                    bind:this={searchElement}
-                    on:input={applySearch}
-                    type="search"
-                    placeholder="Search templates" />
-                <div class="icon-search" aria-hidden="true" />
-                <button
-                    on:click={clearSearch}
-                    class="button is-text is-only-icon"
-                    aria-label="Clear search"
-                    style="--button-size:1.5rem;">
-                    <span class="icon-x" aria-hidden="true" />
-                </button>
-            </div>
+            <InputSearch
+                placeholder="Search templates"
+                on:clear={clearSearch}
+                on:change={applySearch} />
             <div class="u-margin-block-start-24">
                 <Collapsible>
                     <CollapsibleItem>
@@ -136,11 +120,11 @@
                                             on:change={(e) => applyFilter('runtime', runtime, e)} />
                                         <div class="u-flex u-cross-center u-gap-8">
                                             <div class="avatar is-size-x-small">
-                                                <img
-                                                    src={`${base}/icons/${$app.themeInUse}/color/${icon}.svg`}
-                                                    alt={icon} />
+                                                <SvgIcon name={icon} iconSize="small" />
                                             </div>
-                                            <div class="u-trim-1">{runtime}</div>
+                                            <div class="u-trim-1 u-capitalize">
+                                                {runtime?.split('-')?.join(' ')}
+                                            </div>
                                         </div>
                                     </label>
                                 </li>
@@ -171,10 +155,8 @@
                         {@const hidden = template.runtimes.slice(1, -1)}
                         <li>
                             <article class="card u-min-height-100-percent">
-                                <div class="u-flex u-gap-16 u-cross-center">
-                                    <h2
-                                        class="body-text-1 u-bold u-trim"
-                                        style:word-break="break-word">
+                                <div class="u-flex u-gap-16 u-cross-center u-main-space-between">
+                                    <h2 class="body-text-1 u-bold u-trim-1">
                                         {template.name}
                                     </h2>
                                     <ul class="avatars-group is-with-border">
@@ -242,11 +224,10 @@
                     </div>
                 </EmptySearch>
             {/if}
+            <div class="u-flex u-margin-block-start-32 u-main-space-between u-cross-center">
+                <p class="text">Total templates: {data.sum}</p>
+                <Pagination limit={data.limit} offset={data.offset} sum={data.sum} />
+            </div>
         </section>
-    </div>
-    <div class="u-flex u-margin-block-start-32 u-flex-wrap">
-        <div class="u-margin-inline-start-auto">
-            <Pagination limit={data.limit} offset={data.offset} sum={data.sum} />
-        </div>
     </div>
 </Container>

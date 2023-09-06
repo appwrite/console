@@ -25,15 +25,13 @@
         TableRow,
         TableScroll
     } from '$lib/elements/table';
-    import { execute, func, proxyRuleList } from './store';
+    import { deploymentList, execute, func, proxyRuleList } from './store';
     import { Container } from '$lib/layout';
     import { app } from '$lib/stores/app';
     import { calculateSize, humanFileSize } from '$lib/helpers/sizeConvertion';
     import { Query, type Models } from '@appwrite.io/console';
-    import type { PageData } from './$types';
     import Delete from './delete.svelte';
     import Create from './create.svelte';
-    import { onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
     import Activate from './activate.svelte';
     import { calculateTime } from '$lib/helpers/timeConversion';
@@ -43,23 +41,21 @@
     import DeploymentCreatedBy from './deploymentCreatedBy.svelte';
     import DeploymentDomains from './deploymentDomains.svelte';
 
-    export let data: PageData;
+    export let data;
 
     let showDropdown = [];
     let showDelete = false;
     let showActivate = false;
     let showRedeploy = false;
+    let showAlert = true;
 
     let selectedDeployment: Models.Deployment = null;
     let activeDeployment: Models.Deployment = null;
 
-    onMount(async () => {
-        activeDeployment = await getActiveDeployment();
-    });
-
     async function getActiveDeployment() {
+        if (!$func?.deployment) return null;
         const list = await sdk.forProject.functions.listDeployments($page.params.function, [
-            Query.equal('$id', $func?.deployment)
+            Query.equal('$id', $func.deployment)
         ]);
         return list?.deployments?.[0];
     }
@@ -67,6 +63,21 @@
     function handleActivate() {
         invalidate(Dependencies.DEPLOYMENTS);
     }
+
+    deploymentList.subscribe((list: Models.DeploymentList | null) => {
+        if (list?.deployments) {
+            let activeDep = list.deployments.find(
+                (deployment) => deployment.$id === $func.deployment
+            );
+            if (!activeDep) {
+                getActiveDeployment().then((deployment) => {
+                    activeDeployment = deployment;
+                });
+            } else {
+                activeDeployment = activeDep;
+            }
+        }
+    });
 </script>
 
 <Container>
@@ -74,17 +85,20 @@
         <Heading tag="h2" size="5">Deployments</Heading>
         <Create main />
     </div>
-    {#if data.deployments.total}
+    {#if $deploymentList?.total}
         <div class="common-section">
             <Heading tag="h3" size="7">Active</Heading>
         </div>
-        {#if activeDeployment && !$func.live}
-            <div class="u-margin-block-start-8">
-                <Alert type="warning" isStandalone dismissible>
-                    Some configuration options are not live yet. Redeploy your function to apply
-                    latest changes.
-                </Alert>
-            </div>
+        {#if activeDeployment && !$func.live && showAlert}
+            <Alert
+                type="warning"
+                class="u-margin-block-start-8"
+                isStandalone
+                dismissible
+                on:dismiss={() => (showAlert = false)}>
+                Some configuration options are not live yet. Redeploy your function to apply latest
+                changes.
+            </Alert>
         {/if}
         {#if activeDeployment}
             <CardGrid>
@@ -130,8 +144,12 @@
                             <Pill
                                 danger={status === 'failed'}
                                 warning={status === 'building'}
-                                info={status === 'ready'}>
-                                <span class="text u-trim">{activeDeployment.status}</span>
+                                success={status === 'ready'}>
+                                <span class="text u-trim">
+                                    {activeDeployment.status === 'ready'
+                                        ? 'active'
+                                        : activeDeployment.status}
+                                </span>
                             </Pill>
                         </div>
                     </div>
@@ -183,12 +201,12 @@
         <div class="common-section">
             <Heading tag="h3" size="7">All</Heading>
         </div>
-        {#if data.deployments.total > 0}
+        {#if $deploymentList.total}
             <div class="u-margin-block-start-24">
                 <TableScroll noMargin>
                     <TableHeader>
                         <TableCellHead width={150}>Deployment ID</TableCellHead>
-                        <TableCellHead width={80}>Status</TableCellHead>
+                        <TableCellHead width={100}>Status</TableCellHead>
                         <TableCellHead width={80}>Source</TableCellHead>
                         <TableCellHead width={180}>Updated</TableCellHead>
                         <TableCellHead width={80}>Build Time</TableCellHead>
@@ -196,7 +214,7 @@
                         <TableCellHead width={40} />
                     </TableHeader>
                     <TableBody>
-                        {#each data.deployments.deployments as deployment, index}
+                        {#each $deploymentList.deployments as deployment, index (deployment.$id)}
                             {@const status = deployment.status}
                             <TableRow>
                                 <TableCell width={150} title="Deployment ID">
@@ -333,7 +351,7 @@
         name="Deployments"
         limit={data.limit}
         offset={data.offset}
-        total={data.deployments.total} />
+        total={$deploymentList?.total} />
 </Container>
 
 {#if selectedDeployment}

@@ -1,5 +1,6 @@
 <script lang="ts">
     import { FormItem, Helper, Label } from '.';
+    import type { FormItemTag } from './formItem.svelte';
 
     export let id: string;
     export let label: string | undefined = undefined;
@@ -10,6 +11,7 @@
     export let required = false;
     export let hideRequired = false;
     export let disabled = false;
+    export let wrapperTag: FormItemTag = 'li';
     export let options: {
         value: string | boolean | number;
         label: string;
@@ -45,7 +47,7 @@
     $: hasNullOption = options.some((option) => option.value === null);
 </script>
 
-<FormItem>
+<FormItem tag={wrapperTag}>
     {#if label}
         <Label {required} {hideRequired} {optionalText} hide={!showLabel} for={id}>
             {label}

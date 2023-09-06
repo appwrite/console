@@ -25,8 +25,8 @@
             });
             trackEvent(Submit.FunctionRedeploy);
 
-            invalidate(Dependencies.DEPLOYMENTS);
             invalidate(Dependencies.FUNCTION);
+            invalidate(Dependencies.DEPLOYMENTS);
             show = false;
         } catch (error) {
             addNotification({

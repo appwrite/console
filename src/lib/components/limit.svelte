@@ -34,6 +34,7 @@
 
 <div class="u-flex u-gap-12 u-cross-center">
     <InputSelect
+        wrapperTag="div"
         id="rows"
         label="Rows per page"
         showLabel={false}
