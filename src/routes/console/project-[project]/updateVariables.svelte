@@ -174,8 +174,9 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h6" size="7" id="variables"
-        >{isGlobal ? 'Global Variables' : 'Environment Variables'}</Heading>
+    <Heading tag="h6" size="7" id="variables">
+        {isGlobal ? 'Global variables' : 'Environment variables'}
+    </Heading>
     {#if isGlobal}
         <p>
             Set the environment variables or secret keys that will be passed to all functions within
@@ -216,7 +217,7 @@
         </div>
         {@const sum = variableList.total}
         {#if sum}
-            <div class="u-flex u-flex-vertical u-gap-16">
+            <div class="u-flex u-flex-vertical u-gap-24">
                 {#if conflictVariables.length > 0}
                     <Alert type="warning">
                         <p class="text">
@@ -227,7 +228,7 @@
                             {/if}
                             a naming conflict with a global variable. View global variables in
                             <a
-                                href={`${base}/console/project-${$project.$id}/settings/variables`}
+                                href={`${base}/console/project-${$project.$id}/settings`}
                                 title="Project settings"
                                 class="link">
                                 project settings</a
@@ -237,9 +238,9 @@
                 {/if}
                 <Table noMargin noStyles>
                     <TableHeader>
-                        <TableCellHead>Key</TableCellHead>
+                        <TableCellHead width={180}>Key</TableCellHead>
                         <TableCellHead width={180}>Value</TableCellHead>
-                        <TableCellHead width={30} />
+                        <TableCellHead width={40} />
                     </TableHeader>
                     <TableBody>
                         {#each variableList.variables.slice(offset, offset + limit) as variable, i}
@@ -251,16 +252,16 @@
                                                   globalVariable.key === variable.key
                                           ) !== undefined
                                         : false}
-                                    {#if isConflicting}
-                                        <span
-                                            class="icon-exclamation u-color-text-warning"
-                                            aria-hidden="true" />
-                                    {/if}
                                     <div
-                                        style:display="inline-block"
-                                        style:margin-left={!isConflicting && hasConflictOnPage
-                                            ? '1.5rem'
-                                            : '0rem'}>
+                                        class={isConflicting && hasConflictOnPage
+                                            ? 'u-flex u-gap-4 u-cross-center'
+                                            : ''}>
+                                        {#if isConflicting && hasConflictOnPage}
+                                            <span
+                                                class="icon-exclamation u-color-text-warning"
+                                                aria-hidden="true" />
+                                        {/if}
+
                                         <Output value={variable.key} hideCopyIcon>
                                             {variable.key}
                                         </Output>
