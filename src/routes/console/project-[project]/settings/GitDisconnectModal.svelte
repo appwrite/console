@@ -4,12 +4,10 @@
     import Modal from '$lib/components/modal.svelte';
     import { Dependencies } from '$lib/constants';
     import Button from '$lib/elements/forms/button.svelte';
-    import { base } from '$app/paths';
-    import { app } from '$lib/stores/app';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Query, type Models } from '@appwrite.io/console';
-    import { Avatar } from '$lib/components';
+    import { SvgIcon } from '$lib/components';
     import { toLocaleDateTime } from '$lib/helpers/date';
 
     export let showGitDisconnect: boolean;
@@ -68,21 +66,17 @@
         {#if functions.total}
             <div class="u-flex u-flex-vertical u-gap-12">
                 {#each functions.functions as func}
-                    <div class="u-flex u-main-space-between u-cross-center u-width-full-line">
-                        <div class="u-flex u-main-start u-cross-center u-gap-8">
-                            <Avatar
-                                size={24}
-                                name={func.runtime.split('-')[0]}
-                                src={`${base}/icons/${$app.themeInUse}/color/${
-                                    func.runtime.split('-')[0]
-                                }.svg`} />
-
-                            <h6>{func.name}</h6>
+                    <div class="u-flex u-main-start u-gap-8">
+                        <div class="avatar is-size-x-small">
+                            <SvgIcon name={func.runtime.split('-')[0]} />
                         </div>
-
-                        <p class="u-x-small" style="color: hsl(var(--color-neutral-70));">
-                            Last deployed: {toLocaleDateTime(func.$updatedAt)}
-                        </p>
+                        <div
+                            class="u-cross-child-center u-flex u-main-space-between u-flex-wrap u-gap-8 u-width-full-line">
+                            <h6>{func.name}</h6>
+                            <p class="u-x-small" style="color: hsl(var(--color-neutral-70));">
+                                Last deployed: {toLocaleDateTime(func.$updatedAt)}
+                            </p>
+                        </div>
                     </div>
                 {/each}
             </div>
