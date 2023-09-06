@@ -64,8 +64,8 @@
     state="warning"
     headerDivider={false}>
     <p data-private>
-        Are you sure you want to disconnect {$func.name}? This will affect future deployments to
-        this function.
+        Are you sure you want to disconnect <b>{$func.name}</b>? This will affect future deployments
+        to this function.
     </p>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (show = false)}>Cancel</Button>

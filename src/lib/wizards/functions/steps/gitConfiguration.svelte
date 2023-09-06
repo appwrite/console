@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Box } from '$lib/components';
+    import { Box, SvgIcon } from '$lib/components';
     import { FormList, InputChoice, InputText } from '$lib/elements/forms';
     import InputSelectSearch from '$lib/elements/forms/inputSelectSearch.svelte';
     import { WizardStep } from '$lib/layout';
@@ -8,14 +8,6 @@
     import { choices, installation, repository } from '../store';
 
     $choices.rootDir ??= '';
-    function getProviderIcon(provider: string) {
-        switch (provider) {
-            case 'github':
-                return 'icon-github';
-            default:
-                return '';
-        }
-    }
 
     async function loadBranches() {
         const { branches } = await sdk.forProject.vcs.listRepositoryBranches(
@@ -40,13 +32,9 @@
     </svelte:fragment>
 
     <Box radius="small">
-        <div class="u-flex u-gap-16">
-            <div class="avatar is-size-x-small">
-                <span class={getProviderIcon($repository.provider)} />
-            </div>
-            <div class="u-cross-child-center u-line-height-1-5">
-                <h6 class="u-bold u-trim-1">{$installation.organization}/{$repository.name}</h6>
-            </div>
+        <div class="u-flex u-gap-8 u-cross-center">
+            <SvgIcon name={$repository.provider} iconSize="large" />
+            <h6 class="u-bold u-trim-1">{$installation.organization}/{$repository.name}</h6>
         </div>
         {#await loadBranches()}
             <div class="u-flex u-gap-8 u-cross-center u-main-center">
