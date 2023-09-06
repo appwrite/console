@@ -289,7 +289,7 @@
                                     first configure your environment variables.
                                     <svelte:fragment slot="buttons">
                                         <Button
-                                            href="https://appwrite.io/docs/environment-variables#vcs_(version_control_system)"
+                                            href="https://appwrite.io/docs/configuration#git"
                                             external
                                             text>
                                             Learn more

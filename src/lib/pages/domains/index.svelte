@@ -87,12 +87,12 @@
                     </TableCellLink>
                     <TableCell title="Verification">
                         {#if domain.status === 'created'}
-                            <div class="u-flex u-gap-8 u-cross-center">
+                            <div class="u-flex u-gap-16 u-cross-center">
                                 <Pill danger>
                                     <span
                                         class="icon-exclamation-circle u-color-text-danger"
                                         aria-hidden="true" />
-                                    <span class="u-text">Failed</span>
+                                    <span class="u-text">failed</span>
                                 </Pill>
                                 <button type="button" on:click={() => openRetry(domain)}>
                                     <span class="link">Retry</span>
@@ -103,30 +103,30 @@
                                 <span
                                     class="icon-check-circle u-color-text-success"
                                     aria-hidden="true" />
-                                <p class="text">Verified</p>
+                                <p class="text">verified</p>
                             </Pill>
                         {/if}
                     </TableCell>
-                    <TableCell title="Cartificate">
+                    <TableCell title="Certificate">
                         {#if domain.status === 'unverified'}
-                            <div class="u-flex u-gap-8 u-cross-center">
+                            <div class="u-flex u-gap-16 u-cross-center">
                                 <Pill danger>
                                     <span
                                         class="icon-exclamation-circle u-color-text-danger"
                                         aria-hidden="true" />
-                                    <span class="u-text">Failed</span>
+                                    <span class="u-text">failed</span>
                                 </Pill>
                                 <button type="button" on:click={() => openRetry(domain)}>
                                     <span class="link">Retry</span>
                                 </button>
                             </div>
                         {:else if domain.status === 'verified'}
-                            <div class="u-flex u-gap-8 u-cross-center">
+                            <div class="u-flex u-gap-16 u-cross-center">
                                 <Pill success>
                                     <span
                                         class="icon-check-circle u-color-text-success"
                                         aria-hidden="true" />
-                                    <span>Generated</span>
+                                    <span>generated</span>
                                 </Pill>
                                 {#if domain.renewAt}
                                     <span class="u-text-color-gray">
@@ -135,12 +135,10 @@
                                 {/if}
                             </div>
                         {:else}
-                            <div class="u-flex u-gap-8 u-cross-center">
-                                <Pill>
-                                    <span class="icon-clock u-text-color-gray" aria-hidden="true" />
-                                    <p class="text">Waiting for verification</p>
-                                </Pill>
-                            </div>
+                            <Pill warning>
+                                <span class="icon-clock u-text-color-gray" aria-hidden="true" />
+                                <p class="text">Blocked by verification</p>
+                            </Pill>
                         {/if}
                     </TableCell>
                     <TableCell>
@@ -192,6 +190,6 @@
     </svelte:fragment>
     <Retry on:error={(e) => (retryError = e.detail)} />
     <svelte:fragment slot="footer">
-        <Button text on:click={() => (showRetry = false)}>Close</Button>
+        <Button secondary on:click={() => (showRetry = false)}>Close</Button>
     </svelte:fragment>
 </Modal>

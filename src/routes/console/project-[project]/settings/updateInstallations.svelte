@@ -63,9 +63,10 @@
         const redirect = new URL($page.url);
         redirect.searchParams.append('alert', 'installation-updated');
         const target = new URL(`${sdk.forProject.client.config.endpoint}/vcs/github/authorize`);
-        target.searchParams.set('projectId', $page.params.project);
+        target.searchParams.set('project', $page.params.project);
         target.searchParams.set('success', redirect.toString());
         target.searchParams.set('failure', redirect.toString());
+        target.searchParams.set('mode', 'admin');
         return target?.toString();
     }
 
@@ -187,10 +188,7 @@
                     When installing Git in a locally hosted Appwrite project, you must first configure
                     your environment variables.
                     <svelte:fragment slot="buttons">
-                        <Button
-                            href="https://appwrite.io/docs/environment-variables#vcs_(version_control_system)"
-                            external
-                            text>
+                        <Button href="https://appwrite.io/docs/configuration#git" external text>
                             Learn more
                         </Button>
                     </svelte:fragment>

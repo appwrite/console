@@ -62,9 +62,10 @@
             });
         }
         const target = new URL(`${sdk.forProject.client.config.endpoint}/vcs/github/authorize`);
-        target.searchParams.set('projectId', $page.params.project);
+        target.searchParams.set('project', $page.params.project);
         target.searchParams.set('success', redirect.toString());
         target.searchParams.set('failure', redirect.toString());
+        target.searchParams.set('mode', 'admin');
         return target;
     }
 </script>
@@ -116,7 +117,7 @@
             </div>
         </div>
     {/await}
-    <p class="text common-section">
+    <p class="text u-margin-block-start-16">
         Manage organization configuration in your <a
             class="link"
             href={`${base}/console/project-${$page.params.project}/settings`}>project settings</a
@@ -159,7 +160,7 @@
                                                 alt={repo.name} />
                                         {/if}
                                     </div>
-                                    <div class="u-flex u-gap-8">
+                                    <div class="u-flex u-gap-8 u-cross-center">
                                         <span class="text u-trim-1">{repo.name}</span>
                                         {#if repo.private}
                                             <span
@@ -195,28 +196,12 @@
                             <p>There are no repositories that match your search.</p>
                         </div>
                         <div class="u-flex u-gap-16 common-section u-main-center">
-                            <Button external href="https://appwrite.io/docs/client/teams" text
-                                >Documentation</Button>
                             <Button secondary on:click={() => (search = '')}>Clear search</Button>
                         </div>
                     </div>
                 </EmptySearch>
             {:else}
-                <EmptySearch hidePages>
-                    <div class="common-section">
-                        <div class="u-text-center common-section">
-                            <p class="text u-line-height-1-5">You have no repositories.</p>
-                            <p class="text u-line-height-1-5">
-                                Need a hand? Learn more in our <a
-                                    href="https://appwrite.io/docs/client/teams"
-                                    target="_blank"
-                                    rel="noopener noreferrer">
-                                    documentation</a
-                                >.
-                            </p>
-                        </div>
-                    </div>
-                </EmptySearch>
+                <EmptySearch hidePages />
             {/if}
         {/await}
     {/if}

@@ -42,6 +42,7 @@
     import Repositories from './components/repositories.svelte';
     import CreateManual from './createManual.svelte';
     import CreateGit from './createGit.svelte';
+    import { tooltip } from '$lib/actions/tooltip';
 
     let hasInstallations: boolean;
     let selectedRepository: string;
@@ -84,9 +85,7 @@
             <div class="card u-height-100-percent">
                 <section class="common-section">
                     <h2 class="heading-level-6">Quick start</h2>
-                    <p class="u-margin-block-start-8">
-                        Use a starter templates to begin with the basics.
-                    </p>
+                    <p class="u-margin-block-start-8">Use a starter template.</p>
                     <ul
                         class="grid-box u-margin-block-start-16"
                         style:--grid-item-size="8rem"
@@ -141,7 +140,10 @@
                             {/each}
 
                             {#if quickStart.runtimes.length < 6}
-                                <li>
+                                <li
+                                    use:tooltip={{
+                                        content: 'More runtimes coming soon'
+                                    }}>
                                     <Box
                                         class="u-width-full-line u-flex u-cross-center u-gap-8"
                                         padding={16}
@@ -150,6 +152,7 @@
                                             icons={['dotnet', 'deno']}
                                             total={4}
                                             avatarSize="small"
+                                            color="u-color-text-gray"
                                             bordered />
                                     </Box>
                                 </li>
@@ -180,7 +183,7 @@
                                     <div class="avatar is-size-small" style:--p-text-size="1.25rem">
                                         <span class={template.icon} />
                                     </div>
-                                    <div>
+                                    <div class="u-flex u-flex-vertical u-gap-4">
                                         <div class="body-text-2 u-bold u-trim">{template.name}</div>
                                         <div class="u-trim-1 u-color-text-gray">
                                             {template.tagline}
@@ -193,6 +196,7 @@
                 </section>
                 <Button
                     text
+                    noMargin
                     class="u-margin-inline-start-auto u-margin-block-start-16"
                     href={`${base}/console/project-${$page.params.project}/functions/templates`}>
                     <span> All templates </span>

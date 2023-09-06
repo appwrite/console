@@ -7,7 +7,6 @@
 
     function onRetryError(event: CustomEvent<string>) {
         addNotification({
-            title: 'Error',
             message: event.detail,
             type: 'error'
         });
