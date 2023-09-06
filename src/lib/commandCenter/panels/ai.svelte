@@ -15,9 +15,10 @@
     const { input, handleSubmit, completion, isLoading, complete, error } = useCompletion({
         api: endpoint + '/console/assistant',
         headers: {
-            'x-appwrite-mode': 'admin',
-            'content-type': 'application/json'
-        }
+            'content-type': 'application/json',
+            'x-appwrite-project': 'console'
+        },
+        credentials: 'include'
     });
 
     let question = $input;
