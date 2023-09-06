@@ -68,10 +68,13 @@
     <svelte:fragment slot="title">
         Import new {isGlobal ? 'global' : 'environment'} variables
     </svelte:fragment>
-    <div class="u-flex u-flex-vertical u-gap-24">
+    <div class="u-flex u-flex-vertical u-gap-24 u-margin-block-start-8">
         <p>
-            Import new {isGlobal ? 'global' : 'environment'} variables from .env file that will be passed
-            to {isGlobal ? 'all functions within your project' : 'your function'}.
+            Import new {isGlobal ? 'global' : 'environment'} variables from
+            <span class="inline-code">.env</span>
+            file that will be passed to {isGlobal
+                ? 'all functions within your project'
+                : 'your function'}.
         </p>
 
         {#if variableList.total > 0}

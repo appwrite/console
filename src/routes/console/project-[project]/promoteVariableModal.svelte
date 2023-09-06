@@ -16,8 +16,6 @@
     onSubmit={() => {
         dispatch('promoted');
     }}
-    icon="exclamation"
-    state="warning"
     headerDivider={false}>
     <svelte:fragment slot="title">
         {isConflicting ? 'Overwrite global variable' : 'Promote variable'}
