@@ -33,8 +33,8 @@
                 functionId,
                 files[0],
                 active,
-                entrypoint,
-                buildCommand
+                entrypoint || undefined,
+                buildCommand || undefined
             );
             await invalidate(Dependencies.DEPLOYMENTS);
             files = undefined;
@@ -76,8 +76,7 @@
             label="Entrypoint"
             id="entrypoint"
             placeholder="Entrypoint"
-            bind:value={entrypoint}
-            required />
+            bind:value={entrypoint} />
         {#if $func.version !== 'v3'}
             <Alert type="info">
                 <svelte:fragment slot="title">

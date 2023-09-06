@@ -36,6 +36,7 @@
     }
 </script>
 
+<Trim alternativeTrim><b>{$domain.domain}</b></Trim>
 {#if $domain.status === 'created'}
     <Box radius="small">
         <div class="u-flex u-gap-8 u-cross-center">
@@ -63,7 +64,6 @@
         </div>
     </Box>
 {:else if $domain.status === 'unverified'}
-    <Trim alternativeTrim><b>{$domain.domain}</b></Trim>
     <Box radius="small">
         <div class="u-flex u-gap-8 u-cross-center">
             <span class="icon-exclamation-circle u-color-text-danger" aria-hidden="true" />

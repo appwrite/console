@@ -10,7 +10,7 @@
     import { onMount } from 'svelte';
     import { func } from '../store';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
-    import { runtimesList } from '$routes/console/project-[project]/functions/store';
+    import { runtimesList } from '../../store';
 
     const functionId = $page.params.function;
     let runtime: string = null;

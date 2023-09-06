@@ -26,7 +26,7 @@
     let arePermsDisabled = true;
 
     const getPreview = (fileId: string) =>
-        sdk.forProject.storage.getFilePreview($file.bucketId, fileId, 205, 125).toString() +
+        sdk.forProject.storage.getFilePreview($file.bucketId, fileId, 410, 250).toString() +
         '&mode=admin';
     const getView = (fileId: string) =>
         sdk.forProject.storage.getFileView($file.bucketId, fileId).toString() + '&mode=admin';
@@ -107,7 +107,7 @@
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
-                <Button secondary href={downloadFile()} event="download_file">
+                <Button secondary href={downloadFile()} event="download_file" external>
                     <span class="icon-download" aria-hidden="true" />
                     <span class="text"> Download</span></Button>
             </svelte:fragment>
