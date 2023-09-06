@@ -47,6 +47,7 @@
     let showDelete = false;
     let showActivate = false;
     let showRedeploy = false;
+    let showAlert = true;
 
     let selectedDeployment: Models.Deployment = null;
     let activeDeployment: Models.Deployment = null;
@@ -88,13 +89,16 @@
         <div class="common-section">
             <Heading tag="h3" size="7">Active</Heading>
         </div>
-        {#if activeDeployment && !$func.live}
-            <div class="u-margin-block-start-8">
-                <Alert type="warning" isStandalone dismissible>
-                    Some configuration options are not live yet. Redeploy your function to apply
-                    latest changes.
-                </Alert>
-            </div>
+        {#if activeDeployment && !$func.live && showAlert}
+            <Alert
+                type="warning"
+                class="u-margin-block-start-8"
+                isStandalone
+                dismissible
+                on:dismiss={() => (showAlert = false)}>
+                Some configuration options are not live yet. Redeploy your function to apply latest
+                changes.
+            </Alert>
         {/if}
         {#if activeDeployment}
             <CardGrid>
