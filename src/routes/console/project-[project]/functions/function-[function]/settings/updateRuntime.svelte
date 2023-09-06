@@ -20,7 +20,8 @@
     onMount(async () => {
         runtime ??= $func.runtime;
 
-        options = (await $runtimesList).runtimes.map((runtime) => ({
+        let runtimes = await $runtimesList;
+        options = runtimes.runtimes.map((runtime) => ({
             label: `${runtime.name} - ${runtime.version}`,
             value: runtime.$id
         }));
