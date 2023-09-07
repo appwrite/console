@@ -14,8 +14,8 @@ export const load: LayoutLoad = async ({ params, depends }) => {
         return {
             header: Header,
             breadcrumbs: Breadcrumbs,
-            function: sdk.forProject.functions.get(params.function),
-            proxyRuleList: sdk.forProject.proxy.listRules([
+            function: await sdk.forProject.functions.get(params.function),
+            proxyRuleList: await sdk.forProject.proxy.listRules([
                 Query.equal('resourceType', 'function'),
                 Query.equal('resourceId', params.function),
                 Query.limit(1)

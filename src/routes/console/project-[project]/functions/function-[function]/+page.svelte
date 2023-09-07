@@ -29,10 +29,9 @@
     import { Container } from '$lib/layout';
     import { app } from '$lib/stores/app';
     import { calculateSize, humanFileSize } from '$lib/helpers/sizeConvertion';
-    import { Query, type Models } from '@appwrite.io/console';
+    import type { Models } from '@appwrite.io/console';
     import Delete from './delete.svelte';
     import Create from './create.svelte';
-    import { sdk } from '$lib/stores/sdk';
     import Activate from './activate.svelte';
     import { calculateTime } from '$lib/helpers/timeConversion';
     import { Pill } from '$lib/elements';
@@ -50,34 +49,10 @@
     let showAlert = true;
 
     let selectedDeployment: Models.Deployment = null;
-    let activeDeployment: Models.Deployment = null;
-
-    async function getActiveDeployment() {
-        if (!$func?.deployment) return null;
-        const list = await sdk.forProject.functions.listDeployments($page.params.function, [
-            Query.equal('$id', $func.deployment)
-        ]);
-        return list?.deployments?.[0];
-    }
 
     function handleActivate() {
         invalidate(Dependencies.DEPLOYMENTS);
     }
-
-    deploymentList.subscribe((list: Models.DeploymentList | null) => {
-        if (list?.deployments) {
-            let activeDep = list.deployments.find(
-                (deployment) => deployment.$id === $func.deployment
-            );
-            if (!activeDep) {
-                getActiveDeployment().then((deployment) => {
-                    activeDeployment = deployment;
-                });
-            } else {
-                activeDeployment = activeDep;
-            }
-        }
-    });
 </script>
 
 <Container>
@@ -86,6 +61,7 @@
         <Create main />
     </div>
     {#if $deploymentList?.total}
+        {@const activeDeployment = data.activeDeployment}
         <div class="common-section">
             <Heading tag="h3" size="7">Active</Heading>
         </div>
@@ -113,8 +89,8 @@
                     <div class="u-grid-equal-row-size u-gap-4 u-line-height-1">
                         <p><b>Deployment ID</b></p>
 
-                        <Id value={$func.deployment}>
-                            {$func.deployment}
+                        <Id value={activeDeployment.$id}>
+                            {activeDeployment.$id}
                         </Id>
                     </div>
                 </div>
@@ -197,7 +173,6 @@
                 </div>
             </Empty>
         {/if}
-
         <div class="common-section">
             <Heading tag="h3" size="7">All</Heading>
         </div>
