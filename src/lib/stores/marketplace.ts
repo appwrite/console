@@ -132,7 +132,7 @@ export const marketplace: MarketplaceTemplate[] = [
             {
                 name: 'node-18.0',
                 commands: 'npm install && npm run setup',
-                entrypoint: 'src/main.js && npm run setup',
+                entrypoint: 'src/main.js',
                 providerRootDirectory: 'node/discord-command-bot'
             },
             {
@@ -150,9 +150,25 @@ export const marketplace: MarketplaceTemplate[] = [
         variables: [
             {
                 name: 'DISCORD_PUBLIC_KEY',
-                description: `Discord Public Key to verify request signature. <a class="u-bold" target="_blank" href="https://discord.com/developers/docs/tutorials/hosting-on-cloudflare-workers#creating-an-app-on-discord">Learn more</a>.`,
+                description: `Public Key of your application in Discord Developer Portal. <a class="u-bold" target="_blank" href="https://discord.com/developers/docs/tutorials/hosting-on-cloudflare-workers#creating-an-app-on-discord">Learn more</a>.`,
                 value: '',
-                placeholder: 'd1efb...aec35',
+                placeholder: 'db9...980',
+                required: true,
+                type: 'password'
+            },
+            {
+                name: 'DISCORD_APPLICATION_ID',
+                description: `ID of your application in Discord Developer Portal. <a class="u-bold" target="_blank" href="https://discord.com/developers/docs/tutorials/hosting-on-cloudflare-workers#creating-an-app-on-discord">Learn more</a>.`,
+                value: '',
+                placeholder: '427...169',
+                required: true,
+                type: 'password'
+            },
+            {
+                name: 'DISCORD_TOKEN',
+                description: `Bot token of your application in Discord Developer Portal. <a class="u-bold" target="_blank" href="https://discord.com/developers/docs/tutorials/hosting-on-cloudflare-workers#creating-an-app-on-discord">Learn more</a>.`,
+                value: '',
+                placeholder: 'NDI...LUfg',
                 required: true,
                 type: 'password'
             }
