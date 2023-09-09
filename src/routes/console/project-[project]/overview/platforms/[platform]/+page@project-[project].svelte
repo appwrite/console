@@ -33,7 +33,8 @@
         'flutter-android': FlutterAndroid,
         'flutter-linux': FlutterLinux,
         'flutter-macos': FlutterMacOs,
-        'flutter-windows': FlutterWindows
+        'flutter-windows': FlutterWindows,
+        'flutter-web': Web
     };
 
     let showDelete = false;
