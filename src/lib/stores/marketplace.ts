@@ -714,7 +714,7 @@ export const marketplace: MarketplaceTemplate[] = [
                 value: '',
                 placeholder: 'smtp.mailgun.org',
                 required: true,
-                type: 'url'
+                type: 'text'
             },
             {
                 name: 'SMTP_PORT',
