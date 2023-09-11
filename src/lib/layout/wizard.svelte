@@ -159,13 +159,8 @@
 
                     {#if $wizard.step === 1}
                         <Button secondary on:click={handleExit}>Cancel</Button>
-                        <Button submit>Next</Button>
-                    {:else if isLastStep}
-                        <Button secondary on:click={previousStep}>Back</Button>
-                        <Button submit>{finalAction}</Button>
                     {:else}
                         <Button secondary on:click={previousStep}>Back</Button>
-                        <Button submit>Next</Button>
                     {/if}
 
                     <Button submit disabled={$wizard.nextDisabled}>
