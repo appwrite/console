@@ -12,31 +12,31 @@ export const marketplace: MarketplaceTemplate[] = [
         usecases: ['Starter'],
         runtimes: [
             {
-                name: 'node-18.0',
+                name: 'node',
                 commands: 'npm install',
                 entrypoint: 'src/main.js',
                 providerRootDirectory: 'node/starter'
             },
             {
-                name: 'php-8.0',
+                name: 'php',
                 commands: 'composer install',
                 entrypoint: 'src/index.php',
                 providerRootDirectory: 'php/starter'
             },
             {
-                name: 'ruby-3.0',
+                name: 'ruby',
                 commands: 'bundle install',
                 entrypoint: 'lib/main.rb',
                 providerRootDirectory: 'ruby/starter'
             },
             {
-                name: 'python-3.9',
+                name: 'python',
                 commands: 'pip install -r requirements.txt',
                 entrypoint: 'src/main.py',
                 providerRootDirectory: 'python/starter'
             },
             {
-                name: 'dart-2.17',
+                name: 'dart',
                 commands: 'dart pub get',
                 entrypoint: 'lib/main.dart',
                 providerRootDirectory: 'dart/starter'
@@ -70,25 +70,25 @@ export const marketplace: MarketplaceTemplate[] = [
         usecases: ['AI'],
         runtimes: [
             {
-                name: 'node-18.0',
+                name: 'node',
                 commands: 'npm install',
                 entrypoint: 'src/main.js',
                 providerRootDirectory: 'node/prompt-chatgpt'
             },
             {
-                name: 'python-3.9',
+                name: 'python',
                 commands: 'pip install -r requirements.txt',
                 entrypoint: 'src/main.py',
                 providerRootDirectory: 'python/prompt_chatgpt'
             },
             {
-                name: 'php-8.0',
+                name: 'php',
                 commands: 'composer install',
                 entrypoint: 'src/index.php',
                 providerRootDirectory: 'php/prompt-chatgpt'
             },
             {
-                name: 'dart-2.17',
+                name: 'dart',
                 commands: 'dart pub get',
                 entrypoint: 'lib/main.dart',
                 providerRootDirectory: 'dart/prompt_chatgpt'
@@ -130,13 +130,13 @@ export const marketplace: MarketplaceTemplate[] = [
         usecases: ['Messaging'],
         runtimes: [
             {
-                name: 'node-18.0',
+                name: 'node',
                 commands: 'npm install && npm run setup',
                 entrypoint: 'src/main.js',
                 providerRootDirectory: 'node/discord-command-bot'
             },
             {
-                name: 'python-3.9',
+                name: 'python',
                 commands: 'pip install -r requirements.txt && python src/setup.py',
                 entrypoint: 'src/main.py',
                 providerRootDirectory: 'python/discord_command_bot'
@@ -186,7 +186,7 @@ export const marketplace: MarketplaceTemplate[] = [
         usecases: ['AI'],
         runtimes: [
             {
-                name: 'node-18.0',
+                name: 'node',
                 commands: 'npm install',
                 entrypoint: 'src/main.js',
                 providerRootDirectory: 'node/analyze-with-perspectiveapi'
@@ -221,19 +221,19 @@ export const marketplace: MarketplaceTemplate[] = [
         usecases: ['AI'],
         runtimes: [
             {
-                name: 'node-18.0',
+                name: 'node',
                 commands: 'npm install',
                 entrypoint: 'src/main.js',
                 providerRootDirectory: 'node/censor-with-redact'
             },
             {
-                name: 'python-3.9',
+                name: 'python',
                 commands: 'pip install -r requirements.txt',
                 entrypoint: 'src/main.py',
                 providerRootDirectory: 'python/censor_with_redact'
             },
             {
-                name: 'dart-2.17',
+                name: 'dart',
                 commands: 'dart pub get',
                 entrypoint: 'lib/main.dart',
                 providerRootDirectory: 'dart/censor_with_redact'
@@ -267,7 +267,7 @@ export const marketplace: MarketplaceTemplate[] = [
         usecases: ['Utilities'],
         runtimes: [
             {
-                name: 'node-18.0',
+                name: 'node',
                 commands: 'npm install',
                 entrypoint: 'src/main.js',
                 providerRootDirectory: 'node/generate-pdf'
@@ -293,7 +293,7 @@ export const marketplace: MarketplaceTemplate[] = [
         usecases: ['Dev Tools'],
         runtimes: [
             {
-                name: 'node-18.0',
+                name: 'node',
                 commands: 'npm install',
                 entrypoint: 'src/main.js',
                 providerRootDirectory: 'node/github-issue-bot'
@@ -335,7 +335,7 @@ export const marketplace: MarketplaceTemplate[] = [
         usecases: ['Utilities'],
         runtimes: [
             {
-                name: 'node-18.0',
+                name: 'node',
                 commands: 'npm install',
                 entrypoint: 'src/main.js',
                 providerRootDirectory: 'node/url-shortener'
@@ -401,19 +401,19 @@ export const marketplace: MarketplaceTemplate[] = [
         usecases: ['Databases'],
         runtimes: [
             {
-                name: 'node-18.0',
+                name: 'node',
                 commands: 'npm install',
                 entrypoint: 'src/main.js',
                 providerRootDirectory: 'node/sync-with-algolia'
             },
             {
-                name: 'python-3.9',
+                name: 'python',
                 commands: 'pip install -r requirements.txt',
                 entrypoint: 'src/main.py',
                 providerRootDirectory: 'python/sync_with_algolia'
             },
             {
-                name: 'php-8.0',
+                name: 'php',
                 commands: 'composer install',
                 entrypoint: 'src/index.php',
                 providerRootDirectory: 'php/sync-with-algolia'
@@ -490,7 +490,7 @@ export const marketplace: MarketplaceTemplate[] = [
         usecases: ['Databases'],
         runtimes: [
             {
-                name: 'node-18.0',
+                name: 'node',
                 commands: 'npm install',
                 entrypoint: 'src/main.js',
                 providerRootDirectory: 'node/sync-with-meilisearch'
@@ -574,7 +574,7 @@ export const marketplace: MarketplaceTemplate[] = [
         usecases: ['Messaging'],
         runtimes: [
             {
-                name: 'node-18.0',
+                name: 'node',
                 commands: 'npm install',
                 entrypoint: 'src/main.js',
                 providerRootDirectory: 'node/whatsapp-with-vonage'
@@ -629,7 +629,7 @@ export const marketplace: MarketplaceTemplate[] = [
         usecases: ['Messaging'],
         runtimes: [
             {
-                name: 'node-18.0',
+                name: 'node',
                 commands: 'npm install',
                 entrypoint: 'src/main.js',
                 providerRootDirectory: 'node/push-notification-with-fcm'
@@ -684,19 +684,19 @@ export const marketplace: MarketplaceTemplate[] = [
         usecases: ['Utilities'],
         runtimes: [
             {
-                name: 'node-18.0',
+                name: 'node',
                 commands: 'npm install',
                 entrypoint: 'src/main.js',
                 providerRootDirectory: 'node/email-contact-form'
             },
             {
-                name: 'python-3.9',
+                name: 'python',
                 commands: 'pip install -r requirements.txt',
                 entrypoint: 'src/main.py',
                 providerRootDirectory: 'python/email_contact_form'
             },
             {
-                name: 'php-8.0',
+                name: 'php',
                 commands: 'composer install',
                 entrypoint: 'src/index.php',
                 providerRootDirectory: 'php/email-contact-form'
@@ -766,7 +766,7 @@ export const marketplace: MarketplaceTemplate[] = [
         usecases: ['Utilities'],
         runtimes: [
             {
-                name: 'node-18.0',
+                name: 'node',
                 commands: 'npm install',
                 entrypoint: 'src/main.js',
                 providerRootDirectory: 'node/subscriptions-with-stripe'
@@ -822,7 +822,7 @@ export const marketplace: MarketplaceTemplate[] = [
         usecases: ['Utilities'],
         runtimes: [
             {
-                name: 'node-18.0',
+                name: 'node',
                 commands: 'npm install && npm run setup',
                 entrypoint: 'src/main.js',
                 providerRootDirectory: 'node/payments-with-stripe'
@@ -932,7 +932,7 @@ Template:
         "timeout": 15,
         "runtimes": [
             {
-                "name": "node-18",
+                "name": "node",
                 "entrypoint": "src/main.js",
                 "commands": "npm install"
             }

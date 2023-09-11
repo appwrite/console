@@ -1,20 +1,21 @@
 <script context="module" lang="ts">
     import CreateTemplate from './createTemplate.svelte';
 
-    export function connectTemplate(template: MarketplaceTemplate, runtime: string | null = null) {
+    export function connectTemplate(template: MarketplaceTemplate, language: string | null = null) {
         const variables: Record<string, string> = {};
         template.variables.forEach((variable) => {
             variables[variable.name] = variable.value ?? '';
         });
 
-        if (!runtime) {
-            runtime = template.runtimes[0].name;
+        if (!language) {
+            language = template.runtimes[0].name;
         }
 
         templateStore.set(template);
         templateConfig.set({
             $id: null,
-            runtime,
+            language,
+            runtime: null,
             name: template.name,
             variables,
             repositoryBehaviour: 'new',
@@ -106,12 +107,15 @@
                                 </li>
                             {/each}
                         {:then response}
-                            {@const runtimes = new Map(response.runtimes.map((r) => [r.$id, r]))}
-                            {@const templates = quickStart.runtimes.filter((_template) =>
-                                runtimes.has(_template.name)
-                            )}
+                            {@const templates = quickStart.runtimes.filter((_template) => {
+                                return response.runtimes.some((runtime) =>
+                                    runtime.$id.includes(_template.name)
+                                );
+                            })}
                             {#each templates.slice(0, 6) as template}
-                                {@const runtimeDetail = runtimes.get(template.name)}
+                                {@const runtimeDetail = response.runtimes?.find((runtime) =>
+                                    runtime?.$id?.includes(template.name)
+                                )}
                                 <li>
                                     <button
                                         on:click={() => {
@@ -128,13 +132,11 @@
                                         <div class="avatar is-size-small">
                                             <img
                                                 style:--p-text-size="1.25rem"
-                                                src={`${base}/icons/${$app.themeInUse}/color/${
-                                                    template.name.split('-')[0]
-                                                }.svg`}
+                                                src={`${base}/icons/${$app.themeInUse}/color/${template.name}.svg`}
                                                 alt={template.name} />
                                         </div>
                                         <div class="body-text-2">
-                                            {runtimeDetail.name}
+                                            {runtimeDetail?.name ?? template.name}
                                         </div>
                                     </button>
                                 </li>

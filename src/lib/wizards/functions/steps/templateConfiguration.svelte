@@ -15,16 +15,16 @@
     }
 
     async function loadRuntimes() {
-        const options = (await $runtimesList).runtimes
+        const allowedRuntimes = (await $runtimesList).runtimes.filter((runtime) =>
+            runtime.$id.includes($templateConfig.language)
+        );
+        const options = allowedRuntimes
             .map((runtime) => ({
                 label: `${runtime.name} - ${runtime.version}`,
                 value: runtime.$id
             }))
-            .filter((runtime) => {
-                const allowedRuntimes = $template.runtimes.map((r) => r.name);
-                return allowedRuntimes.includes(runtime.value);
-            });
-
+            .reverse();
+        $templateConfig.runtime = options[0].value;
         return options;
     }
 </script>
@@ -54,7 +54,6 @@
             <InputSelect
                 label="Runtime"
                 id="runtime"
-                placeholder="Select runtime"
                 required
                 disabled={options.length <= 1}
                 {options}

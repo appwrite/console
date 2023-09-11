@@ -7,6 +7,7 @@ export const template = writable<MarketplaceTemplate>();
 export const templateConfig = writable<{
     $id: string;
     name: string;
+    language: string;
     runtime: string;
     variables: { [key: string]: unknown };
     repositoryBehaviour: 'new' | 'existing';
