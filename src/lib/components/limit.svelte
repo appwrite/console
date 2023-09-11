@@ -41,5 +41,5 @@
         {options}
         bind:value={limit}
         on:change={limitChange} />
-    <p class="text">{name} per page. Total results: {sum}</p>
+    <p class="text">{name} per page. Total results: {sum >= 5000 ? `${sum}+` : sum}</p>
 </div>
