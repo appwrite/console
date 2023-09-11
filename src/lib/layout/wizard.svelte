@@ -92,7 +92,6 @@
                 $wizard.step++;
             }
             trackEvent('wizard_next');
-            $wizard.step++;
         }
     }
 
