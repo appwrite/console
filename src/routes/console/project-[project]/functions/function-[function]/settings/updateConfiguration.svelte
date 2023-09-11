@@ -102,15 +102,6 @@
         azure = 'Azure'
     }
 
-    function getProviderIcon(provider: string) {
-        switch (provider) {
-            case 'github':
-                return 'icon-github';
-            default:
-                return '';
-        }
-    }
-
     function getRepositoryLink(repository: Models.ProviderRepository) {
         switch (repository.provider) {
             case 'github':
@@ -218,21 +209,21 @@
                         </svelte:fragment>
                         {#if repository}
                             <Box radius="small">
-                                <div class="u-flex u-gap-16">
-                                    <div class="avatar is-size-x-small">
-                                        <span class={getProviderIcon(repository.provider)} />
-                                    </div>
-                                    <div class="u-cross-child-center u-line-height-1-5">
+                                <div class="u-flex u-gap-8">
+                                    <SvgIcon name={repository.provider} iconSize="xlarge" />
+                                    <div class="u-line-height-1-5">
                                         <h6 class="u-bold u-trim-1">
                                             {repository.name}
                                             {#if repository.private}
                                                 <span
-                                                    class="icon-lock-closed"
+                                                    class="icon-lock-closed u-color-text-gray"
                                                     style="font-size: var(--icon-size-small)"
                                                     aria-hidden="true" />
                                             {/if}
                                         </h6>
-                                        <p>Last updated: {toLocaleDateTime(repository.pushedAt)}</p>
+                                        <p class="u-color-text-gray">
+                                            Last updated: {toLocaleDateTime(repository.pushedAt)}
+                                        </p>
                                     </div>
                                 </div>
                                 <div class="u-margin-block-start-24">

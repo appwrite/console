@@ -132,7 +132,7 @@ export const marketplace: MarketplaceTemplate[] = [
             {
                 name: 'node-18.0',
                 commands: 'npm install && npm run setup',
-                entrypoint: 'src/main.js && npm run setup',
+                entrypoint: 'src/main.js',
                 providerRootDirectory: 'node/discord-command-bot'
             },
             {
@@ -150,9 +150,25 @@ export const marketplace: MarketplaceTemplate[] = [
         variables: [
             {
                 name: 'DISCORD_PUBLIC_KEY',
-                description: `Discord Public Key to verify request signature. <a class="u-bold" target="_blank" href="https://discord.com/developers/docs/tutorials/hosting-on-cloudflare-workers#creating-an-app-on-discord">Learn more</a>.`,
+                description: `Public Key of your application in Discord Developer Portal. <a class="u-bold" target="_blank" href="https://discord.com/developers/docs/tutorials/hosting-on-cloudflare-workers#creating-an-app-on-discord">Learn more</a>.`,
                 value: '',
-                placeholder: 'd1efb...aec35',
+                placeholder: 'db9...980',
+                required: true,
+                type: 'password'
+            },
+            {
+                name: 'DISCORD_APPLICATION_ID',
+                description: `ID of your application in Discord Developer Portal. <a class="u-bold" target="_blank" href="https://discord.com/developers/docs/tutorials/hosting-on-cloudflare-workers#creating-an-app-on-discord">Learn more</a>.`,
+                value: '',
+                placeholder: '427...169',
+                required: true,
+                type: 'password'
+            },
+            {
+                name: 'DISCORD_TOKEN',
+                description: `Bot token of your application in Discord Developer Portal. <a class="u-bold" target="_blank" href="https://discord.com/developers/docs/tutorials/hosting-on-cloudflare-workers#creating-an-app-on-discord">Learn more</a>.`,
+                value: '',
+                placeholder: 'NDI...LUfg',
                 required: true,
                 type: 'password'
             }
@@ -698,7 +714,7 @@ export const marketplace: MarketplaceTemplate[] = [
                 value: '',
                 placeholder: 'smtp.mailgun.org',
                 required: true,
-                type: 'url'
+                type: 'text'
             },
             {
                 name: 'SMTP_PORT',
@@ -733,6 +749,134 @@ export const marketplace: MarketplaceTemplate[] = [
                 description: `An optional comma-separated list of allowed origins for CORS (defaults to *). This is an important security measure to prevent malicious users from abusing your function.`,
                 value: '',
                 placeholder: 'https://mywebapp.org,https://mywebapp.com',
+                required: false,
+                type: 'text'
+            }
+        ]
+    },
+    {
+        icon: 'icon-stripe',
+        id: 'subscriptions-with-stripe',
+        name: 'Subscriptions with Stripe',
+        tagline: 'Receive recurring card payments and grant subscribers extra permissions.',
+        permissions: ['any'],
+        events: [],
+        cron: '',
+        timeout: 15,
+        usecases: ['Utilities'],
+        runtimes: [
+            {
+                name: 'node-18.0',
+                commands: 'npm install',
+                entrypoint: 'src/main.js',
+                providerRootDirectory: 'node/subscriptions-with-stripe'
+            }
+        ],
+        instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/subscriptions-with-stripe">file</a>.`,
+        vcsProvider: 'github',
+        providerRepositoryId: 'templates',
+        providerOwner: 'appwrite',
+        providerBranch: 'main',
+        variables: [
+            {
+                name: 'APPWRITE_API_KEY',
+                description: `The API Key to talk to Appwrite backend APIs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/getting-started-for-server">Learn more</a>.`,
+                value: '',
+                placeholder: 'd1efb...aec35',
+                required: true,
+                type: 'password'
+            },
+            {
+                name: 'APPWRITE_ENDPOINT',
+                description: `The URL endpoint of the Appwrite server. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/getting-started-for-server">Learn more</a>.`,
+                value: 'https://cloud.appwrite.io/v1',
+                placeholder: 'https://cloud.appwrite.io/v1',
+                required: false,
+                type: 'url'
+            },
+            {
+                name: 'STRIPE_SECRET_KEY',
+                description: `Secret for sending requests to the Stripe API. <a class="u-bold" target="_blank" href="https://stripe.com/docs/keys">Learn more</a>.`,
+                placeholder: 'sk_test_51J...',
+                required: true,
+                type: 'password'
+            },
+            {
+                name: 'STRIPE_WEBHOOK_SECRET',
+                description: `Secret used to validate the Stripe Webhook signature. <a class="u-bold" target="_blank" href="https://stripe.com/docs/webhooks">Learn more</a>.`,
+                placeholder: 'whsec_...',
+                required: true,
+                type: 'password'
+            }
+        ]
+    },
+    {
+        icon: 'icon-stripe',
+        id: 'payments-with-stripe',
+        name: 'Payments with Stripe',
+        tagline: 'Receive card payments and store paid orders.',
+        permissions: ['any'],
+        events: [],
+        cron: '',
+        timeout: 15,
+        usecases: ['Utilities'],
+        runtimes: [
+            {
+                name: 'node-18.0',
+                commands: 'npm install && npm run setup',
+                entrypoint: 'src/main.js',
+                providerRootDirectory: 'node/payments-with-stripe'
+            }
+        ],
+        instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/payments-with-stripe">file</a>.`,
+        vcsProvider: 'github',
+        providerRepositoryId: 'templates',
+        providerOwner: 'appwrite',
+        providerBranch: 'main',
+        variables: [
+            {
+                name: 'APPWRITE_API_KEY',
+                description: `The API Key to talk to Appwrite backend APIs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/getting-started-for-server">Learn more</a>.`,
+                value: '',
+                placeholder: 'd1efb...aec35',
+                required: true,
+                type: 'password'
+            },
+            {
+                name: 'APPWRITE_ENDPOINT',
+                description: `The URL endpoint of the Appwrite server. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/getting-started-for-server">Learn more</a>.`,
+                value: 'https://cloud.appwrite.io/v1',
+                placeholder: 'https://cloud.appwrite.io/v1',
+                required: false,
+                type: 'url'
+            },
+            {
+                name: 'STRIPE_SECRET_KEY',
+                description: `Secret for sending requests to the Stripe API. <a class="u-bold" target="_blank" href="https://stripe.com/docs/keys">Learn more</a>.`,
+                placeholder: 'sk_test_51J...',
+                required: true,
+                type: 'password'
+            },
+            {
+                name: 'STRIPE_WEBHOOK_SECRET',
+                description: `Secret used to validate the Stripe Webhook signature. <a class="u-bold" target="_blank" href="https://stripe.com/docs/webhooks">Learn more</a>.`,
+                placeholder: 'whsec_...',
+                required: true,
+                type: 'password'
+            },
+            {
+                name: 'APPWRITE_DATABASE_ID',
+                description: `The ID of the database to store paid orders. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/databases">Learn more</a>.`,
+                value: 'orders',
+                placeholder: 'orders',
+                required: false,
+                type: 'text'
+            },
+            {
+                name: 'APPWRITE_COLLECTION_ID',
+                description: `The ID of the collection to store paid orders. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/collections">Learn more</a>.`,
+                value: 'orders',
+                placeholder: 'orders',
                 required: false,
                 type: 'text'
             }

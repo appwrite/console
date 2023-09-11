@@ -106,21 +106,22 @@
                                 </li>
                             {/each}
                         {:then response}
-                            {@const runtimes = response.runtimes}
-                            {#each quickStart.runtimes.filter((_template, index) => index < 6) as runtime}
-                                {@const runtimeDetail = runtimes.find(
-                                    (r) => r.$id === runtime.name
-                                )}
+                            {@const runtimes = new Map(response.runtimes.map((r) => [r.$id, r]))}
+                            {@const templates = quickStart.runtimes.filter((_template) =>
+                                runtimes.has(_template.name)
+                            )}
+                            {#each templates.slice(0, 6) as template}
+                                {@const runtimeDetail = runtimes.get(template.name)}
                                 <li>
                                     <button
                                         on:click={() => {
                                             trackEvent('click_connect_template', {
                                                 from: 'cover',
                                                 template: quickStart.id,
-                                                runtime: runtime.name
+                                                runtime: template.name
                                             });
                                         }}
-                                        on:click={() => connectTemplate(quickStart, runtime.name)}
+                                        on:click={() => connectTemplate(quickStart, template.name)}
                                         class="box u-width-full-line u-flex u-cross-center u-gap-8"
                                         style:--box-padding="1rem"
                                         style:--box-border-radius="var(--border-radius-small)">
@@ -128,9 +129,9 @@
                                             <img
                                                 style:--p-text-size="1.25rem"
                                                 src={`${base}/icons/${$app.themeInUse}/color/${
-                                                    runtime.name.split('-')[0]
+                                                    template.name.split('-')[0]
                                                 }.svg`}
-                                                alt={runtime.name} />
+                                                alt={template.name} />
                                         </div>
                                         <div class="body-text-2">
                                             {runtimeDetail.name}
@@ -139,7 +140,7 @@
                                 </li>
                             {/each}
 
-                            {#if quickStart.runtimes.length < 6}
+                            {#if templates.length < 6}
                                 <li
                                     use:tooltip={{
                                         content: 'More runtimes coming soon'
