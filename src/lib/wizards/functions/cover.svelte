@@ -1,7 +1,10 @@
 <script context="module" lang="ts">
     import CreateTemplate from './createTemplate.svelte';
 
-    export function connectTemplate(template: MarketplaceTemplate, language: string | null = null) {
+    export function connectTemplate(
+        template: MarketplaceTemplate,
+        forceLanguage: string | null = null
+    ) {
         const variables: Record<string, string> = {};
         template.variables.forEach((variable) => {
             variables[variable.name] = variable.value ?? '';
@@ -11,7 +14,7 @@
         templateConfig.set({
             $id: null,
             name: template.name,
-            language,
+            language: forceLanguage,
             runtime: null,
             variables,
             repositoryBehaviour: 'new',
