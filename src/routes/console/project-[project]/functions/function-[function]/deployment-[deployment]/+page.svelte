@@ -34,7 +34,7 @@
                     `functions.${$page.params.function}.deployments.${$page.params.deployment}.update`
                 )
             ) {
-                logs = (message.payload as any).logs as string;
+                logs = message.payload.buildLogs;
                 if (message.payload.status === 'ready') {
                     invalidate(Dependencies.DEPLOYMENT);
                 }
@@ -101,9 +101,8 @@
                 <div class="u-flex u-flex-vertical u-cross-end">
                     <Pill
                         danger={status === 'failed'}
-                        warning={status === 'pending'}
-                        success={status === 'completed' || status === 'ready'}
-                        info={status === 'processing' || status === 'building'}>
+                        warning={status === 'building'}
+                        info={status === 'ready'}>
                         <span class="text u-trim">{$deployment.status}</span>
                     </Pill>
                 </div>
@@ -114,13 +113,14 @@
     <Card>
         <div class="u-stretch u-overflow-hidden">
             <section class="code-panel">
-                <header class="code-panel-header u-flex u-main-space-between u-width-full-line">
+                <header
+                    class="code-panel-header u-flex u-main-space-between u-width-full-line u-flex-wrap u-gap-16">
                     <div class="u-flex u-flex-vertical">
                         <h4 class="u-bold">Build {$func.name}</h4>
                         {#if $deployment.status === 'building'}
                             <span>Building...</span>
                         {:else}
-                            {$deployment.status}
+                            <span class="u-capitalize">{$deployment.status}</span>
                         {/if}
                     </div>
 

@@ -9,8 +9,12 @@
     export let isGlobal: boolean;
     export let show = false;
     export let variableList: Models.VariableList;
-    export let sdkCreateVariable: (key: string, value: string) => Promise<any>;
-    export let sdkUpdateVariable: (variableId: string, key: string, value: string) => Promise<any>;
+    export let sdkCreateVariable: (key: string, value: string) => Promise<unknown>;
+    export let sdkUpdateVariable: (
+        variableId: string,
+        key: string,
+        value: string
+    ) => Promise<unknown>;
 
     let files: FileList;
     let error: string;
@@ -64,10 +68,13 @@
     <svelte:fragment slot="title">
         Import new {isGlobal ? 'global' : 'environment'} variables
     </svelte:fragment>
-    <div class="u-flex u-flex-vertical u-gap-24">
+    <div class="u-flex u-flex-vertical u-gap-24 u-margin-block-start-8">
         <p>
-            Import new {isGlobal ? 'global' : 'environment'} variables from .env file that will be passed
-            to {isGlobal ? 'all functions within your project' : 'your function'}.
+            Import new {isGlobal ? 'global' : 'environment'} variables from
+            <span class="inline-code">.env</span>
+            file that will be passed to {isGlobal
+                ? 'all functions within your project'
+                : 'your function'}.
         </p>
 
         {#if variableList.total > 0}

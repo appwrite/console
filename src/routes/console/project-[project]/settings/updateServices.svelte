@@ -103,23 +103,23 @@
                     <Button text={true} on:click={() => toggleAllServices(true)}>Enable all</Button>
                 </li>
                 <li class="buttons-list-item">
-                    <Button text={true} on:click={() => toggleAllServices(false)}
-                        >Disable all</Button>
+                    <Button text={true} on:click={() => toggleAllServices(false)}>
+                        Disable all
+                    </Button>
                 </li>
             </ul>
-            <form class="form card-separator">
-                <FormList>
-                    <ul class="form-list is-multiple">
-                        {#each $services.list as service}
-                            <InputSwitch
-                                label={service.label}
-                                id={service.method}
-                                bind:value={service.value}
-                                on:change={() => {
-                                    serviceUpdate(service);
-                                }} />
-                        {/each}
-                    </ul>
+            <div class="u-sep-block-start u-padding-block-8 u-margin-block-start-8" />
+            <form class="form">
+                <FormList class="is-multiple">
+                    {#each $services.list as service}
+                        <InputSwitch
+                            label={service.label}
+                            id={service.method}
+                            bind:value={service.value}
+                            on:change={() => {
+                                serviceUpdate(service);
+                            }} />
+                    {/each}
                 </FormList>
             </form>
         </div>

@@ -1,13 +1,27 @@
 <script lang="ts">
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { FormList, InputDomain } from '$lib/elements/forms';
+    import { Alert } from '$lib/components';
+    import { Button, FormList, InputDomain } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
+    import { isSelfHosted } from '$lib/system';
     import { func } from '$routes/console/project-[project]/functions/function-[function]/store';
+    import { onMount } from 'svelte';
     import { ProxyTypes } from '../index.svelte';
     import { domain, typeStore } from './store';
+    import { consoleVariables } from '$routes/console/store';
 
     let error = null;
+    let isDomainsEnabled = false;
+
+    onMount(async () => {
+        if (!isSelfHosted) {
+            return;
+        }
+
+        isDomainsEnabled = (await $consoleVariables)?._APP_DOMAIN_ENABLED === true;
+    });
+
     async function createDomain() {
         try {
             if ($domain.$id) {
@@ -31,7 +45,12 @@
 <WizardStep beforeSubmit={createDomain}>
     <svelte:fragment slot="title">Add function domain</svelte:fragment>
     <svelte:fragment slot="subtitle">
-        Use your self-owned domain as the endpoint of your Appwrite API.
+        Use your self-owned domain as the endpoint of your Appwrite API. <a
+            href="https://appwrite.io/docs/custom-domains"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="link">Learn more</a
+        >.
     </svelte:fragment>
 
     <FormList>
@@ -55,5 +74,22 @@
                 settings as well.
             </p>
         </div>
+    {/if}
+    {#if isSelfHosted && !isDomainsEnabled}
+        <Alert class="common-section" type="info">
+            <svelte:fragment slot="title">
+                Adding a domain to a self-hosted instance
+            </svelte:fragment>
+            To add a domain to a locally hosted Appwrite project, you must first configure your server
+            domain.
+            <svelte:fragment slot="buttons">
+                <Button
+                    href="https://appwrite.io/docs/environment-variables#vcs_(version_control_system)"
+                    external
+                    text>
+                    Learn more
+                </Button>
+            </svelte:fragment>
+        </Alert>
     {/if}
 </WizardStep>

@@ -6,7 +6,7 @@
     import Header from '$lib/layout/header.svelte';
     import SideNavigation from '$lib/layout/navigation.svelte';
     import Shell from '$lib/layout/shell.svelte';
-    import { app, feedback } from '$lib/stores/app';
+    import { app } from '$lib/stores/app';
     import { log } from '$lib/stores/logs';
     import { newOrgModal } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
@@ -17,13 +17,14 @@
     import { goto } from '$app/navigation';
 
     import { CommandCenter, registerCommands, registerSearchers } from '$lib/commandCenter';
-    import { AIPanel } from '$lib/commandCenter/panels';
+    import { AIPanel, OrganizationsPanel, ProjectsPanel } from '$lib/commandCenter/panels';
     import { orgSearcher, projectsSearcher } from '$lib/commandCenter/searchers';
     import { addSubPanel } from '$lib/commandCenter/subPanels';
     import { addNotification } from '$lib/stores/notifications';
     import { openMigrationWizard } from './(migration-wizard)';
     import { project } from './project-[project]/store';
-    import { sdk } from '$lib/stores/sdk';
+    import { feedback } from '$lib/stores/feedback';
+    import { consoleVariables } from './store';
 
     function kebabToSentenceCase(str: string) {
         return str
@@ -34,8 +35,7 @@
 
     let isAssistantEnabled = false;
     onMount(async () => {
-        const vars = await sdk.forConsole.console.variables();
-        isAssistantEnabled = vars._APP_ASSISTANT_ENABLED === true;
+        isAssistantEnabled = (await $consoleVariables)?._APP_ASSISTANT_ENABLED === true;
     });
 
     $: isOnSettingsLayout = $project?.$id
@@ -159,7 +159,7 @@
                 goto(`/console/project-${$project.$id}/settings`);
             },
             disabled: isOnSettingsLayout && $page.url.pathname.endsWith('settings'),
-            group: 'navigation',
+            group: isOnSettingsLayout ? 'navigation' : 'settings',
             rank: isOnSettingsLayout ? 40 : -1
         },
         {
@@ -170,7 +170,7 @@
                 goto(`/console/project-${$project.$id}/settings/domains`);
             },
             disabled: isOnSettingsLayout && $page.url.pathname.includes('domains'),
-            group: 'navigation',
+            group: isOnSettingsLayout ? 'navigation' : 'settings',
             rank: isOnSettingsLayout ? 30 : -1
         },
         {
@@ -180,7 +180,7 @@
                 goto(`/console/project-${$project.$id}/settings/webhooks`);
             },
             disabled: isOnSettingsLayout && $page.url.pathname.includes('webhooks'),
-            group: 'navigation',
+            group: isOnSettingsLayout ? 'navigation' : 'settings',
 
             rank: isOnSettingsLayout ? 20 : -1
         },
@@ -191,7 +191,7 @@
                 goto(`/console/project-${$project.$id}/settings/migrations`);
             },
             disabled: isOnSettingsLayout && $page.url.pathname.includes('migrations'),
-            group: 'navigation',
+            group: isOnSettingsLayout ? 'navigation' : 'settings',
 
             rank: isOnSettingsLayout ? 10 : -1
         },
@@ -202,7 +202,24 @@
                 goto(`/console/project-${$project.$id}/settings/smtp`);
             },
             disabled: isOnSettingsLayout && $page.url.pathname.includes('smtp'),
-            group: 'navigation',
+            group: isOnSettingsLayout ? 'navigation' : 'settings',
+            rank: -1
+        },
+        // Searcher panels
+        {
+            label: 'Find organizations',
+            callback: () => {
+                addSubPanel(OrganizationsPanel);
+            },
+            group: 'organizations',
+            rank: -1
+        },
+        {
+            label: 'Find projects',
+            callback: () => {
+                addSubPanel(ProjectsPanel);
+            },
+            group: 'projects',
             rank: -1
         }
     ]);

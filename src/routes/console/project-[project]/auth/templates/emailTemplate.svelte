@@ -12,7 +12,7 @@
     import { project } from '../../store';
     import ResetEmail from './resetEmail.svelte';
     import { baseEmailTemplate, emailTemplate } from './store';
-    import { deepEqual } from '$lib/helpers/object';
+    import deepEqual from 'deep-equal';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Box } from '$lib/components';
 
@@ -46,12 +46,12 @@
             }
             await sdk.forConsole.projects.updateEmailTemplate(
                 $project.$id,
-                $emailTemplate.type,
-                $emailTemplate.locale,
-                $emailTemplate.senderName,
-                $emailTemplate.senderEmail,
-                $emailTemplate.subject,
-                $emailTemplate.message,
+                $emailTemplate.type ? $emailTemplate.type : undefined,
+                $emailTemplate.locale ? $emailTemplate.locale : undefined,
+                $emailTemplate.subject ? $emailTemplate.subject : undefined,
+                $emailTemplate.message ? $emailTemplate.message : undefined,
+                $emailTemplate.senderName ? $emailTemplate.senderName : undefined,
+                $emailTemplate.senderEmail ? $emailTemplate.senderEmail : undefined,
                 $emailTemplate.replyTo ? $emailTemplate.replyTo : undefined
             );
 
@@ -76,6 +76,8 @@
     }
 
     $: isButtonDisabled = deepEqual($emailTemplate, $baseEmailTemplate);
+
+    $: isSmtpEnabled = $project.smtpEnabled;
 </script>
 
 <Box class="u-position-relative">
@@ -94,12 +96,16 @@
                     id="senderName"
                     label="Sender name"
                     bind:value={$emailTemplate.senderName}
-                    placeholder={'{{project}}'} />
+                    tooltip="Set up an SMTP server to edit the sender name"
+                    placeholder="Enter sender name"
+                    readonly={!isSmtpEnabled} />
                 <InputEmail
                     bind:value={$emailTemplate.senderEmail}
                     id="senderEmail"
                     label="Sender email"
-                    placeholder="Enter sender email" />
+                    tooltip="Set up an SMTP server to edit the sender email"
+                    placeholder="Enter sender email"
+                    readonly={!isSmtpEnabled} />
                 <InputEmail id="replyTo" label="Reply to" placeholder="noreply@appwrite.io" />
                 {#if $$slots.default}
                     <li style="margin-block: 1rem;">
@@ -125,7 +131,7 @@
                     label="Message"
                     placeholder="Enter your message"
                     tooltip="Set up an SMTP server to edit the message body"
-                    readonly={!$project.smtpEnabled} />
+                    readonly={!isSmtpEnabled} />
             </FormList>
             <div class="u-sep-block-start u-margin-block-start-24" />
             <div class="u-flex u-gap-16 u-main-end u-margin-block-start-24">

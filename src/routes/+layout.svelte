@@ -25,7 +25,7 @@
     onMount(async () => {
         if ($page.url.searchParams.has('migrate')) {
             const migrateData = $page.url.searchParams.get('migrate');
-            requestedMigration.set(parseIfString(migrateData));
+            requestedMigration.set(parseIfString(migrateData) as Record<string, string>);
         }
         /**
          * Reporting Web Vitals.

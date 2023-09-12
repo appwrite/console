@@ -83,7 +83,7 @@
     }
 </script>
 
-<Modal title="Create CLI deployment" size="big" bind:show>
+<Modal title="Create CLI deployment" size="big" bind:show headerDivider={false}>
     <p class="text">
         Deploy your function using the Appwrite CLI by running the following command inside your
         function's folder.

@@ -2,6 +2,7 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
+    import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { project } from '../../store';
     import { loadEmailTemplate } from './+page.svelte';
@@ -24,6 +25,10 @@
                 $emailTemplate.locale
             );
             $baseEmailTemplate = { ...$emailTemplate };
+            addNotification({
+                type: 'success',
+                message: 'Email template has been reset'
+            });
             trackEvent(Submit.EmailResetTemplate, {
                 locale: $emailTemplate.locale,
                 type: $emailTemplate.type

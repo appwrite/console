@@ -112,7 +112,7 @@ export const attributeOptions: Option[] = [
         format: 'enum',
         create: submitEnum,
         update: updateEnum,
-        icon: 'list'
+        icon: 'view-list'
     },
     {
         name: 'Relationship',

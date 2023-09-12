@@ -73,7 +73,7 @@
     };
 
     $: operatorsForColumn = Object.entries(operators)
-        .filter(([_, v]) => v.types.includes(column?.type))
+        .filter(([, v]) => v.types.includes(column?.type))
         .map(([k]) => ({
             label: k,
             value: k

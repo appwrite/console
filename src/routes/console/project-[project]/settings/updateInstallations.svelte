@@ -2,6 +2,7 @@
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
     import {
+        Alert,
         AvatarGroup,
         CardGrid,
         DropList,
@@ -27,6 +28,8 @@
     import GitInstallationModal from './GitInstallationModal.svelte';
     import GitDisconnectModal from './GitDisconnectModal.svelte';
     import dayjs from 'dayjs';
+    import { isSelfHosted } from '$lib/system';
+    import { consoleVariables, isVcsEnabled } from '$routes/console/store';
 
     export let total: number;
     export let limit: number;
@@ -60,9 +63,10 @@
         const redirect = new URL($page.url);
         redirect.searchParams.append('alert', 'installation-updated');
         const target = new URL(`${sdk.forProject.client.config.endpoint}/vcs/github/authorize`);
-        target.searchParams.set('projectId', $page.params.project);
+        target.searchParams.set('project', $page.params.project);
         target.searchParams.set('success', redirect.toString());
         target.searchParams.set('failure', redirect.toString());
+        target.searchParams.set('mode', 'admin');
         return target?.toString();
     }
 
@@ -176,6 +180,20 @@
                     bind:offset />
             </div>
         {:else}
+            {#if isSelfHosted && !isVcsEnabled($consoleVariables)}
+                <Alert type="info">
+                    <svelte:fragment slot="title">
+                        Installing Git to a self-hosted instance
+                    </svelte:fragment>
+                    When installing Git in a locally hosted Appwrite project, you must first configure
+                    your environment variables.
+                    <svelte:fragment slot="buttons">
+                        <Button href="https://appwrite.io/docs/configuration#git" external text>
+                            Learn more
+                        </Button>
+                    </svelte:fragment>
+                </Alert>
+            {/if}
             <article class="card-git card is-border-dashed is-no-shadow">
                 <div class="u-flex u-cross-center u-flex-vertical u-gap-32">
                     <div class="u-flex u-cross-center u-flex-vertical u-gap-8">
@@ -184,7 +202,10 @@
 
                         <div class="avatar"><SvgIcon name="appwrite" type="color" size={80} /></div>
                     </div>
-                    <Button on:click={() => (showGitIstall = true)} secondary>
+                    <Button
+                        disabled={isSelfHosted && !isVcsEnabled($consoleVariables)}
+                        on:click={() => (showGitIstall = true)}
+                        secondary>
                         <span class="text">Add Installation</span>
                     </Button>
                 </div>

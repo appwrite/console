@@ -1,10 +1,19 @@
 <script lang="ts">
-    import InputText from '$lib/elements/forms/inputText.svelte';
     import { WizardStep } from '$lib/layout';
     import { template, templateConfig } from '../store';
-    import { FormList, Helper } from '$lib/elements/forms';
+    import {
+        FormList,
+        Helper,
+        InputPassword,
+        InputText,
+        InputURL,
+        InputPhone,
+        InputEmail,
+        InputNumber
+    } from '$lib/elements/forms';
     import { Card, Collapsible, CollapsibleItem } from '$lib/components';
     import AppwriteVariable from '../components/appwriteVariable.svelte';
+    import type { SvelteComponent } from 'svelte';
 
     async function beforeSubmit() {
         for (const variable of $template.variables) {
@@ -23,6 +32,27 @@
 
     $: requiredVariables = $template?.variables?.filter((v) => v.required);
     $: optionalVariables = $template?.variables?.filter((v) => !v.required);
+
+    function selectComponent(
+        variableType: 'password' | 'text' | 'number' | 'email' | 'url' | 'phone'
+    ): typeof SvelteComponent {
+        switch (variableType) {
+            case 'password':
+                return InputPassword;
+            case 'text':
+                return InputText;
+            case 'url':
+                return InputURL;
+            case 'phone':
+                return InputPhone;
+            case 'email':
+                return InputEmail;
+            case 'number':
+                return InputNumber;
+            default:
+                return InputPassword;
+        }
+    }
 </script>
 
 <WizardStep {beforeSubmit}>
@@ -46,14 +76,16 @@
                                 <AppwriteVariable appwriteVariable={variable} />
                             {:else}
                                 <div>
-                                    <InputText
+                                    <svelte:component
+                                        this={selectComponent(variable.type)}
                                         id={variable.name}
                                         label={variable.name}
                                         placeholder={variable.placeholder ?? 'Enter value'}
                                         required={variable.required}
                                         autocomplete={false}
+                                        minlength={variable.type === 'password' ? 0 : null}
+                                        showPasswordButton={variable.type === 'password'}
                                         bind:value={$templateConfig.variables[variable.name]} />
-
                                     <Helper type="neutral">
                                         {@html variable.description}
                                     </Helper>
@@ -79,12 +111,14 @@
                                 <AppwriteVariable appwriteVariable={variable} />
                             {:else}
                                 <div>
-                                    <InputText
+                                    <svelte:component
+                                        this={selectComponent(variable.type)}
                                         id={variable.name}
                                         label={variable.name}
                                         placeholder={variable.placeholder ?? 'Enter value'}
                                         required={variable.required}
                                         autocomplete={false}
+                                        showPasswordButton={variable.type === 'password'}
                                         bind:value={$templateConfig.variables[variable.name]} />
 
                                     <Helper type="neutral">

@@ -35,6 +35,7 @@
 
 <script lang="ts">
     import { InputChoice, InputNumber, InputText, InputTextarea } from '$lib/elements/forms';
+    import { createConservative } from '$lib/helpers/stores';
 
     export let data: Partial<Models.AttributeString> = {
         required: false,
@@ -44,9 +45,28 @@
     };
     export let editing = false;
 
-    $: if (data.array) {
-        data.default = null;
+    let savedDefault = data.default;
+
+    function handleDefaultState(hideDefault: boolean) {
+        if (hideDefault) {
+            savedDefault = data.default;
+            data.default = null;
+        } else {
+            data.default = savedDefault;
+        }
     }
+
+    const {
+        stores: { required, array },
+        listen
+    } = createConservative<Partial<Models.AttributeString>>({
+        required: false,
+        array: false,
+        ...data
+    });
+    $: listen(data);
+
+    $: handleDefaultState($required || $array);
 </script>
 
 <InputNumber

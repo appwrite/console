@@ -3,7 +3,7 @@
     import { Pill } from '$lib/elements';
     import { FormList, InputSelect, InputText } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
-    import { sdk } from '$lib/stores/sdk';
+    import { runtimesList } from '$routes/console/project-[project]/functions/store';
     import { template, templateConfig } from '../store';
 
     let showCustomId = false;
@@ -15,8 +15,7 @@
     }
 
     async function loadRuntimes() {
-        let runtimes = await sdk.forProject.functions.listRuntimes();
-        const options = runtimes.runtimes
+        const options = (await $runtimesList).runtimes
             .map((runtime) => ({
                 label: `${runtime.name} - ${runtime.version}`,
                 value: runtime.$id
@@ -43,9 +42,14 @@
             bind:value={$templateConfig.name}
             required />
         {#await loadRuntimes()}
-            <div class="avatar is-size-x-small">
-                <div class="loader u-margin-16" />
-            </div>
+            <InputSelect
+                label="Runtime"
+                id="runtime"
+                placeholder="Loading runtimes..."
+                required
+                disabled
+                options={[]}
+                value={null} />
         {:then options}
             <InputSelect
                 label="Runtime"

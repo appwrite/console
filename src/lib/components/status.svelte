@@ -6,10 +6,7 @@
         | 'completed'
         | 'processing'
         | 'ready'
-        | 'building'
-        | string = null;
-
-    //TODO: Remove type string once SDK is updated
+        | 'building';
 </script>
 
 <div

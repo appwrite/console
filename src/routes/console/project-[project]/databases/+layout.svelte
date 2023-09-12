@@ -1,7 +1,8 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
-    import { registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
+    import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
+    import { DatabasesPanel } from '$lib/commandCenter/panels';
     import { project } from '../store';
 
     $: $registerCommands([
@@ -14,6 +15,14 @@
             disabled:
                 $page.url.pathname.includes('usage') || $page.url.pathname.includes('database-'),
             group: 'databases'
+        },
+        {
+            label: 'Find databases',
+            callback: () => {
+                addSubPanel(DatabasesPanel);
+            },
+            group: 'databases',
+            rank: -1
         }
     ]);
 

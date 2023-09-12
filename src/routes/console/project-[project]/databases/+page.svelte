@@ -54,7 +54,7 @@
 
     {#if data.databases.total}
         {#if data.view === 'grid'}
-            <Grid {data} />
+            <Grid {data} bind:showCreate />
         {:else}
             <Table {data} />
         {/if}

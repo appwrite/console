@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Box } from '$lib/components';
-    import { FormList, Helper, InputChoice, InputText } from '$lib/elements/forms';
+    import { FormList, Helper, InputChoice, InputPassword } from '$lib/elements/forms';
     import type { Variable } from '$lib/stores/marketplace';
     import { templateConfig } from '../store';
 
@@ -10,10 +10,11 @@
 <Box radius="small" padding={16}>
     <FormList>
         <div>
-            <InputText
+            <InputPassword
                 id={appwriteVariable.name}
                 label={appwriteVariable.name}
                 placeholder={appwriteVariable.placeholder ?? 'Enter value'}
+                showPasswordButton
                 required={appwriteVariable.required && !$templateConfig.generateKey}
                 bind:value={$templateConfig.appwriteApiKey}
                 disabled={!!$templateConfig.generateKey} />

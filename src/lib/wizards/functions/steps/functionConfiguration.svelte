@@ -6,8 +6,8 @@
     import { WizardStep } from '$lib/layout';
     import { onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
-    import Label from '$lib/elements/forms/label.svelte';
     import { choices, createFunction, installation, repository } from '../store';
+    import { runtimesList } from '$routes/console/project-[project]/functions/store';
 
     let showCustomId = false;
 
@@ -29,8 +29,7 @@
     let options = [];
 
     onMount(async () => {
-        let runtimes = await sdk.forProject.functions.listRuntimes();
-        options = runtimes.runtimes.map((runtime) => ({
+        options = (await $runtimesList).runtimes.map((runtime) => ({
             label: `${runtime.name} - ${runtime.version}`,
             value: runtime.$id
         }));
@@ -78,15 +77,13 @@
         {/if}
 
         {#if detectingRuntime}
-            <div>
-                <Label required={true}>Runtime</Label>
-                <div class="card-git card is-border-dashed is-no-shadow">
-                    <div class="u-flex u-gap-8 u-cross-center u-main-center">
-                        <div class="loader u-margin-16" />
-                        Detecting runtime...
-                    </div>
-                </div>
-            </div>
+            <InputSelect
+                disabled
+                label="Runtime"
+                id="runtime"
+                placeholder="Detecting runtime"
+                value={null}
+                options={[]} />
         {:else}
             <InputSelect
                 label="Runtime"

@@ -41,7 +41,7 @@
                 <InputSwitch
                     bind:value={authPersonalDataCheck}
                     id="personalDataCheck"
-                    label="Disallow Personal Data" />
+                    label="Disallow personal data" />
             </FormList>
             <p class="text">
                 Do not allow passwords that contain any part of the user's personal data. This

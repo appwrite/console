@@ -3,17 +3,16 @@
     import { Pill } from '$lib/elements';
     import { InputText, InputSelect, FormList } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
-    import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { createFunction } from '../store';
+    import { runtimesList } from '$routes/console/project-[project]/functions/store';
 
     let showCustomId = false;
 
     let options = [];
 
     onMount(async () => {
-        let runtimes = await sdk.forProject.functions.listRuntimes();
-        options = runtimes.runtimes.map((runtime) => ({
+        options = (await $runtimesList).runtimes.map((runtime) => ({
             label: `${runtime.name} - ${runtime.version}`,
             value: runtime.$id
         }));

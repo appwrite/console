@@ -1,6 +1,5 @@
 <script lang="ts">
-    import { commandGroupRanks, type CommandGroup, type Command } from '../commands';
-
+    import { commandGroupRanks, type Command, type CommandGroup } from '../commands';
     // This is the template for all panels used in the command center.
     // Use this component when you want to create a new panel.
 
@@ -82,19 +81,9 @@
             tick().then(() => {
                 if (!cardEl) return;
 
-                const resultEls = Array.from(contentEl.querySelectorAll('.result'));
                 const selectedEl = contentEl.querySelector('[data-selected]');
-                const selectedIdx = resultEls.indexOf(selectedEl);
 
-                if (selectedIdx === 0) {
-                    contentEl.scrollTo({
-                        top: 0
-                    });
-                } else if (selectedIdx === resultEls.length - 1) {
-                    contentEl.scrollTo({
-                        top: contentEl.scrollHeight
-                    });
-                } else if (selectedEl) {
+                if (selectedEl) {
                     selectedEl.scrollIntoView({
                         block: 'nearest'
                     });
@@ -276,6 +265,7 @@
     </div>
 
     <div class="content" bind:this={contentEl}>
+        <slot />
         {#if groupsAndOptions}
             <ul class="options">
                 {#each groupsAndOptions as item, i}
@@ -320,8 +310,6 @@
                     </li>
                 {/each}
             </ul>
-        {:else}
-            <slot />
         {/if}
     </div>
 
@@ -386,7 +374,7 @@
         --crumb-color: hsl(var(--color-neutral-100));
 
         --result-bg: hsl(var(--color-neutral-10));
-        --footer-bg: linear-gradient(180deg, #fff 0%, #e8e9f0 100%);
+        --footer-bg: linear-gradient(180deg, #fff 49.38%, #e8e9f0 100%);
 
         --icon-color: hsl(var(--color-neutral-50));
         --label-color: hsl(var(--color-neutral-100));
@@ -411,19 +399,20 @@
 
     // Elements
     .card {
+        position: absolute;
+        --top: clamp(64px, 10vh, 400px);
+        top: var(--top);
+        left: 50%;
+        translate: -50%;
+
         display: flex;
         flex-direction: column;
         width: var(--width, 42.5rem);
         max-width: 100%;
         min-height: var(--min-height);
-        max-height: var(--max-height, 32rem);
+        max-height: min(calc(100vh - var(--top) - 4rem), var(--max-height, 32rem));
         overflow: hidden;
         padding: 0;
-
-        position: absolute;
-        top: clamp(128px, 15vh, 400px);
-        left: 50%;
-        translate: -50%;
 
         border-radius: 0.5rem;
         border: 1px solid var(--cmd-center-border);
@@ -511,6 +500,7 @@
 
             .result {
                 position: relative;
+                scroll-margin-block: 0.5rem;
 
                 .bg {
                     position: absolute;

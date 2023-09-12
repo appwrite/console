@@ -7,6 +7,7 @@
     export let size = 40;
     export let avatarSize: keyof typeof Sizes = 'medium';
     export let bordered = false;
+    export let color = '';
 
     enum Sizes {
         xsmall = 'is-size-x-small',
@@ -28,13 +29,13 @@
 
     {#each icons as icon}
         <li class="avatars-group-item">
-            <span class="avatar {Sizes[avatarSize]}"><span class={`icon-${icon}`} /></span>
+            <span class="avatar {Sizes[avatarSize]} {color}"><span class={`icon-${icon}`} /></span>
         </li>
     {/each}
 
     {#if total > 2}
         <li class="avatars-group-item">
-            <div class="avatar {Sizes[avatarSize]}">+{total - 2}</div>
+            <div class="avatar {Sizes[avatarSize]} {color}">+{total - 2}</div>
         </li>
     {/if}
 </ul>

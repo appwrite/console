@@ -37,9 +37,13 @@
     export let globalVariableList: Models.VariableList | undefined = undefined;
 
     export let isGlobal: boolean;
-    export let sdkCreateVariable: (key: string, value: string) => Promise<any>;
-    export let sdkUpdateVariable: (variableId: string, key: string, value: string) => Promise<any>;
-    export let sdkDeleteVariable: (variableId: string) => Promise<any>;
+    export let sdkCreateVariable: (key: string, value: string) => Promise<unknown>;
+    export let sdkUpdateVariable: (
+        variableId: string,
+        key: string,
+        value: string
+    ) => Promise<unknown>;
+    export let sdkDeleteVariable: (variableId: string) => Promise<unknown>;
 
     let showVariablesDropdown = [];
     let selectedVar: Models.Variable = null;
@@ -170,7 +174,9 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h6" size="7">{isGlobal ? 'Global Variables' : 'Environment Variables'}</Heading>
+    <Heading tag="h6" size="7" id="variables">
+        {isGlobal ? 'Global variables' : 'Environment variables'}
+    </Heading>
     {#if isGlobal}
         <p>
             Set the environment variables or secret keys that will be passed to all functions within
@@ -180,7 +186,7 @@
         <p>
             Set the environment variables or secret keys that will be passed to your function.
             Global variables can be found in <a
-                href={`${base}/console/project-${$project.$id}/settings/variables`}
+                href={`${base}/console/project-${$project.$id}/settings#variables`}
                 title="Project settings"
                 class="link">
                 project settings</a
@@ -211,7 +217,7 @@
         </div>
         {@const sum = variableList.total}
         {#if sum}
-            <div class="u-flex u-flex-vertical u-gap-16">
+            <div class="u-flex u-flex-vertical u-gap-24">
                 {#if conflictVariables.length > 0}
                     <Alert type="warning">
                         <p class="text">
@@ -222,7 +228,7 @@
                             {/if}
                             a naming conflict with a global variable. View global variables in
                             <a
-                                href={`${base}/console/project-${$project.$id}/settings/variables`}
+                                href={`${base}/console/project-${$project.$id}/settings`}
                                 title="Project settings"
                                 class="link">
                                 project settings</a
@@ -232,9 +238,9 @@
                 {/if}
                 <Table noMargin noStyles>
                     <TableHeader>
-                        <TableCellHead>Key</TableCellHead>
+                        <TableCellHead width={180}>Key</TableCellHead>
                         <TableCellHead width={180}>Value</TableCellHead>
-                        <TableCellHead width={30} />
+                        <TableCellHead width={40} />
                     </TableHeader>
                     <TableBody>
                         {#each variableList.variables.slice(offset, offset + limit) as variable, i}
@@ -246,16 +252,16 @@
                                                   globalVariable.key === variable.key
                                           ) !== undefined
                                         : false}
-                                    {#if isConflicting}
-                                        <span
-                                            class="icon-exclamation u-color-text-warning"
-                                            aria-hidden="true" />
-                                    {/if}
                                     <div
-                                        style:display="inline-block"
-                                        style:margin-left={!isConflicting && hasConflictOnPage
-                                            ? '1.5rem'
-                                            : '0rem'}>
+                                        class={isConflicting && hasConflictOnPage
+                                            ? 'u-flex u-gap-4 u-cross-center'
+                                            : ''}>
+                                        {#if isConflicting && hasConflictOnPage}
+                                            <span
+                                                class="icon-exclamation u-color-text-warning"
+                                                aria-hidden="true" />
+                                        {/if}
+
                                         <Output value={variable.key} hideCopyIcon>
                                             {variable.key}
                                         </Output>

@@ -1,4 +1,4 @@
-export const marketplace = [
+export const marketplace: MarketplaceTemplate[] = [
     {
         icon: 'icon-lightning-bolt',
         id: 'starter',
@@ -9,7 +9,7 @@ export const marketplace = [
         events: [],
         cron: '',
         timeout: 15,
-        usecases: ['placeholder'],
+        usecases: ['Starter'],
         runtimes: [
             {
                 name: 'node-18.0',
@@ -53,7 +53,8 @@ export const marketplace = [
                 description: `The API Key to talk to Appwrite backend APIs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/getting-started-for-server">Learn more</a>.`,
                 value: '',
                 placeholder: 'd1efb...aec35',
-                required: false
+                required: false,
+                type: 'password'
             }
         ]
     },
@@ -66,13 +67,31 @@ export const marketplace = [
         events: [],
         cron: '',
         timeout: 15,
-        usecases: ['placeholder'],
+        usecases: ['AI'],
         runtimes: [
             {
                 name: 'node-18.0',
                 commands: 'npm install',
                 entrypoint: 'src/main.js',
                 providerRootDirectory: 'node/prompt-chatgpt'
+            },
+            {
+                name: 'python-3.9',
+                commands: 'pip install -r requirements.txt',
+                entrypoint: 'src/main.py',
+                providerRootDirectory: 'python/prompt_chatgpt'
+            },
+            {
+                name: 'php-8.0',
+                commands: 'composer install',
+                entrypoint: 'src/index.php',
+                providerRootDirectory: 'php/prompt-chatgpt'
+            },
+            {
+                name: 'dart-2.17',
+                commands: 'dart pub get',
+                entrypoint: 'lib/main.dart',
+                providerRootDirectory: 'dart/prompt_chatgpt'
             }
         ],
         instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/prompt-chatgpt">file</a>.`,
@@ -86,14 +105,72 @@ export const marketplace = [
                 description: `A unique key used to authenticate with the OpenAI API. This is a paid service and you will be charged for each request made to the API. <a class="u-bold" target="_blank" href="https://platform.openai.com/docs/quickstart/add-your-api-key">Learn more</a>.`,
                 value: '',
                 placeholder: 'sk-wzG...vcy',
-                required: true
+                required: true,
+                type: 'password'
             },
             {
                 name: 'OPENAI_MAX_TOKENS',
                 description: `The maximum number of tokens that the OpenAI response should contain. Be aware that OpenAI models read and write a maximum number of tokens per API call, which varies depending on the model. For GPT-3.5-turbo, the limit is 4096 tokens. <a class="u-bold" target="_blank" href="https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them">Learn more</a>.`,
                 value: '512',
                 placeholder: '512',
-                required: false
+                required: false,
+                type: 'number'
+            }
+        ]
+    },
+    {
+        icon: 'icon-discord',
+        id: 'discord-command-bot',
+        name: 'Discord Command Bot',
+        tagline: 'Simple command using Discord Interactions.',
+        permissions: ['any'],
+        events: [],
+        cron: '',
+        timeout: 15,
+        usecases: ['Messaging'],
+        runtimes: [
+            {
+                name: 'node-18.0',
+                commands: 'npm install && npm run setup',
+                entrypoint: 'src/main.js',
+                providerRootDirectory: 'node/discord-command-bot'
+            },
+            {
+                name: 'python-3.9',
+                commands: 'pip install -r requirements.txt && python src/setup.py',
+                entrypoint: 'src/main.py',
+                providerRootDirectory: 'python/discord_command_bot'
+            }
+        ],
+        instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/discord-command-bot">file</a>.`,
+        vcsProvider: 'github',
+        providerRepositoryId: 'templates',
+        providerOwner: 'appwrite',
+        providerBranch: 'main',
+        variables: [
+            {
+                name: 'DISCORD_PUBLIC_KEY',
+                description: `Public Key of your application in Discord Developer Portal. <a class="u-bold" target="_blank" href="https://discord.com/developers/docs/tutorials/hosting-on-cloudflare-workers#creating-an-app-on-discord">Learn more</a>.`,
+                value: '',
+                placeholder: 'db9...980',
+                required: true,
+                type: 'password'
+            },
+            {
+                name: 'DISCORD_APPLICATION_ID',
+                description: `ID of your application in Discord Developer Portal. <a class="u-bold" target="_blank" href="https://discord.com/developers/docs/tutorials/hosting-on-cloudflare-workers#creating-an-app-on-discord">Learn more</a>.`,
+                value: '',
+                placeholder: '427...169',
+                required: true,
+                type: 'password'
+            },
+            {
+                name: 'DISCORD_TOKEN',
+                description: `Bot token of your application in Discord Developer Portal. <a class="u-bold" target="_blank" href="https://discord.com/developers/docs/tutorials/hosting-on-cloudflare-workers#creating-an-app-on-discord">Learn more</a>.`,
+                value: '',
+                placeholder: 'NDI...LUfg',
+                required: true,
+                type: 'password'
             }
         ]
     },
@@ -106,7 +183,7 @@ export const marketplace = [
         events: [],
         cron: '',
         timeout: 15,
-        usecases: ['placeholder'],
+        usecases: ['AI'],
         runtimes: [
             {
                 name: 'node-18.0',
@@ -126,7 +203,8 @@ export const marketplace = [
                 description: `Google Perspective API key. It authenticates your function, allowing it to interact with the API. <a class="u-bold" target="_blank" href="https://developers.google.com/codelabs/setup-perspective-api">Learn more</a>.`,
                 value: '',
                 placeholder: 'AIzaS...fk-fuM',
-                required: true
+                required: true,
+                type: 'password'
             }
         ]
     },
@@ -140,13 +218,25 @@ export const marketplace = [
         events: [],
         cron: '',
         timeout: 15,
-        usecases: ['placeholder'],
+        usecases: ['AI'],
         runtimes: [
             {
                 name: 'node-18.0',
                 commands: 'npm install',
                 entrypoint: 'src/main.js',
                 providerRootDirectory: 'node/censor-with-redact'
+            },
+            {
+                name: 'python-3.9',
+                commands: 'pip install -r requirements.txt',
+                entrypoint: 'src/main.py',
+                providerRootDirectory: 'python/censor_with_redact'
+            },
+            {
+                name: 'dart-2.17',
+                commands: 'dart pub get',
+                entrypoint: 'lib/main.dart',
+                providerRootDirectory: 'dart/censor_with_redact'
             }
         ],
         instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/censor-with-redact">file</a>.`,
@@ -160,7 +250,8 @@ export const marketplace = [
                 description: `Access token for the Pangea Redact API. <a class="u-bold" target="_blank" href="https://pangea.cloud/docs/redact/getting-started/configuration">Learn more</a>.`,
                 value: '',
                 placeholder: 'pts_7p4...5wl4',
-                required: true
+                required: true,
+                type: 'password'
             }
         ]
     },
@@ -173,7 +264,7 @@ export const marketplace = [
         events: [],
         cron: '',
         timeout: 15,
-        usecases: ['placeholder'],
+        usecases: ['Utilities'],
         runtimes: [
             {
                 name: 'node-18.0',
@@ -190,39 +281,6 @@ export const marketplace = [
         variables: []
     },
     {
-        icon: 'icon-discord',
-        id: 'discord-command-bot',
-        name: 'Discord command bot',
-        tagline: 'Simple command using Discord Interactions.',
-        permissions: ['any'],
-        events: [],
-        cron: '',
-        timeout: 15,
-        usecases: ['placeholder'],
-        runtimes: [
-            {
-                name: 'node-18.0',
-                commands: 'npm install && npm run setup',
-                entrypoint: 'src/main.js',
-                providerRootDirectory: 'node/discord-command-bot'
-            }
-        ],
-        instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/discord-command-bot">file</a>.`,
-        vcsProvider: 'github',
-        providerRepositoryId: 'templates',
-        providerOwner: 'appwrite',
-        providerBranch: 'main',
-        variables: [
-            {
-                name: 'DISCORD_PUBLIC_KEY',
-                description: `Discord Public Key to verify request signature. <a class="u-bold" target="_blank" href="https://discord.com/developers/docs/tutorials/hosting-on-cloudflare-workers#creating-an-app-on-discord">Learn more</a>.`,
-                value: '',
-                placeholder: 'd1efb...aec35',
-                required: true
-            }
-        ]
-    },
-    {
         icon: 'icon-github',
         id: 'github-issue-bot',
         name: 'GitHub issue bot',
@@ -232,7 +290,7 @@ export const marketplace = [
         events: [],
         cron: '',
         timeout: 15,
-        usecases: ['placeholder'],
+        usecases: ['Dev Tools'],
         runtimes: [
             {
                 name: 'node-18.0',
@@ -252,14 +310,16 @@ export const marketplace = [
                 description: `A personal access token from GitHub with the necessary permissions to post comments on issues. <a class="u-bold" target="_blank" href="https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token">Learn more</a>.`,
                 value: '',
                 placeholder: 'ghp_1...',
-                required: true
+                required: true,
+                type: 'password'
             },
             {
                 name: 'GITHUB_WEBHOOK_SECRET',
                 description: `The secret used to verify that the webhook request comes from GitHub. <a class="u-bold" target="_blank" href="https://docs.github.com/en/developers/webhooks-and-events/securing-your-webhooks">Learn more</a>.`,
                 value: '',
                 placeholder: 'd1efb...aec35',
-                required: true
+                required: true,
+                type: 'password'
             }
         ]
     },
@@ -272,7 +332,7 @@ export const marketplace = [
         events: [],
         cron: '',
         timeout: 15,
-        usecases: ['placeholder'],
+        usecases: ['Utilities'],
         runtimes: [
             {
                 name: 'node-18.0',
@@ -292,28 +352,40 @@ export const marketplace = [
                 description: `The API Key to talk to Appwrite backend APIs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/getting-started-for-server">Learn more</a>.`,
                 value: '',
                 placeholder: 'd1efb...aec35',
-                required: true
+                required: true,
+                type: 'password'
             },
             {
                 name: 'APPWRITE_ENDPOINT',
                 description: `The URL endpoint of the Appwrite server. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/getting-started-for-server">Learn more</a>.`,
                 value: 'https://cloud.appwrite.io/v1',
                 placeholder: 'https://cloud.appwrite.io/v1',
-                required: false
+                required: false,
+                type: 'url'
             },
             {
                 name: 'APPWRITE_DATABASE_ID',
                 description: `The ID of the database to store the short URLs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/databases">Learn more</a>.`,
                 value: 'urlShortener',
                 placeholder: 'urlShortener',
-                required: false
+                required: false,
+                type: 'text'
             },
             {
                 name: 'APPWRITE_COLLECTION_ID',
                 description: `The ID of the collection to store the short URLs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/collections">Learn more</a>.`,
                 value: 'urls',
                 placeholder: 'urls',
-                required: false
+                required: false,
+                type: 'text'
+            },
+            {
+                name: 'SHORT_BASE_URL',
+                description: `The domain to use for the short URLs. You can use your functions subdomain or a custom domain.`,
+                value: '',
+                placeholder: 'https://shortdomain.io',
+                required: true,
+                type: 'url'
             }
         ]
     },
@@ -326,13 +398,25 @@ export const marketplace = [
         events: [],
         cron: '',
         timeout: 15,
-        usecases: ['placeholder'],
+        usecases: ['Databases'],
         runtimes: [
             {
                 name: 'node-18.0',
                 commands: 'npm install',
                 entrypoint: 'src/main.js',
                 providerRootDirectory: 'node/sync-with-algolia'
+            },
+            {
+                name: 'python-3.9',
+                commands: 'pip install -r requirements.txt',
+                entrypoint: 'src/main.py',
+                providerRootDirectory: 'python/sync_with_algolia'
+            },
+            {
+                name: 'php-8.0',
+                commands: 'composer install',
+                entrypoint: 'src/index.php',
+                providerRootDirectory: 'php/sync-with-algolia'
             }
         ],
         instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/sync-with-algolia">file</a>.`,
@@ -346,44 +430,51 @@ export const marketplace = [
                 description: `The API Key to talk to Appwrite backend APIs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/getting-started-for-server">Learn more</a>.`,
                 value: '',
                 placeholder: 'd1efb...aec35',
-                required: true
+                required: true,
+                type: 'password'
             },
             {
                 name: 'APPWRITE_DATABASE_ID',
                 description: `The ID of the Appwrite database that contains the collection to sync. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/databases">Learn more</a>.`,
                 placeholder: '64a55...7b912',
-                required: true
+                required: true,
+                type: 'text'
             },
             {
                 name: 'APPWRITE_COLLECTION_ID',
                 description: `The ID of the collection in the Appwrite database to sync. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/collections">Learn more</a>.`,
                 placeholder: '7c3e8...2a9f1',
-                required: true
+                required: true,
+                type: 'text'
             },
             {
                 name: 'ALGOLIA_ADMIN_API_KEY',
                 description: `The admin API Key for your Algolia service. <a class="u-bold" target="_blank" href="https://www.algolia.com/doc/guides/security/api-keys/">Learn more</a>.`,
                 placeholder: 'fd0aa...136a8',
-                required: true
+                required: true,
+                type: 'password'
             },
             {
                 name: 'ALGOLIA_INDEX_ID',
                 description: `The ID of the index in Algolia where the documents are to be synced. <a class="u-bold" target="_blank" href="https://www.algolia.com/doc/api-client/methods/indexing/">Learn more</a>.`,
-                placeholder: 'appwrite_index',
-                required: true
+                placeholder: 'my_index',
+                required: true,
+                type: 'password'
             },
             {
                 name: 'ALGOLIA_SEARCH_API_KEY',
                 description: `The search API Key for your Algolia service. This key is used for searching the synced index. <a class="u-bold" target="_blank" href="https://www.algolia.com/doc/guides/security/api-keys/">Learn more</a>.`,
                 placeholder: 'bf2f5...df733',
-                required: true
+                required: true,
+                type: 'password'
             },
             {
                 name: 'APPWRITE_ENDPOINT',
                 description: `The URL endpoint of the Appwrite server. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/getting-started-for-server">Learn more</a>.`,
                 value: 'https://cloud.appwrite.io/v1',
                 placeholder: 'https://cloud.appwrite.io/v1',
-                required: false
+                required: false,
+                type: 'url'
             }
         ]
     },
@@ -396,7 +487,7 @@ export const marketplace = [
         events: [],
         cron: '',
         timeout: 15,
-        usecases: ['placeholder'],
+        usecases: ['Databases'],
         runtimes: [
             {
                 name: 'node-18.0',
@@ -416,50 +507,58 @@ export const marketplace = [
                 description: `The API Key to talk to Appwrite backend APIs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/getting-started-for-server">Learn more</a>.`,
                 value: '',
                 placeholder: 'd1efb...aec35',
-                required: true
+                required: true,
+                type: 'password'
             },
             {
                 name: 'APPWRITE_DATABASE_ID',
                 description: `The ID of the Appwrite database that contains the collection to sync. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/databases">Learn more</a>.`,
                 placeholder: '64a55...7b912',
-                required: true
+                required: true,
+                type: 'text'
             },
             {
                 name: 'APPWRITE_COLLECTION_ID',
                 description: `The ID of the collection in the Appwrite database to sync. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/collections">Learn more</a>.`,
                 placeholder: '7c3e8...2a9f1',
-                required: true
+                required: true,
+                type: 'text'
             },
             {
                 name: 'MEILISEARCH_ENDPOINT',
                 description: `The host URL of the Meilisearch server. <a class="u-bold" target="_blank" href="https://www.meilisearch.com/docs/learn/getting_started/quick_start/">Learn more</a>.`,
                 placeholder: 'http://127.0.0.1:7700',
-                required: true
+                required: true,
+                type: 'url'
             },
             {
                 name: 'MEILISEARCH_ADMIN_API_KEY',
                 description: `The admin API key for Meilisearch. <a class="u-bold" target="_blank" href="https://docs.meilisearch.com/reference/api/keys/">Learn more</a>.`,
                 placeholder: 'masterKey1234',
-                required: true
+                required: true,
+                type: 'password'
             },
             {
                 name: 'MEILISEARCH_SEARCH_API_KEY',
                 description: `API Key for Meilisearch search operations. <a class="u-bold" target="_blank" href="https://www.algolia.com/doc/guides/security/api-keys/">Learn more</a>.`,
                 placeholder: 'searchKey1234',
-                required: true
+                required: true,
+                type: 'password'
             },
             {
                 name: 'MEILISEARCH_INDEX_NAME',
                 description: `Name of the Meilisearch index to which the documents will be synchronized. <a class="u-bold" target="_blank" href="https://www.meilisearch.com/docs/learn/core_concepts/indexes/">Learn more</a>.`,
                 placeholder: 'appwrite_index',
-                required: true
+                required: true,
+                type: 'text'
             },
             {
                 name: 'APPWRITE_ENDPOINT',
                 description: `The URL endpoint of the Appwrite server. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/getting-started-for-server">Learn more</a>.`,
                 value: 'https://cloud.appwrite.io/v1',
                 placeholder: 'https://cloud.appwrite.io/v1',
-                required: false
+                required: false,
+                type: 'url'
             }
         ]
     },
@@ -472,7 +571,7 @@ export const marketplace = [
         events: [],
         cron: '',
         timeout: 15,
-        usecases: ['placeholder'],
+        usecases: ['Messaging'],
         runtimes: [
             {
                 name: 'node-18.0',
@@ -492,25 +591,29 @@ export const marketplace = [
                 description: `API Key to use the Vonage API. <a class="u-bold" target="_blank" href="https://api.support.vonage.com/hc/en-us/articles/204014493-How-do-I-find-my-Voice-API-key-and-API-secret-">Learn more</a>.`,
                 value: '',
                 placeholder: '62...97',
-                required: true
+                required: true,
+                type: 'password'
             },
             {
                 name: 'VONAGE_API_SECRET',
                 description: `Secret to use the Vonage API. <a class="u-bold" target="_blank" href="https://api.support.vonage.com/hc/en-us/articles/204014493-How-do-I-find-my-Voice-API-key-and-API-secret-">Learn more</a>.`,
                 placeholder: 'Zjc...5PH',
-                required: true
+                required: true,
+                type: 'password'
             },
             {
                 name: 'VONAGE_API_SIGNATURE_SECRET',
                 description: `Secret to verify the JWT token sent by Vonage. <a class="u-bold" target="_blank" href="https://developer.vonage.com/en/getting-started/concepts/signing-messages">Learn more</a>.`,
                 placeholder: 'NXOi3...IBHDa',
-                required: true
+                required: true,
+                type: 'password'
             },
             {
                 name: 'VONAGE_WHATSAPP_NUMBER',
                 description: `Vonage WhatsApp number to send messages from. <a class="u-bold" target="_blank" href="https://api.support.vonage.com/hc/en-us/articles/4431993282580-Where-do-I-find-my-WhatsApp-Number-Certificate-">Learn more</a>.`,
                 placeholder: '+14000000102',
-                required: true
+                required: true,
+                type: 'phone'
             }
         ]
     },
@@ -523,7 +626,7 @@ export const marketplace = [
         events: [],
         cron: '',
         timeout: 15,
-        usecases: ['placeholder'],
+        usecases: ['Messaging'],
         runtimes: [
             {
                 name: 'node-18.0',
@@ -543,25 +646,29 @@ export const marketplace = [
                 description: `A unique identifier for your FCM project. <a class="u-bold" target="_blank" href="https://firebase.google.com/docs/projects/learn-more#project-id">Learn more</a>.`,
                 value: '',
                 placeholder: 'mywebapp-f6e57',
-                required: true
+                required: true,
+                type: 'text'
             },
             {
                 name: 'FCM_CLIENT_EMAIL',
                 description: `Your FCM service account email. <a class="u-bold" target="_blank" href="https://github.com/appwrite/templates/tree/main/node/push-notification-with-fcm#:~:text=Documentation-,FCM%3A%20SDK%20Setup,-FCM_PRIVATE_KEY">Learn more</a>.`,
                 placeholder: 'fcm-adminsdk-2f0de@test-f7q57.iam.gserviceaccount.com',
-                required: true
+                required: true,
+                type: 'email'
             },
             {
                 name: 'FCM_PRIVATE_KEY',
                 description: `A unique private key used to authenticate with FCM. <a class="u-bold" target="_blank" href="https://github.com/appwrite/templates/tree/main/node/push-notification-with-fcm#:~:text=Documentation-,FCM%3A%20SDK%20Setup,-FCM_DATABASE_URL">Learn more</a>.`,
                 placeholder: '0b683...75675',
-                required: true
+                required: true,
+                type: 'password'
             },
             {
                 name: 'FCM_DATABASE_URL',
                 description: `URL of your FCM database. <a class="u-bold" target="_blank" href="https://firebase.google.com/docs/admin/setup#initialize_the_sdk_in_non-google_environments">Learn more</a>.`,
                 placeholder: 'https://my-app-f298e.firebaseio.com',
-                required: true
+                required: true,
+                type: 'url'
             }
         ]
     },
@@ -574,13 +681,25 @@ export const marketplace = [
         events: [],
         cron: '',
         timeout: 15,
-        usecases: ['placeholder'],
+        usecases: ['Utilities'],
         runtimes: [
             {
                 name: 'node-18.0',
                 commands: 'npm install',
                 entrypoint: 'src/main.js',
                 providerRootDirectory: 'node/email-contact-form'
+            },
+            {
+                name: 'python-3.9',
+                commands: 'pip install -r requirements.txt',
+                entrypoint: 'src/main.py',
+                providerRootDirectory: 'python/email_contact_form'
+            },
+            {
+                name: 'php-8.0',
+                commands: 'composer install',
+                entrypoint: 'src/index.php',
+                providerRootDirectory: 'php/email-contact-form'
             }
         ],
         instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/email-contact-form">file</a>.`,
@@ -594,38 +713,172 @@ export const marketplace = [
                 description: `The address of your SMTP server. Many STMP providers will provide this information in their documentation. Some popular providers include: Mailgun, SendGrid, and Gmail.`,
                 value: '',
                 placeholder: 'smtp.mailgun.org',
-                required: true
+                required: true,
+                type: 'text'
             },
             {
                 name: 'SMTP_PORT',
                 description: `The port of your STMP server. Commnly used ports include 25, 465, and 587.`,
                 placeholder: '25',
-                required: true
+                required: true,
+                type: 'number'
             },
             {
                 name: 'SMTP_USERNAME',
                 description: `The username for your SMTP server. This is commonly your email address.`,
                 placeholder: 'no-reply@mywebapp.org',
-                required: true
+                required: true,
+                type: 'text'
             },
             {
                 name: 'SMTP_PASSWORD',
                 description: `The password for your SMTP server.`,
                 placeholder: '5up3r5tr0ngP4ssw0rd',
-                required: true
+                required: true,
+                type: 'password'
             },
             {
                 name: 'SUBMIT_EMAIL',
                 description: `The email address to send form submissions to.`,
                 placeholder: 'me@mywebapp.org',
-                required: true
+                required: true,
+                type: 'email'
             },
             {
                 name: 'ALLOWED_ORIGINS',
                 description: `An optional comma-separated list of allowed origins for CORS (defaults to *). This is an important security measure to prevent malicious users from abusing your function.`,
                 value: '',
                 placeholder: 'https://mywebapp.org,https://mywebapp.com',
-                required: false
+                required: false,
+                type: 'text'
+            }
+        ]
+    },
+    {
+        icon: 'icon-stripe',
+        id: 'subscriptions-with-stripe',
+        name: 'Subscriptions with Stripe',
+        tagline: 'Receive recurring card payments and grant subscribers extra permissions.',
+        permissions: ['any'],
+        events: [],
+        cron: '',
+        timeout: 15,
+        usecases: ['Utilities'],
+        runtimes: [
+            {
+                name: 'node-18.0',
+                commands: 'npm install',
+                entrypoint: 'src/main.js',
+                providerRootDirectory: 'node/subscriptions-with-stripe'
+            }
+        ],
+        instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/subscriptions-with-stripe">file</a>.`,
+        vcsProvider: 'github',
+        providerRepositoryId: 'templates',
+        providerOwner: 'appwrite',
+        providerBranch: 'main',
+        variables: [
+            {
+                name: 'APPWRITE_API_KEY',
+                description: `The API Key to talk to Appwrite backend APIs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/getting-started-for-server">Learn more</a>.`,
+                value: '',
+                placeholder: 'd1efb...aec35',
+                required: true,
+                type: 'password'
+            },
+            {
+                name: 'APPWRITE_ENDPOINT',
+                description: `The URL endpoint of the Appwrite server. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/getting-started-for-server">Learn more</a>.`,
+                value: 'https://cloud.appwrite.io/v1',
+                placeholder: 'https://cloud.appwrite.io/v1',
+                required: false,
+                type: 'url'
+            },
+            {
+                name: 'STRIPE_SECRET_KEY',
+                description: `Secret for sending requests to the Stripe API. <a class="u-bold" target="_blank" href="https://stripe.com/docs/keys">Learn more</a>.`,
+                placeholder: 'sk_test_51J...',
+                required: true,
+                type: 'password'
+            },
+            {
+                name: 'STRIPE_WEBHOOK_SECRET',
+                description: `Secret used to validate the Stripe Webhook signature. <a class="u-bold" target="_blank" href="https://stripe.com/docs/webhooks">Learn more</a>.`,
+                placeholder: 'whsec_...',
+                required: true,
+                type: 'password'
+            }
+        ]
+    },
+    {
+        icon: 'icon-stripe',
+        id: 'payments-with-stripe',
+        name: 'Payments with Stripe',
+        tagline: 'Receive card payments and store paid orders.',
+        permissions: ['any'],
+        events: [],
+        cron: '',
+        timeout: 15,
+        usecases: ['Utilities'],
+        runtimes: [
+            {
+                name: 'node-18.0',
+                commands: 'npm install && npm run setup',
+                entrypoint: 'src/main.js',
+                providerRootDirectory: 'node/payments-with-stripe'
+            }
+        ],
+        instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/payments-with-stripe">file</a>.`,
+        vcsProvider: 'github',
+        providerRepositoryId: 'templates',
+        providerOwner: 'appwrite',
+        providerBranch: 'main',
+        variables: [
+            {
+                name: 'APPWRITE_API_KEY',
+                description: `The API Key to talk to Appwrite backend APIs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/getting-started-for-server">Learn more</a>.`,
+                value: '',
+                placeholder: 'd1efb...aec35',
+                required: true,
+                type: 'password'
+            },
+            {
+                name: 'APPWRITE_ENDPOINT',
+                description: `The URL endpoint of the Appwrite server. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/getting-started-for-server">Learn more</a>.`,
+                value: 'https://cloud.appwrite.io/v1',
+                placeholder: 'https://cloud.appwrite.io/v1',
+                required: false,
+                type: 'url'
+            },
+            {
+                name: 'STRIPE_SECRET_KEY',
+                description: `Secret for sending requests to the Stripe API. <a class="u-bold" target="_blank" href="https://stripe.com/docs/keys">Learn more</a>.`,
+                placeholder: 'sk_test_51J...',
+                required: true,
+                type: 'password'
+            },
+            {
+                name: 'STRIPE_WEBHOOK_SECRET',
+                description: `Secret used to validate the Stripe Webhook signature. <a class="u-bold" target="_blank" href="https://stripe.com/docs/webhooks">Learn more</a>.`,
+                placeholder: 'whsec_...',
+                required: true,
+                type: 'password'
+            },
+            {
+                name: 'APPWRITE_DATABASE_ID',
+                description: `The ID of the database to store paid orders. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/databases">Learn more</a>.`,
+                value: 'orders',
+                placeholder: 'orders',
+                required: false,
+                type: 'text'
+            },
+            {
+                name: 'APPWRITE_COLLECTION_ID',
+                description: `The ID of the collection to store paid orders. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/collections">Learn more</a>.`,
+                value: 'orders',
+                placeholder: 'orders',
+                required: false,
+                type: 'text'
             }
         ]
     }
@@ -644,6 +897,7 @@ export type Variable = {
     value?: string;
     placeholder: string;
     required: boolean;
+    type: 'password' | 'text' | 'number' | 'email' | 'url' | 'phone';
 };
 
 export type MarketplaceTemplate = {

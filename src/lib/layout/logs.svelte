@@ -117,19 +117,17 @@
                     </ul>
                     <div class="status u-margin-inline-start-auto">
                         <Pill
-                            warning={execution.status === 'waiting'}
+                            warning={execution.status === 'waiting' ||
+                                execution.status === 'building'}
                             danger={execution.status === 'failed'}
-                            success={execution.status === 'completed' ||
-                                execution.status === 'ready'}
-                            info={execution.status === 'processing' ||
-                                execution.status === 'building'}>
+                            info={execution.status === 'completed' || execution.status === 'ready'}>
                             {execution.status}
                         </Pill>
                     </div>
                 </div>
             </div>
 
-            <div class="theme-dark u-stretch u-margin-block-start-32 u-overflow-hidden">
+            <div class="u-stretch u-margin-block-start-32 u-overflow-hidden">
                 <section class="code-panel">
                     <header class="code-panel-header u-flex u-main-space-between u-width-full-line">
                         <div class="u-flex u-gap-24">

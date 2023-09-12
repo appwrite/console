@@ -16,8 +16,11 @@
     import { invalidate } from '$app/navigation';
     import UpdateLogging from './updateLogging.svelte';
     import UpdateConfiguration from './updateConfiguration.svelte';
+    import { Alert, Heading } from '$lib/components';
+    import { Button } from '$lib/elements/forms';
 
     export let data;
+    let showAlert = true;
 
     const sdkCreateVariable = async (key: string, value: string) => {
         await sdk.forProject.functions.createVariable($func.$id, key, value);
@@ -39,6 +42,29 @@
 </script>
 
 <Container>
+    <Heading tag="h2" size="5">Settings</Heading>
+    {#if $func.version !== 'v3' && showAlert}
+        <Alert
+            type="warning"
+            dismissible
+            class="u-margin-block-start-24"
+            on:dismiss={() => (showAlert = false)}>
+            <svelte:fragment slot="title">Your function is outdated</svelte:fragment>
+            Update your function version to make use of new features including build commands and HTTP
+            data in your executions. To update, follow the steps outlined in our
+            <a
+                href="https://appwrite.io/docs/functions-develop#upgrade"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="link">documentation</a
+            >.
+            <svelte:fragment slot="buttons">
+                <Button href="https://appwrite.io/docs/functions-develop#upgrade" external text>
+                    Learn more
+                </Button>
+            </svelte:fragment>
+        </Alert>
+    {/if}
     <ExecuteFunction />
     <UpdateName />
     <UpdateRuntime />

@@ -36,6 +36,7 @@
     }
 </script>
 
+<Trim alternativeTrim><b>{$domain.domain}</b></Trim>
 {#if $domain.status === 'created'}
     <Box radius="small">
         <div class="u-flex u-gap-8 u-cross-center">
@@ -50,16 +51,19 @@
             </Button>
         </div>
         <p class="text u-margin-block-start-24">
-            In order to continue, set the following record on your DNS provider. Find a list of
-            domain providers and their DNS settings in our documentation. Changes may take time to
-            be effective.
+            In order to continue, set the following record on your DNS provider. DNS records may
+            take up to 48 hours to propagate. Please retry over the next 48 hours, but if
+            verification still fails, please <a
+                href="https://appwrite.io/support"
+                target="_blank"
+                rel="noopener noreferrer">contact support</a
+            >.
         </p>
         <div class="u-margin-block-start-24">
             <CnameTable />
         </div>
     </Box>
 {:else if $domain.status === 'unverified'}
-    <Trim alternativeTrim><b>{$domain.domain}</b></Trim>
     <Box radius="small">
         <div class="u-flex u-gap-8 u-cross-center">
             <span class="icon-exclamation-circle u-color-text-danger" aria-hidden="true" />
@@ -72,6 +76,15 @@
                 {/if}
             </Button>
         </div>
+        <p class="text u-margin-block-start-24">
+            In order to continue, set the following record on your DNS provider. DNS records may
+            take up to 48 hours to propagate. Please retry over the next 48 hours, but if
+            verification still fails, please <a
+                href="https://appwrite.io/support"
+                target="_blank"
+                rel="noopener noreferrer">contact support</a
+            >.
+        </p>
         {#if $domain?.logs}
             <Code language="sh" withCopy code={$domain.logs} />
         {/if}

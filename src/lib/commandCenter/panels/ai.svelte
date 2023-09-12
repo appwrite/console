@@ -1,22 +1,27 @@
 <script lang="ts">
     import Template from './template.svelte';
 
-    import { AvatarInitials, Code, LoadingDots, SvgIcon } from '$lib/components';
+    import { Alert, AvatarInitials, Code, LoadingDots, SvgIcon } from '$lib/components';
     import { user } from '$lib/stores/user';
     import { useCompletion } from 'ai/svelte';
     import { subPanels } from '../subPanels';
 
     import { isLanguage, type Language } from '$lib/components/code.svelte';
+    import { preferences } from '$lib/stores/preferences';
     import { VARS } from '$lib/system';
 
     const endpoint = VARS.APPWRITE_ENDPOINT ?? `${globalThis?.location?.origin}/v1`;
 
-    const { input, handleSubmit, completion, isLoading, complete } = useCompletion({
+    const { input, handleSubmit, completion, isLoading, complete, error } = useCompletion({
         api: endpoint + '/console/assistant',
         headers: {
-            'content-type': 'application/json'
-        }
+            'content-type': 'application/json',
+            'x-appwrite-project': 'console'
+        },
+        credentials: 'include'
     });
+
+    let question = $input;
 
     const examples = [
         'How to add platform in the console?',
@@ -105,7 +110,9 @@
           })}
     clearOnCallback={false}
     on:keydown={(e) => {
-        e.detail.cancel();
+        if (e.detail.key !== 'Escape') {
+            e.detail.cancel();
+        }
     }}
     --min-height="40rem"
     --max-height="52.5rem">
@@ -118,11 +125,26 @@
         <span>{option.label}</span>
     </div>
 
+    {#if !$preferences.hideAiDisclaimer}
+        <div style="padding: 1rem; padding-block-end: 0;">
+            <Alert
+                type="default"
+                dismissible
+                on:dismiss={() => {
+                    $preferences.hideAiDisclaimer = true;
+                }}>
+                <span slot="title">
+                    We collect user responses to refine our experimental AI feature.
+                </span>
+            </Alert>
+        </div>
+    {/if}
+
     {#if $isLoading || answer}
         <div class="content">
             <div class="u-flex u-gap-8 u-cross-center">
                 <div class="avatar is-size-x-small">{getInitials($user.name)}</div>
-                <p class="u-opacity-75">{$input}</p>
+                <p class="u-opacity-75">{question}</p>
             </div>
             <div class="u-flex u-gap-8 u-margin-block-start-24">
                 <div class="logo">
@@ -140,7 +162,13 @@
                                     <div
                                         class="u-margin-block-start-8"
                                         style="margin-block-end: 1rem;">
-                                        <Code language={part.language} code={part.value} noMargin />
+                                        <Code
+                                            label={part.language}
+                                            language={part.language}
+                                            code={part.value}
+                                            noMargin
+                                            noBoxPadding
+                                            withCopy />
                                     </div>
                                 {/key}
                             {/if}
@@ -151,13 +179,28 @@
         </div>
     {/if}
 
+    {#if $error}
+        <div style="padding: 1rem; padding-block-end: 0;">
+            <Alert type="error">
+                <span slot="title">Something went wrong</span>
+                <p>
+                    An unexpected error occurred while handling your request. Please try again
+                    later.
+                </p>
+            </Alert>
+        </div>
+    {/if}
+
     <div class="footer" slot="footer">
         <div class="u-flex u-cross-center u-gap-4">
             <AvatarInitials size={32} name={$user.name} />
             <form
                 class="input-text-wrapper u-width-full-line"
                 style="--amount-of-buttons: 1;"
-                on:submit|preventDefault={handleSubmit}>
+                on:submit|preventDefault={(e) => {
+                    question = $input;
+                    handleSubmit(e);
+                }}>
                 <!--  svelte-ignore a11y-autofocus -->
                 <input
                     type="text"
@@ -201,6 +244,14 @@
         --logo-bg: #f2f2f8;
     }
 
+    :global(.theme-dark) .footer {
+        --sep-clr: hsl(var(--color-neutral-150));
+    }
+
+    :global(.theme-light) .footer {
+        --sep-clr: hsl(var(--color-neutral-30));
+    }
+
     .content {
         overflow: auto;
         padding: 1rem;
@@ -230,7 +281,7 @@
         .sep {
             width: 1px;
             height: 1.5rem;
-            background-color: hsl(var(--color-neutral-150));
+            background-color: var(--sep-clr);
         }
     }
 
