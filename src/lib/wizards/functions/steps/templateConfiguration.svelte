@@ -15,16 +15,22 @@
     }
 
     async function loadRuntimes() {
-        const allowedRuntimes = (await $runtimesList).runtimes.filter((runtime) =>
-            runtime.$id.includes($templateConfig.language)
-        );
+        const allowedRuntimes = (await $runtimesList).runtimes.filter((runtime) => {
+            if ($templateConfig.language) {
+                return runtime.$id.includes($templateConfig.language);
+            } else {
+                return $template.runtimes.some((templateRuntime) =>
+                    runtime.$id.includes(templateRuntime.name)
+                );
+            }
+        });
         const options = allowedRuntimes
             .map((runtime) => ({
                 label: `${runtime.name} - ${runtime.version}`,
                 value: runtime.$id
             }))
             .reverse();
-        $templateConfig.runtime = options[0].value;
+        $templateConfig.runtime = options[0]?.value;
         return options;
     }
 </script>

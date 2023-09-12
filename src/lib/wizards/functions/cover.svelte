@@ -7,16 +7,12 @@
             variables[variable.name] = variable.value ?? '';
         });
 
-        if (!language) {
-            language = template.runtimes[0].name;
-        }
-
         templateStore.set(template);
         templateConfig.set({
             $id: null,
+            name: template.name,
             language,
             runtime: null,
-            name: template.name,
             variables,
             repositoryBehaviour: 'new',
             repositoryName: template.id,
