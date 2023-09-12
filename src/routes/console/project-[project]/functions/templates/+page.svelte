@@ -13,7 +13,6 @@
     } from '$lib/components';
     import { Button, InputSearch } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
-    import { app } from '$lib/stores/app';
     import { connectTemplate } from '$lib/wizards/functions/cover.svelte';
 
     export let data;
@@ -37,23 +36,6 @@
         target.searchParams.delete('page');
         target.searchParams.delete('search');
         goto(target.toString());
-    }
-
-    function getIconFromRuntime(runtime: string) {
-        switch (true) {
-            case runtime.includes('node'):
-                return 'node';
-            case runtime.includes('php'):
-                return 'php';
-            case runtime.includes('ruby'):
-                return 'ruby';
-            case runtime.includes('python'):
-                return 'python';
-            case runtime.includes('dart'):
-                return 'dart';
-            default:
-                return undefined;
-        }
     }
 
     function applySearch(event: CustomEvent<string>) {
@@ -108,7 +90,6 @@
                         <svelte:fragment slot="title">Runtime</svelte:fragment>
                         <ul class="form-list u-row-gap-16">
                             {#each [...data.runtimes] as runtime}
-                                {@const icon = getIconFromRuntime(runtime)}
                                 <li class="form-item">
                                     <label class="u-flex u-cross-center u-gap-16">
                                         <input
@@ -120,10 +101,10 @@
                                             on:change={(e) => applyFilter('runtime', runtime, e)} />
                                         <div class="u-flex u-cross-center u-gap-8">
                                             <div class="avatar is-size-x-small">
-                                                <SvgIcon name={icon} iconSize="small" />
+                                                <SvgIcon name={runtime} iconSize="small" />
                                             </div>
                                             <div class="u-trim-1 u-capitalize">
-                                                {runtime?.split('-')?.join(' ')}
+                                                {runtime}
                                             </div>
                                         </div>
                                     </label>
@@ -140,19 +121,20 @@
                     Have an idea for a function template? View our <a
                         class="link"
                         href="https://github.com/appwrite/templates/blob/main/CONTRIBUTING.md"
-                        target="_blank">contribution guidelines</a
+                        target="_blank"
+                        rel="noopener noreferrer">contribution guidelines</a
                     >.
                 </p>
             </section>
         </section>
         <section>
-            {#if data.templates.length > 0}
+            {#if data?.templates?.length}
                 <ul
                     class="grid-box"
                     style="--grid-item-size:22rem; --grid-item-size-small-screens:19rem">
                     {#each data.templates as template}
                         {@const displayed = template.runtimes.slice(0, 2)}
-                        {@const hidden = template.runtimes.slice(1, -1)}
+                        {@const hidden = template.runtimes.slice(2)}
                         <li>
                             <article class="card u-min-height-100-percent">
                                 <div class="u-flex u-gap-16 u-cross-center u-main-space-between">
@@ -161,16 +143,12 @@
                                     </h2>
                                     <ul class="avatars-group is-with-border">
                                         {#each displayed as runtime}
-                                            {@const icon = getIconFromRuntime(runtime.name)}
-                                            {#if icon}
+                                            {#if runtime.name}
                                                 <li class="avatars-group-item">
                                                     <div class="avatar is-size-small">
-                                                        <img
-                                                            style:--p-text-size="20px"
-                                                            src={`${base}/icons/${$app.themeInUse}/color/${icon}.svg`}
-                                                            alt={icon}
-                                                            aria-hidden="true"
-                                                            aria-label={icon} />
+                                                        <SvgIcon
+                                                            name={runtime.name}
+                                                            iconSize="medium" />
                                                     </div>
                                                 </li>
                                             {/if}

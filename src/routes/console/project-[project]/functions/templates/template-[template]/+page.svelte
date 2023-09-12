@@ -52,7 +52,7 @@
                     <span class="u-flex u-cross-center u-gap-8">
                         <div class="avatar is-size-small">
                             <span
-                                style:--p-text-size="20px"
+                                style:--p-text-size="var(--icon-size-medium)"
                                 class={$template.icon}
                                 aria-hidden="true" />
                         </div>
