@@ -33,6 +33,15 @@
     <svelte:fragment slot="title">{$template.name}</svelte:fragment>
     <svelte:fragment slot="subtitle">
         {$template.tagline}
+        <br />
+        <br />
+        Supported runtimes:
+        <br />
+        <div class="u-inline-flex u-flex-wrap u-margin-block-start-8 u-gap-8">
+            {#each $template.runtimes as runtime}
+                <Pill>{runtime.name}</Pill>
+            {/each}
+        </div>
     </svelte:fragment>
     <FormList>
         <InputText
