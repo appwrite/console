@@ -44,15 +44,7 @@ export const marketplace: MarketplaceTemplate[] = [
         timeout: 15,
         usecases: ['Starter'],
         runtimes: [
-            ...getRuntimes(TemplateRuntimes.NODE, 'npm install', 'src/main.js', 'node/starter', [
-                '20.0'
-            ]),
-            {
-                name: `node-20.0`,
-                commands: 'npm install --version=20',
-                entrypoint: 'src/mainv20.js',
-                providerRootDirectory: 'node20/starter'
-            },
+            ...getRuntimes(TemplateRuntimes.NODE, 'npm install', 'src/main.js', 'node/starter'),
             ...getRuntimes(
                 TemplateRuntimes.PHP,
                 'composer install',
