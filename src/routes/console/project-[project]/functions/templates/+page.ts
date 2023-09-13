@@ -15,34 +15,47 @@ export const load: PageLoad = async ({ url, route }) => {
     };
     const [runtimes, useCases] = marketplace.reduce(
         ([rt, uc], next) => {
-            next.runtimes.forEach((runtime) => rt.add(runtime.name));
+            next.runtimes.forEach((runtime) => {
+                const runtimeBase = runtime.name.split('-')[0];
+                if (!rt.has(runtimeBase)) rt.add(runtimeBase);
+            });
             next.usecases.forEach((useCase) => uc.add(useCase));
             return [rt, uc];
         },
         [new Set<string>(), new Set<string>()]
     );
 
-    const templates = marketplace.filter((template) => {
-        if (
-            filter.runtimes.length > 0 &&
-            !template.runtimes.some((n) => filter.runtimes.includes(n.name))
-        ) {
-            return false;
-        }
+    const templates = marketplace
+        .filter((template) => {
+            if (
+                filter.runtimes.length > 0 &&
+                !template.runtimes.some((n) => filter.runtimes.includes(n.name))
+            ) {
+                return false;
+            }
 
-        if (
-            filter.useCases.length > 0 &&
-            !template.usecases.some((n) => filter.useCases.includes(n))
-        ) {
-            return false;
-        }
+            if (
+                filter.useCases.length > 0 &&
+                !template.usecases.some((n) => filter.useCases.includes(n))
+            ) {
+                return false;
+            }
 
-        if (search) {
-            return template.name.toLowerCase().includes(search.toLowerCase());
-        } else {
-            return true;
-        }
-    });
+            if (search) {
+                return template.name.toLowerCase().includes(search.toLowerCase());
+            } else {
+                return true;
+            }
+        })
+        .map((template) => ({
+            ...template,
+            runtimes: template.runtimes
+                .map((runtime) => ({ ...runtime, name: runtime.name.split('-')[0] }))
+                .filter(
+                    (runtime, index, self) =>
+                        self.findIndex((n) => n.name === runtime.name) === index
+                )
+        }));
 
     return {
         offset,

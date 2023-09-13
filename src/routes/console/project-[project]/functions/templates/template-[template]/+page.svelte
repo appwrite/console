@@ -7,7 +7,7 @@
     import { isSelfHosted } from '$lib/system';
     import { connectTemplate } from '$lib/wizards/functions/cover.svelte';
     import { consoleVariables, isVcsEnabled } from '$routes/console/store';
-    import { template } from './store';
+    import { template, baseRuntimes } from './store';
 </script>
 
 <Container>
@@ -26,10 +26,10 @@
                 </li>
                 <li class="collapsible-item">
                     <h3 class="body-text-2 u-bold u-padding-block-12">
-                        Runtimes <span class="inline-tag">{$template.runtimes.length}</span>
+                        Runtimes <span class="inline-tag">{$baseRuntimes.length}</span>
                     </h3>
                     <div class="collapsible-content u-flex u-flex-wrap u-gap-8">
-                        {#each $template.runtimes as runtime}
+                        {#each $baseRuntimes as runtime}
                             <Pill>{runtime.name}</Pill>
                         {/each}
                     </div>

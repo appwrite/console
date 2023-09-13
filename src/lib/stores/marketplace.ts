@@ -88,30 +88,30 @@ export const marketplace: MarketplaceTemplate[] = [
         timeout: 15,
         usecases: ['AI'],
         runtimes: [
-            {
-                name: 'node-18.0',
-                commands: 'npm install',
-                entrypoint: 'src/main.js',
-                providerRootDirectory: 'node/prompt-chatgpt'
-            },
-            {
-                name: 'python-3.9',
-                commands: 'pip install -r requirements.txt',
-                entrypoint: 'src/main.py',
-                providerRootDirectory: 'python/prompt_chatgpt'
-            },
-            {
-                name: 'php-8.0',
-                commands: 'composer install',
-                entrypoint: 'src/index.php',
-                providerRootDirectory: 'php/prompt-chatgpt'
-            },
-            {
-                name: 'dart-2.17',
-                commands: 'dart pub get',
-                entrypoint: 'lib/main.dart',
-                providerRootDirectory: 'dart/prompt_chatgpt'
-            }
+            ...getRuntimes(
+                TemplateRuntimes.NODE,
+                'npm install',
+                'src/main.js',
+                'node/prompt-chatgpt'
+            ),
+            ...getRuntimes(
+                TemplateRuntimes.PYTHON,
+                'pip install -r requirements.txt',
+                'src/main.py',
+                'python/prompt_chatgpt'
+            ),
+            ...getRuntimes(
+                TemplateRuntimes.PHP,
+                'composer install',
+                'src/index.php',
+                'php/prompt-chatgpt'
+            ),
+            ...getRuntimes(
+                TemplateRuntimes.DART,
+                'dart pub get',
+                'lib/main.dart',
+                'dart/prompt_chatgpt'
+            )
         ],
         instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/prompt-chatgpt">file</a>.`,
         vcsProvider: 'github',
@@ -148,18 +148,18 @@ export const marketplace: MarketplaceTemplate[] = [
         timeout: 15,
         usecases: ['Messaging'],
         runtimes: [
-            {
-                name: 'node-18.0',
-                commands: 'npm install && npm run setup',
-                entrypoint: 'src/main.js',
-                providerRootDirectory: 'node/discord-command-bot'
-            },
-            {
-                name: 'python-3.9',
-                commands: 'pip install -r requirements.txt && python src/setup.py',
-                entrypoint: 'src/main.py',
-                providerRootDirectory: 'python/discord_command_bot'
-            }
+            ...getRuntimes(
+                TemplateRuntimes.NODE,
+                'npm install && npm run setup',
+                'src/main.js',
+                'node/discord-command-bot'
+            ),
+            ...getRuntimes(
+                TemplateRuntimes.PYTHON,
+                'pip install -r requirements.txt && python src/setup.py',
+                'src/main.py',
+                'python/discord_command_bot'
+            )
         ],
         instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/discord-command-bot">file</a>.`,
         vcsProvider: 'github',
@@ -204,12 +204,12 @@ export const marketplace: MarketplaceTemplate[] = [
         timeout: 15,
         usecases: ['AI'],
         runtimes: [
-            {
-                name: 'node-18.0',
-                commands: 'npm install',
-                entrypoint: 'src/main.js',
-                providerRootDirectory: 'node/analyze-with-perspectiveapi'
-            }
+            ...getRuntimes(
+                TemplateRuntimes.NODE,
+                'npm install',
+                'src/main.js',
+                'node/analyze-with-perspectiveapi'
+            )
         ],
         instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/analyze-with-perspectiveapi">file</a>.`,
         vcsProvider: 'github',
@@ -239,24 +239,24 @@ export const marketplace: MarketplaceTemplate[] = [
         timeout: 15,
         usecases: ['AI'],
         runtimes: [
-            {
-                name: 'node-18.0',
-                commands: 'npm install',
-                entrypoint: 'src/main.js',
-                providerRootDirectory: 'node/censor-with-redact'
-            },
-            {
-                name: 'python-3.9',
-                commands: 'pip install -r requirements.txt',
-                entrypoint: 'src/main.py',
-                providerRootDirectory: 'python/censor_with_redact'
-            },
-            {
-                name: 'dart-2.17',
-                commands: 'dart pub get',
-                entrypoint: 'lib/main.dart',
-                providerRootDirectory: 'dart/censor_with_redact'
-            }
+            ...getRuntimes(
+                TemplateRuntimes.NODE,
+                'npm install',
+                'src/main.js',
+                'node/censor-with-redact'
+            ),
+            ...getRuntimes(
+                TemplateRuntimes.PYTHON,
+                'pip install -r requirements.txt',
+                'src/main.py',
+                'python/censor_with_redact'
+            ),
+            ...getRuntimes(
+                TemplateRuntimes.DART,
+                'dart pub get',
+                'lib/main.dart',
+                'dart/censor_with_redact'
+            )
         ],
         instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/censor-with-redact">file</a>.`,
         vcsProvider: 'github',
@@ -285,12 +285,7 @@ export const marketplace: MarketplaceTemplate[] = [
         timeout: 15,
         usecases: ['Utilities'],
         runtimes: [
-            {
-                name: 'node-18.0',
-                commands: 'npm install',
-                entrypoint: 'src/main.js',
-                providerRootDirectory: 'node/generate-pdf'
-            }
+            ...getRuntimes(TemplateRuntimes.NODE, 'npm install', 'src/main.js', 'node/generate-pdf')
         ],
         instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/generate-pdf">file</a>.`,
         vcsProvider: 'github',
@@ -311,12 +306,12 @@ export const marketplace: MarketplaceTemplate[] = [
         timeout: 15,
         usecases: ['Dev Tools'],
         runtimes: [
-            {
-                name: 'node-18.0',
-                commands: 'npm install',
-                entrypoint: 'src/main.js',
-                providerRootDirectory: 'node/github-issue-bot'
-            }
+            ...getRuntimes(
+                TemplateRuntimes.NODE,
+                'npm install',
+                'src/main.js',
+                'node/github-issue-bot'
+            )
         ],
         instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/github-issue-bot">file</a>.`,
         vcsProvider: 'github',
@@ -353,12 +348,12 @@ export const marketplace: MarketplaceTemplate[] = [
         timeout: 15,
         usecases: ['Utilities'],
         runtimes: [
-            {
-                name: 'node-18.0',
-                commands: 'npm install',
-                entrypoint: 'src/main.js',
-                providerRootDirectory: 'node/url-shortener'
-            }
+            ...getRuntimes(
+                TemplateRuntimes.NODE,
+                'npm install',
+                'src/main.js',
+                'node/url-shortener'
+            )
         ],
         instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/url-shortener">file</a>.`,
         vcsProvider: 'github',
@@ -419,24 +414,24 @@ export const marketplace: MarketplaceTemplate[] = [
         timeout: 15,
         usecases: ['Databases'],
         runtimes: [
-            {
-                name: 'node-18.0',
-                commands: 'npm install',
-                entrypoint: 'src/main.js',
-                providerRootDirectory: 'node/sync-with-algolia'
-            },
-            {
-                name: 'python-3.9',
-                commands: 'pip install -r requirements.txt',
-                entrypoint: 'src/main.py',
-                providerRootDirectory: 'python/sync_with_algolia'
-            },
-            {
-                name: 'php-8.0',
-                commands: 'composer install',
-                entrypoint: 'src/index.php',
-                providerRootDirectory: 'php/sync-with-algolia'
-            }
+            ...getRuntimes(
+                TemplateRuntimes.NODE,
+                'npm install',
+                'src/main.js',
+                'node/sync-with-algolia'
+            ),
+            ...getRuntimes(
+                TemplateRuntimes.PYTHON,
+                'pip install -r requirements.txt',
+                'src/main.py',
+                'python/sync_with_algolia'
+            ),
+            ...getRuntimes(
+                TemplateRuntimes.PHP,
+                'composer install',
+                'src/index.php',
+                'php/sync-with-algolia'
+            )
         ],
         instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/sync-with-algolia">file</a>.`,
         vcsProvider: 'github',
@@ -508,12 +503,12 @@ export const marketplace: MarketplaceTemplate[] = [
         timeout: 15,
         usecases: ['Databases'],
         runtimes: [
-            {
-                name: 'node-18.0',
-                commands: 'npm install',
-                entrypoint: 'src/main.js',
-                providerRootDirectory: 'node/sync-with-meilisearch'
-            }
+            ...getRuntimes(
+                TemplateRuntimes.NODE,
+                'npm install',
+                'src/main.js',
+                'node/sync-with-meilisearch'
+            )
         ],
         instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/sync-with-meilisearch">file</a>.`,
         vcsProvider: 'github',
@@ -592,12 +587,12 @@ export const marketplace: MarketplaceTemplate[] = [
         timeout: 15,
         usecases: ['Messaging'],
         runtimes: [
-            {
-                name: 'node-18.0',
-                commands: 'npm install',
-                entrypoint: 'src/main.js',
-                providerRootDirectory: 'node/whatsapp-with-vonage'
-            }
+            ...getRuntimes(
+                TemplateRuntimes.NODE,
+                'npm install',
+                'src/main.js',
+                'node/whatsapp-with-vonage'
+            )
         ],
         instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/whatsapp-with-vonage">file</a>.`,
         vcsProvider: 'github',
@@ -647,12 +642,12 @@ export const marketplace: MarketplaceTemplate[] = [
         timeout: 15,
         usecases: ['Messaging'],
         runtimes: [
-            {
-                name: 'node-18.0',
-                commands: 'npm install',
-                entrypoint: 'src/main.js',
-                providerRootDirectory: 'node/push-notification-with-fcm'
-            }
+            ...getRuntimes(
+                TemplateRuntimes.NODE,
+                'npm install',
+                'src/main.js',
+                'node/push-notification-with-fcm'
+            )
         ],
         instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/push-notification-with-fcm">file</a>.`,
         vcsProvider: 'github',
@@ -702,24 +697,24 @@ export const marketplace: MarketplaceTemplate[] = [
         timeout: 15,
         usecases: ['Utilities'],
         runtimes: [
-            {
-                name: 'node-18.0',
-                commands: 'npm install',
-                entrypoint: 'src/main.js',
-                providerRootDirectory: 'node/email-contact-form'
-            },
-            {
-                name: 'python-3.9',
-                commands: 'pip install -r requirements.txt',
-                entrypoint: 'src/main.py',
-                providerRootDirectory: 'python/email_contact_form'
-            },
-            {
-                name: 'php-8.0',
-                commands: 'composer install',
-                entrypoint: 'src/index.php',
-                providerRootDirectory: 'php/email-contact-form'
-            }
+            ...getRuntimes(
+                TemplateRuntimes.NODE,
+                'npm install',
+                'src/main.js',
+                'node/email-contact-form'
+            ),
+            ...getRuntimes(
+                TemplateRuntimes.PYTHON,
+                'pip install -r requirements.txt',
+                'src/main.py',
+                'python/email_contact_form'
+            ),
+            ...getRuntimes(
+                TemplateRuntimes.PHP,
+                'composer install',
+                'src/index.php',
+                'php/email-contact-form'
+            )
         ],
         instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/email-contact-form">file</a>.`,
         vcsProvider: 'github',
@@ -784,12 +779,12 @@ export const marketplace: MarketplaceTemplate[] = [
         timeout: 15,
         usecases: ['Utilities'],
         runtimes: [
-            {
-                name: 'node-18.0',
-                commands: 'npm install',
-                entrypoint: 'src/main.js',
-                providerRootDirectory: 'node/subscriptions-with-stripe'
-            }
+            ...getRuntimes(
+                TemplateRuntimes.NODE,
+                'npm install',
+                'src/main.js',
+                'node/subscriptions-with-stripe'
+            )
         ],
         instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/subscriptions-with-stripe">file</a>.`,
         vcsProvider: 'github',
@@ -840,12 +835,12 @@ export const marketplace: MarketplaceTemplate[] = [
         timeout: 15,
         usecases: ['Utilities'],
         runtimes: [
-            {
-                name: 'node-18.0',
-                commands: 'npm install && npm run setup',
-                entrypoint: 'src/main.js',
-                providerRootDirectory: 'node/payments-with-stripe'
-            }
+            ...getRuntimes(
+                TemplateRuntimes.NODE,
+                'npm install',
+                'src/main.js',
+                'node/payments-with-stripe'
+            )
         ],
         instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/payments-with-stripe">file</a>.`,
         vcsProvider: 'github',
