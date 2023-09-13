@@ -35,10 +35,7 @@
     import { marketplace, type MarketplaceTemplate } from '$lib/stores/marketplace';
     import { Button } from '$lib/elements/forms';
     import { page } from '$app/stores';
-    import {
-        baseRuntimesList,
-        runtimesList
-    } from '$routes/console/project-[project]/functions/store';
+    import { baseRuntimesList } from '$routes/console/project-[project]/functions/store';
     import { trackEvent } from '$lib/actions/analytics';
     import type { Models } from '@appwrite.io/console';
     import WizardCover from '$lib/layout/wizardCover.svelte';
