@@ -26,10 +26,10 @@
                 </li>
                 <li class="collapsible-item">
                     <h3 class="body-text-2 u-bold u-padding-block-12">
-                        Runtimes <span class="inline-tag">{$baseRuntimes.length}</span>
+                        Runtimes <span class="inline-tag">{$template.runtimes.length}</span>
                     </h3>
                     <div class="collapsible-content u-flex u-flex-wrap u-gap-8">
-                        {#each $baseRuntimes as runtime}
+                        {#each $template.runtimes as runtime}
                             <Pill>{runtime.name}</Pill>
                         {/each}
                     </div>

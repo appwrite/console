@@ -15,10 +15,7 @@ export const load: PageLoad = async ({ url, route }) => {
     };
     const [runtimes, useCases] = marketplace.reduce(
         ([rt, uc], next) => {
-            next.runtimes.forEach((runtime) => {
-                const runtimeBase = runtime.name.split('-')[0];
-                if (!rt.has(runtimeBase)) rt.add(runtimeBase);
-            });
+            next.runtimes.forEach((runtime) => rt.add(runtime.name.split('-')[0]));
             next.usecases.forEach((useCase) => uc.add(useCase));
             return [rt, uc];
         },
@@ -29,14 +26,16 @@ export const load: PageLoad = async ({ url, route }) => {
         .filter((template) => {
             if (
                 filter.runtimes.length > 0 &&
-                !template.runtimes.some((n) => filter.runtimes.includes(n.name))
+                !template.runtimes.some((runtime) =>
+                    filter.runtimes.includes(runtime.name.split('-')[0])
+                )
             ) {
                 return false;
             }
 
             if (
                 filter.useCases.length > 0 &&
-                !template.usecases.some((n) => filter.useCases.includes(n))
+                !template.usecases.some((useCase) => filter.useCases.includes(useCase))
             ) {
                 return false;
             }
