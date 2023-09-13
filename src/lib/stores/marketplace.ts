@@ -16,16 +16,19 @@ const getRuntimes = (
     runtime: TemplateRuntime,
     commands: string,
     entrypoint: string,
-    providerRootDirectory: string
+    providerRootDirectory: string,
+    versionsDenyList: string[] = []
 ) => {
-    return runtime.versions.map((version) => {
-        return {
-            name: `${runtime.name}-${version}`,
-            commands,
-            entrypoint,
-            providerRootDirectory
-        };
-    });
+    return runtime.versions
+        .filter((version) => !versionsDenyList.includes(version))
+        .map((version) => {
+            return {
+                name: `${runtime.name}-${version}`,
+                commands,
+                entrypoint,
+                providerRootDirectory
+            };
+        });
 };
 
 export const marketplace: MarketplaceTemplate[] = [
@@ -41,7 +44,15 @@ export const marketplace: MarketplaceTemplate[] = [
         timeout: 15,
         usecases: ['Starter'],
         runtimes: [
-            ...getRuntimes(TemplateRuntimes.NODE, 'npm install', 'src/main.js', 'node/starter'),
+            ...getRuntimes(TemplateRuntimes.NODE, 'npm install', 'src/main.js', 'node/starter', [
+                '20.0'
+            ]),
+            {
+                name: `node-20.0`,
+                commands: 'npm install --version=20',
+                entrypoint: 'src/mainv20.js',
+                providerRootDirectory: 'node20/starter'
+            },
             ...getRuntimes(
                 TemplateRuntimes.PHP,
                 'composer install',
