@@ -20,7 +20,7 @@
     async function create() {
         try {
             const runtimeDetail = $template.runtimes.find((r) =>
-                r.name.includes($templateConfig.runtime)
+                $templateConfig.runtime.includes(r.name)
             );
             if ($templateConfig.appwriteApiKey) {
                 $templateConfig.variables['APPWRITE_API_KEY'] = $templateConfig.appwriteApiKey;

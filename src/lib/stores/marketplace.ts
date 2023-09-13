@@ -40,6 +40,12 @@ export const marketplace: MarketplaceTemplate[] = [
                 commands: 'dart pub get',
                 entrypoint: 'lib/main.dart',
                 providerRootDirectory: 'dart/starter'
+            },
+            {
+                name: 'bun',
+                commands: 'bun install',
+                entrypoint: 'src/main.ts',
+                providerRootDirectory: 'bun/starter'
             }
         ],
         instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/starter">file</a>.`,
