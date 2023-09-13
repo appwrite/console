@@ -38,7 +38,7 @@
         Supported runtimes:
         <br />
         <div class="u-inline-flex u-flex-wrap u-margin-block-start-8 u-gap-8">
-            {#each $template.runtimes as runtime}
+            {#each $template.runtimes.sort((r1, r2) => r1.name.localeCompare(r2.name)) as runtime}
                 <Pill>{runtime.name}</Pill>
             {/each}
         </div>
