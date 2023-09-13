@@ -7,7 +7,7 @@
     import { isSelfHosted } from '$lib/system';
     import { connectTemplate } from '$lib/wizards/functions/cover.svelte';
     import { consoleVariables, isVcsEnabled } from '$routes/console/store';
-    import { template, baseRuntimes } from './store';
+    import { template } from './store';
 </script>
 
 <Container>
