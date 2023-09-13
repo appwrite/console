@@ -1,4 +1,9 @@
-const Runtimes = {
+type TemplateRuntime = {
+    name: string;
+    versions: string[];
+};
+
+const TemplateRuntimes = {
     NODE: { name: 'node', versions: ['20.0', '19.0', '18.0', '16.0', '14.5'] },
     PHP: { name: 'php', versions: ['8.2', '8.1', '8.0'] },
     RUBY: { name: 'ruby', versions: ['3.2', '3.1', '3.0'] },
@@ -8,7 +13,7 @@ const Runtimes = {
 };
 
 const getRuntimes = (
-    runtime: any,
+    runtime: TemplateRuntime,
     commands: string,
     entrypoint: string,
     providerRootDirectory: string
@@ -36,17 +41,22 @@ export const marketplace: MarketplaceTemplate[] = [
         timeout: 15,
         usecases: ['Starter'],
         runtimes: [
-            ...getRuntimes(Runtimes.NODE, 'npm install', 'src/main.js', 'node/starter'),
-            ...getRuntimes(Runtimes.PHP, 'composer install', 'src/index.php', 'php/starter'),
-            ...getRuntimes(Runtimes.RUBY, 'bundle install', 'lib/main.rb', 'ruby/starter'),
+            ...getRuntimes(TemplateRuntimes.NODE, 'npm install', 'src/main.js', 'node/starter'),
             ...getRuntimes(
-                Runtimes.PYTHON,
+                TemplateRuntimes.PHP,
+                'composer install',
+                'src/index.php',
+                'php/starter'
+            ),
+            ...getRuntimes(TemplateRuntimes.RUBY, 'bundle install', 'lib/main.rb', 'ruby/starter'),
+            ...getRuntimes(
+                TemplateRuntimes.PYTHON,
                 'pip install -r requirements.txt',
                 'src/main.py',
                 'python/starter'
             ),
-            ...getRuntimes(Runtimes.DART, 'dart pub get', 'lib/main.dart', 'dart/starter'),
-            ...getRuntimes(Runtimes.BUN, 'bun install', 'src/main.ts', 'bun/starter')
+            ...getRuntimes(TemplateRuntimes.DART, 'dart pub get', 'lib/main.dart', 'dart/starter'),
+            ...getRuntimes(TemplateRuntimes.BUN, 'bun install', 'src/main.ts', 'bun/starter')
         ],
         instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/starter">file</a>.`,
         vcsProvider: 'github',
