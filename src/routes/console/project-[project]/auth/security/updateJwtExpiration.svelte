@@ -11,7 +11,7 @@
 
     const projectId = $project.$id;
     console.log('Project: ', $project);
-    const { value, unit, baseValue, units } = createTimeUnitPair($project.jwtExpiration || 5);
+    const { value, unit, baseValue, units } = createTimeUnitPair($project.jwtExpiration);
     const options = units.map((v) => ({ label: v.name, value: v.name }));
 
     async function updateJwtExpiration() {
@@ -37,7 +37,10 @@
 <CardGrid>
     <Heading tag="h2" size="7" id="session-length">JWT expiration</Heading>
 
-    <p>If you reduce the limit, all the existing JWTs will get invalidated.</p>
+    <p>
+        The time limit after which a JWT becomes invalid and can no longer be used for
+        authentication or authorization purposes.
+    </p>
     <svelte:fragment slot="aside">
         <form class="form u-grid u-gap-16">
             <ul class="form-list is-multiple">
