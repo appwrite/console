@@ -18,7 +18,19 @@
     let element: HTMLInputElement;
     let error: string;
 
-    const pattern = String.raw`^[^]+\s+[^]+\s+[^]+\s+[^]+\s+[^]+`;
+    /*
+        Below is a regex pattern which allows us to validate the cron string.
+        The pattern is not perfect, but it is a good start.
+        Allowed values:
+        - minute: 0-59
+        - hour: 0-23
+        - day of month: 1-31
+        - month: 1-12
+        - day of week: 0-6
+        - wildcard *
+        - step values
+    */
+    const pattern = "^(\\*|([0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])|\\*\\/([0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])) (\\*|([0-9]|1[0-9]|2[0-3])|\\*\\/([0-9]|1[0-9]|2[0-3])) (\\*|([1-9]|1[0-9]|2[0-9]|3[0-1])|\\*\\/([1-9]|1[0-9]|2[0-9]|3[0-1])) (\\*|([1-9]|1[0-2])|\\*\\/([1-9]|1[0-2])) (\\*|([0-6])|\\*\\/([0-6]))$";
 
     onMount(() => {
         if (element && autofocus) {
