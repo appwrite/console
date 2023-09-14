@@ -14,6 +14,7 @@
     import { Button, InputSearch } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { app } from '$lib/stores/app';
+    import type { Runtime } from '$lib/stores/marketplace.js';
     import { connectTemplate } from '$lib/wizards/functions/cover.svelte';
 
     export let data;
@@ -37,6 +38,22 @@
         target.searchParams.delete('page');
         target.searchParams.delete('search');
         goto(target.toString());
+    }
+
+    function getBaseRuntimes(runtimes: Runtime[]): Runtime[] {
+        const baseRuntimes = new Map<string, Runtime>();
+
+        for (const runtime of runtimes) {
+            const [baseRuntime] = runtime.name.split('-');
+            if (!baseRuntimes.has(baseRuntime)) {
+                baseRuntimes.set(baseRuntime, {
+                    ...runtime,
+                    name: baseRuntime
+                });
+            }
+        }
+
+        return [...baseRuntimes.values()];
     }
 
     function getIconFromRuntime(runtime: string) {
@@ -153,8 +170,9 @@
                     class="grid-box"
                     style="--grid-item-size:22rem; --grid-item-size-small-screens:19rem">
                     {#each data.templates as template}
-                        {@const displayed = template.runtimes.slice(0, 2)}
-                        {@const hidden = template.runtimes.slice(1, -1)}
+                        {@const baseRuntimes = getBaseRuntimes(template.runtimes)}
+                        {@const displayed = baseRuntimes.slice(0, 2)}
+                        {@const hidden = baseRuntimes.slice(1, -1)}
                         <li>
                             <article class="card u-min-height-100-percent">
                                 <div class="u-flex u-gap-16 u-cross-center u-main-space-between">

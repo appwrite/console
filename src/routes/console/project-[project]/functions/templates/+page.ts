@@ -22,39 +22,29 @@ export const load: PageLoad = async ({ url, route }) => {
         [new Set<string>(), new Set<string>()]
     );
 
-    const templates = marketplace
-        .filter((template) => {
-            if (
-                filter.runtimes.length > 0 &&
-                !template.runtimes.some((runtime) =>
-                    filter.runtimes.includes(runtime.name.split('-')[0])
-                )
-            ) {
-                return false;
-            }
+    const templates = marketplace.filter((template) => {
+        if (
+            filter.runtimes.length > 0 &&
+            !template.runtimes.some((runtime) =>
+                filter.runtimes.includes(runtime.name.split('-')[0])
+            )
+        ) {
+            return false;
+        }
 
-            if (
-                filter.useCases.length > 0 &&
-                !template.usecases.some((useCase) => filter.useCases.includes(useCase))
-            ) {
-                return false;
-            }
+        if (
+            filter.useCases.length > 0 &&
+            !template.usecases.some((useCase) => filter.useCases.includes(useCase))
+        ) {
+            return false;
+        }
 
-            if (search) {
-                return template.name.toLowerCase().includes(search.toLowerCase());
-            } else {
-                return true;
-            }
-        })
-        .map((template) => ({
-            ...template,
-            runtimes: template.runtimes
-                .map((runtime) => ({ ...runtime, name: runtime.name.split('-')[0] }))
-                .filter(
-                    (runtime, index, self) =>
-                        self.findIndex((n) => n.name === runtime.name) === index
-                )
-        }));
+        if (search) {
+            return template.name.toLowerCase().includes(search.toLowerCase());
+        } else {
+            return true;
+        }
+    });
 
     return {
         offset,
