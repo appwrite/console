@@ -9,9 +9,9 @@ export const runtimesList = derived(
 
 export const baseRuntimesList = derived(runtimesList, async ($runtimesList) => {
     const baseRuntimes = new Map<string, Models.Runtime>();
-    (await $runtimesList).runtimes.forEach((runtime) => {
+    for (const runtime of (await $runtimesList).runtimes) {
         const runtimeBase = runtime.name.split('-')[0];
         baseRuntimes.set(runtimeBase, runtime);
-    });
+    }
     return { runtimes: [...baseRuntimes.values()] };
 });
