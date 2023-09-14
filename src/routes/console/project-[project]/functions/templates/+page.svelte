@@ -42,17 +42,13 @@
 
     function getBaseRuntimes(runtimes: Runtime[]): Runtime[] {
         const baseRuntimes = new Map<string, Runtime>();
-
         for (const runtime of runtimes) {
             const [baseRuntime] = runtime.name.split('-');
-            if (!baseRuntimes.has(baseRuntime)) {
-                baseRuntimes.set(baseRuntime, {
-                    ...runtime,
-                    name: baseRuntime
-                });
-            }
+            baseRuntimes.set(baseRuntime, {
+                ...runtime,
+                name: baseRuntime
+            });
         }
-
         return [...baseRuntimes.values()];
     }
 

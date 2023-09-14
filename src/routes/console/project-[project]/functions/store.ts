@@ -7,11 +7,11 @@ export const runtimesList = derived(
     async ($page) => (await $page.data.runtimesList) as Models.RuntimeList
 );
 
-export const baseRuntimesList = derived(runtimesList, async ($runtimesList) => ({
-    runtimes: (await $runtimesList).runtimes
-        .map((runtime) => {
-            const runtimeBase = runtime.name.split('-')[0];
-            return { ...runtime, name: runtimeBase };
-        })
-        .filter((runtime, index, self) => self.findIndex((n) => n.name === runtime.name) === index)
-}));
+export const baseRuntimesList = derived(runtimesList, async ($runtimesList) => {
+    const baseRuntimes = new Map<string, Models.Runtime>();
+    (await $runtimesList).runtimes.forEach((runtime) => {
+        const runtimeBase = runtime.name.split('-')[0];
+        baseRuntimes.set(runtimeBase, runtime);
+    });
+    return { runtimes: [...baseRuntimes.values()] };
+});
