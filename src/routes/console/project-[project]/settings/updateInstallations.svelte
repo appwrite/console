@@ -29,7 +29,7 @@
     import GitDisconnectModal from './GitDisconnectModal.svelte';
     import dayjs from 'dayjs';
     import { isSelfHosted } from '$lib/system';
-    import { consoleVariables, isVcsEnabled } from '$routes/console/store';
+    import { consoleVariables } from '$routes/console/store';
 
     export let total: number;
     export let limit: number;
@@ -40,6 +40,7 @@
     let showGitDisconnect = false;
     let showInstallationDropdown: boolean[] = [];
     let selectedInstallation: Models.Installation;
+    const isVcsEnabled = $consoleVariables?._APP_VCS_ENABLED === true;
 
     function getInstallationLink(installation: Models.Installation) {
         switch (installation.provider) {
@@ -180,7 +181,7 @@
                     bind:offset />
             </div>
         {:else}
-            {#if isSelfHosted && !isVcsEnabled($consoleVariables)}
+            {#if isSelfHosted && !isVcsEnabled}
                 <Alert type="info">
                     <svelte:fragment slot="title">
                         Installing Git to a self-hosted instance
@@ -203,7 +204,7 @@
                         <div class="avatar"><SvgIcon name="appwrite" type="color" size={80} /></div>
                     </div>
                     <Button
-                        disabled={isSelfHosted && !isVcsEnabled($consoleVariables)}
+                        disabled={isSelfHosted && !isVcsEnabled}
                         on:click={() => (showGitIstall = true)}
                         secondary>
                         <span class="text">Add Installation</span>
