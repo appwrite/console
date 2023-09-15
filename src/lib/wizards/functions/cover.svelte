@@ -35,7 +35,7 @@
     import { marketplace, type MarketplaceTemplate } from '$lib/stores/marketplace';
     import { Button } from '$lib/elements/forms';
     import { page } from '$app/stores';
-    import { runtimesList } from '$routes/console/project-[project]/functions/store';
+    import { baseRuntimesList } from '$routes/console/project-[project]/functions/store';
     import { trackEvent } from '$lib/actions/analytics';
     import type { Models } from '@appwrite.io/console';
     import WizardCover from '$lib/layout/wizardCover.svelte';
@@ -139,7 +139,7 @@
                             style:--grid-item-size="8rem"
                             style:--grid-item-size-small-screens="9rem"
                             style:--grid-gap=".5rem">
-                            {#await $runtimesList}
+                            {#await $baseRuntimesList}
                                 {#each Array(6) as _i}
                                     <li>
                                         <button
