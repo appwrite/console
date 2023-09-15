@@ -65,7 +65,7 @@
             case runtime.includes('dart'):
                 return 'dart';
             case runtime.includes('bun'):
-                return 'bun-sh';
+                return 'bun';
             default:
                 return undefined;
         }
