@@ -1,9 +1,9 @@
 <script lang="ts">
     import { addPlatform, Platform } from './platforms/+page.svelte';
-    import OnboardDarkIntro from './intro-dark.svg';
+    import OnboardDarkIntro from './intro-dark.png';
     import OnboardDark1 from './onboard-1-dark.svg';
     import OnboardDark2 from './onboard-2-dark.svg';
-    import OnboardLightIntro from './intro-light.svg';
+    import OnboardLightIntro from './intro-light.png';
     import OnboardLight1 from './onboard-1-light.svg';
     import OnboardLight2 from './onboard-2-light.svg';
     import { app } from '$lib/stores/app';
@@ -45,15 +45,12 @@
 </script>
 
 <div class="card">
-    <header class="card-header common-section grid-1-2">
+    <header class="card-header common-section grid-1-2" style:--url={`url(${onBoardIntro})`}>
         <div class="grid-1-2-col-1">
             <h2 class="heading-level-5">Getting started guide</h2>
             <p class="u-line-height-1-5 u-margin-block-start-12">
                 Here are some next steps to start building
             </p>
-        </div>
-        <div class="grid-1-2-col-2 u-flex u-main-end u-cross-end is-not-mobile">
-            <img src={onBoardIntro} alt="" class="card-header-image" />
         </div>
     </header>
 
@@ -164,7 +161,28 @@
 
 <img src={onBoardImage2} class="common-section" alt="statistics" />
 
-<style>
+<style lang="scss">
+    @import '@appwrite.io/pink/src/abstract/variables/_devices.scss';
+
+    .card-header {
+        background: transparent;
+    }
+
+    @media #{$break2open} {
+        .card-header {
+            background: var(--url);
+            background-repeat: no-repeat;
+            background-position: top right;
+        }
+    }
+    :global(.theme-dark) .card-header {
+        background-color: #18181b;
+    }
+
+    :global(.theme-light) .card-header {
+        background-color: #fbfbfc;
+    }
+
     .onboard-cover {
         height: 342px;
         background: none;
