@@ -206,4 +206,8 @@
         mask-composite: exclude;
         pointer-events: none;
     }
+
+    :root {
+        --heading-font: 'Aeonik Pro', arial, sans-serif;
+    }
 </style>

@@ -223,7 +223,7 @@
             position: relative;
 
             p {
-                font-family: 'Poppins';
+                font-family: 'Aeonik Pro';
                 font-size: clamp(3.5rem, 7vw, 5.25rem);
                 font-weight: 700;
             }
@@ -251,7 +251,7 @@
     .mobile-beta {
         text-align: center;
         align-self: center;
-        font-family: 'Poppins';
+        font-family: 'Aeonik Pro';
         font-size: 1.125rem;
         font-weight: 700;
         text-transform: uppercase;
