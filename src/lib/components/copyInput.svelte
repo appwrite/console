@@ -25,6 +25,7 @@
     span.icon-duplicate {
         cursor: pointer;
     }
+    
 </style>
 <div>
     <label class:u-hide={!showLabel} class="label" for={label}>{label}</label>
