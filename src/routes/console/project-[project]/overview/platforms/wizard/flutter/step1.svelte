@@ -5,13 +5,7 @@
     import { WizardStep } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { createPlatform } from '../store';
-    import { wizard } from '$lib/stores/wizard';
-    import { app } from '$lib/stores/app';
-    import Light from './light.svg';
-    import Dark from './dark.svg';
     import { Submit, trackEvent } from '$lib/actions/analytics';
-
-    $wizard.media = $app.themeInUse === 'dark' ? Dark : Light;
 
     enum Platform {
         Android = 'flutter-android',
