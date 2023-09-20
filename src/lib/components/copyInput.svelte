@@ -23,7 +23,11 @@
         }
     };
 </script>
-
+<style>
+    span.icon-duplicate {
+        cursor: pointer;
+    }
+</style>
 <div>
     <label class:u-hide={!showLabel} class="label" for={label}>{label}</label>
     <div class="input-text-wrapper" style="--amount-of-buttons:1">
