@@ -20,7 +20,7 @@
 </article>
 
 {#if !hidePagination}
-    <div class="u-flex u-margin-block-start-32 u-main-space-between">
+    <div class="u-flex u-margin-block-start-32 u-main-space-between u-cross-center">
         <p class="text">Total results: 0</p>
         <PaginationInline limit={1} offset={0} sum={0} {hidePages} />
     </div>

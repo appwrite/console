@@ -63,7 +63,7 @@
             target="_blank"
             rel="noopener noreferrer"
             class="link">
-            Permissions fuide
+            Permissions guide
         </a>.
     </p>
     <svelte:fragment slot="aside">

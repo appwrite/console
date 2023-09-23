@@ -49,9 +49,10 @@
     import InputSelectSearch from '$lib/elements/forms/inputSelectSearch.svelte';
     import { installations } from '$lib/wizards/functions/store';
     import { isSelfHosted } from '$lib/system';
-    import { consoleVariables, isVcsEnabled } from '$routes/console/store';
+    import { consoleVariables } from '$routes/console/store';
 
     const functionId = $page.params.function;
+    const isVcsEnabled = $consoleVariables?._APP_VCS_ENABLED === true;
 
     let entrypoint: string;
     let commands: string;
@@ -100,15 +101,6 @@
         gitlab = 'GitLab',
         bitBucket = 'BitBucket',
         azure = 'Azure'
-    }
-
-    function getProviderIcon(provider: string) {
-        switch (provider) {
-            case 'github':
-                return 'icon-github';
-            default:
-                return '';
-        }
     }
 
     function getRepositoryLink(repository: Models.ProviderRepository) {
@@ -218,21 +210,21 @@
                         </svelte:fragment>
                         {#if repository}
                             <Box radius="small">
-                                <div class="u-flex u-gap-16">
-                                    <div class="avatar is-size-x-small">
-                                        <span class={getProviderIcon(repository.provider)} />
-                                    </div>
-                                    <div class="u-cross-child-center u-line-height-1-5">
+                                <div class="u-flex u-gap-8">
+                                    <SvgIcon name={repository.provider} iconSize="xlarge" />
+                                    <div class="u-line-height-1-5">
                                         <h6 class="u-bold u-trim-1">
                                             {repository.name}
                                             {#if repository.private}
                                                 <span
-                                                    class="icon-lock-closed"
+                                                    class="icon-lock-closed u-color-text-gray"
                                                     style="font-size: var(--icon-size-small)"
                                                     aria-hidden="true" />
                                             {/if}
                                         </h6>
-                                        <p>Last updated: {toLocaleDateTime(repository.pushedAt)}</p>
+                                        <p class="u-color-text-gray">
+                                            Last updated: {toLocaleDateTime(repository.pushedAt)}
+                                        </p>
                                     </div>
                                 </div>
                                 <div class="u-margin-block-start-24">
@@ -280,7 +272,7 @@
                                 </div>
                             </Box>
                         {:else}
-                            {#if isSelfHosted && !isVcsEnabled($consoleVariables)}
+                            {#if isSelfHosted && !isVcsEnabled}
                                 <Alert class="common-section" type="info">
                                     <svelte:fragment slot="title">
                                         Installing Git to a self-hosted instance
@@ -289,7 +281,7 @@
                                     first configure your environment variables.
                                     <svelte:fragment slot="buttons">
                                         <Button
-                                            href="https://appwrite.io/docs/environment-variables#vcs_(version_control_system)"
+                                            href="https://appwrite.io/docs/configuration#git"
                                             external
                                             text>
                                             Learn more

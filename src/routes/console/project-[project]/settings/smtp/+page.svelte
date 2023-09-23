@@ -46,7 +46,7 @@
     async function updateSmtp() {
         try {
             if (!enabled) {
-                enabled = undefined;
+                enabled = false;
                 senderName = undefined;
                 senderEmail = undefined;
                 replyTo = undefined;
