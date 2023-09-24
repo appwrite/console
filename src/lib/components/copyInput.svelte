@@ -24,7 +24,7 @@
     };
 </script>
 
-<div>
+<div id="tooltip-container">
     <label class:u-hide={!showLabel} class="label" for={label}>{label}</label>
     <div class="input-text-wrapper" style="--amount-of-buttons:1">
         <input {value} id={label} type="text" class="input-text" readonly />
@@ -37,7 +37,8 @@
                 on:mouseenter={() => setTimeout(() => (content = 'Click to copy'))}
                 use:tooltip={{
                     content,
-                    hideOnClick: false
+                    hideOnClick: false,
+                    appendTo: document.getElementById('tooltip-container')
                 }}>
                 <span class="icon-duplicate" aria-hidden="true" />
             </button>
