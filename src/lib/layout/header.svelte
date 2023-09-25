@@ -9,7 +9,8 @@
     import { Feedback } from '$lib/components/feedback';
     import Button from '$lib/elements/forms/button.svelte';
     import { isMac } from '$lib/helpers/platform';
-    import AppwriteLogo from '$lib/images/appwrite-gray-light.svg';
+    import AppwriteLogoDark from '$lib/images/appwrite-logo-dark.svg';
+    import AppwriteLogoLight from '$lib/images/appwrite-logo-light.svg';
     import DarkMode from '$lib/images/mode/dark-mode.svg';
     import LightMode from '$lib/images/mode/light-mode.svg';
     import SystemMode from '$lib/images/mode/system-mode.svg';
@@ -68,7 +69,11 @@
 <a
     class="logo"
     href={$organization ? `${base}/console/organization-${$organization.$id}` : `${base}/console`}>
-    <img src={AppwriteLogo} width="132" height="34" alt="Appwrite" />
+    <img
+        src={$app.themeInUse == 'dark' ? AppwriteLogoDark : AppwriteLogoLight}
+        width="120"
+        height="22"
+        alt="Appwrite" />
 </a>
 
 {#if $page.data.breadcrumbs}
