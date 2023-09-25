@@ -170,21 +170,11 @@
 
     @media #{$break2open} {
         .card-header {
-            background: var(--url);
+            background: var(--url) transparent;
             background-repeat: no-repeat;
             background-position: top right;
         }
     }
-    :global(.theme-dark) .card-header {
-        background: var(--url) #18181b;
-        background-repeat: no-repeat;
-        background-position: top right;
-    }
-
-    :global(.theme-light) .card-header {
-        background-color: #fbfbfc;
-    }
-
     .onboard-cover {
         height: 342px;
         background: none;

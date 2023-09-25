@@ -256,6 +256,15 @@
         // --color-neutral-85:  240  4%  18%;   /* #2D2D31 */
         // --color-neutral-90:  240  7%  12%;   /* #1D1D21 */
         // --color-neutral-100: 240  6%  10%;   /* #19191C */
+
+    }
+
+    .card {
+        --p-card-bg-color: var(--color-neutral-5-new);
+    }
+
+    :global(.theme-dark) .card {
+        --p-card-bg-color: var(--color-neutral-100-new);
     }
 
     .is-cloud {
