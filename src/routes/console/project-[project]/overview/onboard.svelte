@@ -176,7 +176,9 @@
         }
     }
     :global(.theme-dark) .card-header {
-        background-color: #18181b;
+        background: var(--url) #18181b;
+        background-repeat: no-repeat;
+        background-position: top right;
     }
 
     :global(.theme-light) .card-header {
