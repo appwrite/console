@@ -6,8 +6,10 @@
     import { Container } from '$lib/layout';
     import { isSelfHosted } from '$lib/system';
     import { connectTemplate } from '$lib/wizards/functions/cover.svelte';
-    import { consoleVariables, isVcsEnabled } from '$routes/console/store';
+    import { consoleVariables } from '$routes/console/store';
     import { template } from './store';
+
+    const isVcsEnabled = $consoleVariables?._APP_VCS_ENABLED === true;
 </script>
 
 <Container>
@@ -60,7 +62,7 @@
                     </span>
                 </Heading>
                 <p class="u-margin-block-start-24">{$template.tagline}</p>
-                {#if isSelfHosted && !isVcsEnabled($consoleVariables)}
+                {#if isSelfHosted && !isVcsEnabled}
                     <Alert class="u-margin-block-start-24" type="info">
                         <svelte:fragment slot="title">
                             Cloning templates to a self-hosted instance

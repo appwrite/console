@@ -6,21 +6,12 @@
     import { sdk } from '$lib/stores/sdk';
     import { isSelfHosted } from '$lib/system';
     import { func } from '$routes/console/project-[project]/functions/function-[function]/store';
-    import { onMount } from 'svelte';
     import { ProxyTypes } from '../index.svelte';
     import { domain, typeStore } from './store';
     import { consoleVariables } from '$routes/console/store';
 
     let error = null;
-    let isDomainsEnabled = false;
-
-    onMount(async () => {
-        if (!isSelfHosted) {
-            return;
-        }
-
-        isDomainsEnabled = (await $consoleVariables)?._APP_DOMAIN_ENABLED === true;
-    });
+    const isDomainsEnabled = $consoleVariables?._APP_DOMAIN_ENABLED === true;
 
     async function createDomain() {
         try {

@@ -8,15 +8,18 @@ export const load: LayoutLoad = async ({ fetch, depends }) => {
     depends(Dependencies.CONSOLE_VARIABLES);
 
     const { endpoint, project } = sdk.forConsole.client.config;
-    const response = await fetch(`${endpoint}/health/version`, {
+    const versionPromise = fetch(`${endpoint}/health/version`, {
         headers: {
             'X-Appwrite-Project': project
         }
-    });
-    const data = await response.json();
+    }).then((response) => response.json() as { version?: string });
+
+    const variablesPromise = sdk.forConsole.console.variables();
+
+    const [data, variables] = await Promise.all([versionPromise, variablesPromise]);
 
     return {
-        consoleVariables: sdk.forConsole.console.variables(),
+        consoleVariables: variables,
         version: data?.version ?? null
     };
 };
