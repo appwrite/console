@@ -49,9 +49,10 @@
     import InputSelectSearch from '$lib/elements/forms/inputSelectSearch.svelte';
     import { installations } from '$lib/wizards/functions/store';
     import { isSelfHosted } from '$lib/system';
-    import { consoleVariables, isVcsEnabled } from '$routes/console/store';
+    import { consoleVariables } from '$routes/console/store';
 
     const functionId = $page.params.function;
+    const isVcsEnabled = $consoleVariables?._APP_VCS_ENABLED === true;
 
     let entrypoint: string;
     let commands: string;
@@ -271,7 +272,7 @@
                                 </div>
                             </Box>
                         {:else}
-                            {#if isSelfHosted && !isVcsEnabled($consoleVariables)}
+                            {#if isSelfHosted && !isVcsEnabled}
                                 <Alert class="common-section" type="info">
                                     <svelte:fragment slot="title">
                                         Installing Git to a self-hosted instance

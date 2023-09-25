@@ -36,10 +36,7 @@
             .join(' ');
     }
 
-    let isAssistantEnabled = false;
-    onMount(async () => {
-        isAssistantEnabled = (await $consoleVariables)?._APP_ASSISTANT_ENABLED === true;
-    });
+    const isAssistantEnabled = $consoleVariables?._APP_ASSISTANT_ENABLED === true;
 
     $: isOnSettingsLayout = $project?.$id
         ? $page.url.pathname.includes(`project-${$project.$id}/settings`)

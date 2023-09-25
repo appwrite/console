@@ -34,13 +34,6 @@
 
     export let data: PageData;
 
-    // TODO: Remove this when the console SDK is updated
-    const users = data.users.users.map((user) => {
-        const labels: string[] = [];
-        const accessedAt = '';
-        return { accessedAt, labels, ...user };
-    });
-
     const projectId = $page.params.project;
     async function userCreated(event: CustomEvent<Models.User<Record<string, unknown>>>) {
         await goto(`${base}/console/project-${projectId}/auth/user-${event.detail.$id}`);
@@ -65,7 +58,7 @@
                 <TableCellHead onlyDesktop>Last Activity</TableCellHead>
             </TableHeader>
             <TableBody>
-                {#each users as user}
+                {#each data.users.users as user}
                     <TableRowLink
                         href={`${base}/console/project-${projectId}/auth/user-${user.$id}`}>
                         <TableCell title="Name">

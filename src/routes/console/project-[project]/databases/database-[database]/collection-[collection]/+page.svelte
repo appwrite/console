@@ -144,7 +144,7 @@
     {/if}
 </Container>
 
-<CreateAttribute bind:showCreate={showCreateAttribute} selectedOption={selectedAttribute} />
+<CreateAttribute bind:showCreate={showCreateAttribute} bind:selectedOption={selectedAttribute} />
 
 <style lang="scss">
     .heading-grid {
