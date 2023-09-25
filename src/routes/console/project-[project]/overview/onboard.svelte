@@ -1,11 +1,11 @@
 <script lang="ts">
     import { addPlatform, Platform } from './platforms/+page.svelte';
     import OnboardDarkIntro from './intro-dark.png';
-    import OnboardDark1 from './onboard-1-dark.svg';
-    import OnboardDark2 from './onboard-2-dark.svg';
     import OnboardLightIntro from './intro-light.png';
-    import OnboardLight1 from './onboard-1-light.svg';
-    import OnboardLight2 from './onboard-2-light.svg';
+    import OnboardDark2Desktop from './onboard-2-dark-desktop.svg';
+    import OnboardDark2Mobile from './onboard-2-dark-mobile.svg';
+    import OnboardLight2Desktop from './onboard-2-light-desktop.svg';
+    import OnboardLight2Mobile from './onboard-2-light-mobile.svg';
     import { app } from '$lib/stores/app';
     import { wizard } from '$lib/stores/wizard';
     import Wizard from './keys/wizard.svelte';
@@ -40,8 +40,9 @@
     }
 
     $: onBoardIntro = $app.themeInUse === 'dark' ? OnboardDarkIntro : OnboardLightIntro;
-    $: onBoardImage1 = $app.themeInUse === 'dark' ? OnboardDark1 : OnboardLight1;
-    $: onBoardImage2 = $app.themeInUse === 'dark' ? OnboardDark2 : OnboardLight2;
+    $: onBoardImage2Mobile = $app.themeInUse === 'dark' ? OnboardDark2Mobile : OnboardLight2Mobile;
+    $: onBoardImage2Desktop =
+        $app.themeInUse === 'dark' ? OnboardDark2Desktop : OnboardLight2Desktop;
 </script>
 
 <div class="card">
@@ -142,14 +143,12 @@
     </section>
 </div>
 
-<article
-    class="card u-grid u-width-full-line common-section onboard-cover"
-    style={`background-image: url(${onBoardImage1}); box-shadow: none !important`}>
-    <div class="u-flex u-flex-vertical u-cross-center">
+<article class="card u-grid u-width-full-line common-section onboard-cover">
+    <div class="u-flex u-flex-vertical u-cross-center u-padding-block-start-20">
         <div class="avatar">
             <i class="icon-lock-closed" />
         </div>
-        <div class="common-section">
+        <div class="common-section u-text-center">
             <h7 class="heading-level-7">Add a platform to view data about your project</h7>
         </div>
         <div class="u-margin-block-start-16 u-text-center" style:max-width="550px">
@@ -159,7 +158,8 @@
     </div>
 </article>
 
-<img src={onBoardImage2} class="common-section" alt="statistics" />
+<img src={onBoardImage2Mobile} class="common-section is-only-mobile" alt="statistics" />
+<img src={onBoardImage2Desktop} class="common-section is-not-mobile" alt="statistics" />
 
 <style lang="scss">
     @import '@appwrite.io/pink/src/abstract/variables/_devices.scss';
@@ -192,5 +192,26 @@
         background-size: 100% auto;
         background-repeat: no-repeat;
         border: none;
+        box-shadow: none !important;
+    }
+
+    /* Default (including mobile) */
+    :global(.theme-dark) .onboard-cover {
+        background-image: url(./onboard-1-dark-mobile.svg);
+    }
+
+    :global(.theme-light) .onboard-cover {
+        background-image: url(./onboard-1-light-mobile.svg);
+    }
+
+    /* for screens larger than mobile*/
+    @media #{$break2open} {
+        :global(.theme-dark) .onboard-cover {
+            background-image: url(./onboard-1-dark-desktop.svg);
+        }
+
+        :global(.theme-light) .onboard-cover {
+            background-image: url(./onboard-1-light-desktop.svg);
+        }
     }
 </style>
