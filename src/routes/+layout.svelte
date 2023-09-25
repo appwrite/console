@@ -106,17 +106,18 @@
 
     $: {
         if (browser) {
+            const isCloudClass = isCloud ? 'is-cloud' : '';
             if ($app.theme === 'auto') {
                 const darkThemeMq = window.matchMedia('(prefers-color-scheme: dark)');
                 if (darkThemeMq.matches) {
-                    document.body.setAttribute('class', `theme-dark`);
+                    document.body.setAttribute('class', `theme-dark ${isCloudClass}`);
                     $app.themeInUse = 'dark';
                 } else {
-                    document.body.setAttribute('class', `theme-light`);
+                    document.body.setAttribute('class', `theme-light ${isCloudClass}`);
                     $app.themeInUse = 'light';
                 }
             } else {
-                document.body.setAttribute('class', `theme-${$app.theme}`);
+                document.body.setAttribute('class', `theme-${$app.theme} ${isCloudClass}`);
                 $app.themeInUse = $app.theme;
             }
         }
@@ -255,5 +256,9 @@
         // --color-neutral-85:  240  4%  18%;   /* #2D2D31 */
         // --color-neutral-90:  240  7%  12%;   /* #1D1D21 */
         // --color-neutral-100: 240  6%  10%;   /* #19191C */
+    }
+
+    .is-cloud {
+        --heading-font: 'Aeonik Pro', arial, sans-serif;
     }
 </style>
