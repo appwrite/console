@@ -381,9 +381,9 @@
     }
 
     :global(.theme-dark) .card {
-        --cmd-center-bg: rgba(27, 27, 40, 0.8);
+        --cmd-center-bg: hsl(var(--color-neutral-100-new));
         --cmd-center-border: hsl(var(--color-neutral-150));
-        --cmd-center-shadow: 0px 16px 32px 0px #14141f;
+        --cmd-center-shadow: 0px 16px 32px 0px hsl(var(--color-neutral-110-new));
 
         --kbd-bg: hsl(var(--color-neutral-150));
 
@@ -391,7 +391,11 @@
         --crumb-color: hsl(var(--color-neutral-30));
 
         --result-bg: hsl(var(--color-neutral-200));
-        --footer-bg: linear-gradient(180deg, #1b1b28 0%, #282a3b 100%);
+        --footer-bg: linear-gradient(
+            180deg,
+            hsl(var(--color-neutral-100-new)) 0%,
+            hsl(var(--color-neutral-85-new)) 100%
+        );
 
         --icon-color: hsl(var(--color-neutral-70));
         --label-color: hsl(var(--color-neutral-30));
