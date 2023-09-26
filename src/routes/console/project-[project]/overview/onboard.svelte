@@ -164,13 +164,9 @@
 <style lang="scss">
     @import '@appwrite.io/pink/src/abstract/variables/_devices.scss';
 
-    .card-header {
-        background: transparent;
-    }
-
     @media #{$break2open} {
         .card-header {
-            background: var(--url) transparent;
+            background-image: var(--url);
             background-repeat: no-repeat;
             background-position: top right;
         }

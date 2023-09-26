@@ -263,11 +263,18 @@
         background-color: hsl(240 5% 8% / 0.6);
     }
 
-    .card {
-        --p-card-bg-color: var(--color-neutral-5-new);
+    .theme-dark .card-header {
+        background: var(--url) #18181b;
+        background-repeat: no-repeat;
+        background-position: top right;
+    }
+    .theme-light .card-header {
+        background-color: #fbfbfc;
+        background-repeat: no-repeat;
+        background-position: top right;
     }
 
-    :global(.theme-dark) .card {
+    .theme-dark .card {
         --p-card-bg-color: var(--color-neutral-100-new);
     }
 
