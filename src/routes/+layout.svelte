@@ -257,7 +257,10 @@
         // --color-neutral-85:  240  4%  18%;   /* #2D2D31 */
         // --color-neutral-90:  240  7%  12%;   /* #1D1D21 */
         // --color-neutral-100: 240  6%  10%;   /* #19191C */
+    }
 
+    .theme-dark .modal::backdrop {
+        background-color: hsl(240 5% 8% / 0.6);
     }
 
     .card {
