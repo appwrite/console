@@ -5,7 +5,7 @@
     export let name: string;
     export let size: number;
     export let background: string | undefined = undefined;
-    export let color: string = '#FFFFFF';
+    export let color: string = 'black';
 
     $: src = sdk.forConsole.avatars.getInitials(name, size * 2, size * 2, background).toString();
 </script>
