@@ -225,6 +225,7 @@
         --color-neutral-85-new: 240 4% 18%; /* #2D2D31 */
         --color-neutral-90-new: 240 7% 12%; /* #1D1D21 */
         --color-neutral-100-new: 240 6% 10%; /* #19191C */
+        --color-neutral-110-new: 240 5% 8%; /* #141416 */
 
         --color-neutral-0: var(--color-neutral-0-new);
         --color-neutral-5: var(--color-neutral-5-new);
@@ -240,7 +241,7 @@
         --color-neutral-200: var(--color-neutral-85-new);
         --color-neutral-300: var(--color-neutral-90-new);
         --color-neutral-400: var(--color-neutral-100-new);
-        --color-neutral-500: var(--color-neutral-100-new);
+        --color-neutral-500: var(--color-neutral-110-new);
 
         // --color-neutral-0:   0    0% 100%;   /* #ffffff */
         // --color-neutral-5:   240 11%  98%;   /* #FAFAFB */
