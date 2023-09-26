@@ -135,6 +135,7 @@
 <Progress />
 
 <style lang="scss" global>
+    @import '@appwrite.io/pink/src/abstract/variables/_devices.scss';
     .tippy-box {
         --p-tooltip-text-color: var(--color-neutral-10);
         --p-tooltip--bg-color: var(--color-neutral-100);
@@ -280,5 +281,18 @@
 
     .is-cloud {
         --heading-font: 'Aeonik Pro', arial, sans-serif;
+        .heading-level {
+            @media #{$break3open} {
+                &-1,
+                &-2,
+                &-3,
+                &-4,
+                &-5,
+                &-6,
+                &-7 {
+                    font-weight: 500;
+                }
+            }
+        }
     }
 </style>
