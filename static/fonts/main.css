@@ -51,7 +51,7 @@
     font-style: normal;
     font-weight: 100;
     font-display: swap;
-    src: url('https://fonts-five.vercel.app/aeonik-pro/AeonikPro-Air.woff2') format('woff2');
+    src: url('https://fonts.appwrite.io/aeonik-pro/AeonikPro-Air.woff2') format('woff2');
 }
 
 @font-face {
@@ -59,7 +59,7 @@
     font-style: italic;
     font-weight: 100;
     font-display: swap;
-    src: url('https://fonts-five.vercel.app/aeonik-pro/AeonikPro-AirItalic.woff2') format('woff2');
+    src: url('https://fonts.appwrite.io/aeonik-pro/AeonikPro-AirItalic.woff2') format('woff2');
 }
 
 @font-face {
@@ -67,7 +67,7 @@
     font-style: normal;
     font-weight: 200;
     font-display: swap;
-    src: url('https://fonts-five.vercel.app/aeonik-pro/AeonikPro-Thin.woff2') format('woff2');
+    src: url('https://fonts.appwrite.io/aeonik-pro/AeonikPro-Thin.woff2') format('woff2');
 }
 
 @font-face {
@@ -75,7 +75,7 @@
     font-style: italic;
     font-weight: 200;
     font-display: swap;
-    src: url('https://fonts-five.vercel.app/aeonik-pro/AeonikPro-ThinItalic.woff2') format('woff2');
+    src: url('https://fonts.appwrite.io/aeonik-pro/AeonikPro-ThinItalic.woff2') format('woff2');
 }
 
 @font-face {
@@ -83,7 +83,7 @@
     font-style: normal;
     font-weight: 300;
     font-display: swap;
-    src: url('https://fonts-five.vercel.app/aeonik-pro/AeonikPro-Light.woff2') format('woff2');
+    src: url('https://fonts.appwrite.io/aeonik-pro/AeonikPro-Light.woff2') format('woff2');
 }
 
 @font-face {
@@ -91,7 +91,7 @@
     font-style: italic;
     font-weight: 300;
     font-display: swap;
-    src: url('https://fonts-five.vercel.app/aeonik-pro/AeonikPro-LightItalic.woff2') format('woff2');
+    src: url('https://fonts.appwrite.io/aeonik-pro/AeonikPro-LightItalic.woff2') format('woff2');
 }
 
 @font-face {
@@ -99,7 +99,7 @@
     font-style: normal;
     font-weight: 400;
     font-display: swap;
-    src: url('https://fonts-five.vercel.app/aeonik-pro/AeonikPro-Regular.woff2') format('woff2');
+    src: url('https://fonts.appwrite.io/aeonik-pro/AeonikPro-Regular.woff2') format('woff2');
 }
 
 @font-face {
@@ -107,7 +107,7 @@
     font-style: italic;
     font-weight: 400;
     font-display: swap;
-    src: url('https://fonts-five.vercel.app/aeonik-pro/AeonikPro-RegularItalic.woff2')
+    src: url('https://fonts.appwrite.io/aeonik-pro/AeonikPro-RegularItalic.woff2')
         format('woff2');
 }
 
@@ -116,7 +116,7 @@
     font-style: normal;
     font-weight: 500;
     font-display: swap;
-    src: url('https://fonts-five.vercel.app/aeonik-pro/AeonikPro-Medium.woff2') format('woff2');
+    src: url('https://fonts.appwrite.io/aeonik-pro/AeonikPro-Medium.woff2') format('woff2');
 }
 
 @font-face {
@@ -124,7 +124,7 @@
     font-style: italic;
     font-weight: 500;
     font-display: swap;
-    src: url('https://fonts-five.vercel.app/aeonik-pro/AeonikPro-MediumItalic.woff2')
+    src: url('https://fonts.appwrite.io/aeonik-pro/AeonikPro-MediumItalic.woff2')
         format('woff2');
 }
 
@@ -133,7 +133,7 @@
     font-style: normal;
     font-weight: 600;
     font-display: swap;
-    src: url('https://fonts-five.vercel.app/aeonik-pro/AeonikPro-Bold.woff2') format('woff2');
+    src: url('https://fonts.appwrite.io/aeonik-pro/AeonikPro-Bold.woff2') format('woff2');
 }
 
 @font-face {
@@ -141,7 +141,7 @@
     font-style: italic;
     font-weight: 600;
     font-display: swap;
-    src: url('https://fonts-five.vercel.app/aeonik-pro/AeonikPro-BoldItalic.woff2') format('woff2');
+    src: url('https://fonts.appwrite.io/aeonik-pro/AeonikPro-BoldItalic.woff2') format('woff2');
 }
 
 @font-face {
@@ -149,7 +149,7 @@
     font-style: normal;
     font-weight: 700;
     font-display: swap;
-    src: url('https://fonts-five.vercel.app/aeonik-pro/AeonikPro-Black.woff2') format('woff2');
+    src: url('https://fonts.appwrite.io/aeonik-pro/AeonikPro-Black.woff2') format('woff2');
 }
 
 @font-face {
@@ -157,5 +157,5 @@
     font-style: italic;
     font-weight: 700;
     font-display: swap;
-    src: url('https://fonts-five.vercel.app/aeonik-pro/AeonikPro-BlackItalic.woff2') format('woff2');
+    src: url('https://fonts.appwrite.io/aeonik-pro/AeonikPro-BlackItalic.woff2') format('woff2');
 }
