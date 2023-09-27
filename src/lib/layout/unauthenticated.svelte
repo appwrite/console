@@ -5,27 +5,11 @@
     import LoginLight from '$lib/images/login/login-light-mode.png';
     import { app } from '$lib/stores/app';
     import { user } from '$lib/stores/user';
-    import { onDestroy } from 'svelte';
 
     export let imgLight = LoginLight;
     export let imgDark = LoginDark;
 
-    let innerWidth = 0;
-    $: isMobile = innerWidth < 768;
-
-    const prevTheme = $app.theme;
-    $: if (isMobile) {
-        $app.theme = 'dark';
-    } else {
-        $app.theme = prevTheme;
-    }
-
-    onDestroy(() => {
-        $app.theme = prevTheme;
-    });
 </script>
-
-<svelte:window bind:innerWidth />
 
 <main class="grid-1-1 is-full-page" id="main">
     <section
