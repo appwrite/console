@@ -106,17 +106,18 @@
 
     $: {
         if (browser) {
+            const isCloudClass = isCloud ? 'is-cloud' : '';
             if ($app.theme === 'auto') {
                 const darkThemeMq = window.matchMedia('(prefers-color-scheme: dark)');
                 if (darkThemeMq.matches) {
-                    document.body.setAttribute('class', `theme-dark`);
+                    document.body.setAttribute('class', `theme-dark ${isCloudClass}`);
                     $app.themeInUse = 'dark';
                 } else {
-                    document.body.setAttribute('class', `theme-light`);
+                    document.body.setAttribute('class', `theme-light ${isCloudClass}`);
                     $app.themeInUse = 'light';
                 }
             } else {
-                document.body.setAttribute('class', `theme-${$app.theme}`);
+                document.body.setAttribute('class', `theme-${$app.theme} ${isCloudClass}`);
                 $app.themeInUse = $app.theme;
             }
         }
@@ -134,6 +135,7 @@
 <Progress />
 
 <style lang="scss" global>
+    @import '@appwrite.io/pink/src/abstract/variables/_devices.scss';
     .tippy-box {
         --p-tooltip-text-color: var(--color-neutral-10);
         --p-tooltip--bg-color: var(--color-neutral-100);
@@ -205,5 +207,92 @@
         -webkit-mask-composite: destination-out;
         mask-composite: exclude;
         pointer-events: none;
+    }
+
+    :root {
+        /** Neutral **/
+
+        --color-neutral-0-new: 0 0% 100%; /* #ffffff */
+        --color-neutral-5-new: 240 11% 98%; /* #FAFAFB */
+        --color-neutral-10-new: 240 9% 94%; /* #EDEDF0 */
+        --color-neutral-15-new: 240 4% 85%; /* #D8D8DB */
+        --color-neutral-20-new: 240 3% 77%; /* #C3C3C6 */
+
+        --color-neutral-50-new: 240 2% 52%; /* #818186 */
+        --color-neutral-60-new: 240 2% 43%; /* #6C6C71 */
+        --color-neutral-70-new: 240 3% 35%; /* #56565C */
+
+        --color-neutral-80-new: 240 4% 27%; /* #414146 */
+        --color-neutral-85-new: 240 4% 18%; /* #2D2D31 */
+        --color-neutral-90-new: 240 7% 12%; /* #1D1D21 */
+        --color-neutral-100-new: 240 6% 10%; /* #19191C */
+        --color-neutral-110-new: 240 5% 8%; /* #141416 */
+
+        --color-neutral-0: var(--color-neutral-0-new);
+        --color-neutral-5: var(--color-neutral-5-new);
+        --color-neutral-10: var(--color-neutral-10-new);
+        --color-neutral-30: var(--color-neutral-15-new);
+        --color-neutral-50: var(--color-neutral-20-new);
+
+        --color-neutral-70: var(--color-neutral-50-new);
+        --color-neutral-100: var(--color-neutral-60-new);
+        --color-neutral-120: var(--color-neutral-70-new);
+
+        --color-neutral-150: var(--color-neutral-80-new);
+        --color-neutral-200: var(--color-neutral-85-new);
+        --color-neutral-300: var(--color-neutral-90-new);
+        --color-neutral-400: var(--color-neutral-100-new);
+        --color-neutral-500: var(--color-neutral-110-new);
+
+        // --color-neutral-0:   0    0% 100%;   /* #ffffff */
+        // --color-neutral-5:   240 11%  98%;   /* #FAFAFB */
+        // --color-neutral-10:  240  9%  94%;   /* #EDEDF0 */
+        // --color-neutral-15:  240  4%  85%;   /* #D8D8DB */
+        // --color-neutral-20:  240  3%  77%;   /* #C3C3C6 */
+
+        // --color-neutral-50:  240  2%  52%;   /* #818186 */
+        // --color-neutral-60:  240  2%  43%;   /* #6C6C71 */
+        // --color-neutral-70:  240  3%  35%;   /* #56565C */
+
+        // --color-neutral-80:  240  4%  27%;   /* #414146 */
+        // --color-neutral-85:  240  4%  18%;   /* #2D2D31 */
+        // --color-neutral-90:  240  7%  12%;   /* #1D1D21 */
+        // --color-neutral-100: 240  6%  10%;   /* #19191C */
+    }
+
+    .theme-dark .modal::backdrop {
+        background-color: hsl(240 5% 8% / 0.6);
+    }
+
+    .theme-dark .card-header {
+        background: var(--url) #18181b;
+        background-repeat: no-repeat;
+        background-position: top right;
+    }
+    .theme-light .card-header {
+        background-color: #fbfbfc;
+        background-repeat: no-repeat;
+        background-position: top right;
+    }
+
+    .theme-dark .card {
+        --p-card-bg-color: var(--color-neutral-100-new);
+    }
+
+    .is-cloud {
+        --heading-font: 'Aeonik Pro', arial, sans-serif;
+        .heading-level {
+            @media #{$break3open} {
+                &-1,
+                &-2,
+                &-3,
+                &-4,
+                &-5,
+                &-6,
+                &-7 {
+                    font-weight: 500;
+                }
+            }
+        }
     }
 </style>

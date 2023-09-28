@@ -90,7 +90,7 @@
         {
             label: 'Contact support',
             callback: () => {
-                window.open('https://appwrite.io/support', '_blank');
+                window.open('https://github.com/appwrite/appwrite/issues/new/choose', '_blank');
             },
             group: 'help',
             icon: 'question-mark-circle'
