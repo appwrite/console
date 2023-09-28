@@ -365,14 +365,17 @@ export class Billing {
     async listInvoices(
         organizationId: string,
         queries: Query[] = [],
-        search = ''
+        search
     ): Promise<InvoiceList> {
         const path = `/organizations/${organizationId}/invoices`;
         const params = {
             organizationId,
             queries,
-            search
         };
+
+        if (typeof search !== 'undefined') {
+            params['search'] = search;
+        }
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
             'get',
