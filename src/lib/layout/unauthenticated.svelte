@@ -8,7 +8,6 @@
 
     export let imgLight = LoginLight;
     export let imgDark = LoginDark;
-
 </script>
 
 <main class="grid-1-1 is-full-page" id="main">

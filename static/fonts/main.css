@@ -107,8 +107,7 @@
     font-style: italic;
     font-weight: 400;
     font-display: swap;
-    src: url('https://fonts.appwrite.io/aeonik-pro/AeonikPro-RegularItalic.woff2')
-        format('woff2');
+    src: url('https://fonts.appwrite.io/aeonik-pro/AeonikPro-RegularItalic.woff2') format('woff2');
 }
 
 @font-face {
@@ -124,8 +123,7 @@
     font-style: italic;
     font-weight: 500;
     font-display: swap;
-    src: url('https://fonts.appwrite.io/aeonik-pro/AeonikPro-MediumItalic.woff2')
-        format('woff2');
+    src: url('https://fonts.appwrite.io/aeonik-pro/AeonikPro-MediumItalic.woff2') format('woff2');
 }
 
 @font-face {

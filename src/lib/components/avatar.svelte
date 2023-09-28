@@ -2,7 +2,7 @@
     export let size: number;
     export let src: string;
     export let name: string;
-    export let color: string = 'transparent';
+    export let color = 'transparent';
 </script>
 
 <img

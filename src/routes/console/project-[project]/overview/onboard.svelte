@@ -154,8 +154,7 @@
     <img src={onBoardImage1Mobile} class="is-only-mobile u-width-full-line" alt="statistics" />
     <img src={onBoardImage1Desktop} class="is-not-mobile u-width-full-line" alt="statistics" />
     <div class="u-height-100-percent u-width-full-line u-padding-block-start-20">
-        <div
-            class="u-flex u-flex-vertical u-height-100-percent u-cross-center u-padding-inline-24">
+        <div class="u-flex u-flex-vertical u-height-100-percent u-cross-center u-padding-inline-24">
             <div class="avatar">
                 <i class="icon-lock-closed" />
             </div>
