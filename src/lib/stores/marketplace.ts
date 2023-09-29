@@ -69,7 +69,7 @@ export const marketplace: MarketplaceTemplate[] = [
         variables: [
             {
                 name: 'APPWRITE_API_KEY',
-                description: `The API Key to talk to Appwrite backend APIs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/getting-started-for-server">Learn more</a>.`,
+                description: `The API Key to authenticate against Appwrite's Server APIs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/advanced/platform/api-keys">Learn more</a>.`,
                 value: '',
                 placeholder: 'd1efb...aec35',
                 required: false,
@@ -363,7 +363,7 @@ export const marketplace: MarketplaceTemplate[] = [
         variables: [
             {
                 name: 'APPWRITE_API_KEY',
-                description: `The API Key to talk to Appwrite backend APIs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/getting-started-for-server">Learn more</a>.`,
+                description: `The API Key to authenticate against Appwrite's Server APIs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/advanced/platform/api-keys">Learn more</a>.`,
                 value: '',
                 placeholder: 'd1efb...aec35',
                 required: true,
@@ -371,7 +371,7 @@ export const marketplace: MarketplaceTemplate[] = [
             },
             {
                 name: 'APPWRITE_ENDPOINT',
-                description: `The URL endpoint of the Appwrite server. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/getting-started-for-server">Learn more</a>.`,
+                description: `The API endpoint of the Appwrite. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/getting-started-for-server">Learn more</a>.`,
                 value: 'https://cloud.appwrite.io/v1',
                 placeholder: 'https://cloud.appwrite.io/v1',
                 required: false,
