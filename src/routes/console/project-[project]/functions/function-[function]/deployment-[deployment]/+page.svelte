@@ -113,13 +113,14 @@
     <Card>
         <div class="u-stretch u-overflow-hidden">
             <section class="code-panel">
-                <header class="code-panel-header u-flex u-main-space-between u-width-full-line">
+                <header
+                    class="code-panel-header u-flex u-main-space-between u-width-full-line u-flex-wrap u-gap-16">
                     <div class="u-flex u-flex-vertical">
                         <h4 class="u-bold">Build {$func.name}</h4>
                         {#if $deployment.status === 'building'}
                             <span>Building...</span>
                         {:else}
-                            {$deployment.status}
+                            <span class="u-capitalize">{$deployment.status}</span>
                         {/if}
                     </div>
 

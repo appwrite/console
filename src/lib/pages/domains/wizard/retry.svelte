@@ -36,6 +36,7 @@
     }
 </script>
 
+<Trim alternativeTrim><b>{$domain.domain}</b></Trim>
 {#if $domain.status === 'created'}
     <Box radius="small">
         <div class="u-flex u-gap-8 u-cross-center">
@@ -53,7 +54,7 @@
             In order to continue, set the following record on your DNS provider. DNS records may
             take up to 48 hours to propagate. Please retry over the next 48 hours, but if
             verification still fails, please <a
-                href="https://appwrite.io/support"
+                href="https://github.com/appwrite/appwrite/issues/new/choose"
                 target="_blank"
                 rel="noopener noreferrer">contact support</a
             >.
@@ -63,7 +64,6 @@
         </div>
     </Box>
 {:else if $domain.status === 'unverified'}
-    <Trim alternativeTrim><b>{$domain.domain}</b></Trim>
     <Box radius="small">
         <div class="u-flex u-gap-8 u-cross-center">
             <span class="icon-exclamation-circle u-color-text-danger" aria-hidden="true" />
@@ -80,7 +80,7 @@
             In order to continue, set the following record on your DNS provider. DNS records may
             take up to 48 hours to propagate. Please retry over the next 48 hours, but if
             verification still fails, please <a
-                href="https://appwrite.io/support"
+                href="https://github.com/appwrite/appwrite/issues/new/choose"
                 target="_blank"
                 rel="noopener noreferrer">contact support</a
             >.

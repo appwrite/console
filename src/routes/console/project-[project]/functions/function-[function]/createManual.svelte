@@ -1,12 +1,5 @@
 <script lang="ts">
-    import {
-        InputChoice,
-        Button,
-        InputFile,
-        FormList,
-        InputTextarea,
-        InputText
-    } from '$lib/elements/forms';
+    import { InputChoice, Button, InputFile, FormList, InputText } from '$lib/elements/forms';
     import { Alert, Collapsible, CollapsibleItem, Modal } from '$lib/components';
     import { sdk } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
@@ -33,8 +26,8 @@
                 functionId,
                 files[0],
                 active,
-                entrypoint,
-                buildCommand
+                entrypoint || undefined,
+                buildCommand || undefined
             );
             await invalidate(Dependencies.DEPLOYMENTS);
             files = undefined;
@@ -55,7 +48,13 @@
     }
 </script>
 
-<Modal title="Create manual deployment" {error} size="big" bind:show onSubmit={create}>
+<Modal
+    title="Create manual deployment"
+    {error}
+    size="big"
+    bind:show
+    onSubmit={create}
+    headerDivider={false}>
     <p class="text">
         Manually deploy a function by uploading a zip file containing the source code and a relative
         path to the entry point.
@@ -66,7 +65,7 @@
             class="link">Learn more about function deployments</a
         >.
     </p>
-    <FormList>
+    <FormList gap={16}>
         <InputFile
             label="Gzipped code (tar.gz)"
             allowedFileExtensions={['gz']}
@@ -76,8 +75,7 @@
             label="Entrypoint"
             id="entrypoint"
             placeholder="Entrypoint"
-            bind:value={entrypoint}
-            required />
+            bind:value={entrypoint} />
         {#if $func.version !== 'v3'}
             <Alert type="info">
                 <svelte:fragment slot="title">
@@ -94,8 +92,12 @@
                 <CollapsibleItem>
                     <svelte:fragment slot="title">Build settings</svelte:fragment>
                     <svelte:fragment slot="subtitle">(optional)</svelte:fragment>
-                    <FormList>
-                        <InputTextarea
+                    <FormList gap={16}>
+                        <p class="text">
+                            Overwrite your function configuration for a single deployment or save
+                            commands for future use.
+                        </p>
+                        <InputText
                             label="Commands"
                             placeholder="Enter a build commad (e.g. 'npm install')"
                             tooltip="Enter a single command or chain multiple commands with the && operator"

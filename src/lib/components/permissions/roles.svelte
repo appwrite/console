@@ -20,6 +20,7 @@
 
     let showUser = false;
     let showTeam = false;
+    let showLabel = false;
     let showCustom = false;
     let showDropdown = false;
 
@@ -112,6 +113,7 @@
         </TableBody>
     </Table>
     <Actions
+        bind:showLabel
         bind:showCustom
         bind:showDropdown
         bind:showTeam
@@ -128,6 +130,7 @@
         <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
             <div class="common-section">
                 <Actions
+                    bind:showLabel
                     bind:showCustom
                     bind:showDropdown
                     bind:showTeam

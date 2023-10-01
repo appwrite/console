@@ -147,66 +147,68 @@
                                 tooltip="Headers should contain alphanumeric characters (a-z, A-Z, and 0-9) and hyphens only (- and _).">
                                 Headers
                             </Label>
+                            <div class="form u-grid u-gap-8 u-margin-block-start-8">
+                                <FormList>
+                                    {#if headers}
+                                        {#each headers as [name, value], index}
+                                            <FormItem isMultiple>
+                                                <InputText
+                                                    isMultiple
+                                                    fullWidth
+                                                    label="Name"
+                                                    placeholder="Enter Name"
+                                                    id={`key-${index}`}
+                                                    bind:value={name} />
+                                                <InputText
+                                                    isMultiple
+                                                    fullWidth
+                                                    label="Value"
+                                                    placeholder="Enter value"
+                                                    id={`value-${index}`}
+                                                    bind:value />
+                                                <FormItemPart alignEnd>
+                                                    <Button
+                                                        text
+                                                        noMargin
+                                                        disabled={(!name || !value) && index === 0}
+                                                        on:click={() => {
+                                                            if (index === 0) {
+                                                                headers = [['', '']];
+                                                            } else {
+                                                                headers.splice(index, 1);
+                                                                headers = headers;
+                                                            }
+                                                        }}>
+                                                        <span class="icon-x" aria-hidden="true" />
+                                                    </Button>
+                                                </FormItemPart>
+                                            </FormItem>
+                                        {/each}
+                                    {/if}
+                                </FormList>
+                                <Button
+                                    noMargin
+                                    text
+                                    disabled={headers?.length &&
+                                    headers[headers.length - 1][0] &&
+                                    headers[headers.length - 1][1]
+                                        ? false
+                                        : true}
+                                    on:click={() => {
+                                        if (
+                                            headers[headers.length - 1][0] &&
+                                            headers[headers.length - 1][1]
+                                        ) {
+                                            headers.push(['', '']);
+                                            headers = headers;
+                                        }
+                                    }}>
+                                    <span class="icon-plus" aria-hidden="true" />
+                                    <span class="text">Add Header</span>
+                                </Button>
+                            </div>
                         </div>
-                        <div class="form u-grid u-gap-16">
-                            <FormList>
-                                {#if headers}
-                                    {#each headers as [name, value], index}
-                                        <FormItem isMultiple>
-                                            <InputText
-                                                isMultiple
-                                                fullWidth
-                                                label="Name"
-                                                placeholder="Enter Name"
-                                                id={`key-${index}`}
-                                                bind:value={name} />
-                                            <InputText
-                                                isMultiple
-                                                fullWidth
-                                                label="Value"
-                                                placeholder="Enter value"
-                                                id={`value-${index}`}
-                                                bind:value />
-                                            <FormItemPart alignEnd>
-                                                <Button
-                                                    text
-                                                    disabled={(!name || !value) && index === 0}
-                                                    on:click={() => {
-                                                        if (index === 0) {
-                                                            headers = [['', '']];
-                                                        } else {
-                                                            headers.splice(index, 1);
-                                                            headers = headers;
-                                                        }
-                                                    }}>
-                                                    <span class="icon-x" aria-hidden="true" />
-                                                </Button>
-                                            </FormItemPart>
-                                        </FormItem>
-                                    {/each}
-                                {/if}
-                            </FormList>
-                            <Button
-                                noMargin
-                                text
-                                disabled={headers?.length &&
-                                headers[headers.length - 1][0] &&
-                                headers[headers.length - 1][1]
-                                    ? false
-                                    : true}
-                                on:click={() => {
-                                    if (
-                                        headers[headers.length - 1][0] &&
-                                        headers[headers.length - 1][1]
-                                    ) {
-                                        headers.push(['', '']);
-                                        headers = headers;
-                                    }
-                                }}>
-                                <span class="icon-plus" aria-hidden="true" />
-                                <span class="text">Add Header</span>
-                            </Button>
-                        </div>
+
                         <InputTextarea
                             label="Body"
                             placeholder={`{ "myKey": "myValue" }`}

@@ -1,11 +1,15 @@
 <script lang="ts">
     import { addPlatform, Platform } from './platforms/+page.svelte';
-    import OnboardDarkIntro from './intro-dark.svg';
-    import OnboardDark1 from './onboard-1-dark.svg';
-    import OnboardDark2 from './onboard-2-dark.svg';
-    import OnboardLightIntro from './intro-light.svg';
-    import OnboardLight1 from './onboard-1-light.svg';
-    import OnboardLight2 from './onboard-2-light.svg';
+    import OnboardDarkIntro from './intro-dark.png';
+    import OnboardLightIntro from './intro-light.png';
+    import OnboardDark1Desktop from './onboard-1-dark-desktop.svg';
+    import OnboardDark1Mobile from './onboard-1-dark-mobile.svg';
+    import OnboardLight1Desktop from './onboard-1-light-desktop.svg';
+    import OnboardLight1Mobile from './onboard-1-light-mobile.svg';
+    import OnboardDark2Desktop from './onboard-2-dark-desktop.svg';
+    import OnboardDark2Mobile from './onboard-2-dark-mobile.svg';
+    import OnboardLight2Desktop from './onboard-2-light-desktop.svg';
+    import OnboardLight2Mobile from './onboard-2-light-mobile.svg';
     import { app } from '$lib/stores/app';
     import { wizard } from '$lib/stores/wizard';
     import Wizard from './keys/wizard.svelte';
@@ -40,20 +44,21 @@
     }
 
     $: onBoardIntro = $app.themeInUse === 'dark' ? OnboardDarkIntro : OnboardLightIntro;
-    $: onBoardImage1 = $app.themeInUse === 'dark' ? OnboardDark1 : OnboardLight1;
-    $: onBoardImage2 = $app.themeInUse === 'dark' ? OnboardDark2 : OnboardLight2;
+    $: onBoardImage1Mobile = $app.themeInUse === 'dark' ? OnboardDark1Mobile : OnboardLight1Mobile;
+    $: onBoardImage1Desktop =
+        $app.themeInUse === 'dark' ? OnboardDark1Desktop : OnboardLight1Desktop;
+    $: onBoardImage2Mobile = $app.themeInUse === 'dark' ? OnboardDark2Mobile : OnboardLight2Mobile;
+    $: onBoardImage2Desktop =
+        $app.themeInUse === 'dark' ? OnboardDark2Desktop : OnboardLight2Desktop;
 </script>
 
 <div class="card">
-    <header class="card-header common-section grid-1-2">
+    <header class="card-header common-section grid-1-2" style:--url={`url(${onBoardIntro})`}>
         <div class="grid-1-2-col-1">
             <h2 class="heading-level-5">Getting started guide</h2>
             <p class="u-line-height-1-5 u-margin-block-start-12">
                 Here are some next steps to start building
             </p>
-        </div>
-        <div class="grid-1-2-col-2 u-flex u-main-end u-cross-end is-not-mobile">
-            <img src={onBoardIntro} alt="" class="card-header-image" />
         </div>
     </header>
 
@@ -145,32 +150,56 @@
     </section>
 </div>
 
-<article
-    class="card u-grid u-width-full-line common-section onboard-cover"
-    style={`background-image: url(${onBoardImage1}); box-shadow: none !important`}>
-    <div class="u-flex u-flex-vertical u-cross-center">
-        <div class="avatar">
-            <i class="icon-lock-closed" />
-        </div>
-        <div class="common-section">
-            <h7 class="heading-level-7">Add a platform to view data about your project</h7>
-        </div>
-        <div class="u-margin-block-start-16 u-text-center" style:max-width="550px">
-            Get insights on bandwidth usage, requests, realtime connections and more after making
-            your first API call
+<article class="card u-grid u-width-full-line common-section onboard-cover">
+    <img src={onBoardImage1Mobile} class="is-only-mobile u-width-full-line" alt="statistics" />
+    <img src={onBoardImage1Desktop} class="is-not-mobile u-width-full-line" alt="statistics" />
+    <div class="u-height-100-percent u-width-full-line u-padding-block-start-20">
+        <div class="u-flex u-flex-vertical u-height-100-percent u-cross-center u-padding-inline-24">
+            <div class="avatar">
+                <i class="icon-lock-closed" />
+            </div>
+            <div class="common-section u-text-center">
+                <h7 class="heading-level-7">Add a platform to view data about your project</h7>
+            </div>
+            <div class="u-margin-block-start-16 u-text-center" style:max-width="550px">
+                Get insights on bandwidth usage, requests, realtime connections and more after
+                making your first API call
+            </div>
         </div>
     </div>
 </article>
 
-<img src={onBoardImage2} class="common-section" alt="statistics" />
+<img
+    src={onBoardImage2Mobile}
+    class="common-section is-only-mobile u-width-full-line"
+    alt="statistics" />
+<img
+    src={onBoardImage2Desktop}
+    class="common-section is-not-mobile u-width-full-line"
+    alt="statistics" />
 
-<style>
-    .onboard-cover {
-        height: 342px;
-        background: none;
-        background-position: top center;
-        background-size: 100% auto;
-        background-repeat: no-repeat;
-        border: none;
+<style lang="scss">
+    @import '@appwrite.io/pink/src/abstract/variables/_devices.scss';
+
+    @media #{$break2open} {
+        .card-header {
+            background-image: var(--url);
+            background-repeat: no-repeat;
+            background-position: top right;
+        }
+    }
+
+    .onboard-cover > div {
+        background-color: transparent;
+        z-index: 1;
+        position: absolute;
+
+        @media #{$break1} {
+            margin-block-start: 15%;
+        }
+
+        @media #{$break2open} {
+            margin-block-start: 2rem;
+        }
     }
 </style>

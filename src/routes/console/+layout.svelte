@@ -33,10 +33,7 @@
             .join(' ');
     }
 
-    let isAssistantEnabled = false;
-    onMount(async () => {
-        isAssistantEnabled = (await $consoleVariables)?._APP_ASSISTANT_ENABLED === true;
-    });
+    const isAssistantEnabled = $consoleVariables?._APP_ASSISTANT_ENABLED === true;
 
     $: isOnSettingsLayout = $project?.$id
         ? $page.url.pathname.includes(`project-${$project.$id}/settings`)
@@ -93,7 +90,7 @@
         {
             label: 'Contact support',
             callback: () => {
-                window.open('https://appwrite.io/support', '_blank');
+                window.open('https://github.com/appwrite/appwrite/issues/new/choose', '_blank');
             },
             group: 'help',
             icon: 'question-mark-circle'
