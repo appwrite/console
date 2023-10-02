@@ -187,7 +187,7 @@ export enum Submit {
     FunctionUpdateLogging = 'submit_function_update_logging',
     FunctionUpdateTimeout = 'submit_function_update_timeout',
     FunctionUpdateEvents = 'submit_function_update_events',
-    FunctionConnectRepo = 'submit_function_disconnect_repo',
+    FunctionConnectRepo = 'submit_function_connect_repo',
     FunctionDisconnectRepo = 'submit_function_disconnect_repo',
     FunctionRedeploy = 'submit_function_redeploy',
     DeploymentCreate = 'submit_deployment_create',

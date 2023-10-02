@@ -3,7 +3,7 @@
         number,
         {
             label: string;
-            component: typeof SvelteComponent;
+            component: typeof SvelteComponent<unknown>;
             optional?: boolean;
             disabled?: boolean;
         }

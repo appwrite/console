@@ -47,7 +47,7 @@
             );
         }
 
-        return columns.subscribe((ctx) => {
+        columns.subscribe((ctx) => {
             const columns = ctx.filter((n) => n.show).map((n) => n.id);
 
             if (isCustomCollection) {

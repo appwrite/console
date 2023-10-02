@@ -14,7 +14,7 @@
         (org) => (org as Organization)?.billingPlan === 'tier-0'
     );
 
-    $: if ($createOrganization.billingPlan === 'tier-0') {
+    $: if ($createOrganization.billingPlan === 'tier-0' && $createOrgSteps) {
         $createOrgSteps = updateStepStatus($createOrgSteps, 2, true);
         $createOrgSteps = updateStepStatus($createOrgSteps, 3, true);
     }

@@ -7,7 +7,7 @@
     import { updateStepStatus } from '$lib/stores/wizard';
     import { changeOrganizationTier, changeTierSteps } from './store';
 
-    $: if ($changeOrganizationTier.billingPlan === 'tier-0') {
+    $: if ($changeOrganizationTier.billingPlan === 'tier-0' && $changeTierSteps) {
         $changeTierSteps = updateStepStatus($changeTierSteps, 2, true);
         $changeTierSteps = updateStepStatus($changeTierSteps, 3, true);
     }
