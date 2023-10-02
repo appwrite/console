@@ -35,7 +35,7 @@
 
     function selectComponent(
         variableType: 'password' | 'text' | 'number' | 'email' | 'url' | 'phone'
-    ): typeof SvelteComponent {
+    ): typeof SvelteComponent<unknown> {
         switch (variableType) {
             case 'password':
                 return InputPassword;

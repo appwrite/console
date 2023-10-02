@@ -131,7 +131,7 @@
                             <SelectSearchItem data={o.data}>
                                 {o.label}
                             </SelectSearchItem>
-                            <svelte:fragment slot="output">
+                            <svelte:fragment slot="output" let:option={o}>
                                 <output class="input-text is-read-only">
                                     <SelectSearchItem data={o.data}>
                                         {o.label}
@@ -173,7 +173,7 @@
                         <SelectSearchItem data={o.data}>
                             {o.label}
                         </SelectSearchItem>
-                        <svelte:fragment slot="output">
+                        <svelte:fragment slot="output" let:option={o}>
                             <output class="input-text is-read-only">
                                 <SelectSearchItem data={o.data}>
                                     {o.label}
@@ -205,7 +205,7 @@
                             <SelectSearchItem data={o.data}>
                                 {o.label}
                             </SelectSearchItem>
-                            <svelte:fragment slot="output">
+                            <svelte:fragment slot="output" let:option={o}>
                                 <output class="input-text is-read-only">
                                     <SelectSearchItem data={o.data}>
                                         {o.label}
@@ -265,7 +265,7 @@
         <SelectSearchItem data={o.data}>
             {o.label}
         </SelectSearchItem>
-        <svelte:fragment slot="output">
+        <svelte:fragment slot="output" let:option={o}>
             <output class="input-text">
                 <SelectSearchItem data={o.data}>
                     {o.label}

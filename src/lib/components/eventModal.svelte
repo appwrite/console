@@ -339,6 +339,7 @@
             <div {...{ type: 'text' }} style="min-height: 2.5rem;">
                 {#each eventString as route, i}
                     <span
+                        role="tooltip"
                         class:u-opacity-0-5={helper !== route.description}
                         on:mouseenter={() => (helper = route.description)}
                         on:mouseleave={() => (helper = null)}>

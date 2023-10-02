@@ -5,8 +5,8 @@ import { writable } from 'svelte/store';
 export type WizardStore = {
     show: boolean;
     media?: string;
-    component?: typeof SvelteComponent;
-    cover?: typeof SvelteComponent;
+    component?: typeof SvelteComponent<unknown>;
+    cover?: typeof SvelteComponent<unknown>;
     interceptor?: () => Promise<void>;
     nextDisabled: boolean;
     step: number;
@@ -26,7 +26,7 @@ function createWizardStore() {
     return {
         subscribe,
         set,
-        start: (component: typeof SvelteComponent, media: string = null) =>
+        start: (component: typeof SvelteComponent<unknown>, media: string = null) =>
             update((n) => {
                 n.show = true;
                 n.component = component;
@@ -59,7 +59,7 @@ function createWizardStore() {
                 n.cover = null;
                 return n;
             }),
-        showCover: (component: typeof SvelteComponent) =>
+        showCover: (component: typeof SvelteComponent<unknown>) =>
             update((n) => {
                 n.cover = component;
                 return n;

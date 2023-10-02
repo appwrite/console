@@ -5,7 +5,7 @@
     import AppwriteLogoLight from '$lib/images/appwrite-logo-light.svg';
 </script>
 
-<div class="load-screen" out:fade>
+<div class="load-screen" out:fade|global>
     <div class="animation">
         <div />
         <div />
