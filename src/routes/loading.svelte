@@ -1,6 +1,8 @@
 <script>
     import { fade } from 'svelte/transition';
-    import AppwriteLogo from '$lib/images/appwrite-gray-light.svg';
+    import { app } from '$lib/stores/app';
+    import AppwriteLogoDark from '$lib/images/appwrite-logo-dark.svg';
+    import AppwriteLogoLight from '$lib/images/appwrite-logo-light.svg';
 </script>
 
 <div class="load-screen" out:fade|global>
@@ -10,7 +12,11 @@
         <div />
         <div />
     </div>
-    <img src={AppwriteLogo} alt="Appwrite Light Logo" width="132" height="34" />
+    <img
+        src={$app.themeInUse == 'dark' ? AppwriteLogoDark : AppwriteLogoLight}
+        width="120"
+        height="22"
+        alt="Appwrite Logo" />
 </div>
 
 <style lang="scss">

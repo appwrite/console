@@ -9,7 +9,8 @@
     import { Feedback } from '$lib/components/feedback';
     import Button from '$lib/elements/forms/button.svelte';
     import { isMac } from '$lib/helpers/platform';
-    import AppwriteLogo from '$lib/images/appwrite-gray-light.svg';
+    import AppwriteLogoDark from '$lib/images/appwrite-logo-dark.svg';
+    import AppwriteLogoLight from '$lib/images/appwrite-logo-light.svg';
     import DarkMode from '$lib/images/mode/dark-mode.svg';
     import LightMode from '$lib/images/mode/light-mode.svg';
     import SystemMode from '$lib/images/mode/system-mode.svg';
@@ -18,7 +19,6 @@
     import { newOrgModal, organization, organizationList } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
-    import { isCloud } from '$lib/system';
     import { slide } from 'svelte/transition';
 
     let showDropdown = false;
@@ -68,7 +68,11 @@
 <a
     class="logo"
     href={$organization ? `${base}/console/organization-${$organization.$id}` : `${base}/console`}>
-    <img src={AppwriteLogo} width="132" height="34" alt="Appwrite" />
+    <img
+        src={$app.themeInUse == 'dark' ? AppwriteLogoDark : AppwriteLogoLight}
+        width="120"
+        height="22"
+        alt="Appwrite" />
 </a>
 
 {#if $page.data.breadcrumbs}
@@ -91,7 +95,7 @@
             </svelte:fragment>
         </DropList>
         <a
-            href="https://appwrite.io/support"
+            href="https://github.com/appwrite/appwrite/issues/new/choose"
             target="_blank"
             rel="noopener noreferrer"
             class="button is-small is-text">
@@ -220,81 +224,9 @@
                                 </li>
                             </ul>
                         </section>
-                        {#if isCloud}
-                            <section class="drop-section">
-                                <a
-                                    class="claim"
-                                    title="Gradient Border"
-                                    href="/card"
-                                    data-sveltekit-reload>
-                                    Claim your Cloud card
-                                </a>
-                            </section>
-                        {/if}
                     </div>
                 {/if}
             </div>
         {/if}
     </nav>
 </div>
-
-<style lang="scss">
-    .claim {
-        display: block;
-        background-image: linear-gradient(90deg, #fd7f34, #bd155b);
-
-        padding: 0.6875rem 0.625rem;
-        position: relative;
-        z-index: 0;
-        border-radius: 0.5rem;
-        text-align: center;
-        width: 100%;
-
-        font-family: 'Inter';
-        font-style: normal;
-        font-weight: 500;
-        font-size: 12px;
-        line-height: 150%;
-
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-
-        color: #ffffff;
-
-        transition: 150ms ease;
-
-        &::before {
-            content: '';
-            position: absolute;
-            left: -1px;
-            top: -1px;
-            width: calc(100% + 2px);
-            height: calc(100% + 2px);
-            background: linear-gradient(
-                113.48deg,
-                #3b3b4eaa -15.8%,
-                rgba(255, 255, 255, 0.7) 27.72%,
-                #3b3b4eaa 109.47%
-            );
-            z-index: -2;
-            border-radius: 0.3125rem;
-        }
-
-        &::after {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(180deg, #1b1b28 0%, #272739 62.73%, #c81b4c 136.87%);
-            z-index: -1;
-
-            border-radius: 0.25rem;
-        }
-
-        &:hover {
-            opacity: 0.75;
-        }
-    }
-</style>
