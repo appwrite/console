@@ -53,13 +53,13 @@
             Update your function version to make use of new features including build commands and HTTP
             data in your executions. To update, follow the steps outlined in our
             <a
-                href="https://appwrite.io/docs/functions-develop#upgrade"
+                href="https://appwrite.io/docs/products/functions/development"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="link">documentation</a
             >.
             <svelte:fragment slot="buttons">
-                <Button href="https://appwrite.io/docs/functions-develop#upgrade" external text>
+                <Button href="https://appwrite.io/docs/products/functions/development" external text>
                     Learn more
                 </Button>
             </svelte:fragment>

@@ -77,7 +77,7 @@
     {:else}
         <Empty
             single
-            href="https://appwrite.io/docs/webhooks"
+            href="https://appwrite.io/docs/advanced/platform/webhooks"
             target="webhook"
             on:click={openWizard} />
     {/if}

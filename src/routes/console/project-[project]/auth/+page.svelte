@@ -138,7 +138,7 @@
     {:else}
         <Empty
             single
-            href="https://appwrite.io/docs/server/users"
+            href="https://appwrite.io/docs/references/cloud/server-nodejs/users"
             target="user"
             on:click={() => showCreateUser.set(true)} />
     {/if}

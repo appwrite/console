@@ -10,7 +10,7 @@
     <svelte:fragment slot="title">Permissions</svelte:fragment>
     <svelte:fragment slot="subtitle">
         Choose who can access your collection and documents. For more information, check out the <a
-            href="https://appwrite.io/docs/permissions"
+            href="https://appwrite.io/docs/products/databases/permissions"
             target="_blank"
             rel="noopener noreferrer"
             class="link">
