@@ -77,17 +77,3 @@
         <slot />
     </button>
 {/if}
-
-<style lang="scss">
-    .is-github {
-        background-color: #373b4d;
-
-        &:hover {
-            background-color: lighten($color: #373b4d, $amount: 2.5);
-        }
-
-        &:active {
-            background-color: darken($color: #373b4d, $amount: 5);
-        }
-    }
-</style>

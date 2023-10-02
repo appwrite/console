@@ -10,7 +10,7 @@
     } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { project } from '../../store';
-    import { onMount } from 'svelte/internal';
+    import { onMount } from 'svelte';
     import InputPassword from '$lib/elements/forms/inputPassword.svelte';
     import { sdk } from '$lib/stores/sdk';
     import { invalidate } from '$app/navigation';
