@@ -362,17 +362,13 @@ export class Billing {
         );
     }
 
-    async listInvoices(
-        organizationId: string,
-        queries: Query[] = [],
-        search = ''
-    ): Promise<InvoiceList> {
+    async listInvoices(organizationId: string, queries: Query[] = []): Promise<InvoiceList> {
         const path = `/organizations/${organizationId}/invoices`;
         const params = {
             organizationId,
-            queries,
-            search
+            queries
         };
+
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
             'get',
