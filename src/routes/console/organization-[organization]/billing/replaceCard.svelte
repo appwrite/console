@@ -100,8 +100,13 @@
     }
 </script>
 
-<Modal bind:show bind:error onSubmit={handleSubmit} size="big" headerDivider={false}>
-    <svelte:fragment slot="header">Replace payment method</svelte:fragment>
+<Modal
+    bind:show
+    bind:error
+    onSubmit={handleSubmit}
+    size="big"
+    headerDivider={false}
+    title="Replace payment method">
     <p class="text">Replace the existing payment method for your organization.</p>
     <div class:boxes-wrapper={methods?.total}>
         {#if methods?.total}

@@ -87,7 +87,7 @@
     </p>
     <svelte:fragment slot="aside">
         {#if invoiceList.total}
-            <Table noMargin noStyles>
+            <Table noMargin noStyles transparent>
                 <TableHeader>
                     <TableCellHead>Due Date</TableCellHead>
                     <TableCellHead>Status</TableCellHead>

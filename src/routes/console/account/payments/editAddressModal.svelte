@@ -58,8 +58,7 @@
     }
 </script>
 
-<Modal bind:show onSubmit={handleSubmit} size="big">
-    <svelte:fragment slot="header">Edit billing address</svelte:fragment>
+<Modal bind:show onSubmit={handleSubmit} size="big" title="Edit billing address">
     <InputSelect
         bind:value={selectedAddress.country}
         {options}

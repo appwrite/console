@@ -35,8 +35,8 @@
     onSubmit={handleDelete}
     icon="exclamation"
     state="warning"
-    headerDivider={false}>
-    <svelte:fragment slot="header">Delete billing address</svelte:fragment>
+    headerDivider={false}
+    title="Delete billing address">
     <p class="text">Are you sure you want to delete this billing address from your account?</p>
 
     <svelte:fragment slot="footer">

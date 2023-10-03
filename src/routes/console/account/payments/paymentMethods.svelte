@@ -50,7 +50,7 @@
     </p>
     <svelte:fragment slot="aside">
         {#if $paymentMethods?.total}
-            <Table noMargin noStyles>
+            <Table noMargin noStyles transparent>
                 <TableHeader>
                     <TableCellHead>Payment methods</TableCellHead>
                 </TableHeader>

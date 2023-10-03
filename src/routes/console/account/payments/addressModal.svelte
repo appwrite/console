@@ -62,8 +62,7 @@
     $: isButtonDisabled = !country || !address || !city || !state || !zip;
 </script>
 
-<Modal bind:show onSubmit={handleSubmit} size="big">
-    <svelte:fragment slot="header">Add billing address</svelte:fragment>
+<Modal bind:show onSubmit={handleSubmit} size="big" title="Add billing address">
     <InputSelect
         bind:value={country}
         {options}

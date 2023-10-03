@@ -55,8 +55,8 @@
     onSubmit={isBackup ? removeBackuptMethod : removeDefaultMethod}
     icon="exclamation"
     state="warning"
-    headerDivider={false}>
-    <svelte:fragment slot="header">Delete payment method</svelte:fragment>
+    headerDivider={false}
+    title="Delete payment method">
     <p data-private>
         Are you sure you want to delete the payment method from <b>{$organization?.name}</b>?
     </p>

@@ -44,7 +44,6 @@
                     <slot name="title" />
                 </h6>
             {/if}
-            <p class="alert-message"><slot /></p>
 
             {#if $$slots.default}
                 <p class="alert-message"><slot /></p>

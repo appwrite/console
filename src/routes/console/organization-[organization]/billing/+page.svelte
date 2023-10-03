@@ -15,6 +15,10 @@
     $: defaultPaymentMethod = $paymentMethods?.paymentMethods?.find(
         (method: PaymentMethodData) => method.$id === $organization?.paymentMethodId
     );
+
+    $: backupPaymentMethod = $paymentMethods?.paymentMethods?.find(
+        (method: PaymentMethodData) => method.$id === $organization?.backupPaymentMethodId
+    );
 </script>
 
 <Container>
@@ -26,7 +30,7 @@
             To avoid service disruptions in your projects, please verify your payment details and update
             them if necessary.
         </Alert>
-    {:else if defaultPaymentMethod?.failed}
+    {:else if defaultPaymentMethod?.failed && !backupPaymentMethod}
         <Alert type="error">
             <svelte:fragment slot="title">
                 The default payment method for {$organization.name} has expired

@@ -33,8 +33,7 @@
     }
 </script>
 
-<Modal bind:error onSubmit={handleSubmit} size="big" bind:show>
-    <svelte:fragment slot="header">Add payment method</svelte:fragment>
+<Modal bind:error onSubmit={handleSubmit} size="big" bind:show title="Add payment method">
     <FormList>
         <InputText
             id="name"

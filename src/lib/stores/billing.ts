@@ -78,20 +78,21 @@ export const tierScale = {
 export const apperanceLight = {
     variables: {
         colorPrimary: '#606a7b',
-        colorText: '#373B4D',
+        colorText: 'rgb(107, 107, 112)',
         colorBackground: '#FFFFFF',
         color: '#606a7b',
         colorDanger: '#df1b41',
         fontFamily: 'Inter, arial, sans-serif',
-        borderRadius: '4px'
+        borderRadius: '4px',
+        fontSizeBase: '14px'
     },
     rules: {
         '.Input:hover': {
-            border: 'solid 1px #C4C6D7',
+            border: 'solid 1px rgb(195, 195, 198)',
             boxShadow: 'none'
         },
         '.Input:focus': {
-            border: 'solid 1px #C4C6D7',
+            border: 'solid 1px rgb(195, 195, 198)',
             boxShadow: 'none'
         },
         '.Input::placeholder': {
@@ -103,23 +104,28 @@ export const apperanceLight = {
         }
     }
 };
+
 export const apperanceDark = {
     variables: {
         colorPrimary: '#606a7b',
-        colorText: '#C5C7D8',
-        colorBackground: '#161622',
+        colorText: 'rgb(195, 195, 198)',
+        colorBackground: 'rgb(24, 24, 27)',
         colorDanger: '#FF453A',
         fontFamily: 'Inter, arial, sans-serif',
-        borderRadius: '4px'
+        borderRadius: '4px',
+        fontSizeBase: '14px'
     },
     rules: {
         '.Input:hover': {
-            border: 'solid 1px #4F5769',
+            border: 'solid 1px rgb(87, 87, 92)',
             boxShadow: 'none'
         },
         '.Input:focus': {
-            border: 'solid 1px #4F5769',
+            border: 'solid 1px rgb(87, 87, 92)',
             boxShadow: 'none'
+        },
+        '.Input::placeholder': {
+            color: 'rgb(87, 87, 92)'
         },
         '.Input--invalid': {
             border: 'solid 1px var(--colorDanger)',
