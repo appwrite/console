@@ -29,7 +29,7 @@
 
     export let showPayment = false;
     let showDropdown = [];
-    let selectedMethod: string;
+    let selectedMethod: PaymentMethodData;
     let selectedLinkedOrgs: Organization[] = [];
     let showDelete = false;
     let showEdit = false;
@@ -106,14 +106,14 @@
                                                     on:click={() => {
                                                         showEdit = true;
                                                         showDropdown[i] = false;
-                                                        selectedMethod = paymentMethod.$id;
+                                                        selectedMethod = paymentMethod;
                                                     }}>
                                                     Edit
                                                 </DropListItem>
                                                 <DropListItem
                                                     icon="trash"
                                                     on:click={() => {
-                                                        selectedMethod = paymentMethod.$id;
+                                                        selectedMethod = paymentMethod;
                                                         selectedLinkedOrgs = linkedOrgs;
                                                         showDelete = true;
                                                         showDropdown[i] = false;
@@ -149,5 +149,8 @@
 {/if}
 
 {#if selectedMethod}
-    <DeletePaymentModal method={selectedMethod} bind:showDelete linkedOrgs={selectedLinkedOrgs} />
+    <DeletePaymentModal
+        method={selectedMethod.$id}
+        bind:showDelete
+        linkedOrgs={selectedLinkedOrgs} />
 {/if}

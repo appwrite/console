@@ -272,9 +272,7 @@
 {/if}
 {#if showEdit && isCloud && hasStripePublicKey}
     <EditPaymentModal
-        selectedPaymentMethod={isSelectedBackup
-            ? $organization.backupPaymentMethodId
-            : $organization.paymentMethodId}
+        selectedPaymentMethod={isSelectedBackup ? backupPaymentMethod : defaultPaymentMethod}
         bind:show={showEdit} />
 {/if}
 {#if showReplace && isCloud && hasStripePublicKey}

@@ -1,14 +1,15 @@
 <script lang="ts">
     // import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { Modal } from '$lib/components';
+    import { Alert, Modal } from '$lib/components';
     import { Button, FormList, InputNumber, InputSelect } from '$lib/elements/forms';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
+    import type { PaymentMethodData } from '$lib/sdk/billing';
 
     export let show = false;
-    export let selectedPaymentMethod: string;
+    export let selectedPaymentMethod: PaymentMethodData;
 
     const options = [
         { value: '01', label: '01' },
@@ -32,7 +33,7 @@
     async function handleSubmit() {
         try {
             await sdk.forConsole.billing.updatePaymentMethod(
-                selectedPaymentMethod,
+                selectedPaymentMethod.$id,
                 month,
                 year?.toString()
             );
@@ -48,7 +49,18 @@
     }
 </script>
 
-<Modal bind:error onSubmit={handleSubmit} size="big" bind:show title="Update payment method">
+<Modal
+    bind:error
+    onSubmit={handleSubmit}
+    size="big"
+    bind:show
+    title="Update payment method"
+    headerDivider={false}>
+    {#if selectedPaymentMethod?.expired}
+        <Alert type="error">
+            <svelte:fragment slot="title">This payment method has expired</svelte:fragment>
+        </Alert>
+    {/if}
     <FormList>
         <InputSelect
             id="month"
