@@ -3,8 +3,7 @@
     import CreateMember from './createMember.svelte';
     import Create from '../createOrganization.svelte';
     import { isCloud } from '$lib/system';
-    import { onMount } from 'svelte';
-    import { addNotification } from '$lib/stores/notifications';
+    import { addNotification, notifications } from '$lib/stores/notifications';
     import { toLocaleDate } from '$lib/helpers/date';
     import { sdk } from '$lib/stores/sdk';
     import { goto } from '$app/navigation';
@@ -14,7 +13,7 @@
     import { requestedMigration } from '$routes/store';
     import { openMigrationWizard } from '../(migration-wizard)';
 
-    onMount(() => {
+    organization.subscribe(() => {
         if (isCloud) {
             checkForTrialEnding();
             paymentExpired();
@@ -22,8 +21,12 @@
     });
 
     function checkForTrialEnding() {
-        if (localStorage.getItem('trialEndingNotification') === 'true') return;
-        if ($organization?.billingTrialDays === 5) {
+        if (
+            localStorage.getItem('trialEndingNotification') === 'true' &&
+            $organization?.billingTrialDays
+        )
+            return;
+        if ($organization?.billingTrialDays >= 5) {
             const expirationDate = new Date(
                 new Date().getTime() + 5 * 24 * 60 * 60 * 1000
             ).toString();
@@ -41,17 +44,22 @@
 
     //TODO: move this function
     async function paymentExpired() {
-        if (localStorage.getItem('paymentExpiredNotification') === 'true') return;
+        if (!$organization?.paymentMethodId) return;
         const payment = await sdk.forConsole.billing.getPaymentMethod(
             $organization.paymentMethodId
         );
-
-        if (payment.expired) {
+        const year = new Date().getFullYear();
+        const month = new Date().getMonth();
+        const expiredMessage = `The default payment method for <b>${$organization.name}</b> has expired`;
+        const expiringMessage = `The default payment method for <b>${$organization.name}</b> will expire soon`;
+        const expiredNotification = $notifications.some((n) => n.message === expiredMessage);
+        const expiringNotification = $notifications.some((n) => n.message === expiringMessage);
+        if (payment.expired && !expiredNotification) {
             addNotification({
-                type: 'info',
+                type: 'error',
                 isHtml: true,
-                dismissible: false,
-                message: `The default payment method for <b>${$organization.name}</b> has expired`,
+                timeout: 0,
+                message: expiredMessage,
                 buttons: [
                     {
                         name: 'Update payment details',
@@ -61,7 +69,24 @@
                     }
                 ]
             });
-            localStorage.setItem('paymentExpiredNotification', 'true');
+        } else if (
+            !expiringNotification &&
+            (payment.expiryYear < year ||
+                (payment.expiryYear === year && payment.expiryMonth < month))
+        ) {
+            addNotification({
+                type: 'warning',
+                isHtml: true,
+                message: expiringMessage,
+                buttons: [
+                    {
+                        name: 'Update payment details',
+                        method: () => {
+                            goto(`${base}/console/account/payments`);
+                        }
+                    }
+                ]
+            });
         }
     }
 

@@ -53,8 +53,7 @@
                     label="Email address"
                     id="email"
                     placeholder="Email address"
-                    bind:value={email}
-                    required>
+                    bind:value={email}>
                     <Button secondary submit>Add</Button>
                 </InputEmail>
             </FormList>
