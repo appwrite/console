@@ -3,6 +3,7 @@
     import {
         CardGrid,
         DropList,
+        DropListItem,
         DropListLink,
         EmptySearch,
         Heading,
@@ -43,17 +44,36 @@
     });
 
     async function download() {
-        return await sdk.forConsole.billing.downloadInvoice(
+        const response = await sdk.forConsole.billing.downloadInvoice(
             $page.params.organization,
             selectedInvoice
         );
+        console.log(response);
+        const url = pdfToURL(response.message);
+        return url;
     }
 
     async function view() {
-        return await sdk.forConsole.billing.getInvoiceView(
+        const response = await sdk.forConsole.billing.getInvoiceView(
             $page.params.organization,
             selectedInvoice
         );
+        const url = pdfToURL(response.message);
+        return url;
+    }
+
+    function pdfToURL(pdf: ArrayBuffer) {
+        const blob = new Blob([pdf], { type: 'application/pdf' });
+        return URL.createObjectURL(blob);
+    }
+
+    function downloadInvoce() {
+        const link = document.createElement('a');
+        link.href = downloadLink;
+        link.download = `invoice-${selectedInvoice}.pdf`;
+        link.click();
+        URL.revokeObjectURL(link.href);
+        document.body.removeChild(link);
     }
 
     async function request() {
@@ -131,12 +151,21 @@
                                         <span class="icon-dots-horizontal" aria-hidden="true" />
                                     </Button>
                                     <svelte:fragment slot="list">
-                                        <DropListLink icon="external-link" external href={viewLink}>
+                                        <DropListLink
+                                            icon="external-link"
+                                            external
+                                            href={viewLink}
+                                            on:click={() => (showDropdown[i] = !showDropdown[i])}>
                                             View invoice
                                         </DropListLink>
-                                        <DropListLink icon="download" external href={downloadLink}>
+                                        <DropListItem
+                                            icon="download"
+                                            on:click={() => {
+                                                downloadInvoce();
+                                                showDropdown[i] = !showDropdown[i];
+                                            }}>
                                             Download PDF
-                                        </DropListLink>
+                                        </DropListItem>
                                     </svelte:fragment>
                                 </DropList>
                             </TableCell>

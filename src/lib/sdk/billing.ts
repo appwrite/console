@@ -397,7 +397,10 @@ export class Billing {
         );
     }
 
-    async getInvoiceView(organizationId: string, invoiceId: string): Promise<URL> {
+    async getInvoiceView(
+        organizationId: string,
+        invoiceId: string
+    ): Promise<Record<string, ArrayBuffer>> {
         const path = `/organizations/${organizationId}/invoices/${invoiceId}/view`;
         const params = {
             organizationId,
@@ -408,13 +411,16 @@ export class Billing {
             'get',
             uri,
             {
-                'content-type': 'application/json'
+                'content-type': 'application/pdf'
             },
             params
         );
     }
 
-    async downloadInvoice(organizationId: string, invoiceId: string): Promise<URL> {
+    async downloadInvoice(
+        organizationId: string,
+        invoiceId: string
+    ): Promise<Record<string, ArrayBuffer>> {
         const path = `/organizations/${organizationId}/invoices/${invoiceId}/download`;
         const params = {
             organizationId,
