@@ -19,6 +19,7 @@
     import { newOrgModal, organization, organizationList } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
+    import { isCloud } from '$lib/system';
     import { slide } from 'svelte/transition';
 
     let showDropdown = false;
@@ -65,15 +66,25 @@
 
 <svelte:window on:click={onBlur} />
 
-<a
-    class="logo"
-    href={$organization ? `${base}/console/organization-${$organization.$id}` : `${base}/console`}>
-    <img
-        src={$app.themeInUse == 'dark' ? AppwriteLogoDark : AppwriteLogoLight}
-        width="120"
-        height="22"
-        alt="Appwrite" />
-</a>
+<div class="logo u-inline-flex u-gap-16 u-cross-center">
+    <a
+        href={$organization
+            ? `${base}/console/organization-${$organization.$id}`
+            : `${base}/console`}>
+        <img
+            src={$app.themeInUse == 'dark' ? AppwriteLogoDark : AppwriteLogoLight}
+            width="120"
+            height="22"
+            alt="Appwrite" />
+    </a>
+    {#if isCloud}
+        <div
+            class="tag eyebrow-heading-3"
+            style="--p-tag-height: 1.785rem; --p-tag-content-height: 1.15rem; padding-block: 0.25rem;">
+            <span class="text u-x-small" style="font-weight: 500">Beta</span>
+        </div>
+    {/if}
+</div>
 
 {#if $page.data.breadcrumbs}
     <svelte:component this={$page.data.breadcrumbs} />
