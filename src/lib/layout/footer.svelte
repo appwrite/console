@@ -25,12 +25,12 @@
                 </div>
             </li>
             <li class="inline-links-item">
-                <a href="https://appwrite.io/policy/terms" target="_blank" rel="noreferrer">
+                <a href="https://appwrite.io/terms" target="_blank" rel="noreferrer">
                     <span class="text">Terms</span>
                 </a>
             </li>
             <li class="inline-links-item">
-                <a href="https://appwrite.io/policy/privacy" target="_blank" rel="noreferrer">
+                <a href="https://appwrite.io/privacy" target="_blank" rel="noreferrer">
                     <span class="text">Privacy</span>
                 </a>
             </li>
