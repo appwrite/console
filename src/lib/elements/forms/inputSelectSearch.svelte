@@ -4,6 +4,7 @@
     import { createEventDispatcher, onMount } from 'svelte';
     import { Label } from '.';
 
+    /* eslint no-undef: "off" */
     type Option = $$Generic<{
         value: string | boolean | number;
         label: string;
@@ -128,6 +129,8 @@
             <div class="input-text-wrapper" style="--amount-of-buttons:2">
                 {#if $$slots.output && selectedOption}
                     <div
+                        role="button"
+                        tabindex="0"
                         on:keyup={clickOnEnter}
                         on:click={() => {
                             if (interactiveOutput) hasFocus = !hasFocus;

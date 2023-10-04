@@ -87,6 +87,7 @@
     }
 
     // We cast to any to not cause type errors in the input components
+    /* eslint  @typescript-eslint/no-explicit-any: 'off' */
     let value: any = null;
 
     $: {

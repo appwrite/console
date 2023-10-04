@@ -138,9 +138,7 @@
             error = true;
         }
 
-        return () => {
-            isOpen = false;
-        };
+        isOpen = false;
     });
 
     $: resources = providerResources[$provider.provider];

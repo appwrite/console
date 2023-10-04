@@ -1,9 +1,9 @@
-import type { SvelteComponentDev } from 'svelte/internal';
+import type { SvelteComponent } from 'svelte';
 import { writable } from 'svelte/store';
 
 export type SubPanel = {
     name: string;
-    component: typeof SvelteComponentDev;
+    component: typeof SvelteComponent<unknown>;
 };
 
 type CastSubPanel = Omit<SubPanel, 'component'> & {

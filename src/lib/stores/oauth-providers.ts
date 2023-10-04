@@ -15,7 +15,7 @@ export type Provider = Models.Provider & {
     key: string;
     icon: string;
     docs?: string;
-    component?: typeof SvelteComponent;
+    component?: typeof SvelteComponent<unknown>;
 };
 
 export type Providers = {

@@ -197,7 +197,7 @@
     </div>
 
     {#if subNavigation}
-        <div class="side-nav-level-2 is-open" transition:slide|local={{ axis: 'x', duration: 250 }}>
+        <div class="side-nav-level-2 is-open" transition:slide={{ axis: 'x', duration: 250 }}>
             <div class="side-nav-main">
                 <svelte:component this={subNavigation} />
             </div>

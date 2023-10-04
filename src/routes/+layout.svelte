@@ -10,7 +10,6 @@
     import { user } from '$lib/stores/user';
     import { ENV, isCloud } from '$lib/system';
     import * as Sentry from '@sentry/svelte';
-    import { BrowserTracing } from '@sentry/tracing';
     import LogRocket from 'logrocket';
     import { onMount } from 'svelte';
     import { onCLS, onFCP, onFID, onINP, onLCP, onTTFB } from 'web-vitals';
@@ -45,7 +44,7 @@
              */
             Sentry.init({
                 dsn: 'https://c7ce178bdedd486480317b72f282fd39@o1063647.ingest.sentry.io/4504158071422976',
-                integrations: [new BrowserTracing()],
+                integrations: [new Sentry.BrowserTracing()],
                 tracesSampleRate: 1.0
             });
 
@@ -134,6 +133,7 @@
 
 <Progress />
 
+<!-- svelte-ignore css-unused-selector -->
 <style lang="scss" global>
     @import '@appwrite.io/pink/src/abstract/variables/_devices.scss';
     .tippy-box {
