@@ -95,7 +95,7 @@
             </svelte:fragment>
         </DropList>
         <a
-            href="https://github.com/appwrite/appwrite/issues/new/choose"
+            href="https://appwrite.io/discord"
             target="_blank"
             rel="noopener noreferrer"
             class="button is-small is-text">
