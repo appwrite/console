@@ -10,7 +10,7 @@ import io.appwrite.services.Account
 
 val client = Client(context)
     .setEndpoint("${endpoint}")
-    .setProject("${project}");
+    .setProject("${project}");`
 </script>
 
 <WizardStep>
