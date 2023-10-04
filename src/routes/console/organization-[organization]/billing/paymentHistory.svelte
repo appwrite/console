@@ -34,8 +34,6 @@
         invoices: [],
         total: 0
     };
-    let downloadLink: string;
-    let viewLink: string;
 
     const limit = 5;
 
@@ -43,23 +41,18 @@
         request();
     });
 
-    async function download() {
-        const response = await sdk.forConsole.billing.downloadInvoice(
+    async function fetchLinks() {
+        const view = await sdk.forConsole.billing.getInvoiceView(
             $page.params.organization,
             selectedInvoice
         );
-        console.log(response);
-        const url = pdfToURL(response.message);
-        return url;
-    }
-
-    async function view() {
-        const response = await sdk.forConsole.billing.getInvoiceView(
+        const down = await sdk.forConsole.billing.downloadInvoice(
             $page.params.organization,
             selectedInvoice
         );
-        const url = pdfToURL(response.message);
-        return url;
+        const viewURL = pdfToURL(view.message);
+        const downURL = pdfToURL(down.message);
+        return { viewURL, downURL };
     }
 
     function pdfToURL(pdf: ArrayBuffer) {
@@ -67,9 +60,9 @@
         return URL.createObjectURL(blob);
     }
 
-    function downloadInvoce() {
+    function downloadInvoce(url: string) {
         const link = document.createElement('a');
-        link.href = downloadLink;
+        link.href = url;
         link.download = `invoice-${selectedInvoice}.pdf`;
         link.click();
         URL.revokeObjectURL(link.href);
@@ -82,15 +75,6 @@
             Query.offset(offset),
             Query.orderDesc('$createdAt')
         ]);
-    }
-
-    $: if (selectedInvoice) {
-        download().then((res) => {
-            downloadLink = res.toString();
-        });
-        view().then((res) => {
-            viewLink = res.toString();
-        });
     }
 
     $: if (offset !== null) {
@@ -151,21 +135,31 @@
                                         <span class="icon-dots-horizontal" aria-hidden="true" />
                                     </Button>
                                     <svelte:fragment slot="list">
-                                        <DropListLink
-                                            icon="external-link"
-                                            external
-                                            href={viewLink}
-                                            on:click={() => (showDropdown[i] = !showDropdown[i])}>
-                                            View invoice
-                                        </DropListLink>
-                                        <DropListItem
-                                            icon="download"
-                                            on:click={() => {
-                                                downloadInvoce();
-                                                showDropdown[i] = !showDropdown[i];
-                                            }}>
-                                            Download PDF
-                                        </DropListItem>
+                                        {#await fetchLinks()}
+                                            <DropListItem loading disabled>
+                                                View invoice
+                                            </DropListItem>
+                                            <DropListItem loading disabled>
+                                                Download PDF
+                                            </DropListItem>
+                                        {:then { viewURL, downURL }}
+                                            <DropListLink
+                                                icon="external-link"
+                                                external
+                                                href={viewURL}
+                                                on:click={() =>
+                                                    (showDropdown[i] = !showDropdown[i])}>
+                                                View invoice
+                                            </DropListLink>
+                                            <DropListItem
+                                                icon="download"
+                                                on:click={() => {
+                                                    downloadInvoce(downURL);
+                                                    showDropdown[i] = !showDropdown[i];
+                                                }}>
+                                                Download PDF
+                                            </DropListItem>
+                                        {/await}
                                     </svelte:fragment>
                                 </DropList>
                             </TableCell>
