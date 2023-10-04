@@ -8,7 +8,7 @@
     import Shell from '$lib/layout/shell.svelte';
     import { app } from '$lib/stores/app';
     import { log } from '$lib/stores/logs';
-    import { newOrgModal } from '$lib/stores/organization';
+    import { newOrgModal, organization } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
     import { onMount } from 'svelte';
     import { loading, requestedMigration } from '../store';
@@ -23,11 +23,13 @@
     import { AIPanel, OrganizationsPanel, ProjectsPanel } from '$lib/commandCenter/panels';
     import { orgSearcher, projectsSearcher } from '$lib/commandCenter/searchers';
     import { addSubPanel } from '$lib/commandCenter/subPanels';
-    import { addNotification } from '$lib/stores/notifications';
+    import { addNotification, notifications } from '$lib/stores/notifications';
     import { openMigrationWizard } from './(migration-wizard)';
     import { project } from './project-[project]/store';
     import { feedback } from '$lib/stores/feedback';
     import { consoleVariables } from './store';
+    import { isCloud } from '$lib/system';
+    import { sdk } from '$lib/stores/sdk';
 
     function kebabToSentenceCase(str: string) {
         return str
@@ -242,6 +244,82 @@
         } else if (hours >= $feedback.visualized * 10) {
             feedback.toggleNotification();
             feedback.switchType('nps');
+        }
+    }
+
+    organization.subscribe(() => {
+        if (isCloud) {
+            checkForTrialEnding();
+            paymentExpired();
+        }
+    });
+
+    function checkForTrialEnding() {
+        if (
+            localStorage.getItem('trialEndingNotification') === 'true' &&
+            $organization?.billingTrialDays
+        )
+            return;
+        if ($organization?.billingTrialDays >= 5) {
+            const expirationDate = new Date(
+                new Date().getTime() + 5 * 24 * 60 * 60 * 1000
+            ).toString();
+            addNotification({
+                type: 'info',
+                isHtml: true,
+                message: `<b>We hope you've been enjoying the Pro plan.</b>
+                You will be billed on a recurring 30 day cycle after your trial period ends on <b>${toLocaleDate(
+                    expirationDate
+                )}</b>`
+            });
+            localStorage.setItem('trialEndingNotification', 'true');
+        }
+    }
+
+    async function paymentExpired() {
+        if (!$organization?.paymentMethodId) return;
+        const payment = await sdk.forConsole.billing.getPaymentMethod(
+            $organization.paymentMethodId
+        );
+        const year = new Date().getFullYear();
+        const month = new Date().getMonth();
+        const expiredMessage = `The default payment method for <b>${$organization.name}</b> has expired`;
+        const expiringMessage = `The default payment method for <b>${$organization.name}</b> will expire soon`;
+        const expiredNotification = $notifications.some((n) => n.message === expiredMessage);
+        const expiringNotification = $notifications.some((n) => n.message === expiringMessage);
+        if (payment.expired && !expiredNotification) {
+            addNotification({
+                type: 'error',
+                isHtml: true,
+                timeout: 0,
+                message: expiredMessage,
+                buttons: [
+                    {
+                        name: 'Update payment details',
+                        method: () => {
+                            goto(`${base}/console/account/payments`);
+                        }
+                    }
+                ]
+            });
+        } else if (
+            !expiringNotification &&
+            (payment.expiryYear < year ||
+                (payment.expiryYear === year && payment.expiryMonth < month))
+        ) {
+            addNotification({
+                type: 'warning',
+                isHtml: true,
+                message: expiringMessage,
+                buttons: [
+                    {
+                        name: 'Update payment details',
+                        method: () => {
+                            goto(`${base}/console/account/payments`);
+                        }
+                    }
+                ]
+            });
         }
     }
 
