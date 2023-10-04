@@ -44,8 +44,8 @@
     </slot>
 {/if}
 
-<div class:u-flex={isFlex} class=" u-gap-12 common-section u-main-space-between">
-    <div class="u-flex u-cross-child-center u-gap-16">
+<header class:u-flex={isFlex} class="u-gap-12 common-section u-main-space-between u-flex-wrap">
+    <div class="u-flex u-cross-child-center u-gap-16 u-flex-wrap">
         <Heading tag={titleTag} size={titleSize}>{title}</Heading>
         {#if isCloud && limit !== 'unlimited' && limit < Infinity}
             <div
@@ -71,7 +71,7 @@
             <div
                 use:tooltip={{
                     content: `Upgrade to add more ${title.toLocaleLowerCase()}`,
-                    disabled: total < limit || limit === 'unlimited'
+                    disabled: limit === 'unlimited' || total < limit
                 }}>
                 <Button
                     on:click={buttonMethod}
@@ -83,7 +83,7 @@
             </div>
         {/if}
     </slot>
-</div>
+</header>
 
 {#if isCloud}
     <div class="u-hide">

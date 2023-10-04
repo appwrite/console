@@ -5,6 +5,7 @@
     import { tierFree, tierPro, tierScale } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { updateStepStatus } from '$lib/stores/wizard';
+    import { onMount } from 'svelte';
     import { changeOrganizationTier, changeTierSteps } from './store';
 
     $: if ($changeOrganizationTier.billingPlan === 'tier-0' && $changeTierSteps) {
@@ -19,6 +20,17 @@
         $changeTierSteps = updateStepStatus($changeTierSteps, 2, false);
         $changeTierSteps = updateStepStatus($changeTierSteps, 3, false);
     }
+
+    onMount(() => {
+        //Select closest tier from starting one
+        if ($changeOrganizationTier.billingPlan === 'tier-2') {
+            $changeOrganizationTier.billingPlan = 'tier-1';
+        } else if ($changeOrganizationTier.billingPlan === 'tier-1') {
+            $changeOrganizationTier.billingPlan = 'tier-2';
+        } else if ($changeOrganizationTier.billingPlan === 'tier-0') {
+            $changeOrganizationTier.billingPlan = 'tier-1';
+        }
+    });
 </script>
 
 <WizardStep>

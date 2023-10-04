@@ -2,9 +2,9 @@
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { Empty, PaginationWithLimit } from '$lib/components';
+    import { Empty, PaginationWithLimit, ViewSelector } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import { Container, GridHeader } from '$lib/layout';
+    import { Container, ContainerHeader } from '$lib/layout';
     import type { Models } from '@appwrite.io/console';
 
     import type { PageData } from './$types';
@@ -40,17 +40,20 @@
 </script>
 
 <Container>
-    <GridHeader
-        title="Databases"
-        {columns}
-        view={data.view}
-        hideColumns={!data.databases.total}
-        hideView={!data.databases.total}>
-        <Button on:click={() => (showCreate = true)} event="create_database">
-            <span class="icon-plus" aria-hidden="true" />
-            <span class="text">Create database</span>
-        </Button>
-    </GridHeader>
+    <ContainerHeader title="Databases" total={data?.databases?.total}>
+        <div class="u-flex u-gap-16 u-cross-center u-flex-wrap">
+            <ViewSelector
+                {columns}
+                view={data.view}
+                hideColumns={!data.databases.total}
+                hideView={!data.databases.total} />
+
+            <Button on:click={() => (showCreate = true)} event="create_database">
+                <span class="icon-plus" aria-hidden="true" />
+                <span class="text">Create database</span>
+            </Button>
+        </div>
+    </ContainerHeader>
 
     {#if data.databases.total}
         {#if data.view === 'grid'}
