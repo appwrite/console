@@ -304,8 +304,8 @@
             });
         } else if (
             !expiringNotification &&
-            (payment.expiryYear < year ||
-                (payment.expiryYear === year && payment.expiryMonth < month))
+            payment.expiryYear <= year &&
+            payment.expiryMonth < month
         ) {
             addNotification({
                 type: 'warning',
