@@ -1,6 +1,5 @@
 <script lang="ts">
     import { LabelCard } from '$lib/components';
-    import { Pill } from '$lib/elements';
     import { WizardStep } from '$lib/layout';
     import { tierFree, tierPro, tierScale } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
@@ -23,11 +22,11 @@
 
     onMount(() => {
         //Select closest tier from starting one
-        if ($changeOrganizationTier.billingPlan === 'tier-2') {
+        if ($organization.billingPlan === 'tier-2') {
             $changeOrganizationTier.billingPlan = 'tier-1';
-        } else if ($changeOrganizationTier.billingPlan === 'tier-1') {
+        } else if ($organization.billingPlan === 'tier-1') {
             $changeOrganizationTier.billingPlan = 'tier-2';
-        } else if ($changeOrganizationTier.billingPlan === 'tier-0') {
+        } else if ($organization.billingPlan === 'tier-0') {
             $changeOrganizationTier.billingPlan = 'tier-1';
         }
     });
@@ -40,7 +39,7 @@
     <p class="text">
         For more details on our plans, visit our <a
             class="link"
-            href="http://#"
+            href="http://appwrite.io/pricing"
             target="_blank"
             rel="noopener noreferrer">pricing page</a
         >.
@@ -75,13 +74,12 @@
                         <div class="u-flex u-flex-vertical u-gap-4 u-width-full-line">
                             <h4 class="body-text-2 u-bold">
                                 {tierPro.name} - ${tierPro.price}/month per organization member +
-                                exta usage
+                                extra usage
                             </h4>
                             <p class="u-color-text-gray u-small">
                                 {tierPro.description}
                             </p>
                         </div>
-                        <Pill>14 DAY FREE TRIAL</Pill>
                     </svelte:fragment>
                 </LabelCard>
             </li>
@@ -95,13 +93,12 @@
                     <svelte:fragment slot="custom">
                         <div class="u-flex u-flex-vertical u-gap-4 u-width-full-line">
                             <h4 class="body-text-2 u-bold">
-                                {tierScale.name} - ${tierScale.price}/month + exta usage
+                                {tierScale.name} - ${tierScale.price}/month + extra usage
                             </h4>
                             <p class="u-color-text-gray u-small">
                                 {tierScale.description}
                             </p>
                         </div>
-                        <Pill>14 DAY FREE TRIAL</Pill>
                     </svelte:fragment>
                 </LabelCard>
             </li>

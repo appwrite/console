@@ -22,7 +22,10 @@
     onMount(async () => {
         methods = await sdk.forConsole.billing.listPaymentMethods();
         $changeOrganizationTier.paymentMethodId =
-            $organization?.backupPaymentMethodId ?? methods.paymentMethods[0]?.$id ?? null;
+            $organization?.paymentMethodId ??
+            $organization?.backupPaymentMethodId ??
+            methods.paymentMethods[0]?.$id ??
+            null;
     });
 
     async function handleSubmit() {

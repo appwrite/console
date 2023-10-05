@@ -96,8 +96,15 @@
     }
 
     function previousStep() {
+        if (steps.get($wizard.step - 1)?.disabled) {
+            $wizard.step--;
+            while (steps.get($wizard.step)?.disabled) {
+                $wizard.step--;
+            }
+        } else {
+            $wizard.step--;
+        }
         trackEvent('wizard_back');
-        $wizard.step--;
     }
 
     $: sortedSteps = [...steps].sort(([a], [b]) => (a > b ? 1 : -1));

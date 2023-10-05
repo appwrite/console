@@ -57,7 +57,7 @@
     <p class="text">
         For more details on our plans, visit our <a
             class="link"
-            href="http://#"
+            href="http://appwrite.io/pricing"
             target="_blank"
             rel="noopener noreferrer">pricing page</a
         >.
@@ -101,7 +101,7 @@
                 <svelte:fragment slot="custom">
                     <div class="u-flex u-flex-vertical u-gap-4 u-width-full-line">
                         <h4 class="body-text-2 u-bold">
-                            {tierScale.name} - ${tierScale.price}/month + exta usage
+                            {tierScale.name} - ${tierScale.price}/month + extra usage
                         </h4>
                         <p class="u-color-text-gray u-small">
                             {tierScale.description}

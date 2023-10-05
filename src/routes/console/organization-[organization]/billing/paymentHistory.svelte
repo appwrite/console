@@ -3,7 +3,6 @@
     import {
         CardGrid,
         DropList,
-        DropListItem,
         DropListLink,
         EmptySearch,
         Heading,
@@ -23,6 +22,7 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import type { InvoiceList } from '$lib/sdk/billing';
     import { sdk } from '$lib/stores/sdk';
+    import { VARS } from '$lib/system';
     import { Query } from '@appwrite.io/console';
     import { onMount } from 'svelte';
 
@@ -36,38 +36,11 @@
     };
 
     const limit = 5;
+    const endpoint = VARS.APPWRITE_ENDPOINT ?? `${$page.url.origin}/v1`;
 
     onMount(async () => {
         request();
     });
-
-    async function fetchLinks() {
-        const view = await sdk.forConsole.billing.getInvoiceView(
-            $page.params.organization,
-            selectedInvoice
-        );
-        const down = await sdk.forConsole.billing.downloadInvoice(
-            $page.params.organization,
-            selectedInvoice
-        );
-        const viewURL = pdfToURL(view.message);
-        const downURL = pdfToURL(down.message);
-        return { viewURL, downURL };
-    }
-
-    function pdfToURL(pdf: ArrayBuffer) {
-        const blob = new Blob([pdf], { type: 'application/pdf' });
-        return URL.createObjectURL(blob);
-    }
-
-    function downloadInvoce(url: string) {
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `invoice-${selectedInvoice}.pdf`;
-        link.click();
-        URL.revokeObjectURL(link.href);
-        document.body.removeChild(link);
-    }
 
     async function request() {
         invoiceList = await sdk.forConsole.billing.listInvoices($page.params.organization, [
@@ -135,31 +108,21 @@
                                         <span class="icon-dots-horizontal" aria-hidden="true" />
                                     </Button>
                                     <svelte:fragment slot="list">
-                                        {#await fetchLinks()}
-                                            <DropListItem loading disabled>
-                                                View invoice
-                                            </DropListItem>
-                                            <DropListItem loading disabled>
-                                                Download PDF
-                                            </DropListItem>
-                                        {:then { viewURL, downURL }}
-                                            <DropListLink
-                                                icon="external-link"
-                                                external
-                                                href={viewURL}
-                                                on:click={() =>
-                                                    (showDropdown[i] = !showDropdown[i])}>
-                                                View invoice
-                                            </DropListLink>
-                                            <DropListItem
-                                                icon="download"
-                                                on:click={() => {
-                                                    downloadInvoce(downURL);
-                                                    showDropdown[i] = !showDropdown[i];
-                                                }}>
-                                                Download PDF
-                                            </DropListItem>
-                                        {/await}
+                                        <DropListLink
+                                            icon="external-link"
+                                            external
+                                            href={`${endpoint}/organizations/${$page.params.organization}/invoices/${invoice.$id}/view`}
+                                            on:click={() => (showDropdown[i] = !showDropdown[i])}>
+                                            View invoice
+                                        </DropListLink>
+                                        <DropListLink
+                                            icon="download"
+                                            href={`${endpoint}/organizations/${$page.params.organization}/invoices/${invoice.$id}/download`}
+                                            on:click={() => {
+                                                showDropdown[i] = !showDropdown[i];
+                                            }}>
+                                            Download PDF
+                                        </DropListLink>
                                     </svelte:fragment>
                                 </DropList>
                             </TableCell>
