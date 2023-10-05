@@ -10,7 +10,7 @@
 
 let client = Client()
     .setEndpoint("${endpoint}")
-    .setProject("${project}");`
+    .setProject("${project}");`;
 
     let showAlert = true;
 </script>
