@@ -14,7 +14,7 @@ const getUserCommand = (user: Models.User<Models.Preferences>, projectId: string
         },
         group: 'users',
         icon: 'user-circle'
-    }) satisfies Command;
+    } satisfies Command);
 
 export const userSearcher = (async (query: string) => {
     const { users } = await sdk.forProject.users.list([], query || undefined);

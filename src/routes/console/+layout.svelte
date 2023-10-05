@@ -145,7 +145,7 @@
                     },
                     group: 'security',
                     icon: 'pencil'
-                }) as const
+                } as const)
         ),
         // Settings
         {

@@ -22,6 +22,6 @@ export const collectionsSearcher = (async (query: string) => {
                             `/console/project-${projectId}/databases/database-${databaseId}/collection-${col.$id}`
                         );
                     }
-                }) as const
+                } as const)
         );
 }) satisfies Searcher;
