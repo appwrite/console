@@ -27,7 +27,6 @@
     import { onMount } from 'svelte';
 
     let showDropdown = [];
-    let selectedInvoice: string;
 
     let offset = 0;
     let invoiceList: InvoiceList = {
@@ -102,7 +101,6 @@
                                         noMargin
                                         ariaLabel="More options"
                                         on:click={() => {
-                                            selectedInvoice = invoice.$id;
                                             showDropdown[i] = !showDropdown[i];
                                         }}>
                                         <span class="icon-dots-horizontal" aria-hidden="true" />
