@@ -1,9 +1,8 @@
 import { page } from '$app/stores';
-import { derived, get } from 'svelte/store';
+import { derived, get, writable } from 'svelte/store';
 import { sdk } from './sdk';
-import { limitRates } from '$lib/constants';
 import { organization } from './organization';
-import type { AddressesList, Invoice, PaymentList } from '$lib/sdk/billing';
+import type { AddressesList, Invoice, PaymentList, PlansInfo } from '$lib/sdk/billing';
 import { isCloud } from '$lib/system';
 import { cachedStore } from '$lib/helpers/cache';
 
@@ -11,6 +10,9 @@ export type Tier = 'tier-0' | 'tier-1' | 'tier-2';
 
 export const paymentMethods = derived(page, ($page) => $page.data.paymentMethods as PaymentList);
 export const addressList = derived(page, ($page) => $page.data.addressList as AddressesList);
+export const plansInfo = derived(page, ($page) => $page.data.plansInfo as PlansInfo);
+export const daysLeftInTrial = writable<number>(0);
+export const trialEndDate = writable<Date>();
 
 export function tierToPlan(tier: Tier) {
     switch (tier) {
@@ -31,7 +33,8 @@ export function getCreditCardImage(brand: string, width = 46, height = 32) {
 }
 
 export function getServiceLimit(serviceId: string) {
-    return limitRates?.[get(organization)?.billingPlan]?.find((l) => l.id === serviceId);
+    const plan = get(plansInfo).plans.find((p) => p.$id === get(organization)?.billingPlan);
+    return plan[serviceId];
 }
 
 export const failedInvoice = cachedStore<

@@ -17,6 +17,7 @@
     import { Pill } from '$lib/elements';
     import type { Models } from '@appwrite.io/console';
     import type { Organization } from '$lib/stores/organization';
+    import { daysLeftInTrial } from '$lib/stores/billing';
 
     export let data: PageData;
 
@@ -64,7 +65,7 @@
                             {#if organization?.billingPlan === 'tier-0'}
                                 <Pill>FREE</Pill>
                             {/if}
-                            {#if organization?.billingTrialStartDate && organization?.billingTrialDays}
+                            {#if organization?.billingTrialStartDate && $daysLeftInTrial}
                                 <Pill>FREE TRIAL</Pill>
                             {/if}
                         {/if}

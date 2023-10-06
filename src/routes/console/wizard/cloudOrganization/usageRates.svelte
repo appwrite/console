@@ -11,19 +11,13 @@
     } from '$lib/elements/table';
     import { toLocaleDate } from '$lib/helpers/date';
     import { organization } from '$lib/stores/organization';
-    import { onMount } from 'svelte';
     import { createOrganization } from './store';
-    import { sdk } from '$lib/stores/sdk';
-    import type { Plan } from '$lib/sdk/billing';
+    import { plansInfo } from '$lib/stores/billing';
 
     export let show = false;
     export let tier: string;
 
-    let plan: Plan = null;
-    onMount(async () => {
-        const planList = await sdk.forConsole.billing.getPlanList();
-        plan = planList.plans.find((p) => p.$id === tier);
-    });
+    $: plan = $plansInfo.plans.find((p) => p.$id === tier);
 
     $: nextDate = $createOrganization?.name
         ? new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1).toString()

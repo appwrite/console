@@ -196,7 +196,7 @@ export type Plan = {
     realtimeAddon: AdditionalResource | null;
 };
 
-export type PlanList = {
+export type PlansInfo = {
     plans: Plan[];
     total: number;
 };
@@ -793,7 +793,7 @@ export class Billing {
         );
     }
 
-    async getPlanList(): Promise<PlanList> {
+    async getPlansInfo(): Promise<PlansInfo> {
         const path = `/console/plans`;
         const params = {};
         const uri = new URL(this.client.config.endpoint + path);

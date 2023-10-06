@@ -1,11 +1,14 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/stores';
+    import { tooltip } from '$lib/actions/tooltip';
     import { AvatarGroup, DropList, DropListItem, DropListLink, Tab, Tabs } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
+    import { toLocaleDate } from '$lib/helpers/date';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover } from '$lib/layout';
+    import { daysLeftInTrial, trialEndDate } from '$lib/stores/billing';
     import {
         members,
         newMemberModal,
@@ -78,8 +81,16 @@
                         {#if isCloud && $organization?.billingPlan === 'tier-0'}
                             <Pill>FREE</Pill>
                         {/if}
-                        {#if isCloud && $organization?.billingTrialStartDate && $organization?.billingTrialDays}
-                            <Pill>FREE TRIAL</Pill>
+                        {#if isCloud && $organization?.billingTrialStartDate && $daysLeftInTrial}
+                            <div
+                                class="u-flex u-cross-center"
+                                use:tooltip={{
+                                    content: `Your trial ends on ${toLocaleDate(
+                                        $trialEndDate.toString()
+                                    )}. ${$daysLeftInTrial} days remaining.`
+                                }}>
+                                <Pill>FREE TRIAL</Pill>
+                            </div>
                         {/if}
                     </span>
                     <span

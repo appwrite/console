@@ -1,6 +1,6 @@
 import { Dependencies } from '$lib/constants';
 import { sdk } from '$lib/stores/sdk';
-
+import { isCloud } from '$lib/system';
 import type { LayoutLoad } from './$types';
 
 export const load: LayoutLoad = async ({ fetch, depends }) => {
@@ -18,8 +18,14 @@ export const load: LayoutLoad = async ({ fetch, depends }) => {
 
     const [data, variables] = await Promise.all([versionPromise, variablesPromise]);
 
+    let plansInfo = null;
+    if (isCloud) {
+        plansInfo = await sdk.forConsole.billing.getPlansInfo();
+    }
+
     return {
         consoleVariables: variables,
-        version: data?.version ?? null
+        version: data?.version ?? null,
+        plansInfo
     };
 };

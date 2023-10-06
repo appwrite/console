@@ -13,7 +13,7 @@
     import { onMount } from 'svelte';
     import { loading, requestedMigration } from '../store';
     import Create from './createOrganization.svelte';
-    import { failedInvoice } from '$lib/stores/billing';
+    import { failedInvoice, daysLeftInTrial, tierToPlan, trialEndDate } from '$lib/stores/billing';
     import { diffDays, toLocaleDate } from '$lib/helpers/date';
     import { base } from '$app/paths';
 
@@ -247,29 +247,38 @@
         }
     }
 
-    organization.subscribe(() => {
+    organization.subscribe((org) => {
         if (isCloud) {
+            if (org.billingPlan === 'tier-0') {
+                $daysLeftInTrial = 0;
+                $trialEndDate = null;
+            } else {
+                calculateTrialDay(new Date(org.billingTrialStartDate), org.billingTrialDays);
+            }
+
             checkForTrialEnding();
             paymentExpired();
         }
     });
 
+    function calculateTrialDay(startDate: Date, trialDays: number) {
+        const today = new Date();
+        const days = diffDays(startDate, today);
+        $daysLeftInTrial = trialDays - days;
+        $trialEndDate = new Date(startDate.getTime() + trialDays * 24 * 60 * 60 * 1000);
+    }
+
     function checkForTrialEnding() {
-        if (
-            localStorage.getItem('trialEndingNotification') === 'true' &&
-            $organization?.billingTrialDays
-        )
-            return;
-        if ($organization?.billingTrialDays >= 5) {
-            const expirationDate = new Date(
-                new Date().getTime() + 5 * 24 * 60 * 60 * 1000
-            ).toString();
+        if (localStorage.getItem('trialEndingNotification') === 'true' || !$daysLeftInTrial) return;
+        else if ($daysLeftInTrial <= 5) {
             addNotification({
                 type: 'info',
                 isHtml: true,
-                message: `<b>We hope you've been enjoying the Pro plan.</b>
+                message: `<b>We hope you've been enjoying the ${
+                    tierToPlan($organization.billingPlan).name
+                } plan.</b>
                 You will be billed on a recurring 30 day cycle after your trial period ends on <b>${toLocaleDate(
-                    expirationDate
+                    $trialEndDate?.toString()
                 )}</b>`
             });
             localStorage.setItem('trialEndingNotification', 'true');

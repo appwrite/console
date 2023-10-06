@@ -1,10 +1,11 @@
 import { page } from '$app/stores';
 import { derived, writable } from 'svelte/store';
 import type { Models } from '@appwrite.io/console';
+import type { Tier } from './billing';
 
 export type Organization = Models.Team<Record<string, unknown>> & {
     billingBudget: number;
-    billingPlan: string;
+    billingPlan: Tier;
     budgetAlerts: number[];
     paymentMethodId: string;
     backupPaymentMethodId: string;
