@@ -794,7 +794,7 @@ export const marketplace: MarketplaceTemplate[] = [
         variables: [
             {
                 name: 'APPWRITE_API_KEY',
-                description: `The API Key to authenticate against Appwrite's Server APIs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/references#api">Learn more</a>.`,
+                description: `The API Key to authenticate against Appwrite's Server APIs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/advanced/platform/api-keys">Learn more</a>.`,
                 value: '',
                 placeholder: 'd1efb...aec35',
                 required: true,
