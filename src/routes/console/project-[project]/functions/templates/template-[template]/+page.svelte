@@ -1,13 +1,15 @@
 <script lang="ts">
-    import { base } from '$app/paths';
     import { Alert, Card, Collapsible, Heading } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { isSelfHosted } from '$lib/system';
+    import AppwriteLogoDark from '$lib/images/appwrite-logo-dark.svg';
+    import AppwriteLogoLight from '$lib/images/appwrite-logo-light.svg';
     import { connectTemplate } from '$lib/wizards/functions/cover.svelte';
     import { consoleVariables } from '$routes/console/store';
     import { template } from './store';
+    import { app } from '$lib/stores/app';
 
     const isVcsEnabled = $consoleVariables?._APP_VCS_ENABLED === true;
 </script>
@@ -41,9 +43,10 @@
                         <h4 class="body-text-1 u-bold">Published by</h4>
                         <img
                             class="u-margin-block-start-8"
-                            width="130"
-                            src={`${base}/logos/appwrite-full.svg`}
-                            alt="" />
+                            src={$app.themeInUse == 'dark' ? AppwriteLogoDark : AppwriteLogoLight}
+                            width="120"
+                            height="22"
+                            alt="Appwrite" />
                     </section>
                 </li>
             </Collapsible>
