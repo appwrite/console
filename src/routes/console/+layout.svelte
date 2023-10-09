@@ -248,12 +248,13 @@
     }
 
     organization.subscribe((org) => {
+        if (!org) return;
         if (isCloud) {
-            if (org.billingPlan === 'tier-0') {
+            if (org?.billingPlan === 'tier-0') {
                 $daysLeftInTrial = 0;
                 $trialEndDate = null;
             } else {
-                calculateTrialDay(new Date(org.billingTrialStartDate), org.billingTrialDays);
+                calculateTrialDay(new Date(org?.billingTrialStartDate), org?.billingTrialDays);
             }
 
             checkForTrialEnding();
