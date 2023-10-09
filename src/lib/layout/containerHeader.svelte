@@ -20,10 +20,11 @@
     export let buttonText: string = null;
     export let buttonMethod: () => void = null;
     export let buttonEvent: string = buttonText?.toLocaleLowerCase();
+    export let buttonDisabled = false;
 
     let tooltipContent: HTMLDivElement;
 
-    const limit = getServiceLimit(serviceId)?.amount ?? Infinity;
+    const limit = getServiceLimit(serviceId) || Infinity;
 
     $: tier = tierToPlan($organization?.billingPlan as Tier)?.name;
 </script>
@@ -76,7 +77,7 @@
                 <Button
                     on:click={buttonMethod}
                     event={buttonEvent}
-                    disabled={limit !== 'unlimited' && total >= limit}>
+                    disabled={(limit !== 'unlimited' && total >= limit) || buttonDisabled}>
                     <span class="icon-plus" aria-hidden="true" />
                     <span class="text">{buttonText}</span>
                 </Button>

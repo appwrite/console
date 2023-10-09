@@ -259,6 +259,7 @@
 
             checkForTrialEnding();
             paymentExpired();
+            checkForUsageLimit();
         }
     });
 
@@ -284,6 +285,10 @@
             });
             localStorage.setItem('trialEndingNotification', 'true');
         }
+    }
+
+    function checkForUsageLimit() {
+        console.log('test');
     }
 
     async function paymentExpired() {

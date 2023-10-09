@@ -22,6 +22,7 @@
     import type { Models } from '@appwrite.io/console';
     import type { PageData } from './$types';
     import Delete from '../deleteMember.svelte';
+    import { readOnly } from '$lib/stores/billing';
 
     export let data: PageData;
 
@@ -61,7 +62,8 @@
             title="Members"
             total={data.organizationMembers.total}
             buttonText="Invite"
-            buttonMethod={() => newMemberModal.set(true)} />
+            buttonMethod={() => newMemberModal.set(true)}
+            buttonDisabled={$readOnly} />
 
         <TableScroll>
             <TableHeader>

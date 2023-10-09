@@ -37,7 +37,7 @@
     import { app } from '$lib/stores/app';
     import type { PageData } from './$types';
     import { ContainerHeader } from '$lib/layout';
-    import { getServiceLimit } from '$lib/stores/billing';
+    import { getServiceLimit, readOnly } from '$lib/stores/billing';
 
     export let data: PageData;
 
@@ -82,7 +82,8 @@
     <DropList bind:show={showDropdown} placement="bottom-start">
         <Button
             on:click={() => (showDropdown = !showDropdown)}
-            disabled={data?.platforms?.platforms?.length >= getServiceLimit('platforms')?.amount}>
+            disabled={data?.platforms?.platforms?.length >= getServiceLimit('platforms') ||
+                $readOnly}>
             <span class="icon-plus" aria-hidden="true" />
             <span class="text">Add platform</span>
         </Button>

@@ -61,7 +61,9 @@
     import {
         Button,
         Form,
+        FormItem,
         FormList,
+        InputChoice,
         InputSelect,
         InputSwitch,
         InputTags,
@@ -78,6 +80,7 @@
     import Delete from '../deleteBucket.svelte';
     import { bucket } from '../store';
     import UpdateMaxFileSize from './updateMaxFileSize.svelte';
+    import { readOnly } from '$lib/stores/billing';
 
     let showDelete = false;
 
@@ -229,7 +232,9 @@
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">
-                    <Button disabled={enabled === $bucket.enabled} submit>Update</Button>
+                    <Button disabled={enabled === $bucket.enabled || $readOnly} submit>
+                        Update
+                    </Button>
                 </svelte:fragment>
             </CardGrid>
         </Form>
@@ -243,13 +248,15 @@
                             id="name"
                             label="Name"
                             placeholder="Enter name"
-                            autocomplete={false}
+                            readonly={$readOnly}
                             bind:value={bucketName} />
                     </FormList>
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">
-                    <Button disabled={bucketName === $bucket.name || !bucketName} submit>
+                    <Button
+                        disabled={bucketName === $bucket.name || !bucketName || $readOnly}
+                        submit>
                         Update
                     </Button>
                 </svelte:fragment>
@@ -301,7 +308,9 @@
                     </p>
                 </svelte:fragment>
                 <svelte:fragment slot="actions">
-                    <Button disabled={bucketFileSecurity === $bucket.fileSecurity} submit>
+                    <Button
+                        disabled={bucketFileSecurity === $bucket.fileSecurity || $readOnly}
+                        submit>
                         Update
                     </Button>
                 </svelte:fragment>
@@ -317,54 +326,29 @@
                 </p>
                 <svelte:fragment slot="aside">
                     <FormList>
-                        <li class="form-item">
-                            <label class="choice-item" for="encryption">
-                                <div class="input-text-wrapper">
-                                    <input
-                                        name="encryption"
-                                        id="encryption"
-                                        type="checkbox"
-                                        class="switch"
-                                        role="switch"
-                                        aria-checked={encryption}
-                                        bind:checked={encryption} />
-                                </div>
-                                <div class="choice-item-content">
-                                    <div class="choice-item-title">Encryption</div>
+                        <FormItem>
+                            <InputChoice
+                                label="Encryption"
+                                id="encryption"
+                                type="switchbox"
+                                bind:value={encryption}>
+                                This parameter allows you to configure whether or not the files
+                                inside the bucket will be encrypted. We don't encrypt files bigger
+                                than 20MB.
+                            </InputChoice>
+                        </FormItem>
 
-                                    <div class="choice-item-paragraph">
-                                        This parameter allows you to configure whether or not the
-                                        files inside the bucket will be encrypted. We don't encrypt
-                                        files bigger than 20MB.
-                                    </div>
-                                </div>
-                            </label>
-                        </li>
-                        <li class="form-item">
-                            <label class="choice-item" for="antivirus">
-                                <div class="input-text-wrapper">
-                                    <input
-                                        name="antivirus"
-                                        id="antivirus"
-                                        type="checkbox"
-                                        class="switch"
-                                        role="switch"
-                                        aria-checked={antivirus}
-                                        bind:checked={antivirus} />
-                                </div>
-                                <div class="choice-item-content">
-                                    <div class="choice-item-title">Antivirus</div>
-
-                                    <div class="choice-item-paragraph">
-                                        This parameter allows you to configure whether or not the
-                                        files inside the bucket should be scanned by the Appwrite
-                                        Antivirus scanner.
-                                    </div>
-                                </div>
-                            </label>
-                        </li>
-
-                        <li />
+                        <FormItem>
+                            <InputChoice
+                                label="Antivirus"
+                                id="antivirus"
+                                type="switchbox"
+                                bind:value={antivirus}>
+                                This parameter allows you to configure whether or not the files
+                                inside the bucket should be scanned by the Appwrite Antivirus
+                                scanner.
+                            </InputChoice>
+                        </FormItem>
                     </FormList>
                 </svelte:fragment>
 
@@ -406,7 +390,7 @@
 
         <Form onSubmit={updateAllowedExtensions}>
             <CardGrid hideOverflow>
-                <Heading tag="h6" size="7" id="extensions">File Extensions</Heading>
+                <Heading tag="h6" size="7" id="extensions">Allowed file Extensions</Heading>
                 <p class="text">
                     Allowed file extensions. A maximum of 100 file extensions can be added. Leave
                     blank to allow all file types.
@@ -439,7 +423,7 @@
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">
-                    <Button disabled={isExtensionsDisabled} submit>Update</Button>
+                    <Button disabled={isExtensionsDisabled || $readOnly} submit>Update</Button>
                 </svelte:fragment>
             </CardGrid>
         </Form>

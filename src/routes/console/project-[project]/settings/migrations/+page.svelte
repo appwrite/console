@@ -23,6 +23,7 @@
     import ExportModal from './exportModal.svelte';
     import Status from '$lib/components/status.svelte';
     import { capitalize } from '$lib/helpers/string';
+    import { readOnly } from '$lib/stores/billing';
 
     export let data;
     let details: string | null = null;
@@ -251,8 +252,9 @@
                             <span class="icon-cloud" />
                         </div>
                     </div>
-                    <Button class="u-margin-block-start-48" secondary on:click={deployToCloud}
-                        >Deploy to Cloud</Button>
+                    <Button class="u-margin-block-start-48" secondary on:click={deployToCloud}>
+                        Deploy to Cloud
+                    </Button>
                 </div>
             </svelte:fragment>
         </CardGrid>
@@ -281,7 +283,8 @@
                     <Button
                         class="u-margin-block-start-48"
                         secondary
-                        on:click={() => (showExport = true)}>Export data</Button>
+                        on:click={() => (showExport = true)}
+                        disabled={$readOnly}>Export data</Button>
                 </div>
             </svelte:fragment>
         </CardGrid>

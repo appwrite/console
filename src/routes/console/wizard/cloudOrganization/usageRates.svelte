@@ -13,6 +13,7 @@
     import { organization } from '$lib/stores/organization';
     import { createOrganization } from './store';
     import { plansInfo } from '$lib/stores/billing';
+    import { abbreviateNumber } from '$lib/helpers/numbers';
 
     export let show = false;
     export let tier: string;
@@ -29,24 +30,24 @@
         {
             id: 'members',
             resource: 'Organization members',
-            unit: ''
+            unit: 'member'
         },
-        { id: 'bandwith', resource: 'Bandwidth', unit: 'GB' },
+        { id: 'bandwidth', resource: 'Bandwidth', unit: 'GB' },
         { id: 'storage', resource: 'Storage', unit: 'GB' },
         {
             id: 'executions',
             resource: 'Function executions',
-            unit: 'executions'
+            unit: ' executions'
         },
         {
             id: 'users',
             resource: 'Active users',
-            unit: 'AU'
+            unit: ' AU'
         },
         {
             id: 'realtime',
             resource: 'Concurrent connections',
-            unit: 'connections'
+            unit: ' connections'
         }
     ];
 </script>
@@ -65,11 +66,28 @@
         </TableHeader>
         <TableBody>
             {#each planData as usage}
-                <TableRow>
-                    <TableCellText title="resource">{usage.resource}</TableCellText>
-                    <TableCellText title="limit">{plan[usage.id]}{usage?.unit}</TableCellText>
-                    <TableCellText title="rate">{plan[`${usage.id}Addon`]}</TableCellText>
-                </TableRow>
+                {#if usage['id'] === 'members'}
+                    <TableRow>
+                        <TableCellText title="resource">{usage.resource}</TableCellText>
+                        <TableCellText title="limit">
+                            {plan[usage.id] || 'Unlimited'}
+                        </TableCellText>
+                        <TableCellText title="rate"
+                            >${plan.memberAddon.price}/{usage?.unit}</TableCellText>
+                    </TableRow>
+                {:else}
+                    {@const addon = plan[`${usage.id}Addon`]}
+                    <TableRow>
+                        <TableCellText title="resource">{usage.resource}</TableCellText>
+                        <TableCellText title="limit">
+                            {abbreviateNumber(plan[usage.id])}{usage?.unit}
+                        </TableCellText>
+                        <TableCellText title="rate"
+                            >${addon?.price}/{['MB', 'GB', 'TB'].includes(addon?.unit)
+                                ? addon?.value
+                                : abbreviateNumber(addon?.value, 0)}{usage?.unit}</TableCellText>
+                    </TableRow>
+                {/if}
             {/each}
         </TableBody>
     </Table>

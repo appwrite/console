@@ -27,6 +27,7 @@
     import type { Models } from '@appwrite.io/console';
     import { ID } from '@appwrite.io/console';
     import { openImportWizard } from '../project-[project]/settings/migrations/(import)';
+    import { readOnly } from '$lib/stores/billing';
 
     export let data;
 
@@ -119,7 +120,7 @@
         <Heading tag="h2" size="5">Projects</Heading>
 
         <DropList bind:show={showDropdown} placement="bottom-end">
-            <Button on:click={handleCreateProject} event="create_project">
+            <Button on:click={handleCreateProject} event="create_project" disabled={$readOnly}>
                 <span class="icon-plus" aria-hidden="true" />
                 <span class="text">Create project</span>
             </Button>

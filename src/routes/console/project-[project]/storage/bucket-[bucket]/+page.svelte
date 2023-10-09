@@ -46,7 +46,7 @@
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { tooltip } from '$lib/actions/tooltip';
-    import { getServiceLimit, tierToPlan, type Tier } from '$lib/stores/billing';
+    import { getServiceLimit, tierToPlan, type Tier, readOnly } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
     import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
@@ -114,12 +114,12 @@
             <div
                 use:tooltip={{
                     content: `Upgrade to add more files`,
-                    disabled: data.files.total < getServiceLimit('storage')?.amount
+                    disabled: data.files.total < getServiceLimit('storage')
                 }}>
                 <Button
                     on:click={() => ($showCreate = true)}
                     event="create_file"
-                    disabled={data.files.total >= getServiceLimit('storage')?.amount}>
+                    disabled={data.files.total >= getServiceLimit('storage') || $readOnly}>
                     <span class="icon-plus" aria-hidden="true" />
                     <span class="text">Create file</span>
                 </Button>

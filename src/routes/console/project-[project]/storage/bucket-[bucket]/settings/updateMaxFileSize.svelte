@@ -4,7 +4,7 @@
     import { Button, Form, InputNumber, InputSelect } from '$lib/elements/forms';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { createByteUnitPair } from '$lib/helpers/unit';
-    import { getServiceLimit } from '$lib/stores/billing';
+    import { getServiceLimit, readOnly } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
     import { isCloud } from '$lib/system';
@@ -55,6 +55,7 @@
                 <InputNumber
                     id="size"
                     label="Size"
+                    disabled={$readOnly}
                     placeholder={$bucket.maximumFileSize.toString()}
                     min={0}
                     max={isCloud ? service.amount : Infinity}
@@ -64,7 +65,8 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={$baseValue === $bucket.maximumFileSize} submit>Update</Button>
+            <Button disabled={$baseValue === $bucket.maximumFileSize || $readOnly} submit
+                >Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>

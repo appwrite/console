@@ -35,6 +35,7 @@
             {required}
             type="checkbox"
             class:switch={type === 'switchbox'}
+            aria-checked={value}
             bind:this={element}
             bind:checked={value}
             on:invalid={handleInvalid} />
