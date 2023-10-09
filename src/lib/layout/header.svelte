@@ -16,12 +16,12 @@
     import DarkMode from '$lib/images/mode/dark-mode.svg';
     import LightMode from '$lib/images/mode/light-mode.svg';
     import SystemMode from '$lib/images/mode/system-mode.svg';
+    import { feedback } from '$lib/stores/feedback';
     import { slide } from 'svelte/transition';
     import { sdk } from '$lib/stores/sdk';
     import { isCloud } from '$lib/system';
     import { wizard } from '$lib/stores/wizard';
     import CreateOrganizationCloud from '$routes/console/createOrganizationCloud.svelte';
-    import { feedback } from '$lib/stores/feedback';
     import { Feedback } from '$lib/components/feedback';
 
     let showDropdown = false;
@@ -76,15 +76,25 @@
 
 <svelte:window on:click={onBlur} />
 
-<a
-    class="logo"
-    href={$organization ? `${base}/console/organization-${$organization.$id}` : `${base}/console`}>
-    <img
-        src={$app.themeInUse == 'dark' ? AppwriteLogoDark : AppwriteLogoLight}
-        width="120"
-        height="22"
-        alt="Appwrite" />
-</a>
+<div class="logo u-inline-flex u-gap-16 u-cross-center">
+    <a
+        href={$organization
+            ? `${base}/console/organization-${$organization.$id}`
+            : `${base}/console`}>
+        <img
+            src={$app.themeInUse == 'dark' ? AppwriteLogoDark : AppwriteLogoLight}
+            width="120"
+            height="22"
+            alt="Appwrite" />
+    </a>
+    {#if isCloud}
+        <div
+            class="tag eyebrow-heading-3"
+            style="--p-tag-height: 1.785rem; --p-tag-content-height: 1.15rem; padding-block: 0.25rem;">
+            <span class="text u-x-small" style="font-weight: 500">Beta</span>
+        </div>
+    {/if}
+</div>
 
 {#if $page.data.breadcrumbs}
     <svelte:component this={$page.data.breadcrumbs} />
