@@ -33,7 +33,8 @@ export function getCreditCardImage(brand: string, width = 46, height = 32) {
     return sdk.forConsole.avatars.getCreditCard(brand, width, height).toString();
 }
 
-export function getServiceLimit(serviceId: string) {
+export function getServiceLimit(serviceId: string): number {
+    if (!serviceId) return 0;
     const plan = get(plansInfo).plans.find((p) => p.$id === get(organization)?.billingPlan);
     return plan[serviceId];
 }

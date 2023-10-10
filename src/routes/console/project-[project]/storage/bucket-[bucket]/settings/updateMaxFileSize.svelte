@@ -36,7 +36,7 @@
         <p class="text">Set the maximum file size allowed in the bucket.</p>
         <svelte:fragment slot="aside">
             {#if isCloud && $organization?.billingPlan === 'tier-0'}
-                {@const size = humanFileSize(service?.amount)}
+                {@const size = humanFileSize(service)}
                 <Alert type="info">
                     <p class="text">
                         The Free plan has a maximum upload file size limit of {size.value}{size.unit}.
@@ -58,7 +58,7 @@
                     disabled={$readOnly}
                     placeholder={$bucket.maximumFileSize.toString()}
                     min={0}
-                    max={isCloud ? service.amount : Infinity}
+                    max={isCloud ? service : Infinity}
                     bind:value={$value} />
                 <InputSelect id="bytes" label="Bytes" {options} bind:value={$unit} />
             </ul>

@@ -46,12 +46,12 @@
             <div
                 use:tooltip={{
                     content: `Upgrade to add more teams`,
-                    disabled: data.teams.total < getServiceLimit('teams')?.amount
+                    disabled: data.teams.total < getServiceLimit('teams')
                 }}>
                 <Button
                     on:click={() => ($showCreateTeam = true)}
                     event="create_team"
-                    disabled={data.teams.total >= getServiceLimit('teams')?.amount}>
+                    disabled={data.teams.total >= getServiceLimit('teams')}>
                     <span class="icon-plus" aria-hidden="true" />
                     <span class="text">Create team</span>
                 </Button>

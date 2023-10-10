@@ -50,19 +50,28 @@
             unit: ' connections'
         }
     ];
+
+    $: isFree = tier === 'tier-0';
 </script>
 
 <Modal bind:show size="big" headerDivider={false} title="Usage rates">
-    <p>
-        Usage on the Pro plan and Scale plan will be charged at the end of each billing period at
-        the following rates. Next billing period: {toLocaleDate(nextDate)}
-    </p>
-
+    {#if isFree}
+        Usage on the Free plan is limited for the following resources. Next billing period: {toLocaleDate(
+            nextDate
+        )}.
+    {:else}
+        <p>
+            Usage on the Pro plan and Scale plan will be charged at the end of each billing period
+            at the following rates. Next billing period: {toLocaleDate(nextDate)}.
+        </p>
+    {/if}
     <Table noStyles>
         <TableHeader>
             <TableCellHead>Resource</TableCellHead>
             <TableCellHead>Limit</TableCellHead>
-            <TableCellHead>Rate</TableCellHead>
+            {#if !isFree}
+                <TableCellHead>Rate</TableCellHead>
+            {/if}
         </TableHeader>
         <TableBody>
             {#each planData as usage}
@@ -72,8 +81,11 @@
                         <TableCellText title="limit">
                             {plan[usage.id] || 'Unlimited'}
                         </TableCellText>
-                        <TableCellText title="rate"
-                            >${plan.memberAddon.price}/{usage?.unit}</TableCellText>
+                        {#if !isFree}
+                            <TableCellText title="rate">
+                                ${plan.memberAddon.price}/{usage?.unit}
+                            </TableCellText>
+                        {/if}
                     </TableRow>
                 {:else}
                     {@const addon = plan[`${usage.id}Addon`]}
@@ -82,10 +94,13 @@
                         <TableCellText title="limit">
                             {abbreviateNumber(plan[usage.id])}{usage?.unit}
                         </TableCellText>
-                        <TableCellText title="rate"
-                            >${addon?.price}/{['MB', 'GB', 'TB'].includes(addon?.unit)
-                                ? addon?.value
-                                : abbreviateNumber(addon?.value, 0)}{usage?.unit}</TableCellText>
+                        {#if !isFree}
+                            <TableCellText title="rate">
+                                ${addon?.price}/{['MB', 'GB', 'TB'].includes(addon?.unit)
+                                    ? addon?.value
+                                    : abbreviateNumber(addon?.value, 0)}{usage?.unit}
+                            </TableCellText>
+                        {/if}
                     </TableRow>
                 {/if}
             {/each}

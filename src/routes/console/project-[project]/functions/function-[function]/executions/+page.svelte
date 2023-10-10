@@ -51,8 +51,8 @@
     }
 
     const tier = tierToPlan($organization?.billingPlan as Tier)?.name;
-    const executions = getServiceLimit('executions')?.amount;
-    const logs = getServiceLimit('logs')?.amount;
+    const executions = getServiceLimit('executions');
+    const logs = getServiceLimit('logs');
 </script>
 
 <Container>

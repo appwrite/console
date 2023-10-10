@@ -53,11 +53,10 @@
         <Heading tag="h2" size="6">Budget cap</Heading>
 
         <p class="text">
-            Restrict your resource usage by setting a budget cap. <a
-                href="#/"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="link">Learn more about usage rates.</a>
+            Restrict your resource usage by setting a budget cap. <button
+                on:click={() => (showRates = true)}
+                type="button"
+                class="link">Learn more about usage rates.</button>
         </p>
         <svelte:fragment slot="aside">
             {#if $organization?.billingPlan === 'tier-0'}
@@ -67,8 +66,11 @@
                     </svelte:fragment>
                     Upgrade to a Pro plan to set a budget cap for your organization. For more information
                     on what you can do with a Pro plan,
-                    <button type="button" class="link" on:click={() => (showRates = true)}
-                        >view our pricing guide.</button>
+                    <a
+                        class="link"
+                        href="https://appwrite.io/pricing"
+                        target="_blank"
+                        rel="noopener noreferrer">view our pricing guide.</a>
                 </Alert>
             {:else}
                 <FormList>

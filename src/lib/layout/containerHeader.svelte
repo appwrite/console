@@ -29,7 +29,7 @@
     $: tier = tierToPlan($organization?.billingPlan as Tier)?.name;
 </script>
 
-{#if isCloud && total && limit !== 'unlimited' && total >= limit}
+{#if isCloud && total && limit !== 0 && total >= limit}
     <slot name="alert">
         <Alert type="warning">
             <span class="text">
@@ -48,7 +48,7 @@
 <header class:u-flex={isFlex} class="u-gap-12 common-section u-main-space-between u-flex-wrap">
     <div class="u-flex u-cross-child-center u-gap-16 u-flex-wrap">
         <Heading tag={titleTag} size={titleSize}>{title}</Heading>
-        {#if isCloud && limit !== 'unlimited' && limit < Infinity}
+        {#if isCloud && limit !== 0 && limit < Infinity}
             <div
                 use:tooltip={{
                     interactive: true,
@@ -72,12 +72,12 @@
             <div
                 use:tooltip={{
                     content: `Upgrade to add more ${title.toLocaleLowerCase()}`,
-                    disabled: limit === 'unlimited' || total < limit
+                    disabled: limit === 0 || total < limit
                 }}>
                 <Button
                     on:click={buttonMethod}
                     event={buttonEvent}
-                    disabled={(limit !== 'unlimited' && total >= limit) || buttonDisabled}>
+                    disabled={(limit !== 0 && total >= limit) || buttonDisabled}>
                     <span class="icon-plus" aria-hidden="true" />
                     <span class="text">{buttonText}</span>
                 </Button>

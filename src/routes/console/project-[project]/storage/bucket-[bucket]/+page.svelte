@@ -89,7 +89,7 @@
         }
     }
 
-    const limit = getServiceLimit('storage')?.amount ?? Infinity;
+    const limit = getServiceLimit('storage') ?? Infinity;
     $: tier = tierToPlan($organization?.billingPlan as Tier)?.name;
 
     // TODO: fetch the total storage used
