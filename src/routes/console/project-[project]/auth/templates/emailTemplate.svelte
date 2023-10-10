@@ -112,7 +112,8 @@
                         <p class="text">
                             Click to copy variables for the fields below. Learn more <a
                                 class="link"
-                                href="https://appwrite.io/docs/advanced/platform/message-templates">here</a
+                                href="https://appwrite.io/docs/advanced/platform/message-templates"
+                                >here</a
                             >.
                         </p>
                         <div class="u-margin-block-start-16 u-flex u-gap-8">

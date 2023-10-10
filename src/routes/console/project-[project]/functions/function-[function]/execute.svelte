@@ -113,7 +113,10 @@
                 Update your function version to make use of new features including customizable HTTP
                 data in your executions.
                 <svelte:fragment slot="buttons">
-                    <Button href="https://appwrite.io/docs/products/functions/development" external text>
+                    <Button
+                        href="https://appwrite.io/docs/products/functions/development"
+                        external
+                        text>
                         Learn more
                     </Button>
                 </svelte:fragment>

@@ -204,7 +204,10 @@
                 <p>There are no files that match your search.</p>
             </div>
             <div class="u-flex u-gap-16">
-                <Button external href="https://appwrite.io/docs/products/storage/upload-download" text>
+                <Button
+                    external
+                    href="https://appwrite.io/docs/products/storage/upload-download"
+                    text>
                     Documentation
                 </Button>
                 <Button

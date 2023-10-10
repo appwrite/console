@@ -74,7 +74,10 @@
                         you push to that repository, your function will be deployed.
                     </p>
                     <div class="alert-buttons u-flex u-margin-inline-start-auto">
-                        <Button text href="https://appwrite.io/docs/products/functions/deployment" external>
+                        <Button
+                            text
+                            href="https://appwrite.io/docs/products/functions/deployment"
+                            external>
                             Learn more
                         </Button>
                         <Button

@@ -59,7 +59,10 @@
                 class="link">documentation</a
             >.
             <svelte:fragment slot="buttons">
-                <Button href="https://appwrite.io/docs/products/functions/development" external text>
+                <Button
+                    href="https://appwrite.io/docs/products/functions/development"
+                    external
+                    text>
                     Learn more
                 </Button>
             </svelte:fragment>
