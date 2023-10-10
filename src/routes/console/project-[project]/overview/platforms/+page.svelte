@@ -74,11 +74,7 @@
     };
 </script>
 
-<ContainerHeader
-    title="Platforms"
-    titleTag="h3"
-    titleSize="7"
-    total={data?.platforms?.platforms?.length}>
+<ContainerHeader title="Platforms" titleTag="h3" titleSize="7" total={data?.platforms?.total}>
     <DropList bind:show={showDropdown} placement="bottom-start">
         <Button
             on:click={() => (showDropdown = !showDropdown)}

@@ -15,8 +15,12 @@
     import AddressModal from './addressModal.svelte';
     import type { Models } from '@appwrite.io/console';
     import DeleteAddress from './deleteAddress.svelte';
+    import EditAddressModal from './editAddressModal.svelte';
+    import type { Address } from '$lib/sdk/billing';
 
     let show = false;
+    let showEdit = false;
+    let selectedAddress: Address;
     let showDelete = false;
     let showDropdown = [];
     let countryList: Models.CountryList;
@@ -72,7 +76,9 @@
                                         <DropListItem
                                             icon="pencil"
                                             on:click={() => {
-                                                console.log('test');
+                                                showEdit = true;
+                                                selectedAddress = address;
+                                                showDropdown[i] = false;
                                             }}>
                                             Edit
                                         </DropListItem>
@@ -105,4 +111,5 @@
 </CardGrid>
 
 <AddressModal bind:show />
+<EditAddressModal bind:show={showEdit} {selectedAddress} />
 <DeleteAddress bind:showDelete />

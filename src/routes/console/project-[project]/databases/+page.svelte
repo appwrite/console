@@ -13,6 +13,8 @@
     import { columns } from './store';
     import Table from './table.svelte';
     import { registerCommands } from '$lib/commandCenter';
+    import { tooltip } from '$lib/actions/tooltip';
+    import { getServiceLimit } from '$lib/stores/billing';
 
     export let data: PageData;
 
@@ -47,11 +49,19 @@
                 view={data.view}
                 hideColumns={!data.databases.total}
                 hideView={!data.databases.total} />
-
-            <Button on:click={() => (showCreate = true)} event="create_database">
-                <span class="icon-plus" aria-hidden="true" />
-                <span class="text">Create database</span>
-            </Button>
+            <div
+                use:tooltip={{
+                    content: `Upgrade to add more databases`,
+                    disabled: data?.databases?.total < getServiceLimit('databases')
+                }}>
+                <Button
+                    on:click={() => (showCreate = true)}
+                    event="create_database"
+                    disabled={data?.databases?.total >= getServiceLimit('databases')}>
+                    <span class="icon-plus" aria-hidden="true" />
+                    <span class="text">Create database</span>
+                </Button>
+            </div>
         </div>
     </ContainerHeader>
 

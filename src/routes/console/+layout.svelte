@@ -288,7 +288,7 @@
     }
 
     function checkForUsageLimit() {
-        console.log('test');
+        console.log('TODO: set read only mode here');
     }
 
     async function paymentExpired() {
