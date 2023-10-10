@@ -62,20 +62,27 @@ export const failedInvoice = cachedStore<
     };
 });
 
-export const tierFree = {
+export type TierData = {
+    price: number;
+    name: string;
+    description: string;
+    collaboratorPrice?: number;
+};
+
+export const tierFree: TierData = {
     price: 0,
     name: 'Free',
     description: 'For personal, passion projects.',
     collaboratorPrice: undefined
 };
 
-export const tierPro = {
+export const tierPro: TierData = {
     price: 15,
     name: 'Pro',
     description: 'For pro developers and production projects that need the ability to scale.',
     collaboratorPrice: 15
 };
-export const tierScale = {
+export const tierScale: TierData = {
     price: 685,
     name: 'Scale',
     description: 'For scaling teams that need dedicated support.',
