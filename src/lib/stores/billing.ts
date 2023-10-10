@@ -34,8 +34,10 @@ export function getCreditCardImage(brand: string, width = 46, height = 32) {
 }
 
 export function getServiceLimit(serviceId: string): number {
+    if (!isCloud) return 0;
     if (!serviceId) return 0;
     const plan = get(plansInfo).plans.find((p) => p.$id === get(organization)?.billingPlan);
+    console.log(plan);
     return plan[serviceId];
 }
 

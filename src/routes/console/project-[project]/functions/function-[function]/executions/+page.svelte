@@ -22,14 +22,13 @@
     import { func } from '../store';
     import type { Models } from '@appwrite.io/console';
     import { organization } from '$lib/stores/organization';
-    import { tierToPlan, type Tier, getServiceLimit } from '$lib/stores/billing';
-    import { wizard } from '$lib/stores/wizard';
-    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
+    import { getServiceLimit } from '$lib/stores/billing';
     import { isCloud } from '$lib/system';
     import UsageRates from '$routes/console/wizard/cloudOrganization/usageRates.svelte';
     import { project } from '$routes/console/project-[project]/store';
     import Create from '../create.svelte';
     import Execute from '../execute.svelte';
+    import { abbreviateNumber } from '$lib/helpers/numbers';
 
     export let data;
 
@@ -50,8 +49,6 @@
         $log.data = execution;
     }
 
-    const tier = tierToPlan($organization?.billingPlan as Tier)?.name;
-    const executions = getServiceLimit('executions');
     const logs = getServiceLimit('logs');
 </script>
 
@@ -61,11 +58,11 @@
         buttonText="Execute now"
         buttonEvent="execute_function"
         buttonMethod={() => (selectedFunction = $func)}>
-        <svelte:fragment slot="tooltip">
+        <svelte:fragment slot="tooltip" let:tier let:limit let:upgradeMethod>
             <p class="u-bold">The {tier} plan has limits</p>
             <ul>
                 <li>
-                    {executions} function executions
+                    {abbreviateNumber(limit)} function executions
                 </li>
                 <li>
                     {logs} hour of logs
@@ -73,10 +70,7 @@
             </ul>
             {#if $organization?.billingPlan === 'tier-0'}
                 <p class="text">
-                    <button
-                        class="link"
-                        type="button"
-                        on:click|preventDefault={() => wizard.start(ChangeOrganizationTierCloud)}
+                    <button class="link" type="button" on:click|preventDefault={upgradeMethod}
                         >Upgrade</button>
                     to increase your resource limits.
                 </p>

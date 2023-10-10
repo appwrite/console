@@ -1,11 +1,5 @@
 <script lang="ts">
-    import {
-        AvatarInitials,
-        EmptySearch,
-        Heading,
-        PaginationWithLimit,
-        Trim
-    } from '$lib/components';
+    import { AvatarInitials, EmptySearch, PaginationWithLimit, Trim } from '$lib/components';
     import {
         TableBody,
         TableHeader,
@@ -15,17 +9,19 @@
         TableCellText,
         TableScroll
     } from '$lib/elements/table';
-    import { Container } from '$lib/layout';
+    import { Container, ContainerHeader } from '$lib/layout';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import type { Models } from '@appwrite.io/console';
 
     export let logs: Models.LogList;
     export let offset = 0;
     export let limit = 0;
+
+    // TODO: add limit for activity
 </script>
 
 <Container>
-    <Heading tag="h2" size="5">Activity</Heading>
+    <ContainerHeader title="Activity" alertType="info" />
     {#if logs.total}
         <TableScroll>
             <TableHeader>

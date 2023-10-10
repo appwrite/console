@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { Card, CardGrid, Id } from '$lib/components';
+    import { Alert, Card, CardGrid, Id } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
@@ -20,6 +20,11 @@
     import DeploymentCreatedBy from '../deploymentCreatedBy.svelte';
     import DeploymentDomains from '../deploymentDomains.svelte';
     import { tooltip } from '$lib/actions/tooltip';
+    import { wizard } from '$lib/stores/wizard';
+    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
+    import { getServiceLimit, tierToPlan } from '$lib/stores/billing';
+    import { organization } from '$lib/stores/organization';
+    import { isCloud } from '$lib/system';
 
     let logs = '';
 
@@ -41,9 +46,22 @@
             }
         });
     });
+
+    const limit = getServiceLimit('logs');
+    const tier = tierToPlan($organization?.billingPlan)?.name;
 </script>
 
 <Container>
+    {#if isCloud && limit !== 0 && limit < Infinity}
+        <Alert>
+            You are limited to {limit} hour of logs on the {tier} plan.
+            <button
+                class="link"
+                type="button"
+                on:click|preventDefault={() => wizard.start(ChangeOrganizationTierCloud)}
+                >Upgrade</button> to increase log retention for a longer period.
+        </Alert>
+    {/if}
     <CardGrid>
         <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16">
             <div class="avatar is-medium" aria-hidden="true">

@@ -28,12 +28,20 @@
 </script>
 
 <Container>
-    <ContainerHeader title="Sessions" serviceId="logs">
+    <ContainerHeader title="Sessions" serviceId="logs" alertType="info">
         {#if data.sessions.total}
             <Button secondary on:click={() => (showDeleteAll = true)}>
                 <span class="text">Delete All</span>
             </Button>
         {/if}
+
+        <svelte:fragment slot="tooltip" let:limit let:tier let:upgradeMethod>
+            <p class="text">
+                You are limited to {limit} hour of logs on the {tier} plan.
+                <button class="link" type="button" on:click|preventDefault={upgradeMethod}
+                    >Upgrade</button> to increase log retention for a longer period.
+            </p>
+        </svelte:fragment>
     </ContainerHeader>
     {#if data.sessions.total}
         <Table>

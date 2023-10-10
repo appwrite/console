@@ -46,10 +46,7 @@
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { tooltip } from '$lib/actions/tooltip';
-    import { getServiceLimit, tierToPlan, type Tier, readOnly } from '$lib/stores/billing';
-    import { organization } from '$lib/stores/organization';
-    import { wizard } from '$lib/stores/wizard';
-    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
+    import { getServiceLimit, readOnly } from '$lib/stores/billing';
     import { writable } from 'svelte/store';
 
     export let data: PageData;
@@ -89,22 +86,16 @@
         }
     }
 
-    const limit = getServiceLimit('storage') ?? Infinity;
-    $: tier = tierToPlan($organization?.billingPlan as Tier)?.name;
-
     // TODO: fetch the total storage used
 </script>
 
 <Container>
     <ContainerHeader title="Files" serviceId="storage" isFlex={false} total={10}>
-        <svelte:fragment slot="alert">
+        <svelte:fragment slot="alert" let:tier let:upgradeMethod>
             <Alert type="warning">
                 <span class="text">
                     You've reached the storage limit for the {tier} plan.
-                    <button
-                        class="link"
-                        type="button"
-                        on:click|preventDefault={() => wizard.start(ChangeOrganizationTierCloud)}
+                    <button class="link" type="button" on:click|preventDefault={upgradeMethod}
                         >Upgrade</button>
                     for additional storage.
                 </span>
@@ -125,14 +116,11 @@
                 </Button>
             </div>
         </SearchQuery>
-        <svelte:fragment slot="tooltip">
+        <svelte:fragment slot="tooltip" let:limit let:tier let:upgradeMethod>
             <p class="text">
                 You are limited to {limit} of storage on the {tier} plan.
 
-                <button
-                    class="link"
-                    type="button"
-                    on:click|preventDefault={() => wizard.start(ChangeOrganizationTierCloud)}
+                <button class="link" type="button" on:click|preventDefault={upgradeMethod}
                     >Upgrade</button>
                 for addtional storage.
             </p>

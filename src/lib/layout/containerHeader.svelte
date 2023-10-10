@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { tierToPlan, type Tier, getServiceLimit } from '$lib/stores/billing';
+    import { tierToPlan, getServiceLimit } from '$lib/stores/billing';
     import { tooltip } from '$lib/actions/tooltip';
     import { Alert, Heading } from '$lib/components';
     import { Pill } from '$lib/elements';
@@ -16,6 +16,7 @@
     export let titleSize: '1' | '2' | '3' | '4' | '5' | '6' | '7' = '5';
     export let serviceId = title.toLocaleLowerCase();
     export let total: number = null;
+    export let alertType: 'info' | 'success' | 'warning' | 'error' | 'default' = 'warning';
 
     export let buttonText: string = null;
     export let buttonMethod: () => void = null;
@@ -25,19 +26,17 @@
     let tooltipContent: HTMLDivElement;
 
     const limit = getServiceLimit(serviceId) || Infinity;
+    const upgradeMethod = () => wizard.start(ChangeOrganizationTierCloud);
 
-    $: tier = tierToPlan($organization?.billingPlan as Tier)?.name;
+    $: tier = tierToPlan($organization?.billingPlan)?.name;
 </script>
 
 {#if isCloud && total && limit !== 0 && total >= limit}
-    <slot name="alert">
-        <Alert type="warning">
+    <slot name="alert" {limit} {tier} {title} {upgradeMethod}>
+        <Alert type={alertType}>
             <span class="text">
                 You've reached the maximum number of {title.toLowerCase()} for the {tier} plan.
-                <button
-                    class="link"
-                    type="button"
-                    on:click|preventDefault={() => wizard.start(ChangeOrganizationTierCloud)}
+                <button class="link" type="button" on:click|preventDefault={upgradeMethod}
                     >Upgrade</button>
                 for additional {title.toLocaleLowerCase()}.
             </span>
@@ -89,14 +88,11 @@
 {#if isCloud}
     <div class="u-hide">
         <div bind:this={tooltipContent}>
-            <slot name="tooltip">
+            <slot name="tooltip" {limit} {tier} {title} {upgradeMethod}>
                 <p class="text">
                     Your are limited to {limit}
                     {title.toLocaleLowerCase()} per project on the {tier}.
-                    <button
-                        class="link"
-                        type="button"
-                        on:click|preventDefault={() => wizard.start(ChangeOrganizationTierCloud)}
+                    <button class="link" type="button" on:click|preventDefault={upgradeMethod}
                         >Upgrade</button>
                     for addtional {title.toLocaleLowerCase()}.
                 </p>

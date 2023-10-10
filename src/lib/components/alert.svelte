@@ -1,6 +1,7 @@
 <script lang="ts">
     import { createEventDispatcher } from 'svelte';
     import type { Buttons } from '../stores/notifications';
+    import { Button } from '$lib/elements/forms';
 
     export let dismissible = false;
     export let type: 'info' | 'success' | 'warning' | 'error' | 'default' = 'info';
@@ -53,12 +54,9 @@
                     <div class="alert-buttons u-flex">
                         <slot name="buttons">
                             {#each buttons as button}
-                                <button
-                                    type="button"
-                                    class="button is-text"
-                                    on:click={button.method}>
+                                <Button text on:click={button.method}>
                                     <span class="text">{button.name}</span>
-                                </button>
+                                </Button>
                             {/each}
                         </slot>
                     </div>
