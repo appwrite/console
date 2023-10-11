@@ -18,20 +18,7 @@
     let element: HTMLInputElement;
     let error: string;
 
-    /*
-        Below is a regex pattern which allows us to validate the cron string.
-        The pattern is not perfect, but it is a good start.
-        Allowed values:
-        - minute: 0-59
-        - hour: 0-23
-        - day of month: 1-31
-        - month: 1-12
-        - day of week: 0-6
-        - wildcard *
-        - step values
-    */
-    const pattern = "^(\\*|([0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])|\\*\\/([0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])) (\\*|([0-9]|1[0-9]|2[0-3])|\\*\\/([0-9]|1[0-9]|2[0-3])) (\\*|([1-9]|1[0-9]|2[0-9]|3[0-1])|\\*\\/([1-9]|1[0-9]|2[0-9]|3[0-1])) (\\*|([1-9]|1[0-2])|\\*\\/([1-9]|1[0-2])) (\\*|([0-6])|\\*\\/([0-6]))$";
-
+    const pattern = String.raw`/^(\*|\?|[0-5]?\d)(\,(\*|\?|[0-5]?\d)|\-(\*|\?|[0-5]?\d)|\/\d+)?\s+(\*|\?|[01]?\d|2[0-3])(\,(\*|\?|[01]?\d|2[0-3])|\-(\*|\?|[01]?\d|2[0-3])|\/\d+)?\s+(\*|\?|[1-9]|[12]\d|3[01])(W?)(\,(\*|\?|[1-9]|[12]\d|3[01])|\-(\*|\?|[1-9]|[12]\d|3[01])|\/\d+)?\s+(\*|\?|[1-9]|1[0-2]|jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)(\,(\*|\?|[1-9]|1[0-2]|jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)|\-(\*|\?|[1-9]|1[0-2]|jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)|\/\d+)?\s+(\*|\?|[0-7]((\#?)(\d?))(\w?)|sun|mon|tue|wed|thu|fri|sat)(\,(\*|\?|[0-7]((\#?)(\d?))(\w?)|sun|mon|tue|wed|thu|fri|sat)|\-(\*|\?|[0-7]((\#?)(\d?))(\w?)|sun|mon|tue|wed|thu|fri|sat)|\/\d((\#?)(\d?))(\w?)+)?$/i`;
     onMount(() => {
         if (element && autofocus) {
             element.focus();
@@ -66,6 +53,7 @@
 
     <div class="input-text-wrapper">
         <input
+            aria-label="Input"
             {id}
             {placeholder}
             {disabled}
