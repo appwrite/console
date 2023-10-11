@@ -262,7 +262,7 @@
                 <p class="text">
                     Choose who can access your buckets and files. For more information, check out
                     the <a
-                        href="https://appwrite.io/docs/permissions"
+                        href="https://appwrite.io/docs/advanced/platform/permissions"
                         target="_blank"
                         rel="noopener noreferrer"
                         class="link">

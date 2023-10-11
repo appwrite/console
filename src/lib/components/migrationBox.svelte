@@ -57,7 +57,7 @@
     fetchMigrations();
 
     onMount(async () => {
-        return sdk.forConsole.client.subscribe(['project', 'console'], async (response) => {
+        sdk.forConsole.client.subscribe(['project', 'console'], async (response) => {
             if (response.events.includes('migrations.*')) {
                 fetchMigrations();
             }

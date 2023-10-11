@@ -28,6 +28,6 @@
     <InputCheckbox
         id="select-all"
         indeterminate={someSelected && !allSelected}
-        value={allSelected}
+        checked={allSelected}
         on:click={handleClick} />
 </TableCellHead>

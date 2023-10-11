@@ -115,6 +115,7 @@
     {/if}
 </div>
 
+<!-- svelte-ignore css-unused-selector -->
 <style global lang="scss">
     .drop-tooltip[data-popper-placement^='top'] > .drop-arrow {
         bottom: -4px;

@@ -1,17 +1,29 @@
 <script lang="ts">
     import { FormItem, Helper, Label } from '.';
 
+    interface $$Props extends Partial<HTMLLabelElement> {
+        id: string;
+        label?: string;
+        optionalText?: string;
+        tooltip?: string;
+        showLabel?: boolean;
+        checked?: boolean;
+        required?: boolean;
+        disabled?: boolean;
+        element?: HTMLInputElement | undefined;
+        indeterminate?: boolean;
+    }
+
+    export let id: string;
     export let label: string | undefined = undefined;
     export let optionalText: string | undefined = undefined;
     export let tooltip: string = null;
     export let showLabel = true;
-    export let id: string;
-    export let value = false;
-    export let indeterminate = false;
+    export let checked = false;
     export let required = false;
     export let disabled = false;
-
     export let element: HTMLInputElement | undefined = undefined;
+
     let error: string;
 
     const handleInvalid = (event: Event) => {
@@ -23,7 +35,7 @@
         error = element.validationMessage;
     };
 
-    $: if (value) {
+    $: if (checked) {
         error = null;
     }
 </script>
@@ -40,10 +52,10 @@
             {id}
             {disabled}
             {required}
-            {indeterminate}
+            {...$$restProps}
             type="checkbox"
             bind:this={element}
-            bind:checked={value}
+            bind:checked
             on:invalid={handleInvalid}
             on:click
             on:change />

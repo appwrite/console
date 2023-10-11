@@ -17,7 +17,7 @@
     class:is-warning={type === 'warning'}
     class:is-danger={type === 'error'}
     class:is-info={type === 'info'}
-    transition:fly={{ x: 50 }}>
+    transition:fly|global={{ x: 50 }}>
     <button
         class="button is-text is-only-icon"
         style="--button-size:1.5rem;"

@@ -90,7 +90,7 @@
         {
             label: 'Contact support',
             callback: () => {
-                window.open('https://appwrite.io/support', '_blank');
+                window.open('https://appwrite.io/discord', '_blank');
             },
             group: 'help',
             icon: 'question-mark-circle'
@@ -145,7 +145,7 @@
                     },
                     group: 'security',
                     icon: 'pencil'
-                } as const)
+                }) as const
         ),
         // Settings
         {
