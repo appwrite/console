@@ -10,8 +10,7 @@ import { AppwriteException } from '@appwrite.io/console';
 
 function plausible(domain: string): AnalyticsPlugin {
     const instance = Plausible({
-        domain,
-        trackLocalhost: true
+        domain
     });
     return {
         name: 'analytics-plugin-plausible',
