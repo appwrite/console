@@ -138,9 +138,7 @@
             error = true;
         }
 
-        return () => {
-            isOpen = false;
-        };
+        isOpen = false;
     });
 
     $: resources = providerResources[$provider.provider];
@@ -245,7 +243,7 @@
 </ul>
 
 <ul class="u-flex u-flex-vertical u-margin-block-start-16">
-    {#if resources.includes('user')}
+    {#if resources?.includes('user')}
         <li class="checkbox-field">
             <input
                 type="checkbox"
@@ -265,7 +263,7 @@
             <div />
             <span>Import all users</span>
 
-            {#if resources.includes('team')}
+            {#if resources?.includes('team')}
                 <ul>
                     <li class="checkbox-field">
                         <input
@@ -290,7 +288,7 @@
         </li>
     {/if}
 
-    {#if resources.includes('database')}
+    {#if resources?.includes('database')}
         <li class="checkbox-field">
             <input
                 type="checkbox"
@@ -309,7 +307,7 @@
             <div />
             <span>Import all databases, including collections, indexes and attributes</span>
 
-            {#if resources.includes('document')}
+            {#if resources?.includes('document')}
                 <ul>
                     <li class="checkbox-field">
                         <input
@@ -334,7 +332,7 @@
         </li>
     {/if}
 
-    {#if resources.includes('function') && isVersionAtLeast(version, '1.4.0')}
+    {#if resources?.includes('function') && isVersionAtLeast(version, '1.4.0')}
         <li class="checkbox-field">
             <input
                 type="checkbox"
@@ -353,7 +351,7 @@
             <div />
             <span>Import all functions and their active deployment</span>
             <ul>
-                {#if resources.includes('envVar')}
+                {#if resources?.includes('envVar')}
                     <li class="checkbox-field">
                         <input
                             type="checkbox"
@@ -366,7 +364,7 @@
                         <span>Import all environment variables</span>
                     </li>
                 {/if}
-                {#if resources.includes('deployment')}
+                {#if resources?.includes('deployment')}
                     <li class="checkbox-field">
                         <input
                             type="checkbox"
@@ -383,7 +381,7 @@
         </li>
     {/if}
 
-    {#if resources.includes('bucket') && resources.includes('file')}
+    {#if resources?.includes('bucket') && resources?.includes('file')}
         <li class="checkbox-field">
             <input
                 type="checkbox"

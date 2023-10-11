@@ -5,6 +5,7 @@
     import LoginLight from '$lib/images/login/login-light-mode.png';
     import { app } from '$lib/stores/app';
     import { user } from '$lib/stores/user';
+    import { isCloud } from '$lib/system';
 
     export let imgLight = LoginLight;
     export let imgDark = LoginDark;
@@ -14,7 +15,7 @@
     <section
         class="u-flex u-flex-vertical"
         style:--url={`url(${$app.themeInUse === 'dark' ? imgDark : imgLight})`}>
-        <div class="logo">
+        <div class="logo u-flex u-gap-16">
             <a href={user ? '/console' : '/'}>
                 {#if $app.themeInUse === 'dark'}
                     <img
@@ -30,6 +31,9 @@
                         alt="Appwrite Logo" />
                 {/if}
             </a>
+            {#if isCloud}
+                <span class="aw-badges aw-eyebrow">Cloud Beta</span>
+            {/if}
         </div>
 
         <div class="u-flex u-stretch" />
@@ -76,7 +80,7 @@
             font-weight: 400;
             line-height: 100%; /* 80px */
             letter-spacing: -1.6px;
-            backdrop-filter: blur(8px);
+            backdrop-filter: blur(0.5 rem);
             .underscore {
                 -webkit-text-fill-color: #f02e65;
             }
@@ -126,5 +130,51 @@
         background-clip: text;
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
+    }
+
+    .aw-eyebrow {
+        font-family: 'Source Code Pro', monospace;
+        line-height: 0.9rem;
+        font-size: 0.78rem;
+        letter-spacing: 0.08em;
+        font-weight: 400;
+        text-transform: uppercase;
+    }
+
+    .aw-badges {
+        --p-badges-shadow-bg-color: #f2c8d6;
+        --p-badges-shadow-border-color: #f69db7;
+        --p-badges-shadowopacity: 0.4;
+        align-self: center;
+        color: hsl(var(--color-neutral-0));
+        padding-block: 0.375rem;
+        padding-inline: 0.75rem;
+        border-radius: 0.375rem;
+        background: radial-gradient(
+            98.13% 199.7% at 98.13% 100%,
+            #fe6947 0%,
+            #fd366e 41.6%,
+            #fd366e 100%
+        );
+        -webkit-backdrop-filter: blur(2.5rem);
+        backdrop-filter: blur(2.5rem);
+        box-shadow:
+            0.1875rem 0.1875rem var(--p-badges-shadow-bg-color),
+            0.25rem 0.1875rem var(--p-badges-shadow-border-color),
+            0.1875rem 0.25rem var(--p-badges-shadow-border-color),
+            0.125rem 0.1875rem var(--p-badges-shadow-border-color),
+            0.1875rem 0.125rem var(--p-badges-shadow-border-color);
+
+        :global(.theme-dark) & {
+            --p-badges-shadow-bg-color: #2c2c2f;
+            --p-badges-shadow-border-color: #39393c;
+            --p-badges-shadowopacity: 0.13;
+        }
+
+        :global(.theme-light) & {
+            --p-badges-shadow-bg-color: #f2c8d6;
+            --p-badges-shadow-border-color: #f69db7;
+            --p-badges-shadowopacity: 0.4;
+        }
     }
 </style>
