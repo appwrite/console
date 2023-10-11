@@ -19,6 +19,7 @@
     let error: string;
 
     const pattern = String.raw`^.*\s+.*\s+.*\s+.*\s+.*`;
+
     onMount(() => {
         if (element && autofocus) {
             element.focus();
