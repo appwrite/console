@@ -9,6 +9,7 @@ export type Organization = Models.Team<Record<string, unknown>> & {
     budgetAlerts: number[];
     paymentMethodId: string;
     backupPaymentMethodId: string;
+    billingLimits: Record<string, number>;
     billingCurrentInvoiceDate: string;
     billingNextInvoiceDate: string;
     billingTrialStartDate?: string;

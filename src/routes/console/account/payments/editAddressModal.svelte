@@ -12,7 +12,7 @@
     export let show = false;
     export let selectedAddress: Address;
 
-    let zip = parseInt(selectedAddress.postalCode);
+    let zip = selectedAddress?.postalCode ? parseInt(selectedAddress.postalCode) : null;
     let options = [
         {
             value: 'US',
