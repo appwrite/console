@@ -53,7 +53,6 @@
 
     <div class="input-text-wrapper">
         <input
-            aria-label="Input"
             {id}
             {placeholder}
             {disabled}
