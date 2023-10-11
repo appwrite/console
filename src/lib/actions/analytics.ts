@@ -7,6 +7,7 @@ import { page } from '$app/stores';
 import { user } from '$lib/stores/user';
 import { ENV, MODE, VARS, isCloud } from '$lib/system';
 import { AppwriteException } from '@appwrite.io/console';
+import { browser } from '$app/environment';
 
 function plausible(domain: string): AnalyticsPlugin {
     const instance = Plausible({
@@ -39,18 +40,19 @@ function plausible(domain: string): AnalyticsPlugin {
 
 const analytics = Analytics({
     app: 'appwrite',
-    plugins: isCloud
-        ? [
-              plausible('cloud.appwrite.io'),
-              googleTagManager({
-                  containerId: [VARS.GOOGLE_TAG || 'GTM-P3T9TBV']
-              })
-          ]
-        : [
-              googleAnalytics({
-                  measurementIds: [VARS.GOOGLE_ANALYTICS || 'G-R4YJ9JN8L4']
-              })
-          ]
+    plugins:
+        isCloud && browser
+            ? [
+                  plausible('cloud.appwrite.io'),
+                  googleTagManager({
+                      containerId: [VARS.GOOGLE_TAG || 'GTM-P3T9TBV']
+                  })
+              ]
+            : [
+                  googleAnalytics({
+                      measurementIds: [VARS.GOOGLE_ANALYTICS || 'G-R4YJ9JN8L4']
+                  })
+              ]
 });
 
 export function trackEvent(name: string, data: object = null): void {
