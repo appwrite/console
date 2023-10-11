@@ -80,7 +80,7 @@
     {:else}
         <Empty
             single
-            href="https://appwrite.io/docs/databases"
+            href="https://appwrite.io/docs/products/databases/databases"
             target="database"
             on:click={() => (showCreate = true)} />
     {/if}

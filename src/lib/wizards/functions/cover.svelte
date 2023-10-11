@@ -104,7 +104,7 @@
                         Connect your function to a Git repository or use a pre-made template<br />after
                         configuring your self-hosted instance. Learn more in our
                         <a
-                            href="https://appwrite.io/docs/configuration#git"
+                            href="https://appwrite.io/docs/advanced/self-hosting/functions#git"
                             target="_blank"
                             rel="noopener noreferrer"
                             class="link">documentation</a
@@ -271,7 +271,7 @@
                     on:click={() => wizard.start(CreateManual)}>manually</button>
                 or using the CLI.
                 <a
-                    href="https://appwrite.io/docs/functions-deploy"
+                    href="https://appwrite.io/docs/products/functions/deployment"
                     target="_blank"
                     rel="noopener noreferrer"
                     class="link">Learn more</a

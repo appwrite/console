@@ -240,7 +240,10 @@
                 <p>There are no files that match your search.</p>
             </div>
             <div class="u-flex u-gap-16">
-                <Button external href="https://appwrite.io/docs/storage#createFile" text>
+                <Button
+                    external
+                    href="https://appwrite.io/docs/products/storage/upload-download"
+                    text>
                     Documentation
                 </Button>
                 <Button
@@ -253,7 +256,7 @@
     {:else}
         <Empty
             single
-            href="https://appwrite.io/docs/storage#createFile"
+            href="https://appwrite.io/docs/products/storage/upload-download"
             target="file"
             on:click={() => ($showCreate = true)} />
     {/if}

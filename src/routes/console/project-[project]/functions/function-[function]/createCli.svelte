@@ -91,7 +91,7 @@
 
     <Alert dismissible={false} type="warning">
         If you did not create your function using the CLI, initialize your function by following our <a
-            href="https://appwrite.io/docs/command-line"
+            href="https://appwrite.io/docs/tooling/command-line/installation"
             target="_blank"
             rel="noopener noreferrer"
             class="link">documentation</a

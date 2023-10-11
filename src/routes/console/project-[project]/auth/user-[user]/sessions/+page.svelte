@@ -101,7 +101,7 @@
                 <Button
                     external
                     secondary
-                    href="https://appwrite.io/docs/client/account#accountCreateEmailSession">
+                    href="https://appwrite.io/docs/products/auth/email-password">
                     Documentation
                 </Button>
             </div>

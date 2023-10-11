@@ -144,7 +144,7 @@
         <p class="text">
             Import data from another platform or from a different Appwrite instance. <a
                 class="link"
-                href="https://appwrite.io/docs/migrations"
+                href="https://appwrite.io/docs/advanced/migrations"
                 target="_blank"
                 rel="noopener noreferrer">
                 Learn about which platforms are supported</a
@@ -236,7 +236,7 @@
             <p class="text">
                 Export data from your project to Appwrite Cloud. <a
                     class="link"
-                    href="https://appwrite.io/docs/migrations-self-hosted-to-cloud"
+                    href="https://appwrite.io/docs/advanced/migrations/self-hosted"
                     target="_blank"
                     rel="noopener noreferrer">
                     Learn more in our documentation.</a>
@@ -264,7 +264,7 @@
             <p class="text">
                 Export data from your project to a self-hosted instance. <a
                     class="link"
-                    href="https://appwrite.io/docs/migrations-cloud-to-self-hosted"
+                    href="https://appwrite.io/docs/advanced/migrations/self-hosted"
                     target="_blank"
                     rel="noopener noreferrer">
                     Learn more in our documentation.</a>

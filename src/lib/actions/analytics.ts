@@ -1,26 +1,58 @@
+import Analytics, { type AnalyticsPlugin } from 'analytics';
+import googleAnalytics from '@analytics/google-analytics';
+import googleTagManager from '@analytics/google-tag-manager';
+import Plausible from 'plausible-tracker';
+import { get } from 'svelte/store';
 import { page } from '$app/stores';
 import { user } from '$lib/stores/user';
 import { ENV, MODE, VARS, isCloud } from '$lib/system';
-import googleAnalytics from '@analytics/google-analytics';
 import { AppwriteException } from '@appwrite.io/console';
-import googleTagManager from '@analytics/google-tag-manager';
-import Analytics from 'analytics';
-import { get } from 'svelte/store';
+import { browser } from '$app/environment';
+
+function plausible(domain: string): AnalyticsPlugin {
+    const instance = Plausible({
+        domain
+    });
+    return {
+        name: 'analytics-plugin-plausible',
+        page: ({ payload }) => {
+            instance.trackPageview({
+                url: payload.properties.path,
+                referrer: payload.properties.referrer,
+                deviceWidth: payload.properties.width
+            });
+        },
+        track: ({ payload }) => {
+            instance.trackEvent(
+                payload.event,
+                {
+                    props: payload.properties
+                },
+                {
+                    url: payload.properties.path,
+                    deviceWidth: payload.properties.width
+                }
+            );
+        },
+        loaded: () => true
+    };
+}
 
 const analytics = Analytics({
     app: 'appwrite',
-    plugins: [
-        googleAnalytics({
-            measurementIds: [VARS.GOOGLE_ANALYTICS || 'G-R4YJ9JN8L4']
-        }),
-        ...(isCloud
+    plugins:
+        isCloud && browser
             ? [
+                  plausible('cloud.appwrite.io'),
                   googleTagManager({
                       containerId: [VARS.GOOGLE_TAG || 'GTM-P3T9TBV']
                   })
               ]
-            : [])
-    ]
+            : [
+                  googleAnalytics({
+                      measurementIds: [VARS.GOOGLE_ANALYTICS || 'G-R4YJ9JN8L4']
+                  })
+              ]
 });
 
 export function trackEvent(name: string, data: object = null): void {
