@@ -130,7 +130,7 @@
                 <p class="text u-line-height-1-5">Need a hand? Learn more in our documentation</p>
             </div>
             <div class="u-flex u-gap-16">
-                <Button text external href="https://appwrite.io/docs/functions#execute">
+                <Button text external href="https://appwrite.io/docs/products/functions/execution">
                     Documentation
                 </Button>
                 <Create secondary />

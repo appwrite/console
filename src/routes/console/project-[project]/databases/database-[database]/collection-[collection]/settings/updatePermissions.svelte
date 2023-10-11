@@ -59,7 +59,7 @@
     <Heading tag="h6" size="7">Permissions</Heading>
     <p class="text">
         Choose who can access your collection and documents. For more information, check out the <a
-            href="https://appwrite.io/docs/permissions"
+            href="https://appwrite.io/docs/products/databases/permissions"
             target="_blank"
             rel="noopener noreferrer"
             class="link">

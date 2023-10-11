@@ -37,7 +37,7 @@
             <p class="u-bold">No data to show</p>
             <a
                 class="link"
-                href="https://appwrite.io/docs/realtime"
+                href="https://appwrite.io/docs/apis/realtime"
                 target="_blank"
                 rel="noopener noreferrer">Get started with Realtime</a>
         </div>
