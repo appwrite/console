@@ -38,17 +38,24 @@ function plausible(domain: string): AnalyticsPlugin {
     };
 }
 
+const PLAUSIBLE_DOMAINS = {
+    CLOUD: 'cloud.appwrite.io',
+    GLOBAL: 'console.appwrite',
+    SELF_HOSTED: 'self-hosted.appwrite'
+};
+
 const analytics = Analytics({
     app: 'appwrite',
     plugins:
         isCloud && browser
             ? [
-                  plausible('cloud.appwrite.io'),
+                  plausible(`${PLAUSIBLE_DOMAINS.GLOBAL},${PLAUSIBLE_DOMAINS.CLOUD}`),
                   googleTagManager({
                       containerId: [VARS.GOOGLE_TAG || 'GTM-P3T9TBV']
                   })
               ]
             : [
+                  plausible(`${PLAUSIBLE_DOMAINS.GLOBAL},${PLAUSIBLE_DOMAINS.SELF_HOSTED}`),
                   googleAnalytics({
                       measurementIds: [VARS.GOOGLE_ANALYTICS || 'G-R4YJ9JN8L4']
                   })
