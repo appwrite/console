@@ -13,7 +13,21 @@ export const addressList = derived(page, ($page) => $page.data.addressList as Ad
 export const plansInfo = derived(page, ($page) => $page.data.plansInfo as PlansInfo);
 export const daysLeftInTrial = writable<number>(0);
 export const trialEndDate = writable<Date>();
-export const readOnly = writable<boolean>(false);
+export const readOnly = writable<ReadOnlyData>({
+    bandwidth: false,
+    documents: false,
+    executions: false,
+    storage: false,
+    users: false
+});
+
+export type ReadOnlyData = {
+    bandwidth: boolean;
+    documents: boolean;
+    executions: boolean;
+    storage: boolean;
+    users: boolean;
+};
 
 export function tierToPlan(tier: Tier) {
     switch (tier) {

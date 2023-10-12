@@ -284,7 +284,7 @@
                         class="u-margin-block-start-48"
                         secondary
                         on:click={() => (showExport = true)}
-                        disabled={$readOnly}>Export data</Button>
+                        disabled={$readOnly.bandwidth}>Export data</Button>
                 </div>
             </svelte:fragment>
         </CardGrid>

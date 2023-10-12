@@ -110,7 +110,7 @@
                 <Button
                     on:click={() => ($showCreate = true)}
                     event="create_file"
-                    disabled={data.files.total >= getServiceLimit('storage') || $readOnly}>
+                    disabled={data.files.total >= getServiceLimit('storage') || $readOnly.storage}>
                     <span class="icon-plus" aria-hidden="true" />
                     <span class="text">Create file</span>
                 </Button>

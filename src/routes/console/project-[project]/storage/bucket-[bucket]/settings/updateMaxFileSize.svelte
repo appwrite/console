@@ -55,7 +55,7 @@
                 <InputNumber
                     id="size"
                     label="Size"
-                    disabled={$readOnly}
+                    disabled={$readOnly.storage}
                     placeholder={$bucket.maximumFileSize.toString()}
                     min={0}
                     max={isCloud ? service : Infinity}
@@ -65,7 +65,7 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={$baseValue === $bucket.maximumFileSize || $readOnly} submit
+            <Button disabled={$baseValue === $bucket.maximumFileSize || $readOnly.storage} submit
                 >Update</Button>
         </svelte:fragment>
     </CardGrid>

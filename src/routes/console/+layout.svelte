@@ -13,7 +13,13 @@
     import { onMount } from 'svelte';
     import { loading, requestedMigration } from '../store';
     import Create from './createOrganization.svelte';
-    import { failedInvoice, daysLeftInTrial, tierToPlan, trialEndDate } from '$lib/stores/billing';
+    import {
+        failedInvoice,
+        daysLeftInTrial,
+        tierToPlan,
+        trialEndDate,
+        readOnly
+    } from '$lib/stores/billing';
     import { diffDays, toLocaleDate } from '$lib/helpers/date';
     import { base } from '$app/paths';
 
@@ -288,7 +294,15 @@
     }
 
     function checkForUsageLimit() {
-        console.log('TODO: set read only mode here');
+        if (!$organization?.billingLimits) return;
+        const { bandwidth, documents, executions, storage, users } = $organization.billingLimits;
+        readOnly.set({
+            bandwidth: bandwidth >= 100,
+            documents: documents >= 100,
+            executions: executions >= 100,
+            storage: storage >= 100,
+            users: users >= 100
+        });
     }
 
     async function paymentExpired() {

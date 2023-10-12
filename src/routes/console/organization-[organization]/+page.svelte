@@ -28,11 +28,15 @@
     import { ID } from '@appwrite.io/console';
     import { openImportWizard } from '../project-[project]/settings/migrations/(import)';
     import { readOnly } from '$lib/stores/billing';
+    import { organization } from '$lib/stores/organization';
 
     export let data;
 
     let addOrganization = false;
     let showCreate = false;
+
+    $: isCreationDisabled =
+        $readOnly.bandwidth || ($organization.billingPlan === 'tier-0' && data.projects.total >= 1);
 
     const getPlatformInfo = (platform: string) => {
         let name: string, icon: string;
@@ -86,7 +90,7 @@
                 showCreate = true;
             },
             keys: ['c'],
-            disabled: showCreate,
+            disabled: isCreationDisabled,
             group: 'projects',
             icon: 'plus'
         }
@@ -120,7 +124,10 @@
         <Heading tag="h2" size="5">Projects</Heading>
 
         <DropList bind:show={showDropdown} placement="bottom-end">
-            <Button on:click={handleCreateProject} event="create_project" disabled={$readOnly}>
+            <Button
+                on:click={handleCreateProject}
+                event="create_project"
+                disabled={isCreationDisabled}>
                 <span class="icon-plus" aria-hidden="true" />
                 <span class="text">Create project</span>
             </Button>

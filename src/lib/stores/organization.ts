@@ -9,12 +9,20 @@ export type Organization = Models.Team<Record<string, unknown>> & {
     budgetAlerts: number[];
     paymentMethodId: string;
     backupPaymentMethodId: string;
-    billingLimits: Record<string, number>;
+    billingLimits: BillingLimits;
     billingCurrentInvoiceDate: string;
     billingNextInvoiceDate: string;
     billingTrialStartDate?: string;
     billingTrialDays?: number;
     amount: number;
+};
+
+export type BillingLimits = {
+    bandwidth: number;
+    documents: number;
+    executions: number;
+    storage: number;
+    users: number;
 };
 
 export const newOrgModal = writable<boolean>(false);
