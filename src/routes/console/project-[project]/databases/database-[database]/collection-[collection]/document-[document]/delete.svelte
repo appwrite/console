@@ -111,12 +111,6 @@
                 Delete document from <span data-private>{$collection.name}</span>
             </InputChoice>
         </div>
-    {:else}
-        <p data-private>
-            Are you sure you want to delete <b
-                >the document from <span data-private>{$collection.name}</span></b
-            >?
-        </p>
     {/if}
 
     <svelte:fragment slot="footer">
