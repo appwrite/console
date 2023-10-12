@@ -27,10 +27,6 @@ export async function initializeStripe() {
     try {
         const methods = await sdk.forConsole.billing.listPaymentMethods();
         clientSecret = methods.paymentMethods[0]?.clientSecret;
-        // const emptyMethod = methods.paymentMethods.find((method) => method.last4 === null);
-        // if (emptyMethod) {
-        //     paymentMethod = emptyMethod;
-        // }
 
         // If there is no payment method, create an empty one and get the client secret
         if (!clientSecret) {
@@ -55,22 +51,24 @@ export async function initializeStripe() {
 
 // TODO: fix redirect
 
-export async function submitStripeCard(name?: string) {
+export async function submitStripeCard(name?: string, urlRoute?: string) {
     try {
-        // If a payment method was during initialization, use it, otherwise create a new one
+        // If a payment method was created during initialization, use it, otherwise create a new one
         if (!paymentMethod) {
             paymentMethod = await sdk.forConsole.billing.createPaymentMethod();
             clientSecret = paymentMethod.clientSecret;
         }
 
-        // Element needs to be submitted before confirming the setup intent
+        // // Element needs to be submitted before confirming the setup intent
         elements.submit();
 
-        const { setupIntent } = await stripe.confirmSetup({
+        const baseUrl = 'https://cloud.appwrite.io/console/';
+
+        const { setupIntent, error } = await stripe.confirmSetup({
             elements,
             clientSecret,
             confirmParams: {
-                return_url: 'https://example.com',
+                return_url: `${baseUrl}${urlRoute ?? 'account/payments?to=test'}`,
                 payment_method_data: {
                     billing_details: {
                         name
@@ -79,6 +77,10 @@ export async function submitStripeCard(name?: string) {
             },
             redirect: 'if_required'
         });
+
+        if (error) {
+            throw error;
+        }
 
         if (setupIntent && setupIntent.status === 'succeeded') {
             const method = await sdk.forConsole.billing.setPaymentMethod(
@@ -89,43 +91,7 @@ export async function submitStripeCard(name?: string) {
             isStripeInitialized.set(false);
             return method;
         } else {
-            console.log('something went wrong');
-            throw new Error('Something went wrong');
-        }
-    } catch (e) {
-        console.log(e);
-        throw e;
-    }
-}
-
-// TODO: fix update
-
-export async function updateStripeCard(selectedPaymentMethod?: string) {
-    try {
-        paymentMethod = await sdk.forConsole.billing.getPaymentMethod(selectedPaymentMethod);
-        clientSecret = paymentMethod.clientSecret;
-
-        // Element needs to be submitted before confirming the setup intent
-        elements.submit();
-
-        const { setupIntent } = await stripe.confirmSetup({
-            elements,
-            clientSecret,
-            confirmParams: {
-                return_url: 'https://example.com'
-            },
-            redirect: 'if_required'
-        });
-
-        if (setupIntent && setupIntent.status === 'succeeded') {
-            const method = await sdk.forConsole.billing.setPaymentMethod(
-                paymentMethod.$id,
-                setupIntent.payment_method
-            );
-            paymentElement.destroy();
-            return method;
-        } else {
-            console.log('something went wrong');
+            console.log('setupIntent failed');
             throw new Error('Something went wrong');
         }
     } catch (e) {

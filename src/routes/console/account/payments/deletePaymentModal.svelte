@@ -38,7 +38,7 @@
     icon="exclamation"
     state="warning"
     headerDivider={false}>
-    <svelte:fragment slot="header"
+    <svelte:fragment slot="title"
         >{linkedOrgs.length
             ? 'Unable to delete payment method'
             : 'Delete payment method'}</svelte:fragment>
