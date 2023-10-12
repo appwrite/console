@@ -46,8 +46,8 @@ const PLAUSIBLE_DOMAINS = {
 
 const analytics = Analytics({
     app: 'appwrite',
-    plugins:
-        isCloud && browser
+    plugins: browser
+        ? isCloud
             ? [
                   plausible(`${PLAUSIBLE_DOMAINS.GLOBAL},${PLAUSIBLE_DOMAINS.CLOUD}`),
                   googleTagManager({
@@ -60,6 +60,7 @@ const analytics = Analytics({
                       measurementIds: [VARS.GOOGLE_ANALYTICS || 'G-R4YJ9JN8L4']
                   })
               ]
+        : []
 });
 
 export function trackEvent(name: string, data: object = null): void {
