@@ -12,9 +12,9 @@
     $: files = normalizeFileSize(data.filesTotal);
     $: requests = data.requestsTotal;
     $: executions = data.executionsTotal;
-    $: network = data.networkTotal;
     $: users = data.usersTotal;
 
+    //All file sizes get converted to the bigger file size unit
     function normalizeFileSize(
         files: {
             date: string;
@@ -85,8 +85,8 @@
         </svelte:fragment>
     </CardGrid>
     <CardGrid>
-        <Heading tag="h4" size="7">Active users</Heading>
-        <p class="text">Active users of your project.</p>
+        <Heading tag="h4" size="7">Total users</Heading>
+        <p class="text">Total users of your project.</p>
         <svelte:fragment slot="aside">
             {#if total(users)}
                 <div class="u-flex u-gap-8 u-cross-baseline">
@@ -96,7 +96,7 @@
                 <BarChart
                     series={[
                         {
-                            name: 'Active users over time',
+                            name: 'Users over time',
                             data: [...users.map((e) => [e.date, e.value])]
                         }
                     ]} />
@@ -146,16 +146,16 @@
         <Heading tag="h4" size="7">Storage</Heading>
         <p class="text">Calculated for all storage operations in your project.</p>
         <svelte:fragment slot="aside">
-            {@const size = total(files.data)}
+            {@const size = humanFileSize(total(data.filesTotal))}
             {#if size}
                 <div class="u-flex u-gap-8 u-cross-baseline">
-                    <Heading tag="h5" size="4">{size}</Heading>
-                    <Heading tag="h6" size="6">{files.unit}</Heading>
+                    <Heading tag="h5" size="4">{size.value}</Heading>
+                    <Heading tag="h6" size="6">{size.unit}</Heading>
                 </div>
                 <BarChart
                     series={[
                         {
-                            name: 'Storage over time',
+                            name: `Storage over time in ${files.unit}`,
                             data: [...files.data]
                         }
                     ]} />
@@ -172,7 +172,7 @@
             {/if}
         </svelte:fragment>
     </CardGrid>
-    <CardGrid>
+    <!-- <CardGrid>
         <Heading tag="h4" size="7">Realtime connections</Heading>
         <p class="text">
             Calculated for all concurrent connections and messages sent to your project in realtime.
@@ -183,7 +183,7 @@
                 <Heading tag="h6" size="6">Concurrent connections</Heading>
             </div>
         </svelte:fragment>
-    </CardGrid>
+    </CardGrid> -->
     <p class="text u-text-color-gray u-margin-block-start-16">
         Metrics are estimates updated every 24 hours and may not accurately reflect your invoice.
     </p>
