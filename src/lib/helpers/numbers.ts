@@ -10,3 +10,7 @@ export function abbreviateNumber(num: number, decimals: number = 1): string {
         return num.toString();
     }
 }
+
+export function toDecimals(num: number, decimals: number = 1): number {
+    return parseFloat(num.toFixed(decimals));
+}

@@ -5,6 +5,7 @@
     import { BarChart } from '$lib/charts';
     import { page } from '$app/stores';
     import { bytesToSize, humanFileSize } from '$lib/helpers/sizeConvertion';
+    import { toDecimals } from '$lib/helpers/numbers.js';
 
     export let data;
 
@@ -26,7 +27,7 @@
         return {
             data: files.map((e) => ({
                 date: new Date(e.date).toLocaleDateString(),
-                value: bytesToSize(e.value, unit)
+                value: toDecimals(bytesToSize(e.value, unit), 2)
             })),
             unit
         };

@@ -35,6 +35,6 @@ export function humanFileSize(bytes: number): {
 
     return {
         value: value[0],
-        unit: value[1] as Size
+        unit: value[1].toUpperCase() as Size
     };
 }
