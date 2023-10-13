@@ -51,13 +51,13 @@ const analytics = Analytics({
     app: 'appwrite',
     plugins: isCloud
         ? [
-              plausible(`${PLAUSIBLE_DOMAINS.GLOBAL},${PLAUSIBLE_DOMAINS.CLOUD}`),
+              plausible(PLAUSIBLE_DOMAINS.CLOUD),
               googleTagManager({
                   containerId: [VARS.GOOGLE_TAG || 'GTM-P3T9TBV']
               })
           ]
         : [
-              plausible(`${PLAUSIBLE_DOMAINS.GLOBAL},${PLAUSIBLE_DOMAINS.SELF_HOSTED}`),
+              plausible(PLAUSIBLE_DOMAINS.SELF_HOSTED),
               googleAnalytics({
                   measurementIds: [VARS.GOOGLE_ANALYTICS || 'G-R4YJ9JN8L4']
               })
