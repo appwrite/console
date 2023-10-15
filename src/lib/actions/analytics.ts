@@ -10,9 +10,12 @@ import { AppwriteException } from '@appwrite.io/console';
 import { browser } from '$app/environment';
 
 function plausible(domain: string): AnalyticsPlugin {
+    if (!browser) return { name: 'analytics-plugin-plausible' };
+
     const instance = Plausible({
         domain
     });
+
     return {
         name: 'analytics-plugin-plausible',
         page: ({ payload }) => {
@@ -38,21 +41,27 @@ function plausible(domain: string): AnalyticsPlugin {
     };
 }
 
+const PLAUSIBLE_DOMAINS = {
+    CLOUD: 'cloud.appwrite.io',
+    GLOBAL: 'console.appwrite',
+    SELF_HOSTED: 'self-hosted.appwrite'
+};
+
 const analytics = Analytics({
     app: 'appwrite',
-    plugins:
-        isCloud && browser
-            ? [
-                  plausible('cloud.appwrite.io'),
-                  googleTagManager({
-                      containerId: [VARS.GOOGLE_TAG || 'GTM-P3T9TBV']
-                  })
-              ]
-            : [
-                  googleAnalytics({
-                      measurementIds: [VARS.GOOGLE_ANALYTICS || 'G-R4YJ9JN8L4']
-                  })
-              ]
+    plugins: isCloud
+        ? [
+              plausible(PLAUSIBLE_DOMAINS.CLOUD),
+              googleTagManager({
+                  containerId: [VARS.GOOGLE_TAG || 'GTM-P3T9TBV']
+              })
+          ]
+        : [
+              plausible(PLAUSIBLE_DOMAINS.SELF_HOSTED),
+              googleAnalytics({
+                  measurementIds: [VARS.GOOGLE_ANALYTICS || 'G-R4YJ9JN8L4']
+              })
+          ]
 });
 
 export function trackEvent(name: string, data: object = null): void {
