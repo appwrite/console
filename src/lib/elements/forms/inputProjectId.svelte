@@ -54,7 +54,7 @@
         class="u-cross-center u-line-height-1 u-color-text-gray"
         aria-hidden="true" />
     <span class="text u-line-height-1-5">
-        Allowed characters: lowercase alphanumericc and non-leading hyphen 
+        Allowed characters: lowercase alphanumeric and non-leading hyphen 
     </span>
 </div>
 
