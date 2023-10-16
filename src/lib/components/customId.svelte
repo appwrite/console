@@ -2,7 +2,7 @@
     import { trackEvent } from '$lib/actions/analytics';
     import { InnerModal } from '$lib/components';
     import { InputId } from '$lib/elements/forms';
-    import {InputProjectId} from '$lib/elements/forms';
+    import { InputProjectId } from '$lib/elements/forms';
     export let show = false;
     export let name: string;
     export let id: string;
@@ -30,10 +30,10 @@
     <svelte:fragment slot="content">
         <div class="form">
             {#if name === 'Project'}
-            <InputProjectId bind:value={id} {autofocus} />
-          {:else}
-            <InputId bind:value={id} {autofocus} />
-          {/if}
+                <InputProjectId bind:value={id} {autofocus} />
+            {:else}
+                <InputId bind:value={id} {autofocus} />
+            {/if}
         </div>
     </svelte:fragment>
 </InnerModal>
