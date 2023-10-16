@@ -127,6 +127,23 @@
                             <a
                                 class="drop-button"
                                 class:is-selected={$page.url.pathname.startsWith(
+                                    `${projectPath}/messaging`
+                                )}
+                                on:click={() => trackEvent('click_menu_messaging')}
+                                href={`${projectPath}/messaging`}
+                                use:tooltip={{
+                                    content: 'Messaging',
+                                    placement: 'right',
+                                    disabled: !narrow
+                                }}>
+                                <span class="icon-send" aria-hidden="true" />
+                                <span class="text">Messaging</span>
+                            </a>
+                        </li>
+                        <li class="drop-list-item">
+                            <a
+                                class="drop-button"
+                                class:is-selected={$page.url.pathname.startsWith(
                                     `${projectPath}/storage`
                                 )}
                                 on:click={() => trackEvent('click_menu_storage')}
