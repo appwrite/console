@@ -85,7 +85,7 @@
 <Container>
     {@const accessedAt = $key.accessedAt ? toLocaleDate($key.accessedAt) : 'never'}
     <CardGrid>
-        <div>
+        <div data-private>
             <Heading tag="h6" size="7">{$key.name}</Heading>
         </div>
         <svelte:fragment slot="aside">
@@ -157,7 +157,7 @@
             <Box>
                 <div class="u-flex u-gap-16">
                     <div class="u-cross-child-center u-line-height-1-5">
-                        <h6 class="u-bold">{$key.name}</h6>
+                        <h6 class="u-bold" data-private>{$key.name}</h6>
                         <p>Last accessed: {accessedAt}</p>
                     </div>
                 </div>

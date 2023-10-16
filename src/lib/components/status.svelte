@@ -18,5 +18,5 @@
     {#if status}
         <span class="status-icon" />
     {/if}
-    <span class="text"><slot /></span>
+    <span class="text" data-private><slot /></span>
 </div>

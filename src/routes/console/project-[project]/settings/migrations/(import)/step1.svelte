@@ -142,7 +142,7 @@
                     }))} />
             </FormList>
             <p class="u-text-center u-margin-block-start-24">
-                <button class="u-bold" on:click|preventDefault={deauthorizeGoogle}>Sign Out</button>
+                <button class="u-bold" on:click|preventDefault={deauthorizeGoogle}>Sign out</button>
             </p>
         {/if}
     {:else if $provider.provider === 'supabase'}
