@@ -139,7 +139,8 @@
                     <Button
                         secondary
                         on:click={() => (showVerifcationDropdown = !showVerifcationDropdown)}>
-                        {$user.emailVerification ? 'Unverify' : 'Verify'} account
+                        {$user.emailVerification && $user.phoneVerification ? 'Unverify' : 'Verify'}
+                        account
                     </Button>
                     <svelte:fragment slot="list">
                         <DropListItem icon="mail" on:click={() => updateVerificationEmail()}>
