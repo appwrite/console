@@ -155,16 +155,16 @@
                         </Button>
                         <svelte:fragment slot="list">
                             <DropListItem on:click={() => addPlatform(Platform.Web)}>
-                                Web App
+                                Web
                             </DropListItem>Ï
                             <DropListItem on:click={() => addPlatform(Platform.Flutter)}>
-                                Flutter App
+                                Flutter
                             </DropListItem>
                             <DropListItem on:click={() => addPlatform(Platform.Android)}>
-                                Android App
+                                Android
                             </DropListItem>
                             <DropListItem on:click={() => addPlatform(Platform.Apple)}>
-                                Apple App
+                                Apple
                             </DropListItem>
                         </svelte:fragment>
                     </DropList>
