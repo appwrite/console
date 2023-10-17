@@ -125,8 +125,8 @@
                             method: () => wizard.start(ChangeOrganizationTierCloud)
                         }
                     ]}>
-                    All emails sent using the Free plan will include attribution to Appwrite in the
-                    signature. To send attribution-free emails, upgrade your plan.
+                    All emails sent using the Starter plan will include attribution to Appwrite in
+                    the signature. To send attribution-free emails, upgrade your plan.
                 </Alert>
             {/if}
             <Collapsible>

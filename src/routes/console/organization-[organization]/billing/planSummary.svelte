@@ -39,13 +39,13 @@
                     <h6 class="u-bold u-trim-1">
                         {currentTier.name}
                     </h6>
-                    {#if $organization.billingPlan !== 'tier-0' && $daysLeftInTrial}
+                    {#if $organization?.billingPlan !== 'tier-0' && $daysLeftInTrial}
                         <Pill>FREE TRIAL</Pill>
                     {/if}
                 </div>
 
                 <p class="text">
-                    {#if $organization.billingPlan !== 'tier-0' && !$daysLeftInTrial}
+                    {#if $organization?.billingPlan !== 'tier-0' && !$daysLeftInTrial}
                         <span class="u-color-text-gray"> Esimated total: </span>
                     {/if}
                     <!-- TODO: add estimated total from aggregation -->

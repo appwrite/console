@@ -17,6 +17,7 @@
     export let serviceId = title.toLocaleLowerCase();
     export let total: number = null;
     export let alertType: 'info' | 'success' | 'warning' | 'error' | 'default' = 'warning';
+    export let showAlert = true;
 
     export let buttonText: string = null;
     export let buttonMethod: () => void = null;
@@ -31,9 +32,9 @@
     $: tier = tierToPlan($organization?.billingPlan)?.name;
 </script>
 
-{#if isCloud && total && limit !== 0 && total >= limit}
+{#if isCloud && showAlert && total && limit !== 0 && total >= limit}
     <slot name="alert" {limit} {tier} {title} {upgradeMethod}>
-        <Alert type={alertType}>
+        <Alert type={alertType} isStandalone>
             <span class="text">
                 You've reached the maximum number of {title.toLowerCase()} for the {tier} plan.
                 <button class="link" type="button" on:click|preventDefault={upgradeMethod}

@@ -41,9 +41,8 @@
     <Heading tag="h2" size="5">Usage</Heading>
     <div class="u-flex u-main-space-between common-section">
         <p class="text">
-            If you exceed the limits of the Free plan, services for your projects may be disrupted. <a
-                href={`${base}/console/`}>Upgrade for greater capacity</a
-            >.
+            If you exceed the limits of the Starter plan, services for your projects may be
+            disrupted. <a href={`${base}/console/`}>Upgrade for greater capacity</a>.
         </p>
         <div class="u-flex u-gap-8">
             <p class="text">Usage period:</p>

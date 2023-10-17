@@ -56,7 +56,7 @@
 
 <Modal bind:show size="big" headerDivider={false} title="Usage rates">
     {#if isFree}
-        Usage on the Free plan is limited for the following resources. Next billing period: {toLocaleDate(
+        Usage on the Starter plan is limited for the following resources. Next billing period: {toLocaleDate(
             nextDate
         )}.
     {:else}

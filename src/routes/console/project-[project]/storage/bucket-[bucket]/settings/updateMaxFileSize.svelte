@@ -39,7 +39,7 @@
                 {@const size = humanFileSize(service)}
                 <Alert type="info">
                     <p class="text">
-                        The Free plan has a maximum upload file size limit of {size.value}{size.unit}.
+                        The Starter plan has a maximum upload file size limit of {size.value}{size.unit}.
                         Upgrade to allow files of a larger size.
                     </p>
                     <svelte:fragment slot="action">

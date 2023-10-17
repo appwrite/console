@@ -36,7 +36,8 @@
     let showCreate = false;
 
     $: isCreationDisabled =
-        $readOnly.bandwidth || ($organization.billingPlan === 'tier-0' && data.projects.total >= 1);
+        $readOnly.bandwidth ||
+        ($organization?.billingPlan === 'tier-0' && data?.projects?.total >= 1);
 
     const getPlatformInfo = (platform: string) => {
         let name: string, icon: string;
@@ -189,7 +190,7 @@
             </svelte:fragment>
         </CardContainer>
     {:else}
-        <Empty single on:click={handleCreateProject}>
+        <Empty marginTop on:click={handleCreateProject}>
             <p>Create a new project</p>
         </Empty>
     {/if}
