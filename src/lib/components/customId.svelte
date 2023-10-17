@@ -8,7 +8,7 @@
     export let id: string;
     export let autofocus = true;
     export let fullWidth = false;
-
+    export let isProject = false;
     $: if (!show) {
         id = null;
     }
@@ -29,7 +29,7 @@
     </svelte:fragment>
     <svelte:fragment slot="content">
         <div class="form">
-            {#if name === 'Project'}
+            {#if isProject === true}
                 <InputProjectId bind:value={id} {autofocus} />
             {:else}
                 <InputId bind:value={id} {autofocus} />
