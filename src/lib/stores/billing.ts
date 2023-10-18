@@ -85,7 +85,7 @@ export type TierData = {
 
 export const tierFree: TierData = {
     price: 0,
-    name: 'Free',
+    name: 'Starter',
     description: 'For personal, passion projects.',
     collaboratorPrice: undefined
 };
