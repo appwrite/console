@@ -26,6 +26,7 @@
 
     async function upgrade() {
         try {
+            const isUpgrade = $changeOrganizationTier.billingPlan > $organization.billingPlan;
             const org = await sdk.forConsole.billing.updatePlan(
                 $organization.$id,
                 $changeOrganizationTier.billingPlan,
@@ -60,8 +61,12 @@
                 type: 'success',
                 isHtml: true,
                 message: `
-                <b>Your organization has been upgraded</b>
-                Make the most of your increased resource capacity and continue building great things with Appwrite.`
+                <b>Your organization has been ${isUpgrade ? 'upgraded' : 'downgraded'}</b>
+                ${
+                    isUpgrade
+                        ? 'Make the most of your increased resource capacity and continue building great things with Appwrite.'
+                        : ''
+                }`
             });
             trackEvent(Submit.OrganizationCreate, {
                 customId: !!$changeOrganizationTier.id
