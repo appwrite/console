@@ -29,7 +29,7 @@
     </svelte:fragment>
     <svelte:fragment slot="content">
         <div class="form">
-            {#if isProject === true}
+            {#if isProject}
                 <InputProjectId bind:value={id} {autofocus} />
             {:else}
                 <InputId bind:value={id} {autofocus} />
