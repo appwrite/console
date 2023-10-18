@@ -184,9 +184,7 @@
             </svelte:fragment>
         </CardContainer>
     {:else}
-        <Empty single on:click={handleCreateProject}>
-            <p>Create a new project</p>
-        </Empty>
+        <Empty single on:click={handleCreateProject} target="project"></Empty>
     {/if}
 
     <PaginationWithLimit

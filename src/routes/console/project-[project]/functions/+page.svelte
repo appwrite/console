@@ -66,7 +66,7 @@
 <Container>
     <ContainerHeader
         title="Functions"
-        buttonText="Function"
+        buttonText="Create function"
         buttonEvent="create_function"
         buttonMethod={openWizard}
         total={data.functions.total} />
@@ -122,7 +122,7 @@
     {:else}
         <Empty
             single
-            href="https://appwrite.io/docs/products/functions/deployment"
+            href="https://appwrite.io/docs/products/functions"
             target="function"
             on:click={openWizard} />
     {/if}

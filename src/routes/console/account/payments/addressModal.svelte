@@ -3,7 +3,7 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, InputNumber, InputSelect, InputText } from '$lib/elements/forms';
+    import { Button, InputSelect, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
@@ -15,13 +15,14 @@
     let address2: string;
     let city: string;
     let state: string;
-    let zip: number;
+    let zip: string;
     let options = [
         {
             value: 'US',
             label: 'United States'
         }
     ];
+    let error: string = null;
 
     onMount(async () => {
         const countryList = await sdk.forProject.locale.listCountries();
@@ -41,7 +42,7 @@
                 address2,
                 city,
                 state,
-                zip?.toString()
+                zip
             );
             await invalidate(Dependencies.ADDRESS);
             show = false;
@@ -50,19 +51,16 @@
                 message: `Address has been added`
             });
             trackEvent(Submit.BillingAddressCreated);
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
-            trackError(error, Submit.BillingAddressCreated);
+        } catch (e) {
+            error = e.message;
+            trackError(e, Submit.BillingAddressCreated);
         }
     }
 
     $: isButtonDisabled = !country || !address || !city || !state || !zip;
 </script>
 
-<Modal bind:show onSubmit={handleSubmit} size="big" title="Add billing address">
+<Modal bind:show bind:error onSubmit={handleSubmit} size="big" title="Add billing address">
     <InputSelect
         bind:value={country}
         {options}
@@ -93,7 +91,7 @@
         label="State"
         placeholder="Enter your state"
         required />
-    <InputNumber
+    <InputText
         bind:value={zip}
         id="zip"
         label="Postal code"
