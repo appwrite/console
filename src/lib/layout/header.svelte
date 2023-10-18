@@ -145,9 +145,9 @@
                 <button class="user-profile-button" on:click={() => (showDropdown = !showDropdown)}>
                     <AvatarInitials size={40} name={$user.name} />
                     <span class="user-profile-info is-only-desktop">
-                        <span class="name">{$user.name}</span>
+                        <span class="name" data-private>{$user.name}</span>
                         {#if $organization}
-                            <span class="title">{$organization.name}</span>
+                            <span class="title" data-private>{$organization.name}</span>
                         {/if}
                     </span>
                     <span
