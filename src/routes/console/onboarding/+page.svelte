@@ -64,7 +64,7 @@
                         </Pill>
                     </div>
                 {:else}
-                    <CustomId bind:show={showCustomId} name="Project" isProject={true} bind:id />
+                    <CustomId bind:show={showCustomId} name="Project" isProject bind:id />
                 {/if}
                 <Button fullWidth submit disabled={name === ''} event="create_project">
                     Create project
