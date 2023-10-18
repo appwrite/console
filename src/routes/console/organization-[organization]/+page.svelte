@@ -28,16 +28,11 @@
     import { ID } from '@appwrite.io/console';
     import { openImportWizard } from '../project-[project]/settings/migrations/(import)';
     import { readOnly } from '$lib/stores/billing';
-    import { organization } from '$lib/stores/organization';
 
     export let data;
 
     let addOrganization = false;
     let showCreate = false;
-
-    $: isCreationDisabled =
-        $readOnly.bandwidth ||
-        ($organization?.billingPlan === 'tier-0' && data?.projects?.total >= 1);
 
     const getPlatformInfo = (platform: string) => {
         let name: string, icon: string;
@@ -91,7 +86,7 @@
                 showCreate = true;
             },
             keys: ['c'],
-            disabled: isCreationDisabled,
+            disabled: $readOnly.bandwidth,
             group: 'projects',
             icon: 'plus'
         }
@@ -128,7 +123,7 @@
             <Button
                 on:click={handleCreateProject}
                 event="create_project"
-                disabled={isCreationDisabled}>
+                disabled={$readOnly.bandwidth}>
                 <span class="icon-plus" aria-hidden="true" />
                 <span class="text">Create project</span>
             </Button>
@@ -147,7 +142,6 @@
         <CardContainer
             total={data.projects.total}
             offset={data.offset}
-            event="project"
             on:click={handleCreateProject}>
             {#each data.projects.projects as project}
                 <GridItem1 href={`${base}/console/project-${project.$id}`}>
@@ -190,7 +184,7 @@
             </svelte:fragment>
         </CardContainer>
     {:else}
-        <Empty marginTop on:click={handleCreateProject}>
+        <Empty single on:click={handleCreateProject}>
             <p>Create a new project</p>
         </Empty>
     {/if}

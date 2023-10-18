@@ -5,7 +5,7 @@
     import { Pill } from '$lib/elements';
     import { organization } from '$lib/stores/organization';
     import { isCloud } from '$lib/system';
-    import { tick } from 'svelte';
+    import { createEventDispatcher, onMount, tick } from 'svelte';
     import { wizard } from '$lib/stores/wizard';
     import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
     import { Button } from '$lib/elements/forms';
@@ -28,8 +28,15 @@
 
     const limit = getServiceLimit(serviceId) || Infinity;
     const upgradeMethod = () => wizard.start(ChangeOrganizationTierCloud);
+    const dispatch = createEventDispatcher();
 
     $: tier = tierToPlan($organization?.billingPlan)?.name;
+    $: isLimited = limit !== 0 && limit < Infinity;
+    $: isButtonDisabled = buttonDisabled || (isLimited && total >= limit);
+
+    onMount(() => {
+        dispatch('data', { isButtonDisabled, limit, tier });
+    });
 </script>
 
 {#if isCloud && showAlert && total && limit !== 0 && total >= limit}
@@ -48,7 +55,7 @@
 <header class:u-flex={isFlex} class="u-gap-12 common-section u-main-space-between u-flex-wrap">
     <div class="u-flex u-cross-child-center u-gap-16 u-flex-wrap">
         <Heading tag={titleTag} size={titleSize}>{title}</Heading>
-        {#if isCloud && limit !== 0 && limit < Infinity}
+        {#if isCloud && isLimited}
             <div
                 use:tooltip={{
                     interactive: true,
@@ -67,17 +74,14 @@
         {/if}
     </div>
 
-    <slot>
+    <slot {isButtonDisabled}>
         {#if buttonText}
             <div
                 use:tooltip={{
                     content: `Upgrade to add more ${title.toLocaleLowerCase()}`,
-                    disabled: limit === 0 || total < limit
+                    disabled: !isButtonDisabled
                 }}>
-                <Button
-                    on:click={buttonMethod}
-                    event={buttonEvent}
-                    disabled={(limit !== 0 && total >= limit) || buttonDisabled}>
+                <Button on:click={buttonMethod} event={buttonEvent} disabled={isButtonDisabled}>
                     <span class="icon-plus" aria-hidden="true" />
                     <span class="text">{buttonText}</span>
                 </Button>
