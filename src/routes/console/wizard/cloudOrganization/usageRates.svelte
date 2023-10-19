@@ -24,8 +24,6 @@
         ? new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1).toString()
         : $organization?.billingNextInvoiceDate;
 
-    $: console.log(plan);
-
     const planData = [
         {
             id: 'members',

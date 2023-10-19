@@ -8,8 +8,10 @@
     import Step3 from './wizard/cloudOrganizationChangeTier/step3.svelte';
     import Step4 from './wizard/cloudOrganizationChangeTier/step4.svelte';
     import {
+        changeOrganizationFinalAction,
         changeOrganizationTier,
-        changeTierSteps
+        changeTierSteps,
+        isUpgrade
     } from './wizard/cloudOrganizationChangeTier/store';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
@@ -17,6 +19,7 @@
     import { page } from '$app/stores';
     import { organization } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
+    import { tierToPlan } from '$lib/stores/billing';
 
     const dispatch = createEventDispatcher();
 
@@ -26,7 +29,6 @@
 
     async function upgrade() {
         try {
-            const isUpgrade = $changeOrganizationTier.billingPlan > $organization.billingPlan;
             const org = await sdk.forConsole.billing.updatePlan(
                 $organization.$id,
                 $changeOrganizationTier.billingPlan,
@@ -57,17 +59,24 @@
             await invalidate(Dependencies.ACCOUNT);
             dispatch('created');
             await goto(`/console/organization-${org.$id}`);
-            addNotification({
-                type: 'success',
-                isHtml: true,
-                message: `
-                <b>Your organization has been ${isUpgrade ? 'upgraded' : 'downgraded'}</b>
-                ${
-                    isUpgrade
-                        ? 'Make the most of your increased resource capacity and continue building great things with Appwrite.'
-                        : ''
-                }`
-            });
+            if ($isUpgrade) {
+                addNotification({
+                    type: 'success',
+                    isHtml: true,
+                    message: `
+                    <b>Your organization has been upgraded</b>
+                   Make the most of your increased resource capacity and continue building great things with Appwrite.`
+                });
+            } else {
+                addNotification({
+                    type: 'success',
+                    isHtml: true,
+                    message: `
+                    <b>${$organization.name}</b> has been changed to ${
+                        tierToPlan($changeOrganizationTier.billingPlan).name
+                    } plan.`
+                });
+            }
             trackEvent(Submit.OrganizationCreate, {
                 customId: !!$changeOrganizationTier.id
             });
@@ -110,6 +119,6 @@
 <Wizard
     title="Change plan"
     steps={$changeTierSteps}
-    finalAction="Start trial"
+    finalAction={$changeOrganizationFinalAction}
     on:finish={upgrade}
     on:exit={onFinish} />

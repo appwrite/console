@@ -37,9 +37,9 @@
             bind:group
             on:click />
         {#if $$slots.custom}
-            <slot name="custom" />
+            <slot name="custom" {disabled} />
         {:else}
-            <div class="u-flex u-flex-vertical u-gap-4">
+            <div class="u-flex u-flex-vertical u-gap-4" class:u-opacity-50={disabled}>
                 {#if $$slots.title}
                     <h4 class="body-text-2 u-bold"><slot name="title" /></h4>
                 {/if}

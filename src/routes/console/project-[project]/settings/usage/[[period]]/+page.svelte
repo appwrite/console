@@ -6,6 +6,10 @@
     import { page } from '$app/stores';
     import { bytesToSize, humanFileSize } from '$lib/helpers/sizeConvertion';
     import { toDecimals } from '$lib/helpers/numbers.js';
+    import { tierToPlan } from '$lib/stores/billing.js';
+    import { organization } from '$lib/stores/organization.js';
+    import { isCloud } from '$lib/system';
+    import UsageRates from '$routes/console/wizard/cloudOrganization/usageRates.svelte';
 
     export let data;
 
@@ -32,10 +36,12 @@
             unit
         };
     }
+
+    let show = false;
 </script>
 
 <Container>
-    <div class="u-flex u-main-space-between common-section">
+    <div class="u-flex u-main-space-between common-section u-cross-center">
         <Heading tag="h2" size="5">Usage</Heading>
         <SecondaryTabs>
             <SecondaryTabsItem
@@ -55,33 +61,30 @@
             </SecondaryTabsItem>
         </SecondaryTabs>
     </div>
+    {#if isCloud}
+        <p class="u-margin-block-start-8">
+            Project resources contribute to your organization's monthly free usage limits on the {tierToPlan(
+                $organization.billingPlan
+            ).name} plan.
+            <button class="link" type="button" on:click|preventDefault={() => (show = true)}
+                >Learn more about usage rates.</button>
+        </p>
+    {/if}
     <CardGrid>
         <Heading tag="h4" size="7">Bandwidth</Heading>
         <p class="text">Calculated for all bandwidth used across your project.</p>
         <svelte:fragment slot="aside">
-            {#if total(requests)}
-                <div class="u-flex u-gap-8 u-cross-baseline">
-                    <Heading tag="h5" size="4">{total(requests)}</Heading>
-                    <Heading tag="h6" size="6">GB</Heading>
-                </div>
-                <BarChart
-                    series={[
-                        {
-                            name: 'Bandwidth over time',
-                            data: [...requests.map((e) => [e.date, e.value])]
-                        }
-                    ]} />
-            {:else}
-                <Card isDashed>
-                    <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
-                        <span
-                            class="icon-chart-square-bar text-large"
-                            aria-hidden="true"
-                            style="font-size: 32px;" />
-                        <p class="u-bold">No data to show</p>
-                    </div>
-                </Card>
-            {/if}
+            <div class="u-flex u-gap-8 u-cross-baseline">
+                <Heading tag="h5" size="4">{total(requests)}</Heading>
+                <Heading tag="h6" size="6">GB</Heading>
+            </div>
+            <BarChart
+                series={[
+                    {
+                        name: 'Bandwidth over time',
+                        data: [...requests.map((e) => [e.date, e.value])]
+                    }
+                ]} />
         </svelte:fragment>
     </CardGrid>
     <CardGrid>
@@ -188,3 +191,7 @@
         Metrics are estimates updated every 24 hours and may not accurately reflect your invoice.
     </p>
 </Container>
+
+{#if show && isCloud}
+    <UsageRates bind:show tier={$organization.billingPlan} />
+{/if}
