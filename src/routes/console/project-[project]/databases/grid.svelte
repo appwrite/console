@@ -16,6 +16,6 @@
         </GridItem1>
     {/each}
     <svelte:fragment slot="empty">
-        <p>Create a new database</p>
+        <p>Create a database</p>
     </svelte:fragment>
 </CardContainer>

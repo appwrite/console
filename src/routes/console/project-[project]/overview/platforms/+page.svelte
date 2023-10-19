@@ -140,7 +140,7 @@
             {/if}
             <slot>
                 <div class="u-text-center">
-                    <Heading size="7" tag="h4">Create your first platform to get started.</Heading>
+                    <Heading size="7" tag="h4">Create a platform to get started.</Heading>
                     <p class="body-text-2 u-bold u-margin-block-start-4">
                         Need a hand? Learn more in our documentation.
                     </p>
