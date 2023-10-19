@@ -56,7 +56,7 @@
                 </Pill>
             </div>
         {:else}
-            <CustomId bind:show={showCustomId} name="Project" bind:id />
+            <CustomId bind:show={showCustomId} name="Project" isProject bind:id />
         {/if}
     </FormList>
     <svelte:fragment slot="footer">

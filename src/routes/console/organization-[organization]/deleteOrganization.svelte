@@ -43,7 +43,7 @@
     icon="exclamation"
     state="warning"
     headerDivider={false}>
-    <p>
+    <p data-private>
         Are you sure you want to delete <b>{$organization.name}</b>? All projects ({$organization.total})
         and data associated with this organization will be deleted. This action is irreversible.
     </p>
