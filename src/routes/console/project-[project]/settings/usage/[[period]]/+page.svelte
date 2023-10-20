@@ -74,17 +74,29 @@
         <Heading tag="h4" size="7">Bandwidth</Heading>
         <p class="text">Calculated for all bandwidth used across your project.</p>
         <svelte:fragment slot="aside">
-            <div class="u-flex u-gap-8 u-cross-baseline">
-                <Heading tag="h5" size="4">{total(requests)}</Heading>
-                <Heading tag="h6" size="6">GB</Heading>
-            </div>
-            <BarChart
-                series={[
-                    {
-                        name: 'Bandwidth over time',
-                        data: [...requests.map((e) => [e.date, e.value])]
-                    }
-                ]} />
+            {#if total(requests)}
+                <div class="u-flex u-gap-8 u-cross-baseline">
+                    <Heading tag="h5" size="4">{total(requests)}</Heading>
+                    <Heading tag="h6" size="6">GB</Heading>
+                </div>
+                <BarChart
+                    series={[
+                        {
+                            name: 'Bandwidth over time',
+                            data: [...requests.map((e) => [e.date, e.value])]
+                        }
+                    ]} />
+            {:else}
+                <Card isDashed>
+                    <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
+                        <span
+                            class="icon-chart-square-bar text-large"
+                            aria-hidden="true"
+                            style="font-size: 32px;" />
+                        <p class="u-bold">No data to show</p>
+                    </div>
+                </Card>
+            {/if}
         </svelte:fragment>
     </CardGrid>
     <CardGrid>
@@ -175,18 +187,6 @@
             {/if}
         </svelte:fragment>
     </CardGrid>
-    <!-- <CardGrid>
-        <Heading tag="h4" size="7">Realtime connections</Heading>
-        <p class="text">
-            Calculated for all concurrent connections and messages sent to your project in realtime.
-        </p>
-        <svelte:fragment slot="aside">
-            <div class="u-flex u-gap-8 u-cross-baseline">
-                <Heading tag="h5" size="4">{total(network)}</Heading>
-                <Heading tag="h6" size="6">Concurrent connections</Heading>
-            </div>
-        </svelte:fragment>
-    </CardGrid> -->
     <p class="text u-text-color-gray u-margin-block-start-16">
         Metrics are estimates updated every 24 hours and may not accurately reflect your invoice.
     </p>

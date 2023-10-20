@@ -29,7 +29,7 @@
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">Organization Details</svelte:fragment>
+    <svelte:fragment slot="title">Organization details</svelte:fragment>
     <FormList>
         <InputText
             label="Name"

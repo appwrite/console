@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { toLocaleDateTime } from '$lib/helpers/date';
+    import { hoursToDays, toLocaleDateTime } from '$lib/helpers/date';
     import { log } from '$lib/stores/logs';
     import { Alert, Card, Code, Heading, Id, SvgIcon, Tab, Tabs } from '../components';
     import { calculateTime } from '$lib/helpers/timeConversion';
@@ -303,7 +303,8 @@
                                 {#if execution?.logs}
                                     {#if isCloud && limit !== 0 && limit < Infinity}
                                         <Alert>
-                                            You are limited to {limit} hour of logs on the {tier} plan.
+                                            You are limited to {hoursToDays(limit)} of logs on the {tier}
+                                            plan.
                                             <button
                                                 class="link"
                                                 type="button"

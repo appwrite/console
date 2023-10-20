@@ -1,5 +1,11 @@
 <script lang="ts">
-    import { AvatarInitials, EmptySearch, PaginationWithLimit, Trim } from '$lib/components';
+    import {
+        AvatarInitials,
+        EmptySearch,
+        Heading,
+        PaginationWithLimit,
+        Trim
+    } from '$lib/components';
     import {
         TableBody,
         TableHeader,
@@ -10,18 +16,30 @@
         TableScroll
     } from '$lib/elements/table';
     import { Container, ContainerHeader } from '$lib/layout';
-    import { toLocaleDateTime } from '$lib/helpers/date';
+    import { hoursToDays, toLocaleDateTime } from '$lib/helpers/date';
     import type { Models } from '@appwrite.io/console';
 
     export let logs: Models.LogList;
     export let offset = 0;
     export let limit = 0;
 
-    // TODO: add limit for activity
+    export let service: string = null;
 </script>
 
 <Container>
-    <ContainerHeader title="Activity" alertType="info" />
+    {#if service}
+        <ContainerHeader title="Activity" alertType="info" serviceId={service}>
+            <svelte:fragment slot="tooltip" let:limit let:tier let:upgradeMethod>
+                <p class="text">
+                    You are limited to {hoursToDays(limit)} of logs on the {tier} plan.
+                    <button class="link" type="button" on:click|preventDefault={upgradeMethod}
+                        >Upgrade</button> to increase log retention for a longer period.
+                </p>
+            </svelte:fragment>
+        </ContainerHeader>
+    {:else}
+        <Heading tag="h2" size="5">Activity</Heading>
+    {/if}
     {#if logs.total}
         <TableScroll>
             <TableHeader>

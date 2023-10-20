@@ -96,7 +96,7 @@
             <slot name="tooltip" {limit} {tier} {title} {upgradeMethod}>
                 <p class="text">
                     Your are limited to {limit}
-                    {title.toLocaleLowerCase()} per project on the {tier}.
+                    {title.toLocaleLowerCase()} per project on the {tier} plan.
                     <button class="link" type="button" on:click|preventDefault={upgradeMethod}
                         >Upgrade</button>
                     for addtional {title.toLocaleLowerCase()}.

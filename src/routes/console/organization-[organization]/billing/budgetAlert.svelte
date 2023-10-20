@@ -104,7 +104,7 @@
             </FormList>
 
             {#if alerts.length}
-                <Table noMargin noStyles>
+                <Table noMargin noStyles transparent>
                     <TableHeader>
                         <TableCellHead>Alert at budget cap %</TableCellHead>
                         <TableCellHead width={30} />

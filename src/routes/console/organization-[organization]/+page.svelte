@@ -184,7 +184,11 @@
             </svelte:fragment>
         </CardContainer>
     {:else}
-        <Empty single on:click={handleCreateProject} target="project"></Empty>
+        <Empty
+            single
+            on:click={handleCreateProject}
+            target="project"
+            href="https://appwrite.io/docs/quick-starts"></Empty>
     {/if}
 
     <PaginationWithLimit

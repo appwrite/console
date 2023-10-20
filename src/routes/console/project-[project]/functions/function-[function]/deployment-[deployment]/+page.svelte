@@ -25,6 +25,7 @@
     import { getServiceLimit, tierToPlan } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { isCloud } from '$lib/system';
+    import { hoursToDays } from '$lib/helpers/date';
 
     let logs = '';
 
@@ -54,7 +55,7 @@
 <Container>
     {#if isCloud && limit !== 0 && limit < Infinity}
         <Alert>
-            You are limited to {limit} hour of logs on the {tier} plan.
+            You are limited to {hoursToDays(limit)} of logs on the {tier} plan.
             <button
                 class="link"
                 type="button"

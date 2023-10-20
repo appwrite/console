@@ -11,6 +11,7 @@
         TableHeader,
         TableRow
     } from '$lib/elements/table';
+    import { hoursToDays } from '$lib/helpers/date';
     import { Container, ContainerHeader } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import DeleteAllSessions from '../deleteAllSessions.svelte';
@@ -37,7 +38,7 @@
 
         <svelte:fragment slot="tooltip" let:limit let:tier let:upgradeMethod>
             <p class="text">
-                You are limited to {limit} hour of logs on the {tier} plan.
+                You are limited to {hoursToDays(limit)} of logs on the {tier} plan.
                 <button class="link" type="button" on:click|preventDefault={upgradeMethod}
                     >Upgrade</button> to increase log retention for a longer period.
             </p>
