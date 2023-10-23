@@ -4,6 +4,7 @@ import { writable } from 'svelte/store';
 import Apple from '../../routes/console/project-[project]/auth/appleOAuth.svelte';
 import Auth0 from '../../routes/console/project-[project]/auth/auth0OAuth.svelte';
 import Authentik from '../../routes/console/project-[project]/auth/authentikOAuth.svelte';
+import FusionAuth from '../../routes/console/project-[project]/auth/fusionauthOAuth.svelte';
 import GitLab from '../../routes/console/project-[project]/auth/gitlabOAuth.svelte';
 import Google from '../../routes/console/project-[project]/auth/googleOAuth.svelte';
 import Main from '../../routes/console/project-[project]/auth/mainOAuth.svelte';
@@ -75,6 +76,10 @@ const setProviders = (project: Models.Project): Provider[] => {
                     break;
                 case 'facebook':
                     docs = 'https://developers.facebook.com/';
+                    break;
+                case 'fusionauth':
+                    docs = 'https://fusionauth.io/docs/v1/tech/oauth/';
+                    component = FusionAuth;
                     break;
                 case 'github':
                     docs = 'https://developer.github.com';
