@@ -462,6 +462,13 @@ export const marketplace: MarketplaceTemplate[] = [
                 type: 'text'
             },
             {
+                name: 'ALGOLIA_APP_ID',
+                description: `The ID of the application in Algolia. <a class="u-bold" target="_blank" href="https://support.algolia.com/hc/en-us/articles/11040113398673-Where-can-I-find-my-application-ID-and-the-index-name-">Learn more</a>.`,
+                placeholder: 'OFCNCOG2CU',
+                required: true,
+                type: 'text'
+            },
+            {
                 name: 'ALGOLIA_ADMIN_API_KEY',
                 description: `The admin API Key for your Algolia service. <a class="u-bold" target="_blank" href="https://www.algolia.com/doc/guides/security/api-keys/">Learn more</a>.`,
                 placeholder: 'fd0aa...136a8',
