@@ -710,19 +710,19 @@ export class Billing {
     async createAddress(
         country: string,
         streetAddress: string,
-        addressLine2: string,
         city: string,
         state: string,
-        postalCode: string
+        postalCode: string,
+        addressLine2?: string
     ): Promise<Address> {
         const path = `/account/billing-addresses`;
         const params = {
             country,
             streetAddress,
-            addressLine2,
             city,
             state,
-            postalCode
+            postalCode,
+            addressLine2
         };
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
@@ -738,20 +738,20 @@ export class Billing {
         billingAddressId: string,
         country: string,
         streetAddress: string,
-        addressLine2: string,
         city: string,
         state: string,
-        postalCode: string
+        postalCode: string,
+        addressLine2?: string
     ): Promise<Address> {
         const path = `/account/billing-addresses/${billingAddressId}`;
         const params = {
             billingAddressId,
             country,
             streetAddress,
-            addressLine2,
             city,
             state,
-            postalCode
+            postalCode,
+            addressLine2
         };
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(

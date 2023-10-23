@@ -1,8 +1,8 @@
 <script lang="ts">
     import { Heading } from '$lib/components';
     import { Container } from '$lib/layout';
-    import BillingAddress from './billingAddress.svelte';
     import PaymentMethods from './paymentMethods.svelte';
+    import BillingAddress from './billingAddress.svelte';
 
     // export let data;
     let showPayment = false;

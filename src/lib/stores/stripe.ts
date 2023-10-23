@@ -8,7 +8,6 @@ import {
 import { sdk } from './sdk';
 import { app } from './app';
 import { get, writable } from 'svelte/store';
-import { apperanceDark, apperanceLight } from './billing';
 import type { PaymentMethodData } from '$lib/sdk/billing';
 
 let stripe: Stripe;
@@ -99,3 +98,61 @@ export async function submitStripeCard(name?: string, urlRoute?: string) {
         throw e;
     }
 }
+
+const apperanceLight = {
+    variables: {
+        colorPrimary: '#606a7b',
+        colorText: 'rgb(107, 107, 112)',
+        colorBackground: '#FFFFFF',
+        color: '#606a7b',
+        colorDanger: '#df1b41',
+        fontFamily: 'Inter, arial, sans-serif',
+        borderRadius: '4px'
+    },
+    rules: {
+        '.Input:hover': {
+            border: 'solid 1px rgb(195, 195, 198)',
+            boxShadow: 'none'
+        },
+        '.Input:focus': {
+            border: 'solid 1px rgb(195, 195, 198)',
+            boxShadow: 'none'
+        },
+        '.Input::placeholder': {
+            color: '#C4C6D7'
+        },
+        '.Input--invalid': {
+            border: 'solid 1px var(--colorDanger)',
+            boxShadow: 'none'
+        }
+    }
+};
+
+const apperanceDark = {
+    variables: {
+        colorPrimary: '#606a7b',
+        colorText: 'rgb(195, 195, 198)',
+        colorBackground: 'rgb(24, 24, 27)',
+        colorDanger: '#FF453A',
+        fontFamily: 'Inter, arial, sans-serif',
+        borderRadius: '4px',
+        spacingGridRow: '16px'
+    },
+    rules: {
+        '.Input:hover': {
+            border: 'solid 1px rgb(87, 87, 92)',
+            boxShadow: 'none'
+        },
+        '.Input:focus': {
+            border: 'solid 1px rgb(87, 87, 92)',
+            boxShadow: 'none'
+        },
+        '.Input::placeholder': {
+            color: 'rgb(87, 87, 92)'
+        },
+        '.Input--invalid': {
+            border: 'solid 1px var(--colorDanger)',
+            boxShadow: 'none'
+        }
+    }
+};

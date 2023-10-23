@@ -1,6 +1,6 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { Modal } from '$lib/components';
+    import { CreditCardBrandImage, Modal } from '$lib/components';
     import { Button, FormList, InputRadio, InputText } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
     import { organization } from '$lib/stores/organization';
@@ -8,7 +8,6 @@
     import { initializeStripe, isStripeInitialized, submitStripeCard } from '$lib/stores/stripe';
     import { onMount } from 'svelte';
     import type { PaymentList } from '$lib/sdk/billing';
-    import { getCreditCardImage } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Pill } from '$lib/elements';
@@ -124,11 +123,7 @@
                             <span class="u-flex u-cross-center u-gap-8">
                                 <span>
                                     <span class="u-capitalize">{method.brand}</span> ending in {method.last4}</span>
-                                <img
-                                    width="23"
-                                    height="16"
-                                    src={getCreditCardImage(method.brand)}
-                                    alt={method.brand} />
+                                <CreditCardBrandImage brand={method.brand} />
                             </span>
                             {#if method.$id === $organization.backupPaymentMethodId}
                                 <Pill>Backup</Pill>

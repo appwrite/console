@@ -1,8 +1,9 @@
 <script lang="ts">
+    import { CreditCardBrandImage } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { toLocaleDate } from '$lib/helpers/date';
     import { WizardStep } from '$lib/layout';
-    import { getCreditCardImage, tierToPlan } from '$lib/stores/billing';
+    import { tierToPlan } from '$lib/stores/billing';
     import { sdk } from '$lib/stores/sdk';
     import { createOrganization } from './store';
 
@@ -56,11 +57,7 @@
                     <p class="text u-bold">
                         <span class="u-capitalize">{card?.brand}</span> ending in {card?.last4}
                     </p>
-                    <img
-                        width="23"
-                        height="16"
-                        src={getCreditCardImage(card?.brand)}
-                        alt={card?.brand} />
+                    <CreditCardBrandImage brand={card?.brand} />
                 </span>
             {/await}
         </div>

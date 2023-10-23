@@ -38,7 +38,7 @@
     </p>
     <svelte:fragment slot="aside">
         {#if $addressList.total && countryList?.total}
-            <Table noMargin noStyles>
+            <Table noMargin noStyles transparent>
                 <TableHeader>
                     <TableCellHead>Billing address</TableCellHead>
                     <TableCellHead width={40} />
@@ -58,7 +58,7 @@
                                     <p class="text">{country ? country.name : address.country}</p>
                                 </div>
                             </TableCell>
-                            <TableCell>
+                            <TableCell style="vertical-align: top;">
                                 <DropList
                                     bind:show={showDropdown[i]}
                                     placement="bottom-start"

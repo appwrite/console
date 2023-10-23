@@ -112,14 +112,15 @@
                         {error}
                     </Alert>
                 {/if}
-                <FormList>
+                <FormList gap={16}>
                     <InputText
                         id="name"
                         label="Cardholder name"
                         placeholder="Cardholder name"
                         bind:value={name}
                         required
-                        autofocus={true} />
+                        autofocus={true}
+                        hideRequired />
 
                     <div id="payment-element">
                         <!-- Elements will create form elements here -->

@@ -11,7 +11,7 @@
     import { Dependencies } from '$lib/constants';
     import { initializeStripe, isStripeInitialized, submitStripeCard } from '$lib/stores/stripe';
     import { sdk } from '$lib/stores/sdk';
-    import { getCreditCardImage } from '$lib/stores/billing';
+    import { CreditCardBrandImage } from '$lib/components';
 
     let methods: PaymentList;
     let name: string;
@@ -64,11 +64,7 @@
                             <span class="u-flex u-cross-center u-gap-8">
                                 <span>
                                     <span class="u-capitalize">{method.brand}</span> ending in {method.last4}</span>
-                                <img
-                                    width="23"
-                                    height="16"
-                                    src={getCreditCardImage(method.brand)}
-                                    alt={method.brand} />
+                                <CreditCardBrandImage brand={method.brand} />
                             </span>
                         </InputRadio>
                     </div>

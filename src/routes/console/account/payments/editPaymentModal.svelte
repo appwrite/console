@@ -1,7 +1,7 @@
 <script lang="ts">
     // import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Alert, Modal } from '$lib/components';
-    import { Button, FormList, InputNumber, InputSelect } from '$lib/elements/forms';
+    import { Button, FormItem, FormList, InputNumber, InputSelect } from '$lib/elements/forms';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
@@ -10,6 +10,7 @@
 
     export let show = false;
     export let selectedPaymentMethod: PaymentMethodData;
+    export let isLinked = false;
 
     const options = [
         { value: '01', label: '01' },
@@ -61,23 +62,32 @@
             <svelte:fragment slot="title">This payment method has expired</svelte:fragment>
         </Alert>
     {/if}
+    {#if isLinked}
+        Updates to this payment method will be applied to any linked organizations.
+    {/if}
     <FormList>
-        <InputSelect
-            id="month"
-            label="Month"
-            bind:value={month}
-            {options}
-            required
-            placeholder="Select expiry month" />
-        <InputNumber
-            id="year"
-            label="Year"
-            bind:value={year}
-            required
-            placeholder="Select expiry year" />
+        <FormItem isMultiple>
+            <InputSelect
+                isMultiple
+                fullWidth
+                id="month"
+                label="Month"
+                bind:value={month}
+                {options}
+                required
+                placeholder="Select expiry month" />
+            <InputNumber
+                isMultiple
+                fullWidth
+                id="year"
+                label="Year"
+                bind:value={year}
+                required
+                placeholder="Select expiry year" />
+        </FormItem>
     </FormList>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (show = false)}>Cancel</Button>
-        <Button submit>Update</Button>
+        <Button submit disabled={!month || !year}>Update</Button>
     </svelte:fragment>
 </Modal>

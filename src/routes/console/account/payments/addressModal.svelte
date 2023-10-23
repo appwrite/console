@@ -3,7 +3,7 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, InputSelect, InputText } from '$lib/elements/forms';
+    import { Button, FormItem, FormList, InputSelect, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
@@ -39,10 +39,10 @@
             await sdk.forConsole.billing.createAddress(
                 country,
                 address,
-                address2,
                 city,
                 state,
-                zip
+                zip,
+                address2 ? address2 : undefined
             );
             await invalidate(Dependencies.ADDRESS);
             show = false;
@@ -61,42 +61,51 @@
 </script>
 
 <Modal bind:show bind:error onSubmit={handleSubmit} size="big" title="Add billing address">
-    <InputSelect
-        bind:value={country}
-        {options}
-        label="Country or region"
-        placeholder="Select country or region"
-        id="country"
-        required />
-    <InputText
-        bind:value={address}
-        id="address"
-        label="Street address"
-        placeholder="Enter street address"
-        required />
-    <InputText
-        bind:value={address2}
-        id="address2"
-        label="Address line 2"
-        placeholder="Unit number, floor, etc." />
-    <InputText
-        bind:value={city}
-        id="city"
-        label="City or suburb"
-        placeholder="Enter your city"
-        required />
-    <InputText
-        bind:value={state}
-        id="state"
-        label="State"
-        placeholder="Enter your state"
-        required />
-    <InputText
-        bind:value={zip}
-        id="zip"
-        label="Postal code"
-        placeholder="Enter postal code"
-        required />
+    <FormList gap={16}>
+        <InputSelect
+            bind:value={country}
+            {options}
+            label="Country or region"
+            placeholder="Select country or region"
+            id="country"
+            required />
+        <InputText
+            bind:value={address}
+            id="address"
+            label="Street address"
+            placeholder="Enter street address"
+            required />
+        <InputText
+            bind:value={address2}
+            id="address2"
+            label="Address line 2"
+            placeholder="Unit number, floor, etc." />
+        <InputText
+            bind:value={city}
+            id="city"
+            label="City or suburb"
+            placeholder="Enter your city"
+            required />
+        <FormItem isMultiple>
+            <InputText
+                isMultiple
+                fullWidth
+                bind:value={state}
+                id="state"
+                label="State"
+                placeholder="Enter your state"
+                required />
+            <InputText
+                isMultiple
+                fullWidth
+                bind:value={zip}
+                id="zip"
+                label="Postal code"
+                placeholder="Enter postal code"
+                required />
+        </FormItem>
+    </FormList>
+
     <svelte:fragment slot="footer">
         <Button text on:click={() => (show = false)}>Cancel</Button>
         <Button submit disabled={isButtonDisabled}>Save</Button>

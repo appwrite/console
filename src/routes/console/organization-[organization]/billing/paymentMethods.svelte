@@ -2,14 +2,21 @@
     import { sdk } from '$lib/stores/sdk';
     import { invalidate } from '$app/navigation';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { CardGrid, CreditCardInfo, DropList, DropListItem, Heading } from '$lib/components';
+    import {
+        CardGrid,
+        CreditCardBrandImage,
+        CreditCardInfo,
+        DropList,
+        DropListItem,
+        Heading
+    } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
     import { organization } from '$lib/stores/organization';
     import { Button } from '$lib/elements/forms';
     import PaymentModal from '$routes/console/account/payments/paymentModal.svelte';
     import { hasStripePublicKey, isCloud } from '$lib/system';
-    import { getCreditCardImage, paymentMethods } from '$lib/stores/billing';
+    import { paymentMethods } from '$lib/stores/billing';
     import type { PaymentMethodData } from '$lib/sdk/billing';
     import DeleteOrgPayment from './deleteOrgPayment.svelte';
     import ReplaceCard from './replaceCard.svelte';
@@ -154,11 +161,8 @@
                                                 <p class="text">
                                                     Card ending in {paymentMethod.last4}
                                                 </p>
-                                                <img
-                                                    width="23"
-                                                    height="16"
-                                                    src={getCreditCardImage(paymentMethod?.brand)}
-                                                    alt={paymentMethod?.brand} />
+                                                <CreditCardBrandImage
+                                                    brand={paymentMethod?.brand} />
                                             </span>
                                         </DropListItem>
                                     {/each}
@@ -243,11 +247,8 @@
                                                 <p class="text">
                                                     Card ending in {paymentMethod.last4}
                                                 </p>
-                                                <img
-                                                    width="23"
-                                                    height="16"
-                                                    src={getCreditCardImage(paymentMethod?.brand)}
-                                                    alt={paymentMethod?.brand} />
+                                                <CreditCardBrandImage
+                                                    brand={paymentMethod?.brand} />
                                             </span>
                                         </DropListItem>
                                     {/each}

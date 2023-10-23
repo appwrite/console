@@ -33,6 +33,7 @@
     let selectedLinkedOrgs: Organization[] = [];
     let showDelete = false;
     let showEdit = false;
+    let isLinked = false;
 
     $: orgList = $organizationList.teams as unknown as Organization[];
 
@@ -107,6 +108,7 @@
                                                         showEdit = true;
                                                         showDropdown[i] = false;
                                                         selectedMethod = paymentMethod;
+                                                        isLinked = !!linkedOrgs?.length;
                                                     }}>
                                                     Edit
                                                 </DropListItem>
@@ -145,7 +147,7 @@
     <PaymentModal bind:show={showPayment} />
 {/if}
 {#if showEdit && isCloud && hasStripePublicKey}
-    <EditPaymentModal selectedPaymentMethod={selectedMethod} bind:show={showEdit} />
+    <EditPaymentModal selectedPaymentMethod={selectedMethod} bind:show={showEdit} {isLinked} />
 {/if}
 
 {#if selectedMethod}

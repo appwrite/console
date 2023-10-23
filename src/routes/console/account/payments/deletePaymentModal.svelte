@@ -1,5 +1,6 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
+    import { base } from '$app/paths';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
@@ -53,13 +54,22 @@
             This payment method is set as the default for the following organisations. As they have
             upcoming invoices it cannot be deleted from your account.
         </p>
-        <ul class="list" />
+        <ul>
+            {#each linkedOrgs as org}
+                <li class="text">
+                    <a class="link" href={`${base}/console/organization-${org.$id}/billing`}
+                        >{org.name}</a>
+                </li>
+            {/each}
+        </ul>
     {:else}
         <p class="text">Are you sure you want to delete this payment method from your account?</p>
     {/if}
 
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-        <Button secondary submit disabled={!!linkedOrgs.length}>Delete</Button>
+        {#if !linkedOrgs.length}
+            <Button secondary submit>Delete</Button>
+        {/if}
     </svelte:fragment>
 </Modal>

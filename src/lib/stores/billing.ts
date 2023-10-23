@@ -42,11 +42,6 @@ export function tierToPlan(tier: Tier) {
     }
 }
 
-export function getCreditCardImage(brand: string, width = 46, height = 32) {
-    if (!brand) return '';
-    return sdk.forConsole.avatars.getCreditCard(brand, width, height).toString();
-}
-
 export function getServiceLimit(serviceId: string): number {
     if (!isCloud) return 0;
     if (!serviceId) return 0;
@@ -101,63 +96,4 @@ export const tierScale: TierData = {
     name: 'Scale',
     description: 'For scaling teams that need dedicated support.',
     collaboratorPrice: 0
-};
-
-export const apperanceLight = {
-    variables: {
-        colorPrimary: '#606a7b',
-        colorText: 'rgb(107, 107, 112)',
-        colorBackground: '#FFFFFF',
-        color: '#606a7b',
-        colorDanger: '#df1b41',
-        fontFamily: 'Inter, arial, sans-serif',
-        borderRadius: '4px',
-        fontSizeBase: '14px'
-    },
-    rules: {
-        '.Input:hover': {
-            border: 'solid 1px rgb(195, 195, 198)',
-            boxShadow: 'none'
-        },
-        '.Input:focus': {
-            border: 'solid 1px rgb(195, 195, 198)',
-            boxShadow: 'none'
-        },
-        '.Input::placeholder': {
-            color: '#C4C6D7'
-        },
-        '.Input--invalid': {
-            border: 'solid 1px var(--colorDanger)',
-            boxShadow: 'none'
-        }
-    }
-};
-
-export const apperanceDark = {
-    variables: {
-        colorPrimary: '#606a7b',
-        colorText: 'rgb(195, 195, 198)',
-        colorBackground: 'rgb(24, 24, 27)',
-        colorDanger: '#FF453A',
-        fontFamily: 'Inter, arial, sans-serif',
-        borderRadius: '4px',
-        fontSizeBase: '14px'
-    },
-    rules: {
-        '.Input:hover': {
-            border: 'solid 1px rgb(87, 87, 92)',
-            boxShadow: 'none'
-        },
-        '.Input:focus': {
-            border: 'solid 1px rgb(87, 87, 92)',
-            boxShadow: 'none'
-        },
-        '.Input::placeholder': {
-            color: 'rgb(87, 87, 92)'
-        },
-        '.Input--invalid': {
-            border: 'solid 1px var(--colorDanger)',
-            boxShadow: 'none'
-        }
-    }
 };

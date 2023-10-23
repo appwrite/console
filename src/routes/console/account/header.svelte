@@ -43,7 +43,7 @@
               ...permanentTabs,
               {
                   href: `${path}/payments`,
-                  title: 'Payments details',
+                  title: 'Payment details',
                   event: 'payments',
                   hasChildren: true
               }
