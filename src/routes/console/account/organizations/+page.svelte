@@ -17,9 +17,14 @@
     import { Pill } from '$lib/elements';
     import type { Models } from '@appwrite.io/console';
     import type { Organization } from '$lib/stores/organization';
-    import { daysLeftInTrial } from '$lib/stores/billing';
+    import { daysLeftInTrial, trialEndDate } from '$lib/stores/billing';
+    import { tooltip } from '$lib/actions/tooltip';
+    import { toLocaleDate } from '$lib/helpers/date';
+    import { wizard } from '$lib/stores/wizard';
+    import CreateOrganizationCloud from '$routes/console/createOrganizationCloud.svelte';
 
     export let data: PageData;
+    let addOrganization = false;
 
     const getMemberships = async (teamId: string) => {
         const memberships = await sdk.forConsole.teams.listMemberships(teamId);
@@ -32,14 +37,18 @@
         return isCloud && 'billingPlan' in data ? true : false;
     }
 
-    let addOrganization = false;
+    function createOrg() {
+        if (isCloud) {
+            wizard.start(CreateOrganizationCloud);
+        } else addOrganization = true;
+    }
 </script>
 
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
         <Heading tag="h2" size="5">Organizations</Heading>
 
-        <Button on:click={() => (addOrganization = true)} event="create_organization">
+        <Button on:click={createOrg} event="create_organization">
             <span class="icon-plus" aria-hidden="true" />
             <span class="text">Create organization</span>
         </Button>
@@ -50,7 +59,7 @@
             total={data.organizations.total}
             offset={data.offset}
             event="organization"
-            on:click={() => (addOrganization = true)}>
+            on:click={createOrg}>
             {#each data.organizations.teams as organization}
                 {@const avatarList = getMemberships(organization.$id)}
                 <GridItem1 href={`${base}/console/organization-${organization.$id}`}>
@@ -63,10 +72,25 @@
                     <svelte:fragment slot="status">
                         {#if isCloudOrg(organization)}
                             {#if organization?.billingPlan === 'tier-0'}
-                                <Pill>FREE</Pill>
+                                <div
+                                    class="u-flex u-cross-center"
+                                    use:tooltip={{
+                                        content:
+                                            'You are limited to 1 free organization per account'
+                                    }}>
+                                    <Pill>FREE</Pill>
+                                </div>
                             {/if}
                             {#if organization?.billingTrialStartDate && $daysLeftInTrial}
-                                <Pill>FREE TRIAL</Pill>
+                                <div
+                                    class="u-flex u-cross-center"
+                                    use:tooltip={{
+                                        content: `Your trial ends on ${toLocaleDate(
+                                            $trialEndDate.toString()
+                                        )}. ${$daysLeftInTrial} days remaining.`
+                                    }}>
+                                    <Pill>FREE TRIAL</Pill>
+                                </div>
                             {/if}
                         {/if}
                     </svelte:fragment>
@@ -82,7 +106,7 @@
             </svelte:fragment>
         </CardContainer>
     {:else}
-        <Empty single on:click={() => (addOrganization = true)}>
+        <Empty single on:click={createOrg}>
             <p>Create a new organization</p>
         </Empty>
     {/if}
