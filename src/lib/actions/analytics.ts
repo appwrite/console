@@ -1,6 +1,4 @@
 import Analytics, { type AnalyticsPlugin } from 'analytics';
-import googleAnalytics from '@analytics/google-analytics';
-import googleTagManager from '@analytics/google-tag-manager';
 import Plausible from 'plausible-tracker';
 import { get } from 'svelte/store';
 import { page } from '$app/stores';
@@ -49,19 +47,7 @@ const PLAUSIBLE_DOMAINS = {
 
 const analytics = Analytics({
     app: 'appwrite',
-    plugins: isCloud
-        ? [
-              plausible(PLAUSIBLE_DOMAINS.CLOUD),
-              googleTagManager({
-                  containerId: [VARS.GOOGLE_TAG || 'GTM-P3T9TBV']
-              })
-          ]
-        : [
-              plausible(PLAUSIBLE_DOMAINS.SELF_HOSTED),
-              googleAnalytics({
-                  measurementIds: [VARS.GOOGLE_ANALYTICS || 'G-R4YJ9JN8L4']
-              })
-          ]
+    plugins: [plausible(isCloud ? PLAUSIBLE_DOMAINS.CLOUD : PLAUSIBLE_DOMAINS.SELF_HOSTED)]
 });
 
 export function trackEvent(name: string, data: object = null): void {
