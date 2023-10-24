@@ -144,40 +144,42 @@
             offset={data.offset}
             on:click={handleCreateProject}>
             {#each data.projects.projects as project}
-                <GridItem1 href={`${base}/console/project-${project.$id}`}>
-                    <svelte:fragment slot="eyebrow">
-                        {project?.platforms?.length ? project?.platforms?.length : 'No'} apps
-                    </svelte:fragment>
-                    <svelte:fragment slot="title">
-                        {project.name}
-                    </svelte:fragment>
-                    {#if allServiceDisabled(project)}
-                        <p>
-                            <span class="icon-pause" aria-hidden="true" /> All services are disabled.
-                        </p>
-                    {/if}
-                    {@const platforms = filterPlatforms(
-                        project.platforms.map((platform) => getPlatformInfo(platform.type))
-                    )}
-                    {#each platforms as platform, i}
-                        {#if i < 3}
+                <li>
+                    <GridItem1 href={`${base}/console/project-${project.$id}`}>
+                        <svelte:fragment slot="eyebrow">
+                            {project?.platforms?.length ? project?.platforms?.length : 'No'} apps
+                        </svelte:fragment>
+                        <svelte:fragment slot="title">
+                            {project.name}
+                        </svelte:fragment>
+                        {#if allServiceDisabled(project)}
+                            <p>
+                                <span class="icon-pause" aria-hidden="true" /> All services are disabled.
+                            </p>
+                        {/if}
+                        {@const platforms = filterPlatforms(
+                            project.platforms.map((platform) => getPlatformInfo(platform.type))
+                        )}
+                        {#each platforms as platform, i}
+                            {#if i < 3}
+                                <Pill>
+                                    <span class={`icon-${platform.icon}`} aria-hidden="true" />
+                                    {platform.name}
+                                </Pill>
+                            {/if}
+                        {/each}
+                        {#if platforms?.length > 3}
                             <Pill>
-                                <span class={`icon-${platform.icon}`} aria-hidden="true" />
-                                {platform.name}
+                                +{project.platforms.length - 3}
                             </Pill>
                         {/if}
-                    {/each}
-                    {#if platforms?.length > 3}
-                        <Pill>
-                            +{project.platforms.length - 3}
-                        </Pill>
-                    {/if}
-                    <svelte:fragment slot="icon">
-                        {#if isCloud}
-                            <p>region</p>
-                        {/if}
-                    </svelte:fragment>
-                </GridItem1>
+                        <svelte:fragment slot="icon">
+                            {#if isCloud}
+                                <p>region</p>
+                            {/if}
+                        </svelte:fragment>
+                    </GridItem1>
+                </li>
             {/each}
             <svelte:fragment slot="empty">
                 <p>Create a new project</p>
