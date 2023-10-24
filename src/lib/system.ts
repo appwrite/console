@@ -8,9 +8,7 @@ export const VARS = {
     GROWTH_ENDPOINT: import.meta.env?.VITE_APPWRITE_GROWTH_ENDPOINT?.toString() as
         | string
         | undefined,
-    CONSOLE_MODE: import.meta.env?.VITE_CONSOLE_MODE?.toString() as string | undefined,
-    GOOGLE_ANALYTICS: import.meta.env?.VITE_GA_PROJECT?.toString() as string | undefined,
-    GOOGLE_TAG: import.meta.env?.VITE_GTM_PROJECT?.toString() as string | undefined
+    CONSOLE_MODE: import.meta.env?.VITE_CONSOLE_MODE?.toString() as string | undefined
 };
 
 export const ENV = {
