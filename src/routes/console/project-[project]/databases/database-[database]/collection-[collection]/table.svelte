@@ -156,7 +156,7 @@
                 href={`${base}/console/project-${projectId}/databases/database-${databaseId}/collection-${$collection.$id}/document-${document.$id}`}>
                 <TableCellCheck bind:selectedIds={selectedDb} id={document.$id} />
 
-                <TableCell width={150}>
+                <TableCell width={150} title={document.$id}>
                     <Id value={document.$id}>
                         {document.$id}
                     </Id>
