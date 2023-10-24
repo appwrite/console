@@ -5,10 +5,12 @@
     import { Dependencies } from '$lib/constants';
     import { Button, FormItem, FormList, InputSelect, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
+    import type { Organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
 
     export let show = false;
+    export let organization: string = null;
 
     let country: string;
     let address: string;
@@ -36,7 +38,7 @@
 
     async function handleSubmit() {
         try {
-            await sdk.forConsole.billing.createAddress(
+            const response = await sdk.forConsole.billing.createAddress(
                 country,
                 address,
                 city,
@@ -44,13 +46,20 @@
                 zip,
                 address2 ? address2 : undefined
             );
+            trackEvent(Submit.BillingAddressCreated);
+            let org: Organization = null;
+            if (organization) {
+                org = await sdk.forConsole.billing.setBillingAddress(organization, response.$id);
+                trackEvent(Submit.OrganizationBillingAddressAdded);
+            }
             await invalidate(Dependencies.ADDRESS);
             show = false;
             addNotification({
                 type: 'success',
-                message: `Address has been added`
+                message: org
+                    ? `A new billing address has been added to ${org.name}`
+                    : `Address has been added`
             });
-            trackEvent(Submit.BillingAddressCreated);
         } catch (e) {
             error = e.message;
             trackError(e, Submit.BillingAddressCreated);
