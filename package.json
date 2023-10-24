@@ -18,8 +18,6 @@
         "e2e": "playwright test tests/e2e"
     },
     "dependencies": {
-        "@analytics/google-analytics": "^1.0.7",
-        "@analytics/google-tag-manager": "^0.5.5",
         "@appwrite.io/console": "^0.3.0",
         "@appwrite.io/pink": "0.1.0-next.9",
         "@appwrite.io/pink-icons": "^0.1.0-next.9",
