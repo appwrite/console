@@ -46,18 +46,14 @@
             });
             invalidate(Dependencies.ORGANIZATION);
             trackEvent(
-                isBackup
-                    ? Submit.OrganizationBackupPaymentRemoved
-                    : Submit.OrganizationPaymentRemoved
+                isBackup ? Submit.OrganizationBackupPaymentRemove : Submit.OrganizationPaymentRemove
             );
             show = false;
         } catch (e) {
             error = e.message;
             trackError(
                 e,
-                isBackup
-                    ? Submit.OrganizationBackupPaymentRemoved
-                    : Submit.OrganizationPaymentRemoved
+                isBackup ? Submit.OrganizationBackupPaymentRemove : Submit.OrganizationPaymentRemove
             );
         }
     }

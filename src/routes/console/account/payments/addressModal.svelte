@@ -46,11 +46,11 @@
                 zip,
                 address2 ? address2 : undefined
             );
-            trackEvent(Submit.BillingAddressCreated);
+            trackEvent(Submit.BillingAddressCreate);
             let org: Organization = null;
             if (organization) {
                 org = await sdk.forConsole.billing.setBillingAddress(organization, response.$id);
-                trackEvent(Submit.OrganizationBillingAddressAdded);
+                trackEvent(Submit.OrganizationBillingAddressSet);
             }
             await invalidate(Dependencies.ADDRESS);
             show = false;
@@ -62,7 +62,7 @@
             });
         } catch (e) {
             error = e.message;
-            trackError(e, Submit.BillingAddressCreated);
+            trackError(e, Submit.BillingAddressCreate);
         }
     }
 

@@ -110,7 +110,8 @@
                                             icon="external-link"
                                             external
                                             href={`${endpoint}/organizations/${$page.params.organization}/invoices/${invoice.$id}/view`}
-                                            on:click={() => (showDropdown[i] = !showDropdown[i])}>
+                                            on:click={() => (showDropdown[i] = !showDropdown[i])}
+                                            event="view_invoice">
                                             View invoice
                                         </DropListLink>
                                         <DropListLink
@@ -118,7 +119,8 @@
                                             href={`${endpoint}/organizations/${$page.params.organization}/invoices/${invoice.$id}/download`}
                                             on:click={() => {
                                                 showDropdown[i] = !showDropdown[i];
-                                            }}>
+                                            }}
+                                            event="download_invoice">
                                             Download PDF
                                         </DropListLink>
                                     </svelte:fragment>

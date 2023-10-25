@@ -22,13 +22,13 @@
                 type: 'success',
                 message: `Payment method has been deleted`
             });
-            trackEvent(Submit.PaymentMethodDeleted);
+            trackEvent(Submit.PaymentMethodDelete);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
-            trackError(error, Submit.PaymentMethodDeleted);
+            trackError(error, Submit.PaymentMethodDelete);
         }
     }
 </script>

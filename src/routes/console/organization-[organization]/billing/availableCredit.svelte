@@ -41,7 +41,7 @@
                 message: `Credit has been added to ${$organization.name}`
             });
             invalidate(Dependencies.ORGANIZATION);
-            trackEvent(Submit.CouponRedeemed, {
+            trackEvent(Submit.CreditRedeem, {
                 coupon
             });
             coupon = null;
@@ -50,7 +50,7 @@
                 type: 'error',
                 message: error.message
             });
-            trackError(error, Submit.CouponRedeemed);
+            trackError(error, Submit.CreditRedeem);
         }
     }
 

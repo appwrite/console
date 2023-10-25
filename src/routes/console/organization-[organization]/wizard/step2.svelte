@@ -46,7 +46,7 @@
                                     width="40"
                                     height="30" />
                                 <p class:u-opacity-50={region.disabled}>{region.name}</p>
-                                <Pill button>
+                                <Pill button event="region_notify">
                                     <span class="icon-bell" aria-hidden="true" />
                                     <span class="text">Notify me</span>
                                 </Pill>

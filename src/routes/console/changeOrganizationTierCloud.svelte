@@ -27,7 +27,7 @@
         await invalidate(Dependencies.FUNCTIONS);
     }
 
-    async function upgrade() {
+    async function changeTier() {
         try {
             const org = await sdk.forConsole.billing.updatePlan(
                 $organization.$id,
@@ -77,8 +77,9 @@
                     } plan.`
                 });
             }
-            trackEvent(Submit.OrganizationCreate, {
-                customId: !!$changeOrganizationTier.id
+            trackEvent($isUpgrade ? Submit.OrganizationUpgrade : Submit.OrganizationDowngrade, {
+                customId: !!$changeOrganizationTier.id,
+                plan: tierToPlan($changeOrganizationTier.billingPlan)?.name
             });
             wizard.hide();
         } catch (e) {
@@ -86,7 +87,7 @@
                 type: 'error',
                 message: e.mesage
             });
-            trackError(e, Submit.OrganizationCreate);
+            trackError(e, $isUpgrade ? Submit.OrganizationUpgrade : Submit.OrganizationDowngrade);
         }
     }
     onDestroy(() => {
@@ -120,5 +121,5 @@
     title="Change plan"
     steps={$changeTierSteps}
     finalAction={$changeOrganizationFinalAction}
-    on:finish={upgrade}
+    on:finish={changeTier}
     on:exit={onFinish} />

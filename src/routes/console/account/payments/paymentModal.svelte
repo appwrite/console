@@ -1,5 +1,4 @@
 <script lang="ts">
-    // import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Alert } from '$lib/components';
     import { InputText, Button, FormList } from '$lib/elements/forms';
     import { onMount } from 'svelte';

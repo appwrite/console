@@ -61,7 +61,7 @@
                 type: 'success',
                 message: `Budget cap enabled for ${$organization.name}`
             });
-            trackEvent(Submit.BudgetCapUpdate, {
+            trackEvent(Submit.BudgetAlertsUpdate, {
                 alerts
             });
         } catch (error) {
@@ -69,7 +69,7 @@
                 type: 'error',
                 message: `There was an error enabling your budget cap`
             });
-            trackError(error, Submit.BudgetCapUpdate);
+            trackError(error, Submit.BudgetAlertsUpdate);
         }
     }
 

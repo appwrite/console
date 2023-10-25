@@ -43,14 +43,14 @@
                 type: 'success',
                 message: `A new payment method has been added to ${$organization.name}`
             });
-            trackEvent(Submit.OrganizationPaymentAdded);
+            trackEvent(Submit.OrganizationPaymentSet);
             invalidate(Dependencies.ORGANIZATION);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
-            trackError(error, Submit.OrganizationPaymentAdded);
+            trackError(error, Submit.OrganizationPaymentSet);
         }
     }
 
@@ -70,7 +70,7 @@
                 type: 'error',
                 message: error.message
             });
-            trackError(error, Submit.OrganizationPaymentAdded);
+            trackError(error, Submit.OrganizationPaymentSet);
         }
     }
 

@@ -7,6 +7,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import type { PaymentMethodData } from '$lib/sdk/billing';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
 
     export let show = false;
     export let selectedPaymentMethod: PaymentMethodData;
@@ -38,14 +39,16 @@
                 month,
                 year?.toString()
             );
+            trackEvent(Submit.PaymentMethodUpdate);
+            invalidate(Dependencies.PAYMENT_METHODS);
+            show = false;
             addNotification({
                 type: 'success',
                 message: 'Your payment method has been updated'
             });
-            invalidate(Dependencies.PAYMENT_METHODS);
-            show = false;
         } catch (e) {
             error = e.message;
+            trackError(e, Submit.PaymentMethodUpdate);
         }
     }
 </script>

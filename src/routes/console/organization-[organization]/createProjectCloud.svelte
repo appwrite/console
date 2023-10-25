@@ -30,7 +30,8 @@
             );
             trackEvent(Submit.ProjectCreate, {
                 customId: !!$createProject?.id,
-                teamId
+                teamId,
+                region: $createProject.region
             });
             addNotification({
                 type: 'success',

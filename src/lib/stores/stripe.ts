@@ -9,6 +9,7 @@ import { sdk } from './sdk';
 import { app } from './app';
 import { get, writable } from 'svelte/store';
 import type { PaymentMethodData } from '$lib/sdk/billing';
+import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
 
 let stripe: Stripe;
 let paymentMethod: PaymentMethodData;
@@ -78,6 +79,8 @@ export async function submitStripeCard(name?: string, urlRoute?: string) {
         });
 
         if (error) {
+            const e = new Error(error.message);
+            trackError(e, Submit.PaymentMethodCreate);
             throw error;
         }
 
@@ -88,12 +91,16 @@ export async function submitStripeCard(name?: string, urlRoute?: string) {
             );
             paymentElement.destroy();
             isStripeInitialized.set(false);
+            trackEvent(Submit.PaymentMethodCreate);
             return method;
         } else {
+            const e = new Error('Something went wrong');
+            trackError(e, Submit.PaymentMethodCreate);
             console.log('setupIntent failed');
-            throw new Error('Something went wrong');
+            throw e;
         }
     } catch (e) {
+        trackError(e, Submit.PaymentMethodCreate);
         console.log(e);
         throw e;
     }

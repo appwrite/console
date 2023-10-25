@@ -54,13 +54,13 @@
                 type: 'success',
                 message: `Address has been added`
             });
-            trackEvent(Submit.BillingAddressCreated);
+            trackEvent(Submit.BillingAddressCreate);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
-            trackError(error, Submit.BillingAddressCreated);
+            trackError(error, Submit.BillingAddressCreate);
         }
     }
 </script>

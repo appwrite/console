@@ -19,13 +19,13 @@
                 type: 'success',
                 message: `Address has been deleted`
             });
-            trackEvent(Submit.BillingAddressDeleted);
+            trackEvent(Submit.BillingAddressDelete);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
-            trackError(error, Submit.BillingAddressDeleted);
+            trackError(error, Submit.BillingAddressDelete);
         }
     }
 </script>

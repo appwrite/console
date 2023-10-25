@@ -23,13 +23,13 @@
                 type: 'success',
                 message: `A new billing address has been added to ${$organization.name}`
             });
-            trackEvent(Submit.OrganizationBillingAddressAdded);
+            trackEvent(Submit.OrganizationBillingAddressSet);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
-            trackError(error, Submit.OrganizationBillingAddressAdded);
+            trackError(error, Submit.OrganizationBillingAddressSet);
         }
     }
 

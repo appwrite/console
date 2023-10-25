@@ -14,6 +14,7 @@
     import { ID } from '@appwrite.io/console';
     import { page } from '$app/stores';
     import { wizard } from '$lib/stores/wizard';
+    import { tierToPlan } from '$lib/stores/billing';
 
     const dispatch = createEventDispatcher();
 
@@ -58,7 +59,10 @@
                 message: `${$createOrganization.name} has been created`
             });
             trackEvent(Submit.OrganizationCreate, {
-                customId: !!$createOrganization.id
+                customId: !!$createOrganization.id,
+                plan: tierToPlan($createOrganization.billingPlan)?.name,
+                budget_cap_enabled: !!$createOrganization?.billingBudget,
+                members_invited: $createOrganization?.collaborators?.length
             });
             wizard.hide();
         } catch (e) {
