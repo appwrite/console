@@ -388,7 +388,7 @@
                                 access of your organization, please update your billing details.
                             {:else}
                                 Your scheduled payment on <b
-                                    >{toLocaleDate($failedInvoice.dueAt)}</b> failed. Access to The paid
+                                    >{toLocaleDate($failedInvoice.dueAt)}</b> failed. Access to paid
                                 projects within this organization will be disabled if no action is taken
                                 within 30 days.
                             {/if}
@@ -396,7 +396,7 @@
                     </div>
                     <div class="alert-buttons u-flex u-gap-16 u-cross-child-center">
                         <a
-                            href={`${base}/console/organization-${$failedInvoice.teamId}/billing`}
+                            href={`${base}/console/organization-${$failedInvoice.teamId}/billing#paymentMethods`}
                             class="button is-secondary is-full-width-mobile">
                             <span class="text">Update billing details</span>
                         </a>

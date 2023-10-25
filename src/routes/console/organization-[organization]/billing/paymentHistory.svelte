@@ -68,7 +68,7 @@
                     <TableCellHead>Due Date</TableCellHead>
                     <TableCellHead>Status</TableCellHead>
                     <TableCellHead>Amount Due</TableCellHead>
-                    <TableCellHead>Invoce #</TableCellHead>
+                    <TableCellHead>Invoice #</TableCellHead>
                     <TableCellHead width={40} />
                 </TableHeader>
                 <TableBody>

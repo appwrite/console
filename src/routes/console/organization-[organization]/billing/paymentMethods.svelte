@@ -92,7 +92,7 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h2" size="6">Payment methods</Heading>
+    <Heading tag="h2" size="6" id="paymentMethod">Payment methods</Heading>
 
     <p class="text">
         View or update your organization payment methods here. A maximum of two payment methods can
