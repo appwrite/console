@@ -18,6 +18,6 @@ export const dbSearcher = (async (query: string) => {
                         goto(`/console/project-${get(project).$id}/databases/database-${db.$id}`);
                     },
                     icon: 'database'
-                } as const)
+                }) as const
         );
 }) satisfies Searcher;
