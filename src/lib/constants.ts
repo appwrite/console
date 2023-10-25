@@ -46,7 +46,8 @@ export enum Dependencies {
     MIGRATIONS = 'dependency:migrations',
     COLLECTIONS = 'dependency:collections',
     RUNTIMES = 'dependency:runtimes',
-    CONSOLE_VARIABLES = 'dependency:console_variables'
+    CONSOLE_VARIABLES = 'dependency:console_variables',
+    MESSAGING_PROVIDER = 'dependency:messaging_provider'
 }
 
 export const scopes: {
