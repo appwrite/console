@@ -19,6 +19,7 @@
     import { newOrgModal, organization, organizationList } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
+    import { isCloud } from '$lib/system';
     import { slide } from 'svelte/transition';
 
     let showDropdown = false;
@@ -65,15 +66,25 @@
 
 <svelte:window on:click={onBlur} />
 
-<a
-    class="logo"
-    href={$organization ? `${base}/console/organization-${$organization.$id}` : `${base}/console`}>
-    <img
-        src={$app.themeInUse == 'dark' ? AppwriteLogoDark : AppwriteLogoLight}
-        width="120"
-        height="22"
-        alt="Appwrite" />
-</a>
+<div class="logo u-inline-flex u-gap-16 u-cross-center">
+    <a
+        href={$organization
+            ? `${base}/console/organization-${$organization.$id}`
+            : `${base}/console`}>
+        <img
+            src={$app.themeInUse == 'dark' ? AppwriteLogoDark : AppwriteLogoLight}
+            width="120"
+            height="22"
+            alt="Appwrite" />
+    </a>
+    {#if isCloud}
+        <div
+            class="tag eyebrow-heading-3"
+            style="--p-tag-height: 1.785rem; --p-tag-content-height: 1.15rem; padding-block: 0.25rem;">
+            <span class="text u-x-small" style="font-weight: 500">Beta</span>
+        </div>
+    {/if}
+</div>
 
 {#if $page.data.breadcrumbs}
     <svelte:component this={$page.data.breadcrumbs} />
@@ -95,7 +106,7 @@
             </svelte:fragment>
         </DropList>
         <a
-            href="https://github.com/appwrite/appwrite/issues/new/choose"
+            href="https://appwrite.io/discord"
             target="_blank"
             rel="noopener noreferrer"
             class="button is-small is-text">
@@ -122,9 +133,9 @@
                 <button class="user-profile-button" on:click={() => (showDropdown = !showDropdown)}>
                     <AvatarInitials size={40} name={$user.name} />
                     <span class="user-profile-info is-only-desktop">
-                        <span class="name">{$user.name}</span>
+                        <span class="name" data-private>{$user.name}</span>
                         {#if $organization}
-                            <span class="title">{$organization.name}</span>
+                            <span class="title" data-private>{$organization.name}</span>
                         {/if}
                     </span>
                     <span

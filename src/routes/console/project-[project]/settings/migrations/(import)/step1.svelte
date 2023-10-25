@@ -57,7 +57,7 @@
     <svelte:fragment slot="subtitle">
         Select a source platform with the project you want to migrate. <a
             class="link"
-            href="https://appwrite.io/docs/migrations"
+            href="https://appwrite.io/docs/advanced/migrations"
             target="_blank"
             rel="noopener noreferrer">
             Learn about which platforms are supported</a
@@ -142,7 +142,7 @@
                     }))} />
             </FormList>
             <p class="u-text-center u-margin-block-start-24">
-                <button class="u-bold" on:click|preventDefault={deauthorizeGoogle}>Sign Out</button>
+                <button class="u-bold" on:click|preventDefault={deauthorizeGoogle}>Sign out</button>
             </p>
         {/if}
     {:else if $provider.provider === 'supabase'}

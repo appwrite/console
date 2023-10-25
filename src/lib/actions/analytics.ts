@@ -1,26 +1,53 @@
+import Analytics, { type AnalyticsPlugin } from 'analytics';
+import Plausible from 'plausible-tracker';
+import { get } from 'svelte/store';
 import { page } from '$app/stores';
 import { user } from '$lib/stores/user';
 import { ENV, MODE, VARS, isCloud } from '$lib/system';
-import googleAnalytics from '@analytics/google-analytics';
 import { AppwriteException } from '@appwrite.io/console';
-import googleTagManager from '@analytics/google-tag-manager';
-import Analytics from 'analytics';
-import { get } from 'svelte/store';
+import { browser } from '$app/environment';
+
+function plausible(domain: string): AnalyticsPlugin {
+    if (!browser) return { name: 'analytics-plugin-plausible' };
+
+    const instance = Plausible({
+        domain
+    });
+
+    return {
+        name: 'analytics-plugin-plausible',
+        page: ({ payload }) => {
+            instance.trackPageview({
+                url: payload.properties.path,
+                referrer: payload.properties.referrer,
+                deviceWidth: payload.properties.width
+            });
+        },
+        track: ({ payload }) => {
+            instance.trackEvent(
+                payload.event,
+                {
+                    props: payload.properties
+                },
+                {
+                    url: payload.properties.path,
+                    deviceWidth: payload.properties.width
+                }
+            );
+        },
+        loaded: () => true
+    };
+}
+
+const PLAUSIBLE_DOMAINS = {
+    CLOUD: 'cloud.appwrite.io',
+    GLOBAL: 'console.appwrite',
+    SELF_HOSTED: 'self-hosted.appwrite'
+};
 
 const analytics = Analytics({
     app: 'appwrite',
-    plugins: [
-        googleAnalytics({
-            measurementIds: [VARS.GOOGLE_ANALYTICS || 'G-R4YJ9JN8L4']
-        }),
-        ...(isCloud
-            ? [
-                  googleTagManager({
-                      containerId: [VARS.GOOGLE_TAG || 'GTM-P3T9TBV']
-                  })
-              ]
-            : [])
-    ]
+    plugins: [plausible(isCloud ? PLAUSIBLE_DOMAINS.CLOUD : PLAUSIBLE_DOMAINS.SELF_HOSTED)]
 });
 
 export function trackEvent(name: string, data: object = null): void {
