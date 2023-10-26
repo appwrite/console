@@ -21,25 +21,24 @@
         Id,
         ViewSelector
     } from '$lib/components';
-    import Create from './create.svelte';
-    import { goto } from '$app/navigation';
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
-    import type { Models } from '@appwrite.io/console';
     import type { PageData } from './$types';
-    import { showCreate, columns } from './store';
+    import { columns } from './store';
     import { Pill } from '$lib/elements';
     import Provider from '../provider.svelte';
     import ProviderType from '../providerType.svelte';
     import Filters from '$lib/components/filters/filters.svelte';
+    import CreateProviderDropdown from './createProviderDropdown.svelte';
 
     export let data: PageData;
+
+    let showCreateDropdownMobile = false;
+    let showCreateDropdownDesktop = false;
+    let showCreateDropdownEmpty = false;
     let selected: string[] = [];
 
     const project = $page.params.project;
-    const topicCreated = async (event: CustomEvent<Models.Team<Record<string, unknown>>>) => {
-        await goto(`${base}/console/project-${project}/messaging/topics/topic-${event.detail.$id}`);
-    };
 </script>
 
 <Container>
@@ -47,10 +46,7 @@
         <div class="u-flex u-main-space-between">
             <Heading tag="h2" size="5">Providers</Heading>
             <div class="is-only-mobile">
-                <Button on:click={() => ($showCreate = true)} event="create_provider">
-                    <span class="icon-plus" aria-hidden="true" />
-                    <span class="text">Create provider</span>
-                </Button>
+                <CreateProviderDropdown bind:showCreateDropdown={showCreateDropdownMobile} />
             </div>
         </div>
         <!-- TODO: fix width of search input in mobile -->
@@ -63,10 +59,7 @@
                     hideView
                     allowNoColumns
                     showColsTextMobile />
-                <Button on:click={() => ($showCreate = true)} event="create_provider">
-                    <span class="icon-plus" aria-hidden="true" />
-                    <span class="text">Create provider</span>
-                </Button>
+                <CreateProviderDropdown bind:showCreateDropdown={showCreateDropdownDesktop} />
             </div>
         </SearchQuery>
         <div class="u-flex u-gap-16 is-only-mobile u-margin-block-start-16">
@@ -147,7 +140,7 @@
             limit={data.limit}
             offset={data.offset}
             total={data.providers.total} />
-    {:else if data.search}
+    {:else if data.search && data.search != 'empty'}
         <EmptySearch>
             <div class="u-text-center">
                 <b>Sorry, we couldn't find '{data.search}'</b>
@@ -159,11 +152,33 @@
         </EmptySearch>
     {:else}
         <!-- TODO: Update docs links -->
-        <Empty
-            single
-            href="https://appwrite.io/docs/references/cloud/client-web/providers"
-            target="provider" />
+        <Empty single target="provider">
+            <div class="u-text-center">
+                <Heading size="7" tag="h2" trimmed={false}>
+                    Create your first provider to get started.
+                </Heading>
+                <p class="body-text-2 u-bold u-margin-block-start-4">
+                    Need a hand? Learn more in our documentation.
+                </p>
+            </div>
+            <div class="u-flex u-flex-wrap u-gap-16 u-main-center">
+                <Button
+                    external
+                    href="https://appwrite.io/docs/references/cloud/client-web/providers"
+                    text
+                    event="empty_documentation"
+                    ariaLabel={`create provider`}>
+                    Documentation
+                </Button>
+                <CreateProviderDropdown bind:showCreateDropdown={showCreateDropdownEmpty}>
+                    <Button
+                        secondary
+                        on:click={() => (showCreateDropdownEmpty = !showCreateDropdownEmpty)}
+                        event="create_provider">
+                        <span class="text">Create provider</span>
+                    </Button>
+                </CreateProviderDropdown>
+            </div>
+        </Empty>
     {/if}
 </Container>
-
-<Create bind:showCreate={$showCreate} on:created={topicCreated} />
