@@ -70,6 +70,6 @@ export const load = async ({ url, route }) => {
         query,
         page,
         view,
-        providers: providers
+        providers
     };
 };
