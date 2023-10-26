@@ -4,7 +4,6 @@
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import { BucketsPanel } from '$lib/commandCenter/panels';
     import { project } from '../store';
-    import { showCreateBucket } from './+page.svelte';
 
     $: $registerCommands([
         {
@@ -13,7 +12,6 @@
                 if (!$page.url.pathname.endsWith('storage')) {
                     goto(`/console/project-${$project.$id}/storage`);
                 }
-                $showCreateBucket = true;
             },
             keys: $page.url.pathname.endsWith('storage') ? ['c'] : ['c', 'b'],
             icon: 'plus',
