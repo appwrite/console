@@ -8,7 +8,7 @@
     import { Notifications, Progress } from '$lib/layout';
     import { app } from '$lib/stores/app';
     import { user } from '$lib/stores/user';
-    import { ENV, isCloud } from '$lib/system';
+    import { ENV, VARS, hasStripePublicKey, isCloud } from '$lib/system';
     import * as Sentry from '@sentry/svelte';
     import LogRocket from 'logrocket';
     import { onMount } from 'svelte';
@@ -16,6 +16,8 @@
     import Loading from './loading.svelte';
     import { loading, requestedMigration } from './store';
     import { parseIfString } from '$lib/helpers/object';
+    import { loadStripe } from '@stripe/stripe-js';
+    import { stripe } from '$lib/stores/stripe';
 
     if (browser) {
         window.VERCEL_ANALYTICS_ID = import.meta.env.VERCEL_ANALYTICS_ID?.toString() ?? false;
@@ -58,6 +60,10 @@
                     }
                 });
             }
+        }
+
+        if (isCloud && hasStripePublicKey) {
+            $stripe = await loadStripe(VARS.STRIPE_PUBLIC_KEY);
         }
 
         /**

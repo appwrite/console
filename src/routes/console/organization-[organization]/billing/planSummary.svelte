@@ -50,7 +50,7 @@
                     {/if}
                     <!-- TODO: add estimated total from aggregation -->
 
-                    ${currentTier.price}
+                    ${currentTier.price} TBI
                 </p>
             </div>
             <div class="u-flex u-main-space-between u-cross-center">
@@ -62,10 +62,27 @@
             </div>
         </svelte:fragment>
         <svelte:fragment slot="actions">
-            <Button text on:click={() => wizard.start(ChangeOrganizationTierCloud)}
-                >Change plan</Button>
-            <Button secondary href={`${base}/console/organization-${$organization?.$id}/usage`}
-                >View estimated usage</Button>
+            {#if $organization?.billingPlan === 'tier-0'}
+                <div class="u-flex u-gap-16 u-flex-wrap">
+                    <Button text href={`${base}/console/organization-${$organization?.$id}/usage`}>
+                        View estimated usage
+                    </Button>
+                    <Button on:click={() => wizard.start(ChangeOrganizationTierCloud)}>
+                        Upgrade
+                    </Button>
+                </div>
+            {:else}
+                <div class="u-flex u-gap-16 u-flex-wrap">
+                    <Button text on:click={() => wizard.start(ChangeOrganizationTierCloud)}>
+                        Change plan
+                    </Button>
+                    <Button
+                        secondary
+                        href={`${base}/console/organization-${$organization?.$id}/usage`}>
+                        View estimated usage
+                    </Button>
+                </div>
+            {/if}
         </svelte:fragment>
     </CardGrid>
 {/if}

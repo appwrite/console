@@ -74,59 +74,62 @@
                 <TableBody>
                     {#each invoiceList?.invoices as invoice, i}
                         {@const status = invoice.status}
-                        <TableRow>
-                            <TableCellText title="date">
-                                {toLocaleDate(invoice.dueAt)}
-                            </TableCellText>
-                            <TableCell title="status">
-                                <Pill
-                                    danger={status === 'overdue'}
-                                    success={status === 'paid'}
-                                    warning={status === 'pending'}>
-                                    {status}
-                                </Pill>
-                            </TableCell>
-                            <TableCellText title="due">{invoice.amount}</TableCellText>
-                            <TableCellText title="invoice number">
-                                {invoice.$id}
-                            </TableCellText>
-                            <TableCell showOverflow>
-                                <DropList
-                                    bind:show={showDropdown[i]}
-                                    placement="bottom-start"
-                                    noArrow>
-                                    <Button
-                                        round
-                                        text
-                                        noMargin
-                                        ariaLabel="More options"
-                                        on:click={() => {
-                                            showDropdown[i] = !showDropdown[i];
-                                        }}>
-                                        <span class="icon-dots-horizontal" aria-hidden="true" />
-                                    </Button>
-                                    <svelte:fragment slot="list">
-                                        <DropListLink
-                                            icon="external-link"
-                                            external
-                                            href={`${endpoint}/organizations/${$page.params.organization}/invoices/${invoice.$id}/view`}
-                                            on:click={() => (showDropdown[i] = !showDropdown[i])}
-                                            event="view_invoice">
-                                            View invoice
-                                        </DropListLink>
-                                        <DropListLink
-                                            icon="download"
-                                            href={`${endpoint}/organizations/${$page.params.organization}/invoices/${invoice.$id}/download`}
+                        {#if i !== 0}
+                            <TableRow>
+                                <TableCellText title="date">
+                                    {toLocaleDate(invoice.dueAt)}
+                                </TableCellText>
+                                <TableCell title="status">
+                                    <Pill
+                                        danger={status === 'overdue'}
+                                        success={status === 'paid'}
+                                        warning={status === 'pending'}>
+                                        {status}
+                                    </Pill>
+                                </TableCell>
+                                <TableCellText title="due">{invoice.amount}</TableCellText>
+                                <TableCellText title="invoice number">
+                                    {invoice.$id}
+                                </TableCellText>
+                                <TableCell showOverflow>
+                                    <DropList
+                                        bind:show={showDropdown[i]}
+                                        placement="bottom-start"
+                                        noArrow>
+                                        <Button
+                                            round
+                                            text
+                                            noMargin
+                                            ariaLabel="More options"
                                             on:click={() => {
                                                 showDropdown[i] = !showDropdown[i];
-                                            }}
-                                            event="download_invoice">
-                                            Download PDF
-                                        </DropListLink>
-                                    </svelte:fragment>
-                                </DropList>
-                            </TableCell>
-                        </TableRow>
+                                            }}>
+                                            <span class="icon-dots-horizontal" aria-hidden="true" />
+                                        </Button>
+                                        <svelte:fragment slot="list">
+                                            <DropListLink
+                                                icon="external-link"
+                                                external
+                                                href={`${endpoint}/organizations/${$page.params.organization}/invoices/${invoice.$id}/view`}
+                                                on:click={() =>
+                                                    (showDropdown[i] = !showDropdown[i])}
+                                                event="view_invoice">
+                                                View invoice
+                                            </DropListLink>
+                                            <DropListLink
+                                                icon="download"
+                                                href={`${endpoint}/organizations/${$page.params.organization}/invoices/${invoice.$id}/download`}
+                                                on:click={() => {
+                                                    showDropdown[i] = !showDropdown[i];
+                                                }}
+                                                event="download_invoice">
+                                                Download PDF
+                                            </DropListLink>
+                                        </svelte:fragment>
+                                    </DropList>
+                                </TableCell>
+                            </TableRow>
+                        {/if}
                     {/each}
                 </TableBody>
             </Table>

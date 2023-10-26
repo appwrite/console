@@ -22,8 +22,6 @@
         methods = await sdk.forConsole.billing.listPaymentMethods();
         $createOrganization.paymentMethodId =
             methods.paymentMethods.find((method) => !!method?.last4)?.$id ?? null;
-
-        // await initializeStripe();
     });
 
     async function handleSubmit() {

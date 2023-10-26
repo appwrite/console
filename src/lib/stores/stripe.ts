@@ -1,17 +1,11 @@
-import { hasStripePublicKey, VARS } from '$lib/system';
-import {
-    loadStripe,
-    type Stripe,
-    type StripeElement,
-    type StripeElements
-} from '@stripe/stripe-js';
+import type { Stripe, StripeElement, StripeElements } from '@stripe/stripe-js';
 import { sdk } from './sdk';
 import { app } from './app';
 import { get, writable } from 'svelte/store';
 import type { PaymentMethodData } from '$lib/sdk/billing';
 import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
 
-let stripe: Stripe;
+export const stripe = writable<Stripe>();
 let paymentMethod: PaymentMethodData;
 let clientSecret: string;
 let elements: StripeElements;
@@ -20,8 +14,7 @@ let paymentElement: StripeElement;
 export const isStripeInitialized = writable(false);
 
 export async function initializeStripe() {
-    if (!hasStripePublicKey) return;
-    stripe = await loadStripe(VARS.STRIPE_PUBLIC_KEY);
+    if (!get(stripe)) return;
     isStripeInitialized.set(true);
 
     try {
@@ -40,7 +33,7 @@ export async function initializeStripe() {
             appearance: get(app).themeInUse === 'dark' ? apperanceDark : apperanceLight
         };
         // Set up Elements and then create form
-        elements = stripe.elements(options);
+        elements = get(stripe).elements(options);
         paymentElement = elements.create('payment');
         paymentElement.mount('#payment-element');
     } catch (e) {
@@ -64,7 +57,7 @@ export async function submitStripeCard(name?: string, urlRoute?: string) {
 
         const baseUrl = 'https://cloud.appwrite.io/console/';
 
-        const { setupIntent, error } = await stripe.confirmSetup({
+        const { setupIntent, error } = await get(stripe).confirmSetup({
             elements,
             clientSecret,
             confirmParams: {

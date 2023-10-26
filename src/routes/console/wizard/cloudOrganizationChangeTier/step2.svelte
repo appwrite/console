@@ -6,18 +6,17 @@
     import { onMount } from 'svelte';
     import { changeOrganizationTier } from './store';
     import UsageRates from '../cloudOrganization/usageRates.svelte';
-    import type { PaymentList } from '$lib/sdk/billing';
+    import type { PaymentList, PaymentMethodData } from '$lib/sdk/billing';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { initializeStripe, isStripeInitialized, submitStripeCard } from '$lib/stores/stripe';
     import { organization } from '$lib/stores/organization';
+    import { symmetricDifference } from '$lib/helpers/array';
 
     let methods: PaymentList;
     let name: string;
     let budgetEnabled = false;
     let showRates = false;
-
-    // let error: string;
 
     onMount(async () => {
         methods = await sdk.forConsole.billing.listPaymentMethods();
@@ -26,11 +25,21 @@
             $organization?.backupPaymentMethodId ??
             methods.paymentMethods[0]?.$id ??
             null;
+        $changeOrganizationTier.billingBudget = $organization?.billingBudget;
+        budgetEnabled = !!$organization?.billingBudget;
     });
 
     async function handleSubmit() {
         try {
             await submitStripeCard(name);
+            const latestMethods = await sdk.forConsole.billing.listPaymentMethods();
+            const paymentMethod = symmetricDifference(
+                methods.paymentMethods,
+                latestMethods.paymentMethods
+            )[0] as PaymentMethodData;
+
+            console.log(paymentMethod);
+            $changeOrganizationTier.paymentMethodId = paymentMethod.$id;
             invalidate(Dependencies.PAYMENT_METHODS);
         } catch (e) {
             console.log(e.message);
@@ -43,6 +52,10 @@
 
     $: if ($changeOrganizationTier.paymentMethodId) {
         isStripeInitialized.set(false);
+    }
+
+    $: if (!budgetEnabled) {
+        $changeOrganizationTier.billingBudget = null;
     }
 
     $: filteredMethods = methods?.paymentMethods.filter((method) => !!method?.last4);

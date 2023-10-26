@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { CreditCardBrandImage } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { InputTextarea } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
@@ -75,7 +76,12 @@
                         <div class="loader is-small" />
                     </div>
                 {:then card}
-                    <p class="text">Card ending in {card.last4} {card.brand}</p>
+                    <span class="u-flex u-cross-center u-gap-8">
+                        <p class="text">
+                            Card ending in {card.last4}
+                        </p>
+                        <CreditCardBrandImage brand={card.brand}></CreditCardBrandImage>
+                    </span>
                 {/await}
             </div>
         {/if}
