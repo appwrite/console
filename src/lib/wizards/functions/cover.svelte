@@ -285,13 +285,8 @@
     .git-container .overlay {
         background: linear-gradient(
             0,
-            #fcfcff 18.49%,
-            #fcfcff 68.91%,
-            rgba(252, 252, 255, 0.5) 95.8%
+            hsl(var(--p-card-bg-color)) 68.91%,
+            hsl(var(--p-card-bg-color) / 0.5) 95.8%
         );
-    }
-
-    .theme-dark .git-container .overlay {
-        background: linear-gradient(0, #1b1b28 18.49%, #1b1b28 68.91%, rgba(27, 27, 40, 0.5) 95.8%);
     }
 </style>
