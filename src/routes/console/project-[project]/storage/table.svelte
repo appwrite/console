@@ -34,21 +34,21 @@
     async function handleDelete() {
         showDelete = false;
 
-        const promises = selected.map((databaseId) => sdk.forProject.databases.delete(databaseId));
+        const promises = selected.map((bucketId) => sdk.forProject.storage.deleteBucket(bucketId));
         try {
             await Promise.all(promises);
-            trackEvent(Submit.DatabaseDelete);
+            trackEvent(Submit.BucketDelete);
             addNotification({
                 type: 'success',
-                message: `${selected.length} database${selected.length > 1 ? 's' : ''} deleted`
+                message: `${selected.length} bucket${selected.length > 1 ? 's' : ''} deleted`
             });
-            invalidate(Dependencies.DATABASES);
+            invalidate(Dependencies.BUCKET);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
-            trackError(error, Submit.DatabaseDelete);
+            trackError(error, Submit.BucketDelete);
         } finally {
             selected = [];
             showDelete = false;
@@ -102,7 +102,7 @@
             <span class="indicator body-text-2 u-bold">{selected.length}</span>
             <p>
                 <span class="is-only-desktop">
-                    {selected.length > 1 ? 'databases' : 'database'}
+                    {selected.length > 1 ? 'buckets' : 'bucket'}
                 </span>
                 selected
             </p>
@@ -118,7 +118,7 @@
 </FloatingActionBar>
 
 <Modal
-    title="Delete Database"
+    title="Delete Bucket"
     icon="exclamation"
     state="warning"
     bind:show={showDelete}
@@ -127,7 +127,7 @@
     closable={!deleting}>
     <p class="text" data-private>
         Are you sure you want to delete <b>{selected.length}</b>
-        {selected.length > 1 ? 'databases' : 'database'}?
+        {selected.length > 1 ? 'buckets' : 'bucket'}?
     </p>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)} disabled={deleting}>Cancel</Button>
