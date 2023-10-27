@@ -34,8 +34,10 @@
     import { project } from './project-[project]/store';
     import { feedback } from '$lib/stores/feedback';
     import { consoleVariables } from './store';
-    import { isCloud } from '$lib/system';
+    import { VARS, hasStripePublicKey, isCloud } from '$lib/system';
     import { sdk } from '$lib/stores/sdk';
+    import { loadStripe } from '@stripe/stripe-js';
+    import { stripe } from '$lib/stores/stripe';
 
     function kebabToSentenceCase(str: string) {
         return str
@@ -233,11 +235,15 @@
     ]);
     let isOpen = false;
 
-    onMount(() => {
+    onMount(async () => {
         loading.set(false);
         setInterval(() => {
             checkForFeedback(INTERVAL);
         }, INTERVAL);
+
+        if (isCloud && hasStripePublicKey) {
+            $stripe = await loadStripe(VARS.STRIPE_PUBLIC_KEY);
+        }
     });
 
     function checkForFeedback(interval: number) {
@@ -253,8 +259,11 @@
         }
     }
 
+    let currentOrg = JSON.stringify($organization?.$id);
     organization.subscribe((org) => {
         if (!org) return;
+        if (currentOrg === org.$id) return;
+        currentOrg = org.$id;
         if (isCloud) {
             if (org?.billingPlan === 'tier-0') {
                 $daysLeftInTrial = 0;

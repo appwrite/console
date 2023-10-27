@@ -7,6 +7,7 @@
     import Step2 from './wizard/cloudOrganizationChangeTier/step2.svelte';
     import Step3 from './wizard/cloudOrganizationChangeTier/step3.svelte';
     import Step4 from './wizard/cloudOrganizationChangeTier/step4.svelte';
+    import Step5 from './wizard/cloudOrganizationChangeTier/step5.svelte';
     import {
         changeOrganizationFinalAction,
         changeOrganizationTier,
@@ -112,8 +113,13 @@
         component: Step3
     });
     $changeTierSteps.set(4, {
+        label: 'Review usage',
+        component: Step4,
+        disabled: true
+    });
+    $changeTierSteps.set(5, {
         label: 'Review & confirm',
-        component: Step4
+        component: Step5
     });
 </script>
 
