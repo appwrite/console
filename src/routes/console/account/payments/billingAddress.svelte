@@ -34,7 +34,8 @@
     <Heading tag="h2" size="6">Billing Address</Heading>
 
     <p class="text">
-        View or update your billing address. This address will appear on your invoice.
+        View or update your billing address. This address will be included in your invoices from
+        Appwrite.
     </p>
     <svelte:fragment slot="aside">
         {#if $addressList.total && countryList?.total}

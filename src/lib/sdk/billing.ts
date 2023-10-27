@@ -554,6 +554,23 @@ export class Billing {
         );
     }
 
+    async updateTaxId(organizationId: string, taxId: string): Promise<Organization> {
+        const path = `/organizations/${organizationId}/tax-id`;
+        const params = {
+            organizationId,
+            taxId
+        };
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'PATCH',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            params
+        );
+    }
+
     //ACCOUNT
 
     async listPaymentMethods(queries: [] = []): Promise<PaymentList> {

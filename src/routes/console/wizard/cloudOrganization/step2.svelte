@@ -12,6 +12,10 @@
     import { initializeStripe, isStripeInitialized, submitStripeCard } from '$lib/stores/stripe';
     import { sdk } from '$lib/stores/sdk';
     import { CreditCardBrandImage } from '$lib/components';
+    import { toLocaleDate } from '$lib/helpers/date';
+
+    const today = new Date();
+    const billingPayDate = new Date(today.getTime() + 44 * 24 * 60 * 60 * 1000);
 
     let methods: PaymentList;
     let name: string;
@@ -47,9 +51,14 @@
 
 <WizardStep beforeSubmit={handleSubmit}>
     <svelte:fragment slot="title">Payment details</svelte:fragment>
-    <svelte:fragment slot="subtitle">Add a payment method to your organization.</svelte:fragment>
+    <svelte:fragment slot="subtitle">
+        Add a payment method to your organization. You will not be charged until your trial ends on <b
+            >{toLocaleDate(billingPayDate.toString())}</b
+        >.
+    </svelte:fragment>
 
-    <FormList>
+    <p class="text"><b>Payment method</b></p>
+    <FormList class="u-margin-block-start-8">
         <div class:boxes-wrapper={methods?.total}>
             {#if methods?.total}
                 {#each filteredMethods as method}

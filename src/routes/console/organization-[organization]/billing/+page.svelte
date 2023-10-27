@@ -8,6 +8,7 @@
     import PaymentMethods from './paymentMethods.svelte';
     import AvailableCredit from './availableCredit.svelte';
     import PaymentHistory from './paymentHistory.svelte';
+    import TaxId from './taxId.svelte';
     import { Alert, Heading } from '$lib/components';
     import { failedInvoice, paymentMethods } from '$lib/stores/billing';
     import type { PaymentMethodData } from '$lib/sdk/billing';
@@ -45,6 +46,7 @@
     <PaymentHistory />
     <PaymentMethods />
     <BillingAddress />
+    <TaxId />
     <BudgetCap />
     {#if $organization?.billingPlan !== 'tier-0' && !!$organization?.billingBudget}
         <BudgetAlert />

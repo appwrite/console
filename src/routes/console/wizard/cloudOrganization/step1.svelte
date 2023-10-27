@@ -65,20 +65,26 @@
     <ul
         class="u-flex u-flex-vertical u-gap-16 u-margin-block-start-16"
         style="--p-grid-item-size:16em; --p-grid-item-size-small-screens:16rem; --grid-gap: 1rem;">
-        {#if !anyOrgFree}
-            <li>
-                <LabelCard name="plan" bind:group={$createOrganization.billingPlan} value="tier-0">
-                    <svelte:fragment slot="custom">
-                        <div class="u-flex u-flex-vertical u-gap-4 u-width-full-line">
-                            <h4 class="body-text-2 u-bold">
-                                {tierFree.name} - ${tierFree.price}/month
-                            </h4>
-                            <p class="u-color-text-gray u-small">{tierFree.description}</p>
-                        </div>
-                    </svelte:fragment>
-                </LabelCard>
-            </li>
-        {/if}
+        <li>
+            <LabelCard
+                name="plan"
+                bind:group={$createOrganization.billingPlan}
+                value="tier-0"
+                disabled={!!anyOrgFree}
+                tooltipText="You are limited to 1 Free organization per account."
+                showTooltip={!!anyOrgFree}>
+                <svelte:fragment slot="custom" let:disabled>
+                    <div
+                        class="u-flex u-flex-vertical u-gap-4 u-width-full-line"
+                        class:u-opacity-50={disabled}>
+                        <h4 class="body-text-2 u-bold">
+                            {tierFree.name} - ${tierFree.price}/month
+                        </h4>
+                        <p class="u-color-text-gray u-small">{tierFree.description}</p>
+                    </div>
+                </svelte:fragment>
+            </LabelCard>
+        </li>
 
         <li>
             <LabelCard name="plan" bind:group={$createOrganization.billingPlan} value="tier-1">

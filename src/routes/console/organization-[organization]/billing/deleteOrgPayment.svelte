@@ -23,11 +23,11 @@
                 type: 'success',
                 message: `The payment method has been removed from ${$organization.name}`
             });
-            trackEvent(Submit.OrganizationPaymentRemove);
+            trackEvent(Submit.OrganizationPaymentDelete);
             invalidate(Dependencies.ORGANIZATION);
         } catch (e) {
             error = e.message;
-            trackError(e, Submit.OrganizationPaymentRemove);
+            trackError(e, Submit.OrganizationPaymentDelete);
         }
     }
     async function removeBackuptMethod() {
@@ -40,11 +40,11 @@
                 type: 'success',
                 message: `The payment method has been removed from ${$organization.name}`
             });
-            trackEvent(Submit.OrganizationBackupPaymentRemove);
+            trackEvent(Submit.OrganizationBackupPaymentDelete);
             invalidate(Dependencies.ORGANIZATION);
         } catch (e) {
             error = e.message;
-            trackError(e, Submit.OrganizationBackupPaymentRemove);
+            trackError(e, Submit.OrganizationBackupPaymentDelete);
         }
     }
 </script>

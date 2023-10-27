@@ -4,19 +4,19 @@
     import { InputTextarea } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
     import { WizardStep } from '$lib/layout';
-    import { tierToPlan } from '$lib/stores/billing';
+    import { plansInfo } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { changeOrganizationFinalAction, changeOrganizationTier, isUpgrade } from './store';
 
-    let comment: string = null;
-    const plan = tierToPlan($changeOrganizationTier.billingPlan);
+    const plan = $plansInfo.plans.find((p) => p.$id === $changeOrganizationTier.billingPlan);
+    const collaboratorPrice = plan?.memberAddon?.price ?? 0;
     const collaboratorsNumber = $changeOrganizationTier?.collaborators?.length ?? 0;
-    const totalExpences = plan.price + plan.collaboratorPrice * collaboratorsNumber;
-
+    const totalExpences = plan.price + collaboratorPrice * collaboratorsNumber;
     const today = new Date();
     const billingPayDate = new Date(today.getTime() + 44 * 24 * 60 * 60 * 1000);
 
+    let comment: string = null;
     async function fetchCard() {
         try {
             const card = await sdk.forConsole.billing.getPaymentMethod(
@@ -93,8 +93,8 @@
                     <p class="text">${plan.price}</p>
                 </span>
                 <span class="u-flex u-main-space-between">
-                    <p class="text">Invited members</p>
-                    <p class="text">${plan.collaboratorPrice * collaboratorsNumber}</p>
+                    <p class="text">Additional members ({collaboratorsNumber})</p>
+                    <p class="text">${collaboratorPrice * collaboratorsNumber}</p>
                 </span>
             {/if}
             <div class="u-sep-block-start" />
@@ -104,8 +104,8 @@
             </span>
 
             <p class="text u-margin-block-start-16">
-                This amount and any extra usage fees will be charged on a recurring 30 day billing
-                cycle after your trial period ends on <b
+                This amount and any additional usage fees will be charged on a recurring 30 day
+                billing cycle after your trial period ends on <b
                     >{toLocaleDate(billingPayDate.toString())}</b
                 >.
             </p>

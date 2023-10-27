@@ -50,7 +50,7 @@
             let org: Organization = null;
             if (organization) {
                 org = await sdk.forConsole.billing.setBillingAddress(organization, response.$id);
-                trackEvent(Submit.OrganizationBillingAddressSet);
+                trackEvent(Submit.OrganizationBillingAddressUpdate);
             }
             await invalidate(Dependencies.ADDRESS);
             show = false;

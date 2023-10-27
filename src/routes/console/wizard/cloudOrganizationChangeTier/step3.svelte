@@ -11,7 +11,10 @@
         TableRow
     } from '$lib/elements/table';
     import { WizardStep } from '$lib/layout';
+    import { plansInfo } from '$lib/stores/billing';
     import { changeOrganizationTier } from './store';
+
+    const plan = $plansInfo.plans.find((p) => p.$id === $changeOrganizationTier.billingPlan);
 
     let email: string;
 
@@ -38,11 +41,12 @@
 
     <Alert type="info">
         {#if $changeOrganizationTier.billingPlan === 'tier-2'}
-            You can add unlimited organization members on the Scale plan at no cost. Each member
+            You can add unlimited organization members on the {plan.name} plan at no cost. Each member
             added will receive an email invite to your organization on completion.
         {:else if $changeOrganizationTier.billingPlan === 'tier-1'}
-            You can add unlimited organization members on the Pro plan for $15 each. Each member
-            added will receive an email invite to your organization on completion.
+            You can add unlimited organization members on the {plan.name} plan for
+            <b>${plan.memberAddon.price} each per month</b>. Each member added will receive an email
+            invite to your organization on completion.
         {/if}
     </Alert>
 

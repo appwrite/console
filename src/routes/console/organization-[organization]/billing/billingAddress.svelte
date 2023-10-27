@@ -23,13 +23,13 @@
                 type: 'success',
                 message: `A new billing address has been added to ${$organization.name}`
             });
-            trackEvent(Submit.OrganizationBillingAddressSet);
+            trackEvent(Submit.OrganizationBillingAddressUpdate);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
-            trackError(error, Submit.OrganizationBillingAddressSet);
+            trackError(error, Submit.OrganizationBillingAddressUpdate);
         }
     }
 
@@ -42,7 +42,8 @@
     <Heading tag="h2" size="6">Billing address</Heading>
 
     <p class="text">
-        View or update your billing address. This address will appear on your invoice.
+        View or update your billing address. This address will be included in your invoices from
+        Appwrite.
     </p>
     <svelte:fragment slot="aside">
         {#if $organization?.billingAddress && billingAddress}
