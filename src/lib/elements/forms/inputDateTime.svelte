@@ -49,7 +49,7 @@
     $: if (value) {
         error = null;
     }
-    
+
     $: isNullable = nullable && !required;
 </script>
 
