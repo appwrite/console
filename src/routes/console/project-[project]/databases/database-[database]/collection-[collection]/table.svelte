@@ -29,6 +29,7 @@
     import RelationshipsModal from './relationshipsModal.svelte';
     import { attributes, collection, columns } from './store';
     import { clickOnEnter } from '$lib/helpers/a11y';
+    import type { ColumnType } from '$lib/helpers/types';
 
     export let data: PageData;
 
@@ -89,7 +90,7 @@
             $collection.attributes.map((attribute) => ({
                 id: attribute.key,
                 title: attribute.key,
-                type: attribute.type,
+                type: attribute.type as ColumnType,
                 show: selected?.includes(attribute.key) ?? true
             }))
         );

@@ -2,8 +2,16 @@
     import { beforeNavigate } from '$app/navigation';
     import { Drop, Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
+    import type { Column } from '$lib/helpers/types';
+    import type { Writable } from 'svelte/store';
     import Content from './content.svelte';
-    import { queries, queriesAreDirty, tags } from './store';
+    import { queries, queriesAreDirty, queryParamToMap, tags } from './store';
+
+    export let query = '[]';
+    export let columns: Writable<Column[]>;
+
+    const parsedQueries = queryParamToMap(query);
+    queries.set(parsedQueries);
 
     // We need to separate them so we don't trigger Drop's handlers
     let showFiltersDesktop = false;
@@ -33,6 +41,7 @@
             <div class="dropped card">
                 <p>Apply filter rules to refine the table view</p>
                 <Content
+                    {columns}
                     on:apply={(e) => (applied = e.detail.applied)}
                     on:clear={() => (applied = 0)} />
                 <hr />
@@ -61,7 +70,10 @@
         description="Apply filter rules to refine the table view"
         bind:show={showFiltersMobile}
         size="big">
-        <Content on:apply={(e) => (applied = e.detail.applied)} on:clear={() => (applied = 0)} />
+        <Content
+            {columns}
+            on:apply={(e) => (applied = e.detail.applied)}
+            on:clear={() => (applied = 0)} />
         <svelte:fragment slot="footer">
             <Button text on:click={queries.clearAll}>Clear all</Button>
             <Button on:click={queries.apply} disabled={!$queriesAreDirty}>Apply</Button
