@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { getServiceLimit } from '$lib/stores/billing';
+    import { getServiceLimit, type PlanServices } from '$lib/stores/billing';
     import { wizard } from '$lib/stores/wizard';
     import { isCloud } from '$lib/system';
     import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
@@ -7,7 +7,7 @@
 
     let tableBody: HTMLDivElement;
 
-    export let service: string = null;
+    export let service: PlanServices = null;
     export let name = service;
     export let total: number = null;
 

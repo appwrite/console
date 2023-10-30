@@ -42,7 +42,29 @@ export function tierToPlan(tier: Tier) {
     }
 }
 
-export function getServiceLimit(serviceId: string): number {
+export type PlanServices =
+    | 'bandwidth'
+    | 'bandwidthAddon'
+    | 'buckets'
+    | 'databases'
+    | 'executions'
+    | 'executionsAddon'
+    | 'fileSize'
+    | 'functions'
+    | 'logs'
+    | 'memberAddon'
+    | 'members'
+    | 'platforms'
+    | 'realtime'
+    | 'realtimeAddon'
+    | 'storage'
+    | 'storageAddon'
+    | 'teams'
+    | 'users'
+    | 'usersAddon'
+    | 'webhooks';
+
+export function getServiceLimit(serviceId: PlanServices): number {
     if (!isCloud) return 0;
     if (!serviceId) return 0;
     const plan = get(plansInfo).plans.find((p) => p.$id === get(organization)?.billingPlan);

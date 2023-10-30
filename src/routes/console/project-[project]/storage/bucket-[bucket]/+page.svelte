@@ -46,7 +46,7 @@
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { tooltip } from '$lib/actions/tooltip';
-    import { getServiceLimit, readOnly } from '$lib/stores/billing';
+    import { readOnly } from '$lib/stores/billing';
     import { writable } from 'svelte/store';
 
     export let data: PageData;

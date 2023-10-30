@@ -2,7 +2,7 @@
     import { page } from '$app/stores';
     import { Empty } from '$lib/components';
     import { CARD_LIMIT } from '$lib/constants';
-    import { getServiceLimit } from '$lib/stores/billing';
+    import { getServiceLimit, type PlanServices } from '$lib/stores/billing';
     import { preferences } from '$lib/stores/preferences';
     import { isCloud } from '$lib/system';
     import CardPlanLimit from './cardPlanLimit.svelte';
@@ -11,7 +11,7 @@
     export let total = 0;
     export let event: string = null;
     export let service = '';
-    export let serviceId = service;
+    export let serviceId: PlanServices = service as PlanServices;
 
     $: planLimit = getServiceLimit(serviceId) ?? Infinity;
 

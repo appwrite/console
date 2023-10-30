@@ -1,40 +1,32 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
     import { CardGrid, Heading, ProgressBarBig } from '$lib/components';
-    import { organization } from '$lib/stores/organization';
-    import { usageRates } from '$lib/constants';
     import { base } from '$app/paths';
+    import { getServiceLimit } from '$lib/stores/billing.js';
 
     export let data;
-
-    $: rates = usageRates[$organization.billingPlan];
 
     $: bandwidth = data.aggregationList.aggregations.reduce(
         (acc, curr) => acc + curr.usageBandwidth,
         0
     );
-    $: bandwidthLimit = rates.filter((r) => r.resource === 'Bandwidth')[0].amount;
 
     $: users = data.aggregationList.aggregations.reduce((acc, curr) => acc + curr.usageUsers, 0);
-    $: usersLimit = rates.filter((r) => r.resource === 'Active users')[0].amount;
 
     $: executions = data.aggregationList.aggregations.reduce(
         (acc, curr) => acc + curr.usageExecutions,
         0
     );
-    $: executionsLimit = rates.filter((r) => r.resource === 'Function executions')[0].amount;
 
     $: storage = data.aggregationList.aggregations.reduce(
         (acc, curr) => acc + curr.usageStorage,
         0
     );
-    $: storageLimit = rates.filter((r) => r.resource === 'Storage')[0].amount;
 
     $: realtime = data.aggregationList.aggregations.reduce(
         (acc, curr) => acc + curr.usageRealtime,
         0
     );
-    $: realtimeLimit = rates.filter((r) => r.resource === 'Concurrent connections')[0].amount;
 </script>
 
 <Container>
@@ -59,16 +51,16 @@
         </p>
 
         <svelte:fragment slot="aside">
-            <ProgressBarBig unit="TB" max={bandwidthLimit} used={bandwidth} />
+            <ProgressBarBig unit="GB" max={getServiceLimit('bandwidth')} used={bandwidth} />
         </svelte:fragment>
     </CardGrid>
     <CardGrid>
-        <Heading tag="h6" size="7">Active users</Heading>
+        <Heading tag="h6" size="7">Users</Heading>
 
-        <p class="text">Active users across all projects in your organization.</p>
+        <p class="text">Users across all projects in your organization.</p>
 
         <svelte:fragment slot="aside">
-            <ProgressBarBig unit="AU" max={usersLimit} used={users} />
+            <ProgressBarBig unit="Users" max={getServiceLimit('users')} used={users} />
         </svelte:fragment>
     </CardGrid>
 
@@ -80,7 +72,10 @@
         </p>
 
         <svelte:fragment slot="aside">
-            <ProgressBarBig unit="executions" max={executionsLimit} used={executions} />
+            <ProgressBarBig
+                unit="executions"
+                max={getServiceLimit('executions')}
+                used={executions} />
         </svelte:fragment>
     </CardGrid>
 
@@ -92,7 +87,7 @@
         </p>
 
         <svelte:fragment slot="aside">
-            <ProgressBarBig unit="GB" max={storageLimit} used={storage} />
+            <ProgressBarBig unit="GB" max={getServiceLimit('storage')} used={storage} />
         </svelte:fragment>
     </CardGrid>
 
@@ -105,7 +100,7 @@
         </p>
 
         <svelte:fragment slot="aside">
-            <ProgressBarBig unit="GB" max={realtimeLimit} used={realtime} />
+            <ProgressBarBig unit="GB" max={getServiceLimit('storage')} used={realtime} />
         </svelte:fragment>
     </CardGrid>
 
