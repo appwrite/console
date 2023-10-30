@@ -17,21 +17,33 @@
 
     const create = async () => {
         try {
-            const team = await sdk.forProject.teams.create(id ?? ID.unique(), name);
+            const topic = await sdk.forProject.client.call(
+                'POST',
+                new URL(sdk.forProject.client.config.endpoint + '/messaging/topics'),
+                {
+                    'X-Appwrite-Project': sdk.forProject.client.config.project,
+                    'content-type': 'application/json',
+                    'X-Appwrite-Mode': 'admin'
+                },
+                {
+                    topicId: id ?? ID.unique(),
+                    name: name
+                }
+            );
             name = '';
             showCreate = false;
             showCustomId = false;
             addNotification({
                 type: 'success',
-                message: `${team.name} has been created`
+                message: `${topic.name} has been created`
             });
-            trackEvent(Submit.TeamCreate, {
+            trackEvent(Submit.MessagingTopicCreate, {
                 customId: !!id
             });
-            dispatch('created', team);
+            dispatch('created', topic);
         } catch (e) {
             error = e.message;
-            trackError(e, Submit.TeamCreate);
+            trackError(e, Submit.MessagingTopicCreate);
         }
     };
 
@@ -41,7 +53,7 @@
     }
 </script>
 
-<Modal title="Create team" {error} size="big" bind:show={showCreate} onSubmit={create}>
+<Modal title="Create topic" {error} size="big" bind:show={showCreate} onSubmit={create}>
     <FormList>
         <InputText
             id="name"
@@ -54,11 +66,11 @@
             <div>
                 <Pill button on:click={() => (showCustomId = !showCustomId)}
                     ><span class="icon-pencil" aria-hidden="true" />
-                    <span class="text"> Team ID </span>
+                    <span class="text"> Topic ID </span>
                 </Pill>
             </div>
         {:else}
-            <CustomId bind:show={showCustomId} name="Team" bind:id />
+            <CustomId bind:show={showCustomId} name="Topic" bind:id />
         {/if}
     </FormList>
     <svelte:fragment slot="footer">
