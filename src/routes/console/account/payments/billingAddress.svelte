@@ -87,6 +87,7 @@
                                             icon="trash"
                                             on:click={() => {
                                                 showDelete = true;
+                                                selectedAddress = address;
                                                 showDropdown[i] = false;
                                             }}>
                                             Delete
@@ -113,4 +114,4 @@
 
 <AddressModal bind:show />
 <EditAddressModal bind:show={showEdit} {selectedAddress} />
-<DeleteAddress bind:showDelete />
+<DeleteAddress bind:showDelete {selectedAddress} />
