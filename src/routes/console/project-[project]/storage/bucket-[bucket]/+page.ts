@@ -3,6 +3,10 @@ import { sdk } from '$lib/stores/sdk';
 import { getLimit, getPage, getSearch, pageToOffset } from '$lib/helpers/load';
 import { Dependencies, PAGE_LIMIT } from '$lib/constants';
 import type { PageLoad } from './$types';
+import { isCloud } from '$lib/system';
+import type { AggregationList } from '$lib/sdk/billing';
+import { organization } from '$lib/stores/organization';
+import { get } from 'svelte/store';
 
 export const load: PageLoad = async ({ params, depends, url, route }) => {
     depends(Dependencies.FILES);
@@ -10,6 +14,10 @@ export const load: PageLoad = async ({ params, depends, url, route }) => {
     const search = getSearch(url);
     const limit = getLimit(url, route, PAGE_LIMIT);
     const offset = pageToOffset(page, limit);
+    let aggregationList: AggregationList = null;
+    if (isCloud && get(organization)) {
+        aggregationList = await sdk.forConsole.billing.listUsage(get(organization)?.$id);
+    }
 
     return {
         offset,
@@ -19,6 +27,7 @@ export const load: PageLoad = async ({ params, depends, url, route }) => {
             params.bucket,
             [Query.limit(limit), Query.offset(offset), Query.orderDesc('')],
             search
-        )
+        ),
+        aggregationList
     };
 };

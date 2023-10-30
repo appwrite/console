@@ -57,6 +57,10 @@
 
     const projectId = $page.params.project;
     const bucketId = $page.params.bucket;
+    const totalStorage = data.aggregationList.aggregations.reduce((acc, curr) => {
+        acc += curr.usageStorage;
+        return acc;
+    }, 0);
     const getPreview = (fileId: string) =>
         sdk.forProject.storage.getFilePreview(bucketId, fileId, 32, 32).toString() + '&mode=admin';
 
@@ -85,12 +89,15 @@
             trackError(error, Submit.FileDelete);
         }
     }
-
-    // TODO: fetch the total storage used
 </script>
 
 <Container>
-    <ContainerHeader title="Files" serviceId="storage" isFlex={false} total={10}>
+    <ContainerHeader
+        title="Files"
+        serviceId="storage"
+        isFlex={false}
+        total={totalStorage}
+        buttonDisabled={$readOnly.storage}>
         <svelte:fragment slot="alert" let:tier let:upgradeMethod>
             <Alert type="warning">
                 <span class="text">
@@ -101,21 +108,23 @@
                 </span>
             </Alert>
         </svelte:fragment>
-        <SearchQuery search={data.search} placeholder="Search by filename">
-            <div
-                use:tooltip={{
-                    content: `Upgrade to add more files`,
-                    disabled: data.files.total < getServiceLimit('storage')
-                }}>
-                <Button
-                    on:click={() => ($showCreate = true)}
-                    event="create_file"
-                    disabled={data.files.total >= getServiceLimit('storage') || $readOnly.storage}>
-                    <span class="icon-plus" aria-hidden="true" />
-                    <span class="text">Create file</span>
-                </Button>
-            </div>
-        </SearchQuery>
+        <svelte:fragment let:isButtonDisabled>
+            <SearchQuery search={data.search} placeholder="Search by filename">
+                <div
+                    use:tooltip={{
+                        content: `Upgrade to add more files`,
+                        disabled: !isButtonDisabled
+                    }}>
+                    <Button
+                        on:click={() => ($showCreate = true)}
+                        event="create_file"
+                        disabled={isButtonDisabled}>
+                        <span class="icon-plus" aria-hidden="true" />
+                        <span class="text">Create file</span>
+                    </Button>
+                </div>
+            </SearchQuery>
+        </svelte:fragment>
         <svelte:fragment slot="tooltip" let:limit let:tier let:upgradeMethod>
             <p class="text">
                 You are limited to {limit} of storage on the {tier} plan.
