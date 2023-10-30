@@ -100,19 +100,17 @@
 
     // This Map is keyed by tags, and has a query as the value
     function addFilter() {
-        if (column && operator) {
-            queries.addFilter({ column, operator, value });
-            value = null;
-        }
+        if (!column || !operator) return;
+
+        queries.addFilter({ column, operator, value: value ?? '' });
+        value = null;
     }
 
     function tagFormat(node: HTMLElement) {
         node.innerHTML = node.innerHTML.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
     }
 
-    $: isDisabled = (function getDisabled() {
-        return !operator || (!operator?.hideInput && !value);
-    })();
+    $: isDisabled = !operator;
 </script>
 
 <div>
