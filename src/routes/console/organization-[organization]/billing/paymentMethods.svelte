@@ -142,16 +142,28 @@
                 </DropList>
             </CreditCardInfo>
         {:else}
+            {@const filteredPaymentMethods = $paymentMethods.paymentMethods.filter(
+                (o) => !!o.last4 && o.$id !== $organization.backupPaymentMethodId
+            )}
             <article class="card u-grid u-cross-center u-width-full-line dashed">
                 <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
                     <div class="common-section">
                         <DropList bind:show={showDropdown} placement="bottom-start">
-                            <Button secondary round on:click={() => (showDropdown = !showDropdown)}>
+                            <Button
+                                secondary
+                                round
+                                on:click={() => {
+                                    if (filteredPaymentMethods.length) {
+                                        showDropdown = !showDropdown;
+                                    } else {
+                                        showPayment = true;
+                                    }
+                                }}>
                                 <i class="icon-plus" />
                             </Button>
                             <svelte:fragment slot="list">
                                 {#if $paymentMethods.total}
-                                    {#each $paymentMethods.paymentMethods.filter((o) => !!o.last4 && o.$id !== $organization.backupPaymentMethodId) as paymentMethod}
+                                    {#each filteredPaymentMethods as paymentMethod}
                                         <DropListItem
                                             on:click={() => {
                                                 showDropdown = false;
@@ -225,6 +237,9 @@
                 </DropList>
             </CreditCardInfo>
         {:else}
+            {@const filteredPaymentMethods = $paymentMethods.paymentMethods.filter(
+                (o) => !!o.last4 && o.$id !== $organization.paymentMethodId
+            )}
             <article class="card u-grid u-cross-center u-width-full-line dashed">
                 <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
                     <div class="common-section">
@@ -232,12 +247,18 @@
                             <Button
                                 secondary
                                 round
-                                on:click={() => (showDropdownBackup = !showDropdownBackup)}>
+                                on:click={() => {
+                                    if (filteredPaymentMethods.length) {
+                                        showDropdownBackup = !showDropdownBackup;
+                                    } else {
+                                        showPayment = true;
+                                    }
+                                }}>
                                 <i class="icon-plus" />
                             </Button>
                             <svelte:fragment slot="list">
                                 {#if $paymentMethods.total}
-                                    {#each $paymentMethods.paymentMethods.filter((o) => !!o.last4 && o.$id !== $organization?.paymentMethodId) as paymentMethod}
+                                    {#each filteredPaymentMethods as paymentMethod}
                                         <DropListItem
                                             on:click={() => {
                                                 showDropdownBackup = true;

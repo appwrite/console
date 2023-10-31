@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { Pill } from '$lib/elements';
+    import { Flag, Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import Create from './createProjectCloud.svelte';
@@ -28,6 +28,8 @@
     import { ID } from '@appwrite.io/console';
     import { openImportWizard } from '../project-[project]/settings/migrations/(import)';
     import { readOnly } from '$lib/stores/billing';
+    import type { RegionList } from '$lib/sdk/billing';
+    import { onMount } from 'svelte';
 
     export let data;
 
@@ -113,6 +115,11 @@
             trackError(e, Submit.ProjectCreate);
         }
     };
+
+    let regions: RegionList;
+    onMount(async () => {
+        if (isCloud) regions = await sdk.forConsole.billing.listRegions();
+    });
 </script>
 
 <Container>
@@ -173,9 +180,16 @@
                                 +{project.platforms.length - 3}
                             </Pill>
                         {/if}
-                        <svelte:fragment slot="icon">
-                            {#if isCloud}
-                                <p>region</p>
+                        <svelte:fragment slot="icons">
+                            {#if isCloud && regions}
+                                {@const region = regions.regions.find(
+                                    (region) => region.$id === project.region
+                                )}
+
+                                <div class="u-flex u-gap-8 u-cross-center">
+                                    <span class="u-text-color-gray">{region.name}</span>
+                                    <Flag flag={region.flag} width={24} height={18} />
+                                </div>
                             {/if}
                         </svelte:fragment>
                     </GridItem1>

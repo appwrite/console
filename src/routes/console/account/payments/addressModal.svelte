@@ -49,8 +49,10 @@
             trackEvent(Submit.BillingAddressCreate);
             let org: Organization = null;
             if (organization) {
+                console.log(response);
                 org = await sdk.forConsole.billing.setBillingAddress(organization, response.$id);
                 trackEvent(Submit.OrganizationBillingAddressUpdate);
+                console.log(org);
             }
             await invalidate(Dependencies.ADDRESS);
             show = false;

@@ -34,7 +34,7 @@
     }
 
     $: billingAddress = $addressList?.billingAddresses?.find(
-        (address) => address.$id === $organization?.billingAddress
+        (address) => address.$id === $organization?.billingAddressId
     );
 </script>
 
@@ -46,7 +46,7 @@
         Appwrite.
     </p>
     <svelte:fragment slot="aside">
-        {#if $organization?.billingAddress && billingAddress}
+        {#if $organization?.billingAddressId && billingAddress}
             <div class="box">
                 <div class="u-flex u-main-space-between u-cross-start">
                     <div class="u-line-height-1-5 u-flex u-flex-vertical u-gap-2">
@@ -63,7 +63,16 @@
                 <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
                     <div class="common-section">
                         <DropList bind:show={showDropdown} placement="bottom-start">
-                            <Button secondary round on:click={() => (showDropdown = !showDropdown)}>
+                            <Button
+                                secondary
+                                round
+                                on:click={() => {
+                                    if ($addressList.total) {
+                                        showDropdown = !showDropdown;
+                                    } else {
+                                        showCreate = true;
+                                    }
+                                }}>
                                 <i class="icon-plus" />
                             </Button>
                             <svelte:fragment slot="list">
