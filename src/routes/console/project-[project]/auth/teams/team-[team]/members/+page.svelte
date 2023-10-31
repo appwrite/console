@@ -58,12 +58,13 @@
             </TableHeader>
             <TableBody>
                 {#each data.memberships.memberships as membership}
+                    {@const username = membership.userName ? membership.userName : '-'}
                     <TableRowLink
                         href={`${base}/console/project-${project}/auth/user-${membership.userId}`}>
                         <TableCellText title="Name">
                             <div class="u-flex u-gap-12 u-cross-center">
-                                <AvatarInitials size={32} name={membership.userName} />
-                                <span>{membership.userName ? membership.userName : '-'}</span>
+                                <AvatarInitials size={32} name={username} />
+                                <span>{username}</span>
                             </div>
                         </TableCellText>
                         <TableCellText onlyDesktop title="Roles">{membership.roles}</TableCellText>
