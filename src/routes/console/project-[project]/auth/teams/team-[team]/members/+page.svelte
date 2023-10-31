@@ -63,7 +63,7 @@
                         <TableCellText title="Name">
                             <div class="u-flex u-gap-12 u-cross-center">
                                 <AvatarInitials size={32} name={membership.userName} />
-                                <span>{membership.userName ? membership.userName : 'n/a'}</span>
+                                <span>{membership.userName ? membership.userName : '-'}</span>
                             </div>
                         </TableCellText>
                         <TableCellText onlyDesktop title="Roles">{membership.roles}</TableCellText>
