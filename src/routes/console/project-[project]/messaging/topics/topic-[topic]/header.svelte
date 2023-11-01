@@ -14,11 +14,11 @@
             title: 'Overview',
             event: 'overview'
         },
-        // {
-        //     href: `${path}/memberships`,
-        //     title: 'Memberships',
-        //     event: 'memberships'
-        // },
+        {
+            href: `${path}/subscribers`,
+            title: 'Subscribers',
+            event: 'subscribers'
+        }
         // {
         //     href: `${path}/sessions`,
         //     title: 'Sessions',
