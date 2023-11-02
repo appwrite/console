@@ -63,7 +63,8 @@
 
 <WizardStep beforeSubmit={handleSubmit}>
     <svelte:fragment slot="title">Payment details</svelte:fragment>
-    <svelte:fragment slot="subtitle">Add a payment method to your organization.</svelte:fragment>
+    <svelte:fragment slot="subtitle"
+        >Confirm the payment method for your organization.</svelte:fragment>
 
     <FormList>
         <div class:boxes-wrapper={methods?.total}>

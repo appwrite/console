@@ -38,7 +38,9 @@ export const load: LayoutLoad = async ({ depends, url }) => {
         ];
 
         if (!acceptedRoutes.some((n) => url.pathname.startsWith(n))) {
-            const redirectUrl = `${url.search}&redirect=${url.pathname}`;
+            const redirectUrl = url.pathname
+                ? `${url.search}&redirect=${url.pathname}`
+                : url.search;
             throw redirect(303, `/login${redirectUrl}`);
         }
     }

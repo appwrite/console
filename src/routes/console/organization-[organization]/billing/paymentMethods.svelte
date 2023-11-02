@@ -130,7 +130,6 @@
                             Replace
                         </DropListItem>
                         <DropListItem
-                            disabled={!$organization?.backupPaymentMethodId}
                             icon="trash"
                             on:click={() => {
                                 showDelete = true;
@@ -143,7 +142,7 @@
             </CreditCardInfo>
         {:else}
             {@const filteredPaymentMethods = $paymentMethods.paymentMethods.filter(
-                (o) => !!o.last4 && o.$id !== $organization.backupPaymentMethodId
+                (o) => !!o.last4 && o.$id !== $organization?.backupPaymentMethodId
             )}
             <article class="card u-grid u-cross-center u-width-full-line dashed">
                 <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
@@ -224,7 +223,6 @@
                             Replace
                         </DropListItem>
                         <DropListItem
-                            disabled={!$organization?.paymentMethodId}
                             icon="trash"
                             on:click={() => {
                                 showDelete = true;
@@ -238,7 +236,7 @@
             </CreditCardInfo>
         {:else}
             {@const filteredPaymentMethods = $paymentMethods.paymentMethods.filter(
-                (o) => !!o.last4 && o.$id !== $organization.paymentMethodId
+                (o) => !!o.last4 && o.$id !== $organization?.paymentMethodId
             )}
             <article class="card u-grid u-cross-center u-width-full-line dashed">
                 <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
@@ -301,5 +299,10 @@
     <ReplaceCard bind:show={showReplace} isBackup={isSelectedBackup} />
 {/if}
 {#if showDelete && isCloud && hasStripePublicKey}
-    <DeleteOrgPayment bind:showDelete isBackup={isSelectedBackup} />
+    <DeleteOrgPayment
+        bind:showDelete
+        isBackup={isSelectedBackup}
+        disabled={isSelectedBackup
+            ? !$organization?.paymentMethodId
+            : !$organization?.backupPaymentMethodId} />
 {/if}

@@ -6,6 +6,7 @@
     import { updateStepStatus } from '$lib/stores/wizard';
     import { onMount } from 'svelte';
     import { changeOrganizationTier, changeTierSteps, isUpgrade } from './store';
+    import { sdk } from '$lib/stores/sdk';
 
     $: if ($changeOrganizationTier.billingPlan === 'tier-0' && $changeTierSteps) {
         $changeTierSteps = updateStepStatus($changeTierSteps, 2, true);
@@ -24,7 +25,18 @@
         $isUpgrade = $changeOrganizationTier.billingPlan > $organization.billingPlan;
     }
 
-    onMount(() => {
+    $: if (!$isUpgrade && $changeOrganizationTier.billingPlan === 'tier-0') {
+        $changeTierSteps = updateStepStatus($changeTierSteps, 4, true);
+    }
+
+    async function checkOverUsage() {
+        const aggregationList = await sdk.forConsole.billing.listUsage($organization.$id);
+
+        console.log(aggregationList);
+    }
+
+    onMount(async () => {
+        await checkOverUsage();
         //Select closest tier from starting one
         if ($organization.billingPlan === 'tier-2') {
             $changeOrganizationTier.billingPlan = 'tier-1';

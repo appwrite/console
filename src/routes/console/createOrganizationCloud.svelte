@@ -92,7 +92,7 @@
         component: Step2
     });
     $createOrgSteps.set(3, {
-        label: 'Invite collaborators',
+        label: 'Invite members',
         component: Step3
     });
     $createOrgSteps.set(4, {

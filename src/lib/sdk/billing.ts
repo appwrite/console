@@ -555,7 +555,7 @@ export class Billing {
     }
 
     async updateTaxId(organizationId: string, taxId: string): Promise<Organization> {
-        const path = `/organizations/${organizationId}/tax-id`;
+        const path = `/organizations/${organizationId}/taxId`;
         const params = {
             organizationId,
             taxId

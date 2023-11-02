@@ -10,9 +10,12 @@
     import { organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import AddressModal from '$routes/console/account/payments/addressModal.svelte';
+    import EditAddressModal from '$routes/console/account/payments/editAddressModal.svelte';
 
     let showDropdown = false;
+    let showBillingAddressDropdown = false;
     let showCreate = false;
+    let showEdit = false;
 
     async function addAddress(addressId: string) {
         try {
@@ -56,6 +59,37 @@
                         <p class="text">{billingAddress.postalCode}</p>
                         <p class="text">{billingAddress.country}</p>
                     </div>
+                    <DropList
+                        bind:show={showBillingAddressDropdown}
+                        placement="bottom-start"
+                        noArrow>
+                        <Button
+                            round
+                            text
+                            ariaLabel="More options"
+                            on:click={() => {
+                                showBillingAddressDropdown = !showBillingAddressDropdown;
+                            }}>
+                            <span class="icon-dots-horizontal" aria-hidden="true" />
+                        </Button>
+                        <svelte:fragment slot="list">
+                            <DropListItem
+                                icon="pencil"
+                                on:click={() => {
+                                    showEdit = true;
+                                    showBillingAddressDropdown = false;
+                                }}>
+                                Edit
+                            </DropListItem>
+                            <DropListItem
+                                icon="trash"
+                                on:click={() => {
+                                    showBillingAddressDropdown = false;
+                                }}>
+                                Delete
+                            </DropListItem>
+                        </svelte:fragment>
+                    </DropList>
                 </div>
             </div>
         {:else}
@@ -93,7 +127,9 @@
                                     on:click={() => {
                                         showCreate = true;
                                         showDropdown = false;
-                                    }}>Add new billing address</DropListItem>
+                                    }}>
+                                    Add new billing address
+                                </DropListItem>
                             </svelte:fragment>
                         </DropList>
                     </div>
@@ -107,3 +143,4 @@
 </CardGrid>
 
 <AddressModal bind:show={showCreate} organization={$organization.$id} />
+<EditAddressModal bind:show={showEdit} bind:selectedAddress={billingAddress} />

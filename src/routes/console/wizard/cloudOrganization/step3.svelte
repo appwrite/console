@@ -33,7 +33,7 @@
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">Invite collaborators</svelte:fragment>
+    <svelte:fragment slot="title">Invite organization members</svelte:fragment>
     <svelte:fragment slot="subtitle">
         Invite team members to collaborate with you in the Appwrite console. Members will have
         access to all services and payment data within your organization.

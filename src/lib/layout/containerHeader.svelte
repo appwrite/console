@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { tierToPlan, getServiceLimit } from '$lib/stores/billing';
+    import { tierToPlan, getServiceLimit, type PlanServices } from '$lib/stores/billing';
     import { tooltip } from '$lib/actions/tooltip';
     import { Alert, Heading } from '$lib/components';
     import { Pill } from '$lib/elements';
@@ -14,7 +14,7 @@
     export let title: string;
     export let titleTag: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' = 'h2';
     export let titleSize: '1' | '2' | '3' | '4' | '5' | '6' | '7' = '5';
-    export let serviceId = title.toLocaleLowerCase();
+    export let serviceId = title.toLocaleLowerCase() as PlanServices;
     export let total: number = null;
     export let alertType: 'info' | 'success' | 'warning' | 'error' | 'default' = 'warning';
     export let showAlert = true;

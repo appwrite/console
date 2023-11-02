@@ -109,7 +109,7 @@
         component: Step2
     });
     $changeTierSteps.set(3, {
-        label: 'Invite collaborators',
+        label: 'Invite members',
         component: Step3
     });
     $changeTierSteps.set(4, {

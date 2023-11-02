@@ -100,13 +100,13 @@
         </svelte:fragment>
     </CardGrid>
     <CardGrid>
-        <Heading tag="h4" size="7">Total users</Heading>
-        <p class="text">Total users of your project.</p>
+        <Heading tag="h4" size="7">Users</Heading>
+        <p class="text">The total number of users of your project.</p>
         <svelte:fragment slot="aside">
             {#if total(users)}
                 <div class="u-flex u-gap-8 u-cross-baseline">
                     <Heading tag="h5" size="4">{total(users)}</Heading>
-                    <Heading tag="h6" size="6">AU</Heading>
+                    <Heading tag="h6" size="6">Users</Heading>
                 </div>
                 <BarChart
                     series={[

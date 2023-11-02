@@ -3,14 +3,7 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import {
-        Button,
-        FormItem,
-        FormList,
-        InputNumber,
-        InputSelect,
-        InputText
-    } from '$lib/elements/forms';
+    import { Button, FormItem, FormList, InputSelect, InputText } from '$lib/elements/forms';
     import type { Address } from '$lib/sdk/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
@@ -19,7 +12,7 @@
     export let show = false;
     export let selectedAddress: Address;
 
-    let zip = selectedAddress?.postalCode ? parseInt(selectedAddress.postalCode) : null;
+    let error: string = null;
     let options = [
         {
             value: 'US',
@@ -43,10 +36,10 @@
                 selectedAddress.$id,
                 selectedAddress.country,
                 selectedAddress.streetAddress,
-                selectedAddress.addressLine2 ? selectedAddress.addressLine2 : undefined,
                 selectedAddress.city,
                 selectedAddress.state,
-                selectedAddress.postalCode
+                selectedAddress.postalCode,
+                selectedAddress.addressLine2 ? selectedAddress.addressLine2 : undefined
             );
             await invalidate(Dependencies.ADDRESS);
             show = false;
@@ -55,17 +48,14 @@
                 message: `Address has been added`
             });
             trackEvent(Submit.BillingAddressCreate);
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
-            trackError(error, Submit.BillingAddressCreate);
+        } catch (e) {
+            error = e.message;
+            trackError(e, Submit.BillingAddressCreate);
         }
     }
 </script>
 
-<Modal bind:show onSubmit={handleSubmit} size="big" title="Update billing address">
+<Modal bind:error bind:show onSubmit={handleSubmit} size="big" title="Update billing address">
     <FormList gap={16}>
         <InputSelect
             bind:value={selectedAddress.country}
@@ -100,10 +90,10 @@
                 label="State"
                 placeholder="Enter your state"
                 required />
-            <InputNumber
+            <InputText
                 isMultiple
                 fullWidth
-                bind:value={zip}
+                bind:value={selectedAddress.postalCode}
                 id="zip"
                 label="Postal code"
                 placeholder="Enter postal code"

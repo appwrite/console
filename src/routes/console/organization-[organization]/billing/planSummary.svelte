@@ -37,7 +37,7 @@
             <div class="box u-flex u-main-space-between u-cross-center">
                 <div class="u-flex u-gap-8 u-cross-center">
                     <h6 class="u-bold u-trim-1">
-                        {currentTier.name}
+                        {currentTier.name} plan
                     </h6>
                     {#if $organization?.billingPlan !== 'tier-0' && $daysLeftInTrial}
                         <Pill>FREE TRIAL</Pill>

@@ -57,7 +57,7 @@
     <CardGrid>
         <Heading tag="h6" size="7">Users</Heading>
 
-        <p class="text">Users across all projects in your organization.</p>
+        <p class="text">The total number of users across all projects in your organization.</p>
 
         <svelte:fragment slot="aside">
             <ProgressBarBig unit="Users" max={getServiceLimit('users')} used={users} />

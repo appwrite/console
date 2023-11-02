@@ -50,11 +50,16 @@
             let org: Organization = null;
             if (organization) {
                 console.log(response);
-                org = await sdk.forConsole.billing.setBillingAddress(organization, response.$id);
+                Promise.allSettled([
+                    (org = await sdk.forConsole.billing.setBillingAddress(
+                        organization,
+                        response.$id
+                    ))
+                ]);
                 trackEvent(Submit.OrganizationBillingAddressUpdate);
                 console.log(org);
             }
-            await invalidate(Dependencies.ADDRESS);
+            Promise.allSettled([await invalidate(Dependencies.ADDRESS)]);
             show = false;
             addNotification({
                 type: 'success',

@@ -26,6 +26,7 @@
             await submitStripeCard(name);
             show = false;
             invalidate(Dependencies.PAYMENT_METHODS);
+            closeModal();
             addNotification({
                 type: 'success',
                 message: 'A new payment method has been added to your account'
@@ -37,7 +38,6 @@
     }
 
     function handleBLur(event: MouseEvent) {
-        console.log(event);
         if (event.target === backdrop) {
             trackEvent('click_close_modal', {
                 from: 'backdrop'

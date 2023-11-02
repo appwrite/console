@@ -13,7 +13,9 @@
 
     let columns = 0;
 
-    $: limitReached = total >= (getServiceLimit(service) ?? Infinity);
+    const limit = getServiceLimit(service) || Infinity;
+
+    $: limitReached = limit !== 0 && limit < Infinity && total >= limit;
 
     $: if (tableBody) {
         columns = tableBody?.parentNode?.querySelectorAll('.table-thead-col')?.length;

@@ -63,14 +63,5 @@
                 </li>
             {/each}
         </ul>
-
-        <p class="text u-margin-block-start-16">
-            Edge Network is enabled on all regions. For more details, check out our <a
-                class="link"
-                href="http://#"
-                target="_blank"
-                rel="noopener noreferrer">Documentation</a
-            >.
-        </p>
     {/if}
 </WizardStep>
