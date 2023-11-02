@@ -28,7 +28,7 @@
                 type="button"
                 on:click|preventDefault
                 on:click={track}
-                aria-label={`create {target}`}>
+                aria-label="create {target}">
                 {#if $app.themeInUse === 'dark'}
                     <img src={EmptyDark} alt="create" aria-hidden="true" width="376" />
                 {:else}
@@ -50,7 +50,7 @@
                         {href}
                         text
                         event="empty_documentation"
-                        ariaLabel={`create {target}`}>Documentation</Button>
+                        ariaLabel="create {target}">Documentation</Button>
                     <Button secondary on:click on:click={track}>
                         Create {target}
                     </Button>
