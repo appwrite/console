@@ -384,7 +384,7 @@
     :global(.theme-dark) .card {
         --cmd-center-bg: hsl(var(--color-neutral-100));
         --cmd-center-border: hsl(var(--color-neutral-80));
-        --cmd-center-shadow: 0px 16px 32px 0px hsl(var(--color-neutral-110));
+        --cmd-center-shadow: 0px 16px 32px 0px hsl(var(--color-neutral-105));
 
         --kbd-bg: hsl(var(--color-neutral-80));
 

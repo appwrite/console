@@ -229,11 +229,11 @@
         --color-neutral-85: 240 4% 18%; /* #2D2D31 */
         --color-neutral-90: 240 7% 12%; /* #1D1D21 */
         --color-neutral-100: 240 6% 10%; /* #19191C */
-        --color-neutral-110: 240 5% 8%; /* #141416 */
+        --color-neutral-105: 240 5% 8%; /* #141416 */
     }
 
     .theme-dark .modal::backdrop {
-        background-color: hsl(var(--color-neutral-110) / 0.6);
+        background-color: hsl(var(--color-neutral-105) / 0.6);
     }
 
     .theme-dark .card-header {
