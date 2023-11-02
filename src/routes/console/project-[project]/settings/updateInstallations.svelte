@@ -125,7 +125,7 @@
                                             target="_blank"
                                             class="u-flex u-gap-4 u-cross-center">
                                             <span>{installation.organization}</span><span
-                                                style="font-size: 1rem; color: hsl(var(--color-neutral-70));"
+                                                style="font-size: 1rem; color: hsl(var(--color-neutral-50));"
                                                 class="icon-external-link" /></a>
                                     </div>
                                 </TableCell>

@@ -118,8 +118,8 @@
 <!-- svelte-ignore css-unused-selector -->
 <style lang="scss" global>
     .tippy-user .tippy-box {
-        --p-drop-bg-color: var(--color-neutral-500);
-        --p-drop-border-color: var(--color-neutral-200);
+        --p-drop-bg-color: var(--color-neutral-110);
+        --p-drop-border-color: var(--color-neutral-85);
 
         body.theme-light & {
             --p-drop-bg-color: var(--color-neutral-0);

@@ -161,7 +161,7 @@
     .ht-tag {
         padding: 0.125rem 0.5rem;
         border-radius: 0.25rem;
-        background-color: hsl(var(--color-neutral-70));
+        background-color: hsl(var(--color-neutral-50));
         text-align: center;
 
         &-primary {
@@ -209,9 +209,9 @@
     }
 
     .numeric-list {
-        --p-numeric-border-color: var(--color-neutral-30);
+        --p-numeric-border-color: var(--color-neutral-15);
         --p-numeric-bg-color: var(--color-neutral-10);
-        --p-numeric-text-color: var(--color-neutral-100);
+        --p-numeric-text-color: var(--color-neutral-60);
         counter-reset: number;
         display: grid;
         row-gap: 1.5rem;
@@ -240,20 +240,20 @@
             color: hsl(var(--color-neutral-0));
         }
         .ht-tag {
-            background-color: hsl(var(--color-neutral-150));
+            background-color: hsl(var(--color-neutral-80));
             &-primary {
                 background-color: hsl(var(--color-primary-100));
             }
         }
         .card {
-            background-color: hsl(var(--color-neutral-300));
+            background-color: hsl(var(--color-neutral-90));
         }
         .numeric-list {
-            --p-numeric-border-color: var(--color-neutral-150);
-            --p-numeric-bg-color: var(--color-neutral-200);
-            --p-numeric-text-color: var(--color-neutral-50);
+            --p-numeric-border-color: var(--color-neutral-80);
+            --p-numeric-bg-color: var(--color-neutral-85);
+            --p-numeric-text-color: var(--color-neutral-20);
             &-item {
-                color: hsl(var(--color-neutral-30));
+                color: hsl(var(--color-neutral-15));
             }
         }
     }

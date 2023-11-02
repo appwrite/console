@@ -62,6 +62,6 @@
     }
 
     [class^='icon-']:not(.icon-cloud):not(:hover) {
-        color: hsl(var(--color-neutral-50));
+        color: hsl(var(--color-neutral-20));
     }
 </style>

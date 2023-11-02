@@ -70,7 +70,7 @@
     @import 'prismjs/plugins/line-numbers/prism-line-numbers.css';
 
     .box {
-        --p-box-background-color: var(--color-neutral-400) !important;
+        --p-box-background-color: var(--color-neutral-100) !important;
 
         body.theme-light & {
             --p-box-background-color: var(--color-neutral-5) !important;

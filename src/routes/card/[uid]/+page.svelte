@@ -213,9 +213,9 @@
 <style lang="scss">
     :global(.theme-dark) .wrapper {
         --glow: hsl(var(--color-primary-100));
-        --beta-bg: hsl(var(--color-neutral-120));
+        --beta-bg: hsl(var(--color-neutral-70));
         --beta-fg: hsl(var(--color-neutral-0));
-        --sep-clr: hsl(var(--color-neutral-150));
+        --sep-clr: hsl(var(--color-neutral-80));
     }
 
     :global(.main-content) {

@@ -369,37 +369,37 @@
         --cmd-center-border: hsl(var(--color-neutral-10));
         --cmd-center-shadow: 0px 16px 32px 0px rgba(55, 59, 77, 0.04);
 
-        --kbd-bg: hsl(var(--color-neutral-30));
+        --kbd-bg: hsl(var(--color-neutral-15));
 
         --crumb-bg: hsl(var(--color-neutral-10));
-        --crumb-color: hsl(var(--color-neutral-100));
+        --crumb-color: hsl(var(--color-neutral-60));
 
         --result-bg: hsl(var(--color-neutral-10));
         --footer-bg: linear-gradient(180deg, #fff 49.38%, #e8e9f0 100%);
 
-        --icon-color: hsl(var(--color-neutral-50));
-        --label-color: hsl(var(--color-neutral-100));
+        --icon-color: hsl(var(--color-neutral-20));
+        --label-color: hsl(var(--color-neutral-60));
     }
 
     :global(.theme-dark) .card {
-        --cmd-center-bg: hsl(var(--color-neutral-100-new));
-        --cmd-center-border: hsl(var(--color-neutral-150));
-        --cmd-center-shadow: 0px 16px 32px 0px hsl(var(--color-neutral-110-new));
+        --cmd-center-bg: hsl(var(--color-neutral-100));
+        --cmd-center-border: hsl(var(--color-neutral-80));
+        --cmd-center-shadow: 0px 16px 32px 0px hsl(var(--color-neutral-110));
 
-        --kbd-bg: hsl(var(--color-neutral-150));
+        --kbd-bg: hsl(var(--color-neutral-80));
 
-        --crumb-bg: hsl(var(--color-neutral-150));
-        --crumb-color: hsl(var(--color-neutral-30));
+        --crumb-bg: hsl(var(--color-neutral-80));
+        --crumb-color: hsl(var(--color-neutral-15));
 
-        --result-bg: hsl(var(--color-neutral-200));
+        --result-bg: hsl(var(--color-neutral-85));
         --footer-bg: linear-gradient(
             180deg,
-            hsl(var(--color-neutral-100-new)) 0%,
-            hsl(var(--color-neutral-85-new)) 100%
+            hsl(var(--color-neutral-100)) 0%,
+            hsl(var(--color-neutral-85)) 100%
         );
 
-        --icon-color: hsl(var(--color-neutral-70));
-        --label-color: hsl(var(--color-neutral-30));
+        --icon-color: hsl(var(--color-neutral-50));
+        --label-color: hsl(var(--color-neutral-15));
     }
 
     // Elements
@@ -490,7 +490,7 @@
             padding: 1rem;
 
             .group {
-                color: hsl(var(--color-neutral-70));
+                color: hsl(var(--color-neutral-50));
                 margin-inline-start: 0.25rem;
                 margin-block-end: 0.25rem;
                 position: relative;

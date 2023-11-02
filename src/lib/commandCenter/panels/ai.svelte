@@ -245,11 +245,11 @@
     }
 
     :global(.theme-dark) .footer {
-        --sep-clr: hsl(var(--color-neutral-150));
+        --sep-clr: hsl(var(--color-neutral-80));
     }
 
     :global(.theme-light) .footer {
-        --sep-clr: hsl(var(--color-neutral-30));
+        --sep-clr: hsl(var(--color-neutral-15));
     }
 
     .content {

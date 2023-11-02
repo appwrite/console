@@ -73,7 +73,7 @@
                         <div
                             class="u-cross-child-center u-flex u-main-space-between u-flex-wrap u-gap-8 u-width-full-line">
                             <h6>{func.name}</h6>
-                            <p class="u-x-small" style="color: hsl(var(--color-neutral-70));">
+                            <p class="u-x-small" style="color: hsl(var(--color-neutral-50));">
                                 Last deployed: {toLocaleDateTime(func.$updatedAt)}
                             </p>
                         </div>

@@ -11,18 +11,18 @@
 
 <style lang="scss">
     .text-counter {
-        --p-text-counter-color: var(--color-neutral-50);
+        --p-text-counter-color: var(--color-neutral-20);
 
         &.active {
-            --p-text-counter-color: var(--color-neutral-70);
+            --p-text-counter-color: var(--color-neutral-50);
         }
     }
 
     :global(.theme-dark) .text-counter {
-        --p-text-counter-color: var(--color-neutral-70);
+        --p-text-counter-color: var(--color-neutral-50);
 
         &.active {
-            --p-text-counter-color: var(--color-neutral-50);
+            --p-text-counter-color: var(--color-neutral-20);
         }
     }
 </style>

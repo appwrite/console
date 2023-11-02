@@ -30,7 +30,7 @@
                 {#if $domain.status === 'verifying'}
                     <div
                         class="loader"
-                        style="color: hsl(var(--color-neutral-50)); inline-size: 1.25rem; block-size: 1.25rem" />
+                        style="color: hsl(var(--color-neutral-20)); inline-size: 1.25rem; block-size: 1.25rem" />
                     <p class="u-stretch">Generating certificate</p>
                 {:else if $domain.status === 'verified'}
                     <span class="icon-check u-color-text-success" aria-hidden="true" />

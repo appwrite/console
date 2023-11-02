@@ -133,7 +133,7 @@
         position: fixed;
         inset: 0;
 
-        background-color: hsl(var(--color-neutral-500) / 0.5);
+        background-color: hsl(var(--color-neutral-110) / 0.5);
         z-index: 9999;
     }
 

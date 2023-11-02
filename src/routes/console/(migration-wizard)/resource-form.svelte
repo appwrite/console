@@ -417,7 +417,7 @@
 <style lang="scss">
     .box :global(.eyebrow) {
         font-weight: 500;
-        color: hsl(var(--color-neutral-70));
+        color: hsl(var(--color-neutral-50));
     }
 
     .circled {
