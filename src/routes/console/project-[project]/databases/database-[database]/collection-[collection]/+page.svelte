@@ -114,7 +114,7 @@
     {:else}
         <Empty single target="attribute" on:click={() => (showCreateDropdown = true)}>
             <div class="u-text-center">
-                <Heading size="7" tag="h2">Create your first attribute to get started.</Heading>
+                <Heading size="7" tag="h2">Create an attribute to get started.</Heading>
                 <p class="body-text-2 u-bold u-margin-block-start-4">
                     Need a hand? Learn more in our documentation.
                 </p>

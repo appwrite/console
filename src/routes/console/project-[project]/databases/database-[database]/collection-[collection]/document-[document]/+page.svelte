@@ -92,8 +92,8 @@
                 <Alert type="info">
                     <svelte:fragment slot="title">Document security is disabled</svelte:fragment>
                     <p class="text">
-                        If you want to assign document permissions, navigate to Collection settings
-                        and enable document security. Otherwise, only collection permissions will be
+                        If you want to assign document permissions. Go to Collection settings and
+                        enable document security. Otherwise, only collection permissions will be
                         used.
                     </p>
                 </Alert>

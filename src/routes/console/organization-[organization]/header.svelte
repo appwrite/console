@@ -65,7 +65,7 @@
                 <section class="drop-section">
                     <ul class="drop-list">
                         <DropListItem icon="plus" on:click={() => newOrgModal.set(true)}>
-                            New Organization
+                            New organization
                         </DropListItem>
                     </ul>
                 </section></svelte:fragment>

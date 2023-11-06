@@ -37,7 +37,8 @@
     <CardGrid>
         <Heading tag="h6" size="7">Phone</Heading>
         <p>
-            Update user's phone. A phone number must contain leading '+' and maximum of 15 digits.
+            Update user's phone. Phone number must start with '+' and maximum of 15 digits, for
+            example: +14155552671.
         </p>
         <svelte:fragment slot="aside">
             <ul>

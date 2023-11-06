@@ -21,7 +21,7 @@ client
     <svelte:fragment slot="title">Initialize SDK</svelte:fragment>
 
     <h2 class="heading-level-7">Initialize your SDK</h2>
-    <p>
+    <p data-private>
         Initialize your SDK by pointing the client to your Appwrite project using your <Id
             value={project}>Project ID</Id>
     </p>
