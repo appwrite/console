@@ -3,12 +3,12 @@
     import { page } from '$app/stores';
     import { CardContainer, GridItem1, Id } from '$lib/components';
     import type { PageData } from './$types';
-
     export let data: PageData;
+    export let showCreate = false;
     const project = $page.params.project;
 </script>
 
-<CardContainer total={data.buckets.total} event="bucket">
+<CardContainer total={data.buckets.total} on:click={() => (showCreate = true)} event="bucket">
     {#each data.buckets.buckets as bucket}
         <GridItem1 href={`${base}/console/project-${project}/storage/bucket-${bucket.$id}`}>
             <svelte:fragment slot="title">{bucket.name}</svelte:fragment>
