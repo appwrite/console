@@ -1,14 +1,15 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { Empty, EmptySearch, Heading, PaginationWithLimit } from '$lib/components';
+    import Filters from '$lib/components/filters/filters.svelte';
+    import { hasPageQueries, queries } from '$lib/components/filters/store';
     import ViewSelector from '$lib/components/viewSelector.svelte';
     import { Button } from '$lib/elements/forms';
+    import type { ColumnType } from '$lib/helpers/types';
     import { Container } from '$lib/layout';
     import { preferences } from '$lib/stores/preferences';
     import { wizard } from '$lib/stores/wizard';
     import type { PageData } from './$types';
-    import Filters from './(filters)/filters.svelte';
-    import { hasPageQueries, queries } from './(filters)/store';
     import CreateAttributeDropdown from './attributes/createAttributeDropdown.svelte';
     import type { Option } from './attributes/store';
     import CreateAttribute from './createAttribute.svelte';
@@ -27,7 +28,7 @@
         $collection.attributes.map((attribute) => ({
             id: attribute.key,
             title: attribute.key,
-            type: attribute.type,
+            type: attribute.type as ColumnType,
             show: selected?.includes(attribute.key) ?? true
         }))
     );
@@ -54,7 +55,7 @@
             </Button>
         </div>
 
-        <Filters />
+        <Filters query={data.query} {columns} />
 
         <div class="u-flex u-main-end u-gap-16">
             <ViewSelector

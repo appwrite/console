@@ -1,12 +1,3 @@
-<script context="module" lang="ts">
-    export type Column = {
-        id: string;
-        title: string;
-        show: boolean;
-        width?: number;
-    };
-</script>
-
 <script lang="ts">
     import { Button, InputChoice } from '$lib/elements/forms';
     import { DropList } from '.';
@@ -16,6 +7,7 @@
     import { onMount } from 'svelte';
     import { View } from '$lib/helpers/load';
     import { tooltip } from '$lib/actions/tooltip';
+    import type { Column } from '$lib/helpers/types';
 
     export let columns: Writable<Column[]>;
     export let view: View;
