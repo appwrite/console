@@ -18,12 +18,13 @@
     import { Container, ContainerHeader } from '$lib/layout';
     import { hoursToDays, toLocaleDateTime } from '$lib/helpers/date';
     import type { Models } from '@appwrite.io/console';
+    import type { PlanServices } from '$lib/stores/billing';
 
     export let logs: Models.LogList;
     export let offset = 0;
     export let limit = 0;
 
-    export let service: string = null;
+    export let service: PlanServices = null;
 </script>
 
 <Container>

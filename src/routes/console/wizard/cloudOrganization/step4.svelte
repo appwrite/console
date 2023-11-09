@@ -8,7 +8,7 @@
     import { createOrganization } from './store';
 
     const plan = $plansInfo.plans.find((p) => p.$id === $createOrganization.billingPlan);
-    const collaboratorPrice = plan?.memberAddon?.price ?? 0;
+    const collaboratorPrice = plan?.addons.member?.price ?? 0;
     const collaboratorsNumber = $createOrganization?.collaborators?.length ?? 0;
     const totalExpences = plan.price + collaboratorPrice * collaboratorsNumber;
     const today = new Date();

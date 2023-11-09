@@ -60,7 +60,7 @@
                 You can add unlimited organization members on the {plan.name} plan at no cost.
             {:else if $organization?.billingPlan === 'tier-1'}
                 You can add unlimited organization members on the {plan.name} plan for
-                <b>${plan.memberAddon.price} each per billing period</b>.
+                <b>${plan.addons.member.price} each per billing period</b>.
             {/if}
         </Alert>
     {/if}

@@ -45,8 +45,8 @@
             added will receive an email invite to your organization on completion.
         {:else if $changeOrganizationTier.billingPlan === 'tier-1'}
             You can add unlimited organization members on the {plan.name} plan for
-            <b>${plan.memberAddon.price} each per month</b>. Each member added will receive an email
-            invite to your organization on completion.
+            <b>${plan.addons.member.price} each per month</b>. Each member added will receive an
+            email invite to your organization on completion.
         {/if}
     </Alert>
 

@@ -14,8 +14,6 @@
     import { plansInfo } from '$lib/stores/billing';
     import { createOrganization } from './store';
 
-    const plan = $plansInfo.plans.find((p) => p.$id === $createOrganization.billingPlan);
-
     let email: string;
 
     function addCollaborator() {
@@ -30,6 +28,10 @@
             (collaborator) => collaborator !== email
         );
     }
+
+    const plan = $plansInfo.plans.find((p) => p.$id === $createOrganization.billingPlan);
+
+    $: console.log(plan);
 </script>
 
 <WizardStep>
@@ -45,8 +47,8 @@
             added will receive an email invite to your organization on completion.
         {:else if $createOrganization.billingPlan === 'tier-1'}
             You can add unlimited organization members on the {plan.name} plan for
-            <b>${plan.memberAddon.price} each per month</b>. Each member added will receive an email
-            invite to your organization on completion.
+            <b>${plan.addons.member.price} each per month</b>. Each member added will receive an
+            email invite to your organization on completion.
         {/if}
     </Alert>
 

@@ -165,10 +165,12 @@ export type AddressesList = {
 };
 
 export type AdditionalResource = {
-    unit: string;
     currency: string;
+    invoiceDesc: string;
     price: number;
+    unit: string;
     value: number;
+    multiplier?: number;
 };
 
 export type Plan = {
@@ -188,12 +190,14 @@ export type Plan = {
     executions: number;
     realtime: number;
     logs: number;
-    bandwidthAddon: AdditionalResource | null;
-    storageAddon: AdditionalResource | null;
-    memberAddon: AdditionalResource | null;
-    usersAddon: AdditionalResource | null;
-    executionsAddon: AdditionalResource | null;
-    realtimeAddon: AdditionalResource | null;
+    addons: {
+        bandwidth: AdditionalResource;
+        executions: AdditionalResource;
+        member: AdditionalResource;
+        realtime: AdditionalResource;
+        storage: AdditionalResource;
+        users: AdditionalResource;
+    };
 };
 
 export type PlansInfo = {
