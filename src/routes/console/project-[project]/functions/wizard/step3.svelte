@@ -56,7 +56,7 @@
             </Button>
         </div>
     {:else}
-        <Empty on:click={() => (showCreate = !showCreate)}>Add an event to get started</Empty>
+        <Empty on:click={() => (showCreate = !showCreate)}>Add an event</Empty>
     {/if}
 </WizardStep>
 

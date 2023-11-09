@@ -115,7 +115,7 @@
                         }
                     }}>
                     <span class="icon-plus" aria-hidden="true" />
-                    <span class="text">Add Preference</span>
+                    <span class="text">Add preference</span>
                 </Button>
             </form>
         </svelte:fragment>

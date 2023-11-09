@@ -12,3 +12,13 @@ export function isHTMLInputElement(el: unknown): el is HTMLInputElement {
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 export type Prettify<T> = T & {};
+
+const columnTypes = ['string', 'integer', 'double', 'boolean', 'datetime', 'relationship'] as const;
+export type ColumnType = (typeof columnTypes)[number];
+export type Column = {
+    id: string;
+    title: string;
+    type: ColumnType;
+    show: boolean;
+    width?: number;
+};

@@ -4,8 +4,11 @@
     import InputText from '$lib/elements/forms/inputText.svelte';
     import { Query } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
-    import { columns } from '../store';
-    import { tags, type Column, type Operator, queries } from './store';
+    import { tags, type Operator, queries } from './store';
+    import type { Column } from '$lib/helpers/types';
+    import type { Writable } from 'svelte/store';
+
+    export let columns: Writable<Column[]>;
 
     const dispatch = createEventDispatcher<{
         clear: void;
@@ -31,22 +34,22 @@
         'greater than': {
             toQuery: (attr, input) => Query.greaterThan(attr, Number(input)),
             toTag: (attribute, input) => `**${attribute}** greater than **${input}**`,
-            types: ['integer', 'double']
+            types: ['integer', 'double', 'datetime']
         },
         'greater than or equal to': {
             toQuery: (attr, input) => Query.greaterThanEqual(attr, Number(input)),
             toTag: (attribute, input) => `**${attribute}** greater than or equal to **${input}**`,
-            types: ['integer', 'double']
+            types: ['integer', 'double', 'datetime']
         },
         'less than': {
             toQuery: Query.lessThan,
             toTag: (attribute, input) => `**${attribute}** less than **${input}**`,
-            types: ['integer', 'double']
+            types: ['integer', 'double', 'datetime']
         },
         'less than or equal to': {
             toQuery: Query.lessThanEqual,
             toTag: (attribute, input) => `**${attribute}** less than or equal to **${input}**`,
-            types: ['integer', 'double']
+            types: ['integer', 'double', 'datetime']
         },
         equal: {
             toQuery: Query.equal,
@@ -97,19 +100,17 @@
 
     // This Map is keyed by tags, and has a query as the value
     function addFilter() {
-        if (column && operator) {
-            queries.addFilter({ column, operator, value });
-            value = null;
-        }
+        if (!column || !operator) return;
+
+        queries.addFilter({ column, operator, value: value ?? '' });
+        value = null;
     }
 
     function tagFormat(node: HTMLElement) {
         node.innerHTML = node.innerHTML.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
     }
 
-    $: isDisabled = (function getDisabled() {
-        return !operator || (!operator?.hideInput && !value);
-    })();
+    $: isDisabled = !operator;
 </script>
 
 <div>
@@ -134,6 +135,16 @@
             <div class="u-margin-block-start-8">
                 {#if column.type === 'integer' || column.type === 'double'}
                     <InputNumber id="value" bind:value placeholder="Enter value" />
+                {:else if column.type === 'boolean'}
+                    <InputSelect
+                        id="value"
+                        placeholder="Select a value"
+                        required={true}
+                        options={[
+                            { label: 'True', value: true },
+                            { label: 'False', value: false }
+                        ].filter(Boolean)}
+                        bind:value />
                 {:else}
                     <InputText id="value" bind:value placeholder="Enter value" />
                 {/if}

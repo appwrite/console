@@ -29,7 +29,7 @@
     const handleInvalid = (event: Event) => {
         event.preventDefault();
         if (element.validity.typeMismatch) {
-            error = 'Your email should be formatted as: name@example.com';
+            error = 'Emails should be formatted as: name@example.com';
             return;
         }
         if (element.validity.valueMissing) {
