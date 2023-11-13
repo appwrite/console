@@ -1,41 +1,41 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
     import { CardGrid, Heading, ProgressBarBig } from '$lib/components';
-    import { base } from '$app/paths';
-    import { getServiceLimit } from '$lib/stores/billing.js';
+    import { getServiceLimit, tierToPlan } from '$lib/stores/billing.js';
+    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
+    import { wizard } from '$lib/stores/wizard.js';
+    import { organization } from '$lib/stores/organization';
+    import UsageRates from '$routes/console/wizard/cloudOrganization/usageRates.svelte';
+
+    const tier = tierToPlan($organization?.billingPlan)?.name;
 
     export let data;
+    let showRates = false;
 
-    $: bandwidth = data.aggregationList.aggregations.reduce(
-        (acc, curr) => acc + curr.usageBandwidth,
-        0
-    );
-
-    $: users = data.aggregationList.aggregations.reduce((acc, curr) => acc + curr.usageUsers, 0);
-
-    $: executions = data.aggregationList.aggregations.reduce(
-        (acc, curr) => acc + curr.usageExecutions,
-        0
-    );
-
-    $: storage = data.aggregationList.aggregations.reduce(
-        (acc, curr) => acc + curr.usageStorage,
-        0
-    );
-
-    $: realtime = data.aggregationList.aggregations.reduce(
-        (acc, curr) => acc + curr.usageRealtime,
-        0
-    );
+    $: console.log(data.organizationUsage.users);
 </script>
 
 <Container>
     <Heading tag="h2" size="5">Usage</Heading>
     <div class="u-flex u-main-space-between common-section">
-        <p class="text">
-            If you exceed the limits of the Starter plan, services for your projects may be
-            disrupted. <a href={`${base}/console/`}>Upgrade for greater capacity</a>.
-        </p>
+        {#if $organization.billingPlan === 'tier-2'}
+            <p class="text">
+                On the Scale plan, you'll be charged only for any usage that exceeds the thresholds
+                per resource listed below. <button
+                    on:click={() => (showRates = true)}
+                    class="link"
+                    type="button">Learn more about plan usage limits.</button>
+            </p>
+        {:else}
+            <p class="text">
+                If you exceed the limits of the {tier} plan, services for your projects may be disrupted.
+                <button
+                    on:click={() => wizard.start(ChangeOrganizationTierCloud)}
+                    class="link"
+                    type="button">Upgrade for greater capacity</button
+                >.
+            </p>
+        {/if}
         <div class="u-flex u-gap-8">
             <p class="text">Usage period:</p>
 
@@ -51,16 +51,23 @@
         </p>
 
         <svelte:fragment slot="aside">
-            <ProgressBarBig unit="GB" max={getServiceLimit('bandwidth')} used={bandwidth} />
+            <ProgressBarBig
+                unit="GB"
+                max={getServiceLimit('bandwidth')}
+                used={data.organizationUsage.bandwidth[0]} />
         </svelte:fragment>
     </CardGrid>
+
     <CardGrid>
         <Heading tag="h6" size="7">Users</Heading>
 
         <p class="text">The total number of users across all projects in your organization.</p>
 
         <svelte:fragment slot="aside">
-            <ProgressBarBig unit="Users" max={getServiceLimit('users')} used={users} />
+            <ProgressBarBig
+                unit="Users"
+                max={getServiceLimit('users')}
+                used={data.organizationUsage.bandwidth[0]} />
         </svelte:fragment>
     </CardGrid>
 
@@ -75,7 +82,7 @@
             <ProgressBarBig
                 unit="executions"
                 max={getServiceLimit('executions')}
-                used={executions} />
+                used={data.organizationUsage.executions} />
         </svelte:fragment>
     </CardGrid>
 
@@ -87,20 +94,10 @@
         </p>
 
         <svelte:fragment slot="aside">
-            <ProgressBarBig unit="GB" max={getServiceLimit('storage')} used={storage} />
-        </svelte:fragment>
-    </CardGrid>
-
-    <CardGrid>
-        <Heading tag="h6" size="7">Realtime connections</Heading>
-
-        <p class="text">
-            Calculated for all realtime concurrent connections and messages sent to all projects in
-            your organization.
-        </p>
-
-        <svelte:fragment slot="aside">
-            <ProgressBarBig unit="GB" max={getServiceLimit('storage')} used={realtime} />
+            <ProgressBarBig
+                unit="GB"
+                max={getServiceLimit('storage')}
+                used={data.organizationUsage.storage} />
         </svelte:fragment>
     </CardGrid>
 
@@ -108,3 +105,5 @@
         Metrics are estimates updated every 24 hours and may not accurately reflect your invoice.
     </p>
 </Container>
+
+<UsageRates bind:show={showRates} tier={$organization?.billingPlan} />

@@ -57,10 +57,7 @@
 
     const projectId = $page.params.project;
     const bucketId = $page.params.bucket;
-    const totalStorage = data.aggregationList.aggregations.reduce((acc, curr) => {
-        acc += curr.usageStorage;
-        return acc;
-    }, 0);
+    const usedStorage = data.oraganizationUsage.storage;
     const getPreview = (fileId: string) =>
         sdk.forProject.storage.getFilePreview(bucketId, fileId, 32, 32).toString() + '&mode=admin';
 
@@ -96,7 +93,7 @@
         title="Files"
         serviceId="storage"
         isFlex={false}
-        total={totalStorage}
+        total={usedStorage}
         buttonDisabled={$readOnly.storage}>
         <svelte:fragment slot="alert" let:tier let:upgradeMethod>
             <Alert type="warning">
@@ -127,7 +124,7 @@
         </svelte:fragment>
         <svelte:fragment slot="tooltip" let:limit let:tier let:upgradeMethod>
             <p class="text">
-                You are limited to {limit} of storage on the {tier} plan.
+                You are limited to {limit} GB of storage on the {tier} plan.
 
                 <button class="link" type="button" on:click|preventDefault={upgradeMethod}
                     >Upgrade</button>

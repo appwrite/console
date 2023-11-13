@@ -30,9 +30,9 @@
     }
 
     async function checkOverUsage() {
-        const aggregationList = await sdk.forConsole.billing.listUsage($organization.$id);
+        const oraganizationUsage = await sdk.forConsole.billing.listUsage($organization.$id);
 
-        console.log(aggregationList);
+        console.log(oraganizationUsage);
     }
 
     onMount(async () => {

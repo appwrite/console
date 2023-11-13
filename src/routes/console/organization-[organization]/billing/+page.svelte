@@ -12,6 +12,10 @@
     import { Alert, Heading } from '$lib/components';
     import { failedInvoice, paymentMethods } from '$lib/stores/billing';
     import type { PaymentMethodData } from '$lib/sdk/billing';
+    import { onMount } from 'svelte';
+    import { page } from '$app/stores';
+    import { isStripeInitialized, stripe } from '$lib/stores/stripe';
+    import { base } from '$app/paths';
 
     $: defaultPaymentMethod = $paymentMethods?.paymentMethods?.find(
         (method: PaymentMethodData) => method.$id === $organization?.paymentMethodId
@@ -20,6 +24,28 @@
     $: backupPaymentMethod = $paymentMethods?.paymentMethods?.find(
         (method: PaymentMethodData) => method.$id === $organization?.backupPaymentMethodId
     );
+
+    onMount(async () => {
+        if (
+            $isStripeInitialized &&
+            $page.url.searchParams.has('invoice') &&
+            $page.url.searchParams.has('type') &&
+            $page.url.searchParams.get('type') === 'confirmation'
+        ) {
+            console.log('test');
+            console.log($page.url.searchParams.get('invoice'));
+            const { error } = await $stripe.confirmPayment({
+                confirmParams: {
+                    // Return URL where the customer should be redirected after the PaymentIntent is confirmed.
+                    return_url: `${base}/console/organization-${$organization.$id}/billing`,
+                    payment_method: $organization.paymentMethodId
+                }
+            });
+            if (error) {
+                console.log('Something went wrong');
+            }
+        }
+    });
 </script>
 
 <Container>

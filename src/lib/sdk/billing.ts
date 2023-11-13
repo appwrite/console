@@ -131,6 +131,13 @@ export type Aggregation = {
     usageRealtime: number;
 };
 
+export type OrganizationUsage = {
+    bandwidth: [];
+    executions: number;
+    storage: number;
+    users: [];
+};
+
 export type AggregationList = {
     aggregations: Aggregation[];
     total: number;
@@ -441,7 +448,27 @@ export class Billing {
         );
     }
 
-    async listUsage(organizationId: string, queries: string[] = []): Promise<AggregationList> {
+    async listUsage(organizationId: string, queries: string[] = []): Promise<OrganizationUsage> {
+        const path = `/organizations/${organizationId}/usage`;
+        const params = {
+            organizationId,
+            queries
+        };
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'get',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            params
+        );
+    }
+
+    async listAggregation(
+        organizationId: string,
+        queries: string[] = []
+    ): Promise<AggregationList> {
         const path = `/organizations/${organizationId}/aggregations`;
         const params = {
             organizationId,
@@ -458,7 +485,7 @@ export class Billing {
         );
     }
 
-    async getUsage(organizationId: string, aggregationId: string): Promise<Aggregation> {
+    async getAggregation(organizationId: string, aggregationId: string): Promise<Aggregation> {
         const path = `/organizations/${organizationId}/aggregations/${aggregationId}`;
         const params = {
             organizationId,

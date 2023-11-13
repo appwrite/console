@@ -13,6 +13,6 @@ export const load: PageLoad = async ({ params, parent, depends }) => {
     return {
         paymentMethods: await sdk.forConsole.billing.listPaymentMethods(),
         addressList: await sdk.forConsole.billing.listAddresses(),
-        aggregationList: await sdk.forConsole.billing.listUsage(params.organization)
+        oraganizationUsage: await sdk.forConsole.billing.listUsage(params.organization)
     };
 };
