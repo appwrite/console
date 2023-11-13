@@ -34,13 +34,16 @@
         ) {
             console.log('test');
             console.log($page.url.searchParams.get('invoice'));
-            const { error } = await $stripe.confirmPayment({
-                confirmParams: {
-                    // Return URL where the customer should be redirected after the PaymentIntent is confirmed.
-                    return_url: `${base}/console/organization-${$organization.$id}/billing`,
-                    payment_method: $organization.paymentMethodId
+
+            const { setupIntent, error } = await $stripe.confirmCardSetup(
+                '{SETUP_INTENT_CLIENT_SECRET}',
+                {
+                    payment_method: {
+                        id: $organization.paymentMethodId,
+                        return_url: `${base}/console/organization-${$organization.$id}/billing`
+                    }
                 }
-            });
+            );
             if (error) {
                 console.log('Something went wrong');
             }

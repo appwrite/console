@@ -66,7 +66,7 @@
                     isHtml: true,
                     message: `
                     <b>Your organization has been upgraded</b>
-                   Make the most of your increased resource capacity and continue building great things with Appwrite.`
+                   make the most of your increased resource capacity and continue building great things with Appwrite.`
                 });
             } else {
                 addNotification({
