@@ -31,7 +31,7 @@
             <span class="u-flex u-gap-24 u-main-center u-cross-center">
                 <span class="text">Upgrade your plan to add {name} to your organization</span>
                 <Button secondary on:click={() => wizard.start(ChangeOrganizationTierCloud)}>
-                    Change plan
+                    Upgrade plan
                 </Button>
             </span>
         </td>

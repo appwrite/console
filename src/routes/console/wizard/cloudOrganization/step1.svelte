@@ -47,6 +47,7 @@
             </div>
         {:else}
             <CustomId
+                fullWidth
                 bind:show={showCustomId}
                 name="Organization"
                 bind:id={$createOrganization.id} />

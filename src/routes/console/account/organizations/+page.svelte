@@ -81,7 +81,7 @@
                                     <Pill>FREE</Pill>
                                 </div>
                             {/if}
-                            {#if organization?.billingTrialStartDate && $daysLeftInTrial}
+                            {#if organization?.billingTrialStartDate && $daysLeftInTrial > 0}
                                 <div
                                     class="u-flex u-cross-center"
                                     use:tooltip={{

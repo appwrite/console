@@ -54,7 +54,7 @@
             <ProgressBarBig
                 unit="GB"
                 max={getServiceLimit('bandwidth')}
-                used={data.organizationUsage.bandwidth[0]} />
+                used={data.organizationUsage.bandwidth[0] ?? 0} />
         </svelte:fragment>
     </CardGrid>
 
@@ -67,7 +67,7 @@
             <ProgressBarBig
                 unit="Users"
                 max={getServiceLimit('users')}
-                used={data.organizationUsage.bandwidth[0]} />
+                used={data.organizationUsage.bandwidth[0] ?? 0} />
         </svelte:fragment>
     </CardGrid>
 
@@ -80,7 +80,7 @@
 
         <svelte:fragment slot="aside">
             <ProgressBarBig
-                unit="executions"
+                unit="Executions"
                 max={getServiceLimit('executions')}
                 used={data.organizationUsage.executions} />
         </svelte:fragment>

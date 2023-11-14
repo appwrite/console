@@ -24,7 +24,6 @@
     async function handleSubmit() {
         try {
             await submitStripeCard(name);
-            show = false;
             invalidate(Dependencies.PAYMENT_METHODS);
             closeModal();
             addNotification({

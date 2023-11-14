@@ -448,11 +448,11 @@ export class Billing {
         );
     }
 
-    async listUsage(organizationId: string, queries: string[] = []): Promise<OrganizationUsage> {
+    // TODO: add date range
+    async listUsage(organizationId: string): Promise<OrganizationUsage> {
         const path = `/organizations/${organizationId}/usage`;
         const params = {
-            organizationId,
-            queries
+            organizationId
         };
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(

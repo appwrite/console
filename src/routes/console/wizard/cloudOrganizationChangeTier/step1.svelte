@@ -1,12 +1,17 @@
 <script lang="ts">
     import { LabelCard } from '$lib/components';
     import { WizardStep } from '$lib/layout';
-    import { tierFree, tierPro, tierScale } from '$lib/stores/billing';
+    import { plansInfo, tierFree, tierPro, tierScale } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { updateStepStatus } from '$lib/stores/wizard';
     import { onMount } from 'svelte';
     import { changeOrganizationTier, changeTierSteps, isUpgrade } from './store';
     import { sdk } from '$lib/stores/sdk';
+    import type { OrganizationUsage } from '$lib/sdk/billing';
+    import type { Models } from '@appwrite.io/console';
+
+    let usage: OrganizationUsage = null;
+    let members: Models.MembershipList = null;
 
     $: if ($changeOrganizationTier.billingPlan === 'tier-0' && $changeTierSteps) {
         $changeTierSteps = updateStepStatus($changeTierSteps, 2, true);
@@ -23,20 +28,45 @@
 
     $: if ($changeOrganizationTier.billingPlan) {
         $isUpgrade = $changeOrganizationTier.billingPlan > $organization.billingPlan;
+        checkOverUsage();
     }
 
-    $: if (!$isUpgrade && $changeOrganizationTier.billingPlan === 'tier-0') {
-        $changeTierSteps = updateStepStatus($changeTierSteps, 4, true);
-    }
+    function checkOverUsage() {
+        if (!usage) return;
+        const plan = $plansInfo.plans.find(
+            (plan) => plan.$id === $changeOrganizationTier.billingPlan
+        );
 
-    async function checkOverUsage() {
-        const oraganizationUsage = await sdk.forConsole.billing.listUsage($organization.$id);
+        $changeOrganizationTier.limitOverflow = {
+            bandwidth:
+                usage.bandwidth[0] > plan.bandwidth ? usage.bandwidth[0] - plan.bandwidth : 0,
+            storage: usage.storage[0] > plan.storage ? usage.storage[0] - plan.storage : 0,
+            users: usage.users[0] > plan.users ? usage.users[0] - plan.users : 0,
+            executions:
+                usage.executions[0] > plan.executions ? usage.executions[0] - plan.executions : 0,
+            members: members.total > plan.members ? members.total - plan.members : 0
+        };
+        if (
+            $changeOrganizationTier.limitOverflow.bandwidth ||
+            $changeOrganizationTier.limitOverflow.storage ||
+            $changeOrganizationTier.limitOverflow.users ||
+            $changeOrganizationTier.limitOverflow.executions ||
+            $changeOrganizationTier.limitOverflow.members
+        ) {
+            $changeOrganizationTier.isOverLimit = true;
+            $changeTierSteps = updateStepStatus($changeTierSteps, 4, false);
+        } else {
+            $changeOrganizationTier.isOverLimit = false;
+            $changeTierSteps = updateStepStatus($changeTierSteps, 4, true);
+        }
 
-        console.log(oraganizationUsage);
+        console.log($changeOrganizationTier.limitOverflow);
     }
 
     onMount(async () => {
-        await checkOverUsage();
+        usage = await sdk.forConsole.billing.listUsage($organization.$id);
+        members = await sdk.forConsole.teams.listMemberships($organization.$id);
+
         //Select closest tier from starting one
         if ($organization.billingPlan === 'tier-2') {
             $changeOrganizationTier.billingPlan = 'tier-1';

@@ -81,7 +81,7 @@
                         {#if isCloud && $organization?.billingPlan === 'tier-0'}
                             <Pill>FREE</Pill>
                         {/if}
-                        {#if isCloud && $organization?.billingTrialStartDate && $daysLeftInTrial}
+                        {#if isCloud && $organization?.billingTrialStartDate && $daysLeftInTrial > 0}
                             <div
                                 class="u-flex u-cross-center"
                                 use:tooltip={{

@@ -56,7 +56,7 @@
             await goto(`/console/organization-${org.$id}`);
             addNotification({
                 type: 'success',
-                message: `${$createOrganization.name} has been created`
+                message: `${$createOrganization.name ?? 'Organization'} has been created`
             });
             trackEvent(Submit.OrganizationCreate, {
                 customId: !!$createOrganization.id,

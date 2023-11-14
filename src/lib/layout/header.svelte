@@ -23,6 +23,7 @@
     import { wizard } from '$lib/stores/wizard';
     import CreateOrganizationCloud from '$routes/console/createOrganizationCloud.svelte';
     import { Feedback } from '$lib/components/feedback';
+    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
 
     let showDropdown = false;
     let showSupport = false;
@@ -102,6 +103,12 @@
 
 <div class="main-header-end">
     <nav class="u-flex is-only-desktop u-cross-center">
+        {#if isCloud && $organization?.billingPlan !== 'tier-2'}
+            <Button secondary on:click={() => wizard.start(ChangeOrganizationTierCloud)}>
+                Upgrade
+            </Button>
+        {/if}
+
         {#if $feedback.notification}
             <div class="u-flex u-cross-center">
                 <div class="pulse-notification" />
