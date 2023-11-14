@@ -14,7 +14,9 @@
     const collaboratorsNumber = $changeOrganizationTier?.collaborators?.length ?? 0;
     const totalExpences = plan.price + collaboratorPrice * collaboratorsNumber;
     const today = new Date();
-    const billingPayDate = new Date(today.getTime() + 44 * 24 * 60 * 60 * 1000);
+    $: billingPayDate = $isUpgrade
+        ? new Date(today.getTime() + 44 * 24 * 60 * 60 * 1000)
+        : $organization.billingCurrentInvoiceDate;
 
     let comment: string = null;
     async function fetchCard() {

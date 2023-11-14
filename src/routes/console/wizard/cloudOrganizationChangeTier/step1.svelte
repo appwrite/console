@@ -9,6 +9,7 @@
     import { sdk } from '$lib/stores/sdk';
     import type { OrganizationUsage } from '$lib/sdk/billing';
     import type { Models } from '@appwrite.io/console';
+    import { sizeToBytes } from '$lib/helpers/sizeConvertion';
 
     let usage: OrganizationUsage = null;
     let members: Models.MembershipList = null;
@@ -40,7 +41,10 @@
         $changeOrganizationTier.limitOverflow = {
             bandwidth:
                 usage.bandwidth[0] > plan.bandwidth ? usage.bandwidth[0] - plan.bandwidth : 0,
-            storage: usage.storage[0] > plan.storage ? usage.storage[0] - plan.storage : 0,
+            storage:
+                usage.storage[0] > sizeToBytes(plan.storage, 'GB')
+                    ? usage.storage[0] - plan.storage
+                    : 0,
             users: usage.users[0] > plan.users ? usage.users[0] - plan.users : 0,
             executions:
                 usage.executions[0] > plan.executions ? usage.executions[0] - plan.executions : 0,
