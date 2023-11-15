@@ -8,7 +8,7 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h2" size="7">Signature Key</Heading>
+    <Heading tag="h2" size="7">Signature key</Heading>
     <p>
         Add the Signature Key to the X-Appwrite-Webhook-Signature header to validate your webhooks. <a
             href="https://appwrite.io/docs/advanced/platform/webhooks#verification"
