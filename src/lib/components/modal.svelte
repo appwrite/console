@@ -127,7 +127,7 @@
                         </button>
                     {/if}
                 </div>
-                <p>
+                <p class="u-margin-block-start-4">
                     <slot name="description">
                         {description}
                     </slot>

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Button, FormList, Helper, InputText } from '$lib/elements/forms';
+    import { Button, FormItem, FormList, Helper, InputText } from '$lib/elements/forms';
     import { createEventDispatcher } from 'svelte';
     import { Modal } from '..';
     import type { Writable } from 'svelte/store';
@@ -32,12 +32,18 @@
     $: disabled = !value || $groups.has(value);
 </script>
 
-<Modal title="Label" bind:show on:close={reset} onSubmit={create}>
-    <p class="text">Labels allow you to grant access to users with the specfied label.</p>
+<Modal
+    title="Label"
+    description="Labels allow you to grant access to users with the specfied label."
+    bind:show
+    on:close={reset}
+    onSubmit={create}>
     <FormList>
-        <InputText showLabel={false} id="label" label="Label" placeholder="admin" bind:value />
-        <Helper type={isError ? 'warning' : 'neutral'}
-            >Only alphanumeric characters are allowed.</Helper>
+        <FormItem>
+            <InputText id="label" label="Label" placeholder="Enter label" bind:value />
+            <Helper type={isError ? 'warning' : 'neutral'}
+                >Only alphanumeric characters are allowed.</Helper>
+        </FormItem>
     </FormList>
 
     <svelte:fragment slot="footer">

@@ -159,6 +159,25 @@
                     </div>
                 </svelte:fragment>
             </CardGrid>
+        {:else if $deploymentList.total}
+            <Empty noMedia single>
+                <Create secondary round>
+                    <i class="icon-plus" />
+                </Create>
+                <div class="u-text-center">
+                    <p class="body-text-2 u-margin-block-start-4">
+                        Add a new deployment, or activate an existing one to see your function in
+                        action. <br />Learn more about deployments in our
+                        <a
+                            class="link"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            href="https://appwrite.io/docs/products/functions/deployment"
+                            >documentation</a
+                        >.
+                    </p>
+                </div>
+            </Empty>
         {:else}
             <Empty single target="deployment">
                 <div class="u-text-center">
