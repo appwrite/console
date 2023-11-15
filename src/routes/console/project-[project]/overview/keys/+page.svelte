@@ -24,7 +24,7 @@
 </script>
 
 <div class="common-section u-flex u-gap-12">
-    <Heading tag="h3" size="7">API Keys</Heading>
+    <Heading tag="h3" size="7">API keys</Heading>
     <span class="u-margin-inline-start-auto">
         <Button on:click={createApiKey}>
             <span class="icon-plus" aria-hidden="true" />

@@ -22,7 +22,7 @@
     });
 </script>
 
-<Heading tag="h1" size="1">Missing Redirect URL</Heading>
+<Heading tag="h1" size="1">Missing redirect URL</Heading>
 <p>
     Your Magic URL login flow is missing a proper redirect URL. Please check the
     <a href="https://appwrite.io/docs/references/cloud/client-web/account#createMagicURLSession"
