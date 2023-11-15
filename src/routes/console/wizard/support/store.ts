@@ -14,8 +14,8 @@ export const supportData = writable<SupportData>({
 
 export function isSupportOnline() {
     const currentDate = new Date();
-    const day = currentDate.getDay();
-    const hour = currentDate.getHours();
+    const day = currentDate.getUTCDay();
+    const hour = currentDate.getUTCHours();
 
     if (day === 1 || day === 6) {
         return false;
@@ -27,3 +27,5 @@ export function isSupportOnline() {
 
     return true;
 }
+
+export const showSupportModal = writable(false);

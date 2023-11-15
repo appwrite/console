@@ -38,6 +38,8 @@
     import { sdk } from '$lib/stores/sdk';
     import { loadStripe } from '@stripe/stripe-js';
     import { stripe } from '$lib/stores/stripe';
+    import MobileSupportModal from './wizard/support/mobileSupportModal.svelte';
+    import { showSupportModal } from './wizard/support/store';
 
     function kebabToSentenceCase(str: string) {
         return str
@@ -430,4 +432,8 @@
 
 {#if $log.show}
     <Logs />
+{/if}
+
+{#if $showSupportModal}
+    <MobileSupportModal bind:show={$showSupportModal}></MobileSupportModal>
 {/if}

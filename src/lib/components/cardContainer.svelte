@@ -13,7 +13,7 @@
     export let service = '';
     export let serviceId: PlanServices = service as PlanServices;
 
-    $: planLimit = getServiceLimit(serviceId) ?? Infinity;
+    $: planLimit = getServiceLimit(serviceId) || Infinity;
 
     $: limit = preferences.get($page.route)?.limit ?? CARD_LIMIT;
 </script>

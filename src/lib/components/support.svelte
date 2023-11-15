@@ -7,11 +7,13 @@
     import { app } from '$lib/stores/app';
     import { wizard } from '$lib/stores/wizard';
     import SupportWizard from '../../routes/console/supportWizard.svelte';
-    import { isSupportOnline } from '../../routes/console/wizard/support/store';
+    import { isSupportOnline, showSupportModal } from '../../routes/console/wizard/support/store';
     import { isCloud } from '$lib/system';
     import { organization } from '$lib/stores/organization';
 
     export let show = false;
+
+    $: isPaid = $organization?.billingPlan === 'tier-1' || $organization?.billingPlan === 'tier-2';
 </script>
 
 {#if isCloud}
@@ -31,12 +33,14 @@
         </div>
         <div>
             <h4 class="eyebrow-heading-3">Premium support</h4>
-            <p class="u-line-height-1-5 u-margin-block-start-8">
-                Get personalized support from the Appwrite team from <b>09:00 - 17:00 UTC</b>
-            </p>
+            {#if isPaid}
+                <p class="u-line-height-1-5 u-margin-block-start-8">
+                    Get personalized support from the Appwrite team from <b>09:00 - 17:00 UTC</b>
+                </p>
+            {/if}
         </div>
         {#if $organization?.billingPlan === 'tier-0'}
-            <Button fullWidth href="https://appwrite.io/billing">
+            <Button fullWidth href="https://appwrite.io/pricing" external>
                 <span class="text">Get Premium support</span>
             </Button>
         {:else}
@@ -45,6 +49,7 @@
                 fullWidth
                 on:click={() => {
                     show = false;
+                    $showSupportModal = false;
                     wizard.start(SupportWizard);
                 }}>
                 <span class="text">Contact our Support Team</span>
@@ -60,8 +65,8 @@
             href="https://status.appwrite.io/"
             target="_blank"
             rel="noopener noreferrer"
-            class="button is-text u-gap-4 u-cross-center u-padding-inline-0 u-margin-block-start-8 u-width-full-line">
-            <span class="helper u-success">
+            class="button is-text u-flex u-gap-4 u-cross-center u-padding-inline-0 u-margin-block-start-8 u-width-full-line">
+            <span class="helper u-color-text-success">
                 <span class="icon-check-circle" aria-hidden="true" />
             </span>
             <b class="text">All services are online</b>
@@ -88,18 +93,12 @@
 </section>
 <section class="drop-section u-grid u-gap-8 u-padding-24">
     <div>
-        <h4 class="eyebrow-heading-3">community support</h4>
+        <h4 class="eyebrow-heading-3">Community support</h4>
         <p class="text u-margin-block-start-8">Get help from our community</p>
     </div>
-    <ul class="u-flex">
+    <ul class="u-flex u-gap-8">
         <li>
-            <Button
-                href="https://github.com/appwrite"
-                round
-                text
-                noMargin
-                external
-                ariaLabel="Github">
+            <Button href="https://github.com/appwrite" text noMargin external ariaLabel="Github">
                 <span class="icon-github" aria-hidden="true" />
             </Button>
         </li>

@@ -1,8 +1,11 @@
 <script lang="ts">
+    import { abbreviateNumber } from '$lib/helpers/numbers';
+
     export let unit: string;
     export let used: number;
     export let max: number;
     export let status: null | 'warning' | 'error' = null;
+    export let formatNumber = true;
 
     $: progress = Math.round((used / max) * 100);
 
@@ -19,7 +22,7 @@
             <p class="heading-level-4">{progress}%</p>
         </div>
         <p class="body-text-2">
-            {max}
+            {formatNumber ? abbreviateNumber(max) : max}
             {unit}
         </p>
     </div>
