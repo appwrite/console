@@ -48,14 +48,14 @@
             users: usage.users[0] > plan.users ? usage.users[0] - plan.users : 0,
             executions:
                 usage.executions[0] > plan.executions ? usage.executions[0] - plan.executions : 0,
-            members: members.total > plan.members ? members.total - plan.members : 0
+            members: members.total > plan.members ? members.total - (plan.members || Infinity) : 0
         };
         if (
-            $changeOrganizationTier.limitOverflow.bandwidth ||
-            $changeOrganizationTier.limitOverflow.storage ||
-            $changeOrganizationTier.limitOverflow.users ||
-            $changeOrganizationTier.limitOverflow.executions ||
-            $changeOrganizationTier.limitOverflow.members
+            $changeOrganizationTier.limitOverflow.bandwidth > 0 ||
+            $changeOrganizationTier.limitOverflow.storage > 0 ||
+            $changeOrganizationTier.limitOverflow.users > 0 ||
+            $changeOrganizationTier.limitOverflow.executions > 0 ||
+            $changeOrganizationTier.limitOverflow.members > 0
         ) {
             $changeOrganizationTier.isOverLimit = true;
             $changeTierSteps = updateStepStatus($changeTierSteps, 4, false);

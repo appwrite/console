@@ -103,7 +103,7 @@
 
 <div class="main-header-end">
     <nav class="u-flex is-only-desktop u-cross-center">
-        {#if isCloud && $organization?.billingPlan !== 'tier-2'}
+        {#if isCloud && $organization?.billingPlan !== 'tier-2' && !$page.url.pathname.startsWith('/console/account')}
             <Button secondary on:click={() => wizard.start(ChangeOrganizationTierCloud)}>
                 Upgrade
             </Button>
