@@ -60,9 +60,9 @@
     <ContainerHeader title="Deployments" serviceId="logs">
         <svelte:fragment slot="tooltip" let:limit let:tier let:upgradeMethod>
             <p class="text">
-                You are limited to {hoursToDays(limit)} of logs on the {tier} plan.
+                Logs are retained in rolling {hoursToDays(limit)} intervals with the {tier} plan.
                 <button class="link" type="button" on:click|preventDefault={upgradeMethod}
-                    >Upgrade</button> to increase log retention for a longer period.
+                    >Upgrade</button> to increase your log retention for a longer period.
             </p>
         </svelte:fragment>
         <Create main />

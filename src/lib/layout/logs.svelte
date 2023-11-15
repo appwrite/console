@@ -303,15 +303,15 @@
                                 {#if execution?.logs}
                                     {#if isCloud && limit !== 0 && limit < Infinity}
                                         <Alert>
-                                            You are limited to {hoursToDays(limit)} of logs on the {tier}
-                                            plan.
+                                            Logs are retained in rolling {hoursToDays(limit)} intervals
+                                            with the {tier} plan.
                                             <button
                                                 class="link"
                                                 type="button"
                                                 on:click|preventDefault={() =>
                                                     wizard.start(ChangeOrganizationTierCloud)}
-                                                >Upgrade</button> to increase log retention for a longer
-                                            period.
+                                                >Upgrade</button> to increase your log retention for
+                                            a longer period.
                                         </Alert>
                                     {/if}
                                     <Code withCopy noMargin code={execution.logs} language="sh" />

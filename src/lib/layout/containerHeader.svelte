@@ -1,11 +1,11 @@
 <script lang="ts">
     import { tierToPlan, getServiceLimit, type PlanServices } from '$lib/stores/billing';
     import { tooltip } from '$lib/actions/tooltip';
-    import { Alert, Heading } from '$lib/components';
+    import { Alert, DropList, Heading } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { organization } from '$lib/stores/organization';
     import { isCloud } from '$lib/system';
-    import { createEventDispatcher, onMount, tick } from 'svelte';
+    import { createEventDispatcher, onMount } from 'svelte';
     import { wizard } from '$lib/stores/wizard';
     import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
     import { Button } from '$lib/elements/forms';
@@ -24,10 +24,13 @@
     export let buttonEvent: string = buttonText?.toLocaleLowerCase();
     export let buttonDisabled = false;
 
-    let tooltipContent: HTMLDivElement;
+    let showDropdown = false;
 
     const limit = getServiceLimit(serviceId) || Infinity;
-    const upgradeMethod = () => wizard.start(ChangeOrganizationTierCloud);
+    const upgradeMethod = () => {
+        showDropdown = false;
+        wizard.start(ChangeOrganizationTierCloud);
+    };
     const dispatch = createEventDispatcher();
 
     $: tier = tierToPlan($organization?.billingPlan)?.name;
@@ -56,21 +59,24 @@
     <div class="u-flex u-cross-child-center u-gap-16 u-flex-wrap">
         <Heading tag={titleTag} size={titleSize}>{title}</Heading>
         {#if isCloud && isLimited}
-            <div
-                use:tooltip={{
-                    interactive: true,
-                    allowHTML: true,
-                    trigger: 'click',
-                    onShow(instance) {
-                        tick().then(() => {
-                            instance.setContent(tooltipContent);
-                        });
-                    }
-                }}>
-                <Pill button>
+            <DropList bind:show={showDropdown} width="16">
+                <Pill button on:click={() => (showDropdown = !showDropdown)}>
                     <span class="icon-info" />{title} limited
                 </Pill>
-            </div>
+                <svelte:fragment slot="list">
+                    <slot name="tooltip" {limit} {tier} {title} {upgradeMethod}>
+                        <p class="text">
+                            Your are limited to {limit}
+                            {title.toLocaleLowerCase()} per project on the {tier} plan.
+                            <button
+                                class="link"
+                                type="button"
+                                on:click|preventDefault={upgradeMethod}>Upgrade</button>
+                            for addtional {title.toLocaleLowerCase()}.
+                        </p>
+                    </slot>
+                </svelte:fragment>
+            </DropList>
         {/if}
     </div>
 
@@ -89,19 +95,3 @@
         {/if}
     </slot>
 </header>
-
-{#if isCloud}
-    <div class="u-hide">
-        <div bind:this={tooltipContent}>
-            <slot name="tooltip" {limit} {tier} {title} {upgradeMethod}>
-                <p class="text">
-                    Your are limited to {limit}
-                    {title.toLocaleLowerCase()} per project on the {tier} plan.
-                    <button class="link" type="button" on:click|preventDefault={upgradeMethod}
-                        >Upgrade</button>
-                    for addtional {title.toLocaleLowerCase()}.
-                </p>
-            </slot>
-        </div>
-    </div>
-{/if}
