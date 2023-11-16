@@ -11,8 +11,7 @@ export const load: LayoutLoad = async ({ params, depends }) => {
 
     try {
         const project = await sdk.forConsole.projects.get(params.project);
-        localStorage.setItem('project', project.$id);
-        localStorage.setItem('organization', project.teamId);
+        sdk.forConsole.account.updatePrefs({ organization: project.teamId });
         preferences.loadTeamPrefs(project.teamId);
 
         if (isCloud) {
