@@ -30,7 +30,7 @@
     }
 </script>
 
-<div class="u-flex u-cross-center u-gap-8 tippy-user">
+<div class="u-cross-center u-gap-8 tippy-user">
     <div>
         {#if role === 'users'}
             <div>Users</div>
