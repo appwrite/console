@@ -3,10 +3,10 @@
     import { sdk } from '$lib/stores/sdk';
     import { createEventDispatcher, onDestroy } from 'svelte';
     import { addNotification } from '$lib/stores/notifications';
-    import Step1 from './wizard/cloudOrganization/step1.svelte';
-    import Step2 from './wizard/cloudOrganization/step2.svelte';
-    import Step3 from './wizard/cloudOrganization/step3.svelte';
-    import Step4 from './wizard/cloudOrganization/step4.svelte';
+    import OrganizationDetails from './wizard/cloudOrganization/organizationDetails.svelte';
+    import PaymentDetails from './wizard/cloudOrganization/paymentDetails.svelte';
+    import InviteMembers from './wizard/cloudOrganization/inviteMembers.svelte';
+    import ConfirmDetails from './wizard/cloudOrganization/confirmDetails.svelte';
     import { createOrganization, createOrgSteps } from './wizard/cloudOrganization/store';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
@@ -15,6 +15,7 @@
     import { page } from '$app/stores';
     import { wizard } from '$lib/stores/wizard';
     import { tierToPlan } from '$lib/stores/billing';
+    import AddressDetails from './wizard/cloudOrganization/addressDetails.svelte';
 
     const dispatch = createEventDispatcher();
 
@@ -30,6 +31,21 @@
                 $createOrganization.billingPlan,
                 $createOrganization.paymentMethodId
             );
+            //Add billing address
+            if ($createOrganization.billingAddress && $createOrganization.billingAddress.address) {
+                const response = await sdk.forConsole.billing.createAddress(
+                    $createOrganization.billingAddress.country,
+                    $createOrganization.billingAddress.address,
+                    $createOrganization.billingAddress.city,
+                    $createOrganization.billingAddress.state,
+                    $createOrganization.billingAddress.postalCode,
+                    $createOrganization.billingAddress.address2
+                        ? $createOrganization.billingAddress.address2
+                        : undefined
+                );
+
+                await sdk.forConsole.billing.setBillingAddress(org.$id, response.$id);
+            }
 
             //Add budget
             if ($createOrganization?.billingBudget) {
@@ -39,6 +55,7 @@
                     [75]
                 );
             }
+
             //Add collaborators
             if ($createOrganization?.collaborators?.length) {
                 $createOrganization.collaborators.forEach(async (collaborator) => {
@@ -49,6 +66,11 @@
                         collaborator
                     );
                 });
+            }
+
+            //Add tax ID
+            if ($createOrganization?.taxId) {
+                await sdk.forConsole.billing.updateTaxId(org.$id, $createOrganization.taxId);
             }
 
             await invalidate(Dependencies.ACCOUNT);
@@ -79,25 +101,38 @@
             name: null,
             billingPlan: 'tier-1',
             paymentMethodId: null,
-            collaborators: []
+            collaborators: [],
+            billingAddress: {
+                address: null,
+                address2: null,
+                city: null,
+                state: null,
+                postalCode: null,
+                country: null
+            },
+            taxId: null
         };
     });
 
     $createOrgSteps.set(1, {
         label: 'Organization details',
-        component: Step1
+        component: OrganizationDetails
     });
     $createOrgSteps.set(2, {
         label: 'Payment details',
-        component: Step2
+        component: PaymentDetails
     });
     $createOrgSteps.set(3, {
-        label: 'Invite members',
-        component: Step3
+        label: 'Billing address',
+        component: AddressDetails
     });
     $createOrgSteps.set(4, {
+        label: 'Invite members',
+        component: InviteMembers
+    });
+    $createOrgSteps.set(5, {
         label: 'Review & confirm',
-        component: Step4
+        component: ConfirmDetails
     });
 </script>
 

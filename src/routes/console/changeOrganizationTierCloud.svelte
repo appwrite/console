@@ -3,11 +3,11 @@
     import { sdk } from '$lib/stores/sdk';
     import { createEventDispatcher, onDestroy } from 'svelte';
     import { addNotification } from '$lib/stores/notifications';
-    import Step1 from './wizard/cloudOrganizationChangeTier/step1.svelte';
-    import Step2 from './wizard/cloudOrganizationChangeTier/step2.svelte';
-    import Step3 from './wizard/cloudOrganizationChangeTier/step3.svelte';
-    import Step4 from './wizard/cloudOrganizationChangeTier/step4.svelte';
-    import Step5 from './wizard/cloudOrganizationChangeTier/step5.svelte';
+    import ChoosePlan from './wizard/cloudOrganizationChangeTier/choosePlan.svelte';
+    import PaymentDetails from './wizard/cloudOrganizationChangeTier/paymentDetails.svelte';
+    import InviteMembers from './wizard/cloudOrganizationChangeTier/inviteMembers.svelte';
+    import UsageExcess from './wizard/cloudOrganizationChangeTier/usageExcess.svelte';
+    import ConfirmDetails from './wizard/cloudOrganizationChangeTier/confirmDetails.svelte';
     import {
         changeOrganizationFinalAction,
         changeOrganizationTier,
@@ -57,16 +57,18 @@
                 });
             }
 
+            //Add tax ID
+            if ($changeOrganizationTier?.taxId) {
+                await sdk.forConsole.billing.updateTaxId(org.$id, $changeOrganizationTier.taxId);
+            }
+
             await invalidate(Dependencies.ACCOUNT);
             dispatch('created');
             await goto(`/console/organization-${org.$id}`);
             if ($isUpgrade) {
                 addNotification({
                     type: 'success',
-                    isHtml: true,
-                    message: `
-                    <b>Your organization has been upgraded</b>
-                   make the most of your increased resource capacity and continue building great things with Appwrite.`
+                    message: 'Your organization has been upgraded'
                 });
             } else {
                 addNotification({
@@ -96,30 +98,43 @@
             id: null,
             billingPlan: 'tier-1',
             paymentMethodId: null,
-            collaborators: []
+            collaborators: [],
+            billingAddress: {
+                address: null,
+                address2: null,
+                city: null,
+                state: null,
+                postalCode: null,
+                country: null
+            },
+            taxId: null
         };
     });
 
     $changeTierSteps.set(1, {
         label: 'Change plan',
-        component: Step1
+        component: ChoosePlan
     });
     $changeTierSteps.set(2, {
         label: 'Payment details',
-        component: Step2
+        component: PaymentDetails
     });
     $changeTierSteps.set(3, {
-        label: 'Invite members',
-        component: Step3
+        label: 'Billing address',
+        component: PaymentDetails
     });
     $changeTierSteps.set(4, {
-        label: 'Review usage',
-        component: Step4,
-        disabled: true
+        label: 'Invite members',
+        component: InviteMembers
     });
     $changeTierSteps.set(5, {
+        label: 'Review usage',
+        component: UsageExcess,
+        disabled: true
+    });
+    $changeTierSteps.set(6, {
         label: 'Review & confirm',
-        component: Step5
+        component: ConfirmDetails
     });
 </script>
 

@@ -10,6 +10,14 @@ export const changeOrganizationTier = writable<{
     id?: string;
     billingPlan: Tier;
     paymentMethodId: string;
+    billingAddress: {
+        address: null;
+        address2: null;
+        city: null;
+        state: null;
+        postalCode: null;
+        country: null;
+    };
     billingBudget?: number;
     collaborators?: string[];
     isOverLimit?: boolean;
@@ -20,10 +28,20 @@ export const changeOrganizationTier = writable<{
         users?: number;
         members?: number;
     };
+    taxId?: string;
 }>({
     id: null,
     billingPlan: 'tier-1',
     paymentMethodId: null,
     collaborators: [],
-    isOverLimit: false
+    isOverLimit: false,
+    billingAddress: {
+        address: null,
+        address2: null,
+        city: null,
+        state: null,
+        postalCode: null,
+        country: null
+    },
+    taxId: null
 });
