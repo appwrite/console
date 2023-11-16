@@ -1,4 +1,5 @@
 import type { WizardStepsType } from '$lib/layout/wizard.svelte';
+import type { Address } from '$lib/sdk/billing';
 import type { Tier } from '$lib/stores/billing';
 import { writable } from 'svelte/store';
 
@@ -9,14 +10,7 @@ export const createOrganization = writable<{
     name: string;
     billingPlan: Tier;
     paymentMethodId: string;
-    billingAddress: {
-        address: string;
-        address2?: string;
-        city: string;
-        state: string;
-        postalCode: string;
-        country: string;
-    };
+    billingAddress: Address;
     collaborators?: string[];
     billingBudget?: number;
     taxId?: string;
@@ -27,8 +21,9 @@ export const createOrganization = writable<{
     paymentMethodId: null,
     collaborators: [],
     billingAddress: {
-        address: null,
-        address2: null,
+        $id: null,
+        streetAddress: null,
+        addressLine2: null,
         city: null,
         state: null,
         postalCode: null,

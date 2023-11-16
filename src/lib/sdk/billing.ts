@@ -739,7 +739,7 @@ export class Billing {
         );
     }
 
-    async getAddress(billingAddressId: string): Promise<AddressesList> {
+    async getAddress(billingAddressId: string): Promise<Address> {
         const path = `/account/billing-addresses/${billingAddressId}`;
         const params = {
             billingAddressId

@@ -47,13 +47,13 @@
             id="country"
             required />
         <InputText
-            bind:value={$createOrganization.billingAddress.address}
+            bind:value={$createOrganization.billingAddress.streetAddress}
             id="address"
             label="Street address"
             placeholder="Enter street address"
             required />
         <InputText
-            bind:value={$createOrganization.billingAddress.address2}
+            bind:value={$createOrganization.billingAddress.addressLine2}
             id="address2"
             label="Address line 2"
             placeholder="Unit number, floor, etc." />

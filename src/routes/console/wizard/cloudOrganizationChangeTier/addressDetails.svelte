@@ -4,7 +4,9 @@
     import { onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
     import { Alert } from '$lib/components';
-    import { changeOrganizationTier } from './store';
+    import { changeOrganizationTier, currentBillingAddress } from './store';
+    import { organization } from '$lib/stores/organization';
+    import { deepClone } from '$lib/helpers/object';
 
     let options = [
         {
@@ -21,6 +23,13 @@
                 label: country.name
             };
         });
+
+        if ($organization.billingAddressId) {
+            $currentBillingAddress = await sdk.forConsole.billing.getAddress(
+                $organization.billingAddressId
+            );
+            $changeOrganizationTier.billingAddress = deepClone($currentBillingAddress);
+        }
     });
 </script>
 
@@ -47,13 +56,13 @@
             id="country"
             required />
         <InputText
-            bind:value={$changeOrganizationTier.billingAddress.address}
+            bind:value={$changeOrganizationTier.billingAddress.streetAddress}
             id="address"
             label="Street address"
             placeholder="Enter street address"
             required />
         <InputText
-            bind:value={$changeOrganizationTier.billingAddress.address2}
+            bind:value={$changeOrganizationTier.billingAddress.addressLine2}
             id="address2"
             label="Address line 2"
             placeholder="Unit number, floor, etc." />

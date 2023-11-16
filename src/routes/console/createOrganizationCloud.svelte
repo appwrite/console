@@ -32,15 +32,18 @@
                 $createOrganization.paymentMethodId
             );
             //Add billing address
-            if ($createOrganization.billingAddress && $createOrganization.billingAddress.address) {
+            if (
+                $createOrganization.billingAddress &&
+                $createOrganization.billingAddress.streetAddress
+            ) {
                 const response = await sdk.forConsole.billing.createAddress(
                     $createOrganization.billingAddress.country,
-                    $createOrganization.billingAddress.address,
+                    $createOrganization.billingAddress.streetAddress,
                     $createOrganization.billingAddress.city,
                     $createOrganization.billingAddress.state,
                     $createOrganization.billingAddress.postalCode,
-                    $createOrganization.billingAddress.address2
-                        ? $createOrganization.billingAddress.address2
+                    $createOrganization.billingAddress.addressLine2
+                        ? $createOrganization.billingAddress.addressLine2
                         : undefined
                 );
 
@@ -103,8 +106,9 @@
             paymentMethodId: null,
             collaborators: [],
             billingAddress: {
-                address: null,
-                address2: null,
+                $id: null,
+                streetAddress: null,
+                addressLine2: null,
                 city: null,
                 state: null,
                 postalCode: null,

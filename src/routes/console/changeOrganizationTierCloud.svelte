@@ -12,6 +12,7 @@
         changeOrganizationFinalAction,
         changeOrganizationTier,
         changeTierSteps,
+        currentBillingAddress,
         isUpgrade
     } from './wizard/cloudOrganizationChangeTier/store';
     import { goto, invalidate } from '$app/navigation';
@@ -21,6 +22,7 @@
     import { organization } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
     import { tierToPlan } from '$lib/stores/billing';
+    import deepEqual from 'deep-equal';
 
     const dispatch = createEventDispatcher();
 
@@ -35,6 +37,26 @@
                 $changeOrganizationTier.billingPlan,
                 $changeOrganizationTier.paymentMethodId
             );
+
+            //Add billing address
+            if (
+                $changeOrganizationTier.billingAddress &&
+                $changeOrganizationTier.billingAddress.streetAddress &&
+                !deepEqual($changeOrganizationTier.billingAddress, $currentBillingAddress)
+            ) {
+                const response = await sdk.forConsole.billing.createAddress(
+                    $changeOrganizationTier.billingAddress.country,
+                    $changeOrganizationTier.billingAddress.streetAddress,
+                    $changeOrganizationTier.billingAddress.city,
+                    $changeOrganizationTier.billingAddress.state,
+                    $changeOrganizationTier.billingAddress.postalCode,
+                    $changeOrganizationTier.billingAddress.addressLine2
+                        ? $changeOrganizationTier.billingAddress.addressLine2
+                        : undefined
+                );
+
+                await sdk.forConsole.billing.setBillingAddress(org.$id, response.$id);
+            }
 
             //Add budget
             if ($changeOrganizationTier?.billingBudget) {
@@ -100,8 +122,9 @@
             paymentMethodId: null,
             collaborators: [],
             billingAddress: {
-                address: null,
-                address2: null,
+                $id: null,
+                streetAddress: null,
+                addressLine2: null,
                 city: null,
                 state: null,
                 postalCode: null,
