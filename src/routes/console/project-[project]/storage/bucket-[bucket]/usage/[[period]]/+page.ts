@@ -9,6 +9,7 @@ export const load: PageLoad = async ({ params }) => {
     );
 
     return {
-        filesTotal: response.filesTotal as unknown as Models.Metric[]
+        filesTotal: response.filesTotal,
+        files: response.files as unknown as Models.Metric[]
     };
 };

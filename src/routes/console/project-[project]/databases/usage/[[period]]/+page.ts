@@ -8,7 +8,8 @@ export const load: PageLoad = async ({ params }) => {
     try {
         const response = await sdk.forProject.databases.getUsage(period ?? '30d');
         return {
-            databasesTotal: response.databasesTotal as unknown as Models.Metric[]
+            databasesTotal: response.databasesTotal as unknown as Models.Metric[],
+            databases: response.databases
         };
     } catch (e) {
         throw error(e.code, e.message);

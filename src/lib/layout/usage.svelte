@@ -24,6 +24,7 @@
     };
 
     export let title: string;
+    export let total: number;
     export let count: Models.Metric[];
     export let countMetadata: MetricMetadata;
     export let path: string = null;
@@ -48,7 +49,7 @@
     </div>
     <Card>
         {#if count}
-            <Heading tag="h6" size="6">{total(count)}</Heading>
+            <Heading tag="h6" size="6">{total}</Heading>
             <p>{countMetadata.title}</p>
             <div class="u-margin-block-start-16" />
             <div class="chart-container">

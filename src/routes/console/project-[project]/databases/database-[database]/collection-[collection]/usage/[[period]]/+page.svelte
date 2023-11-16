@@ -4,13 +4,14 @@
     import type { PageData } from './$types';
 
     export let data: PageData;
-
-    $: count = data.documentsTotal;
+    $: total = data.documentsTotal;
+    $: count = data.documents;
 </script>
 
 <Usage
     title="Databases"
     path={`/console/project-${$page.params.project}/databases/database-${$page.params.database}/collection-${$page.params.collection}/usage`}
+    {total}
     {count}
     countMetadata={{
         legend: 'Documents',

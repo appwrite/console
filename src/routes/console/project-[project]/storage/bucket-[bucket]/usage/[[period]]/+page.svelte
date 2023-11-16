@@ -4,13 +4,14 @@
     import type { PageData } from './$types';
 
     export let data: PageData;
-
-    $: count = data.filesTotal;
+    $: total = data.filesTotal;
+    $: count = data.files;
 </script>
 
 <Usage
     title="Files"
     path={`/console/project-${$page.params.project}/storage/bucket-${$page.params.bucket}/usage`}
+    {total}
     {count}
     countMetadata={{
         legend: 'Files',

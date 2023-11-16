@@ -11,7 +11,8 @@ export const load: PageLoad = async ({ params }) => {
         );
 
         return {
-            executionsTotal: response.executionsTotal as unknown as Models.Metric[]
+            executionsTotal: response.executionsTotal,
+            executions: response.executions as unknown as Models.Metric[]
         };
     } catch (e) {
         throw error(e.code, e.message);

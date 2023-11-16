@@ -8,7 +8,8 @@ export const load: PageLoad = async ({ params }) => {
     try {
         const response = await sdk.forProject.users.getUsage(period ?? '30d');
         return {
-            usersTotal: response.usersTotal as unknown as Models.Metric[]
+            usersTotal: response.usersTotal,
+            users: response.users as unknown as Models.Metric[]
         };
     } catch (e) {
         throw error(e.code, e.message);

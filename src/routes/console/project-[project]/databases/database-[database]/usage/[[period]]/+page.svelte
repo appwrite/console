@@ -5,12 +5,14 @@
 
     export let data: PageData;
 
-    $: count = data.collectionsTotal;
+    $: total = data.collectionsTotal;
+    $: count = data.collections;
 </script>
 
 <Usage
     title="Databases"
     path={`/console/project-${$page.params.project}/databases/database-${$page.params.database}/usage`}
+    {total}
     {count}
     countMetadata={{
         legend: 'Collections',

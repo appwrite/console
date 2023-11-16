@@ -10,6 +10,7 @@ export const load: PageLoad = async ({ params }) => {
     );
 
     return {
-        documentsTotal: response.documentsTotal as unknown as Models.Metric[]
+        documentsTotal: response.documentsTotal,
+        documents: response.documents as unknown as Models.Metric[]
     };
 };

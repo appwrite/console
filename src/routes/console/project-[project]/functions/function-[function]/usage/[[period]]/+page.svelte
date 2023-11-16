@@ -1,13 +1,13 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
     import { Card, SecondaryTabsItem, SecondaryTabs, Heading } from '$lib/components';
-    import { total } from '$lib/layout/usage.svelte';
     import { BarChart } from '$lib/charts';
     import { page } from '$app/stores';
     import type { PageData } from './$types';
 
     export let data: PageData;
-    $: count = data.executionsTotal;
+    $: total = data.executionsTotal;
+    $: count = data.executions;
 </script>
 
 <Container>
@@ -33,7 +33,7 @@
     </div>
     {#if count}
         <Card>
-            <Heading tag="h6" size="6">{total(count)}</Heading>
+            <Heading tag="h6" size="6">{total}</Heading>
             <p>Executions</p>
             <div class="u-margin-block-start-16" />
             <BarChart

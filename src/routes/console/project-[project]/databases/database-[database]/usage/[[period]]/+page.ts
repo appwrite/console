@@ -9,6 +9,7 @@ export const load: PageLoad = async ({ params }) => {
     );
 
     return {
-        collectionsTotal: response.collectionsTotal as unknown as Models.Metric[]
+        collectionsTotal: response.collectionsTotal,
+        collections: response.collections as unknown as Models.Metric[]
     };
 };
