@@ -13,7 +13,7 @@ export const load: LayoutLoad = async ({ depends, url }) => {
     depends(Dependencies.ACCOUNT);
 
     try {
-        const account = await sdk.forConsole.account.get();
+        const account = await sdk.forConsole.account.get<{ organization?: string }>();
 
         LogRocket.identify(account.$id, {
             name: account.name,
