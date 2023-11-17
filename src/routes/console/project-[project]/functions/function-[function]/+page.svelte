@@ -40,6 +40,8 @@
     import DeploymentCreatedBy from './deploymentCreatedBy.svelte';
     import DeploymentDomains from './deploymentDomains.svelte';
     import { hoursToDays } from '$lib/helpers/date';
+    import { isCloud } from '$lib/system';
+    import { readOnly } from '$lib/stores/billing';
 
     export let data;
 
@@ -155,7 +157,10 @@
                             Redeploy
                         </Button>
 
-                        <Button secondary on:click={() => ($execute = $func)}>Execute now</Button>
+                        <Button
+                            secondary
+                            on:click={() => ($execute = $func)}
+                            disabled={isCloud && $readOnly.executions}>Execute now</Button>
                     </div>
                 </svelte:fragment>
             </CardGrid>

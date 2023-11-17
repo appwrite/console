@@ -223,7 +223,11 @@
                     <div class="avatar u-margin-block-start-8" style="--size: {48 / 16}rem">
                         <span class="icon-cloud" />
                     </div>
-                    <Button class="u-margin-block-start-20" secondary on:click={openImportWizard}>
+                    <Button
+                        class="u-margin-block-start-20"
+                        secondary
+                        on:click={openImportWizard}
+                        disabled={$readOnly.bandwidth}>
                         Import data
                     </Button>
                 </div>
@@ -283,8 +287,7 @@
                     <Button
                         class="u-margin-block-start-48"
                         secondary
-                        on:click={() => (showExport = true)}
-                        disabled={$readOnly.bandwidth}>Export data</Button>
+                        on:click={() => (showExport = true)}>Export data</Button>
                 </div>
             </svelte:fragment>
         </CardGrid>

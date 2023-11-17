@@ -46,7 +46,6 @@
         title="Databases"
         total={data?.databases?.total}
         on:data={(data) => {
-            console.log(data);
             isCreationDisabled = data.detail.isButtonDisabled;
         }}>
         <svelte:fragment>

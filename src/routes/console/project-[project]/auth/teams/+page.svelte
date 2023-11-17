@@ -28,9 +28,10 @@
     import { base } from '$app/paths';
     import type { Models } from '@appwrite.io/console';
     import type { PageData } from './$types';
-    import { getServiceLimit } from '$lib/stores/billing';
     import { tooltip } from '$lib/actions/tooltip';
     import { writable } from 'svelte/store';
+    import { readOnly } from '$lib/stores/billing';
+    import { isCloud } from '$lib/system';
 
     export let data: PageData;
 
@@ -41,17 +42,22 @@
 </script>
 
 <Container>
-    <ContainerHeader title="Teams" isFlex={false} total={data.teams.total}>
+    <ContainerHeader
+        title="Teams"
+        isFlex={false}
+        total={data.teams.total}
+        buttonDisabled={isCloud && $readOnly.users}
+        let:isButtonDisabled>
         <SearchQuery search={data.search} placeholder="Search by name">
             <div
                 use:tooltip={{
                     content: `Upgrade to add more teams`,
-                    disabled: data.teams.total < getServiceLimit('teams')
+                    disabled: !isButtonDisabled
                 }}>
                 <Button
                     on:click={() => ($showCreateTeam = true)}
                     event="create_team"
-                    disabled={data.teams.total >= getServiceLimit('teams')}>
+                    disabled={isButtonDisabled}>
                     <span class="icon-plus" aria-hidden="true" />
                     <span class="text">Create team</span>
                 </Button>

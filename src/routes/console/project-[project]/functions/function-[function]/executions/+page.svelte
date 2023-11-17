@@ -22,7 +22,7 @@
     import { func } from '../store';
     import type { Models } from '@appwrite.io/console';
     import { organization } from '$lib/stores/organization';
-    import { getServiceLimit } from '$lib/stores/billing';
+    import { getServiceLimit, readOnly } from '$lib/stores/billing';
     import { isCloud } from '$lib/system';
     import UsageRates from '$routes/console/wizard/cloudOrganization/usageRates.svelte';
     import { project } from '$routes/console/project-[project]/store';
@@ -57,7 +57,8 @@
         title="Executions"
         buttonText="Execute now"
         buttonEvent="execute_function"
-        buttonMethod={() => (selectedFunction = $func)}>
+        buttonMethod={() => (selectedFunction = $func)}
+        buttonDisabled={isCloud && $readOnly.executions}>
         <svelte:fragment slot="tooltip" let:tier let:limit let:upgradeMethod>
             <p class="u-bold">The {tier} plan has limits</p>
             <ul>

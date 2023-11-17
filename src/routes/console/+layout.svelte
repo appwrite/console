@@ -40,6 +40,8 @@
     import { stripe } from '$lib/stores/stripe';
     import MobileSupportModal from './wizard/support/mobileSupportModal.svelte';
     import { showSupportModal } from './wizard/support/store';
+    import ExcesLimitModal from './organization-[organization]/excesLimitModal.svelte';
+    import { showExcess } from './organization-[organization]/store';
 
     function kebabToSentenceCase(str: string) {
         return str
@@ -436,4 +438,8 @@
 
 {#if $showSupportModal}
     <MobileSupportModal bind:show={$showSupportModal}></MobileSupportModal>
+{/if}
+
+{#if $showExcess}
+    <ExcesLimitModal bind:show={$showExcess}></ExcesLimitModal>
 {/if}
