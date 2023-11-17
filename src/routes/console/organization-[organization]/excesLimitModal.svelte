@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Modal } from '$lib/components';
     import { sizeToBytes } from '$lib/helpers/sizeConvertion';
-    import { plansInfo } from '$lib/stores/billing';
+    import { plansInfo, tierToPlan } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { onMount } from 'svelte';
     import PlanExcess from '../wizard/cloudOrganizationChangeTier/planExcess.svelte';
@@ -42,6 +42,14 @@
 </script>
 
 <Modal bind:show title="Limit reached">
+    <svelte:fragment slot="title">
+        Your usage exceeds the {tierToPlan($organization.billingPlan).name} plan limits
+    </svelte:fragment>
+    <p class="text">
+        Usage for <b>{$organization.name}</b> organization has reached the limits of the {tierToPlan(
+            $organization.billingPlan
+        ).name} plan. Consider upgrading to increase your resource usage.
+    </p>
     <PlanExcess {excess} currentTier={$organization.billingPlan} />
     <svelte:fragment slot="footer">
         <Button

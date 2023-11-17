@@ -57,7 +57,7 @@
     </svelte:fragment>
 </Alert>
 
-<TableScroll>
+<TableScroll noMargin>
     <TableHeader>
         <TableCellHead>Resource</TableCellHead>
         <TableCellHead>Free limit</TableCellHead>

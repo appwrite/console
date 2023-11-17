@@ -104,7 +104,7 @@
     <svelte:component this={$page.data.breadcrumbs} />
 {/if}
 
-{#if !$page.url.pathname.includes('/console/account') && ($readOnly.bandwidth || $readOnly.storage || $readOnly.documents || $readOnly.users || $readOnly.executions)}
+{#if !$page.url.pathname.includes('/console/account') && true}
     <Pill danger button on:click={() => ($showExcess = true)}>
         <div>
             <span class="icon-exclamation-circle" aria-hidden="true" />
