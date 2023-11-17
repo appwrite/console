@@ -66,7 +66,6 @@
         </p>
         <svelte:fragment slot="footer">
             <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-            <Button secondary submit>Delete</Button>
         </svelte:fragment>
     </Modal>
 {:else}
