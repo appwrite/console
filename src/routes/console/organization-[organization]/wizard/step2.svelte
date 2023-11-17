@@ -1,6 +1,6 @@
 <script lang="ts">
     import { RegionCard } from '$lib/components';
-    import { Pill } from '$lib/elements';
+    import { Flag, Pill } from '$lib/elements';
     import { WizardStep } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
@@ -11,14 +11,6 @@
     onMount(async () => {
         regions = await sdk.forConsole.billing.listRegions();
     });
-
-    function getFlag(country: string) {
-        let flag = sdk.forProject.avatars.getFlag(country, 80, 60)?.toString();
-        flag?.includes('&project=')
-            ? (flag = flag.replace('&project=', '&mode=admin'))
-            : flag + '&mode=admin';
-        return flag;
-    }
 </script>
 
 <WizardStep>
@@ -38,24 +30,26 @@
                         value={region.$id}
                         disabled={region.disabled}>
                         <div
-                            class="u-flex u-flex-vertical u-gap-12 u-justify-main-center u-cross-center u-margin-inline-auto">
+                            class="u-flex u-flex-vertical u-gap-8 u-justify-main-center u-cross-center u-margin-inline-auto">
                             {#if region.disabled}
-                                <img
-                                    src={getFlag(region.flag)}
-                                    alt={region.name}
-                                    width="40"
-                                    height="30" />
+                                <Flag
+                                    width={40}
+                                    height={30}
+                                    class={region.disabled ? 'u-opacity-50' : ''}
+                                    flag={region.flag}
+                                    name={region.name} />
                                 <p class:u-opacity-50={region.disabled}>{region.name}</p>
                                 <Pill button event="region_notify">
                                     <span class="icon-bell" aria-hidden="true" />
                                     <span class="text">Notify me</span>
                                 </Pill>
                             {:else}
-                                <img
-                                    src={getFlag(region.flag)}
-                                    alt={region.name}
-                                    width="40"
-                                    height="30" />
+                                <Flag
+                                    width={40}
+                                    height={30}
+                                    flag={region.flag}
+                                    name={region.name} />
+
                                 {region.name}
                             {/if}
                         </div>

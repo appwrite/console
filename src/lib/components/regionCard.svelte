@@ -16,12 +16,12 @@
 </script>
 
 <label
-    class="card u-cursor-pointer u-flex u-flex-vertical u-gap-16"
+    class="box u-cursor-pointer u-flex u-flex-vertical u-gap-16"
     class:is-allow-focus={!disabled}
     class:is-disabled={disabled}
     class:u-height-100-percent={fullHeight}
-    style:--card-padding={`${padding}rem`}
-    style:--card-border-radius={`var(${Radius[borderRadius]})`}>
+    style:--box-padding={`${padding}rem`}
+    style:--box-border-radius={`var(${Radius[borderRadius]})`}>
     <input
         class="is-small u-margin-block-start-2"
         type="radio"
