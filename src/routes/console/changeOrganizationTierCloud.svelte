@@ -8,6 +8,8 @@
     import InviteMembers from './wizard/cloudOrganizationChangeTier/inviteMembers.svelte';
     import UsageExcess from './wizard/cloudOrganizationChangeTier/usageExcess.svelte';
     import ConfirmDetails from './wizard/cloudOrganizationChangeTier/confirmDetails.svelte';
+    import AddressDetails from './wizard/cloudOrganizationChangeTier/addressDetails.svelte';
+
     import {
         changeOrganizationFinalAction,
         changeOrganizationTier,
@@ -139,24 +141,24 @@
         component: ChoosePlan
     });
     $changeTierSteps.set(2, {
-        label: 'Payment details',
+        label: 'Payment',
         component: PaymentDetails
     });
     $changeTierSteps.set(3, {
-        label: 'Billing address',
-        component: PaymentDetails
+        label: 'Address',
+        component: AddressDetails
     });
     $changeTierSteps.set(4, {
-        label: 'Invite members',
+        label: 'Members',
         component: InviteMembers
     });
     $changeTierSteps.set(5, {
-        label: 'Review usage',
+        label: 'Usage',
         component: UsageExcess,
         disabled: true
     });
     $changeTierSteps.set(6, {
-        label: 'Review & confirm',
+        label: 'Review',
         component: ConfirmDetails
     });
 </script>

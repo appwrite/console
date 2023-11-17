@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { CreditCardBrandImage } from '$lib/components';
+    import { Box, CreditCardBrandImage } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { InputTextarea } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
@@ -59,7 +59,7 @@
         </svelte:fragment>
 
         <p class="body-text-1 u-bold">Organization name</p>
-        <div class="u-flex u-gap-8 u-cross-center">
+        <div class="u-flex u-gap-8 u-cross-center u-margin-block-start-8">
             <p class="text">{$organization.name}</p>
             {#if $changeOrganizationTier?.id}
                 <Pill>{$changeOrganizationTier.id}</Pill>
@@ -69,16 +69,16 @@
         {#if $changeOrganizationTier.billingPlan !== 'tier-0'}
             <div class="u-margin-block-start-32">
                 <p class="body-text-1 u-bold">Organization members</p>
-                <p class="text">{collaboratorsNumber} members invited</p>
+                <p class="text u-margin-block-start-8">{collaboratorsNumber} members invited</p>
             </div>
             <div class="u-margin-block-start-32">
                 <p class="body-text-1 u-bold">Payment</p>
                 {#await fetchCard()}
-                    <div class="u-flex u-margin-block-start-4">
+                    <div class="u-flex u-margin-block-start-8">
                         <div class="loader is-small" />
                     </div>
                 {:then card}
-                    <span class="u-flex u-cross-center u-gap-8">
+                    <span class="u-flex u-cross-center u-gap-8 u-margin-block-start-8">
                         <p class="text">
                             Card ending in {card.last4}
                         </p>
@@ -88,7 +88,7 @@
             </div>
         {/if}
 
-        <div class="box u-margin-block-start-32 u-flex u-flex-vertical u-gap-16">
+        <Box class="u-margin-block-start-32 u-flex u-flex-vertical u-gap-16" radius="small">
             {#if $changeOrganizationTier.billingPlan !== 'tier-0'}
                 <span class="u-flex u-main-space-between">
                     <p class="text">{plan.name} plan</p>
@@ -111,6 +111,6 @@
                     >{toLocaleDate(billingPayDate.toString())}</b
                 >.
             </p>
-        </div>
+        </Box>
     </WizardStep>
 {/if}

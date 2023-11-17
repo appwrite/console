@@ -11,13 +11,13 @@
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import {
-        Table,
         TableBody,
         TableCell,
         TableCellHead,
         TableCellText,
         TableHeader,
-        TableRow
+        TableRow,
+        TableScroll
     } from '$lib/elements/table';
     import { toLocaleDate } from '$lib/helpers/date';
     import type { InvoiceList } from '$lib/sdk/billing';
@@ -63,12 +63,12 @@
     </p>
     <svelte:fragment slot="aside">
         {#if invoiceList.total - 1 > 0}
-            <Table noMargin noStyles transparent>
+            <TableScroll noMargin transparent>
                 <TableHeader>
-                    <TableCellHead>Due Date</TableCellHead>
-                    <TableCellHead>Status</TableCellHead>
-                    <TableCellHead>Amount Due</TableCellHead>
-                    <TableCellHead>Invoice #</TableCellHead>
+                    <TableCellHead width={100}>Invoice #</TableCellHead>
+                    <TableCellHead width={80}>Status</TableCellHead>
+                    <TableCellHead width={100}>Amount Due</TableCellHead>
+                    <TableCellHead width={100}>Due Date</TableCellHead>
                     <TableCellHead width={40} />
                 </TableHeader>
                 <TableBody>
@@ -76,9 +76,10 @@
                         {@const status = invoice.status}
                         {#if i !== 0}
                             <TableRow>
-                                <TableCellText title="date">
-                                    {toLocaleDate(invoice.dueAt)}
+                                <TableCellText title="invoice number">
+                                    {invoice.$id}
                                 </TableCellText>
+
                                 <TableCell title="status">
                                     <Pill
                                         danger={status === 'overdue'}
@@ -88,8 +89,8 @@
                                     </Pill>
                                 </TableCell>
                                 <TableCellText title="due">{invoice.amount}</TableCellText>
-                                <TableCellText title="invoice number">
-                                    {invoice.$id}
+                                <TableCellText title="date">
+                                    {toLocaleDate(invoice.dueAt)}
                                 </TableCellText>
                                 <TableCell showOverflow>
                                     <DropList
@@ -132,7 +133,7 @@
                         {/if}
                     {/each}
                 </TableBody>
-            </Table>
+            </TableScroll>
             <div class="u-flex u-main-space-between">
                 <p class="text">Total results: {invoiceList?.total}</p>
                 <PaginationInline {limit} bind:offset sum={invoiceList?.total} hidePages />

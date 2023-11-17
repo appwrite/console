@@ -8,10 +8,6 @@
     import { organization } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
     import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
-    // import { sdk } from '$lib/stores/sdk';
-    import UsageRates from '$routes/console/wizard/cloudOrganization/usageRates.svelte';
-
-    let showPricing = false;
 
     $: currentTier =
         $organization?.billingPlan === 'tier-2'
@@ -26,12 +22,12 @@
         <Heading tag="h2" size="6">Plan summary</Heading>
 
         <p class="text">
-            Your current project plan. For more information on Appwrite plans, <button
+            Your current project plan. For more information on Appwrite plans, <a
                 type="button"
                 class="link"
-                on:click|preventDefault={() => (showPricing = true)}>
+                href="https://appwrite.io/pricing">
                 view our pricing guide.
-            </button>
+            </a>
         </p>
         <svelte:fragment slot="aside">
             <div class="box u-flex u-main-space-between u-cross-center">
@@ -46,7 +42,7 @@
 
                 <p class="text">
                     {#if $organization?.billingPlan !== 'tier-0' && !$daysLeftInTrial}
-                        <span class="u-color-text-gray"> Esimated total: </span>
+                        <span class="u-color-text-gray"> Esimated total (in USD): </span>
                     {/if}
                     <!-- TODO: add estimated total from aggregation -->
 
@@ -86,5 +82,3 @@
         </svelte:fragment>
     </CardGrid>
 {/if}
-
-<UsageRates bind:show={showPricing} tier={$organization?.billingPlan} />

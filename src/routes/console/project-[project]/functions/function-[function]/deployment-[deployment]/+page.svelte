@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { Alert, Card, CardGrid, Id } from '$lib/components';
+    import { Card, CardGrid, Id } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
@@ -20,12 +20,12 @@
     import DeploymentCreatedBy from '../deploymentCreatedBy.svelte';
     import DeploymentDomains from '../deploymentDomains.svelte';
     import { tooltip } from '$lib/actions/tooltip';
-    import { wizard } from '$lib/stores/wizard';
-    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
-    import { getServiceLimit, tierToPlan } from '$lib/stores/billing';
-    import { organization } from '$lib/stores/organization';
-    import { isCloud } from '$lib/system';
-    import { hoursToDays } from '$lib/helpers/date';
+    // import { wizard } from '$lib/stores/wizard';
+    // import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
+    // import { getServiceLimit, tierToPlan } from '$lib/stores/billing';
+    // import { organization } from '$lib/stores/organization';
+    // import { isCloud } from '$lib/system';
+    // import { hoursToDays } from '$lib/helpers/date';
 
     let logs = '';
 
@@ -48,12 +48,12 @@
         });
     });
 
-    const limit = getServiceLimit('logs');
-    const tier = tierToPlan($organization?.billingPlan)?.name;
+    // const limit = getServiceLimit('logs');
+    // const tier = tierToPlan($organization?.billingPlan)?.name;
 </script>
 
 <Container>
-    {#if isCloud && limit !== 0 && limit < Infinity}
+    <!-- {#if isCloud && limit !== 0 && limit < Infinity}
         <Alert>
             Logs are retained in rolling {hoursToDays(limit)} intervals with the {tier} plan.
             <button
@@ -62,7 +62,7 @@
                 on:click|preventDefault={() => wizard.start(ChangeOrganizationTierCloud)}
                 >Upgrade</button> to increase your log retention for a longer period.
         </Alert>
-    {/if}
+    {/if} -->
     <CardGrid>
         <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16">
             <div class="avatar is-medium" aria-hidden="true">

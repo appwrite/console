@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { CreditCardBrandImage } from '$lib/components';
+    import { Box, CreditCardBrandImage } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { toLocaleDate } from '$lib/helpers/date';
     import { WizardStep } from '$lib/layout';
@@ -34,7 +34,7 @@
     </svelte:fragment>
 
     <p class="body-text-1 u-bold">Organization name</p>
-    <div class="u-flex u-gap-8 u-cross-center">
+    <div class="u-flex u-gap-8 u-cross-center u-margin-block-start-8">
         <p class="text">{$createOrganization.name}</p>
         {#if $createOrganization?.id}
             <Pill>{$createOrganization.id}</Pill>
@@ -44,16 +44,16 @@
     {#if $createOrganization.billingPlan !== 'tier-0'}
         <div class="u-margin-block-start-32">
             <p class="body-text-1 u-bold">Organization members</p>
-            <p class="text">{collaboratorsNumber} members invited</p>
+            <p class="text u-margin-block-start-8">{collaboratorsNumber} members invited</p>
         </div>
         <div class="u-margin-block-start-32">
             <p class="body-text-1 u-bold">Payment</p>
             {#await fetchCard()}
-                <div class="u-flex u-margin-block-start-4">
+                <div class="u-flex u-margin-block-start-8">
                     <div class="loader is-small" />
                 </div>
             {:then card}
-                <span class="u-flex u-cross-center u-gap-8">
+                <span class="u-flex u-cross-center u-gap-8 u-margin-block-start-8">
                     <p class="text u-bold">
                         <span class="u-capitalize">{card?.brand}</span> ending in {card?.last4}
                     </p>
@@ -62,7 +62,7 @@
             {/await}
         </div>
     {/if}
-    <div class="box u-margin-block-start-32 u-flex u-flex-vertical u-gap-16">
+    <Box class="u-margin-block-start-32 u-flex u-flex-vertical u-gap-16" radius="small">
         {#if $createOrganization.billingPlan !== 'tier-0'}
             <span class="u-flex u-main-space-between">
                 <p class="text">{plan.name} plan</p>
@@ -83,5 +83,5 @@
             This amount and any additional usage fees will be charged on a recurring 30 day billing
             cycle after your trial period ends on <b>{toLocaleDate(billingPayDate.toString())}</b>.
         </p>
-    </div>
+    </Box>
 </WizardStep>

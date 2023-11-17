@@ -72,10 +72,7 @@
 <CardGrid>
     <Heading tag="h2" size="6">Available credit</Heading>
 
-    <p class="text">
-        Apply Appwrite credit to your organizations. Once applied, credit will be automatically
-        added to your next invoice.
-    </p>
+    <p class="text">Appwrite credit will automatically be applied to your next invoice.</p>
     <svelte:fragment slot="aside">
         <h4 class="body-text-1 u-bold">
             Credit balance: <span class="u-color-text-success">${balance}</span>
@@ -83,9 +80,9 @@
         <Form onSubmit={redeem} noMargin>
             <FormList>
                 <InputText
-                    placeholder="Entert promo code"
+                    placeholder="Coupon code"
                     id="code"
-                    label="Promo code"
+                    label="Add credit"
                     bind:value={coupon}>
                     <Button secondary submit>Redeem</Button>
                 </InputText>

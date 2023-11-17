@@ -21,6 +21,7 @@
     import DeleteOrgPayment from './deleteOrgPayment.svelte';
     import ReplaceCard from './replaceCard.svelte';
     import EditPaymentModal from '$routes/console/account/payments/editPaymentModal.svelte';
+    import { tooltip } from '$lib/actions/tooltip';
 
     let showDropdown = false;
     let showDropdownBackup = false;
@@ -94,196 +95,204 @@
 <CardGrid>
     <Heading tag="h2" size="6" id="paymentMethod">Payment methods</Heading>
 
-    <p class="text">
-        View or update your organization payment methods here. A maximum of two payment methods can
-        be added.
-    </p>
+    <p class="text">View or update your organization payment methods here.</p>
     <svelte:fragment slot="aside">
-        <h4 class="u-bold body-text-2">Default</h4>
-        {#if $organization?.paymentMethodId}
-            <CreditCardInfo isBox paymentMethod={defaultPaymentMethod}>
-                <DropList bind:show={showDropdown} placement="bottom-start" noArrow>
-                    <Button
-                        round
-                        text
-                        ariaLabel="More options"
-                        on:click={() => {
-                            showDropdown = !showDropdown;
-                        }}>
-                        <span class="icon-dots-horizontal" aria-hidden="true" />
-                    </Button>
-                    <svelte:fragment slot="list">
-                        <DropListItem
-                            icon="pencil"
+        <div class="u-flex u-flex-vertical u-gap-8">
+            <h4 class="u-bold body-text-2">Default</h4>
+            {#if $organization?.paymentMethodId}
+                <CreditCardInfo isBox paymentMethod={defaultPaymentMethod}>
+                    <DropList bind:show={showDropdown} placement="bottom-start" noArrow>
+                        <Button
+                            round
+                            text
+                            ariaLabel="More options"
                             on:click={() => {
-                                showEdit = true;
-                                showDropdown = false;
+                                showDropdown = !showDropdown;
                             }}>
-                            Edit
-                        </DropListItem>
-                        <DropListItem
-                            icon="switch-horizontal"
-                            on:click={() => {
-                                showReplace = true;
-                                showDropdown = false;
-                            }}>
-                            Replace
-                        </DropListItem>
-                        <DropListItem
-                            icon="trash"
-                            on:click={() => {
-                                showDelete = true;
-                                showDropdown = false;
-                            }}>
-                            Delete
-                        </DropListItem>
-                    </svelte:fragment>
-                </DropList>
-            </CreditCardInfo>
-        {:else}
-            {@const filteredPaymentMethods = $paymentMethods.paymentMethods.filter(
-                (o) => !!o.last4 && o.$id !== $organization?.backupPaymentMethodId
-            )}
-            <article class="card u-grid u-cross-center u-width-full-line dashed">
-                <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
-                    <div class="common-section">
-                        <DropList bind:show={showDropdown} placement="bottom-start">
-                            <Button
-                                secondary
-                                round
+                            <span class="icon-dots-horizontal" aria-hidden="true" />
+                        </Button>
+                        <svelte:fragment slot="list">
+                            <DropListItem
+                                icon="pencil"
                                 on:click={() => {
-                                    if (filteredPaymentMethods.length) {
-                                        showDropdown = !showDropdown;
-                                    } else {
-                                        showPayment = true;
-                                    }
+                                    showEdit = true;
+                                    showDropdown = false;
                                 }}>
-                                <i class="icon-plus" />
-                            </Button>
-                            <svelte:fragment slot="list">
-                                {#if $paymentMethods.total}
-                                    {#each filteredPaymentMethods as paymentMethod}
-                                        <DropListItem
-                                            on:click={() => {
-                                                showDropdown = false;
-                                                addPaymentMethod(paymentMethod?.$id);
-                                            }}>
-                                            <span class="u-flex u-cross-center u-gap-8">
-                                                <p class="text">
-                                                    Card ending in {paymentMethod.last4}
-                                                </p>
-                                                <CreditCardBrandImage
-                                                    brand={paymentMethod?.brand} />
-                                            </span>
-                                        </DropListItem>
-                                    {/each}
-                                {/if}
-                                <DropListItem on:click={() => (showPayment = true)}>
-                                    Add new payment method
-                                </DropListItem>
-                            </svelte:fragment>
-                        </DropList>
-                    </div>
-                    <div class="common-section">
-                        <span class="text"> Add a payment method </span>
-                    </div>
-                </div>
-            </article>
-        {/if}
-        <h4 class="u-bold body-text-2">Backup</h4>
-        {#if $organization?.backupPaymentMethodId}
-            <CreditCardInfo isBox paymentMethod={backupPaymentMethod}>
-                <DropList bind:show={showDropdownBackup} placement="bottom-start" noArrow>
-                    <Button
-                        round
-                        text
-                        ariaLabel="More options"
-                        on:click={() => {
-                            showDropdownBackup = !showDropdownBackup;
-                        }}>
-                        <span class="icon-dots-horizontal" aria-hidden="true" />
-                    </Button>
-                    <svelte:fragment slot="list">
-                        <DropListItem
-                            icon="pencil"
-                            on:click={() => {
-                                showEdit = true;
-                                isSelectedBackup = true;
-                                showDropdownBackup = false;
-                            }}>
-                            Edit
-                        </DropListItem>
-                        <DropListItem
-                            icon="switch-horizontal"
-                            on:click={() => {
-                                showReplace = true;
-                                isSelectedBackup = true;
-                                showDropdownBackup = false;
-                            }}>
-                            Replace
-                        </DropListItem>
-                        <DropListItem
-                            icon="trash"
-                            on:click={() => {
-                                showDelete = true;
-                                isSelectedBackup = true;
-                                showDropdownBackup = false;
-                            }}>
-                            Delete
-                        </DropListItem>
-                    </svelte:fragment>
-                </DropList>
-            </CreditCardInfo>
-        {:else}
-            {@const filteredPaymentMethods = $paymentMethods.paymentMethods.filter(
-                (o) => !!o.last4 && o.$id !== $organization?.paymentMethodId
-            )}
-            <article class="card u-grid u-cross-center u-width-full-line dashed">
-                <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
-                    <div class="common-section">
-                        <DropList bind:show={showDropdownBackup} placement="bottom-start">
-                            <Button
-                                secondary
-                                round
+                                Edit
+                            </DropListItem>
+                            <DropListItem
+                                icon="switch-horizontal"
                                 on:click={() => {
-                                    if (filteredPaymentMethods.length) {
-                                        showDropdownBackup = !showDropdownBackup;
-                                    } else {
-                                        showPayment = true;
-                                    }
+                                    showReplace = true;
+                                    showDropdown = false;
                                 }}>
-                                <i class="icon-plus" />
-                            </Button>
-                            <svelte:fragment slot="list">
-                                {#if $paymentMethods.total}
-                                    {#each filteredPaymentMethods as paymentMethod}
-                                        <DropListItem
-                                            on:click={() => {
-                                                showDropdownBackup = true;
-                                                addBackupPaymentMethod(paymentMethod?.$id);
-                                            }}>
-                                            <span class="u-flex u-cross-center u-gap-8">
-                                                <p class="text">
-                                                    Card ending in {paymentMethod.last4}
-                                                </p>
-                                                <CreditCardBrandImage
-                                                    brand={paymentMethod?.brand} />
-                                            </span>
-                                        </DropListItem>
-                                    {/each}
-                                {/if}
-                                <DropListItem on:click={() => (showPayment = true)}>
-                                    Add new payment method
-                                </DropListItem>
-                            </svelte:fragment>
-                        </DropList>
+                                Replace
+                            </DropListItem>
+                            <DropListItem
+                                icon="trash"
+                                on:click={() => {
+                                    showDelete = true;
+                                    showDropdown = false;
+                                }}>
+                                Delete
+                            </DropListItem>
+                        </svelte:fragment>
+                    </DropList>
+                </CreditCardInfo>
+            {:else}
+                {@const filteredPaymentMethods = $paymentMethods.paymentMethods.filter(
+                    (o) => !!o.last4 && o.$id !== $organization?.backupPaymentMethodId
+                )}
+                <article class="card u-grid u-cross-center u-width-full-line dashed">
+                    <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
+                        <div class="common-section">
+                            <DropList bind:show={showDropdown} placement="bottom-start">
+                                <Button
+                                    secondary
+                                    round
+                                    on:click={() => {
+                                        if (filteredPaymentMethods.length) {
+                                            showDropdown = !showDropdown;
+                                        } else {
+                                            showPayment = true;
+                                        }
+                                    }}>
+                                    <i class="icon-plus" />
+                                </Button>
+                                <svelte:fragment slot="list">
+                                    {#if $paymentMethods.total}
+                                        {#each filteredPaymentMethods as paymentMethod}
+                                            <DropListItem
+                                                on:click={() => {
+                                                    showDropdown = false;
+                                                    addPaymentMethod(paymentMethod?.$id);
+                                                }}>
+                                                <span class="u-flex u-cross-center u-gap-8">
+                                                    <p class="text">
+                                                        Card ending in {paymentMethod.last4}
+                                                    </p>
+                                                    <CreditCardBrandImage
+                                                        brand={paymentMethod?.brand} />
+                                                </span>
+                                            </DropListItem>
+                                        {/each}
+                                    {/if}
+                                    <DropListItem on:click={() => (showPayment = true)}>
+                                        Add new payment method
+                                    </DropListItem>
+                                </svelte:fragment>
+                            </DropList>
+                        </div>
+                        <div class="common-section">
+                            <span class="text"> Add a payment method </span>
+                        </div>
                     </div>
-                    <div class="common-section">
-                        <span class="text"> Add a backup payment method </span>
+                </article>
+            {/if}
+        </div>
+        <div class="u-flex u-flex-vertical u-gap-8">
+            <h4 class="u-bold body-text-2">Backup</h4>
+            {#if $organization?.backupPaymentMethodId}
+                <CreditCardInfo isBox paymentMethod={backupPaymentMethod}>
+                    <DropList bind:show={showDropdownBackup} placement="bottom-start" noArrow>
+                        <Button
+                            round
+                            text
+                            ariaLabel="More options"
+                            on:click={() => {
+                                showDropdownBackup = !showDropdownBackup;
+                            }}>
+                            <span class="icon-dots-horizontal" aria-hidden="true" />
+                        </Button>
+                        <svelte:fragment slot="list">
+                            <DropListItem
+                                icon="pencil"
+                                on:click={() => {
+                                    showEdit = true;
+                                    isSelectedBackup = true;
+                                    showDropdownBackup = false;
+                                }}>
+                                Edit
+                            </DropListItem>
+                            <DropListItem
+                                icon="switch-horizontal"
+                                on:click={() => {
+                                    showReplace = true;
+                                    isSelectedBackup = true;
+                                    showDropdownBackup = false;
+                                }}>
+                                Replace
+                            </DropListItem>
+                            <DropListItem
+                                icon="trash"
+                                on:click={() => {
+                                    showDelete = true;
+                                    isSelectedBackup = true;
+                                    showDropdownBackup = false;
+                                }}>
+                                Delete
+                            </DropListItem>
+                        </svelte:fragment>
+                    </DropList>
+                </CreditCardInfo>
+            {:else}
+                {@const filteredPaymentMethods = $paymentMethods.paymentMethods.filter(
+                    (o) => !!o.last4 && o.$id !== $organization?.paymentMethodId
+                )}
+                <article class="card u-grid u-cross-center u-width-full-line dashed">
+                    <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
+                        <div class="common-section">
+                            <DropList bind:show={showDropdownBackup} placement="bottom-start">
+                                <Button
+                                    secondary
+                                    round
+                                    on:click={() => {
+                                        if (filteredPaymentMethods.length) {
+                                            showDropdownBackup = !showDropdownBackup;
+                                        } else {
+                                            showPayment = true;
+                                        }
+                                    }}>
+                                    <i class="icon-plus" />
+                                </Button>
+                                <svelte:fragment slot="list">
+                                    {#if $paymentMethods.total}
+                                        {#each filteredPaymentMethods as paymentMethod}
+                                            <DropListItem
+                                                on:click={() => {
+                                                    showDropdownBackup = true;
+                                                    addBackupPaymentMethod(paymentMethod?.$id);
+                                                }}>
+                                                <span class="u-flex u-cross-center u-gap-8">
+                                                    <p class="text">
+                                                        Card ending in {paymentMethod.last4}
+                                                    </p>
+                                                    <CreditCardBrandImage
+                                                        brand={paymentMethod?.brand} />
+                                                </span>
+                                            </DropListItem>
+                                        {/each}
+                                    {/if}
+                                    <DropListItem on:click={() => (showPayment = true)}>
+                                        Add new payment method
+                                    </DropListItem>
+                                </svelte:fragment>
+                            </DropList>
+                        </div>
+                        <div class="common-section u-flex u-cross-center u-gap-4">
+                            <span class="text"> Add a backup payment method </span>
+                            <span
+                                class="icon-info"
+                                style="font-size: var(--icon-size-small)"
+                                use:tooltip={{
+                                    content:
+                                        'When your default payment method fails, a backup method will be used to pay your invoice automatically'
+                                }} />
+                        </div>
                     </div>
-                </div>
-            </article>
-        {/if}
+                </article>
+            {/if}
+        </div>
     </svelte:fragment>
 </CardGrid>
 

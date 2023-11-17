@@ -119,23 +119,23 @@
     });
 
     $createOrgSteps.set(1, {
-        label: 'Organization details',
+        label: 'Organization',
         component: OrganizationDetails
     });
     $createOrgSteps.set(2, {
-        label: 'Payment details',
+        label: 'Payment',
         component: PaymentDetails
     });
     $createOrgSteps.set(3, {
-        label: 'Billing address',
+        label: 'Address',
         component: AddressDetails
     });
     $createOrgSteps.set(4, {
-        label: 'Invite members',
+        label: 'Members',
         component: InviteMembers
     });
     $createOrgSteps.set(5, {
-        label: 'Review & confirm',
+        label: 'Review',
         component: ConfirmDetails
     });
 </script>
