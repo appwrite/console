@@ -104,7 +104,11 @@
             </LabelCard>
         </li>
         <li>
-            <LabelCard name="plan" bind:group={$createOrganization.billingPlan} value="tier-2">
+            <LabelCard
+                name="plan"
+                bind:group={$createOrganization.billingPlan}
+                value="tier-2"
+                disabled>
                 <svelte:fragment slot="custom">
                     <div class="u-flex u-flex-vertical u-gap-4 u-width-full-line">
                         <h4 class="body-text-2 u-bold">
@@ -114,7 +118,8 @@
                             {tierScale.description}
                         </p>
                     </div>
-                    <Pill>14 DAY FREE TRIAL</Pill>
+                    <!-- <Pill>14 DAY FREE TRIAL</Pill> -->
+                    <Pill>COMING SOON</Pill>
                 </svelte:fragment>
             </LabelCard>
         </li>

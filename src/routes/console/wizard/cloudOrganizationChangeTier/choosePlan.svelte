@@ -10,6 +10,7 @@
     import type { OrganizationUsage } from '$lib/sdk/billing';
     import type { Models } from '@appwrite.io/console';
     import { sizeToBytes } from '$lib/helpers/sizeConvertion';
+    import { Pill } from '$lib/elements';
 
     let usage: OrganizationUsage = null;
     let members: Models.MembershipList = null;
@@ -112,6 +113,11 @@
                         </h4>
                         <p class="u-color-text-gray u-small">{tierFree.description}</p>
                     </div>
+                    {#if $organization.billingPlan === 'tier-0'}
+                        <Pill disabled>CURRENT PLAN</Pill>
+                    {:else}
+                        <Pill>14 DAY FREE TRIAL</Pill>
+                    {/if}
                 </svelte:fragment>
             </LabelCard>
         </li>
@@ -133,6 +139,11 @@
                             {tierPro.description}
                         </p>
                     </div>
+                    {#if $organization.billingPlan === 'tier-1'}
+                        <Pill disabled>CURRENT PLAN</Pill>
+                    {:else}
+                        <Pill>14 DAY FREE TRIAL</Pill>
+                    {/if}
                 </svelte:fragment>
             </LabelCard>
         </li>
@@ -141,7 +152,7 @@
                 name="plan"
                 bind:group={$changeOrganizationTier.billingPlan}
                 value="tier-2"
-                disabled={$organization.billingPlan === 'tier-2'}>
+                disabled>
                 <svelte:fragment slot="custom" let:disabled>
                     <div
                         class="u-flex u-flex-vertical u-gap-4 u-width-full-line"
@@ -153,6 +164,7 @@
                             {tierScale.description}
                         </p>
                     </div>
+                    <Pill disabled>COMING SOON</Pill>
                 </svelte:fragment>
             </LabelCard>
         </li>

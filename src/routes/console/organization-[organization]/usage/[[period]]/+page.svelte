@@ -6,7 +6,7 @@
     import { wizard } from '$lib/stores/wizard.js';
     import { organization } from '$lib/stores/organization';
     import UsageRates from '$routes/console/wizard/cloudOrganization/usageRates.svelte';
-    import { InputDate, InputSelect } from '$lib/elements/forms';
+    import { InputDate, InputDateRange, InputSelect } from '$lib/elements/forms';
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
 
@@ -34,6 +34,8 @@
     }
 </script>
 
+<InputDateRange></InputDateRange>
+
 <Container>
     <Heading tag="h2" size="5">Usage</Heading>
     <div class="u-flex u-main-space-between common-section u-cross-center">
@@ -56,7 +58,7 @@
             </p>
         {/if}
 
-        <InputDate id="date" label="test" showLabel={false}></InputDate>
+        <!-- <InputDate id="date" label="test" showLabel={false}></InputDate> -->
 
         <div class="u-flex u-gap-8 u-cross-center">
             <p class="text">Usage period:</p>
