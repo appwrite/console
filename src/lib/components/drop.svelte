@@ -13,6 +13,7 @@
     export let noStyle = false;
     export let fullWidth = false;
     export let fixed = false;
+    export let display = 'block';
 
     const dispatch = createEventDispatcher<{
         blur: undefined;
@@ -100,7 +101,11 @@
 
 <svelte:window on:click={onBlur} on:keydown={onKeyDown} />
 
-<div class:drop-wrapper={!noStyle} class:u-cross-child-start={childStart} bind:this={element}>
+<div
+    class:drop-wrapper={!noStyle}
+    class:u-cross-child-start={childStart}
+    bind:this={element}
+    style:display>
     <slot />
 </div>
 
