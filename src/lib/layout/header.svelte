@@ -25,7 +25,6 @@
     import { Feedback } from '$lib/components/feedback';
     import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
     import { Pill } from '$lib/elements';
-    import { readOnly } from '$lib/stores/billing';
     import { showExcess } from '$routes/console/organization-[organization]/store';
 
     let showDropdown = false;

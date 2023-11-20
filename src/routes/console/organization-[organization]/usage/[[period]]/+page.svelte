@@ -6,18 +6,37 @@
     import { wizard } from '$lib/stores/wizard.js';
     import { organization } from '$lib/stores/organization';
     import UsageRates from '$routes/console/wizard/cloudOrganization/usageRates.svelte';
+    import { InputDate, InputSelect } from '$lib/elements/forms';
+    import { page } from '$app/stores';
+    import { goto } from '$app/navigation';
 
     const tier = tierToPlan($organization?.billingPlan)?.name;
 
     export let data;
     let showRates = false;
+    let period = 'current';
 
-    $: console.log(data.organizationUsage.users);
+    async function handlePeriodChange() {
+        if (
+            period === 'current' &&
+            !$page.url.pathname.includes('usage/current') &&
+            $page.url.pathname !== `/console/organization-${$organization.$id}/usage`
+        ) {
+            await goto(`/console/organization-${$organization.$id}/usage/current`);
+        }
+        if (period === 'previous' && !$page.url.pathname.includes('usage/previous')) {
+            await goto(`/console/organization-${$organization.$id}/usage/previous`);
+        }
+        if (period === 'custom' && !$page.url.pathname.includes('usage/custom')) {
+            console.log('test');
+            // await goto(`/console/organization-${$organization.$id}/usage/custom`);
+        }
+    }
 </script>
 
 <Container>
     <Heading tag="h2" size="5">Usage</Heading>
-    <div class="u-flex u-main-space-between common-section">
+    <div class="u-flex u-main-space-between common-section u-cross-center">
         {#if $organization.billingPlan === 'tier-2'}
             <p class="text">
                 On the Scale plan, you'll be charged only for any usage that exceeds the thresholds
@@ -36,10 +55,32 @@
                 >.
             </p>
         {/if}
-        <div class="u-flex u-gap-8">
+
+        <InputDate id="date" label="test" showLabel={false}></InputDate>
+
+        <div class="u-flex u-gap-8 u-cross-center">
             <p class="text">Usage period:</p>
 
-            JANUARY 2021
+            <InputSelect
+                id="period"
+                label="Usage period"
+                showLabel={false}
+                bind:value={period}
+                on:change={handlePeriodChange}
+                options={[
+                    {
+                        label: 'Current billing cycle',
+                        value: 'current'
+                    },
+                    {
+                        label: 'Previous billing cycle',
+                        value: 'previous'
+                    },
+                    {
+                        label: 'Choose dates',
+                        value: 'custom'
+                    }
+                ]}></InputSelect>
         </div>
     </div>
 

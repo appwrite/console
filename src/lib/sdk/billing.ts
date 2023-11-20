@@ -449,10 +449,16 @@ export class Billing {
     }
 
     // TODO: add date range
-    async listUsage(organizationId: string): Promise<OrganizationUsage> {
+    async listUsage(
+        organizationId: string,
+        startDate: string = '',
+        endDate: string = ''
+    ): Promise<OrganizationUsage> {
         const path = `/organizations/${organizationId}/usage`;
         const params = {
-            organizationId
+            organizationId,
+            startDate,
+            endDate
         };
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
