@@ -6,9 +6,6 @@ on:
     pull_request:
         branches: [main]
 
-env:
-    VITE_APPWRITE_ENDPOINT: http://appwrite.test/v1
-
 jobs:
     build:
         runs-on: ubuntu-latest
@@ -18,8 +15,8 @@ jobs:
               uses: actions/setup-node@v3
               with:
                   node-version: 18
-            # - name: Audit dependencies
-            #   run: npm audit --audit-level low
+            - name: Audit dependencies
+              run: npm audit --audit-level high
             - name: Install dependencies
               run: npm ci
             - name: Svelte Diagnostics

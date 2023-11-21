@@ -1,0 +1,22 @@
+name: E2E
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
+
+env:
+    VITE_APPWRITE_ENDPOINT: http://appwrite.test/v1
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - name: Start Appwrite instance
+              run: cd tests/fixtures && docker compose --env-file ./tests.env up -d 
+            - name: Wait
+              run: sleep 30
+            - name: Unit Tests
+              run: npm run e2e
