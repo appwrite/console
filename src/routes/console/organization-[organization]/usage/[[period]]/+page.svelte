@@ -9,6 +9,7 @@
     import { InputDate, InputDateRange, InputSelect } from '$lib/elements/forms';
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
+    import type { DateRange } from '@melt-ui/svelte/index.js';
 
     const tier = tierToPlan($organization?.billingPlan)?.name;
 
@@ -32,9 +33,11 @@
             // await goto(`/console/organization-${$organization.$id}/usage/custom`);
         }
     }
+
+    let test: DateRange;
 </script>
 
-<InputDateRange></InputDateRange>
+<InputDateRange id="date" label="test" bind:data={test}></InputDateRange>
 
 <Container>
     <Heading tag="h2" size="5">Usage</Heading>
@@ -64,6 +67,7 @@
             <p class="text">Usage period:</p>
 
             <InputSelect
+                wrapperTag="div"
                 id="period"
                 label="Usage period"
                 showLabel={false}

@@ -24,8 +24,8 @@
     export let id: string;
     export let required = false;
     export let hideRequired = false;
-    export let tooltip: string;
-    export let optionalText: string;
+    export let tooltip: string = '';
+    export let optionalText: string = '';
     export let showDates = true;
 
     $: if ($value) {

@@ -19,10 +19,11 @@
             <p class="text">
                 Expires {paymentMethod?.expiryMonth}/{paymentMethod?.expiryYear}
             </p>
-            <!-- TODO: add card owner name when in SDK 
+            {#if paymentMethod?.name}
                 <p class="text">
-                    {paymentMethod?.name}
-                </p> -->
+                    {paymentMethod.name}
+                </p>
+            {/if}
         </div>
 
         <slot />

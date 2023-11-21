@@ -16,6 +16,7 @@ export type PaymentMethodData = {
     brand: string;
     clientSecret: string;
     failed: boolean;
+    name: string;
 };
 
 export type PaymentList = {
