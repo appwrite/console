@@ -1,8 +1,8 @@
 <script lang="ts">
     import { Submit } from '$lib/actions/analytics';
     import { Alert, CardGrid, Heading } from '$lib/components';
-    import { Button, Form, InputNumber, InputSelect } from '$lib/elements/forms';
-    import { humanFileSize } from '$lib/helpers/sizeConvertion';
+    import { Button, Form, FormItem, InputNumber, InputSelect } from '$lib/elements/forms';
+    import { humanFileSize, sizeToBytes } from '$lib/helpers/sizeConvertion';
     import { createByteUnitPair } from '$lib/helpers/unit';
     import { getServiceLimit, readOnly } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
@@ -27,7 +27,7 @@
         );
     }
 
-    const service = getServiceLimit('storage');
+    const service = getServiceLimit('fileSize');
 </script>
 
 <Form onSubmit={updateMaxSize}>
@@ -36,7 +36,7 @@
         <p class="text">Set the maximum file size allowed in the bucket.</p>
         <svelte:fragment slot="aside">
             {#if isCloud && $organization?.billingPlan === 'tier-0'}
-                {@const size = humanFileSize(service)}
+                {@const size = humanFileSize(sizeToBytes(service, 'MB', 1000))}
                 <Alert type="info">
                     <p class="text">
                         The Starter plan has a maximum upload file size limit of {size.value}{size.unit}.
@@ -51,8 +51,10 @@
                     </svelte:fragment>
                 </Alert>
             {/if}
-            <ul class="u-flex u-gap-12 u-width-full-line">
+            <FormItem isMultiple>
                 <InputNumber
+                    isMultiple
+                    fullWidth
                     id="size"
                     label="Size"
                     disabled={$readOnly.storage}
@@ -60,8 +62,14 @@
                     min={0}
                     max={isCloud ? service : Infinity}
                     bind:value={$value} />
-                <InputSelect id="bytes" label="Bytes" {options} bind:value={$unit} />
-            </ul>
+                <InputSelect
+                    id="bytes"
+                    label="Bytes"
+                    isMultiple
+                    fullWidth
+                    {options}
+                    bind:value={$unit} />
+            </FormItem>
         </svelte:fragment>
 
         <svelte:fragment slot="actions">

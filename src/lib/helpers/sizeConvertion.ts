@@ -14,9 +14,9 @@ export function calculateSize(bytes: number, decimals = 1) {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }
 
-export function sizeToBytes(value: number, unit: Size) {
+export function sizeToBytes(value: number, unit: Size, base = 1024) {
     const index = sizes.indexOf(unit);
-    return value * Math.pow(1024, index);
+    return value * Math.pow(base, index);
 }
 
 export function bytesToSize(value: number, unit: Size) {

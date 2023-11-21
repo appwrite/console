@@ -15,8 +15,13 @@ export const load: PageLoad = async ({ params, depends, url, route }) => {
     const limit = getLimit(url, route, PAGE_LIMIT);
     const offset = pageToOffset(page, limit);
     let oraganizationUsage: OrganizationUsage = null;
-    if (isCloud && get(organization)) {
-        oraganizationUsage = await sdk.forConsole.billing.listUsage(get(organization)?.$id);
+    const org = get(organization);
+    if (isCloud && org) {
+        oraganizationUsage = await sdk.forConsole.billing.listUsage(
+            org.$id,
+            org.billingCurrentInvoiceDate,
+            new Date().toISOString()
+        );
     }
 
     return {

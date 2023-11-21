@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { createDateRangePicker, type DateRange } from '@melt-ui/svelte';
+    import { createDateRangePicker, melt, type DateRange } from '@melt-ui/svelte';
     import { Label } from '.';
     const {
         elements: {
@@ -44,38 +44,38 @@
 <div class="u-flex u-gap-4">
     {#if showDates}
         {#each $segmentContents.start as seg}
-            <div {...$startSegment(seg.part)} use:startSegment>
+            <div use:melt={$startSegment(seg.part)}>
                 {seg.value}
             </div>
         {/each}
         <div aria-hidden="true">-</div>
         {#each $segmentContents.end as seg}
-            <div {...$endSegment(seg.part)} use:endSegment>
+            <div use:melt={$endSegment(seg.part)}>
                 {seg.value}
             </div>
         {/each}
     {/if}
     <div>
-        <button {...$trigger} use:trigger class="button is-secondary" type="button">
+        <button use:melt={$trigger} class="button is-secondary" type="button">
             <slot>Open calendar</slot>
         </button>
     </div>
 </div>
-<div {...$content} use:content class="card dt-container">
-    <div {...$calendar} use:calendar class="u-flex u-flex-vertical">
+<div use:melt={$content} class="card dt-container">
+    <div use:melt={$calendar} class="u-flex u-flex-vertical">
         <header class="u-flex u-main-space-between u-cross-center">
-            <button type="button" class="button is-only-icon is-text" use:prevButton>
+            <button type="button" class="button is-only-icon is-text" use:melt={$prevButton}>
                 <span class="icon-cheveron-left" aria-label="previous month"></span>
             </button>
-            <div {...$heading} use:heading>
+            <div {...$heading} use:melt={$heading}>
                 {$headingValue}
             </div>
-            <button type="button" class="button is-only-icon is-text" use:nextButton>
+            <button type="button" class="button is-only-icon is-text" use:melt={$nextButton}>
                 <span class="icon-cheveron-right" aria-label="next month"></span>
             </button>
         </header>
         {#each $months as month}
-            <table use:grid>
+            <table use:melt={$grid}>
                 <thead aria-hidden="true">
                     <tr>
                         {#each $daysOfWeek as day}
@@ -97,8 +97,7 @@
                                     aria-disabled={$isDateDisabled(date) ||
                                         $isDateUnavailable(date)}>
                                     <div
-                                        {...$cell(date, month.value)}
-                                        use:cell
+                                        use:melt={$cell(date, month.value)}
                                         class="u-flex u-main-center u-cross-center dt-button">
                                         {date.day}
                                     </div>

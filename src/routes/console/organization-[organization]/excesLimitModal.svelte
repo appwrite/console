@@ -20,7 +20,11 @@
     let excess: Record<string, number> = null;
 
     onMount(async () => {
-        usage = await sdk.forConsole.billing.listUsage($organization.$id);
+        usage = await sdk.forConsole.billing.listUsage(
+            $organization.$id,
+            $organization.billingCurrentInvoiceDate,
+            new Date().toISOString()
+        );
         members = await sdk.forConsole.teams.listMemberships($organization.$id);
         calculateExcess();
     });
