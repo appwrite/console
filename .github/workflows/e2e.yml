@@ -16,7 +16,14 @@ jobs:
             - uses: actions/checkout@v3
             - name: Start Appwrite instance
               run: cd tests/fixtures && docker compose --env-file ./tests.env up -d
-            - name: Wait
-              run: sleep 30
+            - uses: actions/checkout@v3
+            - name: Use Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 18
+            - name: Audit dependencies
+              run: npx playwright install
+            - name: Install dependencies
+              run: npm ci
             - name: Unit Tests
               run: npm run e2e
