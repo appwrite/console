@@ -2,7 +2,6 @@
     import { toggle } from '$lib/helpers/array';
     import { isHTMLInputElement } from '$lib/helpers/types';
     import { TableCell } from '.';
-    import { InputCheckbox } from '../forms';
 
     export let id: string;
     export let selectedIds: string[] = [];
@@ -30,9 +29,10 @@
         tabindex="-1"
         on:click={handleClick}
         on:keypress={handleClick} />
-    <InputCheckbox
-        bind:element={el}
-        id="select-{id}"
+    <input
+        {id}
+        type="checkbox"
+        bind:this={el}
         checked={selectedIds.includes(id)}
         on:click={handleClick} />
 </TableCell>
