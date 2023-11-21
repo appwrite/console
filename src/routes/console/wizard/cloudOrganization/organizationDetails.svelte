@@ -55,7 +55,7 @@
     </FormList>
 
     <p class="body-text-1 u-bold common-section">Plan</p>
-    <p class="text">
+    <p class="text u-margin-block-start-4">
         For more details on our plans, visit our <a
             class="link"
             href="http://appwrite.io/pricing"
@@ -64,7 +64,7 @@
         >.
     </p>
     <ul
-        class="u-flex u-flex-vertical u-gap-16 u-margin-block-start-16"
+        class="u-flex u-flex-vertical u-gap-16 u-margin-block-start-8"
         style="--p-grid-item-size:16em; --p-grid-item-size-small-screens:16rem; --grid-gap: 1rem;">
         <li>
             <LabelCard
@@ -109,8 +109,10 @@
                 bind:group={$createOrganization.billingPlan}
                 value="tier-2"
                 disabled>
-                <svelte:fragment slot="custom">
-                    <div class="u-flex u-flex-vertical u-gap-4 u-width-full-line">
+                <svelte:fragment slot="custom" let:disabled>
+                    <div
+                        class="u-flex u-flex-vertical u-gap-4 u-width-full-line"
+                        class:u-opacity-50={disabled}>
                         <h4 class="body-text-2 u-bold">
                             {tierScale.name} - ${tierScale.price}/month + extra usage
                         </h4>
@@ -118,8 +120,10 @@
                             {tierScale.description}
                         </p>
                     </div>
-                    <!-- <Pill>14 DAY FREE TRIAL</Pill> -->
-                    <Pill>COMING SOON</Pill>
+                    <div class:u-opacity-50={disabled}>
+                        <!-- <Pill>14 DAY FREE TRIAL</Pill> -->
+                        <Pill disabled>COMING SOON</Pill>
+                    </div>
                 </svelte:fragment>
             </LabelCard>
         </li>

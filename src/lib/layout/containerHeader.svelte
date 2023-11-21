@@ -1,5 +1,11 @@
 <script lang="ts">
-    import { tierToPlan, getServiceLimit, type PlanServices } from '$lib/stores/billing';
+    import {
+        tierToPlan,
+        getServiceLimit,
+        type PlanServices,
+        showUsageRatesModal,
+        type Tier
+    } from '$lib/stores/billing';
     import { tooltip } from '$lib/actions/tooltip';
     import { Alert, DropList, Heading } from '$lib/components';
     import { Pill } from '$lib/elements';
@@ -35,23 +41,57 @@
 
     $: tier = tierToPlan($organization?.billingPlan)?.name;
     $: isLimited = limit !== 0 && limit < Infinity;
-    $: isButtonDisabled = buttonDisabled || (isLimited && total >= limit);
+    $: hasUsageFees = checkForUsageFees($organization?.billingPlan, serviceId);
+    $: isButtonDisabled = buttonDisabled || (isLimited && total >= limit && !hasUsageFees);
 
     onMount(() => {
         dispatch('data', { isButtonDisabled, limit, tier });
     });
+
+    function checkForUsageFees(plan: Tier, id: PlanServices) {
+        if (plan === 'tier-1' || plan === 'tier-2') {
+            switch (id) {
+                case 'bandwidth':
+                case 'storage':
+                case 'users':
+                case 'executions':
+                case 'realtime':
+                    return true;
+
+                default:
+                    return false;
+            }
+        } else return false;
+    }
 </script>
 
 {#if isCloud && showAlert && total && limit !== 0 && total >= limit}
-    <slot name="alert" {limit} {tier} {title} {upgradeMethod}>
-        <Alert type={alertType} isStandalone>
-            <span class="text">
-                You've reached the maximum number of {title.toLowerCase()} for the {tier} plan.
-                <button class="link" type="button" on:click|preventDefault={upgradeMethod}
-                    >Upgrade</button>
-                for additional {title.toLocaleLowerCase()}.
-            </span>
-        </Alert>
+    <slot name="alert" {limit} {tier} {title} {upgradeMethod} {hasUsageFees}>
+        {#if hasUsageFees}
+            <Alert type={alertType} isStandalone>
+                <span class="text">
+                    You've reached the {title.toLocaleLowerCase()} limit for the {tier} plan.
+                    <button
+                        class="link"
+                        type="button"
+                        on:click|preventDefault={() => ($showUsageRatesModal = true)}
+                        >Excess usage fees will apply</button
+                    >.
+                </span>
+            </Alert>
+        {:else}
+            <Alert type={alertType} isStandalone>
+                <span class="text">
+                    You've reached the {title.toLowerCase()} limit for the {tier} plan.
+                    {#if tier !== 'Scale'}<button
+                            class="link"
+                            type="button"
+                            on:click|preventDefault={upgradeMethod}>Upgrade</button>
+                        for additional {title.toLocaleLowerCase()}.
+                    {/if}
+                </span>
+            </Alert>
+        {/if}
     </slot>
 {/if}
 
@@ -64,16 +104,30 @@
                     <span class="icon-info" />{title} limited
                 </Pill>
                 <svelte:fragment slot="list">
-                    <slot name="tooltip" {limit} {tier} {title} {upgradeMethod}>
-                        <p class="text">
-                            Your are limited to {limit}
-                            {title.toLocaleLowerCase()} per project on the {tier} plan.
-                            <button
-                                class="link"
-                                type="button"
-                                on:click|preventDefault={upgradeMethod}>Upgrade</button>
-                            for addtional {title.toLocaleLowerCase()}.
-                        </p>
+                    <slot name="tooltip" {limit} {tier} {title} {upgradeMethod} {hasUsageFees}>
+                        {#if hasUsageFees}
+                            <p class="text">
+                                You are limited to {limit}
+                                {title.toLocaleLowerCase()} per project on the {tier} plan.
+                                <button
+                                    class="link"
+                                    type="button"
+                                    on:click|preventDefault={() => ($showUsageRatesModal = true)}
+                                    >Excess usage fees will apply</button
+                                >.
+                            </p>
+                        {:else}
+                            <p class="text">
+                                Your are limited to {limit}
+                                {title.toLocaleLowerCase()} per project on the {tier} plan.
+                                {#if tier !== 'Scale'}<button
+                                        class="link"
+                                        type="button"
+                                        on:click|preventDefault={upgradeMethod}>Upgrade</button>
+                                    for addtional {title.toLocaleLowerCase()}.
+                                {/if}
+                            </p>
+                        {/if}
                     </slot>
                 </svelte:fragment>
             </DropList>

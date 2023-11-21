@@ -115,3 +115,5 @@ export const tierScale: TierData = {
     name: 'Scale',
     description: 'For scaling teams that need dedicated support.'
 };
+
+export const showUsageRatesModal = writable<boolean>(false);

@@ -89,7 +89,7 @@
                 bind:value={month}
                 {options}
                 required
-                placeholder="Select expiry month" />
+                placeholder="Enter expiry month" />
             <InputNumber
                 isMultiple
                 fullWidth
@@ -98,7 +98,7 @@
                 bind:value={year}
                 min={currentYear}
                 required
-                placeholder="Select expiry year" />
+                placeholder="Enter expiry year" />
         </FormItem>
     </FormList>
     <svelte:fragment slot="footer">

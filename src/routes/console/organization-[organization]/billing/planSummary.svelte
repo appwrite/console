@@ -8,6 +8,7 @@
     import { organization } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
     import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
+    import { aggregationList } from './store';
 
     $: currentTier =
         $organization?.billingPlan === 'tier-2'
@@ -15,6 +16,8 @@
             : $organization?.billingPlan === 'tier-1'
             ? tierPro
             : tierFree;
+
+    $: aggregation = $aggregationList.aggregations[0];
 </script>
 
 {#if $organization}
@@ -44,9 +47,7 @@
                     {#if $organization?.billingPlan !== 'tier-0' && !$daysLeftInTrial}
                         <span class="u-color-text-gray"> Esimated total (in USD): </span>
                     {/if}
-                    <!-- TODO: add estimated total from aggregation -->
-
-                    ${currentTier.price} TBI
+                    ${aggregation?.amount}
                 </p>
             </div>
             <div class="u-flex u-main-space-between u-cross-center">

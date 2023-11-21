@@ -54,7 +54,7 @@
                 </div>
             {:then card}
                 <span class="u-flex u-cross-center u-gap-8 u-margin-block-start-8">
-                    <p class="text u-bold">
+                    <p class="text">
                         <span class="u-capitalize">{card?.brand}</span> ending in {card?.last4}
                     </p>
                     <CreditCardBrandImage brand={card?.brand} />

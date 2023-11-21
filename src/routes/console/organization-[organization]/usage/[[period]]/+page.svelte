@@ -1,20 +1,18 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
     import { CardGrid, Heading, ProgressBarBig } from '$lib/components';
-    import { getServiceLimit, tierToPlan } from '$lib/stores/billing.js';
+    import { getServiceLimit, showUsageRatesModal, tierToPlan } from '$lib/stores/billing.js';
     import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
     import { wizard } from '$lib/stores/wizard.js';
     import { organization } from '$lib/stores/organization';
-    import UsageRates from '$routes/console/wizard/cloudOrganization/usageRates.svelte';
-    import { InputDate, InputDateRange, InputSelect } from '$lib/elements/forms';
+    import { InputDateRange, InputSelect } from '$lib/elements/forms';
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
-    import type { DateRange } from '@melt-ui/svelte/index.js';
+    import type { DateRange } from '@melt-ui/svelte';
 
     const tier = tierToPlan($organization?.billingPlan)?.name;
 
     export let data;
-    let showRates = false;
     let period = 'current';
 
     async function handlePeriodChange() {
@@ -46,7 +44,7 @@
             <p class="text">
                 On the Scale plan, you'll be charged only for any usage that exceeds the thresholds
                 per resource listed below. <button
-                    on:click={() => (showRates = true)}
+                    on:click={() => ($showUsageRatesModal = true)}
                     class="link"
                     type="button">Learn more about plan usage limits.</button>
             </p>
@@ -152,5 +150,3 @@
         Metrics are estimates updated every 24 hours and may not accurately reflect your invoice.
     </p>
 </Container>
-
-<UsageRates bind:show={showRates} tier={$organization?.billingPlan} />

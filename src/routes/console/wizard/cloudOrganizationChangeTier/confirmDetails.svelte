@@ -14,10 +14,12 @@
     const collaboratorsNumber = $changeOrganizationTier?.collaborators?.length ?? 0;
     const totalExpences = plan.price + collaboratorPrice * collaboratorsNumber;
     const today = new Date();
+
     $: billingPayDate = $isUpgrade
         ? new Date(today.getTime() + 44 * 24 * 60 * 60 * 1000)
         : $organization.billingCurrentInvoiceDate;
 
+    // let coupon: string = null;
     let comment: string = null;
     async function fetchCard() {
         try {
@@ -29,6 +31,15 @@
             console.log(error);
         }
     }
+
+    // async function applyCredit() {
+    //     try {
+    //         await sdk.forConsole.billing.getCredit($organization.$id, coupon);
+    //         coupon = null;
+    //     } catch (error) {
+    //         console.log(error);
+    //     }
+    // }
 
     $: downgradeToStarter = $changeOrganizationTier.billingPlan === 'tier-0';
     $: if (!$isUpgrade) {
@@ -89,6 +100,15 @@
         {/if}
 
         <Box class="u-margin-block-start-32 u-flex u-flex-vertical u-gap-16" radius="small">
+            <!-- <FormList>
+                <InputText
+                    placeholder="Coupon code"
+                    id="code"
+                    label="Add credits"
+                    bind:value={coupon}>
+                    <Button secondary disabled={!coupon} on:click={applyCredit}>Apply</Button>
+                </InputText>
+            </FormList> -->
             {#if $changeOrganizationTier.billingPlan !== 'tier-0'}
                 <span class="u-flex u-main-space-between">
                     <p class="text">{plan.name} plan</p>

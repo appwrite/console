@@ -4,15 +4,14 @@
     import { WizardStep } from '$lib/layout';
     import { onMount } from 'svelte';
     import { createOrganization } from './store';
-    import UsageRates from './usageRates.svelte';
     import type { PaymentList } from '$lib/sdk/billing';
-    import { organization } from '$lib/stores/organization';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { initializeStripe, isStripeInitialized, submitStripeCard } from '$lib/stores/stripe';
     import { sdk } from '$lib/stores/sdk';
     import { CreditCardBrandImage } from '$lib/components';
     import { toLocaleDate } from '$lib/helpers/date';
+    import { showUsageRatesModal } from '$lib/stores/billing';
 
     const today = new Date();
     const billingPayDate = new Date(today.getTime() + 44 * 24 * 60 * 60 * 1000);
@@ -20,7 +19,6 @@
     let methods: PaymentList;
     let name: string;
     let budgetEnabled = false;
-    let showRates = false;
 
     onMount(async () => {
         methods = await sdk.forConsole.billing.listPaymentMethods();
@@ -68,7 +66,9 @@
                             value={method.$id}
                             name="payment"
                             bind:group={$createOrganization.paymentMethodId}>
-                            <span class="u-flex u-cross-center u-gap-8">
+                            <span
+                                class="u-flex u-cross-center u-gap-8"
+                                style="padding-inline:0.25rem">
                                 <span>
                                     <span class="u-capitalize">{method.brand}</span> ending in {method.last4}</span>
                                 <CreditCardBrandImage brand={method.brand} />
@@ -82,13 +82,14 @@
                 {#if methods?.total}
                     <InputRadio
                         id="payment-method"
-                        label="Add new payment method"
                         value={null}
                         name="payment"
-                        bind:group={$createOrganization.paymentMethodId} />
+                        bind:group={$createOrganization.paymentMethodId}>
+                        <span style="padding-inline:0.25rem">Add new payment method</span>
+                    </InputRadio>
                 {/if}
                 {#if $createOrganization.paymentMethodId === null}
-                    <FormList>
+                    <FormList class="u-margin-block-start-8" gap={16}>
                         <InputText
                             id="name"
                             label="Cardholder name"
@@ -110,24 +111,25 @@
             id="budget"
             label="Enable budget cap"
             tooltip="If enabled, you will be notified by email when your project spend reaches 75% of the cap you set. Update your budget cap alerts in Organization Settings."
+            fullWidth
             bind:value={budgetEnabled}>
             <p class="text">
                 Restrict your resource usage by setting a budget cap. <button
                     class="link"
                     type="button"
-                    on:click={() => (showRates = true)}>
+                    on:click={() => ($showUsageRatesModal = true)}>
                     Learn more about usage rates</button
                 >.
             </p>
+            {#if budgetEnabled}
+                <div class="u-margin-block-start-16">
+                    <InputNumber
+                        id="budget"
+                        label="Budget cap ($USD)"
+                        placeholder="0"
+                        bind:value={$createOrganization.billingBudget} />
+                </div>
+            {/if}
         </InputChoice>
-        {#if budgetEnabled}
-            <InputNumber
-                id="budget"
-                label="Budget cap"
-                placeholder="0"
-                bind:value={$createOrganization.billingBudget} />
-        {/if}
     </FormList>
 </WizardStep>
-
-<UsageRates bind:show={showRates} tier={$organization?.billingPlan} />

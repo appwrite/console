@@ -46,7 +46,7 @@
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { tooltip } from '$lib/actions/tooltip';
-    import { readOnly } from '$lib/stores/billing';
+    import { readOnly, showUsageRatesModal } from '$lib/stores/billing';
     import { writable } from 'svelte/store';
 
     export let data: PageData;
@@ -95,15 +95,29 @@
         isFlex={false}
         total={usedStorage}
         buttonDisabled={$readOnly.storage}>
-        <svelte:fragment slot="alert" let:tier let:upgradeMethod>
-            <Alert type="warning">
-                <span class="text">
-                    You've reached the storage limit for the {tier} plan.
-                    <button class="link" type="button" on:click|preventDefault={upgradeMethod}
-                        >Upgrade</button>
-                    for additional storage.
-                </span>
-            </Alert>
+        <svelte:fragment slot="alert" let:tier let:upgradeMethod let:hasUsageFees>
+            {#if hasUsageFees}
+                <Alert type="warning" isStandalone>
+                    <span class="text">
+                        You've reached the storage limit for the {tier} plan.
+                        <button
+                            class="link"
+                            type="button"
+                            on:click|preventDefault={() => ($showUsageRatesModal = true)}
+                            >Excess usage fees will apply</button
+                        >.
+                    </span>
+                </Alert>
+            {:else}
+                <Alert type="warning" isStandalone>
+                    <span class="text">
+                        You've reached the storage limit for the {tier} plan.
+                        <button class="link" type="button" on:click|preventDefault={upgradeMethod}
+                            >Upgrade</button>
+                        for additional storage.
+                    </span>
+                </Alert>
+            {/if}
         </svelte:fragment>
         <svelte:fragment let:isButtonDisabled>
             <SearchQuery search={data.search} placeholder="Search by filename">
@@ -123,13 +137,24 @@
             </SearchQuery>
         </svelte:fragment>
         <svelte:fragment slot="tooltip" let:limit let:tier let:upgradeMethod>
-            <p class="text">
-                You are limited to {limit} GB of storage on the {tier} plan.
-
-                <button class="link" type="button" on:click|preventDefault={upgradeMethod}
-                    >Upgrade</button>
-                for addtional storage.
-            </p>
+            {#if tier === 'Starter'}
+                <p class="text">
+                    You are limited to {limit} GB of storage on the {tier} plan.
+                    <button class="link" type="button" on:click|preventDefault={upgradeMethod}
+                        >Upgrade</button>
+                    for addtional storage.
+                </p>
+            {:else}
+                <p class="text">
+                    You are limited to {limit} GB of free storage on the {tier} plan. After this amount
+                    <button
+                        class="link"
+                        type="button"
+                        on:click|preventDefault={() => ($showUsageRatesModal = true)}
+                        >usage fees will apply</button>
+                    .
+                </p>
+            {/if}
         </svelte:fragment>
     </ContainerHeader>
 
@@ -242,7 +267,7 @@
     {:else if data.search}
         <EmptySearch>
             <div class="u-text-center">
-                <b>Sorry, we couldn't find ‘{data.search}'</b>
+                <b>Sorry, we couldn't find '{data.search}'</b>
                 <p>There are no files that match your search.</p>
             </div>
             <div class="u-flex u-gap-16">

@@ -87,7 +87,7 @@
     <svelte:fragment slot="title">Choose a plan</svelte:fragment>
 
     <p class="body-text-1 u-bold common-section">Plan</p>
-    <p class="text">
+    <p class="text u-margin-block-start-4">
         For more details on our plans, visit our <a
             class="link"
             href="http://appwrite.io/pricing"
@@ -96,7 +96,7 @@
         >.
     </p>
     <ul
-        class="u-flex u-flex-vertical u-gap-16 u-margin-block-start-16"
+        class="u-flex u-flex-vertical u-gap-16 u-margin-block-start-8"
         style="--p-grid-item-size:16em; --p-grid-item-size-small-screens:16rem; --grid-gap: 1rem;">
         <li>
             <LabelCard
@@ -113,11 +113,13 @@
                         </h4>
                         <p class="u-color-text-gray u-small">{tierFree.description}</p>
                     </div>
-                    {#if $organization.billingPlan === 'tier-0'}
-                        <Pill disabled>CURRENT PLAN</Pill>
-                    {:else}
-                        <Pill>14 DAY FREE TRIAL</Pill>
-                    {/if}
+                    <div class:u-opacity-50={disabled}>
+                        {#if $organization.billingPlan === 'tier-0'}
+                            <Pill disabled>CURRENT PLAN</Pill>
+                        {:else}
+                            <Pill>14 DAY FREE TRIAL</Pill>
+                        {/if}
+                    </div>
                 </svelte:fragment>
             </LabelCard>
         </li>
@@ -139,11 +141,13 @@
                             {tierPro.description}
                         </p>
                     </div>
-                    {#if $organization.billingPlan === 'tier-1'}
-                        <Pill disabled>CURRENT PLAN</Pill>
-                    {:else}
-                        <Pill>14 DAY FREE TRIAL</Pill>
-                    {/if}
+                    <div class:u-opacity-50={disabled}>
+                        {#if $organization.billingPlan === 'tier-1'}
+                            <Pill disabled>CURRENT PLAN</Pill>
+                        {:else}
+                            <Pill>14 DAY FREE TRIAL</Pill>
+                        {/if}
+                    </div>
                 </svelte:fragment>
             </LabelCard>
         </li>
@@ -164,7 +168,9 @@
                             {tierScale.description}
                         </p>
                     </div>
-                    <Pill disabled>COMING SOON</Pill>
+                    <div class:u-opacity-50={disabled}>
+                        <Pill disabled>COMING SOON</Pill>
+                    </div>
                 </svelte:fragment>
             </LabelCard>
         </li>

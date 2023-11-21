@@ -6,8 +6,8 @@
     export let tag: FormItemTag = 'li';
     export let fullWidth = false;
     export let isMultiple = false;
-    export let style: string = undefined;
-    let classes: string = undefined;
+    export let style: string = '';
+    let classes: string = '';
     export { classes as class };
 </script>
 

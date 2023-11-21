@@ -18,7 +18,8 @@
         daysLeftInTrial,
         tierToPlan,
         trialEndDate,
-        readOnly
+        readOnly,
+        showUsageRatesModal
     } from '$lib/stores/billing';
     import { diffDays, toLocaleDate } from '$lib/helpers/date';
     import { base } from '$app/paths';
@@ -42,6 +43,7 @@
     import { showSupportModal } from './wizard/support/store';
     import ExcesLimitModal from './organization-[organization]/excesLimitModal.svelte';
     import { showExcess } from './organization-[organization]/store';
+    import UsageRates from './wizard/cloudOrganization/usageRates.svelte';
 
     function kebabToSentenceCase(str: string) {
         return str
@@ -440,6 +442,9 @@
     <MobileSupportModal bind:show={$showSupportModal}></MobileSupportModal>
 {/if}
 
-{#if $showExcess}
+{#if isCloud && $showExcess}
     <ExcesLimitModal bind:show={$showExcess}></ExcesLimitModal>
+{/if}
+{#if isCloud && $showUsageRatesModal}
+    <UsageRates bind:show={$showUsageRatesModal} tier={$organization?.billingPlan} />
 {/if}

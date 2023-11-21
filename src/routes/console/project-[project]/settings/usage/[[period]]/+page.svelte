@@ -6,10 +6,9 @@
     import { page } from '$app/stores';
     import { bytesToSize, humanFileSize } from '$lib/helpers/sizeConvertion';
     import { toDecimals } from '$lib/helpers/numbers.js';
-    import { tierToPlan } from '$lib/stores/billing.js';
+    import { showUsageRatesModal, tierToPlan } from '$lib/stores/billing.js';
     import { organization } from '$lib/stores/organization.js';
     import { isCloud } from '$lib/system';
-    import UsageRates from '$routes/console/wizard/cloudOrganization/usageRates.svelte';
 
     export let data;
 
@@ -36,8 +35,6 @@
             unit
         };
     }
-
-    let show = false;
 </script>
 
 <Container>
@@ -66,7 +63,10 @@
             Project resources contribute to your organization's monthly free usage limits on the {tierToPlan(
                 $organization.billingPlan
             ).name} plan.
-            <button class="link" type="button" on:click|preventDefault={() => (show = true)}
+            <button
+                class="link"
+                type="button"
+                on:click|preventDefault={() => ($showUsageRatesModal = true)}
                 >Learn more about usage rates.</button>
         </p>
     {/if}
@@ -191,7 +191,3 @@
         Metrics are estimates updated every 24 hours and may not accurately reflect your invoice.
     </p>
 </Container>
-
-{#if show && isCloud}
-    <UsageRates bind:show tier={$organization.billingPlan} />
-{/if}

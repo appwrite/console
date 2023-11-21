@@ -39,8 +39,8 @@
         },
         {
             id: 'users',
-            resource: 'Active users',
-            unit: ' AU'
+            resource: 'Users',
+            unit: ' Users'
         },
         {
             id: 'realtime',

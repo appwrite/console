@@ -22,9 +22,8 @@
     import { func } from '../store';
     import type { Models } from '@appwrite.io/console';
     import { organization } from '$lib/stores/organization';
-    import { getServiceLimit, readOnly } from '$lib/stores/billing';
+    import { getServiceLimit, readOnly, showUsageRatesModal } from '$lib/stores/billing';
     import { isCloud } from '$lib/system';
-    import UsageRates from '$routes/console/wizard/cloudOrganization/usageRates.svelte';
     import { project } from '$routes/console/project-[project]/store';
     import Create from '../create.svelte';
     import Execute from '../execute.svelte';
@@ -32,7 +31,6 @@
 
     export let data;
 
-    let showRates = false;
     let selectedFunction: Models.Function = null;
 
     onMount(() => {
@@ -80,7 +78,7 @@
                     After this amount, <button
                         class="link"
                         type="button"
-                        on:click|preventDefault={() => (showRates = true)}
+                        on:click|preventDefault={() => ($showUsageRatesModal = true)}
                         >usage fees will apply</button
                     >.
                 </p>
@@ -176,7 +174,4 @@
 
 <!-- <CreateDeployment bind:showCreate /> -->
 
-{#if isCloud}
-    <UsageRates bind:show={showRates} tier={$organization?.billingPlan} />
-{/if}
 <Execute {selectedFunction} />

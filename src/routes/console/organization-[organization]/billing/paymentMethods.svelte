@@ -115,6 +115,7 @@
                             <DropListItem
                                 icon="pencil"
                                 on:click={() => {
+                                    isSelectedBackup = false;
                                     showEdit = true;
                                     showDropdown = false;
                                 }}>
@@ -123,6 +124,7 @@
                             <DropListItem
                                 icon="switch-horizontal"
                                 on:click={() => {
+                                    isSelectedBackup = false;
                                     showReplace = true;
                                     showDropdown = false;
                                 }}>
@@ -131,6 +133,7 @@
                             <DropListItem
                                 icon="trash"
                                 on:click={() => {
+                                    isSelectedBackup = false;
                                     showDelete = true;
                                     showDropdown = false;
                                 }}>

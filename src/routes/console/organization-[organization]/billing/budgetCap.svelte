@@ -4,15 +4,14 @@
     import { Alert, CardGrid, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form, FormList, InputNumber, InputSwitch } from '$lib/elements/forms';
+    import { showUsageRatesModal } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
-    import UsageRates from '$routes/console/wizard/cloudOrganization/usageRates.svelte';
     import { onMount } from 'svelte';
 
     let capActive = false;
     let budget: number;
-    let showRates = false;
 
     onMount(() => {
         budget = $organization?.billingBudget;
@@ -29,7 +28,8 @@
             invalidate(Dependencies.ORGANIZATION);
             addNotification({
                 type: 'success',
-                message: `Budget cap enabled for ${$organization.name}`
+                isHtml: true,
+                message: `<span>Budget cap enabled for <b>${$organization.name}</b></span>`
             });
             trackEvent(Submit.BudgetCapUpdate, {
                 budget: capActive ? budget : undefined
@@ -54,7 +54,7 @@
 
         <p class="text">
             Restrict your resource usage by setting a budget cap. <button
-                on:click={() => (showRates = true)}
+                on:click={() => ($showUsageRatesModal = true)}
                 type="button"
                 class="link">Learn more about usage rates.</button>
         </p>
@@ -91,5 +91,3 @@
         </svelte:fragment>
     </CardGrid>
 </Form>
-
-<UsageRates bind:show={showRates} tier={$organization?.billingPlan} />

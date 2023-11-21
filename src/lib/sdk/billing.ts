@@ -111,6 +111,14 @@ export type Aggregation = {
      */
     to: string;
     /**
+     * Total amount of the invoice.
+     */
+    amount: number;
+    /**
+     * Price for addional members
+     */
+    additionalMembers: number;
+    /**
      * Total storage usage.
      */
     usageStorage: number;
@@ -130,6 +138,10 @@ export type Aggregation = {
      * Total realtime usage for the billing period.
      */
     usageRealtime: number;
+    /**
+     * Usage logs for the billing period.
+     */
+    resources: OrganizationUsage;
 };
 
 export type OrganizationUsage = {

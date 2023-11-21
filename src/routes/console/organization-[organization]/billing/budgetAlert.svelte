@@ -17,10 +17,8 @@
     import { addNotification } from '$lib/stores/notifications';
     import { organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
-    import UsageRates from '$routes/console/wizard/cloudOrganization/usageRates.svelte';
     import { onMount } from 'svelte';
 
-    let showRates = false;
     let search: string;
     let selectedAlert: number;
     let alerts: number[] = [];
@@ -59,7 +57,8 @@
 
             addNotification({
                 type: 'success',
-                message: `Budget cap enabled for ${$organization.name}`
+                isHtml: true,
+                message: `<span>Budget cap enabled for <b>${$organization.name}</b></span>`
             });
             trackEvent(Submit.BudgetAlertsUpdate, {
                 alerts
@@ -137,5 +136,3 @@
         </svelte:fragment>
     </CardGrid>
 </Form>
-
-<UsageRates bind:show={showRates} tier={$organization?.billingPlan} />
