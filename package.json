@@ -24,7 +24,7 @@
         "@popperjs/core": "^2.11.8",
         "@sentry/svelte": "^7.66.0",
         "@sentry/tracing": "^7.66.0",
-        "@stripe/stripe-js": "^1.54.2",
+        "@stripe/stripe-js": "^2.2.0",
         "ai": "^2.2.11",
         "analytics": "^0.8.9",
         "dayjs": "^1.11.9",
