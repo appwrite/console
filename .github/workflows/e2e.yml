@@ -21,9 +21,9 @@ jobs:
               uses: actions/setup-node@v3
               with:
                   node-version: 18
-            - name: Audit dependencies
-              run: npx playwright install
             - name: Install dependencies
               run: npm ci
+            - name: Prepare playwright
+              run: npx playwright install
             - name: Unit Tests
               run: npm run e2e
