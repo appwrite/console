@@ -671,12 +671,14 @@ export class Billing {
 
     async setPaymentMethod(
         paymentMethodId: string,
-        providerMethodId: string | PaymentMethod
+        providerMethodId: string | PaymentMethod,
+        name: string
     ): Promise<PaymentMethodData> {
         const path = `/account/payment-methods/${paymentMethodId}/provider`;
         const params = {
             paymentMethodId,
-            providerMethodId
+            providerMethodId,
+            name
         };
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(

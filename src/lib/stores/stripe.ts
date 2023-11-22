@@ -44,7 +44,7 @@ export async function initializeStripe() {
 
 // TODO: fix redirect
 
-export async function submitStripeCard(name?: string, urlRoute?: string) {
+export async function submitStripeCard(name: string, urlRoute?: string) {
     try {
         // If a payment method was created during initialization, use it, otherwise create a new one
         if (!paymentMethod) {
@@ -61,7 +61,7 @@ export async function submitStripeCard(name?: string, urlRoute?: string) {
             elements,
             clientSecret,
             confirmParams: {
-                return_url: `${baseUrl}${urlRoute ?? 'account/payments?to=test'}`,
+                return_url: `${baseUrl}${urlRoute ?? 'organization/billing?invoiceId'}`,
                 payment_method_data: {
                     billing_details: {
                         name
@@ -80,7 +80,8 @@ export async function submitStripeCard(name?: string, urlRoute?: string) {
         if (setupIntent && setupIntent.status === 'succeeded') {
             const method = await sdk.forConsole.billing.setPaymentMethod(
                 paymentMethod.$id,
-                setupIntent.payment_method
+                setupIntent.payment_method,
+                name
             );
             paymentElement.destroy();
             isStripeInitialized.set(false);
