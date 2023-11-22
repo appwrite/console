@@ -18,7 +18,6 @@
         TableScroll,
         TableCellCheck
     } from '$lib/elements/table';
-    import { toLocaleDateTime } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import type { PageData } from './$types';
