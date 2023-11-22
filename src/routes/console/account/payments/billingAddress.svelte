@@ -53,6 +53,9 @@
                             <TableCell>
                                 <div class="u-line-height-1-5">
                                     <p class="text">{address.streetAddress}</p>
+                                    {#if address?.addressLine2}
+                                        <p class="text">{address.addressLine2}</p>
+                                    {/if}
                                     <p class="text">{address.city}</p>
                                     <p class="text">{address.state}</p>
                                     <p class="text">{address.postalCode}</p>

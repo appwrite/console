@@ -4,7 +4,7 @@
     import { Button, Form, FormItem, InputNumber, InputSelect } from '$lib/elements/forms';
     import { humanFileSize, sizeToBytes } from '$lib/helpers/sizeConvertion';
     import { createByteUnitPair } from '$lib/helpers/unit';
-    import { getServiceLimit, readOnly } from '$lib/stores/billing';
+    import { getServiceLimit, readOnly, tierToPlan } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
     import { isCloud } from '$lib/system';
@@ -35,11 +35,12 @@
         <Heading tag="h2" size="7">Maximum file size</Heading>
         <p class="text">Set the maximum file size allowed in the bucket.</p>
         <svelte:fragment slot="aside">
-            {#if isCloud && $organization?.billingPlan === 'tier-0'}
+            {#if isCloud}
                 {@const size = humanFileSize(sizeToBytes(service, 'MB', 1000))}
+                {@const plan = tierToPlan($organization?.billingPlan)}
                 <Alert type="info">
                     <p class="text">
-                        The Starter plan has a maximum upload file size limit of {size.value}{size.unit}.
+                        The {plan.name} plan has a maximum upload file size limit of {size.value}{size.unit}.
                         Upgrade to allow files of a larger size.
                     </p>
                     <svelte:fragment slot="action">

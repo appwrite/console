@@ -28,7 +28,9 @@
             Your current project plan. For more information on Appwrite plans, <a
                 type="button"
                 class="link"
-                href="https://appwrite.io/pricing">
+                href="https://appwrite.io/pricing"
+                target="_blank"
+                rel="noopener noreferrer">
                 view our pricing guide.
             </a>
         </p>

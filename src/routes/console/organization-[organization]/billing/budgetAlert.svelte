@@ -58,7 +58,7 @@
             addNotification({
                 type: 'success',
                 isHtml: true,
-                message: `<span>Budget cap enabled for <b>${$organization.name}</b></span>`
+                message: `<span>Budget alert condition added to <b>${$organization.name}</b></span>`
             });
             trackEvent(Submit.BudgetAlertsUpdate, {
                 alerts

@@ -112,9 +112,13 @@
                 <Alert type="warning" isStandalone>
                     <span class="text">
                         You've reached the storage limit for the {tier} plan.
-                        <button class="link" type="button" on:click|preventDefault={upgradeMethod}
-                            >Upgrade</button>
-                        for additional storage.
+                        {#if tier === 'Starter'}
+                            <button
+                                class="link"
+                                type="button"
+                                on:click|preventDefault={upgradeMethod}>Upgrade</button>
+                            for additional storage.
+                        {/if}
                     </span>
                 </Alert>
             {/if}

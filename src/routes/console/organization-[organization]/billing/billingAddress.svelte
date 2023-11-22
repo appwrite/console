@@ -59,11 +59,15 @@
                 <div class="u-flex u-main-space-between u-cross-start">
                     <div class="u-line-height-1-5 u-flex u-flex-vertical u-gap-2">
                         <p class="text">{billingAddress.streetAddress}</p>
+                        {#if billingAddress?.addressLine2}
+                            <p class="text">{billingAddress.addressLine2}</p>
+                        {/if}
                         <p class="text">{billingAddress.city}</p>
                         <p class="text">{billingAddress.state}</p>
                         <p class="text">{billingAddress.postalCode}</p>
                         <p class="text">{billingAddress.country}</p>
                     </div>
+
                     <DropList
                         bind:show={showBillingAddressDropdown}
                         placement="bottom-start"
@@ -121,6 +125,9 @@
                                         <DropListItem on:click={() => addAddress(address?.$id)}>
                                             <p class="text">
                                                 <span>{address.streetAddress}</span>,
+                                                {#if address?.addressLine2}
+                                                    <span>{address.addressLine2}</span>,
+                                                {/if}
                                                 <span>{address.city}</span>,
                                                 <span>{address.state}</span>,
                                                 <span>{address.postalCode}</span>,

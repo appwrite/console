@@ -57,10 +57,15 @@
         Usage on the Starter plan is limited for the following resources. Next billing period: {toLocaleDate(
             nextDate
         )}.
-    {:else}
+    {:else if tier === 'tier-1'}
         <p>
-            Usage on the Pro plan and Scale plan will be charged at the end of each billing period
-            at the following rates. Next billing period: {toLocaleDate(nextDate)}.
+            Usage on the Pro plan will be charged at the end of each billing period at the following
+            rates. Next billing period: {toLocaleDate(nextDate)}.
+        </p>
+    {:else if tier === 'tier-2'}
+        <p>
+            Usage on the Scale plan will be charged at the end of each billing period at the
+            following rates. Next billing period: {toLocaleDate(nextDate)}.
         </p>
     {/if}
     <Table noStyles>

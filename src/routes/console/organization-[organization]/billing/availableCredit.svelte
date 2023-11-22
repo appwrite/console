@@ -76,7 +76,7 @@
     <p class="text">Appwrite credit will automatically be applied to your next invoice.</p>
     <svelte:fragment slot="aside">
         <h4 class="body-text-1 u-bold">
-            Credit balance: <span class="inline-tag">${balance}</span>
+            Credit balance <span class="inline-tag">${balance}</span>
         </h4>
         <Form onSubmit={redeem} noMargin>
             <FormList>

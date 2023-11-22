@@ -83,10 +83,10 @@
             <Alert type={alertType} isStandalone>
                 <span class="text">
                     You've reached the {title.toLowerCase()} limit for the {tier} plan.
-                    {#if tier !== 'Scale'}<button
-                            class="link"
-                            type="button"
-                            on:click|preventDefault={upgradeMethod}>Upgrade</button>
+
+                    {#if $organization?.billingPlan === 'tier-0'}
+                        <button class="link" type="button" on:click|preventDefault={upgradeMethod}
+                            >Upgrade</button>
                         for additional {title.toLocaleLowerCase()}.
                     {/if}
                 </span>
@@ -120,7 +120,7 @@
                             <p class="text">
                                 Your are limited to {limit}
                                 {title.toLocaleLowerCase()} per project on the {tier} plan.
-                                {#if tier !== 'Scale'}<button
+                                {#if $organization?.billingPlan === 'tier-0'}<button
                                         class="link"
                                         type="button"
                                         on:click|preventDefault={upgradeMethod}>Upgrade</button>
@@ -138,7 +138,10 @@
         {#if buttonText}
             <div
                 use:tooltip={{
-                    content: `Upgrade to add more ${title.toLocaleLowerCase()}`,
+                    content:
+                        $organization.billingPlan === 'tier-0'
+                            ? `Upgrade to add more ${title.toLocaleLowerCase()}`
+                            : `You've reached the ${title.toLocaleLowerCase()} limit for the ${tier} plan`,
                     disabled: !isButtonDisabled
                 }}>
                 <Button on:click={buttonMethod} event={buttonEvent} disabled={isButtonDisabled}>
