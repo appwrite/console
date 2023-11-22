@@ -142,5 +142,5 @@
     </svelte:fragment>
 </CardGrid>
 
-<AddressModal bind:show={showCreate} organization={$organization.$id} />
+<AddressModal bind:show={showCreate} organization={$organization?.$id} />
 <EditAddressModal bind:show={showEdit} bind:selectedAddress={billingAddress} />
