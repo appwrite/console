@@ -18,6 +18,7 @@
     $: if ($changeOrganizationTier.billingPlan === 'tier-0' && $changeTierSteps) {
         $changeTierSteps = updateStepStatus($changeTierSteps, 2, true);
         $changeTierSteps = updateStepStatus($changeTierSteps, 3, true);
+        $changeTierSteps = updateStepStatus($changeTierSteps, 4, true);
     }
 
     $: if (
@@ -26,6 +27,7 @@
     ) {
         $changeTierSteps = updateStepStatus($changeTierSteps, 2, false);
         $changeTierSteps = updateStepStatus($changeTierSteps, 3, false);
+        $changeTierSteps = updateStepStatus($changeTierSteps, 4, false);
     }
 
     $: if ($changeOrganizationTier.billingPlan) {
@@ -73,10 +75,12 @@
         members = await sdk.forConsole.teams.listMemberships($organization.$id);
 
         //Select closest tier from starting one
-        if ($organization.billingPlan === 'tier-2') {
-            $changeOrganizationTier.billingPlan = 'tier-1';
-        } else if ($organization.billingPlan === 'tier-1') {
-            $changeOrganizationTier.billingPlan = 'tier-2';
+        // if ($organization.billingPlan === 'tier-2') {
+        //     $changeOrganizationTier.billingPlan = 'tier-1';
+        // }
+        // else
+        if ($organization.billingPlan === 'tier-1') {
+            $changeOrganizationTier.billingPlan = 'tier-0';
         } else if ($organization.billingPlan === 'tier-0') {
             $changeOrganizationTier.billingPlan = 'tier-1';
         }

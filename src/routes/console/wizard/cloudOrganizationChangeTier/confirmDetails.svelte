@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Box, CreditCardBrandImage } from '$lib/components';
     import { Pill } from '$lib/elements';
-    import { InputTextarea } from '$lib/elements/forms';
+    import { FormList, InputTextarea } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
     import { WizardStep } from '$lib/layout';
     import { plansInfo } from '$lib/stores/billing';
@@ -56,11 +56,13 @@
             know.
         </svelte:fragment>
         <!-- TODO: submit feedback -->
-        <InputTextarea
-            id="comment"
-            label="Your feedback here"
-            placeholder="This is my reason for downgrading..."
-            bind:value={comment} />
+        <FormList>
+            <InputTextarea
+                id="comment"
+                label="Your feedback here"
+                placeholder="This is my reason for downgrading..."
+                bind:value={comment} />
+        </FormList>
     </WizardStep>
 {:else}
     <WizardStep>

@@ -1,6 +1,6 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { CreditCardBrandImage, Modal } from '$lib/components';
+    import { CreditCardBrandImage, FakeModal } from '$lib/components';
     import { Button, FormList, InputRadio, InputText } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
     import { organization } from '$lib/stores/organization';
@@ -30,12 +30,10 @@
     // TODO: fix new payment method replacement
     async function handleSubmit() {
         try {
-            console.log(selectedPaymentMethodId);
             if (!selectedPaymentMethodId) {
                 const method = await submitStripeCard(name);
                 selectedPaymentMethodId = method.$id;
             }
-            console.log(selectedPaymentMethodId);
             isBackup
                 ? await addBackupPaymentMethod(selectedPaymentMethodId)
                 : await addPaymentMethod(selectedPaymentMethodId);
@@ -95,7 +93,7 @@
     }
 </script>
 
-<Modal
+<FakeModal
     bind:show
     bind:error
     onSubmit={handleSubmit}
@@ -103,61 +101,66 @@
     headerDivider={false}
     title="Replace payment method">
     <p class="text">Replace the existing payment method for your organization.</p>
-    <div class:boxes-wrapper={methods?.total}>
-        {#if methods?.total}
-            {#each filteredMethods as method}
-                <div class="box">
+    <FormList>
+        <div class:boxes-wrapper={methods?.total}>
+            {#if methods?.total}
+                {#each filteredMethods as method}
+                    <div class="box">
+                        <InputRadio
+                            id={`payment-method-${method.$id}`}
+                            disabled={isBackup
+                                ? method.$id === $organization.paymentMethodId
+                                : method.$id === $organization.backupPaymentMethodId}
+                            value={method.$id}
+                            name="payment"
+                            bind:group={selectedPaymentMethodId}>
+                            <span class="u-flex u-gap-16 u-main-space-between">
+                                <span
+                                    class="u-flex u-cross-center u-gap-8"
+                                    style="padding-inline:0.25rem">
+                                    <span>
+                                        <span class="u-capitalize">{method.brand}</span> ending in {method.last4}</span>
+                                    <CreditCardBrandImage brand={method.brand} />
+                                </span>
+                                {#if method.$id === $organization.backupPaymentMethodId}
+                                    <Pill>Backup</Pill>
+                                {:else if method.$id === $organization.paymentMethodId}
+                                    <Pill>Default</Pill>
+                                {/if}
+                            </span>
+                        </InputRadio>
+                    </div>
+                {/each}
+            {/if}
+
+            <div class="box">
+                {#if methods?.total}
                     <InputRadio
-                        id={`payment-method-${method.$id}`}
-                        disabled={isBackup
-                            ? method.$id === $organization.paymentMethodId
-                            : method.$id === $organization.backupPaymentMethodId}
-                        value={method.$id}
+                        id="payment-method"
+                        value={null}
                         name="payment"
                         bind:group={selectedPaymentMethodId}>
-                        <span class="u-flex u-gap-16 u-main-space-between">
-                            <span class="u-flex u-cross-center u-gap-8">
-                                <span>
-                                    <span class="u-capitalize">{method.brand}</span> ending in {method.last4}</span>
-                                <CreditCardBrandImage brand={method.brand} />
-                            </span>
-                            {#if method.$id === $organization.backupPaymentMethodId}
-                                <Pill>Backup</Pill>
-                            {:else if method.$id === $organization.paymentMethodId}
-                                <Pill>Default</Pill>
-                            {/if}
-                        </span>
+                        <span style="padding-inline:0.25rem">Add new payment method</span>
                     </InputRadio>
-                </div>
-            {/each}
-        {/if}
+                {/if}
+                {#if selectedPaymentMethodId === null}
+                    <FormList>
+                        <InputText
+                            id="name"
+                            label="Cardholder name"
+                            placeholder="Cardholder name"
+                            bind:value={name}
+                            required
+                            autofocus={true} />
 
-        <div class="box">
-            {#if methods?.total}
-                <InputRadio
-                    id="payment-method"
-                    label="Add new payment method"
-                    value={null}
-                    name="payment"
-                    bind:group={selectedPaymentMethodId} />
-            {/if}
-            {#if selectedPaymentMethodId === null}
-                <FormList>
-                    <InputText
-                        id="name"
-                        label="Cardholder name"
-                        placeholder="Cardholder name"
-                        bind:value={name}
-                        required
-                        autofocus={true} />
-
-                    <div id="payment-element">
-                        <!-- Elements will create form elements here -->
-                    </div>
-                </FormList>
-            {/if}
+                        <div id="payment-element">
+                            <!-- Elements will create form elements here -->
+                        </div>
+                    </FormList>
+                {/if}
+            </div>
         </div>
-    </div>
+    </FormList>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (show = false)}>Cancel</Button>
         <Button
@@ -167,4 +170,4 @@
                 (isBackup ? $organization.backupPaymentMethodId : $organization.paymentMethodId)}
             >Save</Button>
     </svelte:fragment>
-</Modal>
+</FakeModal>
