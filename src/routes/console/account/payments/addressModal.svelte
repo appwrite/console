@@ -49,21 +49,16 @@
             trackEvent(Submit.BillingAddressCreate);
             let org: Organization = null;
             if (organization) {
-                console.log(response);
-                Promise.allSettled([
-                    (org = await sdk.forConsole.billing.setBillingAddress(
-                        organization,
-                        response.$id
-                    ))
-                ]);
+                org = await sdk.forConsole.billing.setBillingAddress(organization, response.$id);
                 trackEvent(Submit.OrganizationBillingAddressUpdate);
-                console.log(org);
+                await invalidate(Dependencies.ORGANIZATION);
             }
-            Promise.allSettled([await invalidate(Dependencies.ADDRESS)]);
+            await invalidate(Dependencies.ADDRESS);
+
             show = false;
             addNotification({
                 type: 'success',
-                message: org
+                message: org?.name
                     ? `A new billing address has been added to ${org.name}`
                     : `Address has been added`
             });

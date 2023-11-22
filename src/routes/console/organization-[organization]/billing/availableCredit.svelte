@@ -40,7 +40,8 @@
                 type: 'success',
                 message: `Credit has been added to ${$organization.name}`
             });
-            invalidate(Dependencies.ORGANIZATION);
+            await invalidate(Dependencies.CREDIT);
+            await invalidate(Dependencies.ORGANIZATION);
             trackEvent(Submit.CreditRedeem, {
                 coupon
             });
@@ -92,7 +93,7 @@
             <Table noStyles noMargin>
                 <TableHeader>
                     <TableCellHead>Date Added</TableCellHead>
-                    <!-- <TableCellHead>Expiry Date</TableCellHead> -->
+                    <TableCellHead>Expiry Date</TableCellHead>
                     <TableCellHead>Amount</TableCellHead>
                 </TableHeader>
                 <TableBody>
@@ -101,9 +102,9 @@
                             <TableCellText title="date added">
                                 {toLocaleDate(credit.$createdAt)}
                             </TableCellText>
-                            <!-- <TableCellText title="expiry date">
+                            <TableCellText title="expiry date">
                                 {toLocaleDate(credit.expiration)}
-                            </TableCellText> -->
+                            </TableCellText>
                             <TableCellText title="amount">
                                 ${credit.credits}
                             </TableCellText>

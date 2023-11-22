@@ -11,16 +11,21 @@
     import { sdk } from '$lib/stores/sdk';
     import AddressModal from '$routes/console/account/payments/addressModal.svelte';
     import EditAddressModal from '$routes/console/account/payments/editAddressModal.svelte';
+    import RemoveAddressModal from './removeAddressModal.svelte';
 
     let showDropdown = false;
     let showBillingAddressDropdown = false;
     let showCreate = false;
     let showEdit = false;
+    let showDelete = false;
 
     async function addAddress(addressId: string) {
         try {
             await sdk.forConsole.billing.setBillingAddress($organization.$id, addressId);
+
             await invalidate(Dependencies.ADDRESS);
+            await invalidate(Dependencies.ORGANIZATION);
+
             showDropdown = false;
             addNotification({
                 type: 'success',
@@ -84,6 +89,7 @@
                             <DropListItem
                                 icon="trash"
                                 on:click={() => {
+                                    showDelete = true;
                                     showBillingAddressDropdown = false;
                                 }}>
                                 Delete
@@ -144,3 +150,4 @@
 
 <AddressModal bind:show={showCreate} organization={$organization?.$id} />
 <EditAddressModal bind:show={showEdit} bind:selectedAddress={billingAddress} />
+<RemoveAddressModal bind:showDelete />
