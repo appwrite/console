@@ -80,13 +80,13 @@
                                     </Id>
                                 </TableCell>
                             {/key}
-                        {:else if column.id === 'name'}
-                            <TableCellText width={column.width} title={column.title}>
-                                {bucket.name}
-                            </TableCellText>
                         {:else}
                             <TableCellText width={column.width} title={column.title}>
-                                {toLocaleDateTime(bucket[column.id])}
+                                {#if column.transform}
+                                    {column.transform(bucket[column.id])}
+                                {:else}
+                                    {bucket[column.id]}
+                                {/if}
                             </TableCellText>
                         {/if}
                     {/if}

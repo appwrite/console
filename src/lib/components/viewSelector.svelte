@@ -4,6 +4,7 @@
         title: string;
         show: boolean;
         width?: number;
+        transform?: (value: unknown) => string;
     };
 </script>
 
