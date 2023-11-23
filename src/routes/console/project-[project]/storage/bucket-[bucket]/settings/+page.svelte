@@ -232,7 +232,7 @@
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">
-                    <Button disabled={enabled === $bucket.enabled || $readOnly.storage} submit>
+                    <Button disabled={enabled === $bucket.enabled || $readOnly} submit>
                         Update
                     </Button>
                 </svelte:fragment>
@@ -248,14 +248,14 @@
                             id="name"
                             label="Name"
                             placeholder="Enter name"
-                            readonly={$readOnly.storage}
+                            readonly={$readOnly}
                             bind:value={bucketName} />
                     </FormList>
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">
                     <Button
-                        disabled={bucketName === $bucket.name || !bucketName || $readOnly.storage}
+                        disabled={bucketName === $bucket.name || !bucketName || $readOnly}
                         submit>
                         Update
                     </Button>
@@ -308,7 +308,7 @@
                 </svelte:fragment>
                 <svelte:fragment slot="actions">
                     <Button
-                        disabled={bucketFileSecurity === $bucket.fileSecurity || $readOnly.storage}
+                        disabled={bucketFileSecurity === $bucket.fileSecurity || $readOnly}
                         submit>
                         Update
                     </Button>
@@ -422,8 +422,7 @@
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">
-                    <Button disabled={isExtensionsDisabled || $readOnly.storage} submit
-                        >Update</Button>
+                    <Button disabled={isExtensionsDisabled || $readOnly} submit>Update</Button>
                 </svelte:fragment>
             </CardGrid>
         </Form>

@@ -16,6 +16,7 @@
     import { wizard } from '$lib/stores/wizard';
     import { tierToPlan } from '$lib/stores/billing';
     import AddressDetails from './wizard/cloudOrganization/addressDetails.svelte';
+    import { changeOrganizationFinalAction } from './wizard/cloudOrganizationChangeTier/store';
 
     const dispatch = createEventDispatcher();
 
@@ -143,6 +144,6 @@
 <Wizard
     title="Create organization"
     steps={$createOrgSteps}
-    finalAction="Start trial"
+    finalAction={$changeOrganizationFinalAction}
     on:finish={create}
     on:exit={onFinish} />

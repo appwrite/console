@@ -63,7 +63,7 @@
             total={data.organizationMembers.total}
             buttonText="Invite"
             buttonMethod={() => newMemberModal.set(true)}
-            buttonDisabled={$readOnly.bandwidth}
+            buttonDisabled={$readOnly}
             showAlert={false} />
 
         <TableScroll>

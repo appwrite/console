@@ -56,7 +56,7 @@
         buttonText="Execute now"
         buttonEvent="execute_function"
         buttonMethod={() => (selectedFunction = $func)}
-        buttonDisabled={isCloud && $readOnly.executions}>
+        buttonDisabled={isCloud && $readOnly}>
         <svelte:fragment slot="tooltip" let:tier let:limit let:upgradeMethod>
             <p class="u-bold">The {tier} plan has limits</p>
             <ul>

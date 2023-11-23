@@ -568,6 +568,22 @@ export class Billing {
         );
     }
 
+    async getCoupon(couponId: string): Promise<Partial<Credit>> {
+        const path = `/console/coupons/${couponId}`;
+        const params = {
+            couponId
+        };
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'GET',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            params
+        );
+    }
+
     async setBillingAddress(
         organizationId: string,
         billingAddressId: string

@@ -33,68 +33,15 @@
     }
 
     async function changeTier() {
-        try {
-            const org = await sdk.forConsole.billing.updatePlan(
-                $organization.$id,
-                $changeOrganizationTier.billingPlan,
-                $changeOrganizationTier.paymentMethodId
-            );
-
-            //Add billing address
-            if (
-                $changeOrganizationTier.billingAddress &&
-                $changeOrganizationTier.billingAddress.streetAddress &&
-                !deepEqual($changeOrganizationTier.billingAddress, $currentBillingAddress)
-            ) {
-                const response = await sdk.forConsole.billing.createAddress(
-                    $changeOrganizationTier.billingAddress.country,
-                    $changeOrganizationTier.billingAddress.streetAddress,
-                    $changeOrganizationTier.billingAddress.city,
-                    $changeOrganizationTier.billingAddress.state,
-                    $changeOrganizationTier.billingAddress.postalCode,
-                    $changeOrganizationTier.billingAddress.addressLine2
-                        ? $changeOrganizationTier.billingAddress.addressLine2
-                        : undefined
+        if ($changeOrganizationTier.billingPlan === 'tier-0') {
+            try {
+                await sdk.forConsole.billing.updatePlan(
+                    $organization.$id,
+                    $changeOrganizationTier.billingPlan,
+                    $changeOrganizationTier.paymentMethodId
                 );
 
-                await sdk.forConsole.billing.setBillingAddress(org.$id, response.$id);
-            }
-
-            //Add budget
-            if ($changeOrganizationTier?.billingBudget) {
-                await sdk.forConsole.billing.updateBudget(
-                    org.$id,
-                    $changeOrganizationTier.billingBudget,
-                    [75]
-                );
-            }
-
-            //Add collaborators
-            if ($changeOrganizationTier?.collaborators?.length) {
-                $changeOrganizationTier.collaborators.forEach(async (collaborator) => {
-                    await sdk.forConsole.teams.createMembership(
-                        org.$id,
-                        ['collaborator'],
-                        `${$page.url.origin}/console/organization-${org.$id}`,
-                        collaborator
-                    );
-                });
-            }
-
-            //Add tax ID
-            if ($changeOrganizationTier?.taxId) {
-                await sdk.forConsole.billing.updateTaxId(org.$id, $changeOrganizationTier.taxId);
-            }
-
-            await invalidate(Dependencies.ACCOUNT);
-            dispatch('created');
-            await goto(`/console/organization-${org.$id}`);
-            if ($isUpgrade) {
-                addNotification({
-                    type: 'success',
-                    message: 'Your organization has been upgraded'
-                });
-            } else {
+                //TODO: send feedback
                 addNotification({
                     type: 'success',
                     isHtml: true,
@@ -103,20 +50,115 @@
                         tierToPlan($changeOrganizationTier.billingPlan).name
                     } plan.`
                 });
+                wizard.hide();
+
+                trackEvent(Submit.OrganizationDowngrade, {
+                    customId: !!$changeOrganizationTier.id,
+                    plan: tierToPlan($changeOrganizationTier.billingPlan)?.name
+                });
+            } catch (e) {
+                addNotification({
+                    type: 'error',
+                    message: e.message
+                });
+                trackError(
+                    e,
+                    $isUpgrade ? Submit.OrganizationUpgrade : Submit.OrganizationDowngrade
+                );
             }
-            trackEvent($isUpgrade ? Submit.OrganizationUpgrade : Submit.OrganizationDowngrade, {
-                customId: !!$changeOrganizationTier.id,
-                plan: tierToPlan($changeOrganizationTier.billingPlan)?.name
-            });
-            wizard.hide();
-        } catch (e) {
-            addNotification({
-                type: 'error',
-                message: e.mesage
-            });
-            trackError(e, $isUpgrade ? Submit.OrganizationUpgrade : Submit.OrganizationDowngrade);
+        } else {
+            try {
+                const org = await sdk.forConsole.billing.updatePlan(
+                    $organization.$id,
+                    $changeOrganizationTier.billingPlan,
+                    $changeOrganizationTier.paymentMethodId
+                );
+
+                //Add billing address
+                if (
+                    $changeOrganizationTier.billingAddress &&
+                    $changeOrganizationTier.billingAddress.streetAddress &&
+                    !deepEqual($changeOrganizationTier.billingAddress, $currentBillingAddress)
+                ) {
+                    const response = await sdk.forConsole.billing.createAddress(
+                        $changeOrganizationTier.billingAddress.country,
+                        $changeOrganizationTier.billingAddress.streetAddress,
+                        $changeOrganizationTier.billingAddress.city,
+                        $changeOrganizationTier.billingAddress.state,
+                        $changeOrganizationTier.billingAddress.postalCode,
+                        $changeOrganizationTier.billingAddress.addressLine2
+                            ? $changeOrganizationTier.billingAddress.addressLine2
+                            : undefined
+                    );
+
+                    await sdk.forConsole.billing.setBillingAddress(org.$id, response.$id);
+                }
+
+                //Add budget
+                if ($changeOrganizationTier?.billingBudget) {
+                    await sdk.forConsole.billing.updateBudget(
+                        org.$id,
+                        $changeOrganizationTier.billingBudget,
+                        [75]
+                    );
+                }
+
+                //Add collaborators
+                if ($changeOrganizationTier?.collaborators?.length) {
+                    $changeOrganizationTier.collaborators.forEach(async (collaborator) => {
+                        await sdk.forConsole.teams.createMembership(
+                            org.$id,
+                            ['collaborator'],
+                            `${$page.url.origin}/console/organization-${org.$id}`,
+                            collaborator
+                        );
+                    });
+                }
+
+                //Add tax ID
+                if ($changeOrganizationTier?.taxId) {
+                    await sdk.forConsole.billing.updateTaxId(
+                        org.$id,
+                        $changeOrganizationTier.taxId
+                    );
+                }
+
+                await invalidate(Dependencies.ACCOUNT);
+                dispatch('created');
+                await goto(`/console/organization-${org.$id}`);
+                if ($isUpgrade) {
+                    addNotification({
+                        type: 'success',
+                        message: 'Your organization has been upgraded'
+                    });
+                } else {
+                    addNotification({
+                        type: 'success',
+                        isHtml: true,
+                        message: `
+                    <b>${$organization.name}</b> has been changed to ${
+                        tierToPlan($changeOrganizationTier.billingPlan).name
+                    } plan.`
+                    });
+                }
+                trackEvent($isUpgrade ? Submit.OrganizationUpgrade : Submit.OrganizationDowngrade, {
+                    customId: !!$changeOrganizationTier.id,
+                    plan: tierToPlan($changeOrganizationTier.billingPlan)?.name
+                });
+                wizard.hide();
+            } catch (e) {
+                addNotification({
+                    type: 'error',
+                    message: e.mesage
+                });
+                trackError(
+                    e,
+                    $isUpgrade ? Submit.OrganizationUpgrade : Submit.OrganizationDowngrade
+                );
+            }
         }
     }
+
     onDestroy(() => {
         $changeOrganizationTier = {
             id: null,

@@ -46,7 +46,7 @@
         title="Teams"
         isFlex={false}
         total={data.teams.total}
-        buttonDisabled={isCloud && $readOnly.users}
+        buttonDisabled={isCloud && $readOnly}
         let:isButtonDisabled>
         <SearchQuery search={data.search} placeholder="Search by name">
             <div

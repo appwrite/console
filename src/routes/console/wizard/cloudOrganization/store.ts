@@ -4,6 +4,7 @@ import type { Tier } from '$lib/stores/billing';
 import { writable } from 'svelte/store';
 
 export const createOrgSteps = writable<WizardStepsType>(new Map());
+export const createOrganizationFinalAction = writable<string>('Start trial');
 
 export const createOrganization = writable<{
     id?: string;

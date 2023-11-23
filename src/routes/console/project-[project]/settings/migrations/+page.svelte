@@ -227,7 +227,7 @@
                         class="u-margin-block-start-20"
                         secondary
                         on:click={openImportWizard}
-                        disabled={$readOnly.bandwidth}>
+                        disabled={$readOnly}>
                         Import data
                     </Button>
                 </div>

@@ -311,13 +311,15 @@
     function checkForUsageLimit() {
         if (!$organization?.billingLimits) return;
         const { bandwidth, documents, executions, storage, users } = $organization.billingLimits;
-        readOnly.set({
-            bandwidth: bandwidth >= 100,
-            documents: documents >= 100,
-            executions: executions >= 100,
-            storage: storage >= 100,
-            users: users >= 100
-        });
+        if (
+            bandwidth >= 100 &&
+            documents >= 100 &&
+            executions >= 100 &&
+            storage >= 100 &&
+            users >= 100
+        ) {
+            $readOnly = true;
+        }
     }
 
     async function paymentExpired() {

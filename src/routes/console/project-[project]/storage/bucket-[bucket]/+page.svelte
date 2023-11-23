@@ -94,7 +94,7 @@
         serviceId="storage"
         isFlex={false}
         total={usedStorage}
-        buttonDisabled={$readOnly.storage}>
+        buttonDisabled={$readOnly}>
         <svelte:fragment slot="alert" let:tier let:upgradeMethod let:hasUsageFees>
             {#if hasUsageFees}
                 <Alert type="warning" isStandalone>

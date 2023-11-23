@@ -88,7 +88,7 @@
                 showCreate = true;
             },
             keys: ['c'],
-            disabled: $readOnly.bandwidth,
+            disabled: $readOnly,
             group: 'projects',
             icon: 'plus'
         }
@@ -127,10 +127,7 @@
         <Heading tag="h2" size="5">Projects</Heading>
 
         <DropList bind:show={showDropdown} placement="bottom-end">
-            <Button
-                on:click={handleCreateProject}
-                event="create_project"
-                disabled={$readOnly.bandwidth}>
+            <Button on:click={handleCreateProject} event="create_project" disabled={$readOnly}>
                 <span class="icon-plus" aria-hidden="true" />
                 <span class="text">Create project</span>
             </Button>

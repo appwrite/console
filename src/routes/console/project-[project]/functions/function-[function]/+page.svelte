@@ -160,7 +160,7 @@
                         <Button
                             secondary
                             on:click={() => ($execute = $func)}
-                            disabled={isCloud && $readOnly.executions}>Execute now</Button>
+                            disabled={isCloud && $readOnly}>Execute now</Button>
                     </div>
                 </svelte:fragment>
             </CardGrid>

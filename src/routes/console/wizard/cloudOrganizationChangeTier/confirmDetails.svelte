@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Box, CreditCardBrandImage } from '$lib/components';
     import { Pill } from '$lib/elements';
-    import { FormList, InputTextarea } from '$lib/elements/forms';
+    import { Button, FormList, InputText, InputTextarea } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
     import { WizardStep } from '$lib/layout';
     import { plansInfo } from '$lib/stores/billing';
@@ -19,7 +19,7 @@
         ? new Date(today.getTime() + 44 * 24 * 60 * 60 * 1000)
         : $organization.billingCurrentInvoiceDate;
 
-    // let coupon: string = null;
+    let coupon: string = null;
     let comment: string = null;
     async function fetchCard() {
         try {
@@ -32,14 +32,14 @@
         }
     }
 
-    // async function applyCredit() {
-    //     try {
-    //         await sdk.forConsole.billing.getCredit($organization.$id, coupon);
-    //         coupon = null;
-    //     } catch (error) {
-    //         console.log(error);
-    //     }
-    // }
+    async function applyCredit() {
+        try {
+            await sdk.forConsole.billing.getCoupon(coupon);
+            coupon = null;
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     $: downgradeToStarter = $changeOrganizationTier.billingPlan === 'tier-0';
     $: if (!$isUpgrade) {
@@ -102,7 +102,7 @@
         {/if}
 
         <Box class="u-margin-block-start-32 u-flex u-flex-vertical u-gap-16" radius="small">
-            <!-- <FormList>
+            <FormList>
                 <InputText
                     placeholder="Coupon code"
                     id="code"
@@ -110,7 +110,7 @@
                     bind:value={coupon}>
                     <Button secondary disabled={!coupon} on:click={applyCredit}>Apply</Button>
                 </InputText>
-            </FormList> -->
+            </FormList>
             {#if $changeOrganizationTier.billingPlan !== 'tier-0'}
                 <span class="u-flex u-main-space-between">
                     <p class="text">{plan.name} plan</p>

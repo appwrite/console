@@ -26,6 +26,7 @@
     import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
     import { Pill } from '$lib/elements';
     import { showExcess } from '$routes/console/organization-[organization]/store';
+    import { readOnly } from '$lib/stores/billing';
 
     let showDropdown = false;
     let showSupport = false;
@@ -103,7 +104,7 @@
     <svelte:component this={$page.data.breadcrumbs} />
 {/if}
 
-{#if !$page.url.pathname.includes('/console/account') && true}
+{#if !$page.url.pathname.includes('/console/account') && $readOnly}
     <Pill danger button on:click={() => ($showExcess = true)}>
         <div>
             <span class="icon-exclamation-circle" aria-hidden="true" />

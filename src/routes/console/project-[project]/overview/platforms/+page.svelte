@@ -79,7 +79,7 @@
         <Button
             on:click={() => (showDropdown = !showDropdown)}
             disabled={data?.platforms?.platforms?.length >= getServiceLimit('platforms') ||
-                $readOnly.bandwidth}>
+                $readOnly}>
             <span class="icon-plus" aria-hidden="true" />
             <span class="text">Add platform</span>
         </Button>

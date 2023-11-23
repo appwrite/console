@@ -47,7 +47,7 @@
         <Button
             on:click={() => ($showCreateUser = true)}
             event="create_user"
-            disabled={isCloud && $readOnly.users}>
+            disabled={isCloud && $readOnly}>
             <span class="icon-plus" aria-hidden="true" /> <span class="text">Create user</span>
         </Button>
     </SearchQuery>

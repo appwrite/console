@@ -17,7 +17,7 @@
 
     async function updateTaxId() {
         try {
-            await sdk.forConsole.billing.setBillingAddress($organization.$id, taxId || undefined);
+            await sdk.forConsole.billing.updateTaxId($organization.$id, taxId);
             await invalidate(Dependencies.ADDRESS);
             addNotification({
                 type: 'success',

@@ -17,6 +17,7 @@
     $: if ($createOrganization.billingPlan === 'tier-0' && $createOrgSteps) {
         $createOrgSteps = updateStepStatus($createOrgSteps, 2, true);
         $createOrgSteps = updateStepStatus($createOrgSteps, 3, true);
+        $createOrgSteps = updateStepStatus($createOrgSteps, 4, true);
     }
 
     $: if (
@@ -25,6 +26,7 @@
     ) {
         $createOrgSteps = updateStepStatus($createOrgSteps, 2, false);
         $createOrgSteps = updateStepStatus($createOrgSteps, 3, false);
+        $createOrgSteps = updateStepStatus($createOrgSteps, 4, false);
     }
 </script>
 

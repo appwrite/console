@@ -5,7 +5,7 @@
     import { WizardStep } from '$lib/layout';
     import { plansInfo } from '$lib/stores/billing';
     import { sdk } from '$lib/stores/sdk';
-    import { createOrganization } from './store';
+    import { createOrganization, createOrganizationFinalAction } from './store';
 
     const plan = $plansInfo.plans.find((p) => p.$id === $createOrganization.billingPlan);
     const collaboratorPrice = plan?.addons.member?.price ?? 0;
@@ -24,6 +24,10 @@
         } catch (error) {
             console.log(error);
         }
+    }
+
+    $: if ($createOrganization.billingPlan === 'tier-0') {
+        $createOrganizationFinalAction = 'Create organization';
     }
 </script>
 
@@ -72,16 +76,20 @@
                 <p class="text">Additional members ({collaboratorsNumber})</p>
                 <p class="text">${collaboratorPrice * collaboratorsNumber}</p>
             </span>
+            <div class="u-sep-block-start" />
         {/if}
-        <div class="u-sep-block-start" />
         <span class="u-flex u-main-space-between">
             <p class="text">Estimated total (in USD)</p>
             <p class="text">${totalExpences}</p>
         </span>
 
-        <p class="text u-margin-block-start-16">
-            This amount and any additional usage fees will be charged on a recurring 30 day billing
-            cycle after your trial period ends on <b>{toLocaleDate(billingPayDate.toString())}</b>.
-        </p>
+        {#if $createOrganization.billingPlan !== 'tier-0'}
+            <p class="text u-margin-block-start-16">
+                This amount and any additional usage fees will be charged on a recurring 30 day
+                billing cycle after your trial period ends on <b
+                    >{toLocaleDate(billingPayDate.toString())}</b
+                >.
+            </p>
+        {/if}
     </Box>
 </WizardStep>
