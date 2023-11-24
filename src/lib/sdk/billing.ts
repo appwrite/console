@@ -37,6 +37,7 @@ export type Invoice = {
     to: string;
     status: string;
     dueAt: string;
+    clientSecret: string;
 };
 
 export type InvoiceList = {
@@ -145,10 +146,10 @@ export type Aggregation = {
 };
 
 export type OrganizationUsage = {
-    bandwidth: [];
+    bandwidth: { date: string; value: number }[];
     executions: number;
     storage: number;
-    users: [];
+    users: { date: string; value: number }[];
 };
 
 export type AggregationList = {

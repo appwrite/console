@@ -14,8 +14,10 @@
     import type { PaymentMethodData } from '$lib/sdk/billing';
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
-    import { isStripeInitialized, stripe } from '$lib/stores/stripe';
+    import { initializeStripe, isStripeInitialized, stripe } from '$lib/stores/stripe';
     import { base } from '$app/paths';
+    import { sdk } from '$lib/stores/sdk';
+    import { addNotification } from '$lib/stores/notifications';
 
     $: defaultPaymentMethod = $paymentMethods?.paymentMethods?.find(
         (method: PaymentMethodData) => method.$id === $organization?.paymentMethodId
@@ -27,25 +29,58 @@
 
     onMount(async () => {
         if (
-            $isStripeInitialized &&
-            $page.url.searchParams.has('invoice') &&
-            $page.url.searchParams.has('type') &&
-            $page.url.searchParams.get('type') === 'confirmation'
+            ($page.url.searchParams.has('invoice') &&
+                $page.url.searchParams.has('type') &&
+                $page.url.searchParams.get('type') === 'confirmation') ||
+            $page.url.searchParams.has('clientSecret')
         ) {
+            if (!$isStripeInitialized) {
+                await initializeStripe();
+            }
             console.log('test');
             console.log($page.url.searchParams.get('invoice'));
-
-            const { setupIntent, error } = await $stripe.confirmCardSetup(
-                '{SETUP_INTENT_CLIENT_SECRET}',
-                {
-                    payment_method: {
-                        id: $organization.paymentMethodId,
+            try {
+                const invoiceId = $page.url.searchParams.get('invoice');
+                const invoice = await sdk.forConsole.billing.getInvoice(
+                    $page.params.organization,
+                    invoiceId
+                );
+                const { setupIntent, error } = await $stripe.confirmCardSetup(
+                    invoice.clientSecret,
+                    {
+                        payment_method: $organization.paymentMethodId,
                         return_url: `${base}/console/organization-${$organization.$id}/billing`
                     }
+                );
+                console.log(setupIntent);
+                if (error) {
+                    console.log('Something went wrong');
                 }
-            );
-            if (error) {
-                console.log('Something went wrong');
+                if (setupIntent.status === 'succeeded') {
+                    if (typeof setupIntent.payment_method === 'string') {
+                        await sdk.forConsole.billing.setOrganizationPaymentMethod(
+                            $page.params.organization,
+                            setupIntent.payment_method
+                        );
+                    } else {
+                        await sdk.forConsole.billing.setOrganizationPaymentMethod(
+                            $page.params.organization,
+                            setupIntent.payment_method.id
+                        );
+                    }
+                    addNotification({
+                        title: 'Success',
+                        message: 'Your payment method has been updated',
+                        type: 'success'
+                    });
+                }
+            } catch (error) {
+                addNotification({
+                    title: 'Error',
+                    message:
+                        'There was an error processing your payment, try again later. If the problem persists, please contact support.',
+                    type: 'error'
+                });
             }
         }
     });
