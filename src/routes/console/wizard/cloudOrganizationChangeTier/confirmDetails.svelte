@@ -55,7 +55,6 @@
             there is a specific reason you chose to change your plan at this time, please let us
             know.
         </svelte:fragment>
-        <!-- TODO: submit feedback -->
         <FormList>
             <InputTextarea
                 id="comment"

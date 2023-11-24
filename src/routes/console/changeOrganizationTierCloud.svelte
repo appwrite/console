@@ -25,11 +25,13 @@
     import { wizard } from '$lib/stores/wizard';
     import { tierToPlan } from '$lib/stores/billing';
     import deepEqual from 'deep-equal';
+    import { user } from '$lib/stores/user';
+    import { feedback } from '$lib/stores/feedback';
 
     const dispatch = createEventDispatcher();
 
     async function onFinish() {
-        await invalidate(Dependencies.FUNCTIONS);
+        await invalidate(Dependencies.ORGANIZATION);
     }
 
     async function changeTier() {
@@ -40,8 +42,13 @@
                     $changeOrganizationTier.billingPlan,
                     $changeOrganizationTier.paymentMethodId
                 );
+                feedback.submitFeedback(
+                    'downgrade',
+                    $changeOrganizationTier.feedbackMessage,
+                    $user?.name ?? '',
+                    $user.email
+                );
 
-                //TODO: send feedback
                 addNotification({
                     type: 'success',
                     isHtml: true,
@@ -174,7 +181,8 @@
                 postalCode: null,
                 country: null
             },
-            taxId: null
+            taxId: null,
+            feedbackMessage: null
         };
     });
 

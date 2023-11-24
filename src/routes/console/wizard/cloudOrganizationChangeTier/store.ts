@@ -23,6 +23,7 @@ export const changeOrganizationTier = writable<{
         members?: number;
     };
     taxId?: string;
+    feedbackMessage?: string;
 }>({
     id: null,
     billingPlan: 'tier-1',

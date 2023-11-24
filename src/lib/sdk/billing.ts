@@ -157,8 +157,19 @@ export type AggregationList = {
     total: number;
 };
 
+export type AllowedRegions =
+    | 'eu-de'
+    | 'us-nyc'
+    | 'us-sfo'
+    | 'ap-in'
+    | 'eu-gb'
+    | 'eu-nl'
+    | 'ap-sg'
+    | 'ap-ca'
+    | 'ap-au';
+
 export type Region = {
-    $id: string;
+    $id: AllowedRegions;
     name: string;
     disabled: boolean;
     default: boolean;
