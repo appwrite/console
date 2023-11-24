@@ -41,14 +41,15 @@
             (plan) => plan.$id === $changeOrganizationTier.billingPlan
         );
 
+        const totBandwidth = usage?.bandwidth?.length > 0 ? usage.bandwidth[0].value : 0;
+        const totUsers = usage?.users?.length > 0 ? usage.users[0].value : 0;
         $changeOrganizationTier.limitOverflow = {
-            bandwidth:
-                usage.bandwidth[0] > plan.bandwidth ? usage.bandwidth[0] - plan.bandwidth : 0,
+            bandwidth: totBandwidth > plan.bandwidth ? totBandwidth - plan.bandwidth : 0,
             storage:
                 usage.storage[0] > sizeToBytes(plan.storage, 'GB')
                     ? usage.storage[0] - plan.storage
                     : 0,
-            users: usage.users[0] > plan.users ? usage.users[0] - plan.users : 0,
+            users: totUsers > plan.users ? totUsers - plan.users : 0,
             executions:
                 usage.executions[0] > plan.executions ? usage.executions[0] - plan.executions : 0,
             members: members.total > plan.members ? members.total - (plan.members || Infinity) : 0

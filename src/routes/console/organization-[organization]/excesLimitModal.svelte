@@ -57,17 +57,22 @@
     </p>
     <PlanExcess {excess} currentTier={$organization.billingPlan} />
     <svelte:fragment slot="footer">
-        <Button
-            secondary
-            on:click={() => {
-                show = false;
-                goto(`/console/organization-${$organization.$id}/usage`);
-            }}>View usage</Button>
+        <div class="u-flex u-main-space-between u-width-full-line">
+            <Button text on:click={() => (show = false)}>Cancel</Button>
+            <div class="u-flex u-main-end u-gap-16">
+                <Button
+                    secondary
+                    on:click={() => {
+                        show = false;
+                        goto(`/console/organization-${$organization.$id}/usage`);
+                    }}>View usage</Button>
 
-        <Button
-            on:click={() => {
-                show = false;
-                wizard.start(ChangeOrganizationTierCloud);
-            }}>Upgrade plan</Button>
+                <Button
+                    on:click={() => {
+                        show = false;
+                        wizard.start(ChangeOrganizationTierCloud);
+                    }}>Upgrade plan</Button>
+            </div>
+        </div>
     </svelte:fragment>
 </Modal>

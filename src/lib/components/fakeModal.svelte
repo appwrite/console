@@ -16,7 +16,6 @@
         return;
     };
     export let title = '';
-    export let description = '';
 
     let backdrop: HTMLDivElement;
 

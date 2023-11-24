@@ -82,8 +82,8 @@
 
                                 <TableCell title="status">
                                     <Pill
-                                        danger={status === 'overdue'}
-                                        success={status === 'paid'}
+                                        danger={status === 'overdue' || status === 'failed'}
+                                        success={status === 'paid' || status === 'succeeded'}
                                         warning={status === 'pending'}>
                                         {status}
                                     </Pill>
