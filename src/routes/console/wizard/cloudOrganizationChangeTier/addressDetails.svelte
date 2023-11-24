@@ -3,7 +3,6 @@
     import { WizardStep } from '$lib/layout';
     import { onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
-    import { Alert } from '$lib/components';
     import { changeOrganizationTier } from './store';
     import { organization } from '$lib/stores/organization';
     import type { AddressesList } from '$lib/sdk/billing';
@@ -34,11 +33,6 @@
 <WizardStep>
     <svelte:fragment slot="title">Billing address</svelte:fragment>
     <svelte:fragment slot="subtitle">Add a billing address for your organization.</svelte:fragment>
-
-    <Alert type="info">
-        Depending on your location, your billing address might need to be in the same country
-        associated with the payment method for your organization.
-    </Alert>
 
     <p class="text u-margin-block-start-24"><b>Billing address</b></p>
     <FormList class="u-margin-block-start-8">

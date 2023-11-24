@@ -17,3 +17,4 @@ export { default as Activity } from './activity.svelte';
 export { default as Progress } from './progress.svelte';
 export { default as GridHeader } from './gridHeader.svelte';
 export { default as ContainerHeader } from './containerHeader.svelte';
+export { default as HeaderAlert } from './headerAlert.svelte';

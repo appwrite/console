@@ -1,7 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { INTERVAL } from '$lib/constants';
-    import { Logs } from '$lib/layout';
+    import { HeaderAlert, Logs } from '$lib/layout';
     import Footer from '$lib/layout/footer.svelte';
     import Header from '$lib/layout/header.svelte';
     import SideNavigation from '$lib/layout/navigation.svelte';
@@ -44,6 +44,7 @@
     import ExcesLimitModal from './organization-[organization]/excesLimitModal.svelte';
     import { showExcess } from './organization-[organization]/store';
     import UsageRates from './wizard/cloudOrganization/usageRates.svelte';
+    import { Button } from '$lib/elements/forms';
 
     function kebabToSentenceCase(str: string) {
         return str
@@ -327,6 +328,7 @@
         const payment = await sdk.forConsole.billing.getPaymentMethod(
             $organization.paymentMethodId
         );
+        if (!payment?.expiryYear) return;
         const year = new Date().getFullYear();
         const month = new Date().getMonth();
         const expiredMessage = `The default payment method for <b>${$organization.name}</b> has expired`;
@@ -393,33 +395,35 @@
     <svelte:fragment slot="alert">
         {#if $failedInvoice && !$page.url.pathname.includes('/console/account')}
             {@const daysPassed = diffDays(new Date($failedInvoice.dueAt), new Date())}
-            <section class="alert is-action is-action-and-top-sticky is-danger u-sep-block-end">
-                <div class="alert-grid">
-                    <span class="icon-info" aria-hidden="true" />
-                    <div class="alert-content">
-                        <h6 class="alert-title">Your projects are at risk</h6>
-                        <p class="alert-message">
-                            {#if daysPassed > 30}
-                                Your scheduled payment on <b
-                                    >{toLocaleDate($failedInvoice?.dueAt)}</b> failed. To resume write
-                                access of your organization, please update your billing details.
-                            {:else}
-                                Your scheduled payment on <b
-                                    >{toLocaleDate($failedInvoice?.dueAt)}</b> failed. Access to paid
-                                projects within this organization will be disabled if no action is taken
-                                within 30 days.
-                            {/if}
-                        </p>
-                    </div>
-                    <div class="alert-buttons u-flex u-gap-16 u-cross-child-center">
-                        <a
-                            href={`${base}/console/organization-${$failedInvoice?.teamId}/billing#paymentMethods`}
-                            class="button is-secondary is-full-width-mobile">
-                            <span class="text">Update billing details</span>
-                        </a>
-                    </div>
-                </div>
-            </section>
+            <HeaderAlert title="Your projects are at risk">
+                <svelte:fragment>
+                    {#if daysPassed > 30}
+                        Your scheduled payment on <b>{toLocaleDate($failedInvoice?.dueAt)}</b> failed.
+                        To resume write access of your organization, please update your billing details.
+                    {:else}
+                        Your scheduled payment on <b>{toLocaleDate($failedInvoice?.dueAt)}</b> failed.
+                        Access to paid projects within this organization will be disabled if no action
+                        is taken within 30 days.
+                    {/if}
+                </svelte:fragment>
+                <svelte:fragment slot="buttons">
+                    <Button
+                        href={`${base}/console/organization-${$failedInvoice?.teamId}/billing#paymentMethods`}
+                        secondary
+                        fullWidthMobile>
+                        <span class="text">Update billing details</span>
+                    </Button>
+                </svelte:fragment>
+            </HeaderAlert>
+        {/if}
+        <!-- TODO: add variable from backend that indicates org is due to be deleted -->
+        {#if false}
+            <HeaderAlert title="Organization flagged for deletion">
+                <svelte:fragment>
+                    All existing projects in the {$organization.name} organization have been paused.
+                    This organization will be deleted once your upcoming invoice is processed successfully.
+                </svelte:fragment>
+            </HeaderAlert>
         {/if}
     </svelte:fragment>
     <Header slot="header" />
