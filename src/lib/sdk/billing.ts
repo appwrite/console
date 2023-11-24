@@ -45,6 +45,15 @@ export type InvoiceList = {
     total: number;
 };
 
+export type Coupon = {
+    $id: string;
+    code: string;
+    credits: number;
+    expiration: string;
+    status: string; // 'active' | 'disabled' | 'expired'
+    validity: number;
+};
+
 export type Credit = {
     /**
      * Credit ID.
@@ -580,7 +589,7 @@ export class Billing {
         );
     }
 
-    async getCoupon(couponId: string): Promise<Partial<Credit>> {
+    async getCoupon(couponId: string): Promise<Coupon> {
         const path = `/console/coupons/${couponId}`;
         const params = {
             couponId

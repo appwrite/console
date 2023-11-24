@@ -4,6 +4,7 @@
     import { Button, FormList, InputText, InputTextarea } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
     import { WizardStep } from '$lib/layout';
+    import type { Coupon } from '$lib/sdk/billing';
     import { plansInfo } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
@@ -21,6 +22,12 @@
 
     let coupon: string = null;
     let comment: string = null;
+    let couponData: Partial<Coupon> = {
+        code: null,
+        status: null,
+        credits: null
+    };
+    let showCoupon: boolean = false;
     async function fetchCard() {
         try {
             const card = await sdk.forConsole.billing.getPaymentMethod(
@@ -32,13 +39,28 @@
         }
     }
 
-    async function applyCredit() {
+    async function addCoupon() {
         try {
-            await sdk.forConsole.billing.getCoupon(coupon);
+            const response = await sdk.forConsole.billing.getCoupon(coupon);
             coupon = null;
+            couponData = response;
+            showCoupon = true;
+            $changeOrganizationTier.couponCode = response.$id;
         } catch (error) {
             console.log(error);
+            couponData.code = coupon;
+            couponData.status = 'error';
+            showCoupon = true;
         }
+    }
+
+    function removeCoupon() {
+        couponData = {
+            code: null,
+            status: null,
+            credits: null
+        };
+        showCoupon = false;
     }
 
     $: downgradeToStarter = $changeOrganizationTier.billingPlan === 'tier-0';
@@ -101,14 +123,40 @@
         {/if}
 
         <Box class="u-margin-block-start-32 u-flex u-flex-vertical u-gap-16" radius="small">
-            <FormList>
+            <FormList gap={8}>
                 <InputText
                     placeholder="Coupon code"
                     id="code"
                     label="Add credits"
+                    disabled={showCoupon && couponData?.status !== 'error'}
                     bind:value={coupon}>
-                    <Button secondary disabled={!coupon} on:click={applyCredit}>Apply</Button>
+                    <Button
+                        secondary
+                        disabled={(showCoupon && couponData?.status !== 'error') || !coupon}
+                        on:click={addCoupon}>
+                        Apply
+                    </Button>
                 </InputText>
+                {#if showCoupon}
+                    {#if couponData?.status === 'error'}
+                        <div>
+                            <span class="icon-exclamation-circle u-color-text-danger" />
+                            <span>
+                                {couponData.code} is not a valid promo code
+                            </span>
+                        </div>
+                    {:else}
+                        <div class="u-flex u-main-space-between u-cross-center">
+                            <div>
+                                <span class="icon-tag u-color-text-success" />
+                                <span>
+                                    {couponData.code} applied (-${couponData.credits})
+                                </span>
+                            </div>
+                            <Button text on:click={removeCoupon}>Remove</Button>
+                        </div>
+                    {/if}
+                {/if}
             </FormList>
             {#if $changeOrganizationTier.billingPlan !== 'tier-0'}
                 <span class="u-flex u-main-space-between">

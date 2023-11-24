@@ -101,6 +101,14 @@
                     await sdk.forConsole.billing.setBillingAddress(org.$id, response.$id);
                 }
 
+                //Add coupon
+                if ($changeOrganizationTier.couponCode) {
+                    await sdk.forConsole.billing.addCredit(
+                        org.$id,
+                        $changeOrganizationTier.couponCode
+                    );
+                }
+
                 //Add budget
                 if ($changeOrganizationTier?.billingBudget) {
                     await sdk.forConsole.billing.updateBudget(

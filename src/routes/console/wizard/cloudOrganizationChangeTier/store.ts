@@ -24,6 +24,7 @@ export const changeOrganizationTier = writable<{
     };
     taxId?: string;
     feedbackMessage?: string;
+    couponCode?: string;
 }>({
     id: null,
     billingPlan: 'tier-1',
