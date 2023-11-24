@@ -5,43 +5,35 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { createProject } from './store';
-    import type { RegionList } from '$lib/sdk/billing';
-    import { user } from '$lib/stores/user';
-    import { VARS } from '$lib/system';
+    import type { Region, RegionList } from '$lib/sdk/billing';
     import { addNotification } from '$lib/stores/notifications';
+    import type { Models } from '@appwrite.io/console';
 
     let regions: RegionList;
-    let selectedRegion: string;
+    let prefs: Models.Preferences;
     onMount(async () => {
         regions = await sdk.forConsole.billing.listRegions();
+        prefs = await sdk.forConsole.account.getPrefs();
     });
 
-    async function notifyRegion() {
-        const response = await fetch(
-            `https://${VARS.GROWTH_ENDPOINT}/v1/mailinglists/${selectedRegion}`,
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    name: $user.name,
-                    email: $user.email
-                })
-            }
-        );
-        if (response.status !== 200) {
+    async function notifyRegion(selectedRegion: Region) {
+        try {
+            let newPrefs = { ...prefs };
+            newPrefs.notifications = newPrefs.notifications ?? [];
+            newPrefs.notifications = [...newPrefs.notifications, selectedRegion.$id];
+            const response = await sdk.forConsole.account.updatePrefs(newPrefs);
+            prefs = response.prefs;
             addNotification({
-                message: 'There was an error submitting your request',
-                type: 'error'
+                type: 'success',
+                isHtml: true,
+                message: `You will be notified when <b>${selectedRegion.name}</b> region is available`
             });
-        } else {
-            addNotification({
-                message: 'Your request was submitted successfully',
-                type: 'success'
-            });
+        } catch (error) {
+            console.log(error);
         }
     }
+
+    $: notifications = prefs?.notifications ?? [];
 </script>
 
 <WizardStep>
@@ -70,16 +62,17 @@
                                     flag={region.flag}
                                     name={region.name} />
                                 <p class:u-opacity-50={region.disabled}>{region.name}</p>
-                                <Pill
-                                    button
-                                    event="region_notify"
-                                    on:click={() => {
-                                        selectedRegion = region.$id;
-                                        notifyRegion();
-                                    }}>
-                                    <span class="icon-bell" aria-hidden="true" />
-                                    <span class="text">Notify me</span>
-                                </Pill>
+                                {#if !notifications.includes(region.$id)}
+                                    <Pill
+                                        button
+                                        event="region_notify"
+                                        on:click={() => {
+                                            notifyRegion(region);
+                                        }}>
+                                        <span class="icon-bell" aria-hidden="true" />
+                                        <span class="text">Notify me</span>
+                                    </Pill>
+                                {/if}
                             {:else}
                                 <Flag
                                     width={40}
