@@ -33,7 +33,12 @@
                 $createOrganization.paymentMethodId
             );
             //Add billing address
-            if (
+            if ($createOrganization.billingAddressId) {
+                await sdk.forConsole.billing.setBillingAddress(
+                    org.$id,
+                    $createOrganization.billingAddressId
+                );
+            } else if (
                 $createOrganization.billingAddress &&
                 $createOrganization.billingAddress.streetAddress
             ) {
@@ -106,6 +111,7 @@
             billingPlan: 'tier-1',
             paymentMethodId: null,
             collaborators: [],
+            billingAddressId: null,
             billingAddress: {
                 $id: null,
                 streetAddress: null,

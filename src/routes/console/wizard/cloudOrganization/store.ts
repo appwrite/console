@@ -11,7 +11,8 @@ export const createOrganization = writable<{
     name: string;
     billingPlan: Tier;
     paymentMethodId: string;
-    billingAddress: Address;
+    billingAddressId: string;
+    billingAddress?: Address;
     collaborators?: string[];
     billingBudget?: number;
     taxId?: string;
@@ -21,6 +22,7 @@ export const createOrganization = writable<{
     billingPlan: 'tier-1',
     paymentMethodId: null,
     collaborators: [],
+    billingAddressId: null,
     billingAddress: {
         $id: null,
         streetAddress: null,
