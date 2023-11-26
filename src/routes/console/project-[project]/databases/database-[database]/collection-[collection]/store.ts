@@ -1,4 +1,5 @@
 import { page } from '$app/stores';
+import type { Column } from '$lib/helpers/types';
 import type { Models } from '@appwrite.io/console';
 import { derived, writable } from 'svelte/store';
 
@@ -15,14 +16,6 @@ export type Attributes =
 
 type Collection = Omit<Models.Collection, 'attributes'> & {
     attributes: Array<Attributes>;
-};
-export type Column = {
-    id: string;
-    title: string;
-    show: boolean;
-    type?: string;
-    twoWay?: string;
-    width?: number;
 };
 
 export const collection = derived(page, ($page) => $page.data.collection as Collection);

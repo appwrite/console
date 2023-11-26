@@ -86,7 +86,7 @@
                 </GridItem1>
             {/each}
             <svelte:fragment slot="empty">
-                <p>Add a new bucket</p>
+                <p>Create a bucket</p>
             </svelte:fragment>
         </CardContainer>
 

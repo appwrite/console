@@ -65,14 +65,14 @@
                 <section class="drop-section">
                     <ul class="drop-list">
                         <DropListItem icon="plus" on:click={() => newOrgModal.set(true)}>
-                            New Organization
+                            New organization
                         </DropListItem>
                     </ul>
                 </section></svelte:fragment>
         </DropList>
         <div class="u-margin-inline-start-auto">
             <div class="u-flex u-gap-16">
-                <a href={`${path}/members`}>
+                <a href={`${path}/members`} class="is-not-mobile">
                     <AvatarGroup size={40} {avatars} total={$members?.total ?? 0} />
                 </a>
                 <Button secondary on:click={() => newMemberModal.set(true)}>

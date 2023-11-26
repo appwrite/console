@@ -143,7 +143,7 @@
                 </Actions>
             </div>
             <div class="common-section">
-                <span class="text"> Add a role to get started </span>
+                <span class="text"> Add a role </span>
             </div>
         </div>
     </article>

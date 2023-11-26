@@ -382,9 +382,9 @@
     }
 
     :global(.theme-dark) .card {
-        --cmd-center-bg: hsl(var(--color-neutral-100-new));
+        --cmd-center-bg: hsl(var(--color-neutral-100));
         --cmd-center-border: hsl(var(--color-neutral-150));
-        --cmd-center-shadow: 0px 16px 32px 0px hsl(var(--color-neutral-110-new));
+        --cmd-center-shadow: 0px 16px 32px 0px hsl(var(--color-neutral-110));
 
         --kbd-bg: hsl(var(--color-neutral-150));
 
@@ -394,8 +394,8 @@
         --result-bg: hsl(var(--color-neutral-200));
         --footer-bg: linear-gradient(
             180deg,
-            hsl(var(--color-neutral-100-new)) 0%,
-            hsl(var(--color-neutral-85-new)) 100%
+            hsl(var(--color-neutral-100)) 0%,
+            hsl(var(--color-neutral-85)) 100%
         );
 
         --icon-color: hsl(var(--color-neutral-70));

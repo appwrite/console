@@ -25,6 +25,11 @@
                 </div>
             </li>
             <li class="inline-links-item">
+                <a href="https://appwrite.io/docs" target="_blank" rel="noreferrer">
+                    <span class="text">Docs</span>
+                </a>
+            </li>
+            <li class="inline-links-item">
                 <a href="https://appwrite.io/terms" target="_blank" rel="noreferrer">
                     <span class="text">Terms</span>
                 </a>

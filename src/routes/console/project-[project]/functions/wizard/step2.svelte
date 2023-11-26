@@ -8,7 +8,7 @@
     <svelte:fragment slot="title">Permissions</svelte:fragment>
     <svelte:fragment slot="subtitle">
         Choose which users have permission to execute this function using Client SDKs. For more
-        information, check out the <a
+        information, visit our <a
             href="https://appwrite.io/docs/advanced/platform/permissions"
             target="_blank"
             rel="noopener noreferrer"

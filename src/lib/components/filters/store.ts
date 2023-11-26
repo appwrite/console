@@ -1,17 +1,9 @@
 import { goto } from '$app/navigation';
 
-import { derived, get, writable, type Writable } from 'svelte/store';
-import type { columns } from '../store';
+import { derived, get, writable } from 'svelte/store';
 import { page } from '$app/stores';
 import deepEqual from 'deep-equal';
-
-const columnTypes = ['string', 'integer', 'double', 'boolean', 'datetime', 'relationship'] as const;
-type ColumnType = (typeof columnTypes)[number];
-
-type StoreValues<Store> = Store extends Writable<infer T> ? T : never;
-export type Column = Omit<StoreValues<typeof columns>[number], 'type'> & {
-    type: ColumnType;
-};
+import type { Column, ColumnType } from '$lib/helpers/types';
 
 export type Operator = {
     toTag: (attribute: string, input?: string | number) => string;

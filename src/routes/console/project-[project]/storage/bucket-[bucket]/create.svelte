@@ -70,7 +70,7 @@
         {/if}
         <Heading tag="h6" size="7">Permissions</Heading>
         <p class="text">
-            Choose who can access your buckets and files. For more information, check out the
+            Choose who can access your buckets and files. For more information, visit our
             <a
                 href="https://appwrite.io/docs/advanced/platform/permissions"
                 target="_blank"
