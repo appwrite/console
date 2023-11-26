@@ -1,4 +1,4 @@
-import type { Models } from '@appwrite.io/console';
+import type { Metric } from '$lib/sdk/usage';
 import { sdk } from '$lib/stores/sdk';
 import type { PageLoad } from './$types';
 import { error } from '@sveltejs/kit';
@@ -9,7 +9,7 @@ export const load: PageLoad = async ({ params }) => {
         const response = await sdk.forProject.users.getUsage(period ?? '30d');
         return {
             usersTotal: response.usersTotal,
-            users: response.users as unknown as Models.Metric[]
+            users: response.users as unknown as Metric[]
         };
     } catch (e) {
         throw error(e.code, e.message);

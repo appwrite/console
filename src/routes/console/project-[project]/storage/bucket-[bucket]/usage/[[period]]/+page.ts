@@ -1,5 +1,5 @@
 import { sdk } from '$lib/stores/sdk';
-import type { Models } from '@appwrite.io/console';
+import type { Metric } from '$lib/sdk/usage';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ params }) => {
@@ -10,6 +10,6 @@ export const load: PageLoad = async ({ params }) => {
 
     return {
         filesTotal: response.filesTotal,
-        files: response.files as unknown as Models.Metric[]
+        files: response.files as unknown as Metric[]
     };
 };

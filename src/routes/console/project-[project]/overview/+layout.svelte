@@ -1,7 +1,7 @@
 <script lang="ts" context="module">
     export function totalMetrics(set: Array<unknown>): number {
         if (!set) return 0;
-        return total((set as Models.Metric[]).map((c) => c.value));
+        return total((set as Metric[]).map((c) => c.value));
     }
 </script>
 
@@ -14,7 +14,6 @@
     import { Heading, Tab } from '$lib/components';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { Container, type UsagePeriods } from '$lib/layout';
-    import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { onboarding, project } from '../store';
     import Bandwith from './bandwith.svelte';
@@ -25,6 +24,7 @@
     import { usage } from './store';
     import { formatNum } from '$lib/helpers/string';
     import { total } from '$lib/helpers/array';
+    import type { Metric } from '$lib/sdk/usage';
 
     $: projectId = $page.params.project;
     $: path = `/console/project-${projectId}/overview`;

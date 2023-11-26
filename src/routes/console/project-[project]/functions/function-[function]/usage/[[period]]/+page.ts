@@ -1,4 +1,4 @@
-import type { Models } from '@appwrite.io/console';
+import type { Metric } from '$lib/sdk/usage';
 import { sdk } from '$lib/stores/sdk';
 import type { PageLoad } from './$types';
 import { error } from '@sveltejs/kit';
@@ -12,7 +12,7 @@ export const load: PageLoad = async ({ params }) => {
 
         return {
             executionsTotal: response.executionsTotal,
-            executions: response.executions as unknown as Models.Metric[]
+            executions: response.executions as unknown as Metric[]
         };
     } catch (e) {
         throw error(e.code, e.message);
