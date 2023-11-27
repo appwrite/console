@@ -33,6 +33,7 @@
                 name || undefined
             );
             await invalidate(Dependencies.ACCOUNT);
+            await invalidate(Dependencies.ORGANIZATION);
             showCreate = false;
             addNotification({
                 type: 'success',

@@ -14,7 +14,6 @@
         changeOrganizationFinalAction,
         changeOrganizationTier,
         changeTierSteps,
-        currentBillingAddress,
         isUpgrade
     } from './wizard/cloudOrganizationChangeTier/store';
     import { goto, invalidate } from '$app/navigation';
@@ -24,12 +23,13 @@
     import { organization } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
     import { tierToPlan } from '$lib/stores/billing';
-    import deepEqual from 'deep-equal';
+    import { user } from '$lib/stores/user';
+    import { feedback } from '$lib/stores/feedback';
 
     const dispatch = createEventDispatcher();
 
     async function onFinish() {
-        await invalidate(Dependencies.FUNCTIONS);
+        await invalidate(Dependencies.ORGANIZATION);
     }
 
     async function changeTier() {
@@ -40,8 +40,13 @@
                     $changeOrganizationTier.billingPlan,
                     $changeOrganizationTier.paymentMethodId
                 );
+                feedback.submitFeedback(
+                    'downgrade',
+                    $changeOrganizationTier.feedbackMessage,
+                    $user?.name ?? '',
+                    $user.email
+                );
 
-                //TODO: send feedback
                 addNotification({
                     type: 'success',
                     isHtml: true,
@@ -75,10 +80,14 @@
                 );
 
                 //Add billing address
-                if (
+                if ($changeOrganizationTier.billingAddressId) {
+                    await sdk.forConsole.billing.setBillingAddress(
+                        org.$id,
+                        $changeOrganizationTier.billingAddressId
+                    );
+                } else if (
                     $changeOrganizationTier.billingAddress &&
-                    $changeOrganizationTier.billingAddress.streetAddress &&
-                    !deepEqual($changeOrganizationTier.billingAddress, $currentBillingAddress)
+                    $changeOrganizationTier.billingAddress.streetAddress
                 ) {
                     const response = await sdk.forConsole.billing.createAddress(
                         $changeOrganizationTier.billingAddress.country,
@@ -92,6 +101,14 @@
                     );
 
                     await sdk.forConsole.billing.setBillingAddress(org.$id, response.$id);
+                }
+
+                //Add coupon
+                if ($changeOrganizationTier.couponCode) {
+                    await sdk.forConsole.billing.addCredit(
+                        org.$id,
+                        $changeOrganizationTier.couponCode
+                    );
                 }
 
                 //Add budget
@@ -165,6 +182,7 @@
             billingPlan: 'tier-1',
             paymentMethodId: null,
             collaborators: [],
+            billingAddressId: null,
             billingAddress: {
                 $id: null,
                 streetAddress: null,
@@ -174,7 +192,8 @@
                 postalCode: null,
                 country: null
             },
-            taxId: null
+            taxId: null,
+            feedbackMessage: null
         };
     });
 

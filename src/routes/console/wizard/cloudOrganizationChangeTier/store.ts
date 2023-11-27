@@ -11,7 +11,8 @@ export const changeOrganizationTier = writable<{
     id?: string;
     billingPlan: Tier;
     paymentMethodId: string;
-    billingAddress: Address;
+    billingAddressId: string;
+    billingAddress?: Address;
     billingBudget?: number;
     collaborators?: string[];
     isOverLimit?: boolean;
@@ -23,12 +24,15 @@ export const changeOrganizationTier = writable<{
         members?: number;
     };
     taxId?: string;
+    feedbackMessage?: string;
+    couponCode?: string;
 }>({
     id: null,
     billingPlan: 'tier-1',
     paymentMethodId: null,
     collaborators: [],
     isOverLimit: false,
+    billingAddressId: null,
     billingAddress: {
         $id: null,
         streetAddress: null,
@@ -39,14 +43,4 @@ export const changeOrganizationTier = writable<{
         country: null
     },
     taxId: null
-});
-
-export const currentBillingAddress = writable<Address>({
-    $id: null,
-    streetAddress: null,
-    addressLine2: null,
-    city: null,
-    state: null,
-    postalCode: null,
-    country: null
 });

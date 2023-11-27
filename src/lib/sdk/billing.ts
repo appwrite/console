@@ -37,11 +37,21 @@ export type Invoice = {
     to: string;
     status: string;
     dueAt: string;
+    clientSecret: string;
 };
 
 export type InvoiceList = {
     invoices: Invoice[];
     total: number;
+};
+
+export type Coupon = {
+    $id: string;
+    code: string;
+    credits: number;
+    expiration: string;
+    status: string; // 'active' | 'disabled' | 'expired'
+    validity: number;
 };
 
 export type Credit = {
@@ -159,8 +169,19 @@ export type AggregationList = {
     total: number;
 };
 
+export type AllowedRegions =
+    | 'eu-de'
+    | 'us-nyc'
+    | 'us-sfo'
+    | 'ap-in'
+    | 'eu-gb'
+    | 'eu-nl'
+    | 'ap-sg'
+    | 'ap-ca'
+    | 'ap-au';
+
 export type Region = {
-    $id: string;
+    $id: AllowedRegions;
     name: string;
     disabled: boolean;
     default: boolean;
@@ -571,7 +592,7 @@ export class Billing {
         );
     }
 
-    async getCoupon(couponId: string): Promise<Partial<Credit>> {
+    async getCoupon(couponId: string): Promise<Coupon> {
         const path = `/console/coupons/${couponId}`;
         const params = {
             couponId

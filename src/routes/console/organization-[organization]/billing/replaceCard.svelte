@@ -22,12 +22,14 @@
     onMount(async () => {
         methods = await sdk.forConsole.billing.listPaymentMethods();
 
+        if (!$organization.paymentMethodId && !$organization.backupPaymentMethodId) {
+            selectedPaymentMethodId = methods?.total ? methods.paymentMethods[0].$id : null;
+        }
         selectedPaymentMethodId = isBackup
             ? $organization.backupPaymentMethodId
             : $organization.paymentMethodId;
     });
 
-    // TODO: fix new payment method replacement
     async function handleSubmit() {
         try {
             if (!selectedPaymentMethodId) {
@@ -167,7 +169,8 @@
             secondary
             submit
             disabled={selectedPaymentMethodId ===
-                (isBackup ? $organization.backupPaymentMethodId : $organization.paymentMethodId)}
-            >Save</Button>
+                (isBackup ? $organization.backupPaymentMethodId : $organization.paymentMethodId)}>
+            Save
+        </Button>
     </svelte:fragment>
 </FakeModal>

@@ -5,12 +5,35 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { createProject } from './store';
-    import type { RegionList } from '$lib/sdk/billing';
+    import type { Region, RegionList } from '$lib/sdk/billing';
+    import { addNotification } from '$lib/stores/notifications';
+    import type { Models } from '@appwrite.io/console';
 
     let regions: RegionList;
+    let prefs: Models.Preferences;
     onMount(async () => {
         regions = await sdk.forConsole.billing.listRegions();
+        prefs = await sdk.forConsole.account.getPrefs();
     });
+
+    async function notifyRegion(selectedRegion: Region) {
+        try {
+            let newPrefs = { ...prefs };
+            newPrefs.notifications = newPrefs.notifications ?? [];
+            newPrefs.notifications = [...newPrefs.notifications, selectedRegion.$id];
+            const response = await sdk.forConsole.account.updatePrefs(newPrefs);
+            prefs = response.prefs;
+            addNotification({
+                type: 'success',
+                isHtml: true,
+                message: `You will be notified when <b>${selectedRegion.name}</b> region is available`
+            });
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    $: notifications = prefs?.notifications ?? [];
 </script>
 
 <WizardStep>
@@ -39,10 +62,17 @@
                                     flag={region.flag}
                                     name={region.name} />
                                 <p class:u-opacity-50={region.disabled}>{region.name}</p>
-                                <Pill button event="region_notify">
-                                    <span class="icon-bell" aria-hidden="true" />
-                                    <span class="text">Notify me</span>
-                                </Pill>
+                                {#if !notifications.includes(region.$id)}
+                                    <Pill
+                                        button
+                                        event="region_notify"
+                                        on:click={() => {
+                                            notifyRegion(region);
+                                        }}>
+                                        <span class="icon-bell" aria-hidden="true" />
+                                        <span class="text">Notify me</span>
+                                    </Pill>
+                                {/if}
                             {:else}
                                 <Flag
                                     width={40}

@@ -30,14 +30,15 @@
     });
 
     function calculateExcess() {
+        const totBandwidth = usage?.bandwidth?.length > 0 ? usage.bandwidth[0].value : 0;
+        const totUsers = usage?.users?.length > 0 ? usage.users[0].value : 0;
         excess = {
-            bandwidth:
-                usage?.bandwidth?.[0] > plan.bandwidth ? usage?.bandwidth?.[0] - plan.bandwidth : 0,
+            bandwidth: totBandwidth > plan.bandwidth ? totBandwidth - plan.bandwidth : 0,
             storage:
                 usage?.storage[0] > sizeToBytes(plan.storage, 'GB')
                     ? usage.storage[0] - plan.storage
                     : 0,
-            users: usage?.users?.[0] > plan.users ? usage?.users?.[0] - plan.users : 0,
+            users: totUsers > plan.users ? totUsers - plan.users : 0,
             executions:
                 usage?.executions[0] > plan.executions ? usage.executions[0] - plan.executions : 0,
             members: members.total > plan.members ? members.total - (plan.members || Infinity) : 0
@@ -56,17 +57,22 @@
     </p>
     <PlanExcess {excess} currentTier={$organization.billingPlan} />
     <svelte:fragment slot="footer">
-        <Button
-            secondary
-            on:click={() => {
-                show = false;
-                goto(`/console/organization-${$organization.$id}/usage`);
-            }}>View usage</Button>
+        <div class="u-flex u-main-space-between u-width-full-line">
+            <Button text on:click={() => (show = false)}>Cancel</Button>
+            <div class="u-flex u-main-end u-gap-16">
+                <Button
+                    secondary
+                    on:click={() => {
+                        show = false;
+                        goto(`/console/organization-${$organization.$id}/usage`);
+                    }}>View usage</Button>
 
-        <Button
-            on:click={() => {
-                show = false;
-                wizard.start(ChangeOrganizationTierCloud);
-            }}>Upgrade plan</Button>
+                <Button
+                    on:click={() => {
+                        show = false;
+                        wizard.start(ChangeOrganizationTierCloud);
+                    }}>Upgrade plan</Button>
+            </div>
+        </div>
     </svelte:fragment>
 </Modal>

@@ -8,6 +8,7 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { addNotification } from '$lib/stores/notifications';
     import { wizard } from '$lib/stores/wizard';
+    import { VARS } from '$lib/system';
 
     onDestroy(() => {
         $supportData = {
@@ -25,7 +26,7 @@
     });
 
     async function handleSubmit() {
-        const response = await fetch('https://growth.appwrite.io/v1/support', {
+        const response = await fetch(`https://${VARS.GROWTH_ENDPOINT}/v1/support`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
