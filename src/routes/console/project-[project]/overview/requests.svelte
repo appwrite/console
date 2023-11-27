@@ -6,6 +6,7 @@
     import { createEventDispatcher } from 'svelte';
     import { LineChart } from '$lib/charts';
     import { formatNum } from '$lib/helpers/string';
+    import type { Metric } from '$lib/sdk/usage';
 
     export let period: UsagePeriods;
 
@@ -13,10 +14,7 @@
 
     const dispatch = createEventDispatcher();
 
-    $: requests = $usage?.requests as unknown as Array<{
-        date: number;
-        value: number;
-    }>;
+    $: requests = $usage?.requests as Metric[];
 
     $: if (period) {
         showPeriod = false;
