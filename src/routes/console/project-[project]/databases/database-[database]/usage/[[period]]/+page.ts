@@ -1,4 +1,4 @@
-import type { Metric, UsageDatabase} from '$lib/sdk/usage';
+import type { Metric, UsageDatabase } from '$lib/sdk/usage';
 import { sdk } from '$lib/stores/sdk';
 import type { PageLoad } from './$types';
 

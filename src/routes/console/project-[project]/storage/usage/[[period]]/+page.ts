@@ -5,7 +5,9 @@ import { error } from '@sveltejs/kit';
 
 export const load: PageLoad = async ({ params }) => {
     try {
-        const response = (await sdk.forProject.storage.getUsage(params.period ?? '30d')) as unknown as UsageStorage;
+        const response = (await sdk.forProject.storage.getUsage(
+            params.period ?? '30d'
+        )) as unknown as UsageStorage;
 
         return {
             bucketsTotal: response.bucketsTotal,

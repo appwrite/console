@@ -6,7 +6,9 @@ import { error } from '@sveltejs/kit';
 export const load: PageLoad = async ({ params }) => {
     const { period } = params;
     try {
-        const response = (await sdk.forProject.databases.getUsage(period ?? '30d')) as unknown as UsageDatabases;
+        const response = (await sdk.forProject.databases.getUsage(
+            period ?? '30d'
+        )) as unknown as UsageDatabases;
         return {
             databasesTotal: response.databasesTotal,
             databases: response.databases as Metric[]
@@ -15,5 +17,3 @@ export const load: PageLoad = async ({ params }) => {
         throw error(e.code, e.message);
     }
 };
-
-
