@@ -6,7 +6,6 @@
     import type { UsagePeriods } from '$lib/layout';
     import { createEventDispatcher } from 'svelte';
     import { BarChart } from '$lib/charts';
-    import type { Metric } from '$lib/sdk/usage';
 
     export let period: UsagePeriods;
 
@@ -14,8 +13,11 @@
 
     const dispatch = createEventDispatcher();
 
-    $: network = $usage?.network as Metric[];
-    $: bandwith = humanFileSize(totalMetrics($usage?.network as Metric[]));
+    $: network = $usage?.network as unknown as Array<{
+        date: number;
+        value: number;
+    }>;
+    $: bandwith = humanFileSize(totalMetrics($usage?.network));
 
     $: if (period) {
         showPeriod = false;
