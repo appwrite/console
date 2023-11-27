@@ -24,7 +24,7 @@
     }
 
     const cycles = data.invoices.invoices.map((invoice) => ({
-        label: invoice.from,
+        label: (new Date(invoice.from)).toLocaleDateString(),
         value: invoice.$id
     }));
 </script>
