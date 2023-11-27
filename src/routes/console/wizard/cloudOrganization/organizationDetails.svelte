@@ -3,7 +3,7 @@
     import { Pill } from '$lib/elements';
     import { InputText, FormList } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
-    import { tierFree, tierPro, tierScale } from '$lib/stores/billing';
+    import { plansInfo, tierFree, tierPro, tierScale } from '$lib/stores/billing';
     import { organizationList, type Organization } from '$lib/stores/organization';
     import { updateStepStatus } from '$lib/stores/wizard';
     import { createOrganization, createOrgSteps } from './store';
@@ -28,6 +28,10 @@
         $createOrgSteps = updateStepStatus($createOrgSteps, 3, false);
         $createOrgSteps = updateStepStatus($createOrgSteps, 4, false);
     }
+
+    $: freePlan = $plansInfo.plans.find((p) => p.$id === 'tier-0');
+    $: proPlan = $plansInfo.plans.find((p) => p.$id === 'tier-1');
+    $: scalePlan = $plansInfo.plans.find((p) => p.$id === 'tier-2');
 </script>
 
 <WizardStep>
@@ -81,7 +85,7 @@
                         class="u-flex u-flex-vertical u-gap-4 u-width-full-line"
                         class:u-opacity-50={disabled}>
                         <h4 class="body-text-2 u-bold">
-                            {tierFree.name} - ${tierFree.price}/month
+                            {tierFree.name} - ${freePlan?.price}/month
                         </h4>
                         <p class="u-color-text-gray u-small">{tierFree.description}</p>
                     </div>
@@ -94,7 +98,7 @@
                 <svelte:fragment slot="custom">
                     <div class="u-flex u-flex-vertical u-gap-4 u-width-full-line">
                         <h4 class="body-text-2 u-bold">
-                            {tierPro.name} - ${tierPro.price}/month per organization member + exta
+                            {tierPro.name} - ${proPlan.price}/month per organization member + exta
                             usage
                         </h4>
                         <p class="u-color-text-gray u-small">
@@ -116,7 +120,7 @@
                         class="u-flex u-flex-vertical u-gap-4 u-width-full-line"
                         class:u-opacity-50={disabled}>
                         <h4 class="body-text-2 u-bold">
-                            {tierScale.name} - ${tierScale.price}/month + extra usage
+                            {tierScale.name} - ${scalePlan.price}/month + extra usage
                         </h4>
                         <p class="u-color-text-gray u-small">
                             {tierScale.description}

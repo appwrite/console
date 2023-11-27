@@ -11,6 +11,7 @@
     import Delete from './deleteOrganization.svelte';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
+    export let data;
     let name: string;
     let showDelete = false;
 
@@ -89,4 +90,4 @@
     {/if}
 </Container>
 
-<Delete bind:showDelete />
+<Delete bind:showDelete invoices={data.invoices} />

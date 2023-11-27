@@ -416,8 +416,7 @@
                 </svelte:fragment>
             </HeaderAlert>
         {/if}
-        <!-- TODO: add variable from backend that indicates org is due to be deleted -->
-        {#if false}
+        {#if $organization?.markedForDeletion && !$page.url.pathname.includes('/console/account')}
             <HeaderAlert title="Organization flagged for deletion">
                 <svelte:fragment>
                     All existing projects in the {$organization.name} organization have been paused.

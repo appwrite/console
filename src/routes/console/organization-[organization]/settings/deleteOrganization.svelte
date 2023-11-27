@@ -10,21 +10,26 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { projects } from '../store';
     import { toLocaleDate } from '$lib/helpers/date';
+    import { isCloud } from '$lib/system';
+    import type { InvoiceList } from '$lib/sdk/billing';
 
     export let showDelete = false;
+    export let invoices: InvoiceList;
     let error: string = null;
-
-    //TODO: replace variable with value from method
-    const TEMPORARY_SET_FOR_DELETION = true;
 
     async function deleteOrg() {
         try {
-            await sdk.forConsole.teams.delete($organization.$id);
-            await invalidate(Dependencies.ACCOUNT);
+            if (isCloud) {
+                await sdk.forConsole.billing.deleteOrganization($organization.$id);
+            } else {
+                await sdk.forConsole.teams.delete($organization.$id);
+            }
             addNotification({
                 type: 'success',
                 message: `${$organization.name} has been deleted`
             });
+            await invalidate(Dependencies.ACCOUNT);
+            await invalidate(Dependencies.ORGANIZATION);
             trackEvent(Submit.OrganizationDelete);
             if ($organizationList?.total > 1) {
                 goto(`${base}/console/`);
@@ -37,6 +42,8 @@
             trackError(e, Submit.OrganizationDelete);
         }
     }
+
+    $: upcomingInvoice = invoices.invoices.find((i) => i.status === 'upcoming' && i.amount > 0);
 </script>
 
 <Modal
@@ -47,7 +54,7 @@
     icon="exclamation"
     state="warning"
     headerDivider={false}>
-    {#if TEMPORARY_SET_FOR_DELETION}
+    {#if upcomingInvoice}
         <p data-private>
             The organization <b>{$organization.name}</b> will be flagged for deletion.
         </p>
