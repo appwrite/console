@@ -5,37 +5,29 @@
     import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
     import { wizard } from '$lib/stores/wizard.js';
     import { organization } from '$lib/stores/organization';
-    import { InputDateRange, InputSelect } from '$lib/elements/forms';
+    import { InputSelect } from '$lib/elements/forms';
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
-    import type { DateRange } from '@melt-ui/svelte';
 
     const tier = tierToPlan($organization?.billingPlan)?.name;
 
     export let data;
-    let period = 'current';
+    let invoice = 'current';
 
     async function handlePeriodChange() {
-        if (
-            period === 'current' &&
-            !$page.url.pathname.includes('usage/current') &&
-            $page.url.pathname !== `/console/organization-${$organization.$id}/usage`
-        ) {
-            await goto(`/console/organization-${$organization.$id}/usage/current`);
-        }
-        if (period === 'previous' && !$page.url.pathname.includes('usage/previous')) {
-            await goto(`/console/organization-${$organization.$id}/usage/previous`);
-        }
-        if (period === 'custom' && !$page.url.pathname.includes('usage/custom')) {
-            console.log('test');
-            // await goto(`/console/organization-${$organization.$id}/usage/custom`);
+        const target = invoice
+            ? `/console/organization-${$organization.$id}/usage/${invoice}`
+            : `/console/organization-${$organization.$id}/usage`;
+        if ($page.url.pathname !== target) {
+            await goto(target);
         }
     }
 
-    let test: DateRange;
+    const cycles = data.invoices.invoices.map((invoice) => ({
+        label: invoice.from,
+        value: invoice.$id
+    }));
 </script>
-
-<InputDateRange id="date" label="test" bind:data={test}></InputDateRange>
 
 <Container>
     <Heading tag="h2" size="5">Usage</Heading>
@@ -59,8 +51,6 @@
             </p>
         {/if}
 
-        <!-- <InputDate id="date" label="test" showLabel={false}></InputDate> -->
-
         <div class="u-flex u-gap-8 u-cross-center">
             <p class="text">Usage period:</p>
 
@@ -69,21 +59,14 @@
                 id="period"
                 label="Usage period"
                 showLabel={false}
-                bind:value={period}
+                bind:value={invoice}
                 on:change={handlePeriodChange}
                 options={[
                     {
                         label: 'Current billing cycle',
                         value: 'current'
                     },
-                    {
-                        label: 'Previous billing cycle',
-                        value: 'previous'
-                    },
-                    {
-                        label: 'Choose dates',
-                        value: 'custom'
-                    }
+                    ...cycles
                 ]}></InputSelect>
         </div>
     </div>
@@ -99,7 +82,7 @@
             <ProgressBarBig
                 unit="GB"
                 max={getServiceLimit('bandwidth')}
-                used={data.organizationUsage.bandwidth[0] ?? 0} />
+                used={data.organizationUsage.bandwidth[0]?.value ?? 0} />
         </svelte:fragment>
     </CardGrid>
 
@@ -112,7 +95,7 @@
             <ProgressBarBig
                 unit="Users"
                 max={getServiceLimit('users')}
-                used={data.organizationUsage.bandwidth[0] ?? 0} />
+                used={data.organizationUsage.bandwidth[0]?.value ?? 0} />
         </svelte:fragment>
     </CardGrid>
 

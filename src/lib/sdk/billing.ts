@@ -143,12 +143,15 @@ export type Aggregation = {
      */
     resources: OrganizationUsage;
 };
-
+type UsageMetric = {
+    date: string;
+    value: number;
+}
 export type OrganizationUsage = {
-    bandwidth: [];
+    bandwidth: Array<UsageMetric>;
     executions: number;
     storage: number;
-    users: [];
+    users: Array<UsageMetric>;
 };
 
 export type AggregationList = {
