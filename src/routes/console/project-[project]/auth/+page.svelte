@@ -96,10 +96,10 @@
                                     {user.emailVerification && user.phoneVerification
                                         ? 'verified'
                                         : user.emailVerification
-                                        ? 'verified email'
-                                        : user.phoneVerification
-                                        ? 'verified phone'
-                                        : 'unverified'}
+                                          ? 'verified email'
+                                          : user.phoneVerification
+                                            ? 'verified phone'
+                                            : 'unverified'}
                                 </Pill>
                             {:else}
                                 <Pill danger>blocked</Pill>
