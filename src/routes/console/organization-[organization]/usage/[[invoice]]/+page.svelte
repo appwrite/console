@@ -1,17 +1,20 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
     import { CardGrid, Heading, ProgressBarBig } from '$lib/components';
-    import { getServiceLimit, showUsageRatesModal, tierToPlan } from '$lib/stores/billing.js';
-    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
-    import { wizard } from '$lib/stores/wizard.js';
+    import { getServiceLimit, showUsageRatesModal, tierToPlan } from '$lib/stores/billing';
+    import { wizard } from '$lib/stores/wizard';
     import { organization } from '$lib/stores/organization';
     import { InputSelect } from '$lib/elements/forms';
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
-
-    const tier = tierToPlan($organization?.billingPlan)?.name;
+    import { toLocaleDate } from '$lib/helpers/date.js';
+    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
 
     export let data;
+
+    const tier = data?.currentInvoice?.tier ?? $organization?.billingPlan;
+    const plan = tierToPlan(tier).name;
+
     let invoice = 'current';
 
     async function handlePeriodChange() {
@@ -24,7 +27,7 @@
     }
 
     const cycles = data.invoices.invoices.map((invoice) => ({
-        label: (new Date(invoice.from)).toLocaleDateString(),
+        label: toLocaleDate(invoice.from),
         value: invoice.$id
     }));
 </script>
@@ -42,7 +45,7 @@
             </p>
         {:else}
             <p class="text">
-                If you exceed the limits of the {tier} plan, services for your projects may be disrupted.
+                If you exceed the limits of the {plan} plan, services for your projects may be disrupted.
                 <button
                     on:click={() => wizard.start(ChangeOrganizationTierCloud)}
                     class="link"
@@ -81,7 +84,7 @@
         <svelte:fragment slot="aside">
             <ProgressBarBig
                 unit="GB"
-                max={getServiceLimit('bandwidth')}
+                max={getServiceLimit('bandwidth', tier)}
                 used={data.organizationUsage.bandwidth[0]?.value ?? 0} />
         </svelte:fragment>
     </CardGrid>
@@ -94,7 +97,7 @@
         <svelte:fragment slot="aside">
             <ProgressBarBig
                 unit="Users"
-                max={getServiceLimit('users')}
+                max={getServiceLimit('users', tier)}
                 used={data.organizationUsage.bandwidth[0]?.value ?? 0} />
         </svelte:fragment>
     </CardGrid>
@@ -109,7 +112,7 @@
         <svelte:fragment slot="aside">
             <ProgressBarBig
                 unit="Executions"
-                max={getServiceLimit('executions')}
+                max={getServiceLimit('executions', tier)}
                 used={data.organizationUsage.executions} />
         </svelte:fragment>
     </CardGrid>
@@ -124,7 +127,7 @@
         <svelte:fragment slot="aside">
             <ProgressBarBig
                 unit="GB"
-                max={getServiceLimit('storage')}
+                max={getServiceLimit('storage', tier)}
                 used={data.organizationUsage.storage} />
         </svelte:fragment>
     </CardGrid>

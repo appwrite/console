@@ -1,6 +1,7 @@
 import { sdk } from '$lib/stores/sdk';
 import type { PageLoad } from './$types';
 import type { Organization } from '$lib/stores/organization';
+import type { Invoice } from '$lib/sdk/billing';
 
 export const load: PageLoad = async ({ params, parent }) => {
     const { invoice } = params;
@@ -9,11 +10,12 @@ export const load: PageLoad = async ({ params, parent }) => {
     const today = new Date().toISOString();
     let startDate: string;
     let endDate: string;
+    let currentInvoice: Invoice | null = null;
 
-    if (invoice){
-        const data = await sdk.forConsole.billing.getInvoice(org.$id, invoice);
-        startDate = data.from;
-        endDate = data.to;
+    if (invoice) {
+        currentInvoice = await sdk.forConsole.billing.getInvoice(org.$id, invoice);
+        startDate = currentInvoice.from;
+        endDate = currentInvoice.to;
     } else {
         startDate = org.billingCurrentInvoiceDate;
         endDate = today;
@@ -21,15 +23,12 @@ export const load: PageLoad = async ({ params, parent }) => {
 
     const [invoices, usage] = await Promise.all([
         sdk.forConsole.billing.listInvoices(org.$id),
-        sdk.forConsole.billing.listUsage(
-            params.organization,
-            startDate ?? org.billingCurrentInvoiceDate,
-            endDate ?? today
-        )
-    ])
+        sdk.forConsole.billing.listUsage(params.organization, startDate, endDate)
+    ]);
 
     return {
         organizationUsage: usage,
-        invoices
+        invoices,
+        currentInvoice
     };
 };

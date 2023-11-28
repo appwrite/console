@@ -58,10 +58,12 @@ export type PlanServices =
     | 'usersAddon'
     | 'webhooks';
 
-export function getServiceLimit(serviceId: PlanServices): number {
+export function getServiceLimit(serviceId: PlanServices, tier: Tier = null): number {
     if (!isCloud) return 0;
     if (!serviceId) return 0;
-    const plan = get(plansInfo).plans.find((p) => p.$id === get(organization)?.billingPlan);
+    const plan = get(plansInfo).plans.find(
+        (p) => p.$id === (tier ?? get(organization)?.billingPlan)
+    );
     return plan[serviceId];
 }
 

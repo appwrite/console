@@ -1,6 +1,7 @@
 import type { Client, Query } from '@appwrite.io/console';
 import type { Organization } from '../stores/organization';
 import type { PaymentMethod } from '@stripe/stripe-js';
+import type { Tier } from '$lib/stores/billing';
 
 export type PaymentMethodData = {
     $id: string;
@@ -38,6 +39,7 @@ export type Invoice = {
     status: string;
     dueAt: string;
     clientSecret: string;
+    tier: Tier;
 };
 
 export type InvoiceList = {
@@ -156,7 +158,7 @@ export type Aggregation = {
 type UsageMetric = {
     date: string;
     value: number;
-}
+};
 export type OrganizationUsage = {
     bandwidth: Array<UsageMetric>;
     executions: number;
