@@ -1,7 +1,7 @@
 <script lang="ts" context="module">
     export function totalMetrics(set: Array<unknown>): number {
         if (!set) return 0;
-        return total((set as Models.Metric[]).map((c) => c.value));
+        return total((set as Metric[]).map((c) => c.value));
     }
 </script>
 
@@ -14,7 +14,6 @@
     import { Heading, Tab } from '$lib/components';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { Container, type UsagePeriods } from '$lib/layout';
-    import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { onboarding, project } from '../store';
     import Bandwith from './bandwith.svelte';
@@ -25,6 +24,7 @@
     import { usage } from './store';
     import { formatNum } from '$lib/helpers/string';
     import { total } from '$lib/helpers/array';
+    import type { Metric } from '$lib/sdk/usage';
 
     $: projectId = $page.params.project;
     $: path = `/console/project-${projectId}/overview`;
@@ -82,7 +82,7 @@
             <Onboard {projectId} />
         {:else}
             {#if $usage}
-                {@const storage = humanFileSize(totalMetrics($usage.storage) ?? 0)}
+                {@const storage = humanFileSize($usage.filesStorageTotal ?? 0)}
                 <section class="common-section">
                     <div class="grid-dashboard-1s-2m-6l">
                         <div class="card is-2-columns-medium-screen is-3-columns-large-screen">
@@ -106,14 +106,14 @@
 
                                 <div class="grid-item-1-end-start">
                                     <div class="heading-level-4">
-                                        {formatNum(totalMetrics($usage.documents) ?? 0)}
+                                        {formatNum($usage.documentsTotal ?? 0)}
                                     </div>
                                     <div>Documents</div>
                                 </div>
 
                                 <div class="grid-item-1-end-end">
                                     <div class="text">
-                                        Databases: {formatNum(totalMetrics($usage.databases) ?? 0)}
+                                        Databases: {formatNum($usage.databasesTotal ?? 0)}
                                     </div>
                                 </div>
                             </div>
@@ -141,7 +141,7 @@
 
                                 <div class="grid-item-1-end-end">
                                     <div class="text">
-                                        Buckets: {formatNum(totalMetrics($usage.buckets) ?? 0)}
+                                        Buckets: {formatNum($usage.bucketsTotal ?? 0)}
                                     </div>
                                 </div>
                             </div>
@@ -161,7 +161,7 @@
 
                                 <div class="grid-item-1-end-start">
                                     <div class="heading-level-4">
-                                        {formatNum(totalMetrics($usage.users) ?? 0)}
+                                        {formatNum($usage.usersTotal ?? 0)}
                                     </div>
                                     <div>Users</div>
                                 </div>
@@ -182,7 +182,7 @@
 
                                 <div class="grid-item-1-end-start">
                                     <div class="heading-level-4">
-                                        {formatNum(totalMetrics($usage.executions) ?? 0)}
+                                        {formatNum($usage.executionsTotal ?? 0)}
                                     </div>
                                     <div>Executions</div>
                                 </div>
