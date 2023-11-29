@@ -10,6 +10,8 @@
     export let value = '';
     export let required = false;
     export let nullable = false;
+    export let min: string | number | undefined = undefined;
+    export let max: string | number | undefined = undefined;
     export let disabled = false;
     export let readonly = false;
     export let autofocus = false;
@@ -65,6 +67,8 @@
             {readonly}
             {required}
             step=".001"
+            {min}
+            {max}
             autocomplete={autocomplete ? 'on' : 'off'}
             type="date"
             class="input-text"
