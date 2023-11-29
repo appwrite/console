@@ -24,7 +24,9 @@ export type Providers = {
 
 const setProviders = (project: Models.Project): Provider[] => {
     return (
-        project?.providers.map((n) => {
+        // TODO: Remove @ts-expect-error when SDK is updated
+        // @ts-expect-error SDK needs to be updated
+        project?.oAuthProviders.map((n) => {
             const p = n as Models.Provider & { key: string };
             let docs: Provider['docs'];
             let icon: Provider['icon'] = p.key.toLowerCase();
