@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import {
@@ -21,16 +20,15 @@
         TableCellHeadCheck,
         TableCellText,
         TableHeader,
-        TableRowLink
+        TableRowLink,
+        TableScroll
     } from '$lib/elements/table';
-    import TableScroll from '$lib/elements/table/tableScroll.svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
-    import type { Models } from '@appwrite.io/console';
     import type { PageData } from './$types';
-    import Create from './create.svelte';
     import { columns, showCreate } from './store';
     import MessageStatusPill from './messageStatusPill.svelte';
+    import CreateMessageDropdown from './createMessageDropdown.svelte';
     import ProviderType, { ProviderTypes } from './providerType.svelte';
     import Filters from '$lib/components/filters/filters.svelte';
     import FailedModal from './failedModal.svelte';
@@ -40,13 +38,11 @@
     let showDelete = false;
     let showFailed = false;
     let errors: string[] = [];
+    let showCreateDropdownMobile = false;
+    let showCreateDropdownDesktop = false;
+    let showCreateDropdownEmpty = false;
 
     const project = $page.params.project;
-
-    async function messageCreated(event: CustomEvent<Models.Bucket>) {
-        $showCreate = false;
-        await goto(`${base}/console/project-${project}/messaging/message-${event.detail.$id}`);
-    }
 </script>
 
 <Container>
@@ -54,10 +50,7 @@
         <div class="u-flex u-main-space-between">
             <Heading tag="h2" size="5">Messages</Heading>
             <div class="is-only-mobile">
-                <Button on:click={() => ($showCreate = true)} event="create_message">
-                    <span class="icon-plus" aria-hidden="true" />
-                    <span class="text">Create message</span>
-                </Button>
+                <CreateMessageDropdown bind:showCreateDropdown={showCreateDropdownMobile} />
             </div>
         </div>
         <!-- TODO: fix width of search input in mobile -->
@@ -71,10 +64,7 @@
                     hideView
                     allowNoColumns
                     showColsTextMobile />
-                <Button on:click={() => ($showCreate = true)} event="create_message">
-                    <span class="icon-plus" aria-hidden="true" />
-                    <span class="text">Create message</span>
-                </Button>
+                <CreateMessageDropdown bind:showCreateDropdown={showCreateDropdownDesktop} />
             </div>
         </SearchQuery>
         <div class="u-flex u-gap-16 is-only-mobile u-margin-block-start-16">
@@ -219,11 +209,35 @@
             single
             href="https://appwrite.io/docs"
             target="message"
-            on:click={() => ($showCreate = true)} />
+            on:click={() => ($showCreate = true)}>
+            <div class="u-text-center">
+                <Heading size="7" tag="h2" trimmed={false}>
+                    Create your first message to get started.
+                </Heading>
+                <p class="body-text-2 u-bold u-margin-block-start-4">
+                    Need a hand? Learn more in our documentation.
+                </p>
+            </div>
+            <div class="u-flex u-flex-wrap u-gap-16 u-main-center">
+                <Button
+                    external
+                    href="https://appwrite.io/docs/references/cloud/client-web/messages"
+                    text
+                    event="empty_documentation"
+                    ariaLabel={`create message`}>
+                    Documentation
+                </Button>
+                <CreateMessageDropdown bind:showCreateDropdown={showCreateDropdownEmpty}>
+                    <Button
+                        secondary
+                        on:click={() => (showCreateDropdownEmpty = !showCreateDropdownEmpty)}
+                        event="create_message">
+                        <span class="text">Create message</span>
+                    </Button>
+                </CreateMessageDropdown>
+            </div>
+        </Empty>
     {/if}
 </Container>
 
 <FailedModal bind:show={showFailed} {errors} />
-
-<!-- TODO: handle create -->
-<Create bind:showCreate={$showCreate} on:created={messageCreated} />

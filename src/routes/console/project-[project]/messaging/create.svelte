@@ -1,73 +1,111 @@
 <script lang="ts">
-    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { Modal, CustomId } from '$lib/components';
-    import { Pill } from '$lib/elements';
-    import { Button, InputText, FormList } from '$lib/elements/forms';
-    import { addNotification } from '$lib/stores/notifications';
+    import { onDestroy } from 'svelte';
+    import { Wizard } from '$lib/layout';
+    import type { WizardStepsType } from '$lib/layout/wizard.svelte';
+    import Step1 from './wizard/step1.svelte';
+    import Step2 from './wizard/step2.svelte';
+    import Step3 from './wizard/step3.svelte';
     import { sdk } from '$lib/stores/sdk';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { addNotification } from '$lib/stores/notifications';
+    import { goto } from '$app/navigation';
+    import { base } from '$app/paths';
+    import { project } from '../store';
+    import { wizard } from '$lib/stores/wizard';
+    import { providerType, messageParams } from './wizard/store';
+    import { ProviderTypes } from './providerType.svelte';
     import { ID } from '@appwrite.io/console';
-    import { createEventDispatcher } from 'svelte';
 
-    export let showCreate = false;
-
-    const dispatch = createEventDispatcher();
-
-    let name = '';
-    let id: string = null;
-    let showCustomId = false;
-    let error: string;
-
-    const create = async () => {
+    async function create() {
         try {
-            const bucket = await sdk.forProject.storage.createBucket(id ? id : ID.unique(), name);
-            showCreate = false;
-            dispatch('created', bucket);
+            let response = { $id: '' };
+            const messageId = $messageParams[$providerType].messageId || ID.unique();
+            switch ($providerType) {
+                case ProviderTypes.Email:
+                    response = await sdk.forProject.client.call(
+                        'POST',
+                        new URL(
+                            sdk.forProject.client.config.endpoint + '/messaging/messages/email'
+                        ),
+                        {
+                            'X-Appwrite-Project': sdk.forProject.client.config.project,
+                            'content-type': 'application/json',
+                            'X-Appwrite-Mode': 'admin'
+                        },
+                        {
+                            ...$messageParams[$providerType],
+                            messageId
+                        }
+                    );
+                    break;
+                case ProviderTypes.Sms:
+                    response = await sdk.forProject.client.call(
+                        'POST',
+                        new URL(sdk.forProject.client.config.endpoint + '/messaging/messages/sms'),
+                        {
+                            'X-Appwrite-Project': sdk.forProject.client.config.project,
+                            'content-type': 'application/json',
+                            'X-Appwrite-Mode': 'admin'
+                        },
+                        {
+                            ...$messageParams[$providerType],
+                            messageId
+                        }
+                    );
+                    break;
+                case ProviderTypes.Push:
+                    response = await sdk.forProject.client.call(
+                        'POST',
+                        new URL(
+                            sdk.forProject.client.config.endpoint + '/messaging/providers/telesign'
+                        ),
+                        {
+                            'X-Appwrite-Project': sdk.forProject.client.config.project,
+                            'content-type': 'application/json',
+                            'X-Appwrite-Mode': 'admin'
+                        },
+                        {
+                            ...$messageParams[$providerType],
+                            messageId
+                        }
+                    );
+                    break;
+            }
+            wizard.hide();
             addNotification({
                 type: 'success',
-                message: `${name} has been created`
+                message: `The message has been sent.`
             });
-            name = null;
-            trackEvent(Submit.BucketCreate, {
-                customId: !!id
+            trackEvent(Submit.MessagingMessageCreate, {
+                providerType: $providerType
             });
-        } catch (e) {
-            error = e.message;
-            trackError(e, Submit.BucketCreate);
+            await goto(`${base}/console/project-${$project.$id}/messaging/message-${response.$id}`);
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+            trackError(error, Submit.MessagingProviderCreate);
         }
-    };
+    }
 
-    $: if (!showCustomId) {
-        id = null;
-    }
-    $: if (!showCreate) {
-        showCustomId = false;
-        error = null;
-    }
+    onDestroy(() => {
+        console.log('destroy');
+    });
+
+    const stepsComponents: WizardStepsType = new Map();
+    stepsComponents.set(1, {
+        label: 'Message',
+        component: Step1
+    });
+    stepsComponents.set(2, {
+        label: 'Targets',
+        component: Step2
+    });
+    stepsComponents.set(3, {
+        label: 'Schedule',
+        component: Step3
+    });
 </script>
 
-<Modal title="Create message" {error} onSubmit={create} size="big" bind:show={showCreate}>
-    <FormList>
-        <InputText
-            id="name"
-            label="Name"
-            placeholder="New bucket"
-            bind:value={name}
-            autofocus
-            required />
-
-        {#if !showCustomId}
-            <div>
-                <Pill button on:click={() => (showCustomId = !showCustomId)}>
-                    <span class="icon-pencil" aria-hidden="true" />
-                    <span class="text"> Bucket ID </span>
-                </Pill>
-            </div>
-        {:else}
-            <CustomId bind:show={showCustomId} name="Bucket" bind:id />
-        {/if}
-    </FormList>
-    <svelte:fragment slot="footer">
-        <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
-        <Button submit>Create</Button>
-    </svelte:fragment>
-</Modal>
+<Wizard title="Create message" steps={stepsComponents} on:finish={create} finalAction="Send" />

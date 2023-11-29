@@ -290,5 +290,6 @@ export enum Submit {
     SmsUpdateVerificationTemplate = 'submit_sms_update_verification_template',
     MessagingProviderCreate = 'submit_messaging_provider_create',
     MessagingProviderDelete = 'submit_messaging_provider_delete',
-    MessagingProviderUpdate = 'submit_messaging_provider_update'
+    MessagingProviderUpdate = 'submit_messaging_provider_update',
+    MessagingMessageCreate = 'submit_messaging_message_create'
 }

@@ -86,7 +86,9 @@
         userResultsById = {};
         response.users.forEach((user) => {
             if (providerType !== null) {
-                user.targets = user.targets.filter((target) => target.providerType === providerType);
+                user.targets = user.targets.filter(
+                    (target) => target.providerType === providerType
+                );
             }
             userResultsById = {
                 ...userResultsById,
@@ -200,7 +202,9 @@
                                     <svelte:fragment slot="description">
                                         <div class="u-inline-flex u-gap-8">
                                             <span class="inline-tag u-normal"
-                                                ><ProviderType type={target.providerType} noIcon /></span>
+                                                ><ProviderType
+                                                    type={target.providerType}
+                                                    noIcon /></span>
                                             {#if target.providerType !== ProviderTypes.Push}
                                                 {target.identifier}
                                             {:else}
