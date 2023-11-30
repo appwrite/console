@@ -25,6 +25,8 @@
     import { project } from './project-[project]/store';
     import { feedback } from '$lib/stores/feedback';
     import { consoleVariables } from './store';
+    import { isCloud } from '$lib/system';
+    import PreReleaseModal from './(billing-modal)/preReleaseModal.svelte';
 
     function kebabToSentenceCase(str: string) {
         return str
@@ -280,4 +282,8 @@
 
 {#if $log.show}
     <Logs />
+{/if}
+
+{#if isCloud && true}
+    <PreReleaseModal show={true} />
 {/if}
