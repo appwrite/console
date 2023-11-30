@@ -24,7 +24,7 @@
     import { openMigrationWizard } from './(migration-wizard)';
     import { project } from './project-[project]/store';
     import { feedback } from '$lib/stores/feedback';
-    import { consoleVariables } from './store';
+    import { consoleVariables, showPrereleaseModal } from './store';
     import { isCloud } from '$lib/system';
     import PreReleaseModal from './(billing-modal)/preReleaseModal.svelte';
 
@@ -226,6 +226,7 @@
 
     onMount(() => {
         loading.set(false);
+        checkForPreReleaseProModal();
 
         setInterval(() => {
             checkForFeedback(INTERVAL);
@@ -242,6 +243,48 @@
         } else if (hours >= $feedback.visualized * 10) {
             feedback.toggleNotification();
             feedback.switchType('nps');
+        }
+    }
+
+    function checkForPreReleaseProModal() {
+        const modalTime = localStorage.getItem('preReleaseProModal');
+        const notificationTime = localStorage.getItem('preReleaseProNotification');
+        const now = Date.now();
+        // show the modal if it was never shown
+        if (!modalTime) {
+            localStorage.setItem('preReleaseProModal', Date.now().toString());
+            localStorage.setItem('preReleaseProNotification', Date.now().toString());
+            showPrereleaseModal.set(true);
+        } else {
+            const interval = 5 * 24 * 60 * 60 * 1000;
+            const sinceLastModal = now - parseInt(modalTime);
+            // show the modal if it was shown more than 5 days ago
+            if (sinceLastModal > interval) {
+                localStorage.setItem('preReleaseProModal', Date.now().toString());
+                localStorage.setItem('preReleaseProNotification', Date.now().toString());
+                showPrereleaseModal.set(true);
+            }
+            //if the modal has been shown more than 24 ago and the notification has not been shown for 24 hours
+            else if (
+                sinceLastModal > 24 * 60 * 60 * 1000 &&
+                now - (notificationTime ? parseInt(notificationTime) : 0) > 24 * 60 * 60 * 1000
+            ) {
+                localStorage.setItem('preReleaseProNotification', Date.now().toString());
+                addNotification({
+                    type: 'warning',
+                    timeout: 10000,
+                    message:
+                        'Appwrite Pro is coming soon, which means you will be limited to one free organization per account. To avoid service disruptions in your projects, consider upgrading to Pro.',
+                    buttons: [
+                        {
+                            name: 'Learn more',
+                            method: () => {
+                                window.open('https://appwrite.io/pricing', '_blank');
+                            }
+                        }
+                    ]
+                });
+            }
         }
     }
 
@@ -284,6 +327,6 @@
     <Logs />
 {/if}
 
-{#if isCloud && true}
-    <PreReleaseModal show={true} />
+{#if isCloud && $showPrereleaseModal}
+    <PreReleaseModal bind:show={$showPrereleaseModal} />
 {/if}
