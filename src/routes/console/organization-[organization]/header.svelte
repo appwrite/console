@@ -8,7 +8,13 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover } from '$lib/layout';
-    import { daysLeftInTrial, trialEndDate } from '$lib/stores/billing';
+    import {
+        daysLeftInTrial,
+        getServiceLimit,
+        readOnly,
+        tierToPlan,
+        trialEndDate
+    } from '$lib/stores/billing';
     import {
         members,
         newMemberModal,
@@ -20,6 +26,9 @@
     import { isCloud } from '$lib/system';
     import CreateOrganizationCloud from '../createOrganizationCloud.svelte';
 
+    const limit = getServiceLimit('members') || Infinity;
+    $: isLimited = limit !== 0 && limit < Infinity;
+    $: areMembersLimited = isCloud && ($readOnly || (isLimited && $members?.total >= limit));
     let showDropdown = false;
 
     function createOrg() {
@@ -117,17 +126,30 @@
                 </section></svelte:fragment>
         </DropList>
         <div class="u-margin-inline-start-auto">
-            <div class="u-flex u-gap-16">
+            <div class="u-flex u-gap-16 u-cross-center">
                 <a href={`${path}/members`} class="is-not-mobile">
                     <AvatarGroup size={40} {avatars} total={$members?.total ?? 0} />
                 </a>
-                <Button secondary on:click={() => newMemberModal.set(true)}>
-                    <span class="icon-plus" aria-hidden="true" />
-                    <span class="text">Invite</span>
-                </Button>
+                <div
+                    use:tooltip={{
+                        content:
+                            $organization?.billingPlan === 'tier-0'
+                                ? `Upgrade to add more members`
+                                : `You've reached the members limit for the ${tierToPlan(
+                                      $organization?.billingPlan
+                                  )} plan`,
+                        disabled: !areMembersLimited
+                    }}>
+                    <Button
+                        secondary
+                        on:click={() => newMemberModal.set(true)}
+                        disabled={areMembersLimited}>
+                        <span class="icon-plus" aria-hidden="true" />
+                        <span class="text">Invite</span>
+                    </Button>
+                </div>
             </div>
-        </div>
-    </svelte:fragment>
+        </div></svelte:fragment>
     <Tabs>
         {#each tabs as tab}
             <Tab
