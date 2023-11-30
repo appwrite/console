@@ -282,6 +282,22 @@ export class Billing {
         );
     }
 
+    async deleteOrganization(organizationId: string): Promise<Organization> {
+        const path = `/organizations/${organizationId}`;
+        const params = {
+            organizationId
+        };
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'DELETE',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            params
+        );
+    }
+
     async getPlan(organizationId: string): Promise<Plan> {
         const path = `/organizations/${organizationId}/plan`;
         const params = {
@@ -487,7 +503,6 @@ export class Billing {
         );
     }
 
-    // TODO: add date range
     async listUsage(
         organizationId: string,
         startDate: string = null,

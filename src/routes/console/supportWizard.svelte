@@ -9,6 +9,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { wizard } from '$lib/stores/wizard';
     import { VARS } from '$lib/system';
+    import { organization } from '$lib/stores/organization';
 
     onDestroy(() => {
         $supportData = {
@@ -37,7 +38,13 @@
                 firstName: $user?.name ?? '',
                 message: $supportData.message,
                 tags: ['cloud'],
-                customFields: [{ id: '41612', value: $supportData.category }]
+                customFields: [
+                    { id: '41612', value: $supportData.category },
+                    { id: '48493', value: $user?.name ?? '' },
+                    { id: '48492', value: $organization.$id ?? '' },
+                    // { id: '48491', value: $user?.projectId ?? '' },
+                    { id: '48490', value: $user?.$id ?? '' }
+                ]
             })
         });
         trackEvent(Submit.SupportTicket);

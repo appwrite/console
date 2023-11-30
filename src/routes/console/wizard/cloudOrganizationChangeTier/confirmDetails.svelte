@@ -167,11 +167,21 @@
                     <p class="text">Additional members ({collaboratorsNumber})</p>
                     <p class="text">${collaboratorPrice * collaboratorsNumber}</p>
                 </span>
+                {#if showCoupon && couponData?.status !== 'error'}
+                    <span class="u-flex u-main-space-between">
+                        <p class="text">Credits applied ({couponData.credits})</p>
+                        <p class="text">-${couponData.credits}</p>
+                    </span>
+                {/if}
             {/if}
             <div class="u-sep-block-start" />
             <span class="u-flex u-main-space-between">
-                <p class="text">Estimated total</p>
-                <p class="text">${totalExpences}</p>
+                <p class="text">Estimated total (in USD)</p>
+                <p class="text">
+                    ${showCoupon && couponData?.status !== 'error'
+                        ? totalExpences - couponData.credits || 0
+                        : totalExpences}
+                </p>
             </span>
 
             <p class="text u-margin-block-start-16">

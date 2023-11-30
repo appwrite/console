@@ -1,17 +1,19 @@
 import { sdk } from '$lib/stores/sdk';
 import { cachedStore } from '$lib/helpers/cache';
-import type { Models } from '@appwrite.io/console';
+import type { UsageProject } from '$lib/sdk/usage';
 import { writable, type Writable } from 'svelte/store';
 
 export const usage = cachedStore<
-    Models.UsageProject,
+    UsageProject,
     {
         load: (range: string) => Promise<void>;
     }
 >('projectUsage', function ({ set }) {
     return {
         load: async (range) => {
-            const usages = await sdk.forProject.project.getUsage(range);
+            const usages: UsageProject = (await sdk.forProject.project.getUsage(
+                range
+            )) as unknown as UsageProject;
             set(usages);
         }
     };

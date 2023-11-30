@@ -5,38 +5,16 @@
 
     export let data: PageData;
 
-    $: count = data.count;
-    $: created = data.created;
-    $: read = data.read;
-    $: updated = data.updated;
-    $: deleted = data.deleted;
+    $: total = data.collectionsTotal;
+    $: count = data.collections;
 </script>
 
 <Usage
     title="Databases"
     path={`/console/project-${$page.params.project}/databases/database-${$page.params.database}/usage`}
+    {total}
     {count}
-    {created}
-    {read}
-    {updated}
-    {deleted}
     countMetadata={{
         legend: 'Collections',
         title: 'Total collections'
-    }}
-    createdMetadata={{
-        legend: 'Create',
-        title: 'Collections created'
-    }}
-    readMetadata={{
-        legend: 'Read',
-        title: 'Collections read'
-    }}
-    updatedMetadata={{
-        legend: 'Update',
-        title: 'Collections updated'
-    }}
-    deletedMetadata={{
-        legend: 'Delete',
-        title: 'Collections deleted'
     }} />
