@@ -20,7 +20,12 @@
                 aria-hidden="true"
                 width="376" />
         {:else}
-            <img src={SideLight} alt="appwrite pro" aria-hidden="true" width="376" />
+            <img
+                src={SideLight}
+                style="object-fit: cover;   object-position: 30% 100%; height: 100%; width: 100%; aspect-ratio: 1 / 1;"
+                alt="appwrite pro"
+                aria-hidden="true"
+                width="376" />
         {/if}
     </svelte:fragment>
 
