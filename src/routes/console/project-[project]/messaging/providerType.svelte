@@ -49,7 +49,7 @@
                 class="avatar"
                 class:is-size-large={size === 'l'}
                 class:is-size-small={size === 's'}>
-                <span class={icon} style:--p-text-size={textSize} aria-hidden="true" />
+                <span class={icon} style:font-size={textSize} aria-hidden="true" />
             </div>
         {/if}
         <slot>

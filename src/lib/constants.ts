@@ -48,7 +48,8 @@ export enum Dependencies {
     RUNTIMES = 'dependency:runtimes',
     CONSOLE_VARIABLES = 'dependency:console_variables',
     MESSAGING_PROVIDERS = 'dependency:messaging_providers',
-    MESSAGING_PROVIDER = 'dependency:messaging_provider'
+    MESSAGING_PROVIDER = 'dependency:messaging_provider',
+    MESSAGING_MESSAGE = 'dependency:messaging_message'
 }
 
 export const scopes: {
