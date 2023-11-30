@@ -1,41 +1,36 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
     import { CardGrid, Heading, ProgressBarBig } from '$lib/components';
-    import { getServiceLimit, showUsageRatesModal, tierToPlan } from '$lib/stores/billing.js';
-    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
-    import { wizard } from '$lib/stores/wizard.js';
+    import { getServiceLimit, showUsageRatesModal, tierToPlan } from '$lib/stores/billing';
+    import { wizard } from '$lib/stores/wizard';
     import { organization } from '$lib/stores/organization';
-    import { InputDateRange, InputSelect } from '$lib/elements/forms';
+    import { InputSelect } from '$lib/elements/forms';
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
-    import type { DateRange } from '@melt-ui/svelte';
-
-    const tier = tierToPlan($organization?.billingPlan)?.name;
+    import { toLocaleDate } from '$lib/helpers/date.js';
+    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
 
     export let data;
-    let period = 'current';
+
+    const tier = data?.currentInvoice?.tier ?? $organization?.billingPlan;
+    const plan = tierToPlan(tier).name;
+
+    let invoice = 'current';
 
     async function handlePeriodChange() {
-        if (
-            period === 'current' &&
-            !$page.url.pathname.includes('usage/current') &&
-            $page.url.pathname !== `/console/organization-${$organization.$id}/usage`
-        ) {
-            await goto(`/console/organization-${$organization.$id}/usage/current`);
-        }
-        if (period === 'previous' && !$page.url.pathname.includes('usage/previous')) {
-            await goto(`/console/organization-${$organization.$id}/usage/previous`);
-        }
-        if (period === 'custom' && !$page.url.pathname.includes('usage/custom')) {
-            console.log('test');
-            // await goto(`/console/organization-${$organization.$id}/usage/custom`);
+        const target = invoice
+            ? `/console/organization-${$organization.$id}/usage/${invoice}`
+            : `/console/organization-${$organization.$id}/usage`;
+        if ($page.url.pathname !== target) {
+            await goto(target);
         }
     }
 
-    let test: DateRange;
+    const cycles = data.invoices.invoices.map((invoice) => ({
+        label: toLocaleDate(invoice.from),
+        value: invoice.$id
+    }));
 </script>
-
-<InputDateRange id="date" label="test" bind:data={test}></InputDateRange>
 
 <Container>
     <Heading tag="h2" size="5">Usage</Heading>
@@ -50,7 +45,7 @@
             </p>
         {:else}
             <p class="text">
-                If you exceed the limits of the {tier} plan, services for your projects may be disrupted.
+                If you exceed the limits of the {plan} plan, services for your projects may be disrupted.
                 <button
                     on:click={() => wizard.start(ChangeOrganizationTierCloud)}
                     class="link"
@@ -58,8 +53,6 @@
                 >.
             </p>
         {/if}
-
-        <!-- <InputDate id="date" label="test" showLabel={false}></InputDate> -->
 
         <div class="u-flex u-gap-8 u-cross-center">
             <p class="text">Usage period:</p>
@@ -69,21 +62,14 @@
                 id="period"
                 label="Usage period"
                 showLabel={false}
-                bind:value={period}
+                bind:value={invoice}
                 on:change={handlePeriodChange}
                 options={[
                     {
                         label: 'Current billing cycle',
                         value: 'current'
                     },
-                    {
-                        label: 'Previous billing cycle',
-                        value: 'previous'
-                    },
-                    {
-                        label: 'Choose dates',
-                        value: 'custom'
-                    }
+                    ...cycles
                 ]}></InputSelect>
         </div>
     </div>
@@ -98,8 +84,8 @@
         <svelte:fragment slot="aside">
             <ProgressBarBig
                 unit="GB"
-                max={getServiceLimit('bandwidth')}
-                used={data.organizationUsage.bandwidth[0] ?? 0} />
+                max={getServiceLimit('bandwidth', tier)}
+                used={data.organizationUsage.bandwidth[0]?.value ?? 0} />
         </svelte:fragment>
     </CardGrid>
 
@@ -111,8 +97,8 @@
         <svelte:fragment slot="aside">
             <ProgressBarBig
                 unit="Users"
-                max={getServiceLimit('users')}
-                used={data.organizationUsage.bandwidth[0] ?? 0} />
+                max={getServiceLimit('users', tier)}
+                used={data.organizationUsage.bandwidth[0]?.value ?? 0} />
         </svelte:fragment>
     </CardGrid>
 
@@ -126,7 +112,7 @@
         <svelte:fragment slot="aside">
             <ProgressBarBig
                 unit="Executions"
-                max={getServiceLimit('executions')}
+                max={getServiceLimit('executions', tier)}
                 used={data.organizationUsage.executions} />
         </svelte:fragment>
     </CardGrid>
@@ -141,7 +127,7 @@
         <svelte:fragment slot="aside">
             <ProgressBarBig
                 unit="GB"
-                max={getServiceLimit('storage')}
+                max={getServiceLimit('storage', tier)}
                 used={data.organizationUsage.storage} />
         </svelte:fragment>
     </CardGrid>
