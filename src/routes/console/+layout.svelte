@@ -226,7 +226,9 @@
 
     onMount(() => {
         loading.set(false);
-        checkForPreReleaseProModal();
+        if (isCloud && !$page.url.pathname.includes('/console/onboarding')) {
+            checkForPreReleaseProModal();
+        }
 
         setInterval(() => {
             checkForFeedback(INTERVAL);
@@ -327,6 +329,6 @@
     <Logs />
 {/if}
 
-{#if isCloud && $showPrereleaseModal}
+{#if isCloud && $showPrereleaseModal && !$page.url.pathname.includes('/console/onboarding')}
     <PreReleaseModal bind:show={$showPrereleaseModal} />
 {/if}
