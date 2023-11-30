@@ -1,9 +1,8 @@
 <script lang="ts">
-    import { Box, ModalWrapper } from '$lib/components';
+    import { Box } from '$lib/components';
     import SideLight from './side-light.png';
     import SideDark from './side-dark.png';
     import { app } from '$lib/stores/app';
-    import { trackEvent } from '$lib/actions/analytics';
     import ModalSideCol from '$lib/components/modalSideCol.svelte';
     import { Button } from '$lib/elements/forms';
 
@@ -29,48 +28,51 @@
         {/if}
     </svelte:fragment>
 
-    <p class="text">
-        Appwrite will enable billing before the end of the year, which means access to our long
-        awaited Pro plan. It also means you will be limited to <b
-            >one free organization per account</b
-        >.
-    </p>
-    <p class="text">
-        Consider upgrading and take advantage of the extra resources that come with the Pro plan.
-        You can also use our Migrations service to self-host some of your projects instead. Learn
-        more in our <a
-            class="link"
-            href="https://appwrite.io/docs/advanced/migrations"
-            target="_blank"
-            rel="noopener noreferrer">documentation</a
-        >.
-    </p>
+    <div class="u-flex u-gap-16">
+        <p class="text">
+            Appwrite will enable billing before the end of the year, which means access to our long
+            awaited Pro plan. It also means you will be limited to <b
+                >one free organization per account</b
+            >.
+        </p>
+        <p class="text">
+            Consider upgrading and take advantage of the extra resources that come with the Pro
+            plan. You can also use our Migrations service to self-host some of your projects
+            instead. Learn more in our <a
+                class="link"
+                href="https://appwrite.io/docs/advanced/migrations"
+                target="_blank"
+                rel="noopener noreferrer">documentation</a
+            >.
+        </p>
+    </div>
     <Box>
         <b class="body-text-1">Pro - $15 per member per billing period</b>
 
         <ul class="list u-flex-vertical u-gap-8 u-margin-block-start-24">
             <li class="u-flex u-gap-8 u-cross-center">
-                <span class="icon-check-circle" aria-hidden="true"></span>
+                <span class="icon-check-circle" aria-hidden="true" />
                 <span class="text">Unlimited org. members</span>
             </li>
             <li class="u-flex u-gap-8 u-cross-center">
-                <span class="icon-check-circle" aria-hidden="true"></span>
+                <span class="icon-check-circle" aria-hidden="true" />
                 <span class="text">300GB bandwidth</span>
             </li>
             <li class="u-flex u-gap-8 u-cross-center">
-                <span class="icon-check-circle" aria-hidden="true"></span>
+                <span class="icon-check-circle" aria-hidden="true" />
                 <span class="text">200,000 monthly active users</span>
             </li>
             <li class="u-flex u-gap-8 u-cross-center">
-                <span class="icon-check-circle" aria-hidden="true"></span>
+                <span class="icon-check-circle" aria-hidden="true" />
                 <span class="text">Email support</span>
             </li>
             <li class="u-flex u-gap-8 u-cross-center">
-                <span class="icon-check-circle" aria-hidden="true"></span>
+                <span class="icon-check-circle" aria-hidden="true" />
                 <span class="text">And more</span>
             </li>
         </ul>
-        <Button fullWidth class="u-margin-block-start-24" href="https://appwrite.io/pricing"
-            >Learn more about Pro</Button>
+        <Button fullWidth class="u-margin-block-start-24" href="https://appwrite.io/pricing">
+            Learn more about Pro
+        </Button>
     </Box>
 </ModalSideCol>
