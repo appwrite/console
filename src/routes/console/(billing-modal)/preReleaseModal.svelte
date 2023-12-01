@@ -29,7 +29,7 @@
         {/if}
     </svelte:fragment>
 
-    <div class="u-flex u-gap-16">
+    <div class="u-flex u-flex-vertical u-gap-16">
         <p class="text">
             Appwrite will enable billing before the end of the year, which means access to our long
             awaited Pro plan. It also means you will be limited to <b
