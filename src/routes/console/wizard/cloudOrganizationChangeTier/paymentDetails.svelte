@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { FormList, InputNumber, InputRadio, InputText } from '$lib/elements/forms';
+    import { FormList, InputNumber } from '$lib/elements/forms';
     import InputChoice from '$lib/elements/forms/inputChoice.svelte';
     import { WizardStep } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
@@ -11,8 +11,8 @@
     import { initializeStripe, isStripeInitialized, submitStripeCard } from '$lib/stores/stripe';
     import { organization } from '$lib/stores/organization';
     import { symmetricDifference } from '$lib/helpers/array';
-    import { CreditCardBrandImage } from '$lib/components';
     import { showUsageRatesModal } from '$lib/stores/billing';
+    import { PaymentBoxes } from '$lib/components/billing';
 
     let methods: PaymentList;
     let filteredMethods: PaymentMethodData[];
@@ -69,54 +69,10 @@
     </svelte:fragment>
 
     <FormList>
-        <div class:boxes-wrapper={filteredMethods?.length}>
-            {#if filteredMethods?.length}
-                {#each filteredMethods as method}
-                    <div class="box">
-                        <InputRadio
-                            id={`payment-method-${method.$id}`}
-                            value={method.$id}
-                            name="payment"
-                            bind:group={$changeOrganizationTier.paymentMethodId}>
-                            <span
-                                class="u-flex u-cross-center u-gap-8"
-                                style="padding-inline:0.25rem">
-                                <span>
-                                    <span class="u-capitalize">{method.brand}</span> ending in {method.last4}</span>
-                                <CreditCardBrandImage brand={method.brand} />
-                            </span>
-                        </InputRadio>
-                    </div>
-                {/each}
-            {/if}
-
-            <div class="box">
-                {#if filteredMethods?.length}
-                    <InputRadio
-                        id="payment-method"
-                        value={null}
-                        name="payment"
-                        bind:group={$changeOrganizationTier.paymentMethodId}>
-                        <span style="padding-inline:0.25rem">Add new payment method</span>
-                    </InputRadio>
-                {/if}
-                {#if $changeOrganizationTier.paymentMethodId === null}
-                    <FormList class="u-margin-block-start-8" gap={16}>
-                        <InputText
-                            id="name"
-                            label="Cardholder name"
-                            placeholder="Cardholder name"
-                            bind:value={name}
-                            required
-                            autofocus={true} />
-
-                        <div id="payment-element">
-                            <!-- Elements will create form elements here -->
-                        </div>
-                    </FormList>
-                {/if}
-            </div>
-        </div>
+        <PaymentBoxes
+            methods={filteredMethods}
+            bind:name
+            bind:group={$changeOrganizationTier.paymentMethodId} />
 
         <InputChoice
             type="switchbox"

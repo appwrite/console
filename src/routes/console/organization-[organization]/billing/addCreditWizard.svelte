@@ -6,11 +6,11 @@
     import { Dependencies } from '$lib/constants';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { wizard } from '$lib/stores/wizard';
-    import { addCreditWizardStore } from './store';
-    import { createOrgSteps } from '$routes/console/wizard/cloudOrganization/store';
+    import { addCreditWizardSteps, addCreditWizardStore } from './store';
     import AddCredit from './wizard/addCredit.svelte';
     import { sdk } from '$lib/stores/sdk';
     import { organization } from '$lib/stores/organization';
+    import PaymentDetails from './wizard/paymentDetails.svelte';
 
     async function onFinish() {
         await invalidate(Dependencies.FUNCTIONS);
@@ -22,7 +22,7 @@
 
             await sdk.forConsole.billing.setOrganizationPaymentMethod(
                 $organization.$id,
-                $addCreditWizardStore.paymentId
+                $addCreditWizardStore.paymentMethodId
             );
 
             await sdk.forConsole.billing.addCredit($organization.$id, $addCreditWizardStore.coupon);
@@ -48,23 +48,23 @@
     onDestroy(() => {
         $addCreditWizardStore = {
             coupon: null,
-            paymentId: null
+            paymentMethodId: null
         };
     });
 
-    $createOrgSteps.set(1, {
+    $addCreditWizardSteps.set(1, {
         label: 'Credits',
         component: AddCredit
     });
-    $createOrgSteps.set(2, {
+    $addCreditWizardSteps.set(2, {
         label: 'Payment',
-        component: AddCredit
+        component: PaymentDetails
     });
 </script>
 
 <Wizard
     title="Add credits"
-    steps={$createOrgSteps}
+    steps={$addCreditWizardSteps}
     finalAction="Add credits"
     on:finish={create}
     on:exit={onFinish} />
