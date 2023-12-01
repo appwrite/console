@@ -1,9 +1,5 @@
 <script lang="ts">
-    import { invalidate } from '$app/navigation';
-    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { CardGrid, Heading, PaginationInline } from '$lib/components';
-    import { Dependencies } from '$lib/constants';
-    import { Button, Form, FormList, InputText } from '$lib/elements/forms';
+    import { CardGrid, Empty, Heading, PaginationInline } from '$lib/components';
     import {
         Table,
         TableBody,
@@ -14,18 +10,20 @@
     } from '$lib/elements/table';
     import { toLocaleDate } from '$lib/helpers/date';
     import type { Credit, CreditList } from '$lib/sdk/billing';
-    import { addNotification } from '$lib/stores/notifications';
     import { organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
+    import { wizard } from '$lib/stores/wizard';
     import { Query } from '@appwrite.io/console';
     import { onMount } from 'svelte';
+    import AddCreditWizard from './addCreditWizard.svelte';
+    import { Button } from '$lib/elements/forms';
 
-    let coupon: string = null;
     let offset = 0;
     let creditList: CreditList = {
         credits: [],
         total: 0
     };
+    let show = false;
 
     onMount(async () => {
         request();
@@ -33,25 +31,11 @@
 
     const limit = 5;
 
-    async function redeem() {
-        try {
-            await sdk.forConsole.billing.addCredit($organization.$id, coupon);
-            addNotification({
-                type: 'success',
-                message: `Credit has been added to ${$organization.name}`
-            });
-            await invalidate(Dependencies.CREDIT);
-            await invalidate(Dependencies.ORGANIZATION);
-            trackEvent(Submit.CreditRedeem, {
-                coupon
-            });
-            coupon = null;
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
-            trackError(error, Submit.CreditRedeem);
+    function handleCredits() {
+        if ($organization?.paymentMethodId || $organization?.backupPaymentMethodId) {
+            show = true;
+        } else {
+            wizard.start(AddCreditWizard);
         }
     }
 
@@ -75,20 +59,17 @@
 
     <p class="text">Appwrite credit will automatically be applied to your next invoice.</p>
     <svelte:fragment slot="aside">
-        <h4 class="body-text-1 u-bold">
-            Credit balance <span class="inline-tag">${balance}</span>
-        </h4>
-        <Form onSubmit={redeem} noMargin>
-            <FormList>
-                <InputText
-                    placeholder="Coupon code"
-                    id="code"
-                    label="Add credit"
-                    bind:value={coupon}>
-                    <Button secondary submit>Redeem</Button>
-                </InputText>
-            </FormList>
-        </Form>
+        <div class="u-flex u-cross-center u-main-space-between">
+            <h4 class="body-text-1 u-bold">
+                Credit balance <span class="inline-tag">${balance}</span>
+            </h4>
+            {#if creditList?.total}
+                <Button secondary>
+                    <span class="icon-plus" aria-hidden="true"></span>
+                    <span class="text">Add credits</span>
+                </Button>
+            {/if}
+        </div>
         {#if creditList?.total}
             <Table noStyles noMargin>
                 <TableHeader>
@@ -116,6 +97,8 @@
                 <p class="text">Total results: {creditList?.total}</p>
                 <PaginationInline {limit} bind:offset sum={creditList?.total} hidePages />
             </div>
+        {:else}
+            <Empty target="credits" on:click={handleCredits}>Add credits</Empty>
         {/if}
     </svelte:fragment>
 </CardGrid>

@@ -1,0 +1,48 @@
+<script lang="ts">
+    import { invalidate } from '$app/navigation';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { Modal } from '$lib/components';
+    import { Dependencies } from '$lib/constants';
+    import { Button, FormList, InputText } from '$lib/elements/forms';
+    import { addNotification } from '$lib/stores/notifications';
+    import { organization } from '$lib/stores/organization';
+    import { sdk } from '$lib/stores/sdk';
+
+    export let show = false;
+    let coupon: string = null;
+
+    async function redeem() {
+        try {
+            await sdk.forConsole.billing.addCredit($organization.$id, coupon);
+            addNotification({
+                type: 'success',
+                message: `Credit has been added to ${$organization.name}`
+            });
+            await invalidate(Dependencies.CREDIT);
+            await invalidate(Dependencies.ORGANIZATION);
+            trackEvent(Submit.CreditRedeem, {
+                coupon
+            });
+            coupon = null;
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+            trackError(error, Submit.CreditRedeem);
+        }
+    }
+</script>
+
+<Modal title="Add credits" headerDivider={false} onSubmit={redeem}>
+    Apply Appwrite credits to your organization.
+
+    <FormList>
+        <InputText placeholder="Promo code" id="code" label="Add promo code" bind:value={coupon} />
+    </FormList>
+
+    <svelte:fragment slot="footer">
+        <Button text>Cancel</Button>
+        <Button submit>Add credits</Button>
+    </svelte:fragment>
+</Modal>
