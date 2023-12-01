@@ -5,13 +5,15 @@
     import { ProviderTypes } from '../providerType.svelte';
     import EmailFormList from './emailFormList.svelte';
     import SmsFormList from './smsFormList.svelte';
+    import PushFormList, { validateData } from './pushFormList.svelte';
 
-    async function beforeSubmit() {
-        console.log($messageParams[$providerType]);
-    }
+    async function beforeSubmit() {}
 </script>
 
-<WizardStep {beforeSubmit}>
+<WizardStep
+    {beforeSubmit}
+    nextDisabled={$providerType === ProviderTypes.Push &&
+        !!validateData($messageParams[ProviderTypes.Push].data)}>
     <svelte:fragment slot="title">Message</svelte:fragment>
     <svelte:fragment slot="subtitle">
         <!-- TODO: update documentation link -->
@@ -22,5 +24,7 @@
         <EmailFormList />
     {:else if $providerType === ProviderTypes.Sms}
         <SmsFormList />
+    {:else if $providerType === ProviderTypes.Push}
+        <PushFormList />
     {/if}
 </WizardStep>

@@ -30,7 +30,7 @@ export type SMSMessageParams = MessageParams & {
 export type PushMessageParams = MessageParams & {
     title: string;
     body: string;
-    data: Record<string, string>;
+    data: [string, string][];
     action?: string;
     icon?: string;
     sound?: string;

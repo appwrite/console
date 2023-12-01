@@ -54,11 +54,18 @@
                     );
                     break;
                 case ProviderTypes.Push:
+                    const customData: Record<string, string> = {};
+                    const { data } = $messageParams[ProviderTypes.Push];
+                    if (data && data.length > 0) {
+                        data.forEach((item) => {
+                            if (item[0] === '') return;
+                            customData[item[0]] = item[1];
+                        });
+                    }
+
                     response = await sdk.forProject.client.call(
                         'POST',
-                        new URL(
-                            sdk.forProject.client.config.endpoint + '/messaging/providers/telesign'
-                        ),
+                        new URL(sdk.forProject.client.config.endpoint + '/messaging/messages/push'),
                         {
                             'X-Appwrite-Project': sdk.forProject.client.config.project,
                             'content-type': 'application/json',
@@ -66,6 +73,7 @@
                         },
                         {
                             ...$messageParams[$providerType],
+                            data: customData,
                             messageId
                         }
                     );
