@@ -5,6 +5,7 @@
     import { app } from '$lib/stores/app';
     import ModalSideCol from '$lib/components/modalSideCol.svelte';
     import { Button } from '$lib/elements/forms';
+    import { trackEvent } from '$lib/actions/analytics';
 
     export let show = false;
 </script>
@@ -42,7 +43,12 @@
                 class="link"
                 href="https://appwrite.io/docs/advanced/migrations"
                 target="_blank"
-                rel="noopener noreferrer">documentation</a
+                rel="noopener noreferrer"
+                on:click={() =>
+                    trackEvent('click_open_website', {
+                        source: 'pre_billing_release_modal',
+                        destination: 'docs_migration'
+                    })}>documentation</a
             >.
         </p>
     </div>
@@ -71,7 +77,15 @@
                 <span class="text">And more</span>
             </li>
         </ul>
-        <Button fullWidth class="u-margin-block-start-24" href="https://appwrite.io/pricing">
+        <Button
+            fullWidth
+            class="u-margin-block-start-24"
+            href="https://appwrite.io/pricing"
+            on:click={() =>
+                trackEvent('click_open_website', {
+                    source: 'pre_billing_release_modal',
+                    destination: 'pricing'
+                })}>
             Learn more about Pro
         </Button>
     </Box>
