@@ -9,11 +9,26 @@
     } from '$lib/elements/forms';
     import InputPhone from '$lib/elements/forms/inputPhone.svelte';
     import { WizardStep } from '$lib/layout';
+    import { onMount } from 'svelte';
     import { providers } from '../store';
     import { providerType, provider, providerParams } from './store';
 
     let files: Record<string, FileList> = {};
     const inputs = providers[$providerType].providers[$provider].configure;
+
+    onMount(() => {
+        for (const input of inputs) {
+            if (input.type === 'file' && $providerParams[$provider][input.name].length > 0) {
+                const dataTransfer = new DataTransfer();
+                const f = new File(
+                    [$providerParams[$provider][input.name]],
+                    `${input.name}.${input.allowedFileExtensions}`
+                );
+                dataTransfer.items.add(f);
+                files[input.name] = dataTransfer.files;
+            }
+        }
+    });
 
     async function beforeSubmit() {
         const promises = [];
