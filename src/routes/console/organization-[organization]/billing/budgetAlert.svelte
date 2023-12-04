@@ -58,7 +58,7 @@
             addNotification({
                 type: 'success',
                 isHtml: true,
-                message: `<span>Budget alert condition added to <b>${$organization.name}</b></span>`
+                message: `<span>A budget alert has been added to <b>${$organization.name}</b></span>`
             });
             trackEvent(Submit.BudgetAlertsUpdate, {
                 alerts
@@ -77,10 +77,10 @@
 
 <Form onSubmit={updateBudget}>
     <CardGrid>
-        <Heading tag="h2" size="6">Budget alert condition</Heading>
+        <Heading tag="h2" size="6">Budget alerts</Heading>
 
         <p class="text">
-            Get notified by email when your organization meets or exceeds a percent of your
+            Get notified by email when your organization reaches or exceeds a percent of your
             specified budget cap. You can set a maximum of 3 alerts.
         </p>
         <svelte:fragment slot="aside">
@@ -90,6 +90,7 @@
                         label="Percentage (%) of budget cap"
                         placeholder="Select a percentage"
                         id="alerts"
+                        fullWidthDrop={false}
                         {options}
                         bind:search
                         bind:value={selectedAlert}
