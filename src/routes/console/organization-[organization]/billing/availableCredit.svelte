@@ -34,10 +34,8 @@
 
     function handleCredits() {
         if ($organization?.paymentMethodId || $organization?.backupPaymentMethodId) {
-            console.log('askdjsad');
             show = true;
         } else {
-            console.log('test');
             wizard.start(AddCreditWizard);
         }
     }
