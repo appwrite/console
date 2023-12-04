@@ -17,7 +17,7 @@ export type Organization = Models.Team<Record<string, unknown>> & {
     billingTrialDays?: number;
     billingAddressId?: string;
     amount: number;
-    taxId?: string;
+    billingTaxId?: string;
 };
 
 export type BillingLimits = {

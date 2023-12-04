@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { FormList, InputTextarea } from '$lib/elements/forms';
+    import { FormList, InputSelect, InputTextarea } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
     import { app } from '$lib/stores/app';
     import { wizard } from '$lib/stores/wizard';
@@ -7,11 +7,25 @@
     import Light from '$lib/images/support/support-wizard-light.svg';
     import Dark from '$lib/images/support/support-wizard-dark.svg';
     import { Pill } from '$lib/elements';
+    import { onMount } from 'svelte';
+    import { sdk } from '$lib/stores/sdk';
     // import { Collapsible, CollapsibleItem } from '$lib/components';
 
+    // let files: FileList;
     $wizard.media = $app.themeInUse === 'dark' ? Dark : Light;
 
-    // let files: FileList;
+    let options: {
+        value: string;
+        label: string;
+    }[];
+
+    onMount(async () => {
+        const projectList = await sdk.forConsole.projects.list();
+        options = projectList.projects.map((project) => ({
+            value: project.$id,
+            label: project.name
+        }));
+    });
 </script>
 
 <WizardStep>
@@ -35,6 +49,15 @@
     </div>
     <div class="common-section">
         <FormList>
+            {#if options?.length}
+                <InputSelect
+                    id="project"
+                    label="Choose a project"
+                    placeholder="Select project"
+                    optionalText="(optional)"
+                    bind:value={$supportData.project}
+                    {options} />
+            {/if}
             <InputTextarea
                 label="Tell us a bit more"
                 id="message"

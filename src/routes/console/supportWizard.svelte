@@ -42,7 +42,7 @@
                     { id: '41612', value: $supportData.category },
                     { id: '48493', value: $user?.name ?? '' },
                     { id: '48492', value: $organization.$id ?? '' },
-                    // { id: '48491', value: $user?.projectId ?? '' },
+                    { id: '48491', value: $supportData?.project ?? '' },
                     { id: '48490', value: $user?.$id ?? '' }
                 ]
             })
@@ -68,7 +68,8 @@
         $supportData = {
             message: null,
             category: 'general',
-            file: null
+            file: null,
+            project: null
         };
     }
 </script>

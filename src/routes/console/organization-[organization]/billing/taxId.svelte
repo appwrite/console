@@ -12,13 +12,13 @@
     let taxId: string;
 
     onMount(() => {
-        taxId = $organization?.taxId;
+        taxId = $organization?.billingTaxId;
     });
 
     async function updateTaxId() {
         try {
             await sdk.forConsole.billing.updateTaxId($organization.$id, taxId);
-            await invalidate(Dependencies.ADDRESS);
+            await invalidate(Dependencies.ORGANIZATION);
             addNotification({
                 type: 'success',
                 message: `${$organization.name} tax ID has been successfully updated`
@@ -49,7 +49,7 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={$organization?.taxId === taxId} submit>Update</Button>
+            <Button disabled={$organization?.billingTaxId === taxId} submit>Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>
