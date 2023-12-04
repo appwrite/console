@@ -14,18 +14,19 @@ let paymentElement: StripeElement;
 export const isStripeInitialized = writable(false);
 
 export async function initializeStripe() {
+    console.log('Initializing Stripe')
     if (!get(stripe)) return;
     isStripeInitialized.set(true);
 
     try {
         const methods = await sdk.forConsole.billing.listPaymentMethods();
         clientSecret = methods.paymentMethods[0]?.clientSecret;
-
         // If there is no payment method, create an empty one and get the client secret
         if (!clientSecret) {
             paymentMethod = await sdk.forConsole.billing.createPaymentMethod();
             clientSecret = paymentMethod.clientSecret;
         }
+        console.log('client secret', clientSecret);
 
         // Set up the options for the stripe elements
         const options = {
@@ -36,6 +37,7 @@ export async function initializeStripe() {
         elements = get(stripe).elements(options);
         paymentElement = elements.create('payment');
         paymentElement.mount('#payment-element');
+
     } catch (e) {
         console.log(e);
         throw e;
