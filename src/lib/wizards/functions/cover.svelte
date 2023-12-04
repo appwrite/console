@@ -45,7 +45,6 @@
     import { tooltip } from '$lib/actions/tooltip';
     import { isSelfHosted } from '$lib/system';
     import { consoleVariables } from '$routes/console/store';
-    import Activate from '$routes/console/project-[project]/functions/function-[function]/activate.svelte';
 
     const isVcsEnabled = $consoleVariables?._APP_VCS_ENABLED === true;
     let hasInstallations: boolean;
