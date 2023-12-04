@@ -34,7 +34,7 @@
     }
 </script>
 
-<Modal title="Add credits" headerDivider={false} onSubmit={redeem}>
+<Modal bind:show title="Add credits" headerDivider={false} onSubmit={redeem} size="big">
     Apply Appwrite credits to your organization.
 
     <FormList>
@@ -42,7 +42,7 @@
     </FormList>
 
     <svelte:fragment slot="footer">
-        <Button text>Cancel</Button>
+        <Button text on:click={() => (show = false)}>Cancel</Button>
         <Button submit>Add credits</Button>
     </svelte:fragment>
 </Modal>

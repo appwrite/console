@@ -17,6 +17,7 @@
     import { onMount } from 'svelte';
     import AddCreditWizard from './addCreditWizard.svelte';
     import { Button } from '$lib/elements/forms';
+    import AddCreditModal from './addCreditModal.svelte';
 
     let offset = 0;
     let creditList: CreditList = {
@@ -33,6 +34,7 @@
 
     function handleCredits() {
         if ($organization?.paymentMethodId || $organization?.backupPaymentMethodId) {
+            console.log('askdjsad');
             show = true;
         } else {
             console.log('test');
@@ -103,3 +105,5 @@
         {/if}
     </svelte:fragment>
 </CardGrid>
+
+<AddCreditModal bind:show />
