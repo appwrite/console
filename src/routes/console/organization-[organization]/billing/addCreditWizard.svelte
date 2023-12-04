@@ -18,8 +18,6 @@
 
     async function create() {
         try {
-            console.log($addCreditWizardStore);
-
             await sdk.forConsole.billing.setOrganizationPaymentMethod(
                 $organization.$id,
                 $addCreditWizardStore.paymentMethodId
