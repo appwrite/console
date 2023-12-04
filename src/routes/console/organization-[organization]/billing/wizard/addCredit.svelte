@@ -1,34 +1,39 @@
 <script lang="ts">
-    import { Button, FormList, InputText } from '$lib/elements/forms';
+    import { CouponInput } from '$lib/components/billing';
     import { WizardStep } from '$lib/layout';
+    import type { Coupon } from '$lib/sdk/billing';
     import { sdk } from '$lib/stores/sdk';
     import { addCreditWizardStore } from '../store';
 
-    let couponValid = false;
+    let coupon: string;
+    export let couponData: Partial<Coupon> = {
+        code: null,
+        status: null,
+        credits: null
+    };
 
-    async function checkCoupon() {
+    async function validateCoupon() {
         try {
-            await sdk.forConsole.billing.getCoupon($addCreditWizardStore.coupon);
-            couponValid = true;
-        } catch (e) {
-            couponValid = false;
+            const response = await sdk.forConsole.billing.getCoupon(coupon);
+            coupon = null;
+            couponData = response;
+        } catch (error) {
+            couponData.code = coupon;
+            couponData.status = 'error';
         }
     }
 </script>
 
-<WizardStep>
+<WizardStep beforeSubmit={validateCoupon}>
     <svelte:fragment slot="title">Add credits</svelte:fragment>
     <svelte:fragment slot="subtitle">
         Add Appwrite credits to your organization. A payment method is required before credits can
         be applied.
     </svelte:fragment>
-    <FormList>
-        <InputText
-            placeholder="Promo code"
-            id="code"
-            label="Add promo code"
-            bind:value={$addCreditWizardStore.coupon}>
-            <Button secondary on:click={checkCoupon}>Add</Button>
-        </InputText>
-    </FormList>
+    <CouponInput
+        bind:coupon
+        on:validation={(e) => ($addCreditWizardStore.coupon = e.detail.couponData.code)}
+        let:data>
+        <span>{data.code} has been successfully added</span>
+    </CouponInput>
 </WizardStep>

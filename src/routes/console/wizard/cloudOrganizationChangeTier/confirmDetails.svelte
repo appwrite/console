@@ -100,7 +100,11 @@
         {/if}
 
         <Box class="u-margin-block-start-32 u-flex u-flex-vertical u-gap-16" radius="small">
-            <CouponInput bind:coupon bind:couponData />
+            <CouponInput
+                bind:coupon
+                bind:couponData
+                on:validation={(e) =>
+                    ($changeOrganizationTier.couponCode = e.detail.couponData.code)} />
             {#if $changeOrganizationTier.billingPlan !== 'tier-0'}
                 <span class="u-flex u-main-space-between">
                     <p class="text">{plan.name} plan</p>

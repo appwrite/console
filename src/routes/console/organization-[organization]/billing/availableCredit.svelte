@@ -35,6 +35,7 @@
         if ($organization?.paymentMethodId || $organization?.backupPaymentMethodId) {
             show = true;
         } else {
+            console.log('test');
             wizard.start(AddCreditWizard);
         }
     }

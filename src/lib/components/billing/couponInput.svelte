@@ -6,7 +6,8 @@
 
     const dispatch = createEventDispatcher();
 
-    export let coupon: string;
+    export let required = false;
+    export let coupon: string = '';
     export let couponData: Partial<Coupon> = {
         code: null,
         status: null,
@@ -18,7 +19,7 @@
             const response = await sdk.forConsole.billing.getCoupon(coupon);
             coupon = null;
             couponData = response;
-            dispatch('validation', response);
+            dispatch('validation', couponData);
         } catch (error) {
             console.log(error);
             couponData.code = coupon;
@@ -40,6 +41,8 @@
         placeholder="Coupon code"
         id="code"
         label="Add credits"
+        {required}
+        hideRequired
         disabled={couponData?.status === 'active'}
         bind:value={coupon}>
         <Button
@@ -60,9 +63,11 @@
         <div class="u-flex u-main-space-between u-cross-center">
             <div>
                 <span class="icon-tag u-color-text-success" />
-                <span>
-                    {couponData.code} applied (-${couponData.credits})
-                </span>
+                <slot data={couponData}>
+                    <span>
+                        {couponData.code} applied (-${couponData.credits})
+                    </span>
+                </slot>
             </div>
             <Button text on:click={removeCoupon}>Remove</Button>
         </div>
