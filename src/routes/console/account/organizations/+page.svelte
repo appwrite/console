@@ -16,7 +16,7 @@
     import { isCloud } from '$lib/system';
     import { Pill } from '$lib/elements';
     import type { Models } from '@appwrite.io/console';
-    import { organization, type Organization } from '$lib/stores/organization';
+    import type { Organization } from '$lib/stores/organization';
     import { daysLeftInTrial } from '$lib/stores/billing';
     import { tooltip } from '$lib/actions/tooltip';
     import { toLocaleDate } from '$lib/helpers/date';
@@ -71,7 +71,7 @@
                     </svelte:fragment>
                     <svelte:fragment slot="status">
                         {#if isCloudOrg(organization)}
-                            {#if $organization?.billingPlan === 'tier-0'}
+                            {#if organization?.billingPlan === 'tier-0'}
                                 <div
                                     class="u-flex u-cross-center"
                                     use:tooltip={{
@@ -86,7 +86,7 @@
                                     class="u-flex u-cross-center"
                                     use:tooltip={{
                                         content: `Your trial ends on ${toLocaleDate(
-                                            $organization.billingTrialEndDate
+                                            organization.billingTrialEndDate
                                         )}. ${$daysLeftInTrial} days remaining.`
                                     }}>
                                     <Pill>FREE TRIAL</Pill>
