@@ -8,13 +8,7 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover } from '$lib/layout';
-    import {
-        daysLeftInTrial,
-        getServiceLimit,
-        readOnly,
-        tierToPlan,
-        trialEndDate
-    } from '$lib/stores/billing';
+    import { daysLeftInTrial, getServiceLimit, readOnly, tierToPlan } from '$lib/stores/billing';
     import {
         members,
         newMemberModal,
@@ -95,7 +89,7 @@
                                 class="u-flex u-cross-center"
                                 use:tooltip={{
                                     content: `Your trial ends on ${toLocaleDate(
-                                        $trialEndDate.toString()
+                                        $organization.billingTrialEndDate
                                     )}. ${$daysLeftInTrial} days remaining.`
                                 }}>
                                 <Pill>FREE TRIAL</Pill>

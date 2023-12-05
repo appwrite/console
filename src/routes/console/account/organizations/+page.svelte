@@ -16,8 +16,8 @@
     import { isCloud } from '$lib/system';
     import { Pill } from '$lib/elements';
     import type { Models } from '@appwrite.io/console';
-    import type { Organization } from '$lib/stores/organization';
-    import { daysLeftInTrial, trialEndDate } from '$lib/stores/billing';
+    import { organization, type Organization } from '$lib/stores/organization';
+    import { daysLeftInTrial } from '$lib/stores/billing';
     import { tooltip } from '$lib/actions/tooltip';
     import { toLocaleDate } from '$lib/helpers/date';
     import { wizard } from '$lib/stores/wizard';
@@ -86,7 +86,7 @@
                                     class="u-flex u-cross-center"
                                     use:tooltip={{
                                         content: `Your trial ends on ${toLocaleDate(
-                                            $trialEndDate.toString()
+                                            $organization.billingTrialEndDate
                                         )}. ${$daysLeftInTrial} days remaining.`
                                     }}>
                                     <Pill>FREE TRIAL</Pill>

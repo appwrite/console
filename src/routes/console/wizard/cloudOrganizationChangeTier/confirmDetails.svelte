@@ -80,7 +80,7 @@
         {#if $changeOrganizationTier.billingPlan !== 'tier-0'}
             <div class="u-margin-block-start-32">
                 <p class="body-text-1 u-bold">Organization members</p>
-                <p class="text u-margin-block-start-8">{collaboratorsNumber} members invited</p>
+                <p class="text u-margin-block-start-8">{collaboratorsNumber} members</p>
             </div>
             <div class="u-margin-block-start-32">
                 <p class="body-text-1 u-bold">Payment</p>

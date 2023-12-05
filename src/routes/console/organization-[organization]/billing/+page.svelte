@@ -38,13 +38,14 @@
                 await initializeStripe();
             }
             console.log('test');
-            console.log($page.url.searchParams.get('invoice'));
             try {
                 const invoiceId = $page.url.searchParams.get('invoice');
+                console.log(invoiceId);
                 const invoice = await sdk.forConsole.billing.getInvoice(
                     $page.params.organization,
                     invoiceId
                 );
+                console.log(invoice);
                 const { setupIntent, error } = await $stripe.confirmCardSetup(
                     invoice.clientSecret,
                     {
@@ -52,7 +53,7 @@
                         return_url: `${base}/console/organization-${$organization.$id}/billing`
                     }
                 );
-                console.log(setupIntent);
+                console.log('error', error);
                 if (error) {
                     console.log('Something went wrong');
                 }
@@ -75,6 +76,7 @@
                     });
                 }
             } catch (error) {
+                console.log(error);
                 addNotification({
                     title: 'Error',
                     message:

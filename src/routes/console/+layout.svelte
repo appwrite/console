@@ -17,7 +17,6 @@
         failedInvoice,
         daysLeftInTrial,
         tierToPlan,
-        trialEndDate,
         readOnly,
         showUsageRatesModal
     } from '$lib/stores/billing';
@@ -252,6 +251,10 @@
             console.log('Environment is Cloud and Stripe public key deteted');
             $stripe = await loadStripe(VARS.STRIPE_PUBLIC_KEY);
             console.log('Stripe should have been loading', $stripe);
+        } else {
+            console.log('Environment is not Cloud or Stripe public key not deteted');
+            console.log('isCloud:', isCloud);
+            console.log('hasStripePublicKey:', hasStripePublicKey);
         }
     });
 
@@ -276,9 +279,8 @@
         if (isCloud) {
             if (org?.billingPlan === 'tier-0') {
                 $daysLeftInTrial = 0;
-                $trialEndDate = null;
             } else {
-                calculateTrialDay(new Date(org?.billingTrialStartDate), org?.billingTrialDays);
+                calculateTrialDay(new Date(org?.billingTrialEndDate));
             }
 
             checkForTrialEnding();
@@ -287,11 +289,10 @@
         }
     });
 
-    function calculateTrialDay(startDate: Date, trialDays: number) {
+    function calculateTrialDay(endDate: Date) {
         const today = new Date();
-        const days = diffDays(startDate, today);
-        $daysLeftInTrial = trialDays - days;
-        $trialEndDate = new Date(startDate.getTime() + trialDays * 24 * 60 * 60 * 1000);
+        const days = diffDays(today, endDate);
+        $daysLeftInTrial = days;
     }
 
     function checkForTrialEnding() {
@@ -304,7 +305,7 @@
                     tierToPlan($organization.billingPlan).name
                 } plan.</b>
                 You will be billed on a recurring 30 day cycle after your trial period ends on <b>${toLocaleDate(
-                    $trialEndDate?.toString()
+                    $organization.billingTrialEndDate
                 )}</b>`
             });
             localStorage.setItem('trialEndingNotification', 'true');

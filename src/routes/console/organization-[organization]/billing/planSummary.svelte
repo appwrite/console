@@ -14,8 +14,8 @@
         $organization?.billingPlan === 'tier-2'
             ? tierScale
             : $organization?.billingPlan === 'tier-1'
-            ? tierPro
-            : tierFree;
+              ? tierPro
+              : tierFree;
 
     $: aggregation = $aggregationList.aggregations[0];
 </script>
@@ -46,8 +46,8 @@
                 </div>
 
                 <p class="text">
-                    {#if $organization?.billingPlan !== 'tier-0' && !$daysLeftInTrial}
-                        <span class="u-color-text-gray"> Esimated total (in USD): </span>
+                    {#if $organization?.billingPlan !== 'tier-0'}
+                        <span class="u-color-text-gray"> Total to date (in USD): </span>
                     {/if}
                     ${aggregation?.amount}
                 </p>
