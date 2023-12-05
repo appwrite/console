@@ -103,8 +103,7 @@
             <CouponInput
                 bind:coupon
                 bind:couponData
-                on:validation={(e) =>
-                    ($changeOrganizationTier.couponCode = e.detail.couponData.code)} />
+                on:validation={(e) => ($changeOrganizationTier.couponCode = e.detail.code)} />
             {#if $changeOrganizationTier.billingPlan !== 'tier-0'}
                 <span class="u-flex u-main-space-between">
                     <p class="text">{plan.name} plan</p>

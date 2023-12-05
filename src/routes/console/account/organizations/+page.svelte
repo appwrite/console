@@ -71,7 +71,7 @@
                     </svelte:fragment>
                     <svelte:fragment slot="status">
                         {#if isCloudOrg(organization)}
-                            {#if organization?.billingPlan === 'tier-0'}
+                            {#if $organization?.billingPlan === 'tier-0'}
                                 <div
                                     class="u-flex u-cross-center"
                                     use:tooltip={{

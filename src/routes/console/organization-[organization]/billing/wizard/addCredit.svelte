@@ -15,11 +15,13 @@
     async function validateCoupon() {
         try {
             const response = await sdk.forConsole.billing.getCoupon(coupon);
-            coupon = null;
             couponData = response;
+            coupon = null;
         } catch (error) {
+            console.log('test');
             couponData.code = coupon;
             couponData.status = 'error';
+            return;
         }
     }
 </script>
@@ -32,7 +34,10 @@
     </svelte:fragment>
     <CouponInput
         bind:coupon
-        on:validation={(e) => ($addCreditWizardStore.coupon = e.detail.couponData.code)}
+        on:validation={(e) => {
+            console.log(e.detail);
+            $addCreditWizardStore.coupon = e.detail.code;
+        }}
         let:data>
         <span>{data.code} has been successfully added</span>
     </CouponInput>

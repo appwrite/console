@@ -17,9 +17,9 @@
     async function addCoupon() {
         try {
             const response = await sdk.forConsole.billing.getCoupon(coupon);
-            coupon = null;
             couponData = response;
             dispatch('validation', couponData);
+            coupon = null;
         } catch (error) {
             console.log(error);
             couponData.code = coupon;
