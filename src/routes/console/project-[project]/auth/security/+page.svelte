@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
+    import UpdatePasswordAi from './updatePasswordAi.svelte';
     import UpdatePasswordDictionary from './updatePasswordDictionary.svelte';
     import UpdatePasswordHistory from './updatePasswordHistory.svelte';
     import UpdatePersonalDataCheck from './updatePersonalDataCheck.svelte';
@@ -9,10 +10,11 @@
 </script>
 
 <Container>
-    <UpdateUsersLimit />
+    <UpdatePasswordAi />
+    <!-- <UpdateUsersLimit /> -->
     <UpdateSessionLength />
-    <UpdateSessionsLimit />
-    <UpdatePasswordHistory />
+    <!-- <UpdateSessionsLimit /> -->
+    <!-- <UpdatePasswordHistory /> -->
     <UpdatePasswordDictionary />
-    <UpdatePersonalDataCheck />
+    <!-- <UpdatePersonalDataCheck /> -->
 </Container>

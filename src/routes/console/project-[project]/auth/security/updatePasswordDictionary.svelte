@@ -4,18 +4,21 @@
     import { CardGrid, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form, FormList, InputSwitch } from '$lib/elements/forms';
+    import InputSelect from '$lib/elements/forms/inputSelect.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { project } from '../../store';
 
     const projectId = $project.$id;
     let passwordDictionary = $project.authPasswordDictionary ?? false;
+    let passwordDictionaryLength = $project.authPasswordDictionaryLength ?? '10k';
 
     async function updatePasswordDictionary() {
         try {
             await sdk.forConsole.projects.updateAuthPasswordDictionary(
                 projectId,
-                passwordDictionary
+                passwordDictionary,
+                passwordDictionaryLength
             );
             await invalidate(Dependencies.PROJECT);
             addNotification({
@@ -43,6 +46,29 @@
                     bind:value={passwordDictionary}
                     id="passwordDictionary"
                     label="Password dictionary" />
+                    {#if passwordDictionary}
+                    <InputSelect
+                    id="passwordDictionaryLength"
+                    label="Select password dictionary length"
+                    showLabel={false}
+                    bind:value={passwordDictionaryLength}
+                    options={[
+                        {
+                            label: '10 thousands',
+                            value: '10k'
+                        },{
+                            label: '100 thousands',
+                            value: '100k'
+                        },{
+                            label: '1 million',
+                            value: '1m'
+                        },{
+                            label: '10 millions',
+                            value: '10m'
+                        }
+                    ]}
+                     />
+                     {/if}
             </FormList>
             <p class="text">
                 Enabling this option prevent users from setting insecure passwords by comparing the
@@ -53,10 +79,11 @@
                     href="https://github.com/danielmiessler/SecLists/blob/master/Passwords/Common-Credentials/10k-most-common.txt"
                     >10k most commonly used passwords.</a>
             </p>
+            
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={passwordDictionary === $project.authPasswordDictionary} submit
+            <Button disabled={passwordDictionary === $project.authPasswordDictionary && passwordDictionaryLength === $project.authPasswordDictionaryLength} submit
                 >Update</Button>
         </svelte:fragment>
     </CardGrid>

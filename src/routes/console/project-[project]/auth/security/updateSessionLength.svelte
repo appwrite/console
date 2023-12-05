@@ -4,6 +4,7 @@
     import { CardGrid, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, InputNumber, InputSelect } from '$lib/elements/forms';
+    import InputSwitch from '$lib/elements/forms/inputSwitch.svelte';
     import { createTimeUnitPair } from '$lib/helpers/unit';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
@@ -12,10 +13,11 @@
     const projectId = $project.$id;
     const { value, unit, baseValue, units } = createTimeUnitPair($project.authDuration);
     const options = units.map((v) => ({ label: v.name, value: v.name }));
+    let renewal = $project.authRenewal ?? false;
 
     async function updateSessionLength() {
         try {
-            await sdk.forConsole.projects.updateAuthDuration(projectId, $baseValue);
+            await sdk.forConsole.projects.updateAuthDuration(projectId, $baseValue, renewal);
             await invalidate(Dependencies.PROJECT);
 
             addNotification({
@@ -45,13 +47,26 @@
             <ul class="form-list is-multiple">
                 <InputNumber id="length" label="Length" bind:value={$value} min={0} />
                 <InputSelect id="period" label="Time Period" bind:value={$unit} {options} />
+              
             </ul>
+            <ul class="form-list">
+              <div>
+                <InputSwitch
+                bind:value={renewal}
+                id="passwordDictionary"
+                label="Automatic renewal" />
+    
+                <p class="text">
+                    When enabled, sessions are automatically extended to session duration on every request.
+                </p></div>
+            </ul>
+          
         </form>
     </svelte:fragment>
 
     <svelte:fragment slot="actions">
         <Button
-            disabled={$baseValue === $project.authDuration}
+            disabled={$baseValue === $project.authDuration && renewal === $project.authRenewal}
             on:click={() => {
                 updateSessionLength();
             }}>

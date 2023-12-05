@@ -18,7 +18,7 @@
         "e2e": "playwright test tests/e2e"
     },
     "dependencies": {
-        "@appwrite.io/console": "^0.3.0",
+        "@appwrite.io/console": "npm:matej-appwrite-console@0.3.2",
         "@appwrite.io/pink": "0.1.0",
         "@appwrite.io/pink-icons": "^0.1.0",
         "@popperjs/core": "^2.11.8",
