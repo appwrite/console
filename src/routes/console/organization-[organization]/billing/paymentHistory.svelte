@@ -58,7 +58,7 @@
     <Heading tag="h2" size="6">Payment history</Heading>
 
     <p class="text">
-        Transaction history for this Organization. Download invoices for more details about your
+        Transaction history for this organization. Download invoices for more details about your
         payments.
     </p>
     <svelte:fragment slot="aside">
