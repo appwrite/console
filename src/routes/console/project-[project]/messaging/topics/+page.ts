@@ -3,17 +3,7 @@ import { sdk } from '$lib/stores/sdk';
 import { getLimit, getPage, getQuery, getSearch, pageToOffset } from '$lib/helpers/load';
 import { PAGE_LIMIT } from '$lib/constants';
 import { queryParamToMap, queries } from '$lib/components/filters/store';
-
-// TODO: remove when sdk has the model
-export type Topic = {
-    $id: string;
-    $createdAt: string;
-    $updatedAt: string;
-    providerId: string;
-    name: string;
-    total: number;
-    description: string;
-};
+import type { Topic } from '../store';
 
 export const load = async ({ url, route }) => {
     const page = getPage(url);

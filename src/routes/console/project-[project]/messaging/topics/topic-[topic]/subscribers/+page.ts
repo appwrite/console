@@ -1,22 +1,46 @@
+import { Query } from '@appwrite.io/console';
 import { sdk } from '$lib/stores/sdk';
-import { getLimit, getPage, getSearch, pageToOffset } from '$lib/helpers/load';
+import { getLimit, getPage, getQuery, getSearch, pageToOffset } from '$lib/helpers/load';
 import { Dependencies, PAGE_LIMIT } from '$lib/constants';
 import type { PageLoad } from './$types';
-import type { Models } from '@appwrite.io/console';
+import type { Target } from '../../../store';
+import { queryParamToMap, queries } from '$lib/components/filters/store';
 
 export type Subscriber = {
     $id: string;
     $createdAt: string;
+    $updatedAt: string;
     targetId: string;
+    target: Target;
+    userName: string;
     topicId: string;
 };
 
-export const load: PageLoad = async ({ params, url, route, depends }) => {
+export const load: PageLoad = async ({ params, url, route, depends, parent }) => {
     depends(Dependencies.MESSAGING_TOPIC_SUBSCRIBERS);
     const page = getPage(url);
     const limit = getLimit(url, route, PAGE_LIMIT);
     const offset = pageToOffset(page, limit);
     const search = getSearch(url);
+    const query = getQuery(url);
+
+    const parsedQueries = queryParamToMap(query || '[]');
+    queries.set(parsedQueries);
+
+    const payload = {
+        queries: [
+            Query.limit(limit),
+            Query.offset(offset),
+            Query.orderDesc(''),
+            ...parsedQueries.values()
+        ]
+    };
+
+    if (search) {
+        payload['search'] = search;
+    }
+
+    const { topic } = await parent();
 
     // TODO: remove when the API is ready with data
     // This allows us to mock w/ data and when search returns 0 results
@@ -30,22 +54,16 @@ export const load: PageLoad = async ({ params, url, route, depends }) => {
                 'X-Appwrite-Project': sdk.forProject.client.config.project,
                 'content-type': 'application/json',
                 'X-Appwrite-Mode': 'admin'
-            }
+            },
+            payload
         );
-
-    const targetsById = new Map<string, Models.User<Models.Preferences>>();
-    const userPromises = subscribers.subscribers.map((subscriber) =>
-        sdk.forProject.users.get(subscriber.targetId)
-    );
-    for await (const user of userPromises) {
-        targetsById.set(user.$id, user);
-    }
 
     return {
         offset,
         limit,
         search,
-        subscribers,
-        targetsById
+        query,
+        topic,
+        subscribers
     };
 };
