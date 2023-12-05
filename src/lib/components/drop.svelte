@@ -143,7 +143,7 @@
     .drop-arrow::before {
         content: '';
         transform: rotate(45deg);
-        background: hsl(var(--color-neutral-200));
+        background: hsl(var(--color-neutral-85));
 
         body.theme-light & {
             background: hsl(var(--color-neutral-10));

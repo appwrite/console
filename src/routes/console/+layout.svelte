@@ -22,9 +22,7 @@
     } from '$lib/stores/billing';
     import { diffDays, toLocaleDate } from '$lib/helpers/date';
     import { base } from '$app/paths';
-
     import { goto } from '$app/navigation';
-
     import { CommandCenter, registerCommands, registerSearchers } from '$lib/commandCenter';
     import { AIPanel, OrganizationsPanel, ProjectsPanel } from '$lib/commandCenter/panels';
     import { orgSearcher, projectsSearcher } from '$lib/commandCenter/searchers';
@@ -33,7 +31,6 @@
     import { openMigrationWizard } from './(migration-wizard)';
     import { project } from './project-[project]/store';
     import { feedback } from '$lib/stores/feedback';
-    import { consoleVariables } from './store';
     import { VARS, hasStripePublicKey, isCloud } from '$lib/system';
     import { sdk } from '$lib/stores/sdk';
     import { loadStripe } from '@stripe/stripe-js';
@@ -44,6 +41,8 @@
     import { showExcess } from './organization-[organization]/store';
     import UsageRates from './wizard/cloudOrganization/usageRates.svelte';
     import { Button } from '$lib/elements/forms';
+    import { consoleVariables, showPrereleaseModal } from './store';
+    import PreReleaseModal from './(billing-modal)/preReleaseModal.svelte';
 
     function kebabToSentenceCase(str: string) {
         return str
@@ -243,6 +242,10 @@
 
     onMount(async () => {
         loading.set(false);
+        if (isCloud && !$page.url.pathname.includes('/console/onboarding')) {
+            checkForPreReleaseProModal();
+        }
+
         setInterval(() => {
             checkForFeedback(INTERVAL);
         }, INTERVAL);
@@ -374,6 +377,47 @@
             });
         }
     }
+    function checkForPreReleaseProModal() {
+        const modalTime = localStorage.getItem('preReleaseProModal');
+        const notificationTime = localStorage.getItem('preReleaseProNotification');
+        const now = Date.now();
+        // show the modal if it was never shown
+        if (!modalTime) {
+            localStorage.setItem('preReleaseProModal', Date.now().toString());
+            localStorage.setItem('preReleaseProNotification', Date.now().toString());
+            showPrereleaseModal.set(true);
+        } else {
+            const interval = 5 * 24 * 60 * 60 * 1000;
+            const sinceLastModal = now - parseInt(modalTime);
+            // show the modal if it was shown more than 5 days ago
+            if (sinceLastModal > interval) {
+                localStorage.setItem('preReleaseProModal', Date.now().toString());
+                localStorage.setItem('preReleaseProNotification', Date.now().toString());
+                showPrereleaseModal.set(true);
+            }
+            //if the modal has been shown more than 24 ago and the notification has not been shown for 24 hours
+            else if (
+                sinceLastModal > 24 * 60 * 60 * 1000 &&
+                now - (notificationTime ? parseInt(notificationTime) : 0) > 24 * 60 * 60 * 1000
+            ) {
+                localStorage.setItem('preReleaseProNotification', Date.now().toString());
+                addNotification({
+                    type: 'warning',
+                    timeout: 10000,
+                    message:
+                        'Appwrite Pro is coming soon, which means you will be limited to one free organization per account. To avoid service disruptions in your projects, consider upgrading to Pro.',
+                    buttons: [
+                        {
+                            name: 'Learn more',
+                            method: () => {
+                                window.open('https://appwrite.io/pricing', '_blank');
+                            }
+                        }
+                    ]
+                });
+            }
+        }
+    }
 
     $: if (!$log.show) {
         $log.data = null;
@@ -456,4 +500,7 @@
 {/if}
 {#if isCloud && $showUsageRatesModal}
     <UsageRates bind:show={$showUsageRatesModal} tier={$organization?.billingPlan} />
+{/if}
+{#if isCloud && $showPrereleaseModal && !$page.url.pathname.includes('/console/onboarding')}
+    <PreReleaseModal bind:show={$showPrereleaseModal} />
 {/if}
