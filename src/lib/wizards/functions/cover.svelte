@@ -93,25 +93,27 @@
         <div
             class="git-container u-position-relative"
             class:u-margin-block-start-24={isSelfHosted && !isVcsEnabled}>
-            <div
-                class:u-hide={!isSelfHosted || isVcsEnabled}
-                class="overlay u-flex-vertical u-position-absolute u-height-100-percent u-width-full-line u-z-index-1 card u-text-center">
+            {#if isSelfHosted && !isVcsEnabled}
                 <div
-                    class="u-flex-vertical u-height-100-percent u-main-center u-cross-center u-gap-16">
-                    <Heading size="7" tag="h6"
-                        >Configure your self-hosted instance to connect to Git</Heading>
-                    <p>
-                        Connect your function to a Git repository or use a pre-made template<br />after
-                        configuring your self-hosted instance. Learn more in our
-                        <a
-                            href="https://appwrite.io/docs/advanced/self-hosting/functions#git"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            class="link">documentation</a
-                        >.
-                    </p>
+                    class="overlay u-flex-vertical u-position-absolute u-height-100-percent u-width-full-line u-z-index-1 card u-text-center">
+                    <div
+                        class="u-flex-vertical u-height-100-percent u-main-center u-cross-center u-gap-16">
+                        <Heading size="7" tag="h6">
+                            Configure your self-hosted instance to connect to Git
+                        </Heading>
+                        <p>
+                            Connect your function to a Git repository or use a pre-made template<br />after
+                            configuring your self-hosted instance. Learn more in our
+                            <a
+                                href="https://appwrite.io/docs/advanced/self-hosting/functions#git"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="link">documentation</a
+                            >.
+                        </p>
+                    </div>
                 </div>
-            </div>
+            {/if}
             <div class="grid-1-1 u-gap-24">
                 <div class="card u-cross-child-start u-height-100-percent">
                     <Heading size="6" tag="h6">Connect Git repository</Heading>
