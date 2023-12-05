@@ -255,6 +255,7 @@
             console.log('Environment is not Cloud or Stripe public key not deteted');
             console.log('isCloud:', isCloud);
             console.log('hasStripePublicKey:', hasStripePublicKey);
+            console.log('Stripe key:', VARS.STRIPE_PUBLIC_KEY);
         }
     });
 

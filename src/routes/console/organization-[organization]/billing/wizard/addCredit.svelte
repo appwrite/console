@@ -13,6 +13,7 @@
     };
 
     async function validateCoupon() {
+        if (couponData?.status === 'active') return;
         try {
             const response = await sdk.forConsole.billing.getCoupon(coupon);
             couponData = response;
@@ -21,7 +22,7 @@
             console.log('test');
             couponData.code = coupon;
             couponData.status = 'error';
-            return;
+            throw new Error(`${coupon} is not a valid promo code`);
         }
     }
 </script>
