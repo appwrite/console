@@ -35,6 +35,7 @@
     });
 
     function addAlert() {
+        if (isNaN(parseInt(search))) return;
         if (alerts.some((alert) => alert === selectedAlert)) {
             return;
         }
@@ -96,7 +97,10 @@
                         bind:value={selectedAlert}
                         on:select={() => (search = selectedAlert.toString())} />
                     <div style="align-self: flex-end">
-                        <Button secondary disabled={alerts.length > 2} on:click={addAlert}>
+                        <Button
+                            secondary
+                            disabled={alerts.length > 2 || (!search && !selectedAlert)}
+                            on:click={addAlert}>
                             Add alert
                         </Button>
                     </div>
