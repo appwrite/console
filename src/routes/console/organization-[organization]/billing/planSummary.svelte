@@ -1,14 +1,30 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { CardGrid, Heading } from '$lib/components';
+    import { Box, CardGrid, Heading } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
-    import { daysLeftInTrial, tierFree, tierPro, tierScale } from '$lib/stores/billing';
+    import { daysLeftInTrial, plansInfo, tierFree, tierPro, tierScale } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
     import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
+    import { onMount } from 'svelte';
     import { aggregationList } from './store';
+    import { sdk } from '$lib/stores/sdk';
+    import type { Aggregation, Invoice } from '$lib/sdk/billing';
+    import { Query } from '@appwrite.io/console';
+
+    let aggregation: Aggregation;
+    let currentInvoice: Invoice;
+
+    onMount(async () => {
+        const invoices = await sdk.forConsole.billing.listInvoices($organization.$id, [
+            Query.limit(1),
+            Query.orderDesc('$createdAt')
+        ]);
+        currentInvoice = invoices.invoices[0];
+        aggregation = $aggregationList.aggregations.find((a) => (a.$id = currentInvoice.$id));
+    });
 
     $: currentTier =
         $organization?.billingPlan === 'tier-2'
@@ -16,16 +32,16 @@
             : $organization?.billingPlan === 'tier-1'
               ? tierPro
               : tierFree;
-
-    $: aggregation = $aggregationList.aggregations[0];
+    $: currentPlan = $plansInfo.plans.find((p) => p.$id === $organization.billingPlan);
+    $: extraUsage = currentInvoice?.amount - currentPlan?.price;
 </script>
 
 {#if $organization}
     <CardGrid>
-        <Heading tag="h2" size="6">Plan summary</Heading>
+        <Heading tag="h2" size="6">Overview</Heading>
 
         <p class="text">
-            Your current project plan. For more information on Appwrite plans, <a
+            A summaray of your current plan. For more information on Appwrite plans, <a
                 type="button"
                 class="link"
                 href="https://appwrite.io/pricing"
@@ -35,23 +51,35 @@
             </a>
         </p>
         <svelte:fragment slot="aside">
-            <div class="box u-flex u-main-space-between u-cross-center">
-                <div class="u-flex u-gap-8 u-cross-center">
-                    <h6 class="u-bold u-trim-1">
-                        {currentTier.name} plan
-                    </h6>
-                    {#if $organization?.billingPlan !== 'tier-0' && $daysLeftInTrial}
-                        <Pill>FREE TRIAL</Pill>
-                    {/if}
-                </div>
+            <Box class="u-flex-vertical u-gap-8">
+                <div class="u-flex u-main-space-between u-cross-center">
+                    <div class="u-flex u-gap-8 u-cross-center">
+                        <h6 class="u-bold u-trim-1">
+                            {currentTier.name} plan
+                        </h6>
+                        {#if $organization?.billingPlan !== 'tier-0' && $daysLeftInTrial}
+                            <Pill>FREE TRIAL</Pill>
+                        {/if}
+                    </div>
 
-                <p class="text">
-                    {#if $organization?.billingPlan !== 'tier-0'}
-                        <span class="u-color-text-gray"> Total to date (in USD): </span>
-                    {/if}
-                    ${aggregation?.amount}
-                </p>
-            </div>
+                    <p class="text">
+                        {#if !extraUsage}
+                            <span class="text u-color-text-gray">Total to-date (in USD):</span>
+                        {/if}
+                        ${currentPlan?.price}
+                    </p>
+                </div>
+                {#if currentInvoice && $organization?.billingPlan !== 'tier-0' && extraUsage}
+                    <div class="u-flex u-main-space-between u-margin-block-start-8">
+                        <p class="text u-color-text-gray">Extra usage</p>
+                        <p class="text">${extraUsage}</p>
+                    </div>
+                    <div class="u-flex u-main-space-between">
+                        <p class="text u-color-text-gray">Total to-date (in USD):</p>
+                        <p class="text">${currentInvoice?.amount}</p>
+                    </div>
+                {/if}
+            </Box>
             <div class="u-flex u-main-space-between u-cross-center">
                 <p class="text">
                     Billing period: {toLocaleDate($organization?.billingCurrentInvoiceDate)} - {toLocaleDate(
