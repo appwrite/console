@@ -3,6 +3,7 @@
     import { WizardStep } from '$lib/layout';
     import type { Coupon } from '$lib/sdk/billing';
     import { sdk } from '$lib/stores/sdk';
+    import { wizard } from '$lib/stores/wizard';
     import { addCreditWizardStore } from '../store';
 
     let coupon: string;
@@ -14,6 +15,7 @@
 
     async function validateCoupon() {
         if (couponData?.status === 'active') return;
+        console.log(couponData);
         try {
             const response = await sdk.forConsole.billing.getCoupon(coupon);
             couponData = response;
@@ -22,7 +24,8 @@
             console.log('test');
             couponData.code = coupon;
             couponData.status = 'error';
-            throw new Error(`${coupon} is not a valid promo code`);
+            $wizard.interceptorNotificationEnabled = false;
+            throw new Error(error);
         }
     }
 </script>
@@ -35,6 +38,7 @@
     </svelte:fragment>
     <CouponInput
         bind:coupon
+        bind:couponData
         on:validation={(e) => {
             console.log(e.detail);
             $addCreditWizardStore.coupon = e.detail.code;

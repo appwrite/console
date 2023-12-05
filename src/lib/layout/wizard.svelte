@@ -65,6 +65,7 @@
             try {
                 await $wizard.interceptor();
             } catch (error) {
+                if (!$wizard.interceptorNotificationEnabled) return;
                 addNotification({
                     message: error.message,
                     type: 'error'

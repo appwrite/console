@@ -11,6 +11,7 @@ export type WizardStore = {
     interceptor?: () => Promise<void>;
     nextDisabled: boolean;
     step: number;
+    interceptorNotificationEnabled: boolean;
 };
 
 function createWizardStore() {
@@ -19,6 +20,7 @@ function createWizardStore() {
         component: null,
         cover: null,
         interceptor: null,
+        interceptorNotificationEnabled: true,
         media: null,
         nextDisabled: false,
         step: 1
