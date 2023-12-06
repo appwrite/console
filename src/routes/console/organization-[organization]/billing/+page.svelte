@@ -37,7 +37,6 @@
             if (!$isStripeInitialized) {
                 await initializeStripe();
             }
-            console.log('test');
             try {
                 const invoiceId = $page.url.searchParams.get('invoice');
                 console.log(invoiceId);

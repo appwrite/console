@@ -4,7 +4,7 @@
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
-    import { daysLeftInTrial, plansInfo, tierFree, tierPro, tierScale } from '$lib/stores/billing';
+    import { daysLeftInTrial, plansInfo, tierToPlan } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
     import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
@@ -26,12 +26,6 @@
         aggregation = $aggregationList.aggregations.find((a) => (a.$id = currentInvoice.$id));
     });
 
-    $: currentTier =
-        $organization?.billingPlan === 'tier-2'
-            ? tierScale
-            : $organization?.billingPlan === 'tier-1'
-              ? tierPro
-              : tierFree;
     $: currentPlan = $plansInfo.plans.find((p) => p.$id === $organization.billingPlan);
     $: extraUsage = currentInvoice?.amount - currentPlan?.price;
 </script>
@@ -55,7 +49,7 @@
                 <div class="u-flex u-main-space-between u-cross-center">
                     <div class="u-flex u-gap-8 u-cross-center">
                         <h6 class="u-bold u-trim-1">
-                            {currentTier.name} plan
+                            {tierToPlan($organization.billingPlan)?.name} plan
                         </h6>
                         {#if $organization?.billingPlan !== 'tier-0' && $daysLeftInTrial}
                             <Pill>FREE TRIAL</Pill>
@@ -66,10 +60,10 @@
                         {#if !extraUsage}
                             <span class="text u-color-text-gray">Total to-date (in USD):</span>
                         {/if}
-                        ${currentPlan?.price}
+                        ${$daysLeftInTrial ? 0 : currentPlan?.price}
                     </p>
                 </div>
-                {#if currentInvoice && $organization?.billingPlan !== 'tier-0' && extraUsage}
+                {#if currentInvoice && $organization?.billingPlan !== 'tier-0' && extraUsage > 0 && !$daysLeftInTrial}
                     <div class="u-flex u-main-space-between u-margin-block-start-8">
                         <p class="text u-color-text-gray">Extra usage</p>
                         <p class="text">${extraUsage}</p>
