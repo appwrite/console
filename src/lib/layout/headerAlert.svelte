@@ -1,8 +1,14 @@
 <script lang="ts">
     export let title: string;
+    export let type: 'info' | 'success' | 'warning' | 'error' | 'default' = 'info';
 </script>
 
-<section class="alert is-action is-action-and-top-sticky is-danger u-sep-block-end">
+<section
+    class="alert is-action is-action-and-top-sticky u-sep-block-end"
+    class:is-success={type === 'success'}
+    class:is-warning={type === 'warning'}
+    class:is-danger={type === 'error'}
+    class:is-info={type === 'info'}>
     <div class="alert-grid">
         <span class="icon-info" aria-hidden="true" />
         <div class="alert-content">
