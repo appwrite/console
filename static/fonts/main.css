@@ -157,3 +157,24 @@
     font-display: swap;
     src: url('https://fonts.appwrite.io/aeonik-pro/AeonikPro-BlackItalic.woff2') format('woff2');
 }
+
+
+.is-supabase {
+
+}
+
+.is-github {
+    background-color: #2D2D31 !important;
+    border-color: rgba(65, 65, 70, 0.3) !important;
+    border-radius: 8px;
+}
+
+.is-supabase {
+    background-color: #2D2D31 !important;
+    border-color: rgba(65, 65, 70, 0.3) !important;
+    border-radius: 8px;
+}
+
+button {
+    border-radius: 8px !important;
+}

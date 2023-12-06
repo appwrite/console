@@ -24,8 +24,8 @@ export type Providers = {
 
 const setProviders = (project: Models.Project): Provider[] => {
     return (
-        project?.providers.map((n) => {
-            const p = n as Models.Provider & { key: string };
+        project?.oAuthProviders.map((n) => {
+            const p = n as Models.AuthProvider & { key: string };
             let docs: Provider['docs'];
             let icon: Provider['icon'] = p.key.toLowerCase();
             let component: Provider['component'] = Main;

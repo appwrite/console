@@ -8,6 +8,7 @@
     export let submit = false;
     export let secondary = false;
     export let github = false;
+    export let supabase = false;
     export let text = false;
     export let danger = false;
     export let disabled = false;
@@ -44,6 +45,7 @@
         round && 'is-only-icon',
         secondary && 'is-secondary',
         github && 'is-github',
+        supabase && 'is-supabase',
         text && 'is-text',
         danger && 'is-danger',
         fullWidth && 'is-full-width',

@@ -47,6 +47,15 @@
             ['read:user', 'user:email']
         );
     }
+
+    function onSupabaseLogin() {
+        sdk.forConsole.account.createOAuth2Session(
+            'supabase',
+            window.location.origin,
+            window.location.origin,
+            []
+        );
+    }
 </script>
 
 <svelte:head>
@@ -78,12 +87,20 @@
                 </FormItem>
                 {#if isCloud}
                     <span class="with-separators eyebrow-heading-3">or</span>
-                    <FormItem>
+                      <div style="gap: 16px; display: grid;">
+                        <FormItem>
                         <Button github fullWidth on:click={onGithubLogin} {disabled}>
                             <span class="icon-github" aria-hidden="true" />
                             <span class="text">Sign in with GitHub</span>
                         </Button>
+</FormItem>
+<FormItem>
+                        <Button supabase fullWidth on:click={onSupabaseLogin} {disabled}>
+                            <img src="/supabase.png" style="width: 16px;" />
+                            <span class="text">Sign in with Supabase</span>
+                        </Button>
                     </FormItem>
+                      </div>
                 {/if}
             </FormList>
         </Form>

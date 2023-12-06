@@ -9,13 +9,13 @@
     import { sdk } from '$lib/stores/sdk';
     import { project } from '../../store';
 
-    let passwordAi = $project.authPasswordAi ?? false;
+    let notify = $project.authNotify ?? false;
 
-    async function updatePasswordAi() {
+    async function updateNotify() {
         try {
-            await sdk.forConsole.projects.updateAuthPasswordAi(
+            await sdk.forConsole.projects.updateAuthNotify(
                 $project.$id,
-                passwordAi
+                notify
             );
             await invalidate(Dependencies.PROJECT);
             addNotification({
@@ -33,24 +33,25 @@
     }
 </script>
 
-<Form onSubmit={updatePasswordAi}>
+<Form onSubmit={updateNotify}>
     <CardGrid>
-        <Heading tag="h2" size="7" id="personal-data">AI password check         <span class="tag eyebrow-heading-3" style="font-size: 12px; padding: 0px 8px; margin-left: 4px;">DEMO</span>
+        <Heading tag="h2" size="7" id="personal-data">Unusual activity<span class="tag eyebrow-heading-3" style="font-size: 12px; padding: 0px 8px; margin-left: 8px;">DEMO</span>
         </Heading>
         <svelte:fragment slot="aside">
             <FormList>
                 <InputSwitch
-                    bind:value={passwordAi}
-                    id="passwordAi"
-                    label="AI password check" />
+                    bind:value={notify}
+                    id="unusualActivity"
+                    label="Unusual activity" />
             </FormList>
             <p class="text">
-                Enabling this option prevents users from setting passwords that are not approved by AI to prevent the use of insecure passwords containing dates, locations, cities, names etc.
+                Enabling this option sends notification to the user when a session is created in a country for the first time.
+
             </p>
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={passwordAi === $project.authPasswordAi} submit
+            <Button disabled={notify === $project.authNotify} submit
                 >Update</Button>
         </svelte:fragment>
     </CardGrid>

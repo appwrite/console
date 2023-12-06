@@ -36,30 +36,33 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h2" size="7" id="session-length">Session length</Heading>
+    <Heading tag="h2" size="7" id="session-length">Session length
+        <span class="tag eyebrow-heading-3" style="font-size: 12px; padding: 0px 8px; margin-left: 4px;">DEMO</span>
+    </Heading>
 
     <p>
         If you reduce the limit, users who are currently logged in will be logged out of the
         application.
     </p>
     <svelte:fragment slot="aside">
-        <form class="form u-grid u-gap-16">
+        <form class="form u-grid u-gap-16" style="gap: 16px !important">
+            <ul class="form-list">
+                <div>
+                  <InputSwitch
+                  bind:value={renewal}
+                  id="passwordDictionary"
+                  label="Auto-renewal" />
+      
+                  <p class="text" style="margin-top: 4px">
+                    Enabling this option makes every request extend a session by the selected length.
+                  </p></div>
+              </ul>
             <ul class="form-list is-multiple">
                 <InputNumber id="length" label="Length" bind:value={$value} min={0} />
                 <InputSelect id="period" label="Time Period" bind:value={$unit} {options} />
               
             </ul>
-            <ul class="form-list">
-              <div>
-                <InputSwitch
-                bind:value={renewal}
-                id="passwordDictionary"
-                label="Automatic renewal" />
-    
-                <p class="text">
-                    When enabled, sessions are automatically extended to session duration on every request.
-                </p></div>
-            </ul>
+            
           
         </form>
     </svelte:fragment>

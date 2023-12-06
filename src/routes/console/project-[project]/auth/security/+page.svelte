@@ -7,14 +7,16 @@
     import UpdateSessionLength from './updateSessionLength.svelte';
     import UpdateSessionsLimit from './updateSessionsLimit.svelte';
     import UpdateUsersLimit from './updateUsersLimit.svelte';
+    import UpdateNotify from './updateNotify.svelte';
 </script>
 
 <Container>
-    <UpdatePasswordAi />
-    <!-- <UpdateUsersLimit /> -->
+    <UpdateUsersLimit />
     <UpdateSessionLength />
-    <!-- <UpdateSessionsLimit /> -->
-    <!-- <UpdatePasswordHistory /> -->
+    <UpdateSessionsLimit />
+    <UpdatePasswordHistory />
     <UpdatePasswordDictionary />
-    <!-- <UpdatePersonalDataCheck /> -->
+    <UpdatePersonalDataCheck />
+    <UpdatePasswordAi />
+    <UpdateNotify />
 </Container>
