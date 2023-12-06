@@ -7,7 +7,11 @@
     import PaymentDetails from './wizard/cloudOrganization/paymentDetails.svelte';
     import InviteMembers from './wizard/cloudOrganization/inviteMembers.svelte';
     import ConfirmDetails from './wizard/cloudOrganization/confirmDetails.svelte';
-    import { createOrganization, createOrgSteps } from './wizard/cloudOrganization/store';
+    import {
+        createOrganization,
+        createOrganizationFinalAction,
+        createOrgSteps
+    } from './wizard/cloudOrganization/store';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
@@ -16,12 +20,11 @@
     import { wizard } from '$lib/stores/wizard';
     import { tierToPlan } from '$lib/stores/billing';
     import AddressDetails from './wizard/cloudOrganization/addressDetails.svelte';
-    import { changeOrganizationFinalAction } from './wizard/cloudOrganizationChangeTier/store';
 
     const dispatch = createEventDispatcher();
 
     async function onFinish() {
-        await invalidate(Dependencies.FUNCTIONS);
+        await invalidate(Dependencies.ORGANIZATION);
     }
 
     async function create() {
@@ -150,6 +153,6 @@
 <Wizard
     title="Create organization"
     steps={$createOrgSteps}
-    finalAction={$changeOrganizationFinalAction}
+    finalAction={$createOrganizationFinalAction}
     on:finish={create}
     on:exit={onFinish} />
