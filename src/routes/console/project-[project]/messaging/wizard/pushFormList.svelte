@@ -97,7 +97,7 @@
 </script>
 
 <div class="u-flex u-gap-24">
-    <FormList class="u-stretch">
+    <FormList class="u-stretch u-cross-child-start">
         <InputText
             id="title"
             label="Title"
@@ -239,5 +239,12 @@
     </FormList>
     <PushPhone
         title={$messageParams[$providerType]['title']}
-        body={$messageParams[$providerType]['body']} />
+        body={$messageParams[$providerType]['body']}
+        classes="is-only-desktop" />
+</div>
+<div class="u-flex u-main-center u-margin-block-start-24">
+    <PushPhone
+        title={$messageParams[$providerType]['title']}
+        body={$messageParams[$providerType]['body']}
+        classes="is-not-desktop" />
 </div>
