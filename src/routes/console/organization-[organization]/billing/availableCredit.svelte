@@ -25,6 +25,7 @@
         total: 0
     };
     let show = false;
+    let reloadOnWizardClose = false;
 
     onMount(async () => {
         request();
@@ -37,6 +38,7 @@
             show = true;
         } else {
             wizard.start(AddCreditWizard);
+            reloadOnWizardClose = true;
         }
     }
 
@@ -56,6 +58,13 @@
         (acc: number, curr: Credit) => acc + curr.creditsRemaining,
         0
     );
+
+    $: {
+        if (reloadOnWizardClose && !$wizard.show) {
+            request();
+            reloadOnWizardClose = false;
+        }
+    }
 </script>
 
 <CardGrid>
@@ -107,4 +116,4 @@
     </svelte:fragment>
 </CardGrid>
 
-<AddCreditModal bind:show />
+<AddCreditModal bind:show on:success={request} />

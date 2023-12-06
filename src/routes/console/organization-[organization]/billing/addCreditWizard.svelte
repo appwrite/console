@@ -13,7 +13,7 @@
     import PaymentDetails from './wizard/paymentDetails.svelte';
 
     async function onFinish() {
-        await invalidate(Dependencies.FUNCTIONS);
+        await invalidate(Dependencies.CREDIT);
     }
 
     async function create() {

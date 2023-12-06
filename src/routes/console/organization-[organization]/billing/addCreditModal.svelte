@@ -7,7 +7,9 @@
     import { addNotification } from '$lib/stores/notifications';
     import { organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
+    import { createEventDispatcher } from 'svelte';
 
+    const dispatch = createEventDispatcher();
     export let show = false;
     let coupon: string = null;
 
@@ -25,6 +27,7 @@
                 coupon
             });
             coupon = null;
+            dispatch('success');
         } catch (error) {
             addNotification({
                 type: 'error',
