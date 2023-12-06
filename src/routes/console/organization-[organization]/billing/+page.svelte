@@ -18,6 +18,7 @@
     import { base } from '$app/paths';
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
+    import { toLocaleDate } from '$lib/helpers/date';
 
     $: defaultPaymentMethod = $paymentMethods?.paymentMethods?.find(
         (method: PaymentMethodData) => method.$id === $organization?.paymentMethodId
@@ -89,19 +90,27 @@
 
 <Container>
     {#if $failedInvoice}
-        <Alert type="error">
+        <Alert type="error" class="common-section">
             <svelte:fragment slot="title">
                 The scheduled payment for {$organization.name} failed
             </svelte:fragment>
             To avoid service disruptions in your projects, please verify your payment details and update
             them if necessary.
         </Alert>
-    {:else if defaultPaymentMethod?.failed && !backupPaymentMethod}
-        <Alert type="error">
+    {/if}
+    {#if defaultPaymentMethod?.failed && !backupPaymentMethod}
+        <Alert type="error" class="common-section">
             <svelte:fragment slot="title">
                 The default payment method for {$organization.name} has expired
             </svelte:fragment>
             To avoid service disruptions in your projects, please update your payment details.
+        </Alert>
+    {/if}
+    {#if $organization?.billingPlanDowngrade}
+        <Alert type="info" class="common-section">
+            Your organization will change to a Starter plan once your current billing cycle ends on {toLocaleDate(
+                $organization.billingNextInvoiceDate
+            )}.
         </Alert>
     {/if}
     <div class="common-section">
