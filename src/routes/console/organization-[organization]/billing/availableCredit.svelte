@@ -52,7 +52,10 @@
         request();
     }
 
-    $: balance = creditList?.credits?.reduce((acc: number, curr: Credit) => acc + curr.credits, 0);
+    $: balance = creditList?.credits?.reduce(
+        (acc: number, curr: Credit) => acc + curr.creditsRemaining,
+        0
+    );
 </script>
 
 <CardGrid>
@@ -65,7 +68,7 @@
                 Credit balance <span class="inline-tag">${balance}</span>
             </h4>
             {#if creditList?.total}
-                <Button secondary>
+                <Button secondary on:click={handleCredits}>
                     <span class="icon-plus" aria-hidden="true"></span>
                     <span class="text">Add credits</span>
                 </Button>

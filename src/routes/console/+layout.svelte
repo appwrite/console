@@ -14,11 +14,11 @@
     import { loading, requestedMigration } from '../store';
     import Create from './createOrganization.svelte';
     import {
-        failedInvoice,
         daysLeftInTrial,
         tierToPlan,
         readOnly,
-        showUsageRatesModal
+        showUsageRatesModal,
+        actionRequiredInvoices
     } from '$lib/stores/billing';
     import { diffDays, toLocaleDate } from '$lib/helpers/date';
     import { base } from '$app/paths';
@@ -40,9 +40,12 @@
     import ExcesLimitModal from './organization-[organization]/excesLimitModal.svelte';
     import { showExcess } from './organization-[organization]/store';
     import UsageRates from './wizard/cloudOrganization/usageRates.svelte';
-    import { Button } from '$lib/elements/forms';
     import { consoleVariables, showPrereleaseModal } from './store';
     import PreReleaseModal from './(billing-modal)/preReleaseModal.svelte';
+    import { Query } from '@appwrite.io/console';
+    import { headerAlert } from '$lib/stores/headerAlert';
+    import MarkedForDeletion from '$lib/components/billing/alerts/markedForDeletion.svelte';
+    import PaymentAuthRequired from '$lib/components/billing/alerts/paymentAuthRequired.svelte';
 
     function kebabToSentenceCase(str: string) {
         return str
@@ -290,6 +293,14 @@
             checkForTrialEnding();
             paymentExpired();
             checkForUsageLimit();
+            if ($organization?.markedForDeletion) {
+                headerAlert.add({
+                    component: MarkedForDeletion,
+                    show: true,
+                    importance: 5
+                });
+            }
+            checkPaymentAuthorizationRequired();
         }
     });
 
@@ -419,6 +430,20 @@
         }
     }
 
+    async function checkPaymentAuthorizationRequired() {
+        if ($organization.billingPlan === 'tier-0') return;
+        $actionRequiredInvoices = await sdk.forConsole.billing.listInvoices($organization.$id, [
+            Query.equal('status', 'requires_action')
+        ]);
+        if ($actionRequiredInvoices && $actionRequiredInvoices.total) {
+            headerAlert.add({
+                component: PaymentAuthRequired,
+                show: true,
+                importance: 6
+            });
+        }
+    }
+
     $: if (!$log.show) {
         $log.data = null;
         $log.func = null;
@@ -429,6 +454,9 @@
     }
 
     $registerSearchers(orgSearcher, projectsSearcher);
+
+    $: selectedHeaderAlert = headerAlert.get();
+    $: console.log(selectedHeaderAlert);
 </script>
 
 <CommandCenter />
@@ -441,29 +469,10 @@
         !$page.url.pathname.includes('/console/card') &&
         !$page.url.pathname.includes('/console/onboarding')}>
     <svelte:fragment slot="alert">
-        {#if $failedInvoice && !$page.url.pathname.includes('/console/account')}
-            {@const daysPassed = diffDays(new Date($failedInvoice.dueAt), new Date())}
-            <HeaderAlert title="Your projects are at risk">
-                <svelte:fragment>
-                    {#if daysPassed > 30}
-                        Your scheduled payment on <b>{toLocaleDate($failedInvoice?.dueAt)}</b> failed.
-                        To resume write access of your organization, please update your billing details.
-                    {:else}
-                        Your scheduled payment on <b>{toLocaleDate($failedInvoice?.dueAt)}</b> failed.
-                        Access to paid projects within this organization will be disabled if no action
-                        is taken within 30 days.
-                    {/if}
-                </svelte:fragment>
-                <svelte:fragment slot="buttons">
-                    <Button
-                        href={`${base}/console/organization-${$failedInvoice?.teamId}/billing#paymentMethods`}
-                        secondary
-                        fullWidthMobile>
-                        <span class="text">Update billing details</span>
-                    </Button>
-                </svelte:fragment>
-            </HeaderAlert>
+        {#if selectedHeaderAlert?.show}
+            <svelte:component this={selectedHeaderAlert.component} />
         {/if}
+
         {#if $organization?.markedForDeletion && !$page.url.pathname.includes('/console/account')}
             <HeaderAlert title="Organization flagged for deletion">
                 <svelte:fragment>

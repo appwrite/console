@@ -6,6 +6,9 @@ import { error } from '@sveltejs/kit';
 import type { LayoutLoad } from './$types';
 import Breadcrumbs from './breadcrumbs.svelte';
 import Header from './header.svelte';
+import { headerAlert } from '$lib/stores/headerAlert';
+import ProjectsAtRisk from '$lib/components/billing/alerts/projectsAtRisk.svelte';
+import { get } from 'svelte/store';
 
 export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.ORGANIZATION);
@@ -13,6 +16,14 @@ export const load: LayoutLoad = async ({ params, depends }) => {
 
     if (isCloud) {
         await failedInvoice.load(params.organization);
+
+        if (!get(failedInvoice)) {
+            headerAlert.add({
+                show: true,
+                component: ProjectsAtRisk,
+                importance: 1
+            });
+        }
     }
 
     try {

@@ -2,7 +2,7 @@ import { page } from '$app/stores';
 import { derived, get, writable } from 'svelte/store';
 import { sdk } from './sdk';
 import { organization } from './organization';
-import type { AddressesList, Invoice, PaymentList, PlansInfo } from '$lib/sdk/billing';
+import type { InvoiceList, AddressesList, Invoice, PaymentList, PlansInfo } from '$lib/sdk/billing';
 import { isCloud } from '$lib/system';
 import { cachedStore } from '$lib/helpers/cache';
 
@@ -86,6 +86,8 @@ export const failedInvoice = cachedStore<
         }
     };
 });
+
+export const actionRequiredInvoices = writable<InvoiceList>(null);
 
 export type TierData = {
     name: string;
