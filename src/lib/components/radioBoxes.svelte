@@ -8,7 +8,7 @@
     export let name: string;
 </script>
 
-<div class:boxes-wrapper={total}>
+<div class:boxes-wrapper={total} data-private>
     {#if total}
         {#each elements as element}
             {@const value = element[variableName]?.toString()}

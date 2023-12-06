@@ -155,9 +155,9 @@
                         type: 'success',
                         isHtml: true,
                         message: `
-                    <b>${$organization.name}</b> has been changed to ${
+                    <b>${$organization.name}</b> will change to ${
                         tierToPlan($changeOrganizationTier.billingPlan).name
-                    } plan.`
+                    } plan at the end of the current billing cycle.`
                     });
                 }
                 trackEvent($isUpgrade ? Submit.OrganizationUpgrade : Submit.OrganizationDowngrade, {
