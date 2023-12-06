@@ -53,6 +53,23 @@
                     <slot name="links" />
                 </ul>
             </div>
+            <div class="logo u-flex u-gap-16 u-margin-inline-auto is-only-mobile u-margin-block-start-32">
+                <a href={user ? '/console' : '/'}>
+                    {#if $app.themeInUse === 'dark'}
+                        <img
+                                src={AppwriteLogoDark}
+                                width="93"
+                                class="u-block u-only-dark"
+                                alt="Appwrite Logo" />
+                    {:else}
+                        <img
+                                src={AppwriteLogoLight}
+                                width="93"
+                                class="u-block u-only-light"
+                                alt="Appwrite Logo" />
+                    {/if}
+                </a>
+            </div>
         </div>
     </section>
 </main>
