@@ -6,6 +6,7 @@
     import Create from './create.svelte';
     import { messageParams, providerType, targetsById } from './wizard/store';
     import { ProviderTypes } from './providerType.svelte';
+    import { topicsById } from './store';
 
     export let showCreateDropdown = false;
 </script>
@@ -29,6 +30,7 @@
                     )
                         return;
                     $providerType = type;
+                    $topicsById = {};
                     $targetsById = {};
                     const common = {
                         topics: [],
