@@ -35,7 +35,7 @@
         <Heading tag="h2" size="6">Overview</Heading>
 
         <p class="text">
-            A summaray of your current plan. For more information on Appwrite plans, <a
+            A summary of the current plan. For more information on Appwrite plans, <a
                 type="button"
                 class="link"
                 href="https://appwrite.io/pricing"

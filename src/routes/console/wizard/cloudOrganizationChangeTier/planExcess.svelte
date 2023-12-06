@@ -46,7 +46,7 @@
     {#if excess?.bandwidth > 0 || excess?.executions > 0 || excess?.storage > 0 || excess?.users}
         The Starter plan has a limit of one organization member. By proceeding, all but the creator
         of the organization admin will be removed. Until you reduce your usage, you will be unable
-        to add to the resources listed below in all projects within your organization. Your current
+        to add to the resources listed below in all projects within your organization. The current
         billing cycle will end on {toLocaleDate($organization.billingCurrentInvoiceDate)}. Any
         executions, bandwidth, or messaging usage will be reset at that time.
     {/if}
