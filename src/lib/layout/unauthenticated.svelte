@@ -72,7 +72,7 @@
 
       &-text {
         padding: pxToRem(18) pxToRem(28);
-        border:pxToRem(2) solid hsl(343 98% 60% / 0.1); border-radius:pxToRem(16);
+        border:pxToRem(2) solid hsl(343 98% 60% / 0.2); border-radius:pxToRem(16);
         background:rgba(253, 54, 110, 0.10); box-shadow:0 -12.173px 20.289px 0px rgba(253, 54, 110, 0.08) inset;
         @media #{$break1} { padding:pxToRem(8) pxToRem(12); border-radius:pxToRem(8); }
       }
