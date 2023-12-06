@@ -40,7 +40,6 @@
         bind:coupon
         bind:couponData
         on:validation={(e) => {
-            console.log(e.detail);
             $addCreditWizardStore.coupon = e.detail.code;
         }}
         let:data>

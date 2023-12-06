@@ -141,6 +141,8 @@
                 }
 
                 await invalidate(Dependencies.ACCOUNT);
+                await invalidate(Dependencies.ORGANIZATION);
+
                 dispatch('created');
                 await goto(`/console/organization-${org.$id}`);
                 if ($isUpgrade) {
