@@ -9,12 +9,10 @@
     import { wizard } from '$lib/stores/wizard';
     import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
     import { onMount } from 'svelte';
-    import { aggregationList } from './store';
     import { sdk } from '$lib/stores/sdk';
-    import type { Aggregation, Invoice } from '$lib/sdk/billing';
+    import type { Invoice } from '$lib/sdk/billing';
     import { Query } from '@appwrite.io/console';
 
-    let aggregation: Aggregation;
     let currentInvoice: Invoice;
 
     onMount(async () => {
@@ -23,7 +21,6 @@
             Query.orderDesc('$createdAt')
         ]);
         currentInvoice = invoices.invoices[0];
-        aggregation = $aggregationList.aggregations.find((a) => (a.$id = currentInvoice.$id));
     });
 
     $: currentPlan = $plansInfo.plans.find((p) => p.$id === $organization.billingPlan);
