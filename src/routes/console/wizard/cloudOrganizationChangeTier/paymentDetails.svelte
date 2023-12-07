@@ -82,7 +82,7 @@
             type="switchbox"
             id="budget"
             label="Enable budget cap"
-            tooltip="If enabled, you will be notified by email when your project spend reaches 75% of the cap you set. Update your budget cap alerts in Organization Settings."
+            tooltip="If enabled, you will be notified by email when your organization spend reaches 75% of the cap you set. Update your budget cap alerts in organization Settings."
             fullWidth
             bind:value={budgetEnabled}>
             <p class="text">
