@@ -39,7 +39,7 @@
         <div class="now-available">Now available</div>
 
     </section>
-    <section class="grid-1-1-col-2 u-flex u-main-center u-cross-center">
+    <section class="grid-1-1-col-2 u-flex u-main-center u-cross-center _u-padding-16-mobile">
         <div class="container u-flex u-flex-vertical u-cross-center u-main-center">
             <div class="u-max-width-500 u-width-full-line">
                 <h1 class="heading-level-2 u-margin-block-start-auto">
@@ -79,6 +79,10 @@
     @import '@appwrite.io/pink/src/abstract/variables/_devices.scss';
     @import '@appwrite.io/pink/src/abstract/functions/_pxToRem.scss';
 
+    /* mobile utility class */
+    @media #{$break1} {
+      ._u-padding-16-mobile { padding:pxToRem(16); }
+    }
 
     .appwrite-pro {
       position:relative; z-index:1;
