@@ -93,7 +93,9 @@
         <div
             class="git-container u-position-relative"
             class:u-margin-block-start-24={isSelfHosted && !isVcsEnabled}>
+
             {#if isSelfHosted && !isVcsEnabled}
+
                 <div
                     class="overlay u-flex-vertical u-position-absolute u-height-100-percent u-width-full-line u-z-index-1 card u-text-center">
                     <div
