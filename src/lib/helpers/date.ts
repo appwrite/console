@@ -61,3 +61,11 @@ export const diffDays = (date1: Date, date2: Date) => {
 export function timeFromNow(datetime: string): string {
     return dayjs().to(dayjs(datetime));
 }
+
+export function hoursToDays(hours: number) {
+    if (hours > 24) {
+        return `${Math.floor(hours / 24)} days`;
+    } else {
+        return `${hours} hour`;
+    }
+}

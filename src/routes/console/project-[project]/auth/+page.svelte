@@ -31,6 +31,8 @@
     import { writable } from 'svelte/store';
     import type { PageData } from './$types';
     import Create from './createUser.svelte';
+    import { readOnly } from '$lib/stores/billing';
+    import { isCloud } from '$lib/system';
 
     export let data: PageData;
 
@@ -42,7 +44,10 @@
 
 <Container>
     <SearchQuery search={data.search} placeholder="Search by name, email, phone, or ID">
-        <Button on:click={() => ($showCreateUser = true)} event="create_user">
+        <Button
+            on:click={() => ($showCreateUser = true)}
+            event="create_user"
+            disabled={isCloud && $readOnly}>
             <span class="icon-plus" aria-hidden="true" /> <span class="text">Create user</span>
         </Button>
     </SearchQuery>

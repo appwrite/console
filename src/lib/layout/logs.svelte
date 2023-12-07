@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { toLocaleDateTime } from '$lib/helpers/date';
+    import { hoursToDays, toLocaleDateTime } from '$lib/helpers/date';
     import { log } from '$lib/stores/logs';
-    import { Card, Code, Heading, Id, SvgIcon, Tab, Tabs } from '../components';
+    import { Alert, Card, Code, Heading, Id, SvgIcon, Tab, Tabs } from '../components';
     import { calculateTime } from '$lib/helpers/timeConversion';
     import {
         TableBody,
@@ -13,9 +13,17 @@
     } from '$lib/elements/table';
     import { beforeNavigate } from '$app/navigation';
     import { Pill } from '$lib/elements';
+    import { isCloud } from '$lib/system';
+    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
+    import { wizard } from '$lib/stores/wizard';
+    import { getServiceLimit, tierToPlan } from '$lib/stores/billing';
+    import { organization } from '$lib/stores/organization';
 
     let selectedRequest = 'parameters';
     let selectedResponse = 'logs';
+
+    const limit = getServiceLimit('logs');
+    const tier = tierToPlan($organization?.billingPlan)?.name;
 
     function handleKeydown(event: KeyboardEvent) {
         if (event.key === 'Escape') {
@@ -293,6 +301,19 @@
                             </div>
                             {#if selectedResponse === 'logs'}
                                 {#if execution?.logs}
+                                    {#if isCloud && limit !== 0 && limit < Infinity}
+                                        <Alert>
+                                            Logs are retained in rolling {hoursToDays(limit)} intervals
+                                            with the {tier} plan.
+                                            <button
+                                                class="link"
+                                                type="button"
+                                                on:click|preventDefault={() =>
+                                                    wizard.start(ChangeOrganizationTierCloud)}
+                                                >Upgrade</button> to increase your log retention for
+                                            a longer period.
+                                        </Alert>
+                                    {/if}
                                     <Code withCopy noMargin code={execution.logs} language="sh" />
                                 {:else}
                                     <Card isDashed isTile>

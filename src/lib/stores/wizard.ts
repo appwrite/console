@@ -1,4 +1,5 @@
 import { trackEvent } from '$lib/actions/analytics';
+import type { WizardStepsType } from '$lib/layout/wizard.svelte';
 import type { SvelteComponent } from 'svelte';
 import { writable } from 'svelte/store';
 
@@ -10,6 +11,7 @@ export type WizardStore = {
     interceptor?: () => Promise<void>;
     nextDisabled: boolean;
     step: number;
+    interceptorNotificationEnabled: boolean;
 };
 
 function createWizardStore() {
@@ -18,6 +20,7 @@ function createWizardStore() {
         component: null,
         cover: null,
         interceptor: null,
+        interceptorNotificationEnabled: true,
         media: null,
         nextDisabled: false,
         step: 1
@@ -80,3 +83,12 @@ function createWizardStore() {
 }
 
 export const wizard = createWizardStore();
+
+export function updateStepStatus(map: WizardStepsType, key: number, status: boolean) {
+    const updatedComponent = {
+        ...map.get(key),
+        disabled: status
+    };
+    map.set(key, updatedComponent);
+    return map;
+}

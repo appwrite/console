@@ -15,17 +15,32 @@
         TableCellText,
         TableScroll
     } from '$lib/elements/table';
-    import { Container } from '$lib/layout';
-    import { toLocaleDateTime } from '$lib/helpers/date';
+    import { Container, ContainerHeader } from '$lib/layout';
+    import { hoursToDays, toLocaleDateTime } from '$lib/helpers/date';
     import type { Models } from '@appwrite.io/console';
+    import type { PlanServices } from '$lib/stores/billing';
 
     export let logs: Models.LogList;
     export let offset = 0;
     export let limit = 0;
+
+    export let service: PlanServices = null;
 </script>
 
 <Container>
-    <Heading tag="h2" size="5">Activity</Heading>
+    {#if service}
+        <ContainerHeader title="Activity" alertType="info" serviceId={service}>
+            <svelte:fragment slot="tooltip" let:limit let:tier let:upgradeMethod>
+                <p class="text">
+                    Logs are retained in rolling {hoursToDays(limit)} intervals with the {tier} plan.
+                    <button class="link" type="button" on:click|preventDefault={upgradeMethod}
+                        >Upgrade</button> to increase your log retention for a longer period.
+                </p>
+            </svelte:fragment>
+        </ContainerHeader>
+    {:else}
+        <Heading tag="h2" size="5">Activity</Heading>
+    {/if}
     {#if logs.total}
         <TableScroll>
             <TableHeader>

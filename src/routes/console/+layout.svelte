@@ -1,30 +1,51 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { INTERVAL } from '$lib/constants';
-    import { Logs } from '$lib/layout';
+    import { HeaderAlert, Logs } from '$lib/layout';
     import Footer from '$lib/layout/footer.svelte';
     import Header from '$lib/layout/header.svelte';
     import SideNavigation from '$lib/layout/navigation.svelte';
     import Shell from '$lib/layout/shell.svelte';
     import { app } from '$lib/stores/app';
     import { log } from '$lib/stores/logs';
-    import { newOrgModal } from '$lib/stores/organization';
+    import { newOrgModal, organization } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
     import { onMount } from 'svelte';
     import { loading, requestedMigration } from '../store';
     import Create from './createOrganization.svelte';
-
+    import {
+        daysLeftInTrial,
+        tierToPlan,
+        readOnly,
+        showUsageRatesModal,
+        actionRequiredInvoices
+    } from '$lib/stores/billing';
+    import { diffDays, toLocaleDate } from '$lib/helpers/date';
+    import { base } from '$app/paths';
     import { goto } from '$app/navigation';
-
     import { CommandCenter, registerCommands, registerSearchers } from '$lib/commandCenter';
     import { AIPanel, OrganizationsPanel, ProjectsPanel } from '$lib/commandCenter/panels';
     import { orgSearcher, projectsSearcher } from '$lib/commandCenter/searchers';
     import { addSubPanel } from '$lib/commandCenter/subPanels';
-    import { addNotification } from '$lib/stores/notifications';
+    import { addNotification, notifications } from '$lib/stores/notifications';
     import { openMigrationWizard } from './(migration-wizard)';
     import { project } from './project-[project]/store';
     import { feedback } from '$lib/stores/feedback';
-    import { consoleVariables } from './store';
+    import { VARS, hasStripePublicKey, isCloud } from '$lib/system';
+    import { sdk } from '$lib/stores/sdk';
+    import { loadStripe } from '@stripe/stripe-js';
+    import { stripe } from '$lib/stores/stripe';
+    import MobileSupportModal from './wizard/support/mobileSupportModal.svelte';
+    import { showSupportModal } from './wizard/support/store';
+    import ExcesLimitModal from './organization-[organization]/excesLimitModal.svelte';
+    import { showExcess } from './organization-[organization]/store';
+    import UsageRates from './wizard/cloudOrganization/usageRates.svelte';
+    import { consoleVariables, showPrereleaseModal } from './store';
+    import PreReleaseModal from './(billing-modal)/preReleaseModal.svelte';
+    import { Query } from '@appwrite.io/console';
+    import { headerAlert } from '$lib/stores/headerAlert';
+    import MarkedForDeletion from '$lib/components/billing/alerts/markedForDeletion.svelte';
+    import PaymentAuthRequired from '$lib/components/billing/alerts/paymentAuthRequired.svelte';
 
     function kebabToSentenceCase(str: string) {
         return str
@@ -222,12 +243,26 @@
     ]);
     let isOpen = false;
 
-    onMount(() => {
+    onMount(async () => {
         loading.set(false);
+        if (isCloud && !$page.url.pathname.includes('/console/onboarding')) {
+            checkForPreReleaseProModal();
+        }
 
         setInterval(() => {
             checkForFeedback(INTERVAL);
         }, INTERVAL);
+
+        if (isCloud && hasStripePublicKey) {
+            console.log('Environment is Cloud and Stripe public key deteted');
+            $stripe = await loadStripe(VARS.STRIPE_PUBLIC_KEY);
+            console.log('Stripe should have been loading', $stripe);
+        } else {
+            console.log('Environment is not Cloud or Stripe public key not deteted');
+            console.log('isCloud:', isCloud);
+            console.log('hasStripePublicKey:', hasStripePublicKey);
+            console.log('Stripe key:', VARS.STRIPE_PUBLIC_KEY);
+        }
     });
 
     function checkForFeedback(interval: number) {
@@ -243,6 +278,172 @@
         }
     }
 
+    let currentOrg = JSON.stringify($organization?.$id);
+    organization.subscribe((org) => {
+        if (!org) return;
+        if (currentOrg === org.$id) return;
+        currentOrg = org.$id;
+        if (isCloud) {
+            if (org?.billingPlan === 'tier-0') {
+                $daysLeftInTrial = 0;
+            } else {
+                calculateTrialDay(new Date(org?.billingTrialEndDate));
+            }
+
+            checkForTrialEnding();
+            paymentExpired();
+            checkForUsageLimit();
+            if ($organization?.markedForDeletion) {
+                headerAlert.add({
+                    component: MarkedForDeletion,
+                    show: true,
+                    importance: 5
+                });
+            }
+            checkPaymentAuthorizationRequired();
+        }
+    });
+
+    function calculateTrialDay(endDate: Date) {
+        const today = new Date();
+        const days = diffDays(today, endDate);
+        $daysLeftInTrial = days;
+    }
+
+    function checkForTrialEnding() {
+        if (localStorage.getItem('trialEndingNotification') === 'true' || !$daysLeftInTrial) return;
+        else if ($daysLeftInTrial <= 5) {
+            addNotification({
+                type: 'info',
+                isHtml: true,
+                message: `<b>We hope you've been enjoying the ${
+                    tierToPlan($organization.billingPlan).name
+                } plan.</b>
+                You will be billed on a recurring 30 day cycle after your trial period ends on <b>${toLocaleDate(
+                    $organization.billingTrialEndDate
+                )}</b>`
+            });
+            localStorage.setItem('trialEndingNotification', 'true');
+        }
+    }
+
+    function checkForUsageLimit() {
+        if (!$organization?.billingLimits) return;
+        const { bandwidth, documents, executions, storage, users } = $organization.billingLimits;
+        if (
+            bandwidth >= 100 &&
+            documents >= 100 &&
+            executions >= 100 &&
+            storage >= 100 &&
+            users >= 100
+        ) {
+            $readOnly = true;
+        }
+    }
+
+    async function paymentExpired() {
+        if (!$organization?.paymentMethodId) return;
+        const payment = await sdk.forConsole.billing.getPaymentMethod(
+            $organization.paymentMethodId
+        );
+        if (!payment?.expiryYear) return;
+        const year = new Date().getFullYear();
+        const month = new Date().getMonth();
+        const expiredMessage = `The default payment method for <b>${$organization.name}</b> has expired`;
+        const expiringMessage = `The default payment method for <b>${$organization.name}</b> will expire soon`;
+        const expiredNotification = $notifications.some((n) => n.message === expiredMessage);
+        const expiringNotification = $notifications.some((n) => n.message === expiringMessage);
+        if (payment.expired && !expiredNotification) {
+            addNotification({
+                type: 'error',
+                isHtml: true,
+                timeout: 0,
+                message: expiredMessage,
+                buttons: [
+                    {
+                        name: 'Update payment details',
+                        method: () => {
+                            goto(`${base}/console/account/payments`);
+                        }
+                    }
+                ]
+            });
+        } else if (
+            !expiringNotification &&
+            payment.expiryYear <= year &&
+            payment.expiryMonth < month
+        ) {
+            addNotification({
+                type: 'warning',
+                isHtml: true,
+                message: expiringMessage,
+                buttons: [
+                    {
+                        name: 'Update payment details',
+                        method: () => {
+                            goto(`${base}/console/account/payments`);
+                        }
+                    }
+                ]
+            });
+        }
+    }
+    function checkForPreReleaseProModal() {
+        const modalTime = localStorage.getItem('preReleaseProModal');
+        const notificationTime = localStorage.getItem('preReleaseProNotification');
+        const now = Date.now();
+        // show the modal if it was never shown
+        if (!modalTime) {
+            localStorage.setItem('preReleaseProModal', Date.now().toString());
+            localStorage.setItem('preReleaseProNotification', Date.now().toString());
+            showPrereleaseModal.set(true);
+        } else {
+            const interval = 5 * 24 * 60 * 60 * 1000;
+            const sinceLastModal = now - parseInt(modalTime);
+            // show the modal if it was shown more than 5 days ago
+            if (sinceLastModal > interval) {
+                localStorage.setItem('preReleaseProModal', Date.now().toString());
+                localStorage.setItem('preReleaseProNotification', Date.now().toString());
+                showPrereleaseModal.set(true);
+            }
+            //if the modal has been shown more than 24 ago and the notification has not been shown for 24 hours
+            else if (
+                sinceLastModal > 24 * 60 * 60 * 1000 &&
+                now - (notificationTime ? parseInt(notificationTime) : 0) > 24 * 60 * 60 * 1000
+            ) {
+                localStorage.setItem('preReleaseProNotification', Date.now().toString());
+                addNotification({
+                    type: 'warning',
+                    timeout: 10000,
+                    message:
+                        'Appwrite Pro is coming soon, which means you will be limited to one free organization per account. To avoid service disruptions in your projects, consider upgrading to Pro.',
+                    buttons: [
+                        {
+                            name: 'Learn more',
+                            method: () => {
+                                window.open('https://appwrite.io/pricing', '_blank');
+                            }
+                        }
+                    ]
+                });
+            }
+        }
+    }
+
+    async function checkPaymentAuthorizationRequired() {
+        if ($organization.billingPlan === 'tier-0') return;
+        $actionRequiredInvoices = await sdk.forConsole.billing.listInvoices($organization.$id, [
+            Query.equal('status', 'requires_action')
+        ]);
+        if ($actionRequiredInvoices && $actionRequiredInvoices.total) {
+            headerAlert.add({
+                component: PaymentAuthRequired,
+                show: true,
+                importance: 6
+            });
+        }
+    }
+
     $: if (!$log.show) {
         $log.data = null;
         $log.func = null;
@@ -253,6 +454,9 @@
     }
 
     $registerSearchers(orgSearcher, projectsSearcher);
+
+    $: selectedHeaderAlert = headerAlert.get();
+    $: console.log(selectedHeaderAlert);
 </script>
 
 <CommandCenter />
@@ -264,6 +468,20 @@
         !$page.url.pathname.includes('/console/account') &&
         !$page.url.pathname.includes('/console/card') &&
         !$page.url.pathname.includes('/console/onboarding')}>
+    <svelte:fragment slot="alert">
+        {#if selectedHeaderAlert?.show}
+            <svelte:component this={selectedHeaderAlert.component} />
+        {/if}
+
+        {#if $organization?.markedForDeletion && !$page.url.pathname.includes('/console/account')}
+            <HeaderAlert title="Organization flagged for deletion">
+                <svelte:fragment>
+                    All existing projects in the {$organization.name} organization have been paused.
+                    This organization will be deleted once your upcoming invoice is processed successfully.
+                </svelte:fragment>
+            </HeaderAlert>
+        {/if}
+    </svelte:fragment>
     <Header slot="header" />
     <SideNavigation slot="side" bind:isOpen />
     <slot />
@@ -280,4 +498,18 @@
 
 {#if $log.show}
     <Logs />
+{/if}
+
+{#if $showSupportModal}
+    <MobileSupportModal bind:show={$showSupportModal}></MobileSupportModal>
+{/if}
+
+{#if isCloud && $showExcess}
+    <ExcesLimitModal bind:show={$showExcess}></ExcesLimitModal>
+{/if}
+{#if isCloud && $showUsageRatesModal}
+    <UsageRates bind:show={$showUsageRatesModal} tier={$organization?.billingPlan} />
+{/if}
+{#if isCloud && $showPrereleaseModal && !$page.url.pathname.includes('/console/onboarding')}
+    <PreReleaseModal bind:show={$showPrereleaseModal} />
 {/if}

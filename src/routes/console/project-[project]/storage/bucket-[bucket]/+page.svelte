@@ -19,7 +19,8 @@
         DropListItem,
         DropListLink,
         SearchQuery,
-        PaginationWithLimit
+        PaginationWithLimit,
+        Alert
     } from '$lib/components';
     import Create from './create.svelte';
     import Delete from './deleteFile.svelte';
@@ -35,7 +36,7 @@
     } from '$lib/elements/table';
     import { toLocaleDate } from '$lib/helpers/date';
     import { calculateSize } from '$lib/helpers/sizeConvertion';
-    import { Container } from '$lib/layout';
+    import { Container, ContainerHeader } from '$lib/layout';
     import { base } from '$app/paths';
     import type { Models } from '@appwrite.io/console';
     import { uploader } from '$lib/stores/uploader';
@@ -44,6 +45,8 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { tooltip } from '$lib/actions/tooltip';
+    import { readOnly, showUsageRatesModal } from '$lib/stores/billing';
     import { writable } from 'svelte/store';
 
     export let data: PageData;
@@ -54,6 +57,7 @@
 
     const projectId = $page.params.project;
     const bucketId = $page.params.bucket;
+    const usedStorage = data.oraganizationUsage.storage;
     const getPreview = (fileId: string) =>
         sdk.forProject.storage.getFilePreview(bucketId, fileId, 32, 32).toString() + '&mode=admin';
 
@@ -85,11 +89,78 @@
 </script>
 
 <Container>
-    <SearchQuery search={data.search} placeholder="Search by filename">
-        <Button on:click={() => ($showCreate = true)} event="create_file">
-            <span class="icon-plus" aria-hidden="true" /> <span class="text">Create file</span>
-        </Button>
-    </SearchQuery>
+    <ContainerHeader
+        title="Files"
+        serviceId="storage"
+        isFlex={false}
+        total={usedStorage}
+        buttonDisabled={$readOnly}>
+        <svelte:fragment slot="alert" let:tier let:upgradeMethod let:hasUsageFees>
+            {#if hasUsageFees}
+                <Alert type="warning" isStandalone>
+                    <span class="text">
+                        You've reached the storage limit for the {tier} plan.
+                        <button
+                            class="link"
+                            type="button"
+                            on:click|preventDefault={() => ($showUsageRatesModal = true)}
+                            >Excess usage fees will apply</button
+                        >.
+                    </span>
+                </Alert>
+            {:else}
+                <Alert type="warning" isStandalone>
+                    <span class="text">
+                        You've reached the storage limit for the {tier} plan.
+                        {#if tier === 'Starter'}
+                            <button
+                                class="link"
+                                type="button"
+                                on:click|preventDefault={upgradeMethod}>Upgrade</button>
+                            for additional storage.
+                        {/if}
+                    </span>
+                </Alert>
+            {/if}
+        </svelte:fragment>
+        <svelte:fragment let:isButtonDisabled>
+            <SearchQuery search={data.search} placeholder="Search by filename">
+                <div
+                    use:tooltip={{
+                        content: `Upgrade to add more files`,
+                        disabled: !isButtonDisabled
+                    }}>
+                    <Button
+                        on:click={() => ($showCreate = true)}
+                        event="create_file"
+                        disabled={isButtonDisabled}>
+                        <span class="icon-plus" aria-hidden="true" />
+                        <span class="text">Create file</span>
+                    </Button>
+                </div>
+            </SearchQuery>
+        </svelte:fragment>
+        <svelte:fragment slot="tooltip" let:limit let:tier let:upgradeMethod>
+            {#if tier === 'Starter'}
+                <p class="text">
+                    You are limited to {limit} GB of storage on the {tier} plan.
+                    <button class="link" type="button" on:click|preventDefault={upgradeMethod}
+                        >Upgrade</button>
+                    for addtional storage.
+                </p>
+            {:else}
+                <p class="text">
+                    You are limited to {limit} GB of free storage on the {tier} plan. After this amount
+                    <button
+                        class="link"
+                        type="button"
+                        on:click|preventDefault={() => ($showUsageRatesModal = true)}
+                        >usage fees will apply</button>
+                    .
+                </p>
+            {/if}
+        </svelte:fragment>
+    </ContainerHeader>
 
     {#if data.files.total}
         <Table>
@@ -200,7 +271,7 @@
     {:else if data.search}
         <EmptySearch>
             <div class="u-text-center">
-                <b>Sorry, we couldn't find ‘{data.search}'</b>
+                <b>Sorry, we couldn't find '{data.search}'</b>
                 <p>There are no files that match your search.</p>
             </div>
             <div class="u-flex u-gap-16">

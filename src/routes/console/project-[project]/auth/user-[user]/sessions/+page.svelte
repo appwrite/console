@@ -11,7 +11,7 @@
         TableHeader,
         TableRow
     } from '$lib/elements/table';
-    import { Container } from '$lib/layout';
+    import { Container, ContainerHeader } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import DeleteAllSessions from '../deleteAllSessions.svelte';
     import DeleteSessions from '../deleteSession.svelte';
@@ -28,12 +28,14 @@
 </script>
 
 <Container>
-    {#if data.sessions.total}
-        <div class="u-flex u-main-end common-section">
+    <ContainerHeader title="Sessions">
+        {#if data.sessions.total}
             <Button secondary on:click={() => (showDeleteAll = true)}>
                 <span class="text">Delete All</span>
             </Button>
-        </div>
+        {/if}
+    </ContainerHeader>
+    {#if data.sessions.total}
         <Table>
             <TableHeader>
                 <TableCellHead width={140}>Browser and device</TableCellHead>

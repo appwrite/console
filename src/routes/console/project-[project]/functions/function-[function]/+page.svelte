@@ -26,7 +26,7 @@
         TableScroll
     } from '$lib/elements/table';
     import { deploymentList, execute, func, proxyRuleList } from './store';
-    import { Container } from '$lib/layout';
+    import { Container, ContainerHeader } from '$lib/layout';
     import { app } from '$lib/stores/app';
     import { calculateSize, humanFileSize } from '$lib/helpers/sizeConvertion';
     import type { Models } from '@appwrite.io/console';
@@ -39,6 +39,9 @@
     import DeploymentSource from './deploymentSource.svelte';
     import DeploymentCreatedBy from './deploymentCreatedBy.svelte';
     import DeploymentDomains from './deploymentDomains.svelte';
+    import { hoursToDays } from '$lib/helpers/date';
+    import { isCloud } from '$lib/system';
+    import { readOnly } from '$lib/stores/billing';
 
     export let data;
 
@@ -56,10 +59,16 @@
 </script>
 
 <Container>
-    <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <Heading tag="h2" size="5">Deployments</Heading>
+    <ContainerHeader title="Deployments" serviceId="logs">
+        <svelte:fragment slot="tooltip" let:limit let:tier let:upgradeMethod>
+            <p class="text">
+                Logs are retained in rolling {hoursToDays(limit)} intervals with the {tier} plan.
+                <button class="link" type="button" on:click|preventDefault={upgradeMethod}
+                    >Upgrade</button> to increase your log retention for a longer period.
+            </p>
+        </svelte:fragment>
         <Create main />
-    </div>
+    </ContainerHeader>
     {#if $deploymentList?.total}
         {@const activeDeployment = data.activeDeployment}
         <div class="common-section">
@@ -148,7 +157,10 @@
                             Redeploy
                         </Button>
 
-                        <Button secondary on:click={() => ($execute = $func)}>Execute now</Button>
+                        <Button
+                            secondary
+                            on:click={() => ($execute = $func)}
+                            disabled={isCloud && $readOnly}>Execute now</Button>
                     </div>
                 </svelte:fragment>
             </CardGrid>

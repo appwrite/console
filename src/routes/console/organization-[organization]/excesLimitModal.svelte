@@ -1,0 +1,78 @@
+<script lang="ts">
+    import { Modal } from '$lib/components';
+    import { sizeToBytes } from '$lib/helpers/sizeConvertion';
+    import { plansInfo, tierToPlan } from '$lib/stores/billing';
+    import { organization } from '$lib/stores/organization';
+    import { onMount } from 'svelte';
+    import PlanExcess from '../wizard/cloudOrganizationChangeTier/planExcess.svelte';
+    import type { OrganizationUsage } from '$lib/sdk/billing';
+    import type { Models } from '@appwrite.io/console';
+    import { sdk } from '$lib/stores/sdk';
+    import { Button } from '$lib/elements/forms';
+    import { wizard } from '$lib/stores/wizard';
+    import ChangeOrganizationTierCloud from '../changeOrganizationTierCloud.svelte';
+    import { goto } from '$app/navigation';
+
+    export let show = false;
+    const plan = $plansInfo.plans.find((plan) => plan.$id === $organization.billingPlan);
+    let usage: OrganizationUsage = null;
+    let members: Models.MembershipList = null;
+    let excess: Record<string, number> = null;
+
+    onMount(async () => {
+        usage = await sdk.forConsole.billing.listUsage(
+            $organization.$id,
+            $organization.billingCurrentInvoiceDate,
+            new Date().toISOString()
+        );
+        members = await sdk.forConsole.teams.listMemberships($organization.$id);
+        calculateExcess();
+    });
+
+    function calculateExcess() {
+        const totBandwidth = usage?.bandwidth?.length > 0 ? usage.bandwidth[0].value : 0;
+        const totUsers = usage?.users?.length > 0 ? usage.users[0].value : 0;
+        excess = {
+            bandwidth: totBandwidth > plan.bandwidth ? totBandwidth - plan.bandwidth : 0,
+            storage:
+                usage?.storage[0] > sizeToBytes(plan.storage, 'GB')
+                    ? usage.storage[0] - plan.storage
+                    : 0,
+            users: totUsers > plan.users ? totUsers - plan.users : 0,
+            executions:
+                usage?.executions[0] > plan.executions ? usage.executions[0] - plan.executions : 0,
+            members: members.total > plan.members ? members.total - (plan.members || Infinity) : 0
+        };
+    }
+</script>
+
+<Modal bind:show title="Limit reached">
+    <svelte:fragment slot="title">
+        Your usage exceeds the {tierToPlan($organization.billingPlan).name} plan limits
+    </svelte:fragment>
+    <p class="text">
+        Usage for <b>{$organization.name}</b> organization has reached the limits of the {tierToPlan(
+            $organization.billingPlan
+        ).name} plan. Consider upgrading to increase your resource usage.
+    </p>
+    <PlanExcess {excess} currentTier={$organization.billingPlan} />
+    <svelte:fragment slot="footer">
+        <div class="u-flex u-main-space-between u-width-full-line">
+            <Button text on:click={() => (show = false)}>Cancel</Button>
+            <div class="u-flex u-main-end u-gap-16">
+                <Button
+                    secondary
+                    on:click={() => {
+                        show = false;
+                        goto(`/console/organization-${$organization.$id}/usage`);
+                    }}>View usage</Button>
+
+                <Button
+                    on:click={() => {
+                        show = false;
+                        wizard.start(ChangeOrganizationTierCloud);
+                    }}>Upgrade plan</Button>
+            </div>
+        </div>
+    </svelte:fragment>
+</Modal>

@@ -23,6 +23,7 @@
     import ExportModal from './exportModal.svelte';
     import Status from '$lib/components/status.svelte';
     import { capitalize } from '$lib/helpers/string';
+    import { readOnly } from '$lib/stores/billing';
 
     export let data;
     let details: string | null = null;
@@ -222,7 +223,11 @@
                     <div class="avatar u-margin-block-start-8" style="--size: {48 / 16}rem">
                         <span class="icon-cloud" />
                     </div>
-                    <Button class="u-margin-block-start-20" secondary on:click={openImportWizard}>
+                    <Button
+                        class="u-margin-block-start-20"
+                        secondary
+                        on:click={openImportWizard}
+                        disabled={$readOnly}>
                         Import data
                     </Button>
                 </div>
@@ -251,8 +256,9 @@
                             <span class="icon-cloud" />
                         </div>
                     </div>
-                    <Button class="u-margin-block-start-48" secondary on:click={deployToCloud}
-                        >Deploy to Cloud</Button>
+                    <Button class="u-margin-block-start-48" secondary on:click={deployToCloud}>
+                        Deploy to Cloud
+                    </Button>
                 </div>
             </svelte:fragment>
         </CardGrid>

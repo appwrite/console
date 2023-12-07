@@ -5,6 +5,7 @@
             label: string;
             component: typeof SvelteComponent<unknown>;
             optional?: boolean;
+            disabled?: boolean;
         }
     >;
 </script>
@@ -64,6 +65,7 @@
             try {
                 await $wizard.interceptor();
             } catch (error) {
+                if (!$wizard.interceptorNotificationEnabled) return;
                 addNotification({
                     message: error.message,
                     type: 'error'
@@ -82,9 +84,28 @@
                 $wizard.nextDisabled = false;
             }, 2000);
         } else {
+            if (steps.get($wizard.step + 1)?.disabled) {
+                $wizard.step++;
+                while (steps.get($wizard.step)?.disabled) {
+                    $wizard.step++;
+                }
+            } else {
+                $wizard.step++;
+            }
             trackEvent('wizard_next');
-            $wizard.step++;
         }
+    }
+
+    function previousStep() {
+        if (steps.get($wizard.step - 1)?.disabled) {
+            $wizard.step--;
+            while (steps.get($wizard.step)?.disabled) {
+                $wizard.step--;
+            }
+        } else {
+            $wizard.step--;
+        }
+        trackEvent('wizard_back');
     }
 
     $: sortedSteps = [...steps].sort(([a], [b]) => (a > b ? 1 : -1));
@@ -112,13 +133,16 @@
     </header>
 
     <aside class="wizard-side">
-        <Steps
-            on:step={handleStepClick}
-            steps={sortedSteps.map(([, { label, optional }]) => ({
-                text: label,
-                optional
-            }))}
-            currentStep={$wizard.step} />
+        <slot name="aside">
+            <Steps
+                on:step={handleStepClick}
+                steps={sortedSteps.map(([, { label, optional, disabled }]) => ({
+                    text: label,
+                    optional,
+                    disabled
+                }))}
+                currentStep={$wizard.step} />
+        </slot>
     </aside>
     <div class="wizard-media">
         {#if $wizard.media}
@@ -143,10 +167,7 @@
                     {#if $wizard.step === 1}
                         <Button secondary on:click={handleExit}>Cancel</Button>
                     {:else}
-                        <Button
-                            secondary
-                            on:click={() => $wizard.step--}
-                            on:click={() => trackEvent('wizard_back')}>Back</Button>
+                        <Button secondary on:click={previousStep}>Back</Button>
                     {/if}
 
                     <Button submit disabled={$wizard.nextDisabled}>

@@ -5,10 +5,11 @@
     export let showOverflow = false;
     let className = '';
     export { className as class };
+    export let style = '';
 </script>
 
 <div
-    style={width ? `--p-col-width:${width?.toString()}` : ''}
+    style={`${style} ${width ? `--p-col-width:${width?.toString()}` : ''}`}
     class="table-col {className}"
     class:u-overflow-visible={showOverflow}
     class:is-only-desktop={onlyDesktop}
