@@ -95,7 +95,10 @@
                 </div>
             {:else}
                 <div class="u-flex u-gap-16 u-flex-wrap">
-                    <Button text on:click={() => wizard.start(ChangeOrganizationTierCloud)}>
+                    <Button
+                        text
+                        disabled={$organization?.markedForDeletion}
+                        on:click={() => wizard.start(ChangeOrganizationTierCloud)}>
                         Change plan
                     </Button>
                     <Button
