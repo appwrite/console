@@ -12,6 +12,7 @@
     const dispatch = createEventDispatcher();
     export let show = false;
     let coupon: string = null;
+    let error: string = null;
 
     async function redeem() {
         try {
@@ -28,17 +29,14 @@
             });
             coupon = null;
             dispatch('success');
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
-            trackError(error, Submit.CreditRedeem);
+        } catch (e) {
+            error = e.message;
+            trackError(e, Submit.CreditRedeem);
         }
     }
 </script>
 
-<Modal bind:show title="Add credits" headerDivider={false} onSubmit={redeem} size="big">
+<Modal bind:show title="Add credits" headerDivider={false} onSubmit={redeem} size="big" bind:error>
     Apply Appwrite credits to your organization.
 
     <FormList>

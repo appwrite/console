@@ -53,7 +53,7 @@
 
     <svelte:fragment slot="buttons">
         <!-- TODO: add link when available -->
-        <Button text>Learn more</Button>
+        <Button text href="#/">Learn more</Button>
     </svelte:fragment>
 </Alert>
 

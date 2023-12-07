@@ -96,8 +96,7 @@
                 bind:value={selectedAddress.postalCode}
                 id="zip"
                 label="Postal code"
-                placeholder="Enter postal code"
-                required />
+                placeholder="Enter postal code" />
         </FormItem>
     </FormList>
     <svelte:fragment slot="footer">
