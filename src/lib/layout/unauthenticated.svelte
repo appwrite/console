@@ -120,7 +120,7 @@
       background-image: url("/src/lib/images/login/cloud-pro-bg-light.png");
       background-size:contain;
       background-repeat: no-repeat;
-      background-position:center bottom;
+      background-position:right bottom;
       @media #{$break1} { display:none; }
     }
     :global(.theme-dark) .side-bg { background-color: #19191D; }
