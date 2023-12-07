@@ -137,8 +137,8 @@
                 </TableBody>
             </TableScroll>
             <div class="u-flex u-main-space-between">
-                <p class="text">Total results: {invoiceList?.total}</p>
-                <PaginationInline {limit} bind:offset sum={invoiceList?.total} hidePages />
+                <p class="text">Total results: {invoiceList?.total - 1 ?? 0}</p>
+                <PaginationInline {limit} bind:offset sum={invoiceList?.total - 1 ?? 0} hidePages />
             </div>
         {:else}
             <EmptySearch hidePagination>
