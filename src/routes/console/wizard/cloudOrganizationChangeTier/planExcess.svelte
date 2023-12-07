@@ -52,8 +52,8 @@
     {/if}
 
     <svelte:fragment slot="buttons">
-        <!-- TODO: add link when available -->
-        <Button text href="#/">Learn more</Button>
+        <Button text href="https://appwrite.io/docs/advanced/platform/starter#reaching-resource-limits">Learn more</Button>
+        <Button text href="https://appwrite.io/docs/advanced/platform/pro#reaching-resource-limits">Learn more</Button>
     </svelte:fragment>
 </Alert>
 
