@@ -87,7 +87,9 @@
                     <Button text href={`${base}/console/organization-${$organization?.$id}/usage`}>
                         View estimated usage
                     </Button>
-                    <Button on:click={() => wizard.start(ChangeOrganizationTierCloud)}>
+                    <Button
+                        disabled={$organization?.markedForDeletion}
+                        on:click={() => wizard.start(ChangeOrganizationTierCloud)}>
                         Upgrade
                     </Button>
                 </div>
