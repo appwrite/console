@@ -84,7 +84,7 @@
                                     <Pill
                                         danger={status === 'overdue' ||
                                             status === 'failed' ||
-                                            status === 'requires_authorization'}
+                                            status === 'requires_authentication'}
                                         success={status === 'paid' || status === 'succeeded'}
                                         warning={status === 'pending'}>
                                         {status}
