@@ -116,7 +116,7 @@
     .side-bg { position:relative; background-color: #EDEDF0; }
     .side-bg::after {
       position:absolute; inset-inline:0; inset-block-end:0;
-      content:""; display:block; inline-size:100%; block-size:450px;
+      content:""; display:block; inline-size:100%; block-size:100%;
       background-image: url("/src/lib/images/login/cloud-pro-bg-light.png");
       background-size:contain;
       background-repeat: no-repeat;
