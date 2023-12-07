@@ -26,7 +26,7 @@
             }
             addNotification({
                 type: 'success',
-                message: `${$organization.name} has been deleted`
+                message: `${$organization.name} has been flagged for deletion`
             });
             await invalidate(Dependencies.ACCOUNT);
             await invalidate(Dependencies.ORGANIZATION);

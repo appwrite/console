@@ -20,6 +20,8 @@
 
     function addCollaborator() {
         if (!email) return;
+        if ($changeOrganizationTier.collaborators.includes(email)) return;
+
         $changeOrganizationTier.collaborators.push(email);
         $changeOrganizationTier = $changeOrganizationTier;
         email = '';

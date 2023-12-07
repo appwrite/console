@@ -84,7 +84,10 @@
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
-                <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
+                <Button
+                    disabled={$organization?.markedForDeletion}
+                    secondary
+                    on:click={() => (showDelete = true)}>Delete</Button>
             </svelte:fragment>
         </CardGrid>
     {/if}

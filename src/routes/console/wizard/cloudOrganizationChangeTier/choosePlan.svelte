@@ -87,12 +87,21 @@
         }
     });
 
+    async function handleBefore() {
+        if (!$changeOrganizationTier.billingPlan) {
+            throw new Error('Please select a plan.');
+        }
+        if ($changeOrganizationTier.billingPlan === 'tier-0') {
+            $changeOrganizationTier.collaborators = [];
+        }
+    }
+
     $: freePlan = $plansInfo.plans.find((p) => p.$id === 'tier-0');
     $: proPlan = $plansInfo.plans.find((p) => p.$id === 'tier-1');
     $: scalePlan = $plansInfo.plans.find((p) => p.$id === 'tier-2');
 </script>
 
-<WizardStep>
+<WizardStep beforeSubmit={handleBefore}>
     <svelte:fragment slot="title">Choose a plan</svelte:fragment>
 
     <p class="body-text-1 u-bold common-section">Plan</p>

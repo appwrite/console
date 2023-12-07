@@ -18,6 +18,7 @@
 
     function addCollaborator() {
         if (!email) return;
+        if ($createOrganization.collaborators.includes(email)) return;
         $createOrganization.collaborators.push(email);
         $createOrganization = $createOrganization;
         email = '';

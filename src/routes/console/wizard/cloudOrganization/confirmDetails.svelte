@@ -26,12 +26,21 @@
         }
     }
 
+    async function handleBefore() {
+        if (!$createOrganization.billingPlan) {
+            throw new Error('Please select a plan.');
+        }
+        if ($createOrganization.billingPlan === 'tier-0') {
+            $createOrganization.collaborators = [];
+        }
+    }
+
     $: if ($createOrganization.billingPlan === 'tier-0') {
         $createOrganizationFinalAction = 'Create organization';
     }
 </script>
 
-<WizardStep>
+<WizardStep beforeSubmit={handleBefore}>
     <svelte:fragment slot="title">Confirm your details</svelte:fragment>
     <svelte:fragment slot="subtitle">
         Confirm the details of your new organization and start your free trial.
