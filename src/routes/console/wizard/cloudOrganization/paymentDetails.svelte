@@ -27,6 +27,9 @@
     });
 
     async function handleSubmit() {
+        if ($createOrganization.billingBudget < 0) {
+            throw new Error('Budget cannot be negative');
+        }
         try {
             const method = await submitStripeCard(name);
             $createOrganization.paymentMethodId = method.$id;
@@ -83,6 +86,7 @@
                         id="budget"
                         label="Budget cap ($USD)"
                         placeholder="0"
+                        min={0}
                         bind:value={$createOrganization.billingBudget} />
                 </div>
             {/if}

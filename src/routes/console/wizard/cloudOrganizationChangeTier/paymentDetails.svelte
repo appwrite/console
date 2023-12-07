@@ -33,6 +33,10 @@
     });
 
     async function handleSubmit() {
+        if ($changeOrganizationTier.billingBudget < 0) {
+            throw new Error('Budget cannot be negative');
+        }
+
         try {
             await submitStripeCard(name);
             const latestMethods = await sdk.forConsole.billing.listPaymentMethods();
