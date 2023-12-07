@@ -41,11 +41,11 @@
     import { showExcess } from './organization-[organization]/store';
     import UsageRates from './wizard/cloudOrganization/usageRates.svelte';
     import { consoleVariables, showPrereleaseModal } from './store';
-    import PreReleaseModal from './(billing-modal)/preReleaseModal.svelte';
     import { Query } from '@appwrite.io/console';
     import { headerAlert } from '$lib/stores/headerAlert';
     import MarkedForDeletion from '$lib/components/billing/alerts/markedForDeletion.svelte';
     import PaymentAuthRequired from '$lib/components/billing/alerts/paymentAuthRequired.svelte';
+    import PostReleaseModal from './(billing-modal)/postReleaseModal.svelte';
 
     function kebabToSentenceCase(str: string) {
         return str
@@ -278,6 +278,18 @@
         }
     }
 
+    async function checkForFreeOrgOverflow() {
+        const orgs = await sdk.forConsole.teams.list([Query.equal('billingTier', 'tier-0')]);
+        if (orgs.total > 1) {
+            headerAlert.add({
+                id: 'freeOrgOverflow',
+                component: ExcesLimitModal,
+                show: true,
+                importance: 10
+            });
+        }
+    }
+
     let currentOrg = JSON.stringify($organization?.$id);
     organization.subscribe((org) => {
         if (!org) return;
@@ -295,6 +307,7 @@
             checkForUsageLimit();
             if ($organization?.markedForDeletion) {
                 headerAlert.add({
+                    id: 'markedForDeletion',
                     component: MarkedForDeletion,
                     show: true,
                     importance: 5
@@ -433,13 +446,14 @@
     async function checkPaymentAuthorizationRequired() {
         if ($organization.billingPlan === 'tier-0') return;
         $actionRequiredInvoices = await sdk.forConsole.billing.listInvoices($organization.$id, [
-            Query.equal('status', 'requires_action')
+            Query.equal('status', 'requires_authentication')
         ]);
         if ($actionRequiredInvoices && $actionRequiredInvoices.total) {
             headerAlert.add({
+                id: 'paymentAuthRequired',
                 component: PaymentAuthRequired,
                 show: true,
-                importance: 6
+                importance: 8
             });
         }
     }
@@ -456,7 +470,6 @@
     $registerSearchers(orgSearcher, projectsSearcher);
 
     $: selectedHeaderAlert = headerAlert.get();
-    $: console.log(selectedHeaderAlert);
 </script>
 
 <CommandCenter />
@@ -511,5 +524,6 @@
     <UsageRates bind:show={$showUsageRatesModal} tier={$organization?.billingPlan} />
 {/if}
 {#if isCloud && $showPrereleaseModal && !$page.url.pathname.includes('/console/onboarding')}
-    <PreReleaseModal bind:show={$showPrereleaseModal} />
+    <!-- {#if true} -->
+    <PostReleaseModal show={true} />
 {/if}

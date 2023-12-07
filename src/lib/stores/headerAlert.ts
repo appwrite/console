@@ -2,6 +2,7 @@ import type { SvelteComponent } from 'svelte';
 import { writable } from 'svelte/store';
 
 export type HeaderAlert = {
+    id: string;
     show: boolean;
     component: typeof SvelteComponent<unknown>;
     importance: number;
@@ -21,14 +22,18 @@ function createHeaderAlertStore() {
         set,
         add: (component: HeaderAlert) => {
             update((n) => {
-                n.components.push(component);
-                n.components = n.components;
-                return n;
+                if (n.components.find((c) => c.id === component.id)) return n;
+                else {
+                    n.components.push(component);
+                    n.components = n.components;
+                    return n;
+                }
             });
         },
         get: (): HeaderAlert => {
             //return higest importance component
             let component = {
+                id: '',
                 show: false,
                 component: null,
                 importance: 0

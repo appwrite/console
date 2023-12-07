@@ -87,7 +87,7 @@
                                             status === 'requires_authentication'}
                                         success={status === 'paid' || status === 'succeeded'}
                                         warning={status === 'pending'}>
-                                        {status}
+                                        {status === 'requires_authentication' ? 'failed' : status}
                                     </Pill>
                                 </TableCell>
                                 <TableCellText title="due">{invoice.amount}</TableCellText>
