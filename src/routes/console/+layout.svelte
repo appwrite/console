@@ -10,7 +10,7 @@
     import { log } from '$lib/stores/logs';
     import { newOrgModal, organization } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
-    import { onMount } from 'svelte';
+    import { afterUpdate, onMount } from 'svelte';
     import { loading, requestedMigration } from '../store';
     import Create from './createOrganization.svelte';
     import {
@@ -242,7 +242,7 @@
         }
     ]);
     let isOpen = false;
-
+    let selectedHeaderAlert = headerAlert.get();
     onMount(async () => {
         loading.set(false);
         if (isCloud && !$page.url.pathname.includes('/console/onboarding')) {
@@ -314,6 +314,7 @@
                 });
             }
             checkPaymentAuthorizationRequired();
+            selectedHeaderAlert = headerAlert.get();
         }
     });
 
@@ -448,6 +449,7 @@
         $actionRequiredInvoices = await sdk.forConsole.billing.listInvoices($organization.$id, [
             Query.equal('status', 'requires_authentication')
         ]);
+        console.log($actionRequiredInvoices);
         if ($actionRequiredInvoices && $actionRequiredInvoices.total) {
             headerAlert.add({
                 id: 'paymentAuthRequired',
@@ -455,6 +457,7 @@
                 show: true,
                 importance: 8
             });
+            console.log($headerAlert);
         }
     }
 
@@ -469,7 +472,11 @@
 
     $registerSearchers(orgSearcher, projectsSearcher);
 
-    $: selectedHeaderAlert = headerAlert.get();
+    afterUpdate(() => {
+        selectedHeaderAlert = headerAlert.get();
+    });
+
+    $: console.log(selectedHeaderAlert);
 </script>
 
 <CommandCenter />

@@ -46,7 +46,7 @@ function createHeaderAlertStore() {
                 });
                 return n;
             });
-            return component;
+            return component as HeaderAlert;
         }
     };
 }
