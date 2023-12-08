@@ -37,7 +37,6 @@
         </div>
 
         <div class="now-available">Now available</div>
-
     </section>
     <section class="grid-1-1-col-2 u-flex u-main-center u-cross-center _u-padding-16-mobile">
         <div class="container u-flex u-flex-vertical u-cross-center u-main-center">
@@ -53,137 +52,27 @@
                     <slot name="links" />
                 </ul>
             </div>
-            <div class="logo u-flex u-gap-16 u-margin-inline-auto is-only-mobile u-margin-block-start-32">
+            <div
+                class="logo u-flex u-gap-16 u-margin-inline-auto is-only-mobile u-margin-block-start-32">
                 <a href={user ? '/console' : '/'}>
                     {#if $app.themeInUse === 'dark'}
                         <img
-                                src={AppwriteLogoDark}
-                                width="93"
-                                class="u-block u-only-dark"
-                                alt="Appwrite Logo" />
+                            src={AppwriteLogoDark}
+                            width="93"
+                            class="u-block u-only-dark"
+                            alt="Appwrite Logo" />
                     {:else}
                         <img
-                                src={AppwriteLogoLight}
-                                width="93"
-                                class="u-block u-only-light"
-                                alt="Appwrite Logo" />
+                            src={AppwriteLogoLight}
+                            width="93"
+                            class="u-block u-only-light"
+                            alt="Appwrite Logo" />
                     {/if}
                 </a>
             </div>
         </div>
     </section>
 </main>
-
-<style lang="scss">
-    @import '@appwrite.io/pink/src/abstract/variables/_common.scss';
-    @import '@appwrite.io/pink/src/abstract/variables/_devices.scss';
-    @import '@appwrite.io/pink/src/abstract/functions/_pxToRem.scss';
-
-    /* mobile utility class */
-    @media #{$break1} {
-      ._u-padding-16-mobile { padding:pxToRem(16); }
-    }
-
-    .appwrite-pro {
-      position:relative; z-index:1;
-      display: flex; justify-content:center; align-items:baseline;
-      color:hsl(var(--color-neutral-100));
-      @media #{$break1}     { gap:pxToRem(10); font-size:pxToRem(18); letter-spacing:pxToRem(4); }
-      @media #{$break2open} { gap:pxToRem(24); font-size:pxToRem(40); letter-spacing:pxToRem(8); line-height:120%; margin-block-start:pxToRem(160); }
-
-      &-text {
-        padding: pxToRem(18) pxToRem(28);
-        border:pxToRem(2) solid hsl(343 98% 60% / 0.2); border-radius:pxToRem(16);
-        background:rgba(253, 54, 110, 0.10); box-shadow:0 -12.173px 20.289px 0px rgba(253, 54, 110, 0.08) inset;
-        @media #{$break1} { padding:pxToRem(8) pxToRem(12); border-radius:pxToRem(8); }
-      }
-    }
-
-    :global(.theme-dark) .appwrite-pro {
-        color: hsl(var(--color-neutral-10));
-    }
-
-    .now-available {
-      position:relative; z-index:1;
-      background:linear-gradient(70deg, #FB5491 -35.72%, #19191D 79.96%);
-      background-clip:text; -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-      margin-inline:auto;
-
-      @media #{$break1}     { font-size:pxToRem(18); margin-block-start:pxToRem(12); }
-      @media #{$break2open} { font-size:pxToRem(30); margin-block-start:pxToRem(36); }
-    }
-    :global(.theme-dark) .now-available {
-      background: linear-gradient(89deg, #FB5491 -29.25%, #FFF 43.27%);
-      background-clip:text; -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-    }
-
-    .side-bg { position:relative; background-color: #EDEDF0; }
-    .side-bg::after {
-      position:absolute; inset-inline:0; inset-block-end:0;
-      content:""; display:block; inline-size:100%; block-size:100%;
-      background-image: url("/src/lib/images/login/cloud-pro-bg-light.png");
-      background-size:contain;
-      background-repeat: no-repeat;
-      background-position:right bottom;
-      @media #{$break1} { display:none; }
-    }
-    :global(.theme-dark) .side-bg { background-color: #19191D; }
-    :global(.theme-dark) .side-bg::after {
-      background-image: url("/src/lib/images/login/cloud-pro-bg-dark.png");
-    }
-
-    /****** OLD ******/
-    /* Default (including mobile) */
-    #main section:first-child {
-        padding-block-start: 2.25rem;
-        padding-block-end: 2rem;
-
-        div {
-            padding-inline-start: 1rem;
-            padding-inline-end: 1rem;
-        }
-
-        .tag-line {
-            font-family: 'Aeonik Pro';
-            font-size: 4rem;
-            font-style: normal;
-            font-weight: 400;
-            line-height: 100%; /* 80px */
-            letter-spacing: -1.6px;
-            backdrop-filter: blur(0.5 rem);
-            .underscore {
-                -webkit-text-fill-color: #f02e65;
-            }
-        }
-    }
-
-    /* for smaller screens */
-    @media #{$break2open} {
-        #main section:first-child {
-            padding-block-start: 6.25rem;
-            padding-block-end: 6.875rem;
-
-            div {
-                padding-inline-start: 2.625rem;
-                padding-inline-end: 2rem;
-            }
-        }
-    }
-
-    /* for larger screens */
-    @media #{$break3open} {
-        #main section:first-child {
-            div {
-                padding-inline-start: 5.625rem;
-                padding-inline-end: 5rem;
-            }
-            .tag-line {
-                font-size: 5rem;
-            }
-        }
-    }
-</style>
-
 
 <!-- OLD one -->
 <!--
@@ -354,3 +243,156 @@
   }
 </style>
 -->
+
+<style lang="scss">
+    @import '@appwrite.io/pink/src/abstract/variables/_common.scss';
+    @import '@appwrite.io/pink/src/abstract/variables/_devices.scss';
+    @import '@appwrite.io/pink/src/abstract/functions/_pxToRem.scss';
+
+    /* mobile utility class */
+    @media #{$break1} {
+        ._u-padding-16-mobile {
+            padding: pxToRem(16);
+        }
+    }
+
+    .appwrite-pro {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        justify-content: center;
+        align-items: baseline;
+        color: hsl(var(--color-neutral-100));
+        @media #{$break1} {
+            gap: pxToRem(10);
+            font-size: pxToRem(18);
+            letter-spacing: pxToRem(4);
+        }
+        @media #{$break2open} {
+            gap: pxToRem(24);
+            font-size: pxToRem(40);
+            letter-spacing: pxToRem(8);
+            line-height: 120%;
+            margin-block-start: pxToRem(160);
+        }
+
+        &-text {
+            padding: pxToRem(18) pxToRem(28);
+            border: pxToRem(2) solid hsl(343 98% 60% / 0.2);
+            border-radius: pxToRem(16);
+            background: rgba(253, 54, 110, 0.1);
+            box-shadow: 0 -12.173px 20.289px 0px rgba(253, 54, 110, 0.08) inset;
+            @media #{$break1} {
+                padding: pxToRem(8) pxToRem(12);
+                border-radius: pxToRem(8);
+            }
+        }
+    }
+
+    :global(.theme-dark) .appwrite-pro {
+        color: hsl(var(--color-neutral-10));
+    }
+
+    .now-available {
+        position: relative;
+        z-index: 1;
+        background: linear-gradient(70deg, #fb5491 -35.72%, #19191d 79.96%);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-inline: auto;
+
+        @media #{$break1} {
+            font-size: pxToRem(18);
+            margin-block-start: pxToRem(12);
+        }
+        @media #{$break2open} {
+            font-size: pxToRem(30);
+            margin-block-start: pxToRem(36);
+        }
+    }
+    :global(.theme-dark) .now-available {
+        background: linear-gradient(89deg, #fb5491 -29.25%, #fff 43.27%);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .side-bg {
+        position: relative;
+        background-color: #ededf0;
+    }
+    .side-bg::after {
+        position: absolute;
+        inset-inline: 0;
+        inset-block-end: 0;
+        content: '';
+        display: block;
+        inline-size: 100%;
+        block-size: 100%;
+        background-image: url('/src/lib/images/login/cloud-pro-bg-light.png');
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: right bottom;
+        @media #{$break1} {
+            display: none;
+        }
+    }
+    :global(.theme-dark) .side-bg {
+        background-color: #19191d;
+    }
+    :global(.theme-dark) .side-bg::after {
+        background-image: url('/src/lib/images/login/cloud-pro-bg-dark.png');
+    }
+
+    /****** OLD ******/
+    /* Default (including mobile) */
+    #main section:first-child {
+        padding-block-start: 2.25rem;
+        padding-block-end: 2rem;
+
+        div {
+            padding-inline-start: 1rem;
+            padding-inline-end: 1rem;
+        }
+
+        .tag-line {
+            font-family: 'Aeonik Pro';
+            font-size: 4rem;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 100%; /* 80px */
+            letter-spacing: -1.6px;
+            backdrop-filter: blur(0.5 rem);
+            .underscore {
+                -webkit-text-fill-color: #f02e65;
+            }
+        }
+    }
+
+    /* for smaller screens */
+    @media #{$break2open} {
+        #main section:first-child {
+            padding-block-start: 6.25rem;
+            padding-block-end: 6.875rem;
+
+            div {
+                padding-inline-start: 2.625rem;
+                padding-inline-end: 2rem;
+            }
+        }
+    }
+
+    /* for larger screens */
+    @media #{$break3open} {
+        #main section:first-child {
+            div {
+                padding-inline-start: 5.625rem;
+                padding-inline-end: 5rem;
+            }
+            .tag-line {
+                font-size: 5rem;
+            }
+        }
+    }
+</style>

@@ -14,7 +14,7 @@ let paymentElement: StripeElement;
 export const isStripeInitialized = writable(false);
 
 export async function initializeStripe() {
-    console.log('Initializing Stripe')
+    console.log('Initializing Stripe');
     if (!get(stripe)) return;
     isStripeInitialized.set(true);
 
@@ -37,7 +37,6 @@ export async function initializeStripe() {
         elements = get(stripe).elements(options);
         paymentElement = elements.create('payment');
         paymentElement.mount('#payment-element');
-
     } catch (e) {
         console.log(e);
         throw e;

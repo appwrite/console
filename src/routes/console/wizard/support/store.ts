@@ -4,7 +4,7 @@ export type SupportData = {
     message: string;
     category: string;
     file?: File | null;
-    project?: string
+    project?: string;
 };
 
 export const supportData = writable<SupportData>({
