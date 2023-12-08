@@ -79,7 +79,7 @@
                         <InputNumber
                             placeholder="Add budget cap"
                             id="cap"
-                            label="Budget cap ($USD)"
+                            label="Budget cap (USD)"
                             bind:value={budget} />
                     {/if}
                 </FormList>

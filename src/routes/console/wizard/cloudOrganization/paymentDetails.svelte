@@ -84,7 +84,7 @@
                 <div class="u-margin-block-start-16">
                     <InputNumber
                         id="budget"
-                        label="Budget cap ($USD)"
+                        label="Budget cap (USD)"
                         placeholder="0"
                         min={0}
                         bind:value={$createOrganization.billingBudget} />

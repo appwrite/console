@@ -88,7 +88,7 @@
             <div class="u-sep-block-start" />
         {/if}
         <span class="u-flex u-main-space-between">
-            <p class="text">Estimated total (in USD)</p>
+            <p class="text">Estimated total</p>
             <p class="text">${totalExpences}</p>
         </span>
 

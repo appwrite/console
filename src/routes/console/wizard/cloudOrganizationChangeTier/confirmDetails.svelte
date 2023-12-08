@@ -122,7 +122,7 @@
             {/if}
             <div class="u-sep-block-start" />
             <span class="u-flex u-main-space-between">
-                <p class="text">Estimated total (in USD)</p>
+                <p class="text">Estimated total</p>
                 <p class="text">
                     ${couponData?.status === 'active'
                         ? totalExpences - couponData.credits || 0

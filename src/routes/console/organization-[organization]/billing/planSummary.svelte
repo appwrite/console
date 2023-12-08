@@ -57,7 +57,7 @@
 
                     <p class="text">
                         {#if !extraUsage}
-                            <span class="text u-color-text-gray">Total to-date (in USD):</span>
+                            <span class="text u-color-text-gray">Total to-date:</span>
                         {/if}
                         ${isTrial ? 0 : currentPlan?.price}
                     </p>
@@ -68,7 +68,7 @@
                         <p class="text">${extraUsage}</p>
                     </div>
                     <div class="u-flex u-main-space-between">
-                        <p class="text u-color-text-gray">Total to-date (in USD):</p>
+                        <p class="text u-color-text-gray">Total to-date:</p>
                         <p class="text">${currentInvoice?.amount}</p>
                     </div>
                 {/if}
