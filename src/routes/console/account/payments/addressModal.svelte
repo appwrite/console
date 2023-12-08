@@ -68,7 +68,7 @@
         }
     }
 
-    $: isButtonDisabled = !country || !address || !city || !state || !zip;
+    $: isButtonDisabled = !country || !address || !city || !state;
 </script>
 
 <Modal bind:show bind:error onSubmit={handleSubmit} size="big" title="Add billing address">
