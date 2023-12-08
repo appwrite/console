@@ -138,7 +138,7 @@
     @import '@appwrite.io/pink/src/abstract/variables/_devices.scss';
     .tippy-box {
         --p-tooltip-text-color: var(--color-neutral-10);
-        --p-tooltip--bg-color: var(--color-neutral-100);
+        --p-tooltip--bg-color: var(--color-neutral-80);
 
         background-color: hsl(var(--p-tooltip--bg-color));
         color: hsl(var(--p-tooltip-text-color));
