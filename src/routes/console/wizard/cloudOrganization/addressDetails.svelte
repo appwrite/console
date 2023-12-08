@@ -32,7 +32,6 @@
     <svelte:fragment slot="title">Billing address</svelte:fragment>
     <svelte:fragment slot="subtitle">Add a billing address for your organization.</svelte:fragment>
 
-    <p class="text u-margin-block-start-24"><b>Billing address</b></p>
     <FormList class="u-margin-block-start-8">
         {#if addressList}
             <RadioBoxes

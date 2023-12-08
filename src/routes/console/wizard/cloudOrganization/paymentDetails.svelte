@@ -58,7 +58,6 @@
         >.
     </svelte:fragment>
 
-    <p class="text"><b>Payment method</b></p>
     <FormList class="u-margin-block-start-8">
         <PaymentBoxes
             methods={filteredMethods}
