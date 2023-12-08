@@ -109,3 +109,26 @@ export const tierScale: TierData = {
 };
 
 export const showUsageRatesModal = writable<boolean>(false);
+
+export function checkForUsageFees(plan: Tier, id: PlanServices) {
+    if (plan === 'tier-1' || plan === 'tier-2') {
+        switch (id) {
+            case 'bandwidth':
+            case 'storage':
+            case 'users':
+            case 'executions':
+            case 'realtime':
+                return true;
+
+            default:
+                return false;
+        }
+    } else return false;
+}
+
+export function isServiceLimited(serviceId: PlanServices, plan: Tier, total: number) {
+    const limit = getServiceLimit(serviceId) || Infinity;
+    const isLimited = limit !== 0 && limit < Infinity;
+    const hasUsageFees = checkForUsageFees(plan, serviceId);
+    return isLimited && total >= limit && !hasUsageFees;
+}

@@ -4,7 +4,7 @@
         getServiceLimit,
         type PlanServices,
         showUsageRatesModal,
-        type Tier
+        checkForUsageFees
     } from '$lib/stores/billing';
     import { tooltip } from '$lib/actions/tooltip';
     import { Alert, DropList, Heading } from '$lib/components';
@@ -47,22 +47,6 @@
     onMount(() => {
         dispatch('data', { isButtonDisabled, limit, tier });
     });
-
-    function checkForUsageFees(plan: Tier, id: PlanServices) {
-        if (plan === 'tier-1' || plan === 'tier-2') {
-            switch (id) {
-                case 'bandwidth':
-                case 'storage':
-                case 'users':
-                case 'executions':
-                case 'realtime':
-                    return true;
-
-                default:
-                    return false;
-            }
-        } else return false;
-    }
 </script>
 
 {#if isCloud && showAlert && total && limit !== 0 && total >= limit}

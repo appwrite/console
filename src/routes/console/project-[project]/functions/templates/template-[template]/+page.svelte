@@ -10,8 +10,17 @@
     import { consoleVariables } from '$routes/console/store';
     import { template } from './store';
     import { app } from '$lib/stores/app';
+    import { isServiceLimited } from '$lib/stores/billing';
+    import { organization } from '$lib/stores/organization';
+    import { functionsList } from '../../store';
 
     const isVcsEnabled = $consoleVariables?._APP_VCS_ENABLED === true;
+
+    $: buttonDisabled = isServiceLimited(
+        'functions',
+        $organization?.billingPlan,
+        $functionsList?.total ?? 0
+    );
 </script>
 
 <Container>
@@ -91,7 +100,7 @@
                         <span class="icon-external-link" />
                     </Button>
                     <Button
-                        disabled={isSelfHosted && !isVcsEnabled}
+                        disabled={buttonDisabled || (isSelfHosted && !isVcsEnabled)}
                         on:click={() => connectTemplate($template)}>
                         Create function
                     </Button>

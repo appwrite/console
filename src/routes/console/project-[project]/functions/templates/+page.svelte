@@ -14,8 +14,11 @@
     import { Button, InputSearch } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { app } from '$lib/stores/app';
+    import { isServiceLimited } from '$lib/stores/billing';
     import type { Runtime } from '$lib/stores/marketplace.js';
+    import { organization } from '$lib/stores/organization';
     import { connectTemplate } from '$lib/wizards/functions/cover.svelte';
+    import { functionsList } from '../store.js';
 
     export let data;
 
@@ -83,6 +86,12 @@
         target.searchParams.delete('page');
         goto(target.toString(), { keepFocus: true });
     }
+
+    $: buttonDisabled = isServiceLimited(
+        'functions',
+        $organization?.billingPlan,
+        $functionsList?.total ?? 0
+    );
 </script>
 
 <Container>
@@ -218,7 +227,10 @@
                                         <span class="text">View details</span>
                                     </Button>
 
-                                    <Button secondary on:click={() => connectTemplate(template)}>
+                                    <Button
+                                        disabled={buttonDisabled}
+                                        secondary
+                                        on:click={() => connectTemplate(template)}>
                                         <span class="text">Create function</span>
                                     </Button>
                                 </div>
