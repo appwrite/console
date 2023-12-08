@@ -206,7 +206,7 @@
     });
 
     $changeTierSteps.set(1, {
-        label: 'Change plan',
+        label: 'Plans',
         component: ChoosePlan
     });
     $changeTierSteps.set(2, {
