@@ -131,7 +131,7 @@
             </span>
 
             <p class="text u-margin-block-start-16">
-                This amount, and any additional usage fees, will be charged on a recurring 30 day
+                This amount, and any additional usage fees, will be charged on a recurring 30-day
                 billing cycle after your trial period ends on <b
                     >{toLocaleDate(billingPayDate.toString())}</b
                 >.

@@ -336,7 +336,7 @@
                 message: `<b>We hope you've been enjoying the ${
                     tierToPlan($organization.billingPlan).name
                 } plan.</b>
-                You will be billed on a recurring 30 day cycle after your trial period ends on <b>${toLocaleDate(
+                You will be billed on a recurring 30-day cycle after your trial period ends on <b>${toLocaleDate(
                     $organization.billingTrialEndDate
                 )}</b>`
             });
