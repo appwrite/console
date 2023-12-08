@@ -13,7 +13,6 @@
     export let data;
 
     $: files = data.filesTotal ? normalizeFileSize(data.filesTotal) : null;
-    $: requests = data.requestsTotal;
     $: executions = data.executionsTotal;
     $: users = data.usersTotal;
 

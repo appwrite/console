@@ -27,7 +27,7 @@
     });
 
     async function handleSubmit() {
-        const response = await fetch(`https://${VARS.GROWTH_ENDPOINT}/v1/support`, {
+        const response = await fetch(`${VARS.GROWTH_ENDPOINT}/support`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

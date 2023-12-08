@@ -1,18 +1,13 @@
 <script lang="ts">
     import { FormList, InputSelect, InputTextarea } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
-    import { app } from '$lib/stores/app';
-    import { wizard } from '$lib/stores/wizard';
     import { supportData } from './store';
-    import Light from '$lib/images/support/support-wizard-light.svg';
-    import Dark from '$lib/images/support/support-wizard-dark.svg';
     import { Pill } from '$lib/elements';
     import { onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
     // import { Collapsible, CollapsibleItem } from '$lib/components';
 
     // let files: FileList;
-    $wizard.media = $app.themeInUse === 'dark' ? Dark : Light;
 
     let options: {
         value: string;

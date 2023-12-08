@@ -21,14 +21,14 @@
         <div class="u-flex u-main-center">
             {#if isSupportOnline()}
                 {#if $app.themeInUse === 'light'}
-                    <img src={SupportOnlineLight} alt="Support" />
+                    <img src={SupportOnlineLight} alt="Support" height="230px" />
                 {:else}
-                    <img src={SupportOnlineDark} alt="Support" />
+                    <img src={SupportOnlineDark} alt="Support" height="230px" />
                 {/if}
             {:else if $app.themeInUse === 'light'}
-                <img src={SupportOfflineLight} alt="Support" />
+                <img src={SupportOfflineLight} alt="Support" height="230px" />
             {:else}
-                <img src={SupportOfflineDark} alt="Support" />
+                <img src={SupportOfflineDark} alt="Support" height="230px" />
             {/if}
         </div>
         <div>
