@@ -85,6 +85,7 @@
             fullWidth
             class="u-margin-block-start-24"
             on:click={() => wizard.start(ChangeOrganizationTierCloud)}
+            on:click={() => show = false}
             on:click={() =>
                 trackEvent('click_open_website', {
                     source: 'billing_release_modal',
