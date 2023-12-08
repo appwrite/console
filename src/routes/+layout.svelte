@@ -160,12 +160,12 @@
     }
 
     .theme-dark .with-separators {
-        --separator-color: hsl(var(--color-neutral-200));
-        --separator-text: hsl(var(--color-neutral-100));
+        --separator-color: hsl(var(--color-neutral-85));
+        --separator-text: hsl(var(--color-neutral-60));
     }
 
     .with-separators {
-        --separator-color: hsl(var(--color-neutral-5));
+        --separator-color: hsl(var(--color-neutral-10));
         --separator-text: hsl(var(--color-neutral-50));
     }
 
