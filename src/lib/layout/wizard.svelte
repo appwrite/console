@@ -62,6 +62,7 @@
 
     async function submit() {
         if ($wizard.interceptor) {
+            $wizard.nextDisabled = true;
             try {
                 await $wizard.interceptor();
             } catch (error) {
@@ -71,18 +72,15 @@
                     type: 'error'
                 });
                 return;
+            } finally {
+                $wizard.nextDisabled = false;
             }
         }
 
         wizard.setInterceptor(null);
         if (isLastStep) {
-            $wizard.nextDisabled = true;
             trackEvent('wizard_finish');
             dispatch('finish');
-            //Reactivate button in case there are errors
-            setTimeout(() => {
-                $wizard.nextDisabled = false;
-            }, 2000);
         } else {
             if (steps.get($wizard.step + 1)?.disabled) {
                 $wizard.step++;

@@ -12,7 +12,7 @@
 
     export let data;
 
-    $: files = normalizeFileSize(data.filesTotal);
+    $: files = data.filesTotal ? normalizeFileSize(data.filesTotal) : null;
     $: requests = data.requestsTotal;
     $: executions = data.executionsTotal;
     $: users = data.usersTotal;
@@ -24,11 +24,12 @@
             value: number;
         }[]
     ) {
-        const sizes = files.map((e) => e.value);
+        console.log(data.filesTotal);
+        const sizes = files?.map((e) => e.value);
         const biggestSize = Math.max(...sizes);
         const unit = humanFileSize(biggestSize).unit;
         return {
-            data: files.map((e) => ({
+            data: files?.map((e) => ({
                 date: new Date(e.date).toLocaleDateString(),
                 value: toDecimals(bytesToSize(e.value, unit), 2)
             })),
@@ -74,16 +75,16 @@
         <Heading tag="h4" size="7">Bandwidth</Heading>
         <p class="text">Calculated for all bandwidth used across your project.</p>
         <svelte:fragment slot="aside">
-            {#if total(requests)}
+            {#if data?.requestsTotal && total(data.requestsTotal)}
                 <div class="u-flex u-gap-8 u-cross-baseline">
-                    <Heading tag="h5" size="4">{total(requests)}</Heading>
+                    <Heading tag="h5" size="4">{total(data.requestsTotal)}</Heading>
                     <Heading tag="h6" size="6">GB</Heading>
                 </div>
                 <BarChart
                     series={[
                         {
                             name: 'Bandwidth over time',
-                            data: [...requests.map((e) => [e.date, e.value])]
+                            data: [...data.requestsTotal.map((e) => [e.date, e.value])]
                         }
                     ]} />
             {:else}
@@ -157,36 +158,38 @@
             {/if}
         </svelte:fragment>
     </CardGrid>
-    <CardGrid>
-        <Heading tag="h4" size="7">Storage</Heading>
-        <p class="text">Calculated for all storage operations in your project.</p>
-        <svelte:fragment slot="aside">
-            {@const size = humanFileSize(total(data.filesTotal))}
-            {#if size}
-                <div class="u-flex u-gap-8 u-cross-baseline">
-                    <Heading tag="h5" size="4">{size.value}</Heading>
-                    <Heading tag="h6" size="6">{size.unit}</Heading>
-                </div>
-                <BarChart
-                    series={[
-                        {
-                            name: `Storage over time in ${files.unit}`,
-                            data: [...files.data]
-                        }
-                    ]} />
-            {:else}
-                <Card isDashed>
-                    <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
-                        <span
-                            class="icon-chart-square-bar text-large"
-                            aria-hidden="true"
-                            style="font-size: 32px;" />
-                        <p class="u-bold">No data to show</p>
+    {#if data.filesTotal}
+        <CardGrid>
+            <Heading tag="h4" size="7">Storage</Heading>
+            <p class="text">Calculated for all storage operations in your project.</p>
+            <svelte:fragment slot="aside">
+                {@const size = humanFileSize(total(data.filesTotal))}
+                {#if size}
+                    <div class="u-flex u-gap-8 u-cross-baseline">
+                        <Heading tag="h5" size="4">{size.value}</Heading>
+                        <Heading tag="h6" size="6">{size.unit}</Heading>
                     </div>
-                </Card>
-            {/if}
-        </svelte:fragment>
-    </CardGrid>
+                    <BarChart
+                        series={[
+                            {
+                                name: `Storage over time in ${files.unit}`,
+                                data: [...files.data]
+                            }
+                        ]} />
+                {:else}
+                    <Card isDashed>
+                        <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
+                            <span
+                                class="icon-chart-square-bar text-large"
+                                aria-hidden="true"
+                                style="font-size: 32px;" />
+                            <p class="u-bold">No data to show</p>
+                        </div>
+                    </Card>
+                {/if}
+            </svelte:fragment>
+        </CardGrid>
+    {/if}
     <p class="text u-text-color-gray u-margin-block-start-16">
         Metrics are estimates updated every 24 hours and may not accurately reflect your invoice.
     </p>

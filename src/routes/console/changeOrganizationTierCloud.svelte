@@ -33,6 +33,8 @@
     }
 
     async function changeTier() {
+        $wizard.nextDisabled = true;
+        //Downgrade
         if ($changeOrganizationTier.billingPlan === 'tier-0') {
             try {
                 await sdk.forConsole.billing.updatePlan(
@@ -70,6 +72,8 @@
                     e,
                     $isUpgrade ? Submit.OrganizationUpgrade : Submit.OrganizationDowngrade
                 );
+            } finally {
+                $wizard.nextDisabled = false;
             }
         } else {
             try {
@@ -174,6 +178,8 @@
                     e,
                     $isUpgrade ? Submit.OrganizationUpgrade : Submit.OrganizationDowngrade
                 );
+            } finally {
+                $wizard.nextDisabled = false;
             }
         }
     }

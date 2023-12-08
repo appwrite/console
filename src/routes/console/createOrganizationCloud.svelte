@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Wizard } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
-    import { createEventDispatcher, onDestroy } from 'svelte';
+    import { onDestroy } from 'svelte';
     import { addNotification } from '$lib/stores/notifications';
     import OrganizationDetails from './wizard/cloudOrganization/organizationDetails.svelte';
     import PaymentDetails from './wizard/cloudOrganization/paymentDetails.svelte';
@@ -12,7 +12,7 @@
         createOrganizationFinalAction,
         createOrgSteps
     } from './wizard/cloudOrganization/store';
-    import { goto, invalidate } from '$app/navigation';
+    import { goto, invalidate, preloadData } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { ID } from '@appwrite.io/console';
@@ -21,13 +21,12 @@
     import { tierToPlan } from '$lib/stores/billing';
     import AddressDetails from './wizard/cloudOrganization/addressDetails.svelte';
 
-    const dispatch = createEventDispatcher();
-
     async function onFinish() {
         await invalidate(Dependencies.ORGANIZATION);
     }
 
     async function create() {
+        $wizard.nextDisabled = true;
         try {
             const org = await sdk.forConsole.billing.createOrganization(
                 $createOrganization.id ?? ID.unique(),
@@ -86,7 +85,7 @@
             }
 
             await invalidate(Dependencies.ACCOUNT);
-            dispatch('created');
+            await preloadData(`/console/organization-${org.$id}`);
             await goto(`/console/organization-${org.$id}`);
             addNotification({
                 type: 'success',
@@ -98,6 +97,7 @@
                 budget_cap_enabled: !!$createOrganization?.billingBudget,
                 members_invited: $createOrganization?.collaborators?.length
             });
+            console.log('TEST');
             wizard.hide();
         } catch (e) {
             addNotification({
@@ -105,6 +105,8 @@
                 message: e.mesage
             });
             trackError(e, Submit.OrganizationCreate);
+        } finally {
+            $wizard.nextDisabled = false;
         }
     }
     onDestroy(() => {
