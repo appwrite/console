@@ -135,7 +135,7 @@
         component: OrganizationDetails
     });
     $createOrgSteps.set(2, {
-        label: 'Payment',
+        label: 'Payment details',
         component: PaymentDetails
     });
     $createOrgSteps.set(3, {

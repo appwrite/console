@@ -210,7 +210,7 @@
         component: ChoosePlan
     });
     $changeTierSteps.set(2, {
-        label: 'Payment',
+        label: 'Payment details',
         component: PaymentDetails
     });
     $changeTierSteps.set(3, {
