@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { Flag, Pill } from '$lib/elements';
+    import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import Create from './createProjectCloud.svelte';
@@ -185,7 +185,6 @@
 
                                 <div class="u-flex u-gap-8 u-cross-center">
                                     <span class="u-text-color-gray">{region.name}</span>
-                                    <Flag flag={region.flag} width={24} height={18} />
                                 </div>
                             {/if}
                         </svelte:fragment>
