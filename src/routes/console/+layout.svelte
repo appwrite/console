@@ -283,7 +283,7 @@
     }
 
     async function checkForFreeOrgOverflow() {
-        const orgs = await sdk.forConsole.teams.list([Query.equal('billingTier', 'tier-0')]);
+        const orgs = await sdk.forConsole.teams.list([Query.equal('billingPlan', 'tier-0')]);
         if (orgs.total > 1) {
             headerAlert.add({
                 id: 'freeOrgOverflow',
