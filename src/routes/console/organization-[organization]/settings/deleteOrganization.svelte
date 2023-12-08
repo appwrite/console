@@ -24,19 +24,27 @@
             } else {
                 await sdk.forConsole.teams.delete($organization.$id);
             }
-            addNotification({
-                type: 'success',
-                message: `${$organization.name} has been flagged for deletion`
-            });
+
             await invalidate(Dependencies.ACCOUNT);
             await invalidate(Dependencies.ORGANIZATION);
             trackEvent(Submit.OrganizationDelete);
             if ($organizationList?.total > 1) {
-                goto(`${base}/console/`);
+                const account = await sdk.forConsole.account.get();
+                const teamId =
+                    account.prefs.organization ??
+                    $organizationList.teams[0].$id === $organization.$id
+                        ? $organizationList.teams[1].$id
+                        : $organizationList.teams[0].$id;
+
+                await goto(`${base}/console/organization-${teamId}`);
             } else {
-                goto(`${base}/console/onboarding`);
+                await goto(`${base}/console/onboarding`);
             }
             showDelete = false;
+            addNotification({
+                type: 'success',
+                message: `${$organization.name} has been flagged for deletion`
+            });
         } catch (e) {
             error = e.message;
             trackError(e, Submit.OrganizationDelete);

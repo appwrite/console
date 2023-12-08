@@ -1,7 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { INTERVAL } from '$lib/constants';
-    import { HeaderAlert, Logs } from '$lib/layout';
+    import { Logs } from '$lib/layout';
     import Footer from '$lib/layout/footer.svelte';
     import Header from '$lib/layout/header.svelte';
     import SideNavigation from '$lib/layout/navigation.svelte';
@@ -46,6 +46,7 @@
     import MarkedForDeletion from '$lib/components/billing/alerts/markedForDeletion.svelte';
     import PaymentAuthRequired from '$lib/components/billing/alerts/paymentAuthRequired.svelte';
     import PostReleaseModal from './(billing-modal)/postReleaseModal.svelte';
+    import TooManyFreOrgs from '$lib/components/billing/alerts/tooManyFreOrgs.svelte';
 
     function kebabToSentenceCase(str: string) {
         return str
@@ -245,8 +246,11 @@
     let selectedHeaderAlert = headerAlert.get();
     onMount(async () => {
         loading.set(false);
-        if (isCloud && !$page.url.pathname.includes('/console/onboarding')) {
-            checkForPreReleaseProModal();
+        if (isCloud) {
+            checkForFreeOrgOverflow();
+            if (!$page.url.pathname.includes('/console/onboarding')) {
+                checkForPreReleaseProModal();
+            }
         }
 
         setInterval(() => {
@@ -283,7 +287,7 @@
         if (orgs.total > 1) {
             headerAlert.add({
                 id: 'freeOrgOverflow',
-                component: ExcesLimitModal,
+                component: TooManyFreOrgs,
                 show: true,
                 importance: 10
             });
@@ -314,7 +318,6 @@
                 });
             }
             checkPaymentAuthorizationRequired();
-            selectedHeaderAlert = headerAlert.get();
         }
     });
 
@@ -449,7 +452,6 @@
         $actionRequiredInvoices = await sdk.forConsole.billing.listInvoices($organization.$id, [
             Query.equal('status', 'requires_authentication')
         ]);
-        console.log($actionRequiredInvoices);
         if ($actionRequiredInvoices && $actionRequiredInvoices.total) {
             headerAlert.add({
                 id: 'paymentAuthRequired',
@@ -457,7 +459,6 @@
                 show: true,
                 importance: 8
             });
-            console.log($headerAlert);
         }
     }
 
@@ -491,15 +492,6 @@
     <svelte:fragment slot="alert">
         {#if selectedHeaderAlert?.show}
             <svelte:component this={selectedHeaderAlert.component} />
-        {/if}
-
-        {#if $organization?.markedForDeletion && !$page.url.pathname.includes('/console/account')}
-            <HeaderAlert title="Organization flagged for deletion">
-                <svelte:fragment>
-                    All existing projects in the {$organization.name} organization have been paused.
-                    This organization will be deleted once your upcoming invoice is processed successfully.
-                </svelte:fragment>
-            </HeaderAlert>
         {/if}
     </svelte:fragment>
     <Header slot="header" />

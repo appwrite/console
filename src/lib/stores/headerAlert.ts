@@ -22,7 +22,7 @@ function createHeaderAlertStore() {
         set,
         add: (component: HeaderAlert) => {
             update((n) => {
-                if (n.components.find((c) => c.id === component.id)) return n;
+                if (n.components.some((c) => c.id === component.id)) return n;
                 else {
                     n.components.push(component);
                     n.components = n.components;
