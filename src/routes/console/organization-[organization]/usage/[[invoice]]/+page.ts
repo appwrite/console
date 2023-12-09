@@ -30,7 +30,10 @@ export const load: PageLoad = async ({ params, parent }) => {
     ]);
 
     const projectNames = await sdk.forConsole.projects.list([
-        Query.equal('$id', usage.projects.map((p) => p.projectId))
+        Query.equal(
+            '$id',
+            usage.projects.map((p) => p.projectId)
+        )
     ]);
 
     return {

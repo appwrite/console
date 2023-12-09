@@ -6,11 +6,8 @@
     export let progressValue: number;
     export let progressMax: number;
     export let showBar = true;
-    export let status: null | 'warning' | 'error' = null;
 
     $: progress = Math.round((progressValue / progressMax) * 100);
-
-    //TODO: depending on the data received, we could set the status
 </script>
 
 <section class="progress-bar">
@@ -30,8 +27,8 @@
     {#if showBar}
         <div
             class="progress-bar-container u-margin-block-start-16"
-            class:is-warning={status === 'warning'}
-            class:is-danger={status === 'error'}
+            class:is-warning={progress >= 80 && progress < 100}
+            class:is-danger={progress >= 100}
             style:--graph-size={progress + '%'} />
     {/if}
 </section>

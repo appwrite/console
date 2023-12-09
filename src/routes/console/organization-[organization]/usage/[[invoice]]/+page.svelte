@@ -103,7 +103,10 @@
                         data: [...data.organizationUsage.bandwidth.map((e) => [e.date, e.value])]
                     }
                 ]} />
-            <ProjectBreakdown projects={data.organizationUsage.projects} metric="bandwidth" {data} />
+            <ProjectBreakdown
+                projects={data.organizationUsage.projects}
+                metric="bandwidth"
+                {data} />
         </svelte:fragment>
     </CardGrid>
 
@@ -151,7 +154,10 @@
                 maxValue={abbreviateNumber(max)}
                 progressValue={current}
                 progressMax={max} />
-            <ProjectBreakdown projects={data.organizationUsage.projects} metric="executions" {data} />
+            <ProjectBreakdown
+                projects={data.organizationUsage.projects}
+                metric="executions"
+                {data} />
         </svelte:fragment>
     </CardGrid>
 
