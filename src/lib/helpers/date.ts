@@ -69,3 +69,11 @@ export function hoursToDays(hours: number) {
         return `${hours} hour`;
     }
 }
+
+export function getTomorrow(date: Date) {
+    const tomorrow = new Date(date);
+    tomorrow.setDate(tomorrow.getDate() + 2);
+    tomorrow.setHours(0, 0, 0, 0);
+
+    return tomorrow;
+}

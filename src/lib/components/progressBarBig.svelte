@@ -1,34 +1,34 @@
 <script lang="ts">
-    import { abbreviateNumber } from '$lib/helpers/numbers';
+    export let currentValue: string;
+    export let currentUnit: string;
+    export let maxValue: string;
+    export let maxUnit: string;
+    export let progressValue: number;
+    export let progressMax: number;
+    export let showBar = true;
 
-    export let unit: string;
-    export let used: number;
-    export let max: number;
-    export let status: null | 'warning' | 'error' = null;
-    export let formatNumber = true;
-
-    $: progress = Math.round((used / max) * 100);
-
-    //TODO: depending on the data received, we could set the status
+    $: progress = Math.round((progressValue / progressMax) * 100);
 </script>
 
 <section class="progress-bar">
     <div class="u-flex u-flex-vertical">
         <div class="u-flex u-main-space-between">
             <p>
-                <span class="heading-level-4">{used}</span>
-                <span class="body-text-1 u-bold">{unit}</span>
+                <span class="heading-level-4">{currentValue}</span>
+                <span class="body-text-1 u-bold">{currentUnit}</span>
             </p>
             <p class="heading-level-4">{progress}%</p>
         </div>
         <p class="body-text-2">
-            {formatNumber ? abbreviateNumber(max) : max}
-            {unit}
+            {maxValue}
+            {maxUnit}
         </p>
     </div>
-    <div
-        class="progress-bar-container u-margin-block-start-16"
-        class:is-warning={status === 'warning'}
-        class:is-danger={status === 'error'}
-        style:--graph-size={progress + '%'} />
+    {#if showBar}
+        <div
+            class="progress-bar-container u-margin-block-start-16"
+            class:is-warning={progress >= 75 && progress < 100}
+            class:is-danger={progress >= 100}
+            style:--graph-size={progress + '%'} />
+    {/if}
 </section>
