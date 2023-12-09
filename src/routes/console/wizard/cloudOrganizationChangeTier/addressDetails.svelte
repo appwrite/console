@@ -21,6 +21,10 @@
         $changeOrganizationTier.billingAddressId = $organization.billingAddressId
             ? $organization.billingAddressId
             : addressList.billingAddresses?.[0]?.$id ?? null;
+        const locale = await sdk.forProject.locale.get();
+        if (locale?.countryCode && !$changeOrganizationTier.billingAddressId) {
+            $changeOrganizationTier.billingAddress.country = locale.countryCode;
+        }
         const countryList = await sdk.forProject.locale.listCountries();
         options = countryList.countries.map((country) => {
             return {

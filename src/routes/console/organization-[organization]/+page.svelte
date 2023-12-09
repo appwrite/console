@@ -182,10 +182,9 @@
                                 {@const region = regions.regions.find(
                                     (region) => region.$id === project.region
                                 )}
-
-                                <div class="u-flex u-gap-8 u-cross-center">
-                                    <span class="u-text-color-gray">{region.name}</span>
-                                </div>
+                                <Pill>
+                                    {region.name}
+                                </Pill>
                             {/if}
                         </svelte:fragment>
                     </GridItem1>

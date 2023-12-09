@@ -19,6 +19,10 @@
         addressList = await sdk.forConsole.billing.listAddresses();
         $createOrganization.billingAddressId = addressList.billingAddresses?.[0]?.$id ?? null;
         const countryList = await sdk.forProject.locale.listCountries();
+        const locale = await sdk.forProject.locale.get();
+        if (locale?.countryCode) {
+            $createOrganization.billingAddress.country = locale.countryCode;
+        }
         options = countryList.countries.map((country) => {
             return {
                 value: country.code,

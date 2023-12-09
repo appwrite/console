@@ -28,6 +28,10 @@
 
     onMount(async () => {
         const countryList = await sdk.forProject.locale.listCountries();
+        const locale = await sdk.forProject.locale.get();
+        if (locale.countryCode) {
+            country = locale.countryCode;
+        }
         options = countryList.countries.map((country) => {
             return {
                 value: country.code,
