@@ -23,10 +23,10 @@
         currentInvoice = invoices.invoices[0];
     });
 
-    $: currentPlan = $plansInfo.plans.find((p) => p.$id === $organization.billingPlan);
+    $: currentPlan = $plansInfo.plans.find((p) => p.$id === $organization?.billingPlan);
     $: extraUsage = currentInvoice?.amount - currentPlan?.price;
 
-    $: isTrial = new Date($organization.billingTrialEndDate).getTime() - today.getTime() > 0;
+    $: isTrial = new Date($organization?.billingTrialEndDate).getTime() - today.getTime() > 0;
 </script>
 
 {#if $organization}
@@ -48,7 +48,7 @@
                 <div class="u-flex u-main-space-between u-cross-center">
                     <div class="u-flex u-gap-8 u-cross-center">
                         <h6 class="u-bold u-trim-1">
-                            {tierToPlan($organization.billingPlan)?.name} plan
+                            {tierToPlan($organization?.billingPlan)?.name} plan
                         </h6>
                         {#if $organization?.billingPlan !== 'tier-0' && isTrial}
                             <Pill>FREE TRIAL</Pill>
