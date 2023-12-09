@@ -2,12 +2,15 @@ import { sdk } from '$lib/stores/sdk';
 import type { PageLoad } from './$types';
 import type { Organization } from '$lib/stores/organization';
 import type { Invoice } from '$lib/sdk/billing';
+import { getTomorrow } from '$lib/helpers/date';
+import { Query } from '@appwrite.io/console';
 
 export const load: PageLoad = async ({ params, parent }) => {
     const { invoice } = params;
     const parentData = await parent();
     const org = parentData.organization as Organization;
-    const today = new Date().toISOString();
+    const tomorrow = getTomorrow(new Date());
+
     let startDate: string;
     let endDate: string;
     let currentInvoice: Invoice | null = null;
@@ -18,7 +21,7 @@ export const load: PageLoad = async ({ params, parent }) => {
         endDate = currentInvoice.to;
     } else {
         startDate = org.billingCurrentInvoiceDate;
-        endDate = today;
+        endDate = tomorrow.toISOString();
     }
 
     const [invoices, usage] = await Promise.all([
@@ -26,8 +29,13 @@ export const load: PageLoad = async ({ params, parent }) => {
         sdk.forConsole.billing.listUsage(params.organization, startDate, endDate)
     ]);
 
+    const projectNames = await sdk.forConsole.projects.list([
+        Query.equal('$id', usage.projects.map((p) => p.projectId))
+    ]);
+
     return {
         organizationUsage: usage,
+        projectNames: projectNames.projects,
         invoices,
         currentInvoice
     };

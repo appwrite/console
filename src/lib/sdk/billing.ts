@@ -164,6 +164,13 @@ export type OrganizationUsage = {
     executions: number;
     storage: number;
     users: Array<UsageMetric>;
+    projects: Array<{
+        projectId: string;
+        storage: number;
+        executions: number;
+        bandwidth: number;
+        users: number;
+    }>;
 };
 
 export type AggregationList = {

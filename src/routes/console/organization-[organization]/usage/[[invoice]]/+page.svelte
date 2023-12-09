@@ -8,14 +8,18 @@
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
     import { toLocaleDate } from '$lib/helpers/date.js';
+    import { bytesToSize, humanFileSize } from '$lib/helpers/sizeConvertion';
+    import { abbreviateNumber } from '$lib/helpers/numbers';
+    import { BarChart } from '$lib/charts';
     import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
+    import ProjectBreakdown from './ProjectBreakdown.svelte';
 
     export let data;
 
     const tier = data?.currentInvoice?.tier ?? $organization?.billingPlan;
     const plan = tierToPlan(tier).name;
 
-    let invoice = 'current';
+    let invoice = null;
 
     async function handlePeriodChange() {
         const target = invoice
@@ -56,7 +60,6 @@
 
         <div class="u-flex u-gap-8 u-cross-center">
             <p class="text">Usage period:</p>
-
             <InputSelect
                 wrapperTag="div"
                 id="period"
@@ -67,10 +70,10 @@
                 options={[
                     {
                         label: 'Current billing cycle',
-                        value: 'current'
+                        value: null
                     },
                     ...cycles
-                ]}></InputSelect>
+                ]} />
         </div>
     </div>
 
@@ -82,10 +85,25 @@
         </p>
 
         <svelte:fragment slot="aside">
+            {@const current = data.organizationUsage.bandwidth[0]?.value ?? 0}
+            {@const currentHumanized = humanFileSize(current)}
+            {@const max = getServiceLimit('bandwidth', tier)}
             <ProgressBarBig
-                unit="GB"
-                max={getServiceLimit('bandwidth', tier)}
-                used={data.organizationUsage.bandwidth[0]?.value ?? 0} />
+                currentUnit={currentHumanized.unit}
+                currentValue={currentHumanized.value}
+                maxUnit="GB"
+                maxValue={max.toString()}
+                progressValue={bytesToSize(current, 'GB')}
+                progressMax={max}
+                showBar={false} />
+            <BarChart
+                series={[
+                    {
+                        name: 'Bandwidth',
+                        data: [...data.organizationUsage.bandwidth.map((e) => [e.date, e.value])]
+                    }
+                ]} />
+            <ProjectBreakdown projects={data.organizationUsage.projects} metric="bandwidth" {data} />
         </svelte:fragment>
     </CardGrid>
 
@@ -95,10 +113,24 @@
         <p class="text">The total number of users across all projects in your organization.</p>
 
         <svelte:fragment slot="aside">
+            {@const current = data.organizationUsage.users[0]?.value ?? 0}
+            {@const max = getServiceLimit('users', tier)}
             <ProgressBarBig
-                unit="Users"
-                max={getServiceLimit('users', tier)}
-                used={data.organizationUsage.bandwidth[0]?.value ?? 0} />
+                currentUnit="Users"
+                currentValue={current.toString()}
+                maxUnit="Users"
+                maxValue={abbreviateNumber(max)}
+                progressValue={current}
+                progressMax={max}
+                showBar={false} />
+            <BarChart
+                series={[
+                    {
+                        name: 'Users',
+                        data: [...data.organizationUsage.users.map((e) => [e.date, e.value])]
+                    }
+                ]} />
+            <ProjectBreakdown projects={data.organizationUsage.projects} metric="users" {data} />
         </svelte:fragment>
     </CardGrid>
 
@@ -110,10 +142,16 @@
         </p>
 
         <svelte:fragment slot="aside">
+            {@const current = data.organizationUsage.executions}
+            {@const max = getServiceLimit('executions', tier)}
             <ProgressBarBig
-                unit="Executions"
-                max={getServiceLimit('executions', tier)}
-                used={data.organizationUsage.executions} />
+                currentUnit="Executions"
+                currentValue={current.toString()}
+                maxUnit="Executions"
+                maxValue={abbreviateNumber(max)}
+                progressValue={current}
+                progressMax={max} />
+            <ProjectBreakdown projects={data.organizationUsage.projects} metric="executions" {data} />
         </svelte:fragment>
     </CardGrid>
 
@@ -125,10 +163,17 @@
         </p>
 
         <svelte:fragment slot="aside">
+            {@const current = data.organizationUsage.storage}
+            {@const currentHumanized = humanFileSize(current)}
+            {@const max = getServiceLimit('storage', tier)}
             <ProgressBarBig
-                unit="GB"
-                max={getServiceLimit('storage', tier)}
-                used={data.organizationUsage.storage} />
+                currentUnit={currentHumanized.unit}
+                currentValue={currentHumanized.value}
+                maxUnit="GB"
+                maxValue={max.toString()}
+                progressValue={bytesToSize(current, 'GB')}
+                progressMax={max} />
+            <ProjectBreakdown projects={data.organizationUsage.projects} metric="storage" {data} />
         </svelte:fragment>
     </CardGrid>
 
