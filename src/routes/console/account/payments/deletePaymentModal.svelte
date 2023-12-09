@@ -39,10 +39,9 @@
     icon="exclamation"
     state="warning"
     headerDivider={false}>
-    <svelte:fragment slot="title"
-        >{linkedOrgs.length
-            ? 'Unable to delete payment method'
-            : 'Delete payment method'}</svelte:fragment>
+    <svelte:fragment slot="title">
+        {linkedOrgs.length ? 'Unable to delete payment method' : 'Delete payment method'}
+    </svelte:fragment>
     {#if linkedOrgs.length === 1}
         <p class="text">
             This payment method is set as the default for the <span class="u-bold"

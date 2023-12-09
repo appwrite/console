@@ -147,7 +147,7 @@
                         </DropList>
                     </div>
                     <div class="common-section">
-                        <span class="text"> Add a billing address</span>
+                        <span class="text">Add a billing address</span>
                     </div>
                 </div>
             </article>

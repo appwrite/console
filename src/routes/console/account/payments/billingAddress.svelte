@@ -14,7 +14,7 @@
     import { onMount } from 'svelte';
     import AddressModal from './addressModal.svelte';
     import type { Models } from '@appwrite.io/console';
-    import DeleteAddress from './deleteAddress.svelte';
+    import DeleteAddress from './deleteAddressModal.svelte';
     import EditAddressModal from './editAddressModal.svelte';
     import type { Address } from '$lib/sdk/billing';
     import { organizationList, type Organization } from '$lib/stores/organization';
@@ -25,6 +25,7 @@
     let show = false;
     let showEdit = false;
     let selectedAddress: Address;
+    let selectedLinkedOrgs: Organization[] = [];
     let showDelete = false;
     let showDropdown = [];
     let countryList: Models.CountryList;
@@ -126,6 +127,7 @@
                                             on:click={() => {
                                                 showDelete = true;
                                                 selectedAddress = address;
+                                                selectedLinkedOrgs = linkedOrgs;
                                                 showDropdown[i] = false;
                                             }}>
                                             Delete
@@ -152,4 +154,4 @@
 
 <AddressModal bind:show />
 <EditAddressModal bind:show={showEdit} {selectedAddress} />
-<DeleteAddress bind:showDelete {selectedAddress} />
+<DeleteAddress bind:showDelete {selectedAddress} linkedOrgs={selectedLinkedOrgs} />
