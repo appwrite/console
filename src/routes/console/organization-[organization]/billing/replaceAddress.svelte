@@ -5,19 +5,16 @@
     import { sdk } from '$lib/stores/sdk';
     import { organization } from '$lib/stores/organization';
     import { Dependencies } from '$lib/constants';
-    import { createEventDispatcher, onMount } from 'svelte';
+    import { onMount } from 'svelte';
     import type { AddressesList } from '$lib/sdk/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Pill } from '$lib/elements';
 
-    const dispatch = createEventDispatcher();
-
     export let show = false;
     let addresses: AddressesList;
     let selectedAddress: string;
     let error: string;
-    let taxId: string;
     let country: string;
     let streetAddress: string;
     let addressLine2: string;
@@ -58,7 +55,6 @@
         try {
             if (selectedAddress === $organization.billingAddressId) {
                 show = false;
-                return;
             } else if (selectedAddress === null) {
                 const address = await sdk.forConsole.billing.createAddress(
                     country,
@@ -68,15 +64,30 @@
                     postalCode,
                     addressLine2
                 );
-                dispatch('submit', address);
+                await sdk.forConsole.billing.setBillingAddress($organization.$id, address.$id);
+
                 invalidate(Dependencies.ORGANIZATION);
+                invalidate(Dependencies.ADDRESS);
+
                 trackEvent(Submit.OrganizationBillingAddressUpdate);
+                addNotification({
+                    type: 'success',
+                    message: `Billing address has been created`
+                });
                 addNotification({
                     type: 'success',
                     message: `Your billing address has been updated`
                 });
-                show = false;
-                return;
+            } else {
+                await sdk.forConsole.billing.setBillingAddress($organization.$id, selectedAddress);
+
+                invalidate(Dependencies.ORGANIZATION);
+                invalidate(Dependencies.ADDRESS);
+
+                addNotification({
+                    type: 'success',
+                    message: `Your billing address has been updated`
+                });
             }
             show = false;
         } catch (e) {
@@ -129,12 +140,6 @@
                     <span style="padding-inline:0.25rem">Add a new billing address</span>
                 </svelte:fragment>
                 <FormList gap={16} class="u-margin-block-start-24">
-                    <InputText
-                        bind:value={taxId}
-                        id="text"
-                        label="Tax ID"
-                        placeholder="Enter tax ID"
-                        optionalText="(optional)" />
                     <InputSelect
                         bind:value={country}
                         {options}
