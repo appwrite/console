@@ -284,7 +284,7 @@
 
     async function checkForFreeOrgOverflow() {
         const orgs = await sdk.forConsole.teams.list([Query.equal('billingPlan', 'tier-0')]);
-        if (orgs.total > 1) {
+        if (orgs?.teams?.length > 1) {
             headerAlert.add({
                 id: 'freeOrgOverflow',
                 component: TooManyFreOrgs,
@@ -452,7 +452,7 @@
         $actionRequiredInvoices = await sdk.forConsole.billing.listInvoices($organization.$id, [
             Query.equal('status', 'requires_authentication')
         ]);
-        if ($actionRequiredInvoices && $actionRequiredInvoices.total) {
+        if ($actionRequiredInvoices && $actionRequiredInvoices?.invoices?.length > 0) {
             headerAlert.add({
                 id: 'paymentAuthRequired',
                 component: PaymentAuthRequired,
