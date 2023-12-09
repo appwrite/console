@@ -54,7 +54,7 @@
 
 <Collapsible>
     <CollapsibleItem>
-        <svelte:fragment slot="title">Project breakdown</svelte:fragment>
+        <svelte:fragment slot="tgit restore --stageditle">Project breakdown</svelte:fragment>
         <div class="table-wrapper">
             <Table noMargin noStyles>
                 <TableHeader>

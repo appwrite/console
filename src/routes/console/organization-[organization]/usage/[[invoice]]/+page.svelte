@@ -165,7 +165,8 @@
         <Heading tag="h6" size="7">Storage</Heading>
 
         <p class="text">
-            Calculated for all storage operations across all projects in your organization.
+            Calculated for all your files, deployments, builds and databases. While in beta, only
+            file storage is counted against your plan limits.
         </p>
 
         <svelte:fragment slot="aside">

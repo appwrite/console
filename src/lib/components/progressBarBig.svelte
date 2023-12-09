@@ -27,7 +27,7 @@
     {#if showBar}
         <div
             class="progress-bar-container u-margin-block-start-16"
-            class:is-warning={progress >= 80 && progress < 100}
+            class:is-warning={progress >= 75 && progress < 100}
             class:is-danger={progress >= 100}
             style:--graph-size={progress + '%'} />
     {/if}
