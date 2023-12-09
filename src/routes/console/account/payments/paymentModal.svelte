@@ -1,13 +1,15 @@
 <script lang="ts">
     import { FakeModal } from '$lib/components';
     import { InputText, Button, FormList } from '$lib/elements/forms';
-    import { onMount } from 'svelte';
+    import { createEventDispatcher, onMount } from 'svelte';
     import { initializeStripe, submitStripeCard } from '$lib/stores/stripe';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
 
     export let show = false;
+
+    const dispatch = createEventDispatcher();
 
     let name: string;
     let error: string;
@@ -18,8 +20,9 @@
 
     async function handleSubmit() {
         try {
-            await submitStripeCard(name);
+            const card = await submitStripeCard(name);
             invalidate(Dependencies.PAYMENT_METHODS);
+            dispatch('submit', card);
             show = false;
             addNotification({
                 type: 'success',

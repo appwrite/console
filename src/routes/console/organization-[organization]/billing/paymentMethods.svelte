@@ -253,6 +253,7 @@
                                         if (filteredPaymentMethods.length) {
                                             showDropdownBackup = !showDropdownBackup;
                                         } else {
+                                            isSelectedBackup = true;
                                             showPayment = true;
                                         }
                                     }}>
@@ -300,7 +301,15 @@
 </CardGrid>
 
 {#if showPayment && isCloud && hasStripePublicKey}
-    <PaymentModal bind:show={showPayment} />
+    <PaymentModal
+        bind:show={showPayment}
+        on:submit={(e) => {
+            if (isSelectedBackup) {
+                addBackupPaymentMethod(e.detail.$id);
+            } else {
+                addPaymentMethod(e.detail.$id);
+            }
+        }} />
 {/if}
 {#if showEdit && isCloud && hasStripePublicKey}
     <EditPaymentModal

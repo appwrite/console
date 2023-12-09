@@ -6,6 +6,7 @@
     export let elements: Record<string, unknown>[];
     export let group: string;
     export let name: string;
+    export let disabledCondition: string = null;
 </script>
 
 <div class:boxes-wrapper={total} data-private>
@@ -13,7 +14,12 @@
         {#each elements as element}
             {@const value = element[variableName]?.toString()}
             <div class="box">
-                <InputRadio id={`${name}-${element[variableName]}`} {value} {name} bind:group>
+                <InputRadio
+                    id={`${name}-${value}`}
+                    {value}
+                    {name}
+                    bind:group
+                    disabled={disabledCondition ? value === disabledCondition : false}>
                     <slot name="element" {element} />
                 </InputRadio>
             </div>
