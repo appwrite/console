@@ -60,18 +60,18 @@
 <section class="drop-section u-grid u-gap-24 u-padding-24">
     <div>
         <h4 class="eyebrow-heading-3">Troubleshooting</h4>
-        <!-- TODO: check if service is actually live -->
-        <a
-            href="https://status.appwrite.io/"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="button is-text u-flex u-gap-4 u-cross-center u-padding-inline-0 u-margin-block-start-8 u-width-full-line">
-            <span class="helper u-color-text-success">
-                <span class="icon-check-circle" aria-hidden="true" />
-            </span>
-            <b class="text">All services are online</b>
-        </a>
+
+        <div class="u-margin-block-start-8 u-width-full-line">
+            <iframe
+                title="Appwrite Status"
+                src="https://status.appwrite.online/badge?theme=dark"
+                width="250"
+                height="30"
+                frameborder="0"
+                scrolling="no"></iframe>
+        </div>
     </div>
+
     <div class="u-flex u-gap-16">
         <a
             href="https://appwrite.io/docs"

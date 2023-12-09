@@ -139,7 +139,7 @@
         </DropList>
 
         {#if isCloud}
-            <DropList width="17.5" bind:show={showSupport} scrollable={true}>
+            <DropList width="18.5" bind:show={showSupport} scrollable={true}>
                 <Button text on:click={() => (showSupport = !showSupport)}>
                     <span class="text">Support</span>
                 </Button>
