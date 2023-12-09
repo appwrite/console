@@ -17,6 +17,10 @@
     import DeleteAddress from './deleteAddress.svelte';
     import EditAddressModal from './editAddressModal.svelte';
     import type { Address } from '$lib/sdk/billing';
+    import { organizationList, type Organization } from '$lib/stores/organization';
+    import { tooltip } from '$lib/actions/tooltip';
+    import { base } from '$app/paths';
+    import { Pill } from '$lib/elements';
 
     let show = false;
     let showEdit = false;
@@ -28,6 +32,8 @@
     onMount(async () => {
         countryList = await sdk.forProject.locale.listCountries();
     });
+
+    $: orgList = $organizationList.teams as unknown as Organization[];
 </script>
 
 <CardGrid>
@@ -42,6 +48,7 @@
             <Table noMargin noStyles transparent>
                 <TableHeader>
                     <TableCellHead>Billing address</TableCellHead>
+                    <TableCellHead width={195} />
                     <TableCellHead width={40} />
                 </TableHeader>
                 <TableBody>
@@ -49,6 +56,10 @@
                         {@const country = countryList?.countries?.find(
                             (c) => c.code === address.country
                         )}
+                        {@const linkedOrgs = orgList?.filter(
+                            (org) => address.$id === org.billingAddressId
+                        )}
+
                         <TableRow>
                             <TableCell>
                                 <div class="u-line-height-1-5">
@@ -61,6 +72,30 @@
                                     <p class="text">{address.postalCode}</p>
                                     <p class="text">{country ? country.name : address.country}</p>
                                 </div>
+                            </TableCell>
+                            <TableCell style="vertical-align: top;">
+                                {#if linkedOrgs?.length > 0}
+                                    <div
+                                        use:tooltip={{
+                                            interactive: true,
+                                            allowHTML: true,
+                                            trigger: 'click',
+                                            content: `
+                                    <div class="u-flex u-flex-vertical u-gap-8">
+                                        <p class="text">This billing address is linked to the following organizations:</p>                                                         
+                                        ${linkedOrgs
+                                            .map(
+                                                (org) =>
+                                                    `<a href="${base}/console/organization-${org.$id}/billing" class="link">${org.name}</a>`
+                                            )
+                                            .join('')}
+                                                </div>`
+                                        }}>
+                                        <Pill button>
+                                            <span class="icon-info" /> linked to organization
+                                        </Pill>
+                                    </div>
+                                {/if}
                             </TableCell>
                             <TableCell style="vertical-align: top;">
                                 <DropList
