@@ -1,7 +1,7 @@
 <script lang="ts">
     import { FakeModal } from '$lib/components';
     import { InputText, Button, FormList } from '$lib/elements/forms';
-    import { createEventDispatcher, onMount } from 'svelte';
+    import { createEventDispatcher, onDestroy, onMount } from 'svelte';
     import { initializeStripe, submitStripeCard } from '$lib/stores/stripe';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
@@ -33,6 +33,36 @@
             console.log(e.message);
         }
     }
+
+    let element: HTMLElement;
+    let loader: HTMLDivElement;
+
+    let observer: MutationObserver;
+
+    onMount(() => {
+        observer = new MutationObserver((mutationsList) => {
+            for (let mutation of mutationsList) {
+                if (mutation.type === 'childList') {
+                    if (mutation.addedNodes.length > 0) {
+                        for (let node of Array.from(mutation.addedNodes)) {
+                            if (
+                                node instanceof Element &&
+                                node.className.toLowerCase().includes('__privatestripeelement')
+                            ) {
+                                loader.style.display = 'none';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        observer.observe(element, { childList: true });
+    });
+
+    onDestroy(() => {
+        observer.disconnect();
+    });
 </script>
 
 <FakeModal bind:show title="Add payment method" bind:error onSubmit={handleSubmit}>
@@ -45,9 +75,13 @@
             required
             autofocus={true}
             hideRequired />
-
-        <div id="payment-element">
-            <!-- Elements will create form elements here -->
+        <div class="aw-stripe-container">
+            <div class="loader-container" bind:this={loader}>
+                <div class="loader"></div>
+            </div>
+            <div id="payment-element" bind:this={element}>
+                <!-- Elements will create form elements here -->
+            </div>
         </div>
     </FormList>
     <svelte:fragment slot="footer">
@@ -55,3 +89,17 @@
         <Button submit disabled={!name}>Save</Button>
     </svelte:fragment>
 </FakeModal>
+
+<style lang="scss" global>
+    .aw-stripe-container {
+        min-height: 295px;
+        position: relative;
+        .loader-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 0;
+        }
+    }
+</style>
