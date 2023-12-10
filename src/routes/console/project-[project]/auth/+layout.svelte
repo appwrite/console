@@ -2,8 +2,11 @@
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
     import { registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
+    import { isServiceLimited, readOnly } from '$lib/stores/billing';
+    import { organization } from '$lib/stores/organization';
     import { project } from '../store';
     import { showCreateUser } from './+page.svelte';
+    import { userList } from './store';
     import { showCreateTeam } from './teams/+page.svelte';
 
     $: $registerCommands([
@@ -19,7 +22,9 @@
 
             group: 'users',
             icon: 'plus',
-            rank: $page.url.pathname.endsWith('auth') ? 10 : 0
+            rank: $page.url.pathname.endsWith('auth') ? 10 : 0,
+            disabled:
+                $readOnly || isServiceLimited('users', $organization.billingPlan, $userList.total)
         },
         {
             label: 'Create team',
@@ -33,7 +38,8 @@
 
             group: 'teams',
             icon: 'plus',
-            rank: $page.url.pathname.endsWith('teams') ? 10 : 0
+            rank: $page.url.pathname.endsWith('teams') ? 10 : 0,
+            disabled: $readOnly
         },
         {
             label: 'Go to teams',
