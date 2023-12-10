@@ -16,6 +16,7 @@
             id="name"
             placeholder="Project name"
             bind:value={$createProject.name}
+            autofocus
             required />
 
         {#if !showCustomId}

@@ -32,6 +32,25 @@
             console.log(error);
         }
     }
+    async function unNotifyRegion(selectedRegion: Region) {
+        try {
+            let newPrefs = { ...prefs };
+            newPrefs.notifications = newPrefs.notifications ?? [];
+            newPrefs.notifications = [...newPrefs.notifications, selectedRegion.$id];
+            newPrefs.notifications = newPrefs.notifications.filter(
+                (region: string) => region !== selectedRegion.$id
+            );
+            const response = await sdk.forConsole.account.updatePrefs(newPrefs);
+            prefs = response.prefs;
+            addNotification({
+                type: 'info',
+                isHtml: true,
+                message: `You won't be notified anymore when the <b>${selectedRegion.name}</b> region is available`
+            });
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     $: notifications = prefs?.notifications ?? [];
 </script>
@@ -70,6 +89,17 @@
                                             notifyRegion(region);
                                         }}>
                                         <span class="icon-bell" aria-hidden="true" />
+                                        <span class="text">Notify me</span>
+                                    </Pill>
+                                {:else}
+                                    <Pill
+                                        selected
+                                        button
+                                        event="region_notify"
+                                        on:click={() => {
+                                            unNotifyRegion(region);
+                                        }}>
+                                        <span class="icon-check" aria-hidden="true" />
                                         <span class="text">Notify me</span>
                                     </Pill>
                                 {/if}
