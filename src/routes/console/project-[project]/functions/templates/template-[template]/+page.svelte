@@ -99,7 +99,6 @@
                         View source
                         <span class="icon-external-link" />
                     </Button>
-
                     <ContainerButton
                         title="functions"
                         disabled={buttonDisabled || (isSelfHosted && !isVcsEnabled)}
