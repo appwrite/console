@@ -200,7 +200,11 @@
                 {/if}
             </svelte:fragment>
             <svelte:fragment slot="actions">
-                <Button submit disabled={isButtonDisabled}>Update</Button>
+                <Button
+                    submit
+                    disabled={isButtonDisabled || $organization.billingPlan === 'tier-0'}>
+                    Update
+                </Button>
             </svelte:fragment>
         </CardGrid>
     </Form>
