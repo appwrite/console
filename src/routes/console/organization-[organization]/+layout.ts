@@ -21,6 +21,7 @@ export const load: LayoutLoad = async ({ params, depends }) => {
             headerAlert.add({
                 show: true,
                 component: ProjectsAtRisk,
+                id: 'projectsAtRisk',
                 importance: 1
             });
         }

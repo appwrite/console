@@ -20,9 +20,12 @@
     import { isCloud } from '$lib/system';
     import CreateOrganizationCloud from '../createOrganizationCloud.svelte';
 
-    const limit = getServiceLimit('members') || Infinity;
-    $: isLimited = limit !== 0 && limit < Infinity;
-    $: areMembersLimited = isCloud && ($readOnly || (isLimited && $members?.total >= limit));
+    let areMembersLimited: boolean;
+    $: organization.subscribe(() => {
+        const limit = getServiceLimit('members') || Infinity;
+        const isLimited = limit !== 0 && limit < Infinity;
+        areMembersLimited = isCloud && ($readOnly || (isLimited && $members?.total >= limit));
+    });
     let showDropdown = false;
 
     function createOrg() {
@@ -129,9 +132,9 @@
                         content:
                             $organization?.billingPlan === 'tier-0'
                                 ? `Upgrade to add more members`
-                                : `You've reached the members limit for the ${tierToPlan(
-                                      $organization?.billingPlan
-                                  )} plan`,
+                                : `You've reached the members limit for the ${
+                                      tierToPlan($organization?.billingPlan)?.name
+                                  } plan`,
                         disabled: !areMembersLimited
                     }}>
                     <Button

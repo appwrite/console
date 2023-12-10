@@ -25,7 +25,7 @@
     export let showAlert = true;
 
     export let buttonText: string = null;
-    export let buttonMethod: () => void | Promise<void> = null;
+    export let buttonMethod: () => void = null;
     export let buttonEvent: string = buttonText?.toLocaleLowerCase();
     export let buttonDisabled = false;
 
