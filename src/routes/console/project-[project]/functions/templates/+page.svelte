@@ -12,13 +12,13 @@
         SvgIcon
     } from '$lib/components';
     import { Button, InputSearch } from '$lib/elements/forms';
-    import { Container } from '$lib/layout';
+    import { Container, ContainerButton } from '$lib/layout';
     import { app } from '$lib/stores/app';
     import { isServiceLimited } from '$lib/stores/billing';
     import type { Runtime } from '$lib/stores/marketplace.js';
     import { organization } from '$lib/stores/organization';
     import { connectTemplate } from '$lib/wizards/functions/cover.svelte';
-    import { functionsList } from '../store.js';
+    import { functionsList } from '../store';
 
     export let data;
 
@@ -227,12 +227,14 @@
                                         <span class="text">View details</span>
                                     </Button>
 
-                                    <Button
+                                    <ContainerButton
+                                        title="functions"
                                         disabled={buttonDisabled}
-                                        secondary
-                                        on:click={() => connectTemplate(template)}>
-                                        <span class="text">Create function</span>
-                                    </Button>
+                                        buttonType="secondary"
+                                        buttonMethod={() => connectTemplate(template)}
+                                        showIcon={false}
+                                        buttonText="Create function"
+                                        buttonEvent="create_function" />
                                 </div>
                             </article>
                         </li>

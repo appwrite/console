@@ -16,6 +16,9 @@
         template as templateStore
     } from '$lib/wizards/functions/store.js';
     import { marketplace } from '$lib/stores/marketplace.js';
+    import { functionsList } from './store';
+    import { organization } from '$lib/stores/organization';
+    import { isServiceLimited } from '$lib/stores/billing';
 
     export let data;
 
@@ -54,13 +57,17 @@
             label: 'Create function',
             callback: openWizard,
             keys: ['c'],
-            disabled: $wizard.show,
+            disabled:
+                $wizard.show ||
+                isServiceLimited('functions', $organization?.billingPlan, $functionsList?.total),
             icon: 'plus',
             group: 'functions'
         }
     ]);
 
     $updateCommandGroupRanks({ functions: 1000 });
+
+    $: console.log($functionsList);
 </script>
 
 <Container>

@@ -2,7 +2,7 @@
     import { Alert, Card, Collapsible, Heading } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
-    import { Container } from '$lib/layout';
+    import { Container, ContainerButton } from '$lib/layout';
     import { isSelfHosted } from '$lib/system';
     import AppwriteLogoDark from '$lib/images/appwrite-logo-dark.svg';
     import AppwriteLogoLight from '$lib/images/appwrite-logo-light.svg';
@@ -19,7 +19,7 @@
     $: buttonDisabled = isServiceLimited(
         'functions',
         $organization?.billingPlan,
-        $functionsList?.total ?? 0
+        $functionsList?.total
     );
 </script>
 
@@ -99,11 +99,14 @@
                         View source
                         <span class="icon-external-link" />
                     </Button>
-                    <Button
+
+                    <ContainerButton
+                        title="functions"
                         disabled={buttonDisabled || (isSelfHosted && !isVcsEnabled)}
-                        on:click={() => connectTemplate($template)}>
-                        Create function
-                    </Button>
+                        buttonMethod={() => connectTemplate($template)}
+                        showIcon={false}
+                        buttonText="Create function"
+                        buttonEvent="create_function" />
                 </div>
             </Card>
         </section>

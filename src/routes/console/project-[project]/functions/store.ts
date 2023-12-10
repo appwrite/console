@@ -16,4 +16,4 @@ export const baseRuntimesList = derived(runtimesList, async ($runtimesList) => {
     return { runtimes: [...baseRuntimes.values()] };
 });
 
-export const functionsList = derived(page, ($page) => $page.data?.projects as Models.FunctionList);
+export const functionsList = derived(page, ($page) => $page.data.functions as Models.FunctionList);

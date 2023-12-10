@@ -6,7 +6,6 @@
         showUsageRatesModal,
         checkForUsageFees
     } from '$lib/stores/billing';
-    import { tooltip } from '$lib/actions/tooltip';
     import { Alert, DropList, Heading } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { organization } from '$lib/stores/organization';
@@ -14,7 +13,7 @@
     import { createEventDispatcher, onMount } from 'svelte';
     import { wizard } from '$lib/stores/wizard';
     import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
-    import { Button } from '$lib/elements/forms';
+    import { ContainerButton } from '.';
 
     export let isFlex = true;
     export let title: string;
@@ -26,7 +25,7 @@
     export let showAlert = true;
 
     export let buttonText: string = null;
-    export let buttonMethod: () => void = null;
+    export let buttonMethod: () => void | Promise<void> = null;
     export let buttonEvent: string = buttonText?.toLocaleLowerCase();
     export let buttonDisabled = false;
 
@@ -120,19 +119,12 @@
 
     <slot {isButtonDisabled}>
         {#if buttonText}
-            <div
-                use:tooltip={{
-                    content:
-                        $organization.billingPlan === 'tier-0'
-                            ? `Upgrade to add more ${title.toLocaleLowerCase()}`
-                            : `You've reached the ${title.toLocaleLowerCase()} limit for the ${tier} plan`,
-                    disabled: !isButtonDisabled
-                }}>
-                <Button on:click={buttonMethod} event={buttonEvent} disabled={isButtonDisabled}>
-                    <span class="icon-plus" aria-hidden="true" />
-                    <span class="text">{buttonText}</span>
-                </Button>
-            </div>
+            <ContainerButton
+                {title}
+                disabled={isButtonDisabled}
+                {buttonText}
+                {buttonEvent}
+                {buttonMethod} />
         {/if}
     </slot>
 </header>

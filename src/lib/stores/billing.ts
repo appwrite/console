@@ -127,8 +127,10 @@ export function checkForUsageFees(plan: Tier, id: PlanServices) {
 }
 
 export function isServiceLimited(serviceId: PlanServices, plan: Tier, total: number) {
+    if (!total) return false;
     const limit = getServiceLimit(serviceId) || Infinity;
     const isLimited = limit !== 0 && limit < Infinity;
     const hasUsageFees = checkForUsageFees(plan, serviceId);
+    console.log(serviceId, plan, total, limit, isLimited, hasUsageFees);
     return isLimited && total >= limit && !hasUsageFees;
 }

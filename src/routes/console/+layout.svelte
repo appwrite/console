@@ -476,8 +476,6 @@
     afterUpdate(() => {
         selectedHeaderAlert = headerAlert.get();
     });
-
-    $: console.log(selectedHeaderAlert);
 </script>
 
 <CommandCenter />
