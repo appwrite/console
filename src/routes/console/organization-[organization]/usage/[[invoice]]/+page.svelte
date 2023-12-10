@@ -4,7 +4,7 @@
     import { getServiceLimit, showUsageRatesModal, tierToPlan } from '$lib/stores/billing';
     import { wizard } from '$lib/stores/wizard';
     import { organization } from '$lib/stores/organization';
-    import { InputSelect } from '$lib/elements/forms';
+    import { Button, InputSelect } from '$lib/elements/forms';
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
     import { toLocaleDate } from '$lib/helpers/date.js';
@@ -37,7 +37,15 @@
 </script>
 
 <Container>
-    <Heading tag="h2" size="5">Usage</Heading>
+    <div class="u-flex u-cross-center u-main-space-between">
+        <Heading tag="h2" size="5">Usage</Heading>
+
+        {#if $organization?.billingPlan === 'tier-0'}
+            <Button on:click={() => wizard.start(ChangeOrganizationTierCloud)}>
+                <span class="text">Upgrade</span>
+            </Button>
+        {/if}
+    </div>
     <div class="u-flex u-main-space-between common-section u-cross-center">
         {#if $organization.billingPlan === 'tier-2'}
             <p class="text">
