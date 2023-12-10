@@ -33,7 +33,10 @@
 
         <div class="appwrite-pro">
             <span class="text">APPWRITE</span>
-            <span class="appwrite-pro-text">PRO</span>
+            <span class="appwrite-pro-text">
+                <span class="appwrite-pro-text-letter">P</span><span
+                    class="appwrite-pro-text-letter">R</span
+                ><span class="appwrite-pro-text-letter">O</span></span>
         </div>
 
         <div class="now-available">Now available</div>
@@ -263,6 +266,7 @@
         justify-content: center;
         align-items: baseline;
         color: hsl(var(--color-neutral-100));
+
         @media #{$break1} {
             gap: pxToRem(10);
             font-size: pxToRem(18);
@@ -282,6 +286,16 @@
             border-radius: pxToRem(16);
             background: rgba(253, 54, 110, 0.1);
             box-shadow: 0 -12.173px 20.289px 0px rgba(253, 54, 110, 0.08) inset;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            &-letter {
+                width: 2rem;
+                @media #{$break1} {
+                    width: 1rem;
+                }
+            }
             @media #{$break1} {
                 padding: pxToRem(8) pxToRem(12);
                 border-radius: pxToRem(8);
@@ -321,28 +335,43 @@
     .side-bg {
         position: relative;
         background-color: #ededf0;
+        overflow: hidden;
     }
-    .side-bg::after {
+    .side-bg::before {
         position: absolute;
-        inset-inline: 0;
-        inset-block-end: 0;
+        inset-block-start: -950px;
+        inset-inline-end: -650px;
         content: '';
         display: block;
         inline-size: 100%;
         block-size: 100%;
-        background-image: url('/src/lib/images/login/cloud-pro-bg-light.png');
-        background-size: contain;
-        background-repeat: no-repeat;
-        background-position: right bottom;
+        background: radial-gradient(49.55% 43.54% at 47% 50.69%, #e7f8f7 0%, #85dbd8 100%);
+        filter: blur(250px);
         @media #{$break1} {
-            display: none;
+            inset-block-start: -200px;
+            inset-inline-end: -400px;
+            filter: blur(100px);
+        }
+    }
+    .side-bg::after {
+        position: absolute;
+        inset-block-end: -850px;
+        inset-inline-start: -600px;
+        content: '';
+        display: block;
+        inline-size: 100%;
+        block-size: 100%;
+        background: radial-gradient(50% 46.73% at 50% 53.27%, #fe9567 28.17%, #fd366e 59.38%);
+        filter: blur(250px);
+
+        @media #{$break1} {
+            inset-block-end: -200px;
+            inset-inline-start: -400px;
+            filter: blur(100px);
         }
     }
     :global(.theme-dark) .side-bg {
         background-color: #19191d;
-    }
-    :global(.theme-dark) .side-bg::after {
-        background-image: url('/src/lib/images/login/cloud-pro-bg-dark.png');
     }
 
     /****** OLD ******/
