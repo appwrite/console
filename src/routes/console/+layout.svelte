@@ -348,10 +348,10 @@
         if (!$organization?.billingLimits) return;
         const { bandwidth, documents, executions, storage, users } = $organization.billingLimits;
         if (
-            bandwidth >= 100 &&
-            documents >= 100 &&
-            executions >= 100 &&
-            storage >= 100 &&
+            bandwidth >= 100 ||
+            documents >= 100 ||
+            executions >= 100 ||
+            storage >= 100 ||
             users >= 100
         ) {
             $readOnly = true;
