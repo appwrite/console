@@ -33,7 +33,6 @@
     }
 
     async function changeTier() {
-        $wizard.nextDisabled = true;
         //Downgrade
         if ($changeOrganizationTier.billingPlan === 'tier-0') {
             try {
@@ -72,8 +71,6 @@
                     e,
                     $isUpgrade ? Submit.OrganizationUpgrade : Submit.OrganizationDowngrade
                 );
-            } finally {
-                $wizard.nextDisabled = false;
             }
         } else {
             try {
@@ -178,8 +175,6 @@
                     e,
                     $isUpgrade ? Submit.OrganizationUpgrade : Submit.OrganizationDowngrade
                 );
-            } finally {
-                $wizard.nextDisabled = false;
             }
         }
     }
@@ -230,11 +225,12 @@
         label: 'Review',
         component: ConfirmDetails
     });
+
+    $wizard.finalAction = changeTier;
 </script>
 
 <Wizard
     title="Change plan"
     steps={$changeTierSteps}
     finalAction={$changeOrganizationFinalAction}
-    on:finish={changeTier}
     on:exit={onFinish} />

@@ -26,7 +26,6 @@
     }
 
     async function create() {
-        $wizard.nextDisabled = true;
         try {
             const org = await sdk.forConsole.billing.createOrganization(
                 $createOrganization.id ?? ID.unique(),
@@ -105,8 +104,6 @@
                 message: e.mesage
             });
             trackError(e, Submit.OrganizationCreate);
-        } finally {
-            $wizard.nextDisabled = false;
         }
     }
     onDestroy(() => {
@@ -150,11 +147,12 @@
         label: 'Review',
         component: ConfirmDetails
     });
+
+    $wizard.finalAction = create;
 </script>
 
 <Wizard
     title="Create organization"
     steps={$createOrgSteps}
     finalAction={$createOrganizationFinalAction}
-    on:finish={create}
     on:exit={onFinish} />

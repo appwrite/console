@@ -72,14 +72,11 @@
             project: null
         };
     }
+
+    $wizard.finalAction = handleSubmit;
 </script>
 
-<Wizard
-    title="Contact us"
-    steps={stepsComponents}
-    finalAction="Submit"
-    on:finish={handleSubmit}
-    on:exit={resetData}>
+<Wizard title="Contact us" steps={stepsComponents} finalAction="Submit" on:exit={resetData}>
     <svelte:fragment slot="aside">
         <h4 class="body-text-1 u-bold">Contact the Appwrite Team</h4>
         <p class="text u-margin-block-start-16">

@@ -40,6 +40,7 @@
         <InputText
             label="Name"
             id="name"
+            autofocus
             placeholder="Organization name"
             bind:value={$createOrganization.name}
             required />

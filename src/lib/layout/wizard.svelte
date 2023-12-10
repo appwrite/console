@@ -79,8 +79,27 @@
 
         wizard.setInterceptor(null);
         if (isLastStep) {
-            trackEvent('wizard_finish');
-            dispatch('finish');
+            if ($wizard.finalAction) {
+                $wizard.nextDisabled = true;
+                try {
+                    await $wizard.finalAction();
+                    trackEvent('wizard_finish');
+                } catch (error) {
+                    addNotification({
+                        message: error.message,
+                        type: 'error'
+                    });
+                } finally {
+                    $wizard.nextDisabled = false;
+                }
+            } else {
+                $wizard.nextDisabled = true;
+                trackEvent('wizard_finish');
+                dispatch('finish');
+                setTimeout(() => {
+                    $wizard.nextDisabled = false;
+                }, 2000);
+            }
         } else {
             if (steps.get($wizard.step + 1)?.disabled) {
                 $wizard.step++;
