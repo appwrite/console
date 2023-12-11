@@ -62,14 +62,18 @@
         <h4 class="eyebrow-heading-3">Troubleshooting</h4>
 
         <div class="u-margin-block-start-8 u-width-full-line">
-            <iframe
-                title="Appwrite Status"
-                src="https://status.appwrite.online/badge?theme=dark"
-                width="250"
-                height="30"
-                frameborder="0"
-                scrolling="no">
-            </iframe>
+            {#key $app.themeInUse}
+                <iframe
+                    title="Appwrite Status"
+                    src={`https://status.appwrite.online/badge?theme=${
+                        $app.themeInUse === 'dark' ? 'dark' : 'light'
+                    }`}
+                    width="250"
+                    height="30"
+                    frameborder="0"
+                    scrolling="no">
+                </iframe>
+            {/key}
         </div>
     </div>
 
