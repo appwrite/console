@@ -51,12 +51,14 @@
         if (response.status !== 200) {
             trackError(new Error(response.status.toString()), Submit.SupportTicket);
             addNotification({
-                message: 'There was an error submitting your feedback',
+                message:
+                    'There was an error submitting your support ticket. Please try again later.',
                 type: 'error'
             });
         } else {
             addNotification({
-                message: 'Your feedback was submitted successfully',
+                message:
+                    'Your support ticket was submitted successfully. The Appwrite team will get back to you shortly.',
                 type: 'success'
             });
         }
@@ -83,7 +85,7 @@
             If you found a bug or have questions, please reach out to the Appwrite team. We try to
             respond to all messages within our office hours.
         </p>
-        <p class="text u-margin-block-start-32">Available: <b>Mon-Fri 09:00 - 17:00 UCT</b></p>
+        <p class="text u-margin-block-start-32">Available: <b>Mon-Fri 09:00 - 17:00 UTC</b></p>
         <div class="u-flex u-gap-4 u-cross-center">
             <span>Currently:</span>
             {#if isSupportOnline()}
