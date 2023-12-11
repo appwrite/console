@@ -42,7 +42,9 @@
 <Form onSubmit={updateName}>
     <CardGrid>
         <Heading tag="h6" size="7">API credentials</Heading>
-        <p class="text">Access Appwrite services using this project's API Endpoint and Project ID.</p>
+        <p class="text">
+            Access Appwrite services using this project's API Endpoint and Project ID.
+        </p>
         <svelte:fragment slot="aside">
             <FormList>
                 <CopyInput label="Project ID" showLabel={true} value={$project.$id} />

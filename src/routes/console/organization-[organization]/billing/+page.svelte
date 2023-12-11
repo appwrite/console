@@ -94,8 +94,8 @@
             <svelte:fragment slot="title">
                 The scheduled payment for {$organization.name} failed
             </svelte:fragment>
-            To avoid service disruptions in organization's your projects, please verify your payment details and update
-            them if necessary.
+            To avoid service disruptions in organization's your projects, please verify your payment
+            details and update them if necessary.
         </Alert>
     {/if}
     {#if defaultPaymentMethod?.failed && !backupPaymentMethod}
@@ -103,7 +103,8 @@
             <svelte:fragment slot="title">
                 The default payment method for {$organization.name} has expired
             </svelte:fragment>
-            To avoid service disruptions in your organization's projects, please update your payment details.
+            To avoid service disruptions in your organization's projects, please update your payment
+            details.
         </Alert>
     {/if}
     {#if $organization?.billingPlanDowngrade}

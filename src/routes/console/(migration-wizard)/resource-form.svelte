@@ -163,7 +163,9 @@
             </div>
             <div>
                 <p class="u-bold">Keep your organization plan's limits in mind</p>
-                <p>Make sure to have enough storage in your organization plan when importing files.</p>
+                <p>
+                    Make sure to have enough storage in your organization plan when importing files.
+                </p>
             </div>
         </div>
         {#if $provider.provider === 'firebase'}
