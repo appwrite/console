@@ -21,7 +21,7 @@
             </Button>
             <Button
                 secondary
-                href={`/organization-${$organization.$id}/billing?type=confirmation&invoice=${$actionRequiredInvoices.invoices[0].$id}`}>
+                href={`/console/organization-${$organization.$id}/billing?type=confirmation&invoice=${$actionRequiredInvoices.invoices[0].$id}`}>
                 Authorize payment
             </Button>
         </svelte:fragment>

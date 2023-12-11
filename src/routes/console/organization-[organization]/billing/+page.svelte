@@ -45,36 +45,45 @@
                     $page.params.organization,
                     invoiceId
                 );
-                console.log(invoice);
-                const { setupIntent, error } = await $stripe.confirmCardSetup(
-                    invoice.clientSecret,
-                    {
-                        payment_method: $organization.paymentMethodId,
-                        return_url: `${base}/console/organization-${$organization.$id}/billing`
-                    }
+                const paymentMethod = await sdk.forConsole.billing.getPaymentMethod(
+                    $organization.paymentMethodId
                 );
+                const url = `${window.location.origin}/console/organization-${$organization.$id}/billing`;
+
+                console.log(url);
+                console.log(invoice);
+                const { error } = await $stripe.confirmPayment({
+                    clientSecret: invoice.clientSecret,
+                    confirmParams: {
+                        return_url: url,
+                        payment_method: paymentMethod.providerMethodId
+                    }
+                });
                 console.log('error', error);
                 if (error) {
                     console.log('Something went wrong');
+                } else {
+                    console.log('yay?');
                 }
-                if (setupIntent.status === 'succeeded') {
-                    if (typeof setupIntent.payment_method === 'string') {
-                        await sdk.forConsole.billing.setOrganizationPaymentMethod(
-                            $page.params.organization,
-                            setupIntent.payment_method
-                        );
-                    } else {
-                        await sdk.forConsole.billing.setOrganizationPaymentMethod(
-                            $page.params.organization,
-                            setupIntent.payment_method.id
-                        );
-                    }
-                    addNotification({
-                        title: 'Success',
-                        message: 'Your payment method has been updated',
-                        type: 'success'
-                    });
-                }
+
+                // if (setupIntent.status === 'succeeded') {
+                //     if (typeof setupIntent.payment_method === 'string') {
+                //         await sdk.forConsole.billing.setOrganizationPaymentMethod(
+                //             $page.params.organization,
+                //             setupIntent.payment_method
+                //         );
+                //     } else {
+                //         await sdk.forConsole.billing.setOrganizationPaymentMethod(
+                //             $page.params.organization,
+                //             setupIntent.payment_method.id
+                //         );
+                //     }
+                //     addNotification({
+                //         title: 'Success',
+                //         message: 'Your payment method has been updated',
+                //         type: 'success'
+                //     });
+                // }
             } catch (error) {
                 console.log(error);
                 addNotification({
