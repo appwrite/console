@@ -339,7 +339,7 @@
                     type: 'warning',
                     timeout: 10000,
                     message:
-                        'Appwrite Pro is coming soon, which means you will be limited to one free organization per account. To avoid service disruptions in your projects, consider upgrading to Pro.',
+                        'Appwrite Pro is coming soon, which means you will be limited to one free organization per account. To avoid service disruptions in your organization's projects, consider upgrading to Pro.',
                     buttons: [
                         {
                             name: 'Learn more',

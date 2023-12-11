@@ -57,7 +57,7 @@
             </p>
         {:else}
             <p class="text">
-                If you exceed the limits of the {plan} plan, services for your projects may be disrupted.
+                If you exceed the limits of the {plan} plan, services for your organization's projects may be disrupted.
                 <button
                     on:click={() => wizard.start(ChangeOrganizationTierCloud)}
                     class="link"
