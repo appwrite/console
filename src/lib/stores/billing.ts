@@ -5,13 +5,16 @@ import { organization, type Organization } from './organization';
 import type { InvoiceList, AddressesList, Invoice, PaymentList, PlansInfo } from '$lib/sdk/billing';
 import { isCloud } from '$lib/system';
 import { cachedStore } from '$lib/helpers/cache';
-import { Query } from '@appwrite.io/console';
+import { Query, type Models } from '@appwrite.io/console';
 import { headerAlert } from './headerAlert';
 import PaymentAuthRequired from '$lib/components/billing/alerts/paymentAuthRequired.svelte';
 import { diffDays, toLocaleDate } from '$lib/helpers/date';
 import { addNotification, notifications } from './notifications';
 import { goto } from '$app/navigation';
 import { base } from '$app/paths';
+import TooManyFreOrgs from '$lib/components/billing/alerts/tooManyFreOrgs.svelte';
+import { showPostReleaseModal } from '$routes/console/store';
+import MarkedForDeletion from '$lib/components/billing/alerts/markedForDeletion.svelte';
 
 export type Tier = 'tier-0' | 'tier-1' | 'tier-2';
 
@@ -263,5 +266,45 @@ export async function paymentExpired(org: Organization) {
                 }
             ]
         });
+    }
+}
+
+export function checkForMarkedForDeletion(org: Organization) {
+    if (org?.markedForDeletion) {
+        headerAlert.add({
+            id: 'markedForDeletion',
+            component: MarkedForDeletion,
+            show: true,
+            importance: 5
+        });
+    }
+}
+
+export async function checkForFreeOrgOverflow(orgs: Models.TeamList<Record<string, unknown>>) {
+    if (orgs?.teams?.length > 1) {
+        headerAlert.add({
+            id: 'freeOrgOverflow',
+            component: TooManyFreOrgs,
+            show: true,
+            importance: 10
+        });
+    }
+}
+
+export function checkForPostReleaseProModal() {
+    const modalTime = localStorage.getItem('postReleaseProModal');
+    const now = Date.now();
+    // show the modal if it was never shown
+    if (!modalTime) {
+        localStorage.setItem('postReleaseProModal', Date.now().toString());
+        showPostReleaseModal.set(true);
+    } else {
+        const interval = 5 * 24 * 60 * 60 * 1000;
+        const sinceLastModal = now - parseInt(modalTime);
+        // show the modal if it was shown more than 5 days ago
+        if (sinceLastModal > interval) {
+            localStorage.setItem('postReleaseProModal', Date.now().toString());
+            showPostReleaseModal.set(true);
+        }
     }
 }

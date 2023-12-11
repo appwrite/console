@@ -19,7 +19,10 @@
         checkPaymentAuthorizationRequired,
         calculateTrialDay,
         checkForTrialEnding,
-        paymentExpired
+        paymentExpired,
+        checkForFreeOrgOverflow,
+        checkForPostReleaseProModal,
+        checkForMarkedForDeletion
     } from '$lib/stores/billing';
     import { goto } from '$app/navigation';
     import { CommandCenter, registerCommands, registerSearchers } from '$lib/commandCenter';
@@ -42,9 +45,7 @@
     import { consoleVariables, showPostReleaseModal } from './store';
     import { Query } from '@appwrite.io/console';
     import { headerAlert } from '$lib/stores/headerAlert';
-    import MarkedForDeletion from '$lib/components/billing/alerts/markedForDeletion.svelte';
     import PostReleaseModal from './(billing-modal)/postReleaseModal.svelte';
-    import TooManyFreOrgs from '$lib/components/billing/alerts/tooManyFreOrgs.svelte';
 
     function kebabToSentenceCase(str: string) {
         return str
@@ -244,8 +245,10 @@
     let selectedHeaderAlert = headerAlert.get();
     onMount(async () => {
         loading.set(false);
+
         if (isCloud) {
-            checkForFreeOrgOverflow();
+            const orgs = await sdk.forConsole.teams.list([Query.equal('billingPlan', 'tier-0')]);
+            checkForFreeOrgOverflow(orgs);
             if (!$page.url.pathname.includes('/console/onboarding')) {
                 checkForPostReleaseProModal();
             }
@@ -258,7 +261,7 @@
         if (isCloud && hasStripePublicKey) {
             console.log('Environment is Cloud and Stripe public key deteted');
             $stripe = await loadStripe(VARS.STRIPE_PUBLIC_KEY);
-            console.log('Stripe should have been loading', $stripe);
+            console.log('Stripe loaded', $stripe);
         } else {
             console.log('Environment is not Cloud or Stripe public key not deteted');
             console.log('isCloud:', isCloud);
@@ -280,18 +283,6 @@
         }
     }
 
-    async function checkForFreeOrgOverflow() {
-        const orgs = await sdk.forConsole.teams.list([Query.equal('billingPlan', 'tier-0')]);
-        if (orgs?.teams?.length > 1) {
-            headerAlert.add({
-                id: 'freeOrgOverflow',
-                component: TooManyFreOrgs,
-                show: true,
-                importance: 10
-            });
-        }
-    }
-
     organization.subscribe(async (org) => {
         if (!org) return;
         if (isCloud) {
@@ -299,35 +290,10 @@
             checkForTrialEnding(org);
             await paymentExpired(org);
             checkForUsageLimit(org);
-            if (org?.markedForDeletion) {
-                headerAlert.add({
-                    id: 'markedForDeletion',
-                    component: MarkedForDeletion,
-                    show: true,
-                    importance: 5
-                });
-            }
+            checkForMarkedForDeletion(org);
             await checkPaymentAuthorizationRequired(org);
         }
     });
-
-    function checkForPostReleaseProModal() {
-        const modalTime = localStorage.getItem('postReleaseProModal');
-        const now = Date.now();
-        // show the modal if it was never shown
-        if (!modalTime) {
-            localStorage.setItem('postReleaseProModal', Date.now().toString());
-            showPostReleaseModal.set(true);
-        } else {
-            const interval = 5 * 24 * 60 * 60 * 1000;
-            const sinceLastModal = now - parseInt(modalTime);
-            // show the modal if it was shown more than 5 days ago
-            if (sinceLastModal > interval) {
-                localStorage.setItem('postReleaseProModal', Date.now().toString());
-                showPostReleaseModal.set(true);
-            }
-        }
-    }
 
     $: if (!$log.show) {
         $log.data = null;
