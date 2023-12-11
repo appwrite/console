@@ -19,12 +19,10 @@
                 showCreateUser.set(true);
             },
             keys: $page.url.pathname.endsWith('auth') ? ['c'] : ['c', 'u'],
-
             group: 'users',
             icon: 'plus',
             rank: $page.url.pathname.endsWith('auth') ? 10 : 0,
-            disabled:
-                $readOnly || isServiceLimited('users', $organization.billingPlan, $userList.total)
+            disabled: $readOnly
         },
         {
             label: 'Create team',
