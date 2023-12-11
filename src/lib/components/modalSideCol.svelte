@@ -41,7 +41,7 @@
                     </slot>
                 </p>
             </header>
-            <div class="modal-content">
+            <div class="modal-content mk-content">
                 <slot />
             </div>
         </div>
@@ -49,9 +49,19 @@
 </ModalWrapper>
 
 <style lang="scss">
+    @import '@appwrite.io/pink/src/abstract/mixins/_scroll.scss';
+
     .mk-grid {
         overflow: hidden;
+        &-item-1 {
+            overflow: hidden;
+        }
+        &-item-2 {
+            overflow: auto;
+            @include scroll;
+        }
     }
+
     @media screen and (max-width: 768px) {
         .mk-grid {
             &-item-1 {
