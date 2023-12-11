@@ -70,7 +70,7 @@ export function getServiceLimit(serviceId: PlanServices, tier: Tier = null): num
     const plan = get(plansInfo).plans.find(
         (p) => p.$id === (tier ?? get(organization)?.billingPlan)
     );
-    return plan[serviceId];
+    return plan?.[serviceId];
 }
 
 export const failedInvoice = cachedStore<
@@ -87,8 +87,12 @@ export const failedInvoice = cachedStore<
             // const failedInvoices = invoices.invoices;
             if (failedInvoices.length > 0) {
                 const firstFailed = failedInvoices[0];
-                //TODO: if firstFailed is older than 30 days, set readonly to true!
-                set(firstFailed);
+                const today = new Date();
+                const thirtyDaysAgo = new Date(today.setDate(today.getDate() - 30));
+                const failedDate = new Date(firstFailed.$createdAt);
+                if (failedDate < thirtyDaysAgo) {
+                    readOnly.set(true);
+                }
             } else set(false);
         }
     };
