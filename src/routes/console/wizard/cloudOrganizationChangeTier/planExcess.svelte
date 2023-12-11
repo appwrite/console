@@ -28,8 +28,6 @@
 
     const plan = $plansInfo.plans.find((p) => p.$id === currentTier);
     const collaboratorPrice = plan?.addons.member?.price ?? 0;
-
-    $: console.log(excess);
 </script>
 
 <Alert type="error">
