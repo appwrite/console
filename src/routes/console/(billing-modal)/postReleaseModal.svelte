@@ -10,13 +10,10 @@
     import { user } from '$lib/stores/user';
 
     export let show = false;
-    const today = new Date();
 
+    $: isNewUser = new Date($user.$createdAt) > new Date(2023, 11, 12);
     //user creation date after the 12th of December 2023
-    $: event =
-        new Date($user.$createdAt) > new Date(2023, 11, 12)
-            ? 'click_organization_upgrade'
-            : 'pre_billing_release_modal_old';
+    $: event = isNewUser ? 'billing_new_user_modal' : 'billing_release_modal';
 </script>
 
 <ModalSideCol bind:show title="Claim your Pro credit today" style="max-width: min(53rem,95%)">
@@ -40,19 +37,25 @@
 
     <div class="u-flex u-flex-vertical u-gap-16">
         <p class="text">
-            Upgrade now and use the code <span class="inline-tag">THANKYOU30</span>
-            to claim $30 in credits for a Pro plan. Credits will expire on 31 January 2024.
+            Upgrade now and use the code <span class="inline-tag"
+                >{isNewUser ? 'WELCOME15' : 'THANKYOU30'}</span>
+            to claim ${isNewUser ? '15' : '30'} in credits for a Pro plan. Credits will expire on 31
+            January 2024.
         </p>
     </div>
     <Box>
         <b class="body-text-1">Pro: $15 per member per billing period</b>
 
         <p class="u-margin-block-start-8">
-            For pro developers and teams that need to scale their products. <a
+            For pro developers and teams that need to scale their products. <Button
+                link
                 href="http://appwrite.io/pricing"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="link">Learn more on our pricing page.</a>
+                external
+                on:click={() => {
+                    trackEvent('click_open_pricing', {
+                        source: event
+                    });
+                }}>Learn more on our pricing page.</Button>
         </p>
 
         <ul class="list u-flex-vertical u-gap-8 u-margin-block-start-24">
@@ -87,9 +90,8 @@
             on:click={() => wizard.start(ChangeOrganizationTierCloud)}
             on:click={() => (show = false)}
             on:click={() =>
-                trackEvent('click_open_website', {
-                    source: 'billing_release_modal',
-                    destination: 'pricing'
+                trackEvent('click_organization_upgrade', {
+                    source: event
                 })}>
             Start your 14 day free trial
         </Button>
