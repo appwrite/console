@@ -39,7 +39,7 @@
     import ExcesLimitModal from './organization-[organization]/excesLimitModal.svelte';
     import { showExcess } from './organization-[organization]/store';
     import UsageRates from './wizard/cloudOrganization/usageRates.svelte';
-    import { consoleVariables, showPrereleaseModal } from './store';
+    import { consoleVariables, showPostReleaseModal } from './store';
     import { Query } from '@appwrite.io/console';
     import { headerAlert } from '$lib/stores/headerAlert';
     import MarkedForDeletion from '$lib/components/billing/alerts/markedForDeletion.svelte';
@@ -247,7 +247,7 @@
         if (isCloud) {
             checkForFreeOrgOverflow();
             if (!$page.url.pathname.includes('/console/onboarding')) {
-                checkForPreReleaseProModal();
+                checkForPostReleaseProModal();
             }
         }
 
@@ -311,44 +311,20 @@
         }
     });
 
-    function checkForPreReleaseProModal() {
-        const modalTime = localStorage.getItem('preReleaseProModal');
-        const notificationTime = localStorage.getItem('preReleaseProNotification');
+    function checkForPostReleaseProModal() {
+        const modalTime = localStorage.getItem('postReleaseProModal');
         const now = Date.now();
         // show the modal if it was never shown
         if (!modalTime) {
-            localStorage.setItem('preReleaseProModal', Date.now().toString());
-            localStorage.setItem('preReleaseProNotification', Date.now().toString());
-            showPrereleaseModal.set(true);
+            localStorage.setItem('postReleaseProModal', Date.now().toString());
+            showPostReleaseModal.set(true);
         } else {
             const interval = 5 * 24 * 60 * 60 * 1000;
             const sinceLastModal = now - parseInt(modalTime);
             // show the modal if it was shown more than 5 days ago
             if (sinceLastModal > interval) {
-                localStorage.setItem('preReleaseProModal', Date.now().toString());
-                localStorage.setItem('preReleaseProNotification', Date.now().toString());
-                showPrereleaseModal.set(true);
-            }
-            //if the modal has been shown more than 24 ago and the notification has not been shown for 24 hours
-            else if (
-                sinceLastModal > 24 * 60 * 60 * 1000 &&
-                now - (notificationTime ? parseInt(notificationTime) : 0) > 24 * 60 * 60 * 1000
-            ) {
-                localStorage.setItem('preReleaseProNotification', Date.now().toString());
-                addNotification({
-                    type: 'warning',
-                    timeout: 10000,
-                    message:
-                        "Appwrite Pro is coming soon, which means you will be limited to one free organization per account. To avoid service disruptions in your organization's projects, consider upgrading to Pro.",
-                    buttons: [
-                        {
-                            name: 'Learn more',
-                            method: () => {
-                                window.open('https://appwrite.io/pricing', '_blank');
-                            }
-                        }
-                    ]
-                });
+                localStorage.setItem('postReleaseProModal', Date.now().toString());
+                showPostReleaseModal.set(true);
             }
         }
     }
@@ -411,7 +387,7 @@
 {#if isCloud && $showUsageRatesModal}
     <UsageRates bind:show={$showUsageRatesModal} tier={$organization?.billingPlan} />
 {/if}
-{#if isCloud && $showPrereleaseModal && !$page.url.pathname.includes('/console/onboarding')}
+{#if isCloud && $showPostReleaseModal && !$page.url.pathname.includes('/console/onboarding')}
     <!-- {#if true} -->
     <PostReleaseModal show={true} />
 {/if}

@@ -8,4 +8,4 @@ export const consoleVariables = derived(
     ($page) => $page.data.consoleVariables as Models.ConsoleVariables
 );
 
-export const showPrereleaseModal = writable(false);
+export const showPostReleaseModal = writable(false);
