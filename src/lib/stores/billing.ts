@@ -1,10 +1,17 @@
 import { page } from '$app/stores';
 import { derived, get, writable } from 'svelte/store';
 import { sdk } from './sdk';
-import { organization } from './organization';
+import { organization, type Organization } from './organization';
 import type { InvoiceList, AddressesList, Invoice, PaymentList, PlansInfo } from '$lib/sdk/billing';
 import { isCloud } from '$lib/system';
 import { cachedStore } from '$lib/helpers/cache';
+import { Query } from '@appwrite.io/console';
+import { headerAlert } from './headerAlert';
+import PaymentAuthRequired from '$lib/components/billing/alerts/paymentAuthRequired.svelte';
+import { diffDays, toLocaleDate } from '$lib/helpers/date';
+import { addNotification, notifications } from './notifications';
+import { goto } from '$app/navigation';
+import { base } from '$app/paths';
 
 export type Tier = 'tier-0' | 'tier-1' | 'tier-2';
 
@@ -148,4 +155,106 @@ export function isServiceLimited(serviceId: PlanServices, plan: Tier, total: num
     const isLimited = limit !== 0 && limit < Infinity;
     const hasUsageFees = checkForUsageFees(plan, serviceId);
     return isLimited && total >= limit && !hasUsageFees;
+}
+
+export function calculateTrialDay(org: Organization) {
+    if (org?.billingPlan === 'tier-0') return false;
+    const endDate = new Date(org?.billingTrialEndDate);
+    const today = new Date();
+    const days = diffDays(today, endDate);
+    daysLeftInTrial.set(days);
+    return days;
+}
+
+export function checkForTrialEnding(org: Organization) {
+    const days = calculateTrialDay(org);
+    if (localStorage.getItem('trialEndingNotification') === 'true' || !days) return;
+    else if (days <= 5) {
+        addNotification({
+            type: 'info',
+            isHtml: true,
+            message: `<b>We hope you've been enjoying the ${
+                tierToPlan(org.billingPlan).name
+            } plan.</b>
+                You will be billed on a recurring 30-day cycle after your trial period ends on <b>${toLocaleDate(
+                    org.billingTrialEndDate
+                )}</b>`
+        });
+        localStorage.setItem('trialEndingNotification', 'true');
+    }
+}
+
+export function checkForUsageLimit(org: Organization) {
+    if (org?.billingLimits) return;
+    const { bandwidth, documents, executions, storage, users } = org.billingLimits;
+    if (
+        bandwidth >= 100 ||
+        documents >= 100 ||
+        executions >= 100 ||
+        storage >= 100 ||
+        users >= 100
+    ) {
+        readOnly.set(true);
+    }
+}
+
+export async function checkPaymentAuthorizationRequired(org: Organization) {
+    if (org.billingPlan === 'tier-0') return;
+
+    const invoices = await sdk.forConsole.billing.listInvoices(org.$id, [
+        Query.equal('status', 'requires_authentication')
+    ]);
+
+    actionRequiredInvoices.set(invoices);
+    if (get(actionRequiredInvoices) && get(actionRequiredInvoices)?.invoices?.length > 0) {
+        headerAlert.add({
+            id: 'paymentAuthRequired',
+            component: PaymentAuthRequired,
+            show: true,
+            importance: 8
+        });
+    }
+}
+
+export async function paymentExpired(org: Organization) {
+    if (!org?.paymentMethodId) return;
+    const payment = await sdk.forConsole.billing.getPaymentMethod(org.paymentMethodId);
+    if (!payment?.expiryYear) return;
+    const year = new Date().getFullYear();
+    const month = new Date().getMonth();
+    const expiredMessage = `The default payment method for <b>${org.name}</b> has expired`;
+    const expiringMessage = `The default payment method for <b>${org.name}</b> will expire soon`;
+    const nots = get(notifications);
+    const expiredNotification = nots.some((n) => n.message === expiredMessage);
+    const expiringNotification = nots.some((n) => n.message === expiringMessage);
+    if (payment.expired && !expiredNotification) {
+        addNotification({
+            type: 'error',
+            isHtml: true,
+            timeout: 0,
+            message: expiredMessage,
+            buttons: [
+                {
+                    name: 'Update payment details',
+                    method: () => {
+                        goto(`${base}/console/account/payments`);
+                    }
+                }
+            ]
+        });
+    } else if (!expiringNotification && payment.expiryYear <= year && payment.expiryMonth < month) {
+        addNotification({
+            type: 'warning',
+            isHtml: true,
+            message: expiringMessage,
+            buttons: [
+                {
+                    name: 'Update payment details',
+                    method: () => {
+                        goto(`${base}/console/account/payments`);
+                    }
+                }
+            ]
+        });
+    }
 }
