@@ -9,10 +9,11 @@
     import { goto } from '$app/navigation';
     import { toLocaleDate } from '$lib/helpers/date.js';
     import { bytesToSize, humanFileSize } from '$lib/helpers/sizeConvertion';
-    import { abbreviateNumber } from '$lib/helpers/numbers';
     import { BarChart } from '$lib/charts';
     import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
     import ProjectBreakdown from './ProjectBreakdown.svelte';
+    import { last } from '$lib/helpers/array';
+    import { formatNum } from '$lib/helpers/string';
 
     export let data;
 
@@ -93,7 +94,7 @@
         </p>
 
         <svelte:fragment slot="aside">
-            {@const current = data.organizationUsage.bandwidth[0]?.value ?? 0}
+            {@const current = last(data.organizationUsage.bandwidth)?.value ?? 0}
             {@const currentHumanized = humanFileSize(current)}
             {@const max = getServiceLimit('bandwidth', tier)}
             <ProgressBarBig
@@ -105,10 +106,24 @@
                 progressMax={max}
                 showBar={false} />
             <BarChart
+                options={{
+                    yAxis: {
+                        axisLabel: {
+                            formatter: (value) =>
+                                value
+                                    ? `${humanFileSize(+value).value} ${humanFileSize(+value).unit}`
+                                    : '0'
+                        }
+                    }
+                }}
                 series={[
                     {
                         name: 'Bandwidth',
-                        data: [...data.organizationUsage.bandwidth.map((e) => [e.date, e.value])]
+                        data: [...data.organizationUsage.bandwidth.map((e) => [e.date, e.value])],
+                        tooltip: {
+                            valueFormatter: (value) =>
+                                `${humanFileSize(+value).value} ${humanFileSize(+value).unit}`
+                        }
                     }
                 ]} />
             <ProjectBreakdown
@@ -124,17 +139,24 @@
         <p class="text">The total number of users across all projects in your organization.</p>
 
         <svelte:fragment slot="aside">
-            {@const current = data.organizationUsage.users[0]?.value ?? 0}
+            {@const current = last(data.organizationUsage.users)?.value ?? 0}
             {@const max = getServiceLimit('users', tier)}
             <ProgressBarBig
                 currentUnit="Users"
-                currentValue={current.toString()}
+                currentValue={formatNum(current)}
                 maxUnit="Users"
-                maxValue={abbreviateNumber(max)}
+                maxValue={formatNum(max)}
                 progressValue={current}
                 progressMax={max}
                 showBar={false} />
             <BarChart
+                options={{
+                    yAxis: {
+                        axisLabel: {
+                            formatter: formatNum
+                        }
+                    }
+                }}
                 series={[
                     {
                         name: 'Users',
@@ -159,7 +181,7 @@
                 currentUnit="Executions"
                 currentValue={current.toString()}
                 maxUnit="Executions"
-                maxValue={abbreviateNumber(max)}
+                maxValue={formatNum(max)}
                 progressValue={current}
                 progressMax={max} />
             <ProjectBreakdown

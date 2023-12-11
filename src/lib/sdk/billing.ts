@@ -512,15 +512,21 @@ export class Billing {
 
     async listUsage(
         organizationId: string,
-        startDate: string = null,
-        endDate: string = null
+        startDate: string = undefined,
+        endDate: string = undefined
     ): Promise<OrganizationUsage> {
         const path = `/organizations/${organizationId}/usage`;
         const params = {
-            organizationId,
-            startDate,
-            endDate
+            organizationId
         };
+
+        if (startDate !== undefined) {
+            params['startDate'] = startDate;
+        }
+        if (endDate !== undefined) {
+            params['endDate'] = endDate;
+        }
+
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
             'get',

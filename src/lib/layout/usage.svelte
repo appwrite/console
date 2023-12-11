@@ -1,13 +1,38 @@
 <script context="module" lang="ts">
     export type UsagePeriods = '24h' | '30d' | '90d';
 
+    export function periodToDates(period: UsagePeriods): {
+        start: string;
+        end: string;
+        period: '1h' | '1d';
+    } {
+        const end = new Date();
+        switch (period) {
+            case '24h':
+                end.setHours(end.getHours() + 24);
+                break;
+            case '30d':
+                end.setDate(end.getDate() + 30);
+                break;
+            case '90d':
+                end.setDate(end.getDate() + 90);
+                break;
+        }
+
+        return {
+            start: new Date().toISOString(),
+            end: end.toISOString(),
+            period: period === '24h' ? '1h' : '1d'
+        };
+    }
+
     export function last(set: Models.Metric[]): Models.Metric | null {
         if (!set) return null;
         return set.slice(-1)[0] ?? null;
     }
 
     export function total(set: Models.Metric[]): number {
-        return set.reduce((prev, curr) => prev + curr.value, 0);
+        return set?.reduce((prev, curr) => prev + curr.value, 0) ?? 0;
     }
 </script>
 
