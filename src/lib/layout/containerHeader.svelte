@@ -58,7 +58,8 @@
         : false;
     $: isLimited = limit !== 0 && limit < Infinity;
     $: overflowingServices = limitedServices.filter((service) => service.value >= 0);
-    $: isButtonDisabled = buttonDisabled || (isLimited && total >= limit && !hasUsageFees);
+    $: isButtonDisabled =
+        buttonDisabled || $readOnly || (isLimited && total >= limit && !hasUsageFees);
 
     onMount(() => {
         dispatch('data', { isButtonDisabled, limit, tier });
@@ -66,16 +67,19 @@
 </script>
 
 <!-- Show only if on Cloud, alerts are enabled, and it isn't a project limited service -->
-{#if isCloud && showAlert && !hasProjectLimitation}
+{#if isCloud && showAlert}
     <slot name="alert" {limit} {tier} {title} {upgradeMethod} {hasUsageFees}>
-        {#if $readOnly && hasUsageFees}
-            {#if $organization?.billingPlan !== 'tier-0'}
+        {#if $readOnly}
+            {@const services = overflowingServices
+                .map((s) => {
+                    return s.name.toLocaleLowerCase();
+                })
+                .join(', ')}
+            {#if $organization?.billingPlan !== 'tier-0' && hasUsageFees}
                 <Alert type="info" isStandalone>
                     <span class="text">
-                        You've reached the {overflowingServices.forEach((s) => {
-                            s.name.toLocaleLowerCase() + ', ';
-                        })} limit for the {tier} plan.
-                        <Button on:click={() => ($showUsageRatesModal = true)}
+                        You've reached the {services} limit for the {tier} plan.
+                        <Button link on:click={() => ($showUsageRatesModal = true)}
                             >Excess usage fees will apply</Button
                         >.
                     </span>
@@ -83,13 +87,9 @@
             {:else}
                 <Alert type={alertType} isStandalone>
                     <span class="text">
-                        You've reached the {overflowingServices.forEach((s) => {
-                            s.name.toLocaleLowerCase() + ', ';
-                        })} limit for the {tier} plan.
-
-                        {#if $organization?.billingPlan === 'tier-0'}
-                            <Button on:click={upgradeMethod}>Upgrade</Button>
-                            for additional {title.toLocaleLowerCase()}.
+                        You've reached the {services} limit for the {tier} plan. You won't be able to
+                        create additional resources until you {#if $organization?.billingPlan === 'tier-0'}
+                            <Button link on:click={upgradeMethod}>upgrade</Button>.
                         {/if}
                     </span>
                 </Alert>
@@ -128,10 +128,19 @@
                         {:else if hasUsageFees}
                             <p class="text">
                                 You are limited to {limit}
-                                {title.toLocaleLowerCase()} per project on the {tier} plan.
+                                {title.toLocaleLowerCase()} per organization on the {tier} plan.
                                 <Button link on:click={() => ($showUsageRatesModal = true)}
                                     >Excess usage fees will apply</Button
                                 >.
+                            </p>
+                        {:else}
+                            <p class="text">
+                                You are limited to {limit}
+                                {title.toLocaleLowerCase()} per organization on the {tier} plan.
+                                {#if $organization?.billingPlan === 'tier-0'}
+                                    <Button link on:click={upgradeMethod}>Upgrade</Button>
+                                    for additional {title.toLocaleLowerCase()}.
+                                {/if}
                             </p>
                         {/if}
                     </slot>
