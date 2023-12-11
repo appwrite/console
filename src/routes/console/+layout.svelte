@@ -292,12 +292,8 @@
         }
     }
 
-    let currentOrg = JSON.stringify($organization?.$id);
-
     organization.subscribe(async (org) => {
         if (!org) return;
-        if (currentOrg === org.$id) return;
-        currentOrg = org.$id;
         if (isCloud) {
             calculateTrialDay(org);
             checkForTrialEnding(org);

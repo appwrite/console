@@ -185,7 +185,10 @@ export function checkForTrialEnding(org: Organization) {
 }
 
 export function checkForUsageLimit(org: Organization) {
-    if (org?.billingLimits) return;
+    if (!org?.billingLimits) {
+        readOnly.set(false);
+        return;
+    }
     const { bandwidth, documents, executions, storage, users } = org.billingLimits;
     if (
         bandwidth >= 100 ||
@@ -195,7 +198,7 @@ export function checkForUsageLimit(org: Organization) {
         users >= 100
     ) {
         readOnly.set(true);
-    }
+    } else readOnly.set(false);
 }
 
 export async function checkPaymentAuthorizationRequired(org: Organization) {
