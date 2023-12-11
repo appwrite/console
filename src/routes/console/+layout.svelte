@@ -411,7 +411,7 @@
 {#if isCloud && $showUsageRatesModal}
     <UsageRates bind:show={$showUsageRatesModal} tier={$organization?.billingPlan} />
 {/if}
-<!-- {#if isCloud && $showPrereleaseModal && !$page.url.pathname.includes('/console/onboarding')} -->
-{#if true}
+{#if isCloud && $showPrereleaseModal && !$page.url.pathname.includes('/console/onboarding')}
+    <!-- {#if true} -->
     <PostReleaseModal show={true} />
 {/if}
