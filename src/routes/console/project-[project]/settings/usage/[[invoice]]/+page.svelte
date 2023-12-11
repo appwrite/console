@@ -198,7 +198,7 @@
             {#if data.usage.executionsBreakdown.length > 0}
                 <Table noMargin noStyles>
                     <TableHeader>
-                        <TableCellHead width={285}>Project</TableCellHead>
+                        <TableCellHead width={285}>Function</TableCellHead>
                         <TableCellHead>Usage</TableCellHead>
                         <TableCellHead width={140} />
                     </TableHeader>
