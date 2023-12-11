@@ -7,7 +7,7 @@
     export let progressMax: number;
     export let showBar = true;
 
-    $: progress = Math.round((progressValue / progressMax) * 100);
+    $: progress = Math.min(Math.max(Math.round((progressValue / progressMax) * 100), 0), 100);
 </script>
 
 <section class="progress-bar">

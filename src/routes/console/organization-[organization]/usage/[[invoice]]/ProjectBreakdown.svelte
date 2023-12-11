@@ -54,8 +54,8 @@
 
 <Collapsible>
     <CollapsibleItem>
-        <svelte:fragment slot="tgit restore --stageditle">Project breakdown</svelte:fragment>
-        <div class="table-wrapper">
+        <svelte:fragment slot="title">Project breakdown</svelte:fragment>
+        <div class="table-wrapper" data-sveltekit-preload-data="off">
             <Table noMargin noStyles>
                 <TableHeader>
                     <TableCellHead width={285}>Project</TableCellHead>
@@ -71,8 +71,9 @@
                             <TableCell title="Usage">{format(project.usage)}</TableCell>
                             <TableCellLink
                                 title="Go to project usage"
-                                href={getProjectUsageLink(project.projectId)}
-                                >View project usage</TableCellLink>
+                                href={getProjectUsageLink(project.projectId)}>
+                                View project usage
+                            </TableCellLink>
                         </TableRow>
                     {/each}
                 </TableBody>

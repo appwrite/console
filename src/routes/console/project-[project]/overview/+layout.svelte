@@ -25,6 +25,7 @@
     import { formatNum } from '$lib/helpers/string';
     import { total } from '$lib/helpers/array';
     import type { Metric } from '$lib/sdk/usage';
+    import { periodToDates } from '$lib/layout/usage.svelte';
 
     $: projectId = $page.params.project;
     $: path = `/console/project-${projectId}/overview`;
@@ -34,7 +35,7 @@
     afterNavigate(handle);
 
     async function handle() {
-        const promise = usage.load(period);
+        const promise = changePeriod(period);
 
         if ($usage) {
             await promise;
@@ -43,7 +44,8 @@
 
     function changePeriod(newPeriod: UsagePeriods) {
         period = newPeriod;
-        usage.load(period);
+        const dates = periodToDates(newPeriod);
+        return usage.load(dates.start, dates.end, dates.period);
     }
 
     $: $registerCommands([
