@@ -87,10 +87,10 @@
             {:else}
                 <Alert type={alertType} isStandalone>
                     <span class="text">
-                        You've reached the {services} limit for the {tier} plan. You won't be able to
-                        create additional resources until you {#if $organization?.billingPlan === 'tier-0'}
-                            <Button link on:click={upgradeMethod}>upgrade</Button>.
-                        {/if}
+                        You've reached the {services} limit for the {tier} plan. <Button
+                            link
+                            on:click={upgradeMethod}>Upgrade</Button> your organization for additional
+                        resources.
                     </span>
                 </Alert>
             {/if}

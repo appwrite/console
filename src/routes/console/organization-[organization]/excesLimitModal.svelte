@@ -41,20 +41,31 @@
             users: totUsers > plan.users ? totUsers - plan.users : 0,
             executions:
                 usage?.executions[0] > plan.executions ? usage.executions[0] - plan.executions : 0,
-            members: members.total > plan.members ? members.total - (plan.members || Infinity) : 0
+            members: members?.total > plan.members ? members.total - (plan.members || Infinity) : 0
         };
     }
+
+    $: if (show) calculateExcess();
 </script>
 
 <Modal bind:show title="Limit reached">
     <svelte:fragment slot="title">
         Your usage exceeds the {tierToPlan($organization.billingPlan).name} plan limits
     </svelte:fragment>
-    <p class="text">
-        Usage for <b>{$organization.name}</b> organization has reached the limits of the {tierToPlan(
-            $organization.billingPlan
-        ).name} plan. Consider upgrading to increase your resource usage.
-    </p>
+    {#if $organization.billingPlan === 'tier-0'}
+        <p class="text">
+            Usage for <b>{$organization.name}</b> organization has reached the limits of the {tierToPlan(
+                $organization.billingPlan
+            ).name} plan. Consider upgrading to increase your resource usage.
+        </p>
+    {:else}
+        <p class="text">
+            Usage for <b>{$organization.name}</b> organization has reached the limits of the {tierToPlan(
+                $organization.billingPlan
+            ).name} plan. Excess usage fees will apply.
+        </p>
+    {/if}
+
     <PlanExcess {excess} currentTier={$organization.billingPlan} />
     <svelte:fragment slot="footer">
         <div class="u-flex u-main-space-between u-width-full-line">

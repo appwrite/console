@@ -31,7 +31,11 @@
 
 <Alert type="error">
     <svelte:fragment slot="title">
-        Changing your plan now will result in removal of organization members and more
+        {#if currentTier === 'tier-0'}
+            Your usage exceeds the {plan.name} plan limits
+        {:else}
+            Changing your plan now will result in removal of organization members and more
+        {/if}
     </svelte:fragment>
 
     {#if excess?.members > 0}
