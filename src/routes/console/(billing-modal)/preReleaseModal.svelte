@@ -37,8 +37,8 @@
         </p>
         <p class="text">
             Consider upgrading and take advantage of the extra resources that come with the Pro
-            plan. You can also use our Migrations service to self-host some of your projects
-            instead. Learn more in our <a
+            plan. You can also use Migrations to self-host some of your projects instead. Learn more
+            in our <a
                 class="link"
                 href="https://appwrite.io/docs/advanced/migrations"
                 target="_blank"

@@ -105,12 +105,14 @@
 {/if}
 
 {#if !$page.url.pathname.includes('/console/account') && $readOnly}
-    <Pill danger button on:click={() => ($showExcess = true)}>
-        <div>
-            <span class="icon-exclamation-circle" aria-hidden="true" />
-            <span>limit reached</span>
-        </div>
-    </Pill>
+    <div style="min-inline-size: fit-content">
+        <Pill danger button on:click={() => ($showExcess = true)}>
+            <div>
+                <span class="icon-exclamation-circle" aria-hidden="true" />
+                <span>limit reached</span>
+            </div>
+        </Pill>
+    </div>
 {/if}
 
 <div class="main-header-end">

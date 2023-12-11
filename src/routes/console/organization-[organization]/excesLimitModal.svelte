@@ -12,6 +12,7 @@
     import { wizard } from '$lib/stores/wizard';
     import ChangeOrganizationTierCloud from '../changeOrganizationTierCloud.svelte';
     import { goto } from '$app/navigation';
+    import { last } from '$lib/helpers/array';
 
     export let show = false;
     const plan = $plansInfo.plans.find((plan) => plan.$id === $organization.billingPlan);
@@ -30,31 +31,48 @@
     });
 
     function calculateExcess() {
-        const totBandwidth = usage?.bandwidth?.length > 0 ? usage.bandwidth[0].value : 0;
-        const totUsers = usage?.users?.length > 0 ? usage.users[0].value : 0;
+        const totBandwidth = usage?.bandwidth?.length > 0 ? last(usage.bandwidth).value : 0;
+        const totUsers = usage?.users?.length > 0 ? last(usage.users).value : 0;
+
         excess = {
             bandwidth: totBandwidth > plan.bandwidth ? totBandwidth - plan.bandwidth : 0,
             storage:
-                usage?.storage[0] > sizeToBytes(plan.storage, 'GB')
-                    ? usage.storage[0] - plan.storage
+                usage?.storage > sizeToBytes(plan.storage, 'GB')
+                    ? usage.storage - sizeToBytes(plan.storage, 'GB')
                     : 0,
-            users: totUsers > plan.users ? totUsers - plan.users : 0,
+            users: totUsers > (plan.users || Infinity) ? totUsers - plan.users : 0,
             executions:
-                usage?.executions[0] > plan.executions ? usage.executions[0] - plan.executions : 0,
-            members: members.total > plan.members ? members.total - (plan.members || Infinity) : 0
+                usage?.executions > sizeToBytes(plan.executions, 'GB')
+                    ? usage.executions - sizeToBytes(plan.executions, 'GB')
+                    : 0,
+            members:
+                members?.total > (plan.members || Infinity)
+                    ? members.total - (plan.members || Infinity)
+                    : 0
         };
     }
+
+    $: if (show) calculateExcess();
 </script>
 
 <Modal bind:show title="Limit reached">
     <svelte:fragment slot="title">
         Your usage exceeds the {tierToPlan($organization.billingPlan).name} plan limits
     </svelte:fragment>
-    <p class="text">
-        Usage for <b>{$organization.name}</b> organization has reached the limits of the {tierToPlan(
-            $organization.billingPlan
-        ).name} plan. Consider upgrading to increase your resource usage.
-    </p>
+    {#if $organization.billingPlan === 'tier-0'}
+        <p class="text">
+            Usage for <b>{$organization.name}</b> organization has reached the limits of the {tierToPlan(
+                $organization.billingPlan
+            ).name} plan. Consider upgrading to increase your resource usage.
+        </p>
+    {:else}
+        <p class="text">
+            Usage for <b>{$organization.name}</b> organization has reached the limits of the {tierToPlan(
+                $organization.billingPlan
+            ).name} plan. Excess usage fees will apply.
+        </p>
+    {/if}
+
     <PlanExcess {excess} currentTier={$organization.billingPlan} />
     <svelte:fragment slot="footer">
         <div class="u-flex u-main-space-between u-width-full-line">

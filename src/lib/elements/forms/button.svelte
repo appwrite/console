@@ -10,8 +10,9 @@
     export let github = false;
     export let text = false;
     export let danger = false;
-    export let disabled = false;
     export let round = false;
+    export let link = false;
+    export let disabled = false;
     export let external = false;
     export let href: string = null;
     export let fullWidth = false;
@@ -40,7 +41,7 @@
     }
 
     $: resolvedClasses = [
-        'button',
+        link ? 'link' : 'button',
         disabled && 'is-disabled',
         round && 'is-only-icon',
         secondary && 'is-secondary',

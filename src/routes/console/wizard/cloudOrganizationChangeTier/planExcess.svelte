@@ -15,6 +15,7 @@
     import { Button } from '$lib/elements/forms';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { abbreviateNumber } from '$lib/helpers/numbers';
+    import { formatNum } from '$lib/helpers/string';
 
     export let excess: {
         bandwidth?: number;
@@ -31,7 +32,11 @@
 
 <Alert type="error">
     <svelte:fragment slot="title">
-        Changing your plan now will result in removal of organization members and more
+        {#if currentTier === 'tier-0'}
+            Your usage exceeds the {plan.name} plan limits
+        {:else}
+            Changing your plan now will result in removal of organization members and more
+        {/if}
     </svelte:fragment>
 
     {#if excess?.members > 0}
@@ -44,16 +49,26 @@
         {/if}
     {/if}
     {#if excess?.bandwidth > 0 || excess?.executions > 0 || excess?.storage > 0 || excess?.users}
-        The Starter plan has a limit of one organization member. By proceeding, all but the creator
-        of the organization admin will be removed. Until you reduce your usage, you will be unable
-        to add to the resources listed below in all projects within your organization. The current
-        billing cycle will end on {toLocaleDate($organization.billingCurrentInvoiceDate)}. Any
-        executions, bandwidth, or messaging usage will be reset at that time.
+        Until you reduce your usage, you will be unable to add to the resources listed below in all
+        projects within your organization. The current billing cycle will end on {toLocaleDate(
+            $organization.billingCurrentInvoiceDate
+        )}. Any executions, bandwidth, or messaging usage will be reset at that time.
     {/if}
 
     <svelte:fragment slot="buttons">
-        <!-- TODO: add link when available -->
-        <Button text href="#/">Learn more</Button>
+        {#if currentTier === 'tier-0'}
+            <Button
+                text
+                href="https://appwrite.io/docs/advanced/platform/starter#reaching-resource-limits">
+                Learn more
+            </Button>
+        {:else if currentTier === 'tier-1'}
+            <Button
+                text
+                href="https://appwrite.io/docs/advanced/platform/pro#reaching-resource-limits">
+                Learn more
+            </Button>
+        {/if}
     </svelte:fragment>
 </Alert>
 
@@ -97,7 +112,12 @@
                 <TableCell title="excess">
                     <p class="u-color-text-danger">
                         <span class="icon-arrow-up" />
-                        {excess?.executions} executions
+                        <span
+                            title={excess?.executions
+                                ? excess.executions.toString()
+                                : 'executions'}>
+                            {formatNum(excess?.executions)} executions
+                        </span>
                     </p>
                 </TableCell>
             </TableRow>
@@ -111,7 +131,9 @@
                 <TableCell title="excess">
                     <p class="u-color-text-danger">
                         <span class="icon-arrow-up" />
-                        {excess?.users} users
+                        <span title={excess?.users ? excess.users.toString() : 'users'}>
+                            {formatNum(excess?.users)} users
+                        </span>
                     </p>
                 </TableCell>
             </TableRow>
