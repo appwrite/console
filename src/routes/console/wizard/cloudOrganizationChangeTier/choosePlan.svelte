@@ -134,8 +134,6 @@
                     <div class:u-opacity-50={disabled}>
                         {#if $organization.billingPlan === 'tier-0'}
                             <Pill disabled>CURRENT PLAN</Pill>
-                        {:else}
-                            <Pill>14 DAY FREE TRIAL</Pill>
                         {/if}
                     </div>
                 </svelte:fragment>
