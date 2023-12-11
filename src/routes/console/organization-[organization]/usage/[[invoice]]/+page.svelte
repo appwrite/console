@@ -56,7 +56,15 @@
                     class="link"
                     type="button">Learn more about plan usage limits.</button>
             </p>
-        {:else}
+        {:else if $organization.billingPlan === 'tier-1'}
+            <p class="text">
+                On the Scale plan, you'll be charged only for any usage that exceeds the thresholds
+                per resource listed below. <button
+                    on:click={() => ($showUsageRatesModal = true)}
+                    class="link"
+                    type="button">Learn more about plan usage limits.</button>
+            </p>
+        {:else if $organization.billingPlan === 'tier-0'}
             <p class="text">
                 If you exceed the limits of the {plan} plan, services for your organization's projects
                 may be disrupted.

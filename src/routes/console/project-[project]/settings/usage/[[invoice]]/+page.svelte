@@ -65,12 +65,18 @@
         {#if $organization.billingPlan === 'tier-2'}
             <p class="text">
                 On the Scale plan, you'll be charged only for any usage that exceeds the thresholds
-                per resource listed below. <button
+                per resource listed below. <Button
                     on:click={() => ($showUsageRatesModal = true)}
-                    class="link"
-                    type="button">Learn more about plan usage limits.</button>
+                    link>Learn more about plan usage limits.</Button>
             </p>
-        {:else}
+        {:else if $organization.billingPlan === 'tier-1'}
+            <p class="text">
+                On the Pro plan, you'll be charged only for any usage that exceeds the thresholds
+                per resource listed below. <Button
+                    on:click={() => ($showUsageRatesModal = true)}
+                    link>Learn more about plan usage limits.</Button>
+            </p>
+        {:else if $organization.billingPlan === 'tier-0'}
             <p class="text">
                 If you exceed the limits of the {plan} plan, services for your projects may be disrupted.
                 <button
