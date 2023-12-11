@@ -150,7 +150,7 @@
                 </p>
             {:else}
                 <p class="text">
-                    You are limited to {limit} GB of free storage on the {tier} plan. After this amount
+                    You are limited to {limit} GB storage on the {tier} plan. After this amount
                     <button
                         class="link"
                         type="button"
