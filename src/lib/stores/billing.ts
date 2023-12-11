@@ -126,11 +126,26 @@ export function checkForUsageFees(plan: Tier, id: PlanServices) {
     } else return false;
 }
 
+export function checkForProjectLimitation(id: PlanServices) {
+    switch (id) {
+        case 'databases':
+        case 'functions':
+        case 'buckets':
+        case 'members':
+        case 'platforms':
+        case 'webhooks':
+        case 'teams':
+            return true;
+
+        default:
+            return false;
+    }
+}
+
 export function isServiceLimited(serviceId: PlanServices, plan: Tier, total: number) {
     if (!total) return false;
     const limit = getServiceLimit(serviceId) || Infinity;
     const isLimited = limit !== 0 && limit < Infinity;
     const hasUsageFees = checkForUsageFees(plan, serviceId);
-    console.log(serviceId, plan, total, limit, isLimited, hasUsageFees);
     return isLimited && total >= limit && !hasUsageFees;
 }

@@ -4,7 +4,9 @@
         getServiceLimit,
         type PlanServices,
         showUsageRatesModal,
-        checkForUsageFees
+        checkForUsageFees,
+        readOnly,
+        checkForProjectLimitation
     } from '$lib/stores/billing';
     import { Alert, DropList, Heading } from '$lib/components';
     import { Pill } from '$lib/elements';
@@ -14,6 +16,7 @@
     import { wizard } from '$lib/stores/wizard';
     import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
     import { ContainerButton } from '.';
+    import { Button } from '$lib/elements/forms';
 
     export let isFlex = true;
     export let title: string;
@@ -31,6 +34,15 @@
 
     let showDropdown = false;
 
+    const { bandwidth, documents, storage, users, executions } = $organization?.billingLimits;
+    const limitedServices = [
+        { name: 'bandwidth', value: bandwidth },
+        { name: 'documents', value: documents },
+        { name: 'storage', value: storage },
+        { name: 'users', value: users },
+        { name: 'executions', value: executions }
+    ];
+
     const limit = getServiceLimit(serviceId) || Infinity;
     const upgradeMethod = () => {
         showDropdown = false;
@@ -39,8 +51,13 @@
     const dispatch = createEventDispatcher();
 
     $: tier = tierToPlan($organization?.billingPlan)?.name;
+    $: hasProjectLimitation =
+        checkForProjectLimitation(serviceId) && $organization?.billingPlan === 'tier-0';
+    $: hasUsageFees = hasProjectLimitation
+        ? checkForUsageFees($organization?.billingPlan, serviceId)
+        : false;
     $: isLimited = limit !== 0 && limit < Infinity;
-    $: hasUsageFees = checkForUsageFees($organization?.billingPlan, serviceId);
+    $: overflowingServices = limitedServices.filter((service) => service.value >= 0);
     $: isButtonDisabled = buttonDisabled || (isLimited && total >= limit && !hasUsageFees);
 
     onMount(() => {
@@ -48,32 +65,35 @@
     });
 </script>
 
-{#if isCloud && showAlert && total && limit !== 0 && total >= limit}
+<!-- Show only if on Cloud, alerts are enabled, and it isn't a project limited service -->
+{#if isCloud && showAlert && !hasProjectLimitation}
     <slot name="alert" {limit} {tier} {title} {upgradeMethod} {hasUsageFees}>
-        {#if hasUsageFees}
-            <Alert type={alertType} isStandalone>
-                <span class="text">
-                    You've reached the {title.toLocaleLowerCase()} limit for the {tier} plan.
-                    <button
-                        class="link"
-                        type="button"
-                        on:click|preventDefault={() => ($showUsageRatesModal = true)}
-                        >Excess usage fees will apply</button
-                    >.
-                </span>
-            </Alert>
-        {:else}
-            <Alert type={alertType} isStandalone>
-                <span class="text">
-                    You've reached the {title.toLowerCase()} limit for the {tier} plan.
+        {#if $readOnly && hasUsageFees}
+            {#if $organization?.billingPlan !== 'tier-0'}
+                <Alert type="info" isStandalone>
+                    <span class="text">
+                        You've reached the {overflowingServices.forEach((s) => {
+                            s.name.toLocaleLowerCase() + ', ';
+                        })} limit for the {tier} plan.
+                        <Button on:click={() => ($showUsageRatesModal = true)}
+                            >Excess usage fees will apply</Button
+                        >.
+                    </span>
+                </Alert>
+            {:else}
+                <Alert type={alertType} isStandalone>
+                    <span class="text">
+                        You've reached the {overflowingServices.forEach((s) => {
+                            s.name.toLocaleLowerCase() + ', ';
+                        })} limit for the {tier} plan.
 
-                    {#if $organization?.billingPlan === 'tier-0'}
-                        <button class="link" type="button" on:click|preventDefault={upgradeMethod}
-                            >Upgrade</button>
-                        for additional {title.toLocaleLowerCase()}.
-                    {/if}
-                </span>
-            </Alert>
+                        {#if $organization?.billingPlan === 'tier-0'}
+                            <Button on:click={upgradeMethod}>Upgrade</Button>
+                            for additional {title.toLocaleLowerCase()}.
+                        {/if}
+                    </span>
+                </Alert>
+            {/if}
         {/if}
     </slot>
 {/if}
@@ -83,32 +103,35 @@
         <Heading tag={titleTag} size={titleSize}>{title}</Heading>
         {#if isCloud && isLimited}
             <DropList bind:show={showDropdown} width="16">
-                <Pill button on:click={() => (showDropdown = !showDropdown)}>
-                    <span class="icon-info" />{title} limited
-                </Pill>
+                {#if hasProjectLimitation}
+                    <Pill button on:click={() => (showDropdown = !showDropdown)}>
+                        <span class="icon-info" />{total}/{limit}
+                        {title} used
+                    </Pill>
+                {:else}
+                    <Pill button on:click={() => (showDropdown = !showDropdown)}>
+                        <span class="icon-info" />{title} limited
+                    </Pill>
+                {/if}
                 <svelte:fragment slot="list">
                     <slot name="tooltip" {limit} {tier} {title} {upgradeMethod} {hasUsageFees}>
-                        {#if hasUsageFees}
-                            <p class="text">
-                                You are limited to {limit}
-                                {title.toLocaleLowerCase()} per project on the {tier} plan.
-                                <button
-                                    class="link"
-                                    type="button"
-                                    on:click|preventDefault={() => ($showUsageRatesModal = true)}
-                                    >Excess usage fees will apply</button
-                                >.
-                            </p>
-                        {:else}
+                        {#if hasProjectLimitation}
                             <p class="text">
                                 Your are limited to {limit}
                                 {title.toLocaleLowerCase()} per project on the {tier} plan.
-                                {#if $organization?.billingPlan === 'tier-0'}<button
-                                        class="link"
-                                        type="button"
-                                        on:click|preventDefault={upgradeMethod}>Upgrade</button>
+                                {#if $organization?.billingPlan === 'tier-0'}<Button
+                                        link
+                                        on:click={upgradeMethod}>Upgrade</Button>
                                     for addtional {title.toLocaleLowerCase()}.
                                 {/if}
+                            </p>
+                        {:else if hasUsageFees}
+                            <p class="text">
+                                You are limited to {limit}
+                                {title.toLocaleLowerCase()} per project on the {tier} plan.
+                                <Button link on:click={() => ($showUsageRatesModal = true)}
+                                    >Excess usage fees will apply</Button
+                                >.
                             </p>
                         {/if}
                     </slot>
