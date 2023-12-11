@@ -117,7 +117,6 @@
                 </div>
                 <BarChart
                     options={{
-                        splitNumber: 3,
                         yAxis: {
                             axisLabel: {
                                 formatter: (value) =>
@@ -170,7 +169,6 @@
             <BarChart
                 options={{
                     yAxis: {
-                        splitNumber: 3,
                         axisLabel: {
                             formatter: formatNum
                         }
