@@ -21,7 +21,6 @@
             dispatch('validation', couponData);
             coupon = null;
         } catch (error) {
-            console.log(error);
             couponData.code = coupon;
             couponData.status = 'error';
         }

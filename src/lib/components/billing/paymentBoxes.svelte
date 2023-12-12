@@ -66,7 +66,7 @@
                 <div class="loader"></div>
             </div>
             <div id="payment-element" bind:this={element}>
-                <!-- Elements will create form elements here -->
+                <!-- Stripe will create form elements here -->
             </div>
         </div>
     </FormList>

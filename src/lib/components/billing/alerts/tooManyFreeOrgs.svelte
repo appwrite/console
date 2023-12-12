@@ -9,13 +9,5 @@
     <HeaderAlert title="You are limited to one free organization per account">
         All but one organization will be automatically upgraded to a Pro plan on <b>01 Feb 2024</b>.
         You can add a payment method or transfer projects from your settings.
-        <!-- <svelte:fragment slot="buttons">
-            <Button
-                href={`${base}/console/organization-${$failedInvoice?.teamId}/billing#paymentMethods`}
-                secondary
-                fullWidthMobile>
-                <span class="text">Update billing details</span>
-            </Button>
-        </svelte:fragment> -->
     </HeaderAlert>
 {/if}

@@ -12,7 +12,7 @@ import { diffDays, toLocaleDate } from '$lib/helpers/date';
 import { addNotification, notifications } from './notifications';
 import { goto } from '$app/navigation';
 import { base } from '$app/paths';
-import TooManyFreOrgs from '$lib/components/billing/alerts/tooManyFreOrgs.svelte';
+import TooManyFreOrgs from '$lib/components/billing/alerts/tooManyFreeOrgs.svelte';
 import { showPostReleaseModal } from '$routes/console/store';
 import MarkedForDeletion from '$lib/components/billing/alerts/markedForDeletion.svelte';
 

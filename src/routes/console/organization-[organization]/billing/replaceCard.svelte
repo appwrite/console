@@ -156,7 +156,7 @@
                             autofocus={true} />
 
                         <div id="payment-element">
-                            <!-- Elements will create form elements here -->
+                            <!-- Stripe will create form elements here -->
                         </div>
                     </FormList>
                 {/if}
