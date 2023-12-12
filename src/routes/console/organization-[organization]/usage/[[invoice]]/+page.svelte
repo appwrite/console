@@ -58,7 +58,7 @@
             </p>
         {:else if $organization.billingPlan === 'tier-1'}
             <p class="text">
-                On the Scale plan, you'll be charged only for any usage that exceeds the thresholds
+                On the Pro plan, you'll be charged only for any usage that exceeds the thresholds
                 per resource listed below. <button
                     on:click={() => ($showUsageRatesModal = true)}
                     class="link"
