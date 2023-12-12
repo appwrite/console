@@ -1,5 +1,6 @@
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
+    import { page } from '$app/stores';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Card } from '$lib/components';
     import CustomId from '$lib/components/customId.svelte';
@@ -10,12 +11,26 @@
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
+    import { wizard } from '$lib/stores/wizard';
     import { isCloud } from '$lib/system';
     import { ID } from '@appwrite.io/console';
+    import { onMount } from 'svelte';
+    import CreateOrganizationCloud from '../createOrganizationCloud.svelte';
 
     let name: string;
     let id: string;
     let showCustomId = false;
+
+    onMount(() => {
+        if (isCloud) {
+            if ($page.url.searchParams.has('type')) {
+                const paramType = $page.url.searchParams.get('type');
+                if (paramType === 'createPro') {
+                    wizard.start(CreateOrganizationCloud);
+                }
+            }
+        }
+    });
 
     async function createProject() {
         try {
