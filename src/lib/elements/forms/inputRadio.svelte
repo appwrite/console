@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { FormItem, Helper } from '.';
+    import { FormItem, Helper, Label } from '.';
 
-    export let label: string;
+    export let label: string = null;
     export let showLabel = true;
     export let id: string;
     export let group: string;
@@ -40,7 +40,13 @@
             bind:group
             bind:this={element}
             on:invalid={handleInvalid} />
-        <label class:u-hide={!showLabel} class="label" for={id}>{label}</label>
+        <Label {required} hide={!showLabel} for={id}>
+            {#if label}
+                {label}
+            {:else}
+                <slot />
+            {/if}
+        </Label>
     </div>
     {#if error}
         <Helper type="warning">{error}</Helper>

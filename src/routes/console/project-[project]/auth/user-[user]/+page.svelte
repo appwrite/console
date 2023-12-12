@@ -2,6 +2,7 @@
     import { Container } from '$lib/layout';
     import DangerZone from './dangerZone.svelte';
     import UpdateEmail from './updateEmail.svelte';
+    import UpdateLabels from './updateLabels.svelte';
     import UpdateName from './updateName.svelte';
     import UpdatePassword from './updatePassword.svelte';
     import UpdatePhone from './updatePhone.svelte';
@@ -15,6 +16,7 @@
     <UpdateEmail />
     <UpdatePhone />
     <UpdatePassword />
+    <UpdateLabels />
     <UpdatePrefs />
     <DangerZone />
 </Container>

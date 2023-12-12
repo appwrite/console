@@ -1,7 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { Copy, Tab, Tabs } from '$lib/components';
-    import { Pill } from '$lib/elements';
+    import { Id, Tab, Tabs } from '$lib/components';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover, CoverTitle } from '$lib/layout';
     import { func } from './store';
@@ -17,15 +16,20 @@
             hasChildren: true
         },
         {
-            href: `${path}/usage`,
-            title: 'Usage',
-            event: 'sage',
-            hasChildren: true
-        },
-        {
             href: `${path}/executions`,
             title: 'Executions',
             event: 'executions',
+            hasChildren: true
+        },
+        {
+            href: `${path}/domains`,
+            title: 'Domains',
+            event: 'domains'
+        },
+        {
+            href: `${path}/usage`,
+            title: 'Usage',
+            event: 'sage',
             hasChildren: true
         },
         {
@@ -41,12 +45,9 @@
         <CoverTitle href={`/console/project-${projectId}/functions`}>
             {$func?.name}
         </CoverTitle>
-        <Copy value={$func?.$id} event="function">
-            <Pill button>
-                <span class="icon-duplicate" aria-hidden="true" />
-                Function ID
-            </Pill>
-        </Copy>
+        {#if $func?.$id}
+            <Id value={$func.$id} event="function">{$func.$id}</Id>
+        {/if}
     </svelte:fragment>
 
     <Tabs>

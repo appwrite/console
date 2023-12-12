@@ -3,11 +3,14 @@
     import { Pill } from '$lib/elements';
     import { InputText, Button, FormList } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { ID } from '@appwrite.io/console';
+    import Alert from '$lib/components/alert.svelte';
+    import { isCloud } from '$lib/system';
 
     export let show = false;
 
@@ -18,9 +21,9 @@
 
     const dispatch = createEventDispatcher();
 
-    const create = async () => {
+    async function create() {
         try {
-            const org = await sdkForConsole.teams.create(id ?? 'unique()', name);
+            const org = await sdk.forConsole.teams.create(id ?? ID.unique(), name);
             await invalidate(Dependencies.ACCOUNT);
             dispatch('created');
             await goto(`/console/organization-${org.$id}`);
@@ -28,21 +31,35 @@
                 type: 'success',
                 message: `${name} has been created`
             });
-            trackEvent('submit_organization_create');
+            trackEvent(Submit.OrganizationCreate, {
+                customId: !!id
+            });
             name = null;
             id = null;
             show = false;
-        } catch ({ message }) {
-            error = message;
+        } catch (e) {
+            error = e.message;
+            trackError(e, Submit.OrganizationCreate);
         }
-    };
+    }
 </script>
 
-<Modal {error} on:submit={create} size="big" bind:show>
-    <svelte:fragment slot="header">Create New Organization</svelte:fragment>
+<Modal title="Create new organization" {error} onSubmit={create} size="big" bind:show>
+    {#if isCloud}
+        <Alert type="info">
+            <svelte:fragment slot="title">Get ready for Appwrite Pro</svelte:fragment>
+            We will soon introduce the much-anticipated Pro plan. Your account will continue to have
+            access to <b>one free Starter organization</b>. If you manage more than one
+            organization, you will need to either upgrade to the Pro plan, transfer your projects to
+            a Pro organization, or migrate to self-hosting.
+            <svelte:fragment slot="buttons">
+                <Button href="https://appwrite.io/pricing" external text>Learn more</Button>
+            </svelte:fragment>
+        </Alert>
+    {/if}
     <FormList>
         <InputText
-            id="name"
+            id="organization-name"
             label="Name"
             placeholder="Enter name"
             bind:value={name}

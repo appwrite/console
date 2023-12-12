@@ -1,11 +1,11 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { CardGrid, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form, InputEmail } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { user } from './store';
 
@@ -16,25 +16,31 @@
 
     async function updateEmail() {
         try {
-            await sdkForProject.users.updateEmail($user.$id, userEmail);
-            invalidate(Dependencies.USER);
+            await sdk.forProject.users.updateEmail($user.$id, userEmail);
+            await invalidate(Dependencies.USER);
             addNotification({
                 message: 'Email has been updated',
                 type: 'success'
             });
-            trackEvent('submit_user_update_email');
+            trackEvent(Submit.UserUpdateEmail);
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
+            trackError(error, Submit.UserUpdateEmail);
         }
     }
 </script>
 
-<Form on:submit={updateEmail}>
+<Form onSubmit={updateEmail}>
     <CardGrid>
-        <Heading tag="h6" size="7">Update Email</Heading>
+        <Heading tag="h6" size="7">Email</Heading>
+        <p>
+            Update user's email. An Email should be formatted as: <span class="inline-code"
+                >name@example.com</span
+            >.
+        </p>
         <svelte:fragment slot="aside">
             <ul>
                 <InputEmail

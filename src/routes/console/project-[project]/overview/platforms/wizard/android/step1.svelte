@@ -2,39 +2,38 @@
     import { page } from '$app/stores';
     import { FormList, InputText } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { createPlatform } from '../store';
-    import { wizard } from '$lib/stores/wizard';
-    import { app } from '$lib/stores/app';
-    import Light from './light.svg';
-    import Dark from './dark.svg';
-
-    $wizard.media = $app.themeInUse === 'dark' ? Dark : Light;
+    import { Submit, trackEvent } from '$lib/actions/analytics';
 
     const projectId = $page.params.project;
 
     async function beforeSubmit() {
         if ($createPlatform.$id) {
-            await sdkForConsole.projects.updatePlatform(
+            await sdk.forConsole.projects.updatePlatform(
                 projectId,
                 $createPlatform.$id,
                 $createPlatform.name,
-                $createPlatform.key,
-                $createPlatform.store,
-                $createPlatform.hostname
+                $createPlatform.key || undefined,
+                $createPlatform.store || undefined,
+                $createPlatform.hostname || undefined
             );
 
             return;
         }
 
-        const platform = await sdkForConsole.projects.createPlatform(
+        const platform = await sdk.forConsole.projects.createPlatform(
             projectId,
             'android',
             $createPlatform.name,
+            $createPlatform.key || undefined,
             undefined,
-            undefined,
-            $createPlatform.hostname
+            undefined
         );
+
+        trackEvent(Submit.PlatformCreate, {
+            type: 'android'
+        });
 
         $createPlatform.$id = platform.$id;
     }
@@ -50,11 +49,11 @@
             required
             bind:value={$createPlatform.name} />
         <InputText
-            id="hostname"
+            id="key"
             label="Package Name"
             placeholder="com.company.appname"
             tooltip="Your package name is generally the applicationId in your app-level build.gradle file."
             required
-            bind:value={$createPlatform.hostname} />
+            bind:value={$createPlatform.key} />
     </FormList>
 </WizardStep>

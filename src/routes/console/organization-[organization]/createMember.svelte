@@ -1,43 +1,51 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { Modal } from '$lib/components';
+    import { Alert, Modal } from '$lib/components';
     import { InputText, InputEmail, Button, FormList } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
     import { organization } from '$lib/stores/organization';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { isCloud } from '$lib/system';
+    import { plansInfo } from '$lib/stores/billing';
 
     export let showCreate = false;
 
     const dispatch = createEventDispatcher();
 
-    let email: string, name: string, error: string;
     const url = `${$page.url.origin}/invite`;
+    $: plan = $plansInfo?.plans?.find((p) => p.$id === $organization?.billingPlan);
 
-    const create = async () => {
+    let email: string, name: string, error: string;
+
+    async function create() {
         try {
-            const team = await sdkForConsole.teams.createMembership(
+            const team = await sdk.forConsole.teams.createMembership(
                 $organization.$id,
-                email,
                 ['owner'],
                 url,
-                name
+                email,
+                undefined,
+                undefined,
+                name || undefined
             );
-            invalidate(Dependencies.ACCOUNT);
+            await invalidate(Dependencies.ACCOUNT);
+            await invalidate(Dependencies.ORGANIZATION);
             showCreate = false;
             addNotification({
                 type: 'success',
                 message: `Invite has been sent to ${email}`
             });
-            trackEvent('submit_member_create');
+            trackEvent(Submit.MemberCreate);
             dispatch('created', team);
-        } catch ({ message }) {
-            error = message;
+        } catch (e) {
+            error = e.message;
+            trackError(e, Submit.MemberCreate);
         }
-    };
+    }
 
     $: if (!showCreate) {
         error = null;
@@ -46,16 +54,30 @@
     }
 </script>
 
-<Modal {error} size="big" bind:show={showCreate} on:submit={create}>
-    <svelte:fragment slot="header">Invite Member</svelte:fragment>
+<Modal title="Invite Member" {error} size="big" bind:show={showCreate} onSubmit={create}>
+    {#if isCloud}
+        <Alert type="info">
+            {#if $organization?.billingPlan === 'tier-2'}
+                You can add unlimited organization members on the {plan.name} plan at no cost.
+            {:else if $organization?.billingPlan === 'tier-1'}
+                You can add unlimited organization members on the {plan.name} plan for
+                <b>${plan.addons.member.price} each per billing period</b>.
+            {/if}
+        </Alert>
+    {/if}
     <FormList>
         <InputEmail
+            required
             id="email"
             label="Email"
             placeholder="Enter email"
             autofocus={true}
             bind:value={email} />
-        <InputText id="name" label="Name (optional)" placeholder="Enter name" bind:value={name} />
+        <InputText
+            id="member-name"
+            label="Name (optional)"
+            placeholder="Enter name"
+            bind:value={name} />
     </FormList>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>

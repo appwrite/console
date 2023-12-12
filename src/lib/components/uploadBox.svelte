@@ -1,7 +1,7 @@
 <script lang="ts">
     import { uploader } from '$lib/stores/uploader';
     import { Pill } from '$lib/elements';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { Avatar } from '$lib/components';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
@@ -9,7 +9,7 @@
     let hovering = false;
 
     const getPreview = (fileId: string, bucketId: string) =>
-        sdkForProject.storage.getFilePreview(bucketId, fileId, 32, 32).toString() + '&mode=admin';
+        sdk.forProject.storage.getFilePreview(bucketId, fileId, 32, 32).toString() + '&mode=admin';
 </script>
 
 {#if $uploader?.isOpen}
@@ -20,7 +20,7 @@
                 <span class="amount">{$uploader.files.length}</span>
             </h4>
             <button
-                class="icon-button"
+                class="upload-box-button"
                 class:is-open={!$uploader.isCollapsed}
                 aria-label="toggle upload box"
                 on:click={() => uploader.toggle()}>
@@ -28,7 +28,7 @@
             </button>
             <button
                 on:click={() => uploader.reset()}
-                class="icon-button"
+                class="upload-box-button"
                 aria-label="close upload box">
                 <span class="icon-x" aria-hidden="true" />
             </button>
@@ -52,7 +52,7 @@
                             <label for={file.name} class="file-name u-trim">{file.name}</label>
 
                             <button
-                                class="icon-button"
+                                class="upload-box-button"
                                 aria-label="Failed"
                                 on:mouseenter={() => (hovering = true)}
                                 on:mouseleave={() => (hovering = false)}
@@ -74,7 +74,7 @@
                             <label for={file.name} class="file-name u-trim">{file.name}</label>
                             <Pill danger>Failed</Pill>
                             <button
-                                class="icon-button"
+                                class="upload-box-button"
                                 aria-label="Failed"
                                 on:click|preventDefault={() => uploader.removeFromQueue(file.$id)}>
                                 <span class="icon-x" />

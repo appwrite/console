@@ -1,17 +1,19 @@
-import type { Models } from '@aw-labs/appwrite-console';
-import { sdkForProject } from '$lib/stores/sdk';
+import type { Metric, UsageDatabases } from '$lib/sdk/usage';
+import { sdk } from '$lib/stores/sdk';
 import type { PageLoad } from './$types';
+import { error } from '@sveltejs/kit';
 
-export const load: PageLoad = async ({ params, parent }) => {
-    await parent();
+export const load: PageLoad = async ({ params }) => {
     const { period } = params;
-    const response = await sdkForProject.databases.getUsage(period ?? '30d');
-
-    return {
-        count: response.databasesCount as unknown as Models.Metric[],
-        created: response.databasesCreate as unknown as Models.Metric[],
-        read: response.databasesRead as unknown as Models.Metric[],
-        updated: response.databasesUpdate as unknown as Models.Metric[],
-        deleted: response.databasesDelete as unknown as Models.Metric[]
-    };
+    try {
+        const response = (await sdk.forProject.databases.getUsage(
+            period ?? '30d'
+        )) as unknown as UsageDatabases;
+        return {
+            databasesTotal: response.databasesTotal,
+            databases: response.databases as Metric[]
+        };
+    } catch (e) {
+        throw error(e.code, e.message);
+    }
 };

@@ -6,10 +6,7 @@
         | 'completed'
         | 'processing'
         | 'ready'
-        | 'building'
-        | string = null;
-
-    //TODO: Remove type string once SDK is updated
+        | 'building';
 </script>
 
 <div
@@ -21,5 +18,5 @@
     {#if status}
         <span class="status-icon" />
     {/if}
-    <span class="text"><slot /></span>
+    <span class="text" data-private><slot /></span>
 </div>

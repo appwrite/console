@@ -4,45 +4,46 @@
     import { Pill } from '$lib/elements';
     import { FormList, InputText } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
-    import { sdkForConsole } from '$lib/stores/sdk';
-    import { wizard } from '$lib/stores/wizard';
+    import { sdk } from '$lib/stores/sdk';
     import { createPlatform } from '../store';
-    import { app } from '$lib/stores/app';
-    import Light from './light.svg';
-    import Dark from './dark.svg';
+    import { Submit, trackEvent } from '$lib/actions/analytics';
 
     const projectId = $page.params.project;
-    const suggestions = ['*.vercel.app', '*.netlify.app', '*.gitpod.app'];
+    const suggestions = ['*.vercel.app', '*.netlify.app', '*.gitpod.io'];
 
-    $wizard.media = $app.themeInUse === 'dark' ? Dark : Light;
     async function beforeSubmit() {
         if ($createPlatform.$id) {
-            await sdkForConsole.projects.updatePlatform(
+            await sdk.forConsole.projects.updatePlatform(
                 projectId,
                 $createPlatform.$id,
                 $createPlatform.name,
-                $createPlatform.key,
-                $createPlatform.store,
-                $createPlatform.hostname
+                $createPlatform.key || undefined,
+                $createPlatform.store || undefined,
+                $createPlatform.hostname || undefined
             );
 
             return;
         }
 
-        const platform = await sdkForConsole.projects.createPlatform(
+        const platform = await sdk.forConsole.projects.createPlatform(
             projectId,
             'web',
             $createPlatform.name,
             undefined,
             undefined,
-            $createPlatform.hostname
+            $createPlatform.hostname || undefined
         );
+
+        trackEvent(Submit.PlatformCreate, {
+            type: 'web'
+        });
+
         $createPlatform.$id = platform.$id;
     }
 </script>
 
 <WizardStep {beforeSubmit}>
-    <svelte:fragment slot="title">Register your Web app</svelte:fragment>
+    <svelte:fragment slot="title">Register your hostname</svelte:fragment>
     <FormList>
         <InputText
             id="name"

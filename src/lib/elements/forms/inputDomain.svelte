@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount } from 'svelte';
-    import { FormItem, Helper } from '.';
+    import { FormItem, Helper, Label } from '.';
 
     export let label: string;
     export let showLabel = true;
@@ -15,7 +15,7 @@
     export let maxlength: number = null;
 
     // https://www.geeksforgeeks.org/how-to-validate-a-domain-name-using-regular-expression/
-    const pattern = String.raw`^(?!-)[A-Za-z0-9-]+([\-\.]{1}[a-z0-9]+)*\.[A-Za-z]{2,6}$`;
+    const pattern = String.raw`^(?!-)[A-Za-z0-9-]+([\-\.]{1}[a-z0-9]+)*\.[A-Za-z]{2,18}$`;
 
     let element: HTMLInputElement;
     let error: string;
@@ -47,7 +47,10 @@
 </script>
 
 <FormItem>
-    <label class:u-hide={!showLabel} class="label" for={id}>{label}</label>
+    <Label {required} hide={!showLabel} for={id}>
+        {label}
+    </Label>
+
     <div class="input-text-wrapper">
         <input
             {id}

@@ -1,6 +1,7 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
+    import { trackEvent } from '$lib/actions/analytics';
     import { onMount } from 'svelte';
     import { onDestroy } from 'svelte';
 
@@ -28,27 +29,32 @@
         }
     });
 
-    $: valueChange(search);
+    $: valueChange(search ?? '');
 
-    const valueChange = (value: string) => {
+    function valueChange(value: string) {
         clearTimeout(timer);
-        timer = setTimeout(async () => {
+        timer = setTimeout(() => {
             const url = new URL($page.url);
-            if (url.search === value) {
+            const previous = url.searchParams.get('search') ?? '';
+
+            if (previous === value) {
                 return;
             }
-            /**
-             * Reset to first page if search changes.
-             */
+
             if ($page.data.page > 1) {
-                url.pathname = url.pathname.replace(new RegExp(`/${$page.data.page}*$`), '/');
+                url.searchParams.delete('page');
             }
 
-            url.search = value;
+            if (value === '') {
+                url.searchParams.delete('search');
+            } else {
+                url.searchParams.set('search', value);
+            }
 
-            goto(url, { keepfocus: true });
+            trackEvent('search');
+            goto(url, { keepFocus: true });
         }, debounce);
-    };
+    }
 </script>
 
 <div class="u-flex u-gap-12 common-section u-main-space-between">
@@ -63,7 +69,11 @@
                 bind:value={search} />
             <span class="icon-search" aria-hidden="true" />
             {#if isWithEndButton && search}
-                <button class="x-button" aria-label="Clear search" on:click={() => (search = '')}>
+                <button
+                    class="button is-text is-only-icon"
+                    style="--button-size:1.5rem;"
+                    aria-label="Clear search"
+                    on:click={() => (search = '')}>
                     <span class="icon-x" aria-hidden="true" />
                 </button>
             {/if}

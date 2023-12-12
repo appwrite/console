@@ -1,7 +1,7 @@
 <script lang="ts">
     import { tooltip } from '$lib/actions/tooltip';
-    import { sdkForProject } from '$lib/stores/sdk';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import { sdk } from '$lib/stores/sdk';
+    import type { Models } from '@appwrite.io/console';
     import { tick } from 'svelte';
     import { AvatarInitials } from '../';
     import Output from '../output.svelte';
@@ -14,15 +14,17 @@
 
     async function getData(
         permission: string
-    ): Promise<Partial<Models.User<Record<string, unknown>> & Models.Team>> {
+    ): Promise<
+        Partial<Models.User<Record<string, unknown>> & Models.Team<Record<string, unknown>>>
+    > {
         const role = permission.split(':')[0];
         const id = permission.split(':')[1].split('/')[0];
         if (role === 'user') {
-            const user = await sdkForProject.users.get(id);
+            const user = await sdk.forProject.users.get(id);
             return user;
         }
         if (role === 'team') {
-            const team = await sdkForProject.teams.get(id);
+            const team = await sdk.forProject.teams.get(id);
             return team;
         }
     }
@@ -53,64 +55,67 @@
                             })
                             .finally(() => {
                                 tick().then(() => {
-                                    instance.setContent(content.innerHTML);
+                                    instance.setContent(content);
                                 });
                             });
                     }
                 }}>
                 {role}
             </div>
-            <div class="u-hide" bind:this={content}>
-                {#if data}
-                    {@const isUser = role.startsWith('user')}
-                    {@const isTeam = role.startsWith('team')}
-                    {@const isAnonymous = !data.email && !data.phone}
-                    <div class="user-profile">
-                        {#if isAnonymous}
-                            <div class="avatar is-size-small ">
-                                <span class="icon-anonymous" aria-hidden="true" />
-                            </div>
-                        {:else if data.name}
-                            <AvatarInitials name={data.name} size={40} />
-                        {:else}
-                            <div class="avatar is-size-small ">
-                                <span class="icon-minus-sm" aria-hidden="true" />
-                            </div>
-                        {/if}
-                        <span class="user-profile-info is-only-desktop">
-                            <span class="name">
-                                {data.name
-                                    ? data.name
-                                    : data?.email
-                                    ? data?.email
-                                    : data?.phone
-                                    ? data?.phone
-                                    : '-'}
-                            </span>
-                            <Output value={data.$id}>{role}</Output>
-                        </span>
-                        {#if (isUser && (data?.email || data?.phone)) || isTeam}
-                            <span class="user-profile-sep" />
-
-                            <span class="user-profile-empty-column" />
+            <div class="u-hide">
+                <div bind:this={content}>
+                    {#if data}
+                        {@const isUser = role.startsWith('user')}
+                        {@const isTeam = role.startsWith('team')}
+                        {@const isAnonymous = !data.email && !data.phone && isUser}
+                        <div class="user-profile">
+                            {#if isAnonymous}
+                                <div class="avatar is-size-small">
+                                    <span class="icon-anonymous" aria-hidden="true" />
+                                </div>
+                            {:else if data.name}
+                                <AvatarInitials name={data.name} size={40} />
+                            {:else}
+                                <div class="avatar is-size-small">
+                                    <span class="icon-minus-sm" aria-hidden="true" />
+                                </div>
+                            {/if}
                             <span class="user-profile-info is-only-desktop">
-                                {#if isUser}
-                                    <p class="text u-x-small">{data?.email}</p>
-                                    <p class="text u-x-small">{data?.phone}</p>
-                                {:else if isTeam}
-                                    <p class="text u-x-small">Members: {data?.total}</p>
-                                {/if}
+                                <span class="name">
+                                    {data.name ?? data?.email ?? data?.phone ?? '-'}
+                                </span>
+                                <Output value={data.$id}>{role}</Output>
                             </span>
-                        {/if}
-                    </div>
-                {:else}
-                    Not found.
-                {/if}
+                            {#if (isUser && (data?.email || data?.phone)) || isTeam}
+                                <span class="user-profile-sep" />
+
+                                <span class="user-profile-empty-column" />
+                                <span class="user-profile-info is-only-desktop">
+                                    {#if isUser}
+                                        <div class="u-grid u-gap-4">
+                                            {#if data?.email}
+                                                <p class="text u-x-small">Email: {data?.email}</p>
+                                            {/if}
+                                            {#if data?.phone}
+                                                <p class="text u-x-small">Phone: {data?.phone}</p>
+                                            {/if}
+                                        </div>
+                                    {:else if isTeam}
+                                        <p class="text u-x-small">Members: {data?.total}</p>
+                                    {/if}
+                                </span>
+                            {/if}
+                        </div>
+                    {:else}
+                        Not found.
+                    {/if}
+                </div>
             </div>
         {/if}
     </div>
 </div>
 
+<!-- svelte-ignore css-unused-selector -->
 <style lang="scss" global>
     .tippy-user .tippy-box {
         --p-drop-bg-color: var(--color-neutral-500);

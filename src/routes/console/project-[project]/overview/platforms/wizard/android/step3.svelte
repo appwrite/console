@@ -1,9 +1,10 @@
 <script lang="ts">
     import { Code } from '$lib/components';
+    import Id from '$lib/components/id.svelte';
     import { WizardStep } from '$lib/layout';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
 
-    const { endpoint, project } = sdkForProject.client.config;
+    const { endpoint, project } = sdk.forProject.client.config;
     const code = `import io.appwrite.Client
 import io.appwrite.services.Account
 
@@ -14,12 +15,13 @@ val client = Client(context)
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">Let's get coding</svelte:fragment>
+    <svelte:fragment slot="title">Initialize SDK</svelte:fragment>
 
-    <h2 class="heading-level-7">Init your SDK</h2>
+    <h2 class="heading-level-7">Initialize your SDK</h2>
     <p>
-        Now that you've downloaded the SDK, it's time to initialze it. Use your project ID, which
-        can be found in your project settings page.
+        Initialize your SDK by pointing the client to your Appwrite project using your <Id
+            value={project}>Project ID</Id
+        >.
     </p>
     <Code
         label="Android SDK"

@@ -1,17 +1,21 @@
 <script lang="ts">
     import { onMount } from 'svelte';
-    import { FormItem, Helper } from '.';
+    import { FormItem, Helper, Label } from '.';
+    import NullCheckbox from './nullCheckbox.svelte';
 
     export let label: string;
+    export let optionalText: string | undefined = undefined;
     export let showLabel = true;
     export let id: string;
     export let value = '';
     export let placeholder = '';
     export let required = false;
+    export let nullable = false;
     export let disabled = false;
     export let readonly = false;
     export let autofocus = false;
     export let autocomplete = false;
+    export let tooltip: string = null;
 
     let element: HTMLInputElement;
     let error: string;
@@ -25,7 +29,7 @@
     const handleInvalid = (event: Event) => {
         event.preventDefault();
         if (element.validity.typeMismatch) {
-            error = 'Your email should be formatted as: name@example.com';
+            error = 'Emails should be formatted as: name@example.com';
             return;
         }
         if (element.validity.valueMissing) {
@@ -38,11 +42,29 @@
     $: if (value) {
         error = null;
     }
+
+    let prevValue = '';
+    function handleNullChange(e: CustomEvent<boolean>) {
+        const isNull = e.detail;
+        if (isNull) {
+            prevValue = value;
+            value = null;
+        } else {
+            value = prevValue;
+        }
+    }
 </script>
 
 <FormItem>
-    <label class:u-hide={!showLabel} class="label" for={id}>{label}</label>
-    <div class="input-text-wrapper">
+    <Label {required} {optionalText} {tooltip} hide={!showLabel} for={id}>
+        {label}
+    </Label>
+
+    <div
+        class:input-text-wrapper={!$$slots.default}
+        class:u-flex={$$slots.default}
+        class:u-gap-16={$$slots.default}
+        class:u-cross-center={$$slots.default}>
         <input
             {id}
             {placeholder}
@@ -55,6 +77,15 @@
             bind:value
             bind:this={element}
             on:invalid={handleInvalid} />
+        {#if nullable && !required}
+            <ul
+                class="buttons-list u-cross-center u-gap-8 u-position-absolute u-inset-block-start-8 u-inset-block-end-8 u-inset-inline-end-12">
+                <li class="buttons-list-item">
+                    <NullCheckbox checked={value === null} on:change={handleNullChange} />
+                </li>
+            </ul>
+        {/if}
+        <slot />
     </div>
     {#if error}
         <Helper type="warning">{error}</Helper>

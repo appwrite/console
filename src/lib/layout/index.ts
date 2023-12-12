@@ -15,3 +15,7 @@ export { default as Unauthenticated } from './unauthenticated.svelte';
 export { default as Usage, type UsagePeriods } from './usage.svelte';
 export { default as Activity } from './activity.svelte';
 export { default as Progress } from './progress.svelte';
+export { default as GridHeader } from './gridHeader.svelte';
+export { default as ContainerHeader } from './containerHeader.svelte';
+export { default as HeaderAlert } from './headerAlert.svelte';
+export { default as ContainerButton } from './containerButton.svelte';

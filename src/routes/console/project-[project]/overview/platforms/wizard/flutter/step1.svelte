@@ -1,17 +1,11 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { Alert } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { FormList, InputText } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { createPlatform } from '../store';
-    import { wizard } from '$lib/stores/wizard';
-    import { app } from '$lib/stores/app';
-    import Light from './light.svg';
-    import Dark from './dark.svg';
-
-    $wizard.media = $app.themeInUse === 'dark' ? Dark : Light;
+    import { Submit, trackEvent } from '$lib/actions/analytics';
 
     enum Platform {
         Android = 'flutter-android',
@@ -22,10 +16,16 @@
         Web = 'flutter-web'
     }
 
-    let platform: Platform = Platform.Android;
+    function isPlatform(value: string): value is Platform {
+        return Object.values(Platform).includes(value as Platform);
+    }
+
+    let platform: Platform = isPlatform($createPlatform.type)
+        ? $createPlatform.type
+        : Platform.Android;
 
     const projectId = $page.params.project;
-    const suggestions = ['*.vercel.app', '*.netlify.app', '*.gitpod.app'];
+    const suggestions = ['*.vercel.app', '*.netlify.app', '*.gitpod.io'];
     const placeholder: Record<
         Platform,
         {
@@ -59,7 +59,7 @@
         },
         [Platform.Web]: {
             name: 'My Web App',
-            hostname: 'com.company.appname',
+            hostname: 'localhost',
             tooltip:
                 'The hostname that your website will use to interact with the Appwrite APIs in production or development environments. No protocol or port number required.'
         },
@@ -81,35 +81,40 @@
 
     async function beforeSubmit() {
         if ($createPlatform.$id) {
-            await sdkForConsole.projects.updatePlatform(
-                projectId,
-                $createPlatform.$id,
-                $createPlatform.name,
-                $createPlatform.key,
-                $createPlatform.store,
-                $createPlatform.hostname
-            );
-
-            return;
+            await sdk.forConsole.projects.deletePlatform(projectId, $createPlatform.$id);
         }
 
-        const response = await sdkForConsole.projects.createPlatform(
+        const response = await sdk.forConsole.projects.createPlatform(
             projectId,
             platform,
             $createPlatform.name,
+            platform !== Platform.Web ? $createPlatform.key : undefined,
             undefined,
-            undefined,
-            $createPlatform.hostname
+            platform === Platform.Web ? $createPlatform.hostname : undefined
         );
 
+        trackEvent(Submit.PlatformCreate, {
+            type: platform
+        });
+
         $createPlatform.$id = response.$id;
+        $createPlatform.type = platform;
     }
+
+    $: registee = {
+        [Platform.Android]: 'package name',
+        [Platform.Ios]: 'bundle ID',
+        [Platform.Linux]: 'package name',
+        [Platform.Macos]: 'bundle ID',
+        [Platform.Windows]: 'package name',
+        [Platform.Web]: 'hostname'
+    }[platform];
 </script>
 
 <WizardStep {beforeSubmit}>
-    <svelte:fragment slot="title">Register your Flutter app</svelte:fragment>
+    <svelte:fragment slot="title">Register your {registee}</svelte:fragment>
     <svelte:fragment slot="subtitle">
-        <div class="u-flex u-gap-16 u-margin-block-start-8">
+        <div class="u-flex u-gap-16 u-margin-block-start-8 u-flex-wrap">
             <Pill
                 button
                 on:click={() => (platform = Platform.Android)}
@@ -132,7 +137,7 @@
                 button
                 on:click={() => (platform = Platform.Macos)}
                 selected={platform === Platform.Macos}>
-                Mac OS
+                macOS
             </Pill>
             <Pill
                 button
@@ -148,10 +153,6 @@
             </Pill>
         </div>
     </svelte:fragment>
-    <Alert type="warning">
-        Note: If you are building your Flutter application for multiple devices, you will have to
-        follow this process for each different device.
-    </Alert>
 
     <FormList isCommonSection>
         <InputText
@@ -160,15 +161,16 @@
             placeholder={placeholder[platform].name}
             required
             bind:value={$createPlatform.name} />
-        <div>
-            <InputText
-                id="hostname"
-                label={hostname[platform]}
-                placeholder={placeholder[platform].hostname}
-                tooltip={placeholder[platform].tooltip}
-                required
-                bind:value={$createPlatform.hostname} />
-            {#if platform === Platform.Web}
+        {#if platform === Platform.Web}
+            <div>
+                <InputText
+                    id="hostname"
+                    label={hostname[platform]}
+                    placeholder={placeholder[platform].hostname}
+                    tooltip={placeholder[platform].tooltip}
+                    required
+                    bind:value={$createPlatform.hostname} />
+
                 <div class="u-flex u-gap-16 u-margin-block-start-8">
                     {#each suggestions as suggestion}
                         <Pill
@@ -179,7 +181,15 @@
                         </Pill>
                     {/each}
                 </div>
-            {/if}
-        </div>
+            </div>
+        {:else}
+            <InputText
+                id="key"
+                label={hostname[platform]}
+                placeholder={placeholder[platform].hostname}
+                tooltip={placeholder[platform].tooltip}
+                required
+                bind:value={$createPlatform.key} />
+        {/if}
     </FormList>
 </WizardStep>

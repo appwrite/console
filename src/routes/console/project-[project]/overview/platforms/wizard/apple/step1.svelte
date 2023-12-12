@@ -3,14 +3,9 @@
     import { Pill } from '$lib/elements';
     import { FormItem, FormList, InputText } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { createPlatform } from '../store';
-    import { wizard } from '$lib/stores/wizard';
-    import { app } from '$lib/stores/app';
-    import Light from './light.svg';
-    import Dark from './dark.svg';
-
-    $wizard.media = $app.themeInUse === 'dark' ? Dark : Light;
+    import { Submit, trackEvent } from '$lib/actions/analytics';
 
     enum Platform {
         iOS = 'apple-ios',
@@ -25,37 +20,33 @@
 
     async function beforeSubmit() {
         if ($createPlatform.$id) {
-            await sdkForConsole.projects.updatePlatform(
-                projectId,
-                $createPlatform.$id,
-                $createPlatform.name,
-                $createPlatform.key,
-                $createPlatform.store,
-                $createPlatform.hostname
-            );
-
-            return;
+            await sdk.forConsole.projects.deletePlatform(projectId, $createPlatform.$id);
         }
 
-        const response = await sdkForConsole.projects.createPlatform(
+        const response = await sdk.forConsole.projects.createPlatform(
             projectId,
             platform,
             $createPlatform.name,
+            $createPlatform.key,
             undefined,
-            undefined,
-            $createPlatform.hostname
+            undefined
         );
 
+        trackEvent(Submit.PlatformCreate, {
+            type: platform
+        });
+
         $createPlatform.$id = response.$id;
+        $createPlatform.type = platform;
     }
 </script>
 
 <WizardStep {beforeSubmit}>
-    <svelte:fragment slot="title">Register your Apple app</svelte:fragment>
+    <svelte:fragment slot="title">Register your bundle ID</svelte:fragment>
 
     <FormList isCommonSection>
         <FormItem>
-            <p>Choose a platform</p>
+            <p>Choose an Apple platform</p>
             <div class="u-flex u-gap-16 u-margin-block-start-8">
                 <Pill
                     button
@@ -95,6 +86,6 @@
             placeholder="com.company.appname"
             tooltip="You can find your Bundle Identifier in the General tab for your app's primary target in Xcode."
             required
-            bind:value={$createPlatform.hostname} />
+            bind:value={$createPlatform.key} />
     </FormList>
 </WizardStep>

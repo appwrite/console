@@ -1,19 +1,24 @@
 <script lang="ts">
     import { onMount } from 'svelte';
-    import { FormItem, Helper } from '.';
+    import { FormItem, FormItemPart, Helper, Label } from '.';
+    import NullCheckbox from './nullCheckbox.svelte';
 
-    export let label: string;
+    export let label: string | undefined = undefined;
+    export let optionalText: string | undefined = undefined;
     export let showLabel = true;
     export let id: string;
     export let value: number = null;
     export let placeholder = '';
     export let required = false;
+    export let nullable = false;
     export let disabled = false;
     export let readonly = false;
     export let autofocus = false;
     export let min: number = null;
     export let max: number = null;
     export let step: number | 'any' = 1;
+    export let isMultiple = false;
+    export let fullWidth = false;
 
     let element: HTMLInputElement;
     let error: string;
@@ -48,10 +53,28 @@
     $: if (value) {
         error = null;
     }
+
+    let prevValue = 0;
+    function handleNullChange(e: CustomEvent<boolean>) {
+        const isNull = e.detail;
+        if (isNull) {
+            prevValue = value;
+            value = null;
+        } else {
+            value = prevValue;
+        }
+    }
+
+    $: wrapper = isMultiple ? FormItemPart : FormItem;
 </script>
 
-<FormItem>
-    <label class:u-hide={!showLabel} class="label" for={id}>{label}</label>
+<svelte:component this={wrapper} {fullWidth}>
+    {#if label}
+        <Label {required} {optionalText} hide={!showLabel} for={id}>
+            {label}
+        </Label>
+    {/if}
+
     <div class="input-text-wrapper">
         <input
             {id}
@@ -66,9 +89,18 @@
             class="input-text"
             bind:value
             bind:this={element}
-            on:invalid={handleInvalid} />
+            on:invalid={handleInvalid}
+            style:--amount-of-buttons={nullable && !required ? 1.75 : 0} />
+        <ul
+            class="buttons-list u-cross-center u-gap-8 u-position-absolute u-inset-block-start-8 u-inset-block-end-8 u-inset-inline-end-12">
+            {#if nullable && !required}
+                <li class="buttons-list-item">
+                    <NullCheckbox checked={value === null} on:change={handleNullChange} />
+                </li>
+            {/if}
+        </ul>
     </div>
     {#if error}
         <Helper type="warning">{error}</Helper>
     {/if}
-</FormItem>
+</svelte:component>

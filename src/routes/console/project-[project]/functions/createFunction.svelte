@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Wizard } from '$lib/layout';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { onDestroy } from 'svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { wizard } from '$lib/stores/wizard';
@@ -15,7 +15,8 @@
     import { Dependencies } from '$lib/constants';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { ID } from '@appwrite.io/console';
 
     const projectId = $page.params.project;
 
@@ -25,38 +26,46 @@
 
     async function create() {
         try {
-            const response = await sdkForProject.functions.create(
-                $createFunction.id ?? 'unique()',
+            const response = await sdk.forProject.functions.create(
+                $createFunction.id ?? ID.unique(),
                 $createFunction.name,
-                $createFunction.execute,
                 $createFunction.runtime,
-                $createFunction.events,
-                $createFunction.schedule,
-                $createFunction.timeout
+                $createFunction.execute || undefined,
+                $createFunction.events || undefined,
+                $createFunction.schedule || undefined,
+                $createFunction.timeout || undefined,
+                undefined,
+                undefined,
+                $createFunction.entrypoint || undefined
             );
-            $createFunction.vars.forEach(
-                async (v) =>
-                    await sdkForProject.functions.createVariable(response.$id, v.key, v.value)
+            await Promise.all(
+                $createFunction.vars.map((v) =>
+                    sdk.forProject.functions.createVariable(response.$id, v.key, v.value)
+                )
             );
             await invalidate(Dependencies.FUNCTIONS);
-            goto(`${base}/console/project-${projectId}/functions/function-${response.$id}`);
+            await goto(`${base}/console/project-${projectId}/functions/function-${response.$id}`);
             addNotification({
                 message: `${$createFunction.name} has been created`,
                 type: 'success'
             });
-            trackEvent('submit_function_create');
+            trackEvent(Submit.FunctionCreate, {
+                customId: !!$createFunction.id
+            });
             wizard.hide();
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
+            trackError(error, Submit.FunctionCreate);
         }
     }
 
     onDestroy(() => {
         $createFunction = {
             id: null,
+            entrypoint: null,
             name: null,
             execute: [],
             runtime: null,
@@ -69,11 +78,11 @@
 
     const stepsComponents: WizardStepsType = new Map();
     stepsComponents.set(1, {
-        label: 'Function Details',
+        label: 'Configuration',
         component: Step1
     });
     stepsComponents.set(2, {
-        label: 'Execute access',
+        label: 'Permissions',
         component: Step2,
         optional: true
     });
@@ -83,7 +92,7 @@
         optional: true
     });
     stepsComponents.set(4, {
-        label: 'Scheduling',
+        label: 'Schedule',
         component: Step4,
         optional: true
     });

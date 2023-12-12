@@ -4,7 +4,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { wizard } from '$lib/stores/wizard';
     import { createWebhook } from './wizard/store';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/stores';
     import Step1 from './wizard/step1.svelte';
     import Step2 from './wizard/step2.svelte';
@@ -12,34 +12,37 @@
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     const projectId = $page.params.project;
-    const create = async () => {
+    async function create() {
         try {
-            await sdkForConsole.projects.createWebhook(
+            await sdk.forConsole.projects.createWebhook(
                 projectId,
                 $createWebhook.name,
                 $createWebhook.events,
                 $createWebhook.url,
                 $createWebhook.security,
-                $createWebhook.httpUser,
-                $createWebhook.httpPass
+                $createWebhook.httpUser || undefined,
+                $createWebhook.httpPass || undefined
             );
-            invalidate(Dependencies.WEBHOOKS);
+            await invalidate(Dependencies.WEBHOOKS);
             addNotification({
                 message: 'Webhook has been created',
                 type: 'success'
             });
             wizard.hide();
-            trackEvent('submit_webhook_create');
+            trackEvent(Submit.WebhookCreate, {
+                events: $createWebhook.events
+            });
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
+            trackError(error, Submit.WebhookCreate);
         }
-    };
+    }
 
     onDestroy(() => {
         $createWebhook = {
@@ -54,11 +57,11 @@
 
     const stepsComponents: WizardStepsType = new Map();
     stepsComponents.set(1, {
-        label: 'Add your webhook',
+        label: 'Configure',
         component: Step1
     });
     stepsComponents.set(2, {
-        label: 'Webhook events',
+        label: 'Events',
         component: Step2
     });
     stepsComponents.set(3, {

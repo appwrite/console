@@ -1,4 +1,4 @@
-import { sdkForProject } from '$lib/stores/sdk';
+import { sdk } from '$lib/stores/sdk';
 import { Dependencies } from '$lib/constants';
 import type { LayoutLoad } from './$types';
 import Breadcrumbs from './breadcrumbs.svelte';
@@ -11,7 +11,7 @@ export const load: LayoutLoad = async ({ params, parent, depends }) => {
     const { collection } = await parent();
 
     try {
-        const document = await sdkForProject.databases.getDocument(
+        const document = await sdk.forProject.databases.getDocument(
             params.database,
             params.collection,
             params.document
@@ -26,7 +26,7 @@ export const load: LayoutLoad = async ({ params, parent, depends }) => {
                 if (array) {
                     document[key] = document[key].map((n: string) => {
                         if (!n) {
-                            return '';
+                            return null;
                         }
                         return new Date(n).toISOString().slice(0, 23);
                     });
@@ -34,7 +34,7 @@ export const load: LayoutLoad = async ({ params, parent, depends }) => {
                     if (document[key]) {
                         document[key] = new Date(document[key]).toISOString().slice(0, 23);
                     } else {
-                        document[key] = '';
+                        document[key] = null;
                     }
                 }
             }

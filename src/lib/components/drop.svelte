@@ -4,12 +4,19 @@
 
 <script lang="ts">
     import { createPopper, type Instance } from '@popperjs/core';
-    import { onDestroy, onMount } from 'svelte';
+    import { createEventDispatcher, onDestroy, onMount } from 'svelte';
 
     export let show = false;
     export let noArrow = false;
     export let placement: Placement = 'bottom-start';
     export let childStart = false;
+    export let noStyle = false;
+    export let fullWidth = false;
+    export let fixed = false;
+
+    const dispatch = createEventDispatcher<{
+        blur: undefined;
+    }>();
 
     let element: HTMLDivElement;
     let tooltip: HTMLDivElement;
@@ -19,6 +26,7 @@
     onMount(() => {
         instance = createPopper(element, tooltip, {
             placement,
+            strategy: fixed ? 'fixed' : 'absolute',
             modifiers: [
                 {
                     name: 'arrow',
@@ -36,6 +44,20 @@
                     name: 'flip',
                     options: {
                         fallbackPlacements: ['bottom-start', 'bottom-end', 'top-start', 'top-end']
+                    }
+                },
+                {
+                    name: 'sameWidth',
+                    enabled: fixed,
+                    phase: 'beforeWrite',
+                    requires: ['computeStyles'],
+                    fn: ({ state }) => {
+                        state.styles.popper.width = `${state.rects.reference.width}px`;
+                    },
+                    effect: ({ state }) => {
+                        state.elements.popper.style.width = `${
+                            (state.elements.reference as HTMLElement)?.offsetWidth
+                        }px`;
                     }
                 }
             ]
@@ -57,27 +79,43 @@
                 event.target === element ||
                 element.contains(event.target as Node) ||
                 event.target === tooltip ||
-                tooltip.contains(event.target as Node)
+                tooltip.contains(event.target as Node) ||
+                // Avoid deleted elements triggering blur
+                !document.body.contains(event.target as Node)
             )
         ) {
             show = false;
+            dispatch('blur');
+        }
+    };
+
+    const onKeyDown = (event: KeyboardEvent) => {
+        if (event.key === 'Escape' && show) {
+            event.preventDefault();
+            show = false;
+            dispatch('blur');
         }
     };
 </script>
 
-<svelte:window on:click={onBlur} />
+<svelte:window on:click={onBlur} on:keydown={onKeyDown} />
 
-<div class="drop-wrapper" class:u-cross-child-start={childStart} bind:this={element}>
+<div class:drop-wrapper={!noStyle} class:u-cross-child-start={childStart} bind:this={element}>
     <slot />
 </div>
 
-<div class="drop-tooltip" bind:this={tooltip} style="z-index: 10">
+<div
+    class="drop-tooltip"
+    class:u-width-full-line={fullWidth}
+    bind:this={tooltip}
+    style:z-index="10">
     <div class="drop-arrow" class:u-hide={!show || (show && noArrow)} bind:this={arrow} />
     {#if show}
         <slot name="list" />
     {/if}
 </div>
 
+<!-- svelte-ignore css-unused-selector -->
 <style global lang="scss">
     .drop-tooltip[data-popper-placement^='top'] > .drop-arrow {
         bottom: -4px;
@@ -105,7 +143,7 @@
     .drop-arrow::before {
         content: '';
         transform: rotate(45deg);
-        background: hsl(var(--color-neutral-200));
+        background: hsl(var(--color-neutral-85));
 
         body.theme-light & {
             background: hsl(var(--color-neutral-10));

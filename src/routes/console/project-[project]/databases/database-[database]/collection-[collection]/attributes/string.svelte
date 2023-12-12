@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
-    import type { Models } from '@aw-labs/appwrite-console';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
+    import type { Models } from '@appwrite.io/console';
 
     export async function submitString(
         databaseId: string,
@@ -8,66 +8,97 @@
         key: string,
         data: Partial<Models.AttributeString>
     ) {
-        await sdkForProject.databases.createStringAttribute(
+        await sdk.forProject.databases.createStringAttribute(
             databaseId,
             collectionId,
             key,
             data.size,
             data.required,
-            data.default ? (data.default as string) : undefined,
+            data.default,
             data.array
+        );
+    }
+    export async function updateString(
+        databaseId: string,
+        collectionId: string,
+        data: Partial<Models.AttributeString>
+    ) {
+        await sdk.forProject.databases.updateStringAttribute(
+            databaseId,
+            collectionId,
+            data.key,
+            data.required,
+            data.default
         );
     }
 </script>
 
 <script lang="ts">
-    import { InputNumber, InputText, InputChoice } from '$lib/elements/forms';
+    import { InputChoice, InputNumber, InputText, InputTextarea } from '$lib/elements/forms';
+    import { createConservative } from '$lib/helpers/stores';
 
-    export let selectedAttribute: Models.AttributeString;
     export let data: Partial<Models.AttributeString> = {
         required: false,
         size: 0,
         default: null,
         array: false
     };
+    export let editing = false;
 
-    $: if (selectedAttribute) {
-        ({
-            required: data.required,
-            array: data.array,
-            size: data.size,
-            default: data.default
-        } = selectedAttribute);
+    let savedDefault = data.default;
+
+    function handleDefaultState(hideDefault: boolean) {
+        if (hideDefault) {
+            savedDefault = data.default;
+            data.default = null;
+        } else {
+            data.default = savedDefault;
+        }
     }
-    $: if (data.required || data.array) {
-        data.default = null;
-    }
+
+    const {
+        stores: { required, array },
+        listen
+    } = createConservative<Partial<Models.AttributeString>>({
+        required: false,
+        array: false,
+        ...data
+    });
+    $: listen(data);
+
+    $: handleDefaultState($required || $array);
 </script>
 
 <InputNumber
     id="size"
     label="Size"
+    placeholder="Enter size"
     bind:value={data.size}
-    required
-    readonly={!!selectedAttribute} />
-<InputText
-    id="default"
-    label="Default value"
-    bind:value={data.default}
-    maxlength={data.size}
-    disabled={data.required || data.array}
-    readonly={!!selectedAttribute} />
-<InputChoice
-    id="required"
-    label="Required"
-    bind:value={data.required}
-    disabled={!!selectedAttribute || data.array}>
+    required={!editing}
+    readonly={editing} />
+{#if data.size >= 50}
+    <InputTextarea
+        id="default"
+        label="Default"
+        placeholder="Enter string"
+        disabled={data.required || data.array}
+        nullable={!data.required && !data.array}
+        maxlength={data.size}
+        bind:value={data.default} />
+{:else}
+    <InputText
+        id="default"
+        label="Default"
+        placeholder="Enter string"
+        disabled={data.required || data.array}
+        nullable={!data.required && !data.array}
+        maxlength={data.size}
+        bind:value={data.default} />
+{/if}
+<InputChoice id="required" label="Required" bind:value={data.required} disabled={data.array}>
     Indicate whether this is a required attribute
 </InputChoice>
-<InputChoice
-    id="array"
-    label="Array"
-    bind:value={data.array}
-    disabled={!!selectedAttribute || data.required}>
-    Indicate whether this attribute should act as an array
+<InputChoice id="array" label="Array" bind:value={data.array} disabled={data.required || editing}>
+    Indicate whether this attribute should act as an array, with the default value set as an empty
+    array.
 </InputChoice>

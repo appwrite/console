@@ -5,5 +5,5 @@
     "trailingComma": "none",
     "printWidth": 100,
     "bracketSameLine": true,
-    "svelteSortOrder": "scripts-options-markup-styles"
+    "plugins": ["prettier-plugin-svelte"]
 }

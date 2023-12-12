@@ -1,17 +1,18 @@
 <script lang="ts">
-    import { Modal } from '$lib/components';
-    import { Button, InputText, FormList, InputSelect } from '$lib/elements/forms';
-    import { collection } from '../store';
-    import { onMount } from 'svelte';
-    import { sdkForProject } from '$lib/stores/sdk';
-    import { addNotification } from '$lib/stores/notifications';
+    import { goto, invalidate } from '$app/navigation';
+    import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import type { Attributes } from '../store';
-    import { invalidate } from '$app/navigation';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import Select from './select.svelte';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Button, FormList, InputSelect, InputText } from '$lib/elements/forms';
     import { remove } from '$lib/helpers/array';
+    import { addNotification } from '$lib/stores/notifications';
+    import { sdk } from '$lib/stores/sdk';
+    import { isRelationship } from '../document-[document]/attributes/store';
+    import { indexes, type Attributes } from '../store';
+    import { collection } from '../store';
+    import Select from './select.svelte';
 
     export let showCreateIndex = false;
     export let externalAttribute: Attributes = null;
@@ -19,7 +20,7 @@
     const databaseId = $page.params.database;
 
     let error: string;
-    let key: string = null;
+    let key = `index_${$indexes.length + 1}`;
     let types = [
         { value: 'key', label: 'Key' },
         { value: 'unique', label: 'Unique' },
@@ -27,24 +28,29 @@
     ];
     let selectedType = 'key';
 
-    let attributeOptions = $collection.attributes.map((attribute: Attributes) => ({
-        value: attribute.key,
-        label: attribute.key
-    }));
+    let attributeOptions = $collection.attributes
+        .filter((attribute) => !isRelationship(attribute))
+        .map((attribute) => ({
+            value: attribute.key,
+            label: attribute.key
+        }));
+
     let attributeList = [{ value: '', order: '' }];
 
-    $: addAttributeDisabled = !attributeList.at(-1)?.value || !attributeList.at(-1)?.order;
-
-    onMount(() => {
-        if (!externalAttribute) return;
-        attributeList = [{ value: externalAttribute.key, order: 'ASC' }];
-    });
+    function initialize() {
+        attributeList = externalAttribute
+            ? [{ value: externalAttribute.key, order: 'ASC' }]
+            : [{ value: '', order: 'ASC' }];
+        selectedType = 'key';
+        key = `index_${$indexes.length + 1}`;
+    }
 
     $: if (showCreateIndex) {
-        attributeList = [{ value: '', order: '' }];
-        selectedType = 'key';
-        key = null;
+        error = null;
+        initialize();
     }
+
+    $: addAttributeDisabled = !attributeList.at(-1)?.value || !attributeList.at(-1)?.order;
 
     async function create() {
         if (!(key && selectedType && !addAttributeDisabled)) {
@@ -53,7 +59,7 @@
         }
 
         try {
-            await sdkForProject.databases.createIndex(
+            await sdk.forProject.databases.createIndex(
                 databaseId,
                 $collection.$id,
                 key,
@@ -61,19 +67,27 @@
                 attributeList.map((a) => a.value),
                 attributeList.map((a) => a.order)
             );
-            invalidate(Dependencies.COLLECTION);
+            await Promise.allSettled([
+                invalidate(Dependencies.COLLECTION),
+                invalidate(Dependencies.DATABASE)
+            ]);
+
+            goto(
+                `${base}/console/project-${$page.params.project}/databases/database-${databaseId}/collection-${$collection.$id}/indexes`
+            );
+
             addNotification({
-                message: 'Index has been created',
+                message: 'Creating index',
                 type: 'success'
             });
-            trackEvent('submit_index_create');
+            trackEvent(Submit.IndexCreate);
+            showCreateIndex = false;
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
-        } finally {
-            showCreateIndex = false;
+            trackError(error, Submit.IndexCreate);
         }
     }
 
@@ -85,8 +99,7 @@
     }
 </script>
 
-<Modal bind:error size="big" on:submit={create} bind:show={showCreateIndex}>
-    <svelte:fragment slot="header">Create Index</svelte:fragment>
+<Modal title="Create index" bind:error size="big" onSubmit={create} bind:show={showCreateIndex}>
     <FormList>
         <InputText id="key" label="Index Key" placeholder="Enter Key" bind:value={key} autofocus />
         <InputSelect options={types} id="type" label="Index type" bind:value={selectedType} />
@@ -122,6 +135,7 @@
 
                 <div class="form-item-part u-cross-child-end">
                     <Button
+                        noMargin
                         text
                         disabled={attributeList.length <= 1}
                         on:click={() => {

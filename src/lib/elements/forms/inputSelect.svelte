@@ -1,17 +1,23 @@
 <script lang="ts">
-    import { FormItem, Helper } from '.';
+    import { FormItem, FormItemPart, Helper, Label } from '.';
+    import type { FormItemTag } from './formItem.svelte';
 
     export let id: string;
-    export let label: string;
+    export let label: string | undefined = undefined;
+    export let optionalText: string | undefined = undefined;
     export let showLabel = true;
     export let value: string | number | boolean;
     export let placeholder = '';
     export let required = false;
+    export let hideRequired = false;
     export let disabled = false;
+    export let wrapperTag: FormItemTag = 'li';
     export let options: {
         value: string | boolean | number;
         label: string;
     }[];
+    export let isMultiple = false;
+    export let fullWidth = false;
 
     let element: HTMLSelectElement;
     let error: string;
@@ -26,13 +32,31 @@
         error = element.validationMessage;
     };
 
-    $: if (value) {
+    const isNotEmpty = (value: string | number | boolean) => {
+        return typeof value === 'boolean' ? true : !!value;
+    };
+
+    $: if (required && !isNotEmpty(value)) {
+        element?.setCustomValidity('This field is required');
+    } else {
+        element?.setCustomValidity('');
+    }
+
+    $: if (isNotEmpty(value)) {
         error = null;
     }
+
+    $: hasNullOption = options.some((option) => option.value === null);
+    $: wrapper = isMultiple ? FormItemPart : FormItem;
 </script>
 
-<FormItem>
-    <label class:u-hide={!showLabel} class="label" for={id}>{label}</label>
+<svelte:component this={wrapper} {fullWidth} tag={wrapperTag}>
+    {#if label}
+        <Label {required} {hideRequired} {optionalText} hide={!showLabel} for={id}>
+            {label}
+        </Label>
+    {/if}
+
     <div class="select">
         <select
             {id}
@@ -40,8 +64,9 @@
             {disabled}
             bind:this={element}
             bind:value
-            on:invalid={handleInvalid}>
-            {#if placeholder}
+            on:invalid={handleInvalid}
+            on:change>
+            {#if placeholder && !hasNullOption}
                 <option value={null} disabled selected hidden>{placeholder}</option>
             {/if}
             {#each options as option}
@@ -54,5 +79,7 @@
     </div>
     {#if error}
         <Helper type="warning">{error}</Helper>
+    {:else}
+        <slot name="helper" />
     {/if}
-</FormItem>
+</svelte:component>

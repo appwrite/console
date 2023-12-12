@@ -5,6 +5,7 @@
     export let steps: {
         text: string;
         optional: boolean;
+        disabled?: boolean;
         substeps?: {
             text: string;
         }[];

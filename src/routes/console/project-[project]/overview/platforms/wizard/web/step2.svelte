@@ -14,10 +14,12 @@
 
     const example1 = `import { Client } from 'appwrite';`;
     const example2 =
-        `<script src="https://cdn.jsdelivr.net/npm/appwrite@${$versions['client-web']}" />
-<script>
+        `<script src="https://cdn.jsdelivr.net/npm/appwrite@${$versions['client-web']}"></script` +
+        `>\n` +
+        `<script>
     const { Client } = Appwrite;
-</script` + `>`; // Prevent svelte from processing the closing script tag
+</script` +
+        `>`; // Prevent svelte from processing the closing script tag
 </script>
 
 <WizardStep>
@@ -35,12 +37,16 @@
     </svelte:fragment>
     {#if method === Method.NPM}
         <p>
-            Use <a href="https://npmjs.org" target="_blank" rel="noopener noreferrer" class="link"
-                >NPM (node package manager)</a> from your command line to add Appwrite SDK to your project.
+            Use <a
+                href="https://npmjs.com/package/appwrite"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="link">NPM (node package manager)</a> from your command line to add Appwrite SDK
+            to your project.
         </p>
         <Code label="Bash" language="sh" code="npm install appwrite" withCopy />
         <p class="common-section">
-            When you're using a bundler (like <a
+            If you're using a bundler like <a
                 href="https://vitejs.dev"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -48,14 +54,11 @@
             or
             <a href="https://rollupjs.org" target="_blank" rel="noopener noreferrer" class="link"
                 >Rollup</a
-            >), import the Appwrite module when you need it:
+            >, import Appwrite as a module.
         </p>
         <Code label="Web SDK" labelIcon="code" language="js" code={example1} withCopy />
     {:else if method === Method.CDN}
-        <p>
-            To install with a CDN (content delivery network) add the following scripts to the bottom
-            of your tag, but before you use any Appwrite services:
-        </p>
+        <p>Add the following script tags to install Appwrite with a CDN.</p>
         <Code label="HTML" language="html" code={example2} withCopy />
     {/if}
 </WizardStep>

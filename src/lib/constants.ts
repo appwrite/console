@@ -2,14 +2,15 @@ export const PAGE_LIMIT = 12; // default page limit
 export const CARD_LIMIT = 6; // default card limit
 export const INTERVAL = 5 * 60000; // default interval to check for feedback
 
-export enum Mode {
-    CLOUD = 'mode:cloud',
-    SELF_HOSTED = 'mode:self-hosted'
-}
-
 export enum Dependencies {
+    CREDIT = 'dependency:credit',
+    INVOICES = 'dependency:invoices',
+    ADDRESS = 'dependency:address',
+    PAYMENT_METHODS = 'dependency:paymentMethods',
     ORGANIZATION = 'dependency:organization',
     PROJECT = 'dependency:project',
+    PROJECT_VARIABLES = 'dependency:project_variables',
+    PROJECT_INSTALLATIONS = 'dependency:project_installations',
     PROJECTS = 'dependency:projects',
     ACCOUNT = 'dependency:account',
     ACCOUNT_SESSIONS = 'dependency:account_sessions',
@@ -20,6 +21,7 @@ export enum Dependencies {
     TEAMS = 'dependency:teams',
     MEMBERSHIPS = 'dependency:memberships',
     DATABASE = 'dependency:database',
+    DATABASES = 'dependency:databases',
     COLLECTION = 'dependency:collection',
     DOCUMENT = 'dependency:document',
     DOCUMENTS = 'dependency:documents',
@@ -27,8 +29,11 @@ export enum Dependencies {
     FILE = 'dependency:file',
     FILES = 'dependency:files',
     FUNCTION = 'dependency:function',
+    FUNCTION_DOMAINS = 'dependency:function_domains',
+    FUNCTION_INSTALLATIONS = 'dependency:function_installations',
     FUNCTIONS = 'dependency:functions',
     VARIABLES = 'dependency:variables',
+    DEPLOYMENT = 'dependency:deployment',
     DEPLOYMENTS = 'dependency:deployments',
     EXECUTIONS = 'dependency:executions',
     PLATFORM = 'dependency:platform',
@@ -37,7 +42,11 @@ export enum Dependencies {
     KEYS = 'dependency:keys',
     DOMAINS = 'dependency:domains',
     WEBHOOK = 'dependency:webhook',
-    WEBHOOKS = 'dependency:webhooks'
+    WEBHOOKS = 'dependency:webhooks',
+    MIGRATIONS = 'dependency:migrations',
+    COLLECTIONS = 'dependency:collections',
+    RUNTIMES = 'dependency:runtimes',
+    CONSOLE_VARIABLES = 'dependency:console_variables'
 }
 
 export const scopes: {
@@ -172,5 +181,438 @@ export const scopes: {
         scope: 'health.read',
         description: "Access to read your project's health status",
         category: 'Other'
+    },
+    {
+        scope: 'migrations.read',
+        description: "Access to read your project's migration status",
+        category: 'Other'
+    },
+    {
+        scope: 'migrations.write',
+        description: 'Access to create migrations',
+        category: 'Other'
     }
 ];
+
+export type EventService = {
+    name: string;
+    resources: EventResource[];
+    actions?: EventAction[];
+};
+
+export type EventResource = {
+    name: string;
+    actions?: EventAction[];
+};
+
+export type EventAction = {
+    name: string;
+    attributes?: string[];
+};
+
+export const eventServices: Array<EventService> = [
+    {
+        name: 'buckets',
+        resources: [
+            {
+                name: 'files',
+                actions: [{ name: 'create' }, { name: 'update' }, { name: 'delete' }]
+            }
+        ],
+        actions: [{ name: 'create' }, { name: 'update' }, { name: 'delete' }]
+    },
+    {
+        name: 'databases',
+        resources: [
+            {
+                name: 'collections',
+                actions: [{ name: 'create' }, { name: 'update' }, { name: 'delete' }]
+            },
+            {
+                name: 'documents',
+                actions: [{ name: 'create' }, { name: 'update' }, { name: 'delete' }]
+            }
+        ],
+        actions: [{ name: 'create' }, { name: 'update' }, { name: 'delete' }]
+    },
+    {
+        name: 'functions',
+        resources: [
+            {
+                name: 'deployments',
+                actions: [{ name: 'create' }, { name: 'update' }, { name: 'delete' }]
+            },
+            {
+                name: 'executions',
+                actions: [{ name: 'create' }, { name: 'update' }, { name: 'delete' }]
+            }
+        ],
+        actions: [{ name: 'create' }, { name: 'update' }, { name: 'delete' }]
+    },
+    {
+        name: 'teams',
+        resources: [
+            {
+                name: 'memberships',
+                actions: [
+                    { name: 'create' },
+                    { name: 'update', attributes: ['status'] },
+                    { name: 'delete' }
+                ]
+            }
+        ],
+        actions: [{ name: 'create' }, { name: 'update' }, { name: 'delete' }]
+    },
+    {
+        name: 'users',
+        resources: [
+            { name: 'recovery', actions: [{ name: 'create' }, { name: 'delete' }] },
+            { name: 'sessions', actions: [{ name: 'create' }, { name: 'delete' }] },
+            { name: 'verification', actions: [{ name: 'create' }, { name: 'delete' }] }
+        ],
+        actions: [
+            { name: 'create' },
+            { name: 'update', attributes: ['email', 'name', 'password', 'status', 'prefs'] },
+            { name: 'delete' }
+        ]
+    }
+];
+
+export const usageRates = {
+    'tier-0': [
+        {
+            id: 'members',
+            resource: 'Organization members',
+            amount: 1,
+            unit: '',
+            rate: '$20/member'
+        },
+        { id: 'bandwith', resource: 'Bandwidth', amount: 10, unit: 'GB', rate: '$0.04/GB' },
+        { id: 'storage', resource: 'Storage', amount: 2, unit: 'GB', rate: '$0.025/GB' },
+        {
+            id: 'executions',
+            resource: 'Function executions',
+            amount: 750000,
+            unit: 'executions',
+            rate: '$2/1M executions'
+        },
+        {
+            id: 'users',
+            resource: 'Active users',
+            amount: 200000,
+            unit: 'AU',
+            rate: '$0.0012/user'
+        },
+        {
+            id: 'connections',
+            resource: 'Concurrent connections',
+            amount: 750,
+            unit: 'connections',
+            rate: '$5/1K connections'
+        }
+    ],
+    'tier-1': [
+        {
+            id: 'members',
+            resource: 'Organization members',
+            amount: 'Unlimited',
+            unit: '',
+            rate: '$20/member'
+        },
+        { id: 'bandwith', resource: 'Bandwidth', amount: 1, unit: 'TB', rate: '$0.04/GB' },
+        { id: 'storage', resource: 'Storage', amount: 150, unit: 'GB', rate: '$0.025/GB' },
+        {
+            id: 'executions',
+            resource: 'Function executions',
+            amount: 3500000,
+            unit: 'executions',
+            rate: '$2/1M executions'
+        },
+        {
+            id: 'users',
+            resource: 'Active users',
+            amount: 200000,
+            unit: 'AU',
+            rate: '$0.0012/user'
+        },
+        {
+            id: 'connections',
+            resource: 'Concurrent connections',
+            amount: 750,
+            unit: 'connections',
+            rate: '$5/1K connections'
+        }
+    ],
+    'tier-2': [
+        {
+            id: 'members',
+            resource: 'Organization members',
+            amount: 'Unlimited',
+            unit: '',
+            rate: '$20/member'
+        },
+        { id: 'bandwith', resource: 'Bandwidth', amount: 1, unit: 'TB', rate: '$0.04/GB' },
+        { id: 'storage', resource: 'Storage', amount: 150, unit: 'GB', rate: '$0.025/GB' },
+        {
+            id: 'executions',
+            resource: 'Function executions',
+            amount: 3500000,
+            unit: 'executions',
+            rate: '$2/1M executions'
+        },
+        {
+            id: 'users',
+            resource: 'Active users',
+            amount: 200000,
+            unit: 'AU',
+            rate: '$0.0012/user'
+        },
+        {
+            id: 'connections',
+            resource: 'Concurrent connections',
+            amount: 750,
+            unit: 'connections',
+            rate: '$5/1K connections'
+        }
+    ]
+};
+
+//resources: bandwidth, buckets, file size limit, functions, executions, users,teams,logs, members, platforms, webhooks, databases, connections, messages
+export const limitRates = {
+    'tier-0': [
+        {
+            id: 'bandwith',
+            amount: 10,
+            unit: 'GB'
+        },
+        {
+            id: 'buckets',
+            amount: 3,
+            unit: ''
+        },
+        {
+            id: 'file-size-limit',
+            amount: 1,
+            unit: 'MB'
+        },
+        {
+            id: 'storage',
+            amount: 5,
+            unit: 'GB'
+        },
+        {
+            id: 'functions',
+            amount: 1,
+            unit: ''
+        },
+        {
+            id: 'executions',
+            amount: 750000,
+            unit: 'executions'
+        },
+        {
+            id: 'users',
+            amount: 200000,
+            unit: 'AU'
+        },
+
+        {
+            id: 'teams',
+            amount: 1,
+            unit: ''
+        },
+
+        {
+            id: 'logs',
+            amount: 1,
+            unit: ''
+        },
+
+        {
+            id: 'members',
+            amount: 1,
+            unit: ''
+        },
+        {
+            id: 'platforms',
+            amount: 1,
+            unit: ''
+        },
+        {
+            id: 'webhooks',
+            amount: 1,
+            unit: ''
+        },
+        {
+            id: 'databases',
+            amount: 1,
+            unit: ''
+        },
+        {
+            id: 'connections',
+            amount: 1,
+            unit: ''
+        },
+        {
+            id: 'messages',
+            amount: 1,
+            unit: ''
+        }
+    ],
+    'tier-1': [
+        {
+            id: 'bandwith',
+            amount: 10,
+            unit: 'GB'
+        },
+        {
+            id: 'buckets',
+            amount: 1,
+            unit: ''
+        },
+        {
+            id: 'file-size-limit',
+            amount: 5,
+            unit: 'MB'
+        },
+        {
+            id: 'storage',
+            amount: 5,
+            unit: 'GB'
+        },
+        {
+            id: 'functions',
+            amount: 1,
+            unit: ''
+        },
+        {
+            id: 'executions',
+            amount: 750000,
+            unit: 'executions'
+        },
+        {
+            id: 'users',
+            amount: 200000,
+            unit: 'AU'
+        },
+
+        {
+            id: 'teams',
+            amount: 1,
+            unit: ''
+        },
+        {
+            id: 'logs',
+            amount: 1,
+            unit: ''
+        },
+        {
+            id: 'members',
+            amount: 1,
+            unit: ''
+        },
+        {
+            id: 'platforms',
+            amount: 1,
+            unit: ''
+        },
+        {
+            id: 'webhooks',
+            amount: 1,
+            unit: ''
+        },
+        {
+            id: 'databases',
+            amount: 1,
+            unit: ''
+        },
+        {
+            id: 'connections',
+            amount: 1,
+            unit: ''
+        },
+        {
+            id: 'messages',
+            amount: 1,
+            unit: ''
+        }
+    ],
+    'tier-2': [
+        {
+            id: 'bandwith',
+            amount: 10,
+            unit: 'GB'
+        },
+        {
+            id: 'buckets',
+            amount: 1,
+            unit: ''
+        },
+        {
+            id: 'file-size-limit',
+            amount: 5,
+            unit: 'MB'
+        },
+        {
+            id: 'storage',
+            amount: 5,
+            unit: 'GB'
+        },
+        {
+            id: 'functions',
+            amount: 1,
+            unit: ''
+        },
+        {
+            id: 'executions',
+            amount: 750000,
+            unit: 'executions'
+        },
+        {
+            id: 'users',
+            amount: 200000,
+            unit: 'AU'
+        },
+
+        {
+            id: 'teams',
+            amount: 1,
+            unit: ''
+        },
+        {
+            id: 'logs',
+            amount: 1,
+            unit: ''
+        },
+        {
+            id: 'members',
+            amount: 1,
+            unit: ''
+        },
+        {
+            id: 'platforms',
+            amount: 1,
+            unit: ''
+        },
+        {
+            id: 'webhooks',
+            amount: 1,
+            unit: ''
+        },
+        {
+            id: 'databases',
+            amount: 1,
+            unit: ''
+        },
+        {
+            id: 'connections',
+            amount: 1,
+            unit: ''
+        },
+        {
+            id: 'messages',
+            amount: 1,
+            unit: ''
+        }
+    ]
+};

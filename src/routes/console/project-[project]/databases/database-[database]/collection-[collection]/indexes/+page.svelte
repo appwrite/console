@@ -16,10 +16,10 @@
     import Create from './createIndex.svelte';
     import Overview from './overviewIndex.svelte';
     import CreateAttribute from '../createAttribute.svelte';
-    import type { Models } from '@aw-labs/appwrite-console';
-    import { invalidate } from '$app/navigation';
-    import { Dependencies } from '$lib/constants';
+    import type { Models } from '@appwrite.io/console';
     import { Button } from '$lib/elements/forms';
+    import CreateAttributeDropdown from '../attributes/createAttributeDropdown.svelte';
+    import type { Option } from '../attributes/store';
 
     let showDropdown = [];
     let selectedIndex: Models.Index = null;
@@ -27,10 +27,8 @@
     let showOverview = false;
     let showDelete = false;
     let showCreateAttribute = false;
-
-    const handleDelete = async () => {
-        invalidate(Dependencies.COLLECTION);
-    };
+    let showCreateDropdown = false;
+    let selectedAttribute: Option['name'] = null;
 </script>
 
 <Container>
@@ -50,9 +48,9 @@
             <Table>
                 <TableHeader>
                     <TableCellHead>Key</TableCellHead>
-                    <TableCellHead>Type</TableCellHead>
-                    <TableCellHead>Attributes</TableCellHead>
-                    <TableCellHead>Asc/Desc</TableCellHead>
+                    <TableCellHead onlyDesktop>Type</TableCellHead>
+                    <TableCellHead onlyDesktop>Attributes</TableCellHead>
+                    <TableCellHead onlyDesktop>Asc/Desc</TableCellHead>
                     <TableCellHead width={30} />
                 </TableHeader>
                 <TableBody>
@@ -72,11 +70,11 @@
                                     {/if}
                                 </div>
                             </TableCell>
-                            <TableCellText title="Type">{index.type}</TableCellText>
-                            <TableCellText title="Attributes">
+                            <TableCellText title="Type" onlyDesktop>{index.type}</TableCellText>
+                            <TableCellText title="Attributes" onlyDesktop>
                                 {index.attributes}
                             </TableCellText>
-                            <TableCellText title="ASC/DESC">
+                            <TableCellText title="ASC/DESC" onlyDesktop>
                                 {index.orders}
                             </TableCellText>
                             <TableCell showOverflow>
@@ -119,24 +117,48 @@
         {:else}
             <Empty
                 single
-                href="https://appwrite.io/docs/databases#indexes"
+                href="https://appwrite.io/docs/products/databases/collections#indexes"
                 target="index"
                 on:click={() => (showCreateIndex = true)} />
         {/if}
     {:else}
-        <Empty
-            single
-            target="attribute"
-            href="https://appwrite.io/docs/databases#attributes"
-            on:click={() => (showCreateAttribute = true)} />
+        <Empty single target="attribute" on:click={() => (showCreateDropdown = true)}>
+            <div class="u-text-center">
+                <Heading size="7" tag="h2">Create an attribute to get started.</Heading>
+                <p class="body-text-2 u-bold u-margin-block-start-4">
+                    Need a hand? Learn more in our documentation.
+                </p>
+            </div>
+            <div class="u-flex u-gap-16 u-main-center">
+                <Button
+                    external
+                    href="https://appwrite.io/docs/products/databases/collections#attributes"
+                    text
+                    event="empty_documentation"
+                    ariaLabel={`create {target}`}>Documentation</Button>
+                <CreateAttributeDropdown
+                    bind:showCreateDropdown
+                    bind:showCreate={showCreateAttribute}
+                    bind:selectedOption={selectedAttribute}>
+                    <Button
+                        secondary
+                        event="create_attribute"
+                        on:click={() => {
+                            showCreateDropdown = !showCreateDropdown;
+                        }}>
+                        Create attribute
+                    </Button>
+                </CreateAttributeDropdown>
+            </div>
+        </Empty>
     {/if}
 </Container>
 
 <Create bind:showCreateIndex />
 
 {#if selectedIndex}
-    <Delete bind:showDelete {selectedIndex} on:deleted={handleDelete} />
+    <Delete bind:showDelete {selectedIndex} />
     <Overview bind:showOverview {selectedIndex} />
 {/if}
 
-<CreateAttribute bind:showCreate={showCreateAttribute} />
+<CreateAttribute bind:showCreate={showCreateAttribute} bind:selectedOption={selectedAttribute} />

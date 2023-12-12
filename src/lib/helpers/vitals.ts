@@ -18,7 +18,7 @@ const vitalsUrl = 'https://vitals.vercel-analytics.com/v1/vitals';
 function getConnectionSpeed() {
     return 'connection' in navigator &&
         navigator['connection'] &&
-        'effectiveType' in navigator['connection']
+        'effectiveType' in (navigator['connection'] as Record<string, unknown>)
         ? navigator['connection']['effectiveType']
         : '';
 }
@@ -40,7 +40,7 @@ function sendToAnalytics(metric: Metric, options: Options) {
     };
 
     if (options.debug) {
-        console.log('[Analytics]', metric.name, JSON.stringify(body, null, 2));
+        console.debug('[Analytics]', metric.name, JSON.stringify(body, null, 2));
     }
 
     const blob = new Blob([new URLSearchParams(body).toString()], {

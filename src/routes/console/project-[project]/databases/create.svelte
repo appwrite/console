@@ -1,9 +1,11 @@
 <script lang="ts">
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal, CustomId } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button, InputText, FormList } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
+    import { ID } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
 
     export let showCreate = false;
@@ -12,16 +14,19 @@
 
     let name = '';
     let id: string = null;
-    let showCustomId = false;
+    let showCustomId = true;
 
     const create = async () => {
         try {
-            const database = await sdkForProject.databases.create(id ? id : 'unique()', name);
+            const database = await sdk.forProject.databases.create(id ? id : ID.unique(), name);
             showCreate = false;
             dispatch('created', database);
             addNotification({
                 type: 'success',
                 message: `${name} has been created`
+            });
+            trackEvent(Submit.DatabaseCreate, {
+                customId: !!id
             });
             name = id = null;
         } catch (error) {
@@ -29,12 +34,12 @@
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.DatabaseCreate);
         }
     };
 </script>
 
-<Modal size="big" on:submit={create} bind:show={showCreate}>
-    <svelte:fragment slot="header">Create Database</svelte:fragment>
+<Modal title="Create database" size="big" onSubmit={create} bind:show={showCreate}>
     <FormList>
         <InputText
             id="name"
@@ -52,7 +57,7 @@
                     </span></Pill>
             </div>
         {:else}
-            <CustomId bind:show={showCustomId} name="Database" bind:id />
+            <CustomId bind:show={showCustomId} name="Database" bind:id autofocus={false} />
         {/if}
     </FormList>
     <svelte:fragment slot="footer">

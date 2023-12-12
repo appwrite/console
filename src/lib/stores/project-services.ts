@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import type { Models } from '@aw-labs/appwrite-console';
+import type { Models } from '@appwrite.io/console';
 
 export type Service = {
     label: string;
@@ -53,6 +53,21 @@ function createServices() {
             {
                 label: 'Users',
                 method: 'users',
+                value: null
+            },
+            {
+                label: 'GraphQL',
+                method: 'graphql',
+                value: null
+            },
+            {
+                label: 'VCS',
+                method: 'vcs',
+                value: null
+            },
+            {
+                label: 'Proxy',
+                method: 'proxy',
                 value: null
             }
         ]

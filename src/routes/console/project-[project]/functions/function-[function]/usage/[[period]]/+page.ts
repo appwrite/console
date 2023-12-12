@@ -1,16 +1,20 @@
-import type { Models } from '@aw-labs/appwrite-console';
-import { sdkForProject } from '$lib/stores/sdk';
+import type { Metric, UsageFunctions } from '$lib/sdk/usage';
+import { sdk } from '$lib/stores/sdk';
 import type { PageLoad } from './$types';
+import { error } from '@sveltejs/kit';
 
-export const load: PageLoad = async ({ params, parent }) => {
-    await parent();
-    const response = await sdkForProject.functions.getFunctionUsage(
-        params.function,
-        params.period ?? '30d'
-    );
+export const load: PageLoad = async ({ params }) => {
+    try {
+        const response = (await sdk.forProject.functions.getFunctionUsage(
+            params.function,
+            params.period ?? '30d'
+        )) as unknown as UsageFunctions;
 
-    return {
-        count: response.executionsTotal as unknown as Models.Metric[],
-        errors: response.buildsFailure as unknown as Models.Metric[]
-    };
+        return {
+            executionsTotal: response.executionsTotal,
+            executions: response.executions as Metric[]
+        };
+    } catch (e) {
+        throw error(e.code, e.message);
+    }
 };

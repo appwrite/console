@@ -19,7 +19,13 @@
 <WizardStep>
     <svelte:fragment slot="title">Events</svelte:fragment>
     <svelte:fragment slot="subtitle">
-        Set the events that will trigger your function. Maximum 100 events allowed.
+        Set the events that will trigger your function. Maximum 100 events allowed.<a
+            href="https://appwrite.io/docs/advanced/platform/events"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="link">
+            Learn more about events.
+        </a>.
     </svelte:fragment>
 
     {#if $createFunction?.events?.length}
@@ -50,10 +56,19 @@
             </Button>
         </div>
     {:else}
-        <Empty on:click={() => (showCreate = !showCreate)}>Add an event to get started</Empty>
+        <Empty on:click={() => (showCreate = !showCreate)}>Add an event</Empty>
     {/if}
 </WizardStep>
 
 {#if showCreate}
-    <EventModal bind:show={showCreate} on:created={handleCreated} />
+    <EventModal bind:show={showCreate} on:created={handleCreated}>
+        <p class="text">
+            Select events in your Appwrite project that will trigger your function. <a
+                href="https://appwrite.io/docs/advanced/platform/events"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="link">Learn more about Appwrite Events</a
+            >.
+        </p>
+    </EventModal>
 {/if}

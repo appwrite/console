@@ -1,65 +1,75 @@
 <script lang="ts">
-    import { EmptySearch, Pagination, Trim } from '$lib/components';
     import {
-        Table,
+        AvatarInitials,
+        EmptySearch,
+        Heading,
+        PaginationWithLimit,
+        Trim
+    } from '$lib/components';
+    import {
         TableBody,
         TableHeader,
         TableRow,
         TableCellHead,
         TableCell,
-        TableCellText
+        TableCellText,
+        TableScroll
     } from '$lib/elements/table';
-    import { Container } from '$lib/layout';
-    import { toLocaleDateTime } from '$lib/helpers/date';
-    import { sdkForConsole } from '$lib/stores/sdk';
-    import { PAGE_LIMIT } from '$lib/constants';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import { Container, ContainerHeader } from '$lib/layout';
+    import { hoursToDays, toLocaleDateTime } from '$lib/helpers/date';
+    import type { Models } from '@appwrite.io/console';
+    import type { PlanServices } from '$lib/stores/billing';
 
     export let logs: Models.LogList;
-    export let path: string;
     export let offset = 0;
+    export let limit = 0;
 
-    const getBrowser = (clientCode: string) => {
-        return sdkForConsole.avatars.getBrowser(clientCode, 40, 40);
-    };
+    export let service: PlanServices = null;
 </script>
 
 <Container>
+    {#if service}
+        <ContainerHeader title="Activity" alertType="info" serviceId={service}>
+            <svelte:fragment slot="tooltip" let:limit let:tier let:upgradeMethod>
+                <p class="text">
+                    Logs are retained in rolling {hoursToDays(limit)} intervals with the {tier} plan.
+                    <button class="link" type="button" on:click|preventDefault={upgradeMethod}
+                        >Upgrade</button> to increase your log retention for a longer period.
+                </p>
+            </svelte:fragment>
+        </ContainerHeader>
+    {:else}
+        <Heading tag="h2" size="5">Activity</Heading>
+    {/if}
     {#if logs.total}
-        <Table>
+        <TableScroll>
             <TableHeader>
-                <TableCellHead>Client</TableCellHead>
-                <TableCellHead>Event</TableCellHead>
-                <TableCellHead>Location</TableCellHead>
-                <TableCellHead>IP</TableCellHead>
-                <TableCellHead>Date</TableCellHead>
+                <TableCellHead width={100}>User</TableCellHead>
+                <TableCellHead width={100}>Event</TableCellHead>
+                <TableCellHead width={80}>Location</TableCellHead>
+                <TableCellHead width={90}>IP</TableCellHead>
+                <TableCellHead width={140}>Date</TableCellHead>
             </TableHeader>
             <TableBody>
                 {#each logs.logs as log}
                     <TableRow>
                         <TableCell title="Client">
-                            {#if log.clientName}
-                                <div class="u-flex u-cross-center u-gap-12">
-                                    <div class="avatar is-small">
-                                        <img
-                                            height="20"
-                                            width="20"
-                                            src={getBrowser(log.clientCode).toString()}
-                                            alt={log.clientName} />
+                            <div class="u-flex u-cross-center u-gap-12">
+                                {#if log.userEmail}
+                                    {#if log.userName}
+                                        <AvatarInitials size={32} name={log.userName} />
+                                        <Trim>{log.userName}</Trim>
+                                    {:else}
+                                        <AvatarInitials size={32} name={log.userEmail} />
+                                        <Trim>{log.userEmail}</Trim>
+                                    {/if}
+                                {:else}
+                                    <div class="avatar is-size-small">
+                                        <span class="icon-anonymous" aria-hidden="true" />
                                     </div>
-                                    <Trim>
-                                        {log.clientName}
-                                        {log.clientVersion}
-                                        on {log.osName}
-                                        {log.osVersion}
-                                    </Trim>
-                                </div>
-                            {:else}
-                                <div class="u-flex u-cross-center u-gap-12">
-                                    <span class="avatar  is-color-empty" />
-                                    <p class="text u-trim">Unknown</p>
-                                </div>
-                            {/if}
+                                    <span class="text u-trim">{log.userName ?? 'Anonymous'}</span>
+                                {/if}
+                            </div>
                         </TableCell>
                         <TableCellText title="Event">{log.event}</TableCellText>
 
@@ -75,11 +85,9 @@
                     </TableRow>
                 {/each}
             </TableBody>
-        </Table>
-        <div class="u-flex u-margin-block-start-32 u-main-space-between">
-            <p class="text">Total results: {logs.total}</p>
-            <Pagination limit={PAGE_LIMIT} {path} {offset} sum={logs.total} />
-        </div>
+        </TableScroll>
+
+        <PaginationWithLimit name="Logs" {limit} {offset} total={logs.total} />
     {:else}
         <EmptySearch>
             <div class="u-flex u-flex-vertical u-cross-center">

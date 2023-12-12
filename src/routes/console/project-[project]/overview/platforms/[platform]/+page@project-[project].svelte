@@ -11,21 +11,18 @@
     import AppleWatchOs from './appleWatchOS.svelte';
     import AppleTvos from './appleTvOS.svelte';
     import Android from './android.svelte';
-    import { CardGrid, Heading } from '$lib/components';
+    import { Box, CardGrid, Heading } from '$lib/components';
     import { Button, Form, FormList, InputText } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { onMount, SvelteComponent } from 'svelte';
     import { project } from '../../../store';
     import { platform } from './store';
     import { Dependencies } from '$lib/constants';
-    import type { PageData } from './$types';
     import { invalidate } from '$app/navigation';
 
-    export let data: PageData;
-
-    const types: Record<string, typeof SvelteComponent> = {
+    const types: Record<string, typeof SvelteComponent<unknown>> = {
         web: Web,
         android: Android,
         'apple-ios': AppleiOs,
@@ -36,27 +33,28 @@
         'flutter-android': FlutterAndroid,
         'flutter-linux': FlutterLinux,
         'flutter-macos': FlutterMacOs,
-        'flutter-windows': FlutterWindows
+        'flutter-windows': FlutterWindows,
+        'flutter-web': Web
     };
 
     let showDelete = false;
     let name: string = null;
 
     onMount(() => {
-        name ??= data.platform.name;
+        name ??= $platform.name;
     });
 
-    const updateName = async () => {
+    async function updateName() {
         try {
-            await sdkForConsole.projects.updatePlatform(
+            await sdk.forConsole.projects.updatePlatform(
                 $project.$id,
-                data.platform.$id,
+                $platform.$id,
                 name,
-                data.platform.key,
-                data.platform.store,
-                data.platform.hostname
+                $platform.key || undefined,
+                $platform.store || undefined,
+                $platform.hostname || undefined
             );
-            invalidate(Dependencies.PLATFORM);
+            await invalidate(Dependencies.PLATFORM);
             addNotification({
                 type: 'success',
                 message: 'Platform name has been updated'
@@ -67,13 +65,13 @@
                 message: error.message
             });
         }
-    };
+    }
 </script>
 
 <Container>
-    <Form on:submit={updateName}>
+    <Form onSubmit={updateName}>
         <CardGrid>
-            <Heading tag="h6" size="7">Update Name</Heading>
+            <Heading tag="h6" size="7">Name</Heading>
             <p class="text">Choose any name that will help you distinguish between platforms.</p>
             <svelte:fragment slot="aside">
                 <FormList>
@@ -96,18 +94,18 @@
 
     <CardGrid danger>
         <div>
-            <Heading tag="h6" size="7">Delete Platform</Heading>
+            <Heading tag="h6" size="7">Delete platform</Heading>
         </div>
         <p>The Platform will be permanently deleted. This action is irreversible.</p>
         <svelte:fragment slot="aside">
-            <div class="box">
+            <Box>
                 <div class="u-flex u-gap-16">
                     <div class="u-cross-child-center u-line-height-1-5">
                         <h6 class="u-bold">{$platform.name}</h6>
                         <p>{$platform.hostname}</p>
                     </div>
                 </div>
-            </div>
+            </Box>
         </svelte:fragment>
 
         <svelte:fragment slot="actions">

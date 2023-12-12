@@ -1,16 +1,17 @@
 <script lang="ts">
-    import { CardGrid, Box, AvatarGroup, Heading } from '$lib/components';
+    import { CardGrid, BoxAvatar, AvatarGroup, Heading } from '$lib/components';
     import { InputText, Form, Button } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { members, organization } from '$lib/stores/organization';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { onMount } from 'svelte';
-    import Delete from '../deleteOrganization.svelte';
-    import { trackEvent } from '$lib/actions/analytics';
+    import Delete from './deleteOrganization.svelte';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
+    export let data;
     let name: string;
     let showDelete = false;
 
@@ -20,18 +21,19 @@
 
     async function updateName() {
         try {
-            await sdkForConsole.teams.update($organization.$id, name);
+            await sdk.forConsole.teams.updateName($organization.$id, name);
             await invalidate(Dependencies.ORGANIZATION);
             addNotification({
                 message: 'Name has been updated',
                 type: 'success'
             });
-            trackEvent('submit_organization_update_name');
+            trackEvent(Submit.OrganizationUpdateName);
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
+            trackError(error, Submit.OrganizationUpdateName);
         }
     }
 
@@ -40,9 +42,9 @@
 
 <Container>
     {#if $organization}
-        <Form on:submit={updateName}>
+        <Form onSubmit={updateName}>
             <CardGrid>
-                <Heading tag="h6" size="7">Update Name</Heading>
+                <Heading tag="h6" size="7">Name</Heading>
 
                 <svelte:fragment slot="aside">
                     <ul>
@@ -63,29 +65,32 @@
 
         <CardGrid danger>
             <div>
-                <Heading tag="h6" size="7">Delete Organization</Heading>
+                <Heading tag="h6" size="7">Delete organization</Heading>
             </div>
             <p>
                 The organization will be permanently deleted, including all projects and data
                 associated with this organization. This action is irreversible.
             </p>
             <svelte:fragment slot="aside">
-                <Box>
+                <BoxAvatar>
                     <svelte:fragment slot="image">
                         <AvatarGroup {avatars} total={$members.total} />
                     </svelte:fragment>
                     <svelte:fragment slot="title">
-                        <h6 class="u-bold u-trim-1">{$organization.name}</h6>
+                        <h6 class="u-bold u-trim-1" data-private>{$organization.name}</h6>
                     </svelte:fragment>
                     <p>{$organization.total} members</p>
-                </Box>
+                </BoxAvatar>
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
-                <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
+                <Button
+                    disabled={$organization?.markedForDeletion}
+                    secondary
+                    on:click={() => (showDelete = true)}>Delete</Button>
             </svelte:fragment>
         </CardGrid>
     {/if}
 </Container>
 
-<Delete bind:showDelete />
+<Delete bind:showDelete invoices={data.invoices} />

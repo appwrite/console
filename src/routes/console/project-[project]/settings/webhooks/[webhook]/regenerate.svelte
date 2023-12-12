@@ -1,12 +1,12 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { page } from '$app/stores';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { webhook } from './store';
 
     export let show = false;
@@ -14,28 +14,28 @@
 
     async function regenerate() {
         try {
-            await sdkForConsole.projects.updateWebhookSignature(projectId, $webhook.$id);
-            invalidate(Dependencies.WEBHOOK);
+            await sdk.forConsole.projects.updateWebhookSignature(projectId, $webhook.$id);
+            await invalidate(Dependencies.WEBHOOK);
             show = false;
             addNotification({
                 type: 'success',
                 message: 'Key has been regenerated'
             });
-            trackEvent('submit_webhook_update_signature');
+            trackEvent(Submit.WebhookUpdateSignature);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.WebhookUpdateSignature);
         }
     }
 </script>
 
-<Modal bind:show on:submit={regenerate}>
-    <svelte:fragment slot="header">Regenerate Key</svelte:fragment>
+<Modal title="Regenerate Key" bind:show onSubmit={regenerate}>
     <p class="u-text">
         Are you sure you want to generate a new Signature Key?
-        <b>You will not be able to recover your current key.</b>
+        <b>You will not be able to recover the current key.</b>
     </p>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (show = false)}>Cancel</Button>

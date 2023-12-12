@@ -8,6 +8,8 @@
     export let value = false;
     export let required = false;
     export let disabled = false;
+    export let tooltip: string = null;
+    export let fullWidth = false;
 
     let element: HTMLInputElement;
     let error: string;
@@ -34,13 +36,35 @@
             {required}
             type="checkbox"
             class:switch={type === 'switchbox'}
+            aria-checked={value}
             bind:this={element}
             bind:checked={value}
             on:invalid={handleInvalid} />
 
-        <div class="choice-item-content">
-            <div class:u-hide={!showLabel} class="choice-item-title">{label}</div>
-            {#if $$slots}
+        <div class="choice-item-content" class:u-width-full-line={fullWidth}>
+            {#if (label && showLabel) || tooltip}
+                <div class="u-flex u-gap-4">
+                    {#if label}
+                        <h6 class:u-hide={!showLabel} class="choice-item-title">
+                            {label}
+                        </h6>
+                    {/if}
+                    {#if tooltip}
+                        <button type="button" class="tooltip" aria-label="variables info">
+                            <span
+                                class="icon-info"
+                                aria-hidden="true"
+                                style="font-size: var(--icon-size-small)" />
+                            <span class="tooltip-popup" role="tooltip">
+                                <p class="text">
+                                    {tooltip}
+                                </p>
+                            </span>
+                        </button>
+                    {/if}
+                </div>
+            {/if}
+            {#if $$slots.default}
                 <p class="choice-item-paragraph"><slot /></p>
             {/if}
         </div>

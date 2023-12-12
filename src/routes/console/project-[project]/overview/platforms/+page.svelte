@@ -1,12 +1,12 @@
 <script lang="ts" context="module">
-    import { wizard } from '$lib/stores/wizard';
-    import { versions } from './wizard/store';
-    import SearchLight from '$lib/images/search-light.svg';
     import SearchDark from '$lib/images/search-dark.svg';
+    import SearchLight from '$lib/images/search-light.svg';
+    import { wizard } from '$lib/stores/wizard';
     import CreateAndroid from './createAndroid.svelte';
     import CreateApple from './createApple.svelte';
     import CreateFlutter from './createFlutter.svelte';
     import CreateWeb from './createWeb.svelte';
+    import { versions } from './wizard/store';
 
     export enum Platform {
         Web,
@@ -29,16 +29,32 @@
 </script>
 
 <script lang="ts">
+    import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { DropList, DropListItem, Heading } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import { base } from '$app/paths';
     import { app } from '$lib/stores/app';
     import type { PageData } from './$types';
+    import { ContainerHeader } from '$lib/layout';
+    import { getServiceLimit, readOnly } from '$lib/stores/billing';
 
     export let data: PageData;
 
+    enum PlatformTypes {
+        'apple-ios' = 'iOS',
+        'apple-macos' = 'macOS',
+        'apple-watchos' = 'watchOS',
+        'apple-tvos' = 'tvOS',
+        'android' = 'Android',
+        'flutter-android' = 'Android',
+        'flutter-ios' = 'iOS',
+        'flutter-linux' = 'Linux',
+        'flutter-macos' = 'macOS',
+        'flutter-windows' = 'Windows',
+        'flutter-web' = 'Web',
+        'web' = 'Web'
+    }
     let showDropdown = false;
     let showDropdownEmpty = false;
     const path = `/console/project-${$page.params.project}/overview/platforms`;
@@ -58,37 +74,34 @@
     };
 </script>
 
-<div class="common-section u-flex u-gap-12">
-    <Heading tag="h3" size="7">Platforms</Heading>
-    <span class="u-margin-inline-start-auto">
-        <DropList bind:show={showDropdown} placement="bottom-start">
-            <Button on:click={() => (showDropdown = !showDropdown)}>
-                <span class="icon-plus" aria-hidden="true" />
-                <span class="text">Add platform</span>
-            </Button>
-            <svelte:fragment slot="list">
-                <DropListItem on:click={() => addPlatform(Platform.Web)}>Web App</DropListItem>
-                <DropListItem on:click={() => addPlatform(Platform.Flutter)}>
-                    Flutter App
-                </DropListItem>
-                <DropListItem on:click={() => addPlatform(Platform.Android)}>
-                    Android App
-                </DropListItem>
-                <DropListItem on:click={() => addPlatform(Platform.Apple)}>Apple App</DropListItem>
-            </svelte:fragment>
-        </DropList>
-    </span>
-</div>
+<ContainerHeader title="Platforms" titleTag="h3" titleSize="7" total={data?.platforms?.total}>
+    <DropList bind:show={showDropdown} placement="bottom-start">
+        <Button
+            on:click={() => (showDropdown = !showDropdown)}
+            disabled={data?.platforms?.platforms?.length >= getServiceLimit('platforms') ||
+                $readOnly}>
+            <span class="icon-plus" aria-hidden="true" />
+            <span class="text">Add platform</span>
+        </Button>
+        <svelte:fragment slot="list">
+            <DropListItem on:click={() => addPlatform(Platform.Web)}>Web App</DropListItem>
+            <DropListItem on:click={() => addPlatform(Platform.Flutter)}>Flutter App</DropListItem>
+            <DropListItem on:click={() => addPlatform(Platform.Android)}>Android App</DropListItem>
+            <DropListItem on:click={() => addPlatform(Platform.Apple)}>Apple App</DropListItem>
+        </svelte:fragment>
+    </DropList>
+</ContainerHeader>
 
 {#if data.platforms.platforms.length}
     <div
         class="grid-box u-margin-block-start-32"
-        style="--grid-gap:1.5rem; --grid-item-size:20rem;">
+        style="--grid-gap:1.5rem; --grid-item-size:20rem;"
+        data-private>
         {#each data.platforms.platforms as platform}
             <a class="card" href={`${path}/${platform.$id}`}>
                 <div class="grid-item-1" style="min-block-size: calc(182 / 16 * 1rem)">
                     <div class="grid-item-1-start-start">
-                        <div class="u-flex u-gap-8 u-cross-center">
+                        <div class="u-flex u-gap-16 u-cross-center">
                             <div class="avatar is-medium" aria-hidden="true">
                                 <img
                                     src={`${base}/icons/${$app.themeInUse}/${getPlatformInfo(
@@ -96,14 +109,17 @@
                                     )}.svg`}
                                     alt="technology" />
                             </div>
-                            <span class="text">{platform.name}</span>
+                            <div>
+                                <Heading size="6" tag="h3">{platform.name}</Heading>
+                                <p class="text">{PlatformTypes[platform.type]}</p>
+                            </div>
                         </div>
                     </div>
 
                     <div class="grid-item-1-end-start">
                         <div class="u-flex u-gap-16 u-flex-wrap">
                             <div class="grid-item-1-end-start">
-                                <p class="eyebrow-heading-3">Last Updated</p>
+                                <p class="eyebrow-heading-3">Last updated</p>
                                 <p>{toLocaleDateTime(platform.$updatedAt)}</p>
                             </div>
                         </div>
@@ -122,9 +138,9 @@
             {/if}
             <slot>
                 <div class="u-text-center">
-                    <Heading size="7" tag="h4">Create your first platform to get started.</Heading>
-                    <p class="body-text-2 u-margin-block-start-4">
-                        Need a hand? Check out our documentation.
+                    <Heading size="7" tag="h4">Create a platform to get started.</Heading>
+                    <p class="body-text-2 u-bold u-margin-block-start-4">
+                        Need a hand? Learn more in our documentation.
                     </p>
                 </div>
                 <div class="u-flex u-gap-16 u-main-center">
@@ -137,16 +153,16 @@
                         </Button>
                         <svelte:fragment slot="list">
                             <DropListItem on:click={() => addPlatform(Platform.Web)}>
-                                Web App
-                            </DropListItem>
+                                Web
+                            </DropListItem>Ï
                             <DropListItem on:click={() => addPlatform(Platform.Flutter)}>
-                                Flutter App
+                                Flutter
                             </DropListItem>
                             <DropListItem on:click={() => addPlatform(Platform.Android)}>
-                                Android App
+                                Android
                             </DropListItem>
                             <DropListItem on:click={() => addPlatform(Platform.Apple)}>
-                                Apple App
+                                Apple
                             </DropListItem>
                         </svelte:fragment>
                     </DropList>

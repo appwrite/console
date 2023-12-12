@@ -1,11 +1,10 @@
 <script lang="ts">
-    import { CardGrid, Box, Copy, Heading, Alert } from '$lib/components';
+    import { CardGrid, BoxAvatar, Heading, Alert, Id } from '$lib/components';
     import { Container } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
-    import { Pill } from '$lib/elements';
     import { file } from './store';
     import { toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import { calculateSize } from '$lib/helpers/sizeConvertion';
     import { onMount } from 'svelte';
@@ -14,7 +13,7 @@
     import Delete from './deleteFile.svelte';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { bucket } from '../store';
 
     let showFileAlert = true;
@@ -27,10 +26,10 @@
     let arePermsDisabled = true;
 
     const getPreview = (fileId: string) =>
-        sdkForProject.storage.getFilePreview($file.bucketId, fileId, 205, 125).toString() +
+        sdk.forProject.storage.getFilePreview($file.bucketId, fileId, 410, 250).toString() +
         '&mode=admin';
     const getView = (fileId: string) =>
-        sdkForProject.storage.getFileView($file.bucketId, fileId).toString() + '&mode=admin';
+        sdk.forProject.storage.getFileView($file.bucketId, fileId).toString() + '&mode=admin';
 
     $: if (filePermissions) {
         if (symmetricDifference(filePermissions, $file.$permissions).length) {
@@ -40,26 +39,32 @@
 
     function downloadFile() {
         return (
-            sdkForProject.storage.getFileDownload($file.bucketId, $file.$id).toString() +
+            sdk.forProject.storage.getFileDownload($file.bucketId, $file.$id).toString() +
             '&mode=admin'
         );
     }
 
     async function updatePermissions() {
         try {
-            await sdkForProject.storage.updateFile($file.bucketId, $file.$id, filePermissions);
-            invalidate(Dependencies.FILE);
+            await sdk.forProject.storage.updateFile(
+                $file.bucketId,
+                $file.$id,
+                $file.name,
+                filePermissions
+            );
+            await invalidate(Dependencies.FILE);
             arePermsDisabled = true;
             addNotification({
                 message: 'Permissions have been updated',
                 type: 'success'
             });
-            trackEvent('submit_file_update_permissions');
+            trackEvent(Submit.FileUpdatePermissions);
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
+            trackError(error, Submit.FileUpdatePermissions);
         }
     }
 </script>
@@ -67,9 +72,9 @@
 <Container>
     {#if $file}
         <CardGrid>
-            <div class="u-flex u-gap-16">
+            <div class="u-flex u-gap-16" data-private>
                 <a
-                    href={downloadFile()}
+                    href={getView($file.$id)}
                     class="file-preview is-with-image"
                     target="_blank"
                     rel="noopener noreferrer"
@@ -89,9 +94,7 @@
                 </a>
                 <div class="u-flex u-flex-vertical u-gap-16">
                     <Heading tag="h2" size="7">{$file.name}</Heading>
-                    <Copy value={getView($file.$id)}>
-                        <Pill button><i class="icon-duplicate" />File URL</Pill>
-                    </Copy>
+                    <Id value={getView($file.$id)}>File URL</Id>
                 </div>
             </div>
             <svelte:fragment slot="aside">
@@ -99,21 +102,21 @@
                     <p>MIME Type: {$file.mimeType}</p>
                     <p>Size: {calculateSize($file.sizeOriginal)}</p>
                     <p>Created: {toLocaleDate($file.$createdAt)}</p>
-                    <p>Last Updated: {toLocaleDate($file.$updatedAt)}</p>
+                    <p>Last updated: {toLocaleDate($file.$updatedAt)}</p>
                 </div>
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
-                <Button secondary href={downloadFile()} event="download_file">
+                <Button secondary href={downloadFile()} event="download_file" external>
                     <span class="icon-download" aria-hidden="true" />
                     <span class="text"> Download</span></Button>
             </svelte:fragment>
         </CardGrid>
 
         <CardGrid>
-            <Heading tag="h6" size="7">Update Permissions</Heading>
+            <Heading tag="h6" size="7">Permissions</Heading>
             <p>
-                Assign read or write permissions at the Bucket Level or File Level. If Bucket Level
+                Assign read or write permissions at the bucket level or file level. If bucket level
                 permissions are enabled, file permissions will be ignored.
             </p>
             <svelte:fragment slot="aside">
@@ -133,9 +136,8 @@
                     <Alert type="info">
                         <svelte:fragment slot="title">File security is disabled</svelte:fragment>
                         <p class="text">
-                            If you want to assign document permissions, navigate to Bucket settings
-                            and enable file security. Otherwise, only Bucket permissions will be
-                            used.
+                            If you want to assign document permissions. Go to Bucket settings and
+                            enable file security. Otherwise, only Bucket permissions will be used.
                         </p>
                     </Alert>
                 {/if}
@@ -151,20 +153,17 @@
         </CardGrid>
 
         <CardGrid danger>
-            <Heading tag="h6" size="7">Delete File</Heading>
-            <p>
-                The file will be permanently deleted, including all the files within it. This action
-                is irreversible.
-            </p>
+            <Heading tag="h6" size="7">Delete file</Heading>
+            <p>The file will be permanently deleted. This action is irreversible.</p>
             <svelte:fragment slot="aside">
-                <Box>
+                <BoxAvatar>
                     <svelte:fragment slot="title">
-                        <h6 class="u-bold u-trim-1">{$file.name}</h6>
+                        <h6 class="u-bold u-trim-1" data-private>{$file.name}</h6>
                     </svelte:fragment>
                     <p>
-                        Last Updated: {toLocaleDateTime($file.$updatedAt)}
+                        Last updated: {toLocaleDateTime($file.$updatedAt)}
                     </p>
-                </Box>
+                </BoxAvatar>
             </svelte:fragment>
 
             <svelte:fragment slot="actions">

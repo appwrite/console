@@ -1,28 +1,53 @@
 <script lang="ts">
-    import { getFileExt, getFileName } from '$lib/helpers/file';
-    import { calculateSize } from '$lib/helpers/sizeConvertion';
+    import { Trim } from '$lib/components';
+    import { humanFileSize } from '$lib/helpers/sizeConvertion';
+    import { onMount } from 'svelte';
+    import { Helper, Label } from '.';
 
     export let label: string = null;
     export let files: FileList;
-    export let list = new DataTransfer();
+
     export let allowedFileExtensions: string[] = [];
-    export let error: string = null;
     export let maxSize: number = null;
+    export let required = false;
+    export let optionalText: string = null;
+    export let tooltip: string = null;
+    export let error: string = null;
 
     let input: HTMLInputElement;
     let hovering = false;
 
+    function setFiles(value: FileList) {
+        if (!value) return;
+
+        const hasInvalidExt = Array.from(value).some((file) => {
+            const fileExtension = file.name.split('.').pop();
+            return allowedFileExtensions?.length
+                ? !allowedFileExtensions.includes(fileExtension)
+                : false;
+        });
+        if (hasInvalidExt) {
+            error = 'Invalid file extension';
+            return;
+        }
+
+        files = value;
+        input.files = value;
+    }
+
+    function resetFiles() {
+        setFiles(new DataTransfer().files);
+    }
+
     function dropHandler(ev: DragEvent) {
+        ev.dataTransfer.dropEffect = 'move';
         hovering = false;
-        if (ev.dataTransfer.items) {
-            // Use DataTransferItemList interface to access the file(s)
-            for (let i = 0; i < ev.dataTransfer.items.length; i++) {
-                // If dropped items aren't files, reject them
-                if (ev.dataTransfer.items[i].kind === 'file') {
-                    list.items.clear();
-                    list.items.add(ev.dataTransfer.items[i].getAsFile());
-                    files = list.files;
-                }
+        if (!ev.dataTransfer.items) return;
+        for (let i = 0; i < ev.dataTransfer.items.length; i++) {
+            if (ev.dataTransfer.items[i].kind === 'file') {
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(ev.dataTransfer.items[i].getAsFile());
+                setFiles(dataTransfer.files);
             }
         }
     }
@@ -31,85 +56,126 @@
         console.log('aaaaa');
         hovering = true;
     }
+
+    const handleInvalid = (event: Event) => {
+        event.preventDefault();
+
+        if (input.validity.valueMissing) {
+            error = 'This field is required';
+            return;
+        }
+        error = input.validationMessage;
+    };
+
+    $: if (files) {
+        error = null;
+    }
+
+    $: fileArray = files?.length ? Array.from(files) : [];
+
+    onMount(() => {
+        setFiles(files);
+    });
+
+    const handleChange = (event: Event) => {
+        const target = event.currentTarget as HTMLInputElement;
+        setFiles(target.files);
+    };
 </script>
 
 <input
-    bind:files
+    on:change={handleChange}
     bind:this={input}
     accept={allowedFileExtensions.map((n) => `.${n}`).join(',')}
     type="file"
-    style="display: none" />
+    style="display: none"
+    {required}
+    on:invalid={handleInvalid} />
 
 <div>
     {#if label}
-        <p class="text">{label}</p>
+        <Label {required} {optionalText} {tooltip} hide={!label}>
+            {label}
+        </Label>
     {/if}
 
     <div
-        class="box is-border-dashed is-no-shadow"
+        role="region"
+        class="box is-no-shadow u-padding-24"
+        style="--box-border-radius:var(--border-radius-xsmall); z-index: 1"
+        class:u-margin-block-start-8={!!label}
+        class:is-border-dashed={!hovering}
         class:is-hover-with-file={hovering}
         on:drop|preventDefault={dropHandler}
         on:dragover|preventDefault={dragOverHandler}
-        on:dragleave|preventDefault={() => {
-            hovering = false;
-            console.log('bbbbb');
-        }}>
+        on:dragenter|preventDefault
+        on:dragleave|preventDefault={() => (hovering = false)}>
         <div class="upload-file-box">
-            <!-- TODO: Check if this should be a button or not -->
-            <button type="button" on:click={() => input.click()} class="upload-file-box-image">
+            <div class="upload-file-box-image">
                 <span class="icon-upload" aria-hidden="true" />
-            </button>
-            <div class="u-min-width-0">
-                <div class="">
-                    <h5 class="upload-file-box-title heading-level-7 u-inline">
-                        <span class="is-only-desktop">Drag and drop files here to upload</span>
-                        <span class="is-no-desktop">Upload a File</span>
-                    </h5>
-                    <button class="tooltip u-margin-inline-start-4" aria-label="variables info">
+            </div>
+            <div class="u-min-width-0 u-text-center">
+                <h5 class="upload-file-box-title heading-level-7 u-inline">
+                    <span class="is-only-desktop">Drag and drop a file here to upload</span>
+                    <span class="is-not-desktop">Upload a File</span>
+                </h5>
+                {#if allowedFileExtensions?.length}
+                    <button
+                        class="tooltip u-inline u-margin-inline-start-4"
+                        aria-label="variables info">
                         <span class="icon-info" aria-hidden="true" />
-                        <span class="tooltip-popup" role="tooltip">
-                            Set variables or secret keys that will be passed as env vars to your
-                            function at runtime.
-                        </span>
+                        <span class="tooltip-popup" role="tooltip"
+                            >Only {allowedFileExtensions.join(', ')} accepted.</span>
                     </button>
-                </div>
+                {/if}
+            </div>
+            <div class="u-flex u-main-center u-cross-center u-gap-16 u-flex-vertical-mobile">
                 {#if maxSize}
-                    <p class="upload-file-box-info body-text-2 u-normal">
-                        Max file size: {calculateSize(maxSize)}
+                    {@const readableMaxSize = humanFileSize(maxSize)}
+                    <p class="upload-file-box-info body-text-2">
+                        Max file size: {readableMaxSize.value + readableMaxSize.unit}
                     </p>
                 {/if}
+                <button
+                    class="button is-secondary is-full-width-mobile"
+                    type="button"
+                    on:click={() => input.click()}>
+                    <span class="text">Choose a file</span>
+                </button>
             </div>
 
             {#if files?.length}
-                {@const fileName = getFileName(files.item(0).name)}
-                {@const fileExt = getFileExt(files.item(0).name)}
-                {@const fileSize = calculateSize(files.item(0).size)}
                 <ul class="upload-file-box-list u-min-width-0">
-                    <li class="u-flex u-cross-center u-min-width-0">
-                        <span class="icon-document" aria-hidden="true" />
-                        <span class="upload-file-box-name u-trim u-min-width-0">{fileName} </span>
-                        <span class="upload-file-box-name u-min-width-0 u-flex-shrink-0">
-                            .{fileExt}
-                        </span>
-                        <span
-                            class="upload-file-box-size u-margin-inline-start-4 u-margin-inline-end-16 u-flex-shrink-0">
-                            {fileSize}
-                        </span>
-                        <button
-                            on:click={() => (files = null)}
-                            type="button"
-                            class="x-button u-margin-inline-start-16"
-                            aria-label="remove file"
-                            title="Remove file"><span class="icon-x" aria-hidden="true" /></button>
-                    </li>
+                    {#each fileArray as file}
+                        {@const fileName = file.name.split('.')}
+                        {@const fileSize = humanFileSize(file.size)}
+                        <li class="u-flex u-cross-center u-min-width-0">
+                            <span class="icon-document" aria-hidden="true" />
+                            <span class="upload-file-box-name u-trim u-min-width-0">
+                                <Trim>{fileName[0]}</Trim>
+                            </span>
+                            <span class="upload-file-box-name u-min-width-0 u-flex-shrink-0">
+                                .{fileName[1]}
+                            </span>
+                            <span
+                                class="upload-file-box-size u-margin-inline-start-4 u-margin-inline-end-16">
+                                {fileSize.value + fileSize.unit}
+                            </span>
+                            <button
+                                on:click|preventDefault={resetFiles}
+                                type="button"
+                                class="button is-text is-only-icon u-margin-inline-start-auto"
+                                aria-label="remove file"
+                                style="--button-size:1.5rem;">
+                                <span class="icon-x" aria-hidden="true" />
+                            </button>
+                        </li>
+                    {/each}
                 </ul>
             {/if}
         </div>
     </div>
     {#if error}
-        <p class="helper u-error u-margin-block-start-8">
-            <span class="icon-exclamation-circle" aria-hidden="true" />
-            <span class="text">{error}</span>
-        </p>
+        <Helper type="warning">{error}</Helper>
     {/if}
 </div>

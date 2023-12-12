@@ -1,15 +1,14 @@
 <script lang="ts">
     import { Modal } from '$lib/components';
     import { Button, InputText, FormList } from '$lib/elements/forms';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import type { Models } from '@appwrite.io/console';
 
     export let showOverview = false;
     export let selectedIndex: Models.Index = null;
     //TODO: add error message when index failed
 </script>
 
-<Modal size="big" bind:show={showOverview}>
-    <svelte:fragment slot="header">Overview</svelte:fragment>
+<Modal title="Overview" size="big" bind:show={showOverview}>
     <FormList>
         <InputText
             id="key"

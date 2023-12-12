@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount } from 'svelte';
-    import { FormItem, Helper } from '.';
+    import { FormItem, Helper, Label } from '.';
 
     export let id: string;
     export let label: string;
@@ -47,8 +47,11 @@
 </script>
 
 <FormItem>
-    <label class:u-hide={!showLabel} class="label" for={id}>{label}</label>
-    <div class="input-text-wrapper">
+    <Label {required} hide={!showLabel} for={id}>
+        {label}
+    </Label>
+
+    <div class="input-text-wrapper" style={showPasswordButton ? '--amount-of-buttons: 1' : ''}>
         {#if showInPlainText}
             <input
                 {id}

@@ -1,17 +1,33 @@
 <script lang="ts">
-    import InputText from '$lib/elements/forms/inputText.svelte';
-    import type { Models } from '@aw-labs/appwrite-console';
+    import { InputText, InputTextarea } from '$lib/elements/forms';
+    import type { Models } from '@appwrite.io/console';
 
     export let id: string;
     export let label: string;
     export let value: string;
     export let attribute: Models.AttributeString;
+    export let optionalText: string | undefined = undefined;
 </script>
 
-<InputText
-    {id}
-    {label}
-    showLabel={!!label?.length}
-    required={attribute.required}
-    maxlength={attribute.size}
-    bind:value />
+{#if attribute.size >= 50}
+    <InputTextarea
+        {id}
+        {label}
+        nullable={!attribute.required}
+        placeholder="Enter string"
+        showLabel={!!label?.length}
+        required={attribute.required}
+        maxlength={attribute.size}
+        bind:value />
+{:else}
+    <InputText
+        {id}
+        {label}
+        {optionalText}
+        nullable={!attribute.required}
+        placeholder="Enter string"
+        showLabel={!!label?.length}
+        required={attribute.required}
+        maxlength={attribute.size}
+        bind:value />
+{/if}

@@ -1,4 +1,4 @@
-import { writable, readable } from 'svelte/store';
+import { writable } from 'svelte/store';
 import type { SvelteComponent } from 'svelte';
 
 export type Tab = {
@@ -11,18 +11,17 @@ export type Breadcrumb = {
     title: string;
 };
 
+export type View = 'list' | 'grid';
+
 export type updateLayoutArguments = {
-    header?: typeof SvelteComponent;
-    breadcrumb?: typeof SvelteComponent;
+    header?: typeof SvelteComponent<unknown>;
+    breadcrumb?: typeof SvelteComponent<unknown>;
 };
 
-export const header = writable<typeof SvelteComponent>();
-export const breadcrumb = writable<typeof SvelteComponent>();
+export const header = writable<typeof SvelteComponent<unknown>>();
+export const breadcrumb = writable<typeof SvelteComponent<unknown>>();
 
 export function updateLayout(args: updateLayoutArguments) {
     header.set(args.header ?? null);
     breadcrumb.set(args.breadcrumb ?? null);
 }
-
-export const pageLimit = readable(12); // default page limit
-export const cardLimit = readable(6); // default card limit

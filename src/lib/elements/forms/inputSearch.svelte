@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
+    import { createEventDispatcher, onMount } from 'svelte';
     import { onDestroy } from 'svelte';
 
     export let value = '';
@@ -10,6 +10,7 @@
     export let autofocus = false;
     export let isWithEndButton = true;
 
+    const dispatch = createEventDispatcher();
     let element: HTMLInputElement;
     let timer: ReturnType<typeof setTimeout>;
 
@@ -26,13 +27,19 @@
         }
     });
 
-    const valueChange = (event: Event) => {
+    function valueChange(event: Event) {
         clearTimeout(timer);
         timer = setTimeout(() => {
             const target = event.target as HTMLInputElement;
             value = target.value;
+            dispatch('change', value);
         }, debounce);
-    };
+    }
+
+    function clearSearch() {
+        value = '';
+        dispatch('clear');
+    }
 
     $: if (!value) {
         if (element) {
@@ -52,7 +59,12 @@
         on:input={valueChange} />
     <span class="icon-search" aria-hidden="true" />
     {#if isWithEndButton && value}
-        <button class="x-button" aria-label="Clear search" on:click={() => (value = '')}>
+        <button
+            class="button is-text is-only-icon"
+            style="--button-size:1.5rem;"
+            aria-label="Clear search"
+            type="button"
+            on:click={clearSearch}>
             <span class="icon-x" aria-hidden="true" />
         </button>
     {/if}

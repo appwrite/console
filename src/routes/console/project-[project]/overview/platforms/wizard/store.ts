@@ -1,7 +1,7 @@
 import { writable } from 'svelte/store';
-import { sdkForConsole } from '$lib/stores/sdk';
+import { sdk } from '$lib/stores/sdk';
 import { cachedStore } from '$lib/helpers/cache';
-import type { Models } from '@aw-labs/appwrite-console';
+import type { Models } from '@appwrite.io/console';
 
 function createPlatformStore() {
     const { subscribe, update, set } = writable<Partial<Models.Platform>>({
@@ -56,8 +56,12 @@ export const versions = cachedStore<
 >('versions', function ({ set }) {
     return {
         load: async () => {
-            const { endpoint } = sdkForConsole.client.config;
-            const response = await fetch(`${endpoint}/../versions`);
+            const { endpoint, project } = sdk.forConsole.client.config;
+            const response = await fetch(`${endpoint}/../versions`, {
+                headers: {
+                    'X-Appwrite-Project': project
+                }
+            });
             set(await response.json());
         }
     };

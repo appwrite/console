@@ -1,13 +1,13 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { AvatarInitials, CardGrid, DropList, DropListItem, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
-    import { toLocaleDateTime } from '$lib/helpers/date';
+    import { toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForProject } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import { user } from './store';
 
     let showVerifcationDropdown = false;
@@ -15,63 +15,69 @@
     async function updateVerificationEmail() {
         showVerifcationDropdown = false;
         try {
-            await sdkForProject.users.updateEmailVerification($user.$id, !$user.emailVerification);
-            invalidate(Dependencies.USER);
+            await sdk.forProject.users.updateEmailVerification($user.$id, !$user.emailVerification);
+            await invalidate(Dependencies.USER);
             addNotification({
                 message: `${$user.name || $user.email || $user.phone || 'The account'} has been ${
-                    $user.emailVerification ? 'unverified' : 'verified'
+                    !$user.emailVerification ? 'unverified' : 'verified'
                 }`,
                 type: 'success'
             });
-            trackEvent('submit_user_update_verification_email');
+            trackEvent(Submit.UserUpdateVerificationEmail);
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
+            trackError(error, Submit.UserUpdateVerificationEmail);
         }
     }
     async function updateVerificationPhone() {
         showVerifcationDropdown = false;
         try {
-            await sdkForProject.users.updatePhoneVerification($user.$id, !$user.phoneVerification);
-            invalidate(Dependencies.USER);
+            await sdk.forProject.users.updatePhoneVerification($user.$id, !$user.phoneVerification);
+            await invalidate(Dependencies.USER);
             addNotification({
                 message: `${$user.name || $user.email || $user.phone || 'The account'} has been ${
                     $user.phoneVerification ? 'unverified' : 'verified'
                 }`,
                 type: 'success'
             });
-            trackEvent('submit_user_update_verification_phone');
+            trackEvent(Submit.UserUpdateVerificationPhone);
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
+            trackError(error, Submit.UserUpdateVerificationPhone);
         }
     }
     async function updateStatus() {
         try {
-            await sdkForProject.users.updateStatus($user.$id, !$user.status);
-            invalidate(Dependencies.USER);
+            await sdk.forProject.users.updateStatus($user.$id, !$user.status);
+            await invalidate(Dependencies.USER);
             addNotification({
                 message: `${$user.name || $user.email || $user.phone || 'The account'} has been ${
-                    $user.status ? 'blocked' : 'unblocked'
+                    $user.status ? 'unblocked' : 'blocked'
                 }`,
                 type: 'success'
             });
-            trackEvent('submit_user_update_status');
+            trackEvent(Submit.UserUpdateStatus);
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
+            trackError(error, Submit.UserUpdateStatus);
         }
     }
+
+    // TODO: Remove this when the console SDK is updated
+    $: accessedAt = ($user as unknown as { accessedAt: string }).accessedAt;
 </script>
 
 <CardGrid>
-    <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16">
+    <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16" data-private>
         {#if $user.email || $user.phone}
             {#if $user.name}
                 <AvatarInitials size={48} name={$user.name} />
@@ -89,7 +95,7 @@
     </div>
     <svelte:fragment slot="aside">
         <div class="u-flex u-main-space-between">
-            <div>
+            <div data-private>
                 {#if $user.email}
                     <p class="title">{$user.email}</p>
                 {/if}
@@ -97,6 +103,7 @@
                     <p class="title">{$user.phone}</p>
                 {/if}
                 <p>Joined: {toLocaleDateTime($user.registration)}</p>
+                <p>Last activity: {accessedAt ? toLocaleDate(accessedAt) : 'never'}</p>
             </div>
             {#if !$user.status}
                 <Pill danger>blocked</Pill>
@@ -105,18 +112,18 @@
                     {$user.emailVerification && $user.phoneVerification
                         ? 'verified'
                         : $user.emailVerification
-                        ? 'verified email'
-                        : $user.phoneVerification
-                        ? 'verified phone'
-                        : 'unverified'}
+                          ? 'verified email'
+                          : $user.phoneVerification
+                            ? 'verified phone'
+                            : 'unverified'}
                 </Pill>
             {:else}
                 <Pill success={$user.emailVerification || $user.phoneVerification}>
                     {$user.emailVerification
                         ? 'verified '
                         : $user.phoneVerification
-                        ? 'verified '
-                        : 'unverified'}
+                          ? 'verified '
+                          : 'unverified'}
                 </Pill>
             {/if}
         </div>
@@ -132,7 +139,8 @@
                     <Button
                         secondary
                         on:click={() => (showVerifcationDropdown = !showVerifcationDropdown)}>
-                        {$user.emailVerification ? 'Unverify' : 'Verify'} account
+                        {$user.emailVerification && $user.phoneVerification ? 'Unverify' : 'Verify'}
+                        account
                     </Button>
                     <svelte:fragment slot="list">
                         <DropListItem icon="mail" on:click={() => updateVerificationEmail()}>

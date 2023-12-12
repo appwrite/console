@@ -1,35 +1,41 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { trackEvent } from '$lib/actions/analytics';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdkForConsole } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
 
     export let showDelete = false;
 
-    const deleteAccount = async () => {
+    async function deleteAccount() {
         try {
-            await sdkForConsole.account.updateStatus();
+            await sdk.forConsole.account.updateStatus();
+            await invalidate(Dependencies.ACCOUNT);
             showDelete = false;
-            invalidate(Dependencies.ACCOUNT);
             addNotification({
                 type: 'success',
                 message: `Account was deleted `
             });
-            trackEvent('submit_account_delete');
+            trackEvent(Submit.AccountDelete);
         } catch (error) {
             addNotification({
                 type: 'error',
                 message: error.message
             });
+            trackError(error, Submit.AccountDelete);
         }
-    };
+    }
 </script>
 
-<Modal bind:show={showDelete} on:submit={deleteAccount} warning>
-    <svelte:fragment slot="header">Delete Account</svelte:fragment>
+<Modal
+    title="Delete account"
+    bind:show={showDelete}
+    onSubmit={deleteAccount}
+    icon="exclamation"
+    state="warning"
+    headerDivider={false}>
     <p>Are you sure you want to delete your account?</p>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)}>Cancel</Button>
