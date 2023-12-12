@@ -8,7 +8,7 @@
 <footer class="main-footer u-cross-center">
     <div class="main-footer-start">
         <ul class="inline-links is-no-padding-first-and-last u-x-small">
-            <li class="inline-links-item" style="line-height: 1.01;">
+            <li class="inline-links-item" style="line-height: 1.02;">
                 <div class="u-flex u-cross-center u-gap-8">
                     {#if isCloud}
                         <span class="icon-cloud" />
