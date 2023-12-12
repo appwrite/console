@@ -36,7 +36,7 @@
         <p class="text">Set the maximum file size allowed in the bucket.</p>
         <svelte:fragment slot="aside">
             {#if isCloud}
-                {@const size = humanFileSize(sizeToBytes(service, 'MB', 1000))}
+                {@const size = humanFileSize(sizeToBytes(service, 'MB', 1024))}
                 {@const plan = tierToPlan($organization?.billingPlan)}
                 <Alert type="info">
                     <p class="text">
@@ -74,8 +74,9 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={$baseValue === $bucket.maximumFileSize || $readOnly} submit
-                >Update</Button>
+            <Button disabled={$baseValue === $bucket.maximumFileSize || $readOnly} submit>
+                Update
+            </Button>
         </svelte:fragment>
     </CardGrid>
 </Form>
