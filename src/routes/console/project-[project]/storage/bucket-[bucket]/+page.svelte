@@ -19,8 +19,7 @@
         DropListItem,
         DropListLink,
         SearchQuery,
-        PaginationWithLimit,
-        Alert
+        PaginationWithLimit
     } from '$lib/components';
     import Create from './create.svelte';
     import Delete from './deleteFile.svelte';
@@ -35,7 +34,7 @@
         TableCell
     } from '$lib/elements/table';
     import { toLocaleDate } from '$lib/helpers/date';
-    import { calculateSize } from '$lib/helpers/sizeConvertion';
+    import { bytesToSize, calculateSize } from '$lib/helpers/sizeConvertion';
     import { Container, ContainerHeader } from '$lib/layout';
     import { base } from '$app/paths';
     import type { Models } from '@appwrite.io/console';
@@ -57,7 +56,7 @@
 
     const projectId = $page.params.project;
     const bucketId = $page.params.bucket;
-    const usedStorage = data.oraganizationUsage.storage;
+    const usedStorage = bytesToSize(data.oraganizationUsage.storage, 'MB');
     const getPreview = (fileId: string) =>
         sdk.forProject.storage.getFilePreview(bucketId, fileId, 32, 32).toString() + '&mode=admin';
 
@@ -95,34 +94,6 @@
         isFlex={false}
         total={usedStorage}
         buttonDisabled={$readOnly}>
-        <svelte:fragment slot="alert" let:tier let:upgradeMethod let:hasUsageFees>
-            {#if hasUsageFees}
-                <Alert type="warning" isStandalone>
-                    <span class="text">
-                        You've reached the storage limit for the {tier} plan.
-                        <button
-                            class="link"
-                            type="button"
-                            on:click|preventDefault={() => ($showUsageRatesModal = true)}
-                            >Excess usage fees will apply</button
-                        >.
-                    </span>
-                </Alert>
-            {:else}
-                <Alert type="warning" isStandalone>
-                    <span class="text">
-                        You've reached the storage limit for the {tier} plan.
-                        {#if tier === 'Starter'}
-                            <button
-                                class="link"
-                                type="button"
-                                on:click|preventDefault={upgradeMethod}>Upgrade</button>
-                            for additional storage.
-                        {/if}
-                    </span>
-                </Alert>
-            {/if}
-        </svelte:fragment>
         <svelte:fragment let:isButtonDisabled>
             <SearchQuery search={data.search} placeholder="Search by filename">
                 <div

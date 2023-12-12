@@ -68,13 +68,13 @@
 
 <!-- Show only if on Cloud, alerts are enabled, and it isn't a project limited service -->
 {#if isCloud && showAlert}
-    <slot name="alert" {limit} {tier} {title} {upgradeMethod} {hasUsageFees}>
-        {#if $readOnly}
-            {@const services = overflowingServices
-                .map((s) => {
-                    return s.name.toLocaleLowerCase();
-                })
-                .join(', ')}
+    {#if $readOnly}
+        {@const services = overflowingServices
+            .map((s) => {
+                return s.name.toLocaleLowerCase();
+            })
+            .join(', ')}
+        <slot name="alert" {limit} {tier} {title} {upgradeMethod} {hasUsageFees} {services}>
             {#if $organization?.billingPlan !== 'tier-0' && hasUsageFees}
                 <Alert type="info" isStandalone>
                     <span class="text">
@@ -94,8 +94,8 @@
                     </span>
                 </Alert>
             {/if}
-        {/if}
-    </slot>
+        </slot>
+    {/if}
 {/if}
 
 <header class:u-flex={isFlex} class="u-gap-12 common-section u-main-space-between u-flex-wrap">

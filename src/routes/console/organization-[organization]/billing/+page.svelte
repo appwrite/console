@@ -15,7 +15,6 @@
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
     import { initializeStripe, isStripeInitialized, stripe } from '$lib/stores/stripe';
-    import { base } from '$app/paths';
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import { toLocaleDate } from '$lib/helpers/date';
@@ -50,7 +49,6 @@
                 );
                 const url = `${window.location.origin}/console/organization-${$organization.$id}/billing`;
 
-                console.log(url);
                 console.log(invoice);
                 const { error } = await $stripe.confirmPayment({
                     clientSecret: invoice.clientSecret,
@@ -59,33 +57,11 @@
                         payment_method: paymentMethod.providerMethodId
                     }
                 });
-                console.log('error', error);
                 if (error) {
-                    console.log('Something went wrong');
-                } else {
-                    console.log('yay?');
+                    console.log('error', error);
+                    throw new Error();
                 }
-
-                // if (setupIntent.status === 'succeeded') {
-                //     if (typeof setupIntent.payment_method === 'string') {
-                //         await sdk.forConsole.billing.setOrganizationPaymentMethod(
-                //             $page.params.organization,
-                //             setupIntent.payment_method
-                //         );
-                //     } else {
-                //         await sdk.forConsole.billing.setOrganizationPaymentMethod(
-                //             $page.params.organization,
-                //             setupIntent.payment_method.id
-                //         );
-                //     }
-                //     addNotification({
-                //         title: 'Success',
-                //         message: 'Your payment method has been updated',
-                //         type: 'success'
-                //     });
-                // }
-            } catch (error) {
-                console.log(error);
+            } catch (e) {
                 addNotification({
                     title: 'Error',
                     message:

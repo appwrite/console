@@ -17,11 +17,7 @@ export const load: PageLoad = async ({ params, depends, url, route }) => {
     let oraganizationUsage: OrganizationUsage = null;
     const org = get(organization);
     if (isCloud && org) {
-        oraganizationUsage = await sdk.forConsole.billing.listUsage(
-            org.$id,
-            org.billingCurrentInvoiceDate,
-            new Date().toISOString()
-        );
+        oraganizationUsage = await sdk.forConsole.billing.listUsage(org.$id);
     }
 
     return {
