@@ -91,7 +91,7 @@
                         {/if}
                     </TableRow>
                 {:else}
-                    {@const addon = plan[`${usage.id}Addon`]}
+                    {@const addon = plan.addons[usage.id]}
                     <TableRow>
                         <TableCellText title="resource">{usage.resource}</TableCellText>
                         <TableCellText title="limit">
