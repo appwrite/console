@@ -18,6 +18,8 @@
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import { toLocaleDate } from '$lib/helpers/date';
+    import { wizard } from '$lib/stores/wizard';
+    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
 
     $: defaultPaymentMethod = $paymentMethods?.paymentMethods?.find(
         (method: PaymentMethodData) => method.$id === $organization?.paymentMethodId
@@ -29,6 +31,12 @@
 
     onMount(async () => {
         if (
+            $page.url.searchParams.has('type') &&
+            $page.url.searchParams.get('type') === 'upgrade'
+        ) {
+            wizard.start(ChangeOrganizationTierCloud);
+        }
+        if (
             ($page.url.searchParams.has('invoice') &&
                 $page.url.searchParams.has('type') &&
                 $page.url.searchParams.get('type') === 'confirmation') ||
@@ -39,7 +47,6 @@
             }
             try {
                 const invoiceId = $page.url.searchParams.get('invoice');
-                console.log(invoiceId);
                 const invoice = await sdk.forConsole.billing.getInvoice(
                     $page.params.organization,
                     invoiceId
@@ -49,7 +56,6 @@
                 );
                 const url = `${window.location.origin}/console/organization-${$organization.$id}/billing`;
 
-                console.log(invoice);
                 const { error } = await $stripe.confirmPayment({
                     clientSecret: invoice.clientSecret,
                     confirmParams: {
