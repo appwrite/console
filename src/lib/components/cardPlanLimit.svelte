@@ -3,7 +3,7 @@
     import { wizard } from '$lib/stores/wizard';
     import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
 
-    export let service = '';
+    export let service: string;
 </script>
 
 <article class="card u-grid u-cross-center u-width-full-line">
