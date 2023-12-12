@@ -155,7 +155,7 @@
                             required
                             autofocus={true} />
 
-                        <div id="payment-element">
+                        <div id="payment-element" data-private>
                             <!-- Stripe will create form elements here -->
                         </div>
                     </FormList>

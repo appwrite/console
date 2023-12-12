@@ -61,7 +61,7 @@
             required
             autofocus={true} />
 
-        <div class="aw-stripe-container">
+        <div class="aw-stripe-container" data-private>
             <div class="loader-container" bind:this={loader}>
                 <div class="loader"></div>
             </div>
