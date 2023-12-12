@@ -30,7 +30,6 @@
             });
         } catch (e) {
             error = e.message;
-            console.log(e.message);
         }
     }
 
@@ -62,6 +61,7 @@
 
     onDestroy(() => {
         observer.disconnect();
+        document.documentElement.classList.remove('u-overflow-hidden');
     });
 </script>
 

@@ -316,7 +316,7 @@
         selectedPaymentMethod={isSelectedBackup ? backupPaymentMethod : defaultPaymentMethod}
         bind:show={showEdit} />
 {/if}
-{#if showReplace && isCloud && hasStripePublicKey}
+{#if isCloud && hasStripePublicKey}
     <ReplaceCard bind:show={showReplace} isBackup={isSelectedBackup} />
 {/if}
 {#if showDelete && isCloud && hasStripePublicKey}

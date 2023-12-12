@@ -19,9 +19,7 @@
 
     let backdrop: HTMLDivElement;
 
-    onMount(async () => {
-        document.body.appendChild(backdrop);
-    });
+    onMount(async () => {});
 
     function handleBLur(event: MouseEvent) {
         if (event.target === backdrop) {
@@ -33,10 +31,8 @@
     }
 
     function closeModal() {
-        if (show) {
-            show = false;
-            document.documentElement.classList.remove('u-overflow-hidden');
-        }
+        document.documentElement.classList.remove('u-overflow-hidden');
+        show = false;
     }
 
     function handleKeydown(event: KeyboardEvent) {
@@ -49,6 +45,10 @@
         }
     }
 
+    $: if (backdrop) {
+        document.body.appendChild(backdrop);
+    }
+
     $: if (show) {
         document.documentElement.classList.add('u-overflow-hidden');
     } else {
@@ -58,81 +58,84 @@
 </script>
 
 <svelte:window on:keydown={handleKeydown} />
-<!-- svelte-ignore a11y-no-static-element-interactions -->
-<div
-    class="payment-modal-backdrop"
-    on:keyup={clickOnEnter}
-    on:click={handleBLur}
-    bind:this={backdrop}>
+
+{#if show}
+    <!-- svelte-ignore a11y-no-static-element-interactions -->
     <div
-        class="modal payment-modal"
-        class:is-small={size === 'small'}
-        class:is-big={size === 'big'}
-        class:is-separate-header={headerDivider}>
-        <Form isModal {onSubmit}>
-            <header class="modal-header">
-                <div class="u-flex u-main-space-between u-cross-center u-gap-16">
-                    <div class="u-flex u-cross-center u-gap-16">
-                        {#if icon}
-                            <div
-                                class="avatar is-medium"
-                                class:is-success={state === 'success'}
-                                class:is-warning={state === 'warning'}
-                                class:is-danger={state === 'error'}
-                                class:is-info={state === 'info'}>
-                                <span class={`icon-${icon}`} aria-hidden="true" />
-                            </div>
+        class="payment-modal-backdrop"
+        on:keyup={clickOnEnter}
+        on:click={handleBLur}
+        bind:this={backdrop}>
+        <div
+            class="modal payment-modal"
+            class:is-small={size === 'small'}
+            class:is-big={size === 'big'}
+            class:is-separate-header={headerDivider}>
+            <Form isModal {onSubmit} class="payment-form">
+                <header class="modal-header">
+                    <div class="u-flex u-main-space-between u-cross-center u-gap-16">
+                        <div class="u-flex u-cross-center u-gap-16">
+                            {#if icon}
+                                <div
+                                    class="avatar is-medium"
+                                    class:is-success={state === 'success'}
+                                    class:is-warning={state === 'warning'}
+                                    class:is-danger={state === 'error'}
+                                    class:is-info={state === 'info'}>
+                                    <span class={`icon-${icon}`} aria-hidden="true" />
+                                </div>
+                            {/if}
+
+                            <h4 class="modal-title heading-level-5">
+                                <slot name="title">
+                                    {title}
+                                </slot>
+                            </h4>
+                        </div>
+                        {#if closable}
+                            <button
+                                type="button"
+                                class="button is-text is-only-icon"
+                                style="--button-size:1.5rem;"
+                                aria-label="Close Modal"
+                                title="Close Modal"
+                                on:click={() =>
+                                    trackEvent('click_close_modal', {
+                                        from: 'button'
+                                    })}
+                                on:click={closeModal}>
+                                <span class="icon-x" aria-hidden="true" />
+                            </button>
                         {/if}
-
-                        <h4 class="modal-title heading-level-5">
-                            <slot name="title">
-                                {title}
-                            </slot>
-                        </h4>
                     </div>
-                    {#if closable}
-                        <button
-                            type="button"
-                            class="button is-text is-only-icon"
-                            style="--button-size:1.5rem;"
-                            aria-label="Close Modal"
-                            title="Close Modal"
-                            on:click={() =>
-                                trackEvent('click_close_modal', {
-                                    from: 'button'
-                                })}
-                            on:click={closeModal}>
-                            <span class="icon-x" aria-hidden="true" />
-                        </button>
+                </header>
+                <div class="modal-content">
+                    {#if error}
+                        <Alert
+                            dismissible
+                            type="warning"
+                            on:dismiss={() => {
+                                error = null;
+                            }}>
+                            {error}
+                        </Alert>
                     {/if}
+                    <slot />
                 </div>
-            </header>
-            <div class="modal-content">
-                {#if error}
-                    <Alert
-                        dismissible
-                        type="warning"
-                        on:dismiss={() => {
-                            error = null;
-                        }}>
-                        {error}
-                    </Alert>
-                {/if}
-                <slot />
-            </div>
 
-            {#if $$slots.footer}
-                <div class="modal-footer">
-                    <div class="u-flex u-main-end u-gap-16">
-                        <slot name="footer" />
+                {#if $$slots.footer}
+                    <div class="modal-footer">
+                        <div class="u-flex u-main-end u-gap-16">
+                            <slot name="footer" />
+                        </div>
                     </div>
-                </div>
-            {/if}
-        </Form>
+                {/if}
+            </Form>
+        </div>
     </div>
-</div>
+{/if}
 
-<style lang="scss">
+<style lang="scss" global>
     .payment-modal-backdrop {
         position: fixed;
         top: 0;
@@ -147,5 +150,15 @@
         :global() {
             background-color: hsl(240 5% 8% / 0.6);
         }
+    }
+
+    .payment-modal {
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .payment-form {
+        height: 100%;
+        overflow: auto;
     }
 </style>
