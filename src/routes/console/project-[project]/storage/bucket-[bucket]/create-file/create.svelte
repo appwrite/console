@@ -19,12 +19,12 @@
 
     stepComponents.set(1, {
         component: Step1,
-        label: 'Create file'
+        label: 'Create'
     });
 
     stepComponents.set(2, {
         component: Step2,
-        label: 'Update permissions'
+        label: 'Permissions'
     });
 
     async function create() {

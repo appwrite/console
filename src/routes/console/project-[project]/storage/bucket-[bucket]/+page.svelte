@@ -1,6 +1,4 @@
 <script lang="ts" context="module">
-    let showCreate = writable(false);
-
     export const showCreateFile = () => {
         wizard.start(Create);
     };
@@ -43,9 +41,9 @@
     import { wizard } from '$lib/stores/wizard';
     import { tooltip } from '$lib/actions/tooltip';
     import { readOnly, showUsageRatesModal } from '$lib/stores/billing';
-    import { writable } from 'svelte/store';
     import { sdk } from '$lib/stores/sdk.js';
     import Create from './create-file/create.svelte';
+    import DeleteFile from './deleteFile.svelte';
 
     export let data;
 
@@ -58,11 +56,6 @@
     const usedStorage = bytesToSize(data.oraganizationUsage.storage, 'MB');
     const getPreview = (fileId: string) =>
         sdk.forProject.storage.getFilePreview(bucketId, fileId, 32, 32).toString() + '&mode=admin';
-
-    async function fileCreated() {
-        $showCreate = false;
-        await invalidate(Dependencies.FILES);
-    }
 
     async function fileDeleted(event: CustomEvent<Models.File>) {
         showDelete = false;
@@ -268,5 +261,5 @@
 </Container>
 
 {#if selectedFile}
-    <Delete file={selectedFile} bind:showDelete on:deleted={fileDeleted} />
+    <DeleteFile file={selectedFile} bind:showDelete on:deleted={fileDeleted} />
 {/if}
