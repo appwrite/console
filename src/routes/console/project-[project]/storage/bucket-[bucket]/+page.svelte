@@ -1,54 +1,51 @@
 <script lang="ts" context="module">
-    let showCreate = writable(false);
-
     export const showCreateFile = () => {
-        showCreate.set(true);
+        wizard.start(Create);
     };
 </script>
 
 <script lang="ts">
+    import { invalidate } from '$app/navigation';
+    import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { sdk } from '$lib/stores/sdk';
-    import { Pill } from '$lib/elements';
-    import { Button } from '$lib/elements/forms';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import {
-        Empty,
-        EmptySearch,
         Avatar,
         DropList,
         DropListItem,
         DropListLink,
-        SearchQuery,
-        PaginationWithLimit
+        Empty,
+        EmptySearch,
+        PaginationWithLimit,
+        SearchQuery
     } from '$lib/components';
-    import Create from './create.svelte';
-    import Delete from './deleteFile.svelte';
+    import { Dependencies } from '$lib/constants';
+    import { Pill } from '$lib/elements';
+    import { Button } from '$lib/elements/forms';
     import {
         Table,
-        TableHeader,
         TableBody,
-        TableRowLink,
-        TableRow,
+        TableCell,
         TableCellHead,
         TableCellText,
-        TableCell
+        TableHeader,
+        TableRow,
+        TableRowLink
     } from '$lib/elements/table';
     import { toLocaleDate } from '$lib/helpers/date';
     import { bytesToSize, calculateSize } from '$lib/helpers/sizeConvertion';
     import { Container, ContainerHeader } from '$lib/layout';
-    import { base } from '$app/paths';
     import type { Models } from '@appwrite.io/console';
-    import { uploader } from '$lib/stores/uploader';
     import { addNotification } from '$lib/stores/notifications';
-    import type { PageData } from './$types';
-    import { invalidate } from '$app/navigation';
-    import { Dependencies } from '$lib/constants';
-    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { uploader } from '$lib/stores/uploader';
+    import { wizard } from '$lib/stores/wizard';
     import { tooltip } from '$lib/actions/tooltip';
     import { readOnly, showUsageRatesModal } from '$lib/stores/billing';
-    import { writable } from 'svelte/store';
+    import { sdk } from '$lib/stores/sdk.js';
+    import Create from './create-file/create.svelte';
+    import DeleteFile from './deleteFile.svelte';
 
-    export let data: PageData;
+    export let data;
 
     let showDelete = false;
     let showDropdown = [];
@@ -59,11 +56,6 @@
     const usedStorage = bytesToSize(data.oraganizationUsage.storage, 'MB');
     const getPreview = (fileId: string) =>
         sdk.forProject.storage.getFilePreview(bucketId, fileId, 32, 32).toString() + '&mode=admin';
-
-    async function fileCreated() {
-        $showCreate = false;
-        await invalidate(Dependencies.FILES);
-    }
 
     async function fileDeleted(event: CustomEvent<Models.File>) {
         showDelete = false;
@@ -102,7 +94,7 @@
                         disabled: !isButtonDisabled
                     }}>
                     <Button
-                        on:click={() => ($showCreate = true)}
+                        on:click={() => wizard.start(Create)}
                         event="create_file"
                         disabled={isButtonDisabled}>
                         <span class="icon-plus" aria-hidden="true" />
@@ -264,11 +256,10 @@
             single
             href="https://appwrite.io/docs/products/storage/upload-download"
             target="file"
-            on:click={() => ($showCreate = true)} />
+            on:click={() => wizard.start(Create)} />
     {/if}
 </Container>
 
-<Create bind:showCreate={$showCreate} on:created={fileCreated} />
 {#if selectedFile}
-    <Delete file={selectedFile} bind:showDelete on:deleted={fileDeleted} />
+    <DeleteFile file={selectedFile} bind:showDelete on:deleted={fileDeleted} />
 {/if}
