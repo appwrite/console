@@ -1,40 +1,31 @@
-<script context="module" lang="ts">
-    const formatter = Intl.NumberFormat('en', {
-        notation: 'compact'
-    });
-
-    // TODO: metric type is wrong
-    export function last(set: Array<unknown>): Models.Metric | null {
-        if (!set) return null;
-        return (set as Models.Metric[]).slice(-1)[0] ?? null;
-    }
-
-    // TODO: metric type is wrong
-    export function total(set: Array<unknown>): number {
+<script lang="ts" context="module">
+    export function totalMetrics(set: Array<unknown>): number {
         if (!set) return 0;
-        return (set as Models.Metric[]).reduce((prev, curr) => prev + curr.value, 0);
-    }
-
-    export function format(number: number): string {
-        return formatter.format(number);
+        return total((set as Metric[]).map((c) => c.value));
     }
 </script>
 
 <script lang="ts">
-    import type { Models } from '@appwrite.io/console';
-    import { Container, type UsagePeriods } from '$lib/layout';
-    import { page } from '$app/stores';
-    import { onboarding, project } from '../store';
-    import { usage } from './store';
-    import { onMount } from 'svelte';
     import { afterNavigate } from '$app/navigation';
+    import { base } from '$app/paths';
+    import { page } from '$app/stores';
+    import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
+    import { PlatformsPanel } from '$lib/commandCenter/panels';
     import { Heading, Tab } from '$lib/components';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
-    import { base } from '$app/paths';
-    import Realtime from './realtime.svelte';
+    import { Container, type UsagePeriods } from '$lib/layout';
+    import { onMount } from 'svelte';
+    import { onboarding, project } from '../store';
     import Bandwith from './bandwith.svelte';
-    import Requests from './requests.svelte';
+    import { createApiKey } from './keys/+page.svelte';
     import Onboard from './onboard.svelte';
+    import Realtime from './realtime.svelte';
+    import Requests from './requests.svelte';
+    import { usage } from './store';
+    import { formatNum } from '$lib/helpers/string';
+    import { total } from '$lib/helpers/array';
+    import type { Metric } from '$lib/sdk/usage';
+    import { periodToDates } from '$lib/layout/usage.svelte';
 
     $: projectId = $page.params.project;
     $: path = `/console/project-${projectId}/overview`;
@@ -44,7 +35,7 @@
     afterNavigate(handle);
 
     async function handle() {
-        const promise = usage.load(projectId, period);
+        const promise = changePeriod(period);
 
         if ($usage) {
             await promise;
@@ -53,8 +44,34 @@
 
     function changePeriod(newPeriod: UsagePeriods) {
         period = newPeriod;
-        usage.load(projectId, period);
+        const dates = periodToDates(newPeriod);
+        return usage.load(dates.start, dates.end, dates.period);
     }
+
+    $: $registerCommands([
+        {
+            label: 'Add platform',
+            keys: ['a', 'p'],
+            callback() {
+                addSubPanel(PlatformsPanel);
+            },
+            icon: 'plus',
+            group: 'integrations'
+        },
+        {
+            label: 'Create API Key',
+            icon: 'plus',
+            callback() {
+                createApiKey();
+            },
+            keys: ['c', 'k'],
+            group: 'integrations'
+        }
+    ]);
+
+    $: $updateCommandGroupRanks({
+        integrations: 10
+    });
 </script>
 
 <svelte:head>
@@ -67,7 +84,7 @@
             <Onboard {projectId} />
         {:else}
             {#if $usage}
-                {@const storage = humanFileSize(total($usage.storage) ?? 0)}
+                {@const storage = humanFileSize($usage.filesStorageTotal ?? 0)}
                 <section class="common-section">
                     <div class="grid-dashboard-1s-2m-6l">
                         <div class="card is-2-columns-medium-screen is-3-columns-large-screen">
@@ -91,14 +108,14 @@
 
                                 <div class="grid-item-1-end-start">
                                     <div class="heading-level-4">
-                                        {format(total($usage.documents) ?? 0)}
+                                        {formatNum($usage.documentsTotal ?? 0)}
                                     </div>
                                     <div>Documents</div>
                                 </div>
 
                                 <div class="grid-item-1-end-end">
                                     <div class="text">
-                                        Databases: {format(total($usage.databases) ?? 0)}
+                                        Databases: {formatNum($usage.databasesTotal ?? 0)}
                                     </div>
                                 </div>
                             </div>
@@ -119,14 +136,14 @@
                                 <div class="grid-item-1-end-start">
                                     <div class="heading-level-4">
                                         {storage.value}
-                                        <span class="body-text-2 u-bold">{storage.unit}</span>
+                                        <span class="body-text-2">{storage.unit}</span>
                                     </div>
                                     <div>Storage</div>
                                 </div>
 
                                 <div class="grid-item-1-end-end">
                                     <div class="text">
-                                        Buckets: {format(total($usage.buckets) ?? 0)}
+                                        Buckets: {formatNum($usage.bucketsTotal ?? 0)}
                                     </div>
                                 </div>
                             </div>
@@ -146,7 +163,7 @@
 
                                 <div class="grid-item-1-end-start">
                                     <div class="heading-level-4">
-                                        {format(total($usage.users) ?? 0)}
+                                        {formatNum($usage.usersTotal ?? 0)}
                                     </div>
                                     <div>Users</div>
                                 </div>
@@ -167,7 +184,7 @@
 
                                 <div class="grid-item-1-end-start">
                                     <div class="heading-level-4">
-                                        {format(total($usage.executions) ?? 0)}
+                                        {formatNum($usage.executionsTotal ?? 0)}
                                     </div>
                                     <div>Executions</div>
                                 </div>

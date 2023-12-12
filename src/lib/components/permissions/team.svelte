@@ -61,8 +61,7 @@
     }
 </script>
 
-<Modal bind:show onSubmit={create} on:close={reset} size="big">
-    <svelte:fragment slot="header">Select teams</svelte:fragment>
+<Modal title="Select teams" bind:show onSubmit={create} on:close={reset} size="big">
     <p class="text">
         Grant access to any member of a specific team. To grant access to team members with specific
         roles, you will need to set a <button
@@ -120,7 +119,7 @@
                     <p>There are no teams that match your search.</p>
                 </div>
                 <div class="u-flex u-gap-16 common-section u-main-center">
-                    <Button external href="https://appwrite.io/docs/client/teams" text
+                    <Button external href="https://appwrite.io/docs/products/auth/teams" text
                         >Documentation</Button>
                     <Button secondary on:click={() => (search = '')}>Clear search</Button>
                 </div>
@@ -134,8 +133,8 @@
                         You have no teams. Create a team to see them here.
                     </p>
                     <p class="text u-line-height-1-5">
-                        Need a hand? Check out our <a
-                            href="https://appwrite.io/docs/client/teams"
+                        Need a hand? Learn more in our <a
+                            href="https://appwrite.io/docs/products/auth/teams"
                             target="_blank"
                             rel="noopener noreferrer">
                             documentation</a

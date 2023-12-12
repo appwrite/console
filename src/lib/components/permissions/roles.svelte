@@ -10,8 +10,8 @@
         TableRow
     } from '$lib/elements/table';
     import { symmetricDifference } from '$lib/helpers/array';
-    import { onDestroy, onMount } from 'svelte';
-    import { writable, type Unsubscriber } from 'svelte/store';
+    import { onMount } from 'svelte';
+    import { writable } from 'svelte/store';
     import Actions from './actions.svelte';
     import type { Permission } from './permissions.svelte';
     import Row from './row.svelte';
@@ -20,26 +20,20 @@
 
     let showUser = false;
     let showTeam = false;
+    let showLabel = false;
     let showCustom = false;
     let showDropdown = false;
-    let unsubscribe: Unsubscriber;
 
     const groups = writable<Map<string, Permission>>(new Map());
 
     onMount(() => {
         roles.forEach(addRole);
-        unsubscribe = groups.subscribe((n) => {
+        return groups.subscribe((n) => {
             const current = Array.from(n.keys());
             if (symmetricDifference(current, roles).length) {
                 roles = current;
             }
         });
-    });
-
-    onDestroy(() => {
-        if (unsubscribe) {
-            unsubscribe();
-        }
     });
 
     function create(event: CustomEvent<string[]>) {
@@ -119,6 +113,7 @@
         </TableBody>
     </Table>
     <Actions
+        bind:showLabel
         bind:showCustom
         bind:showDropdown
         bind:showTeam
@@ -135,6 +130,7 @@
         <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
             <div class="common-section">
                 <Actions
+                    bind:showLabel
                     bind:showCustom
                     bind:showDropdown
                     bind:showTeam
@@ -147,7 +143,7 @@
                 </Actions>
             </div>
             <div class="common-section">
-                <span class="text"> Add a role to get started </span>
+                <span class="text"> Add a role </span>
             </div>
         </div>
     </article>

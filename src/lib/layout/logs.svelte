@@ -1,40 +1,29 @@
 <script lang="ts">
-    import { toLocaleDateTime } from '$lib/helpers/date';
-    import { humanFileSize } from '$lib/helpers/sizeConvertion';
+    import { hoursToDays, toLocaleDateTime } from '$lib/helpers/date';
     import { log } from '$lib/stores/logs';
-    import { Output, Status, Tab, Tabs } from '../components';
-    import { Button } from '$lib/elements/forms';
-    import { base } from '$app/paths';
-    import { app } from '$lib/stores/app';
-    import { sdk } from '$lib/stores/sdk';
-    import { page } from '$app/stores';
+    import { Alert, Card, Code, Heading, Id, SvgIcon, Tab, Tabs } from '../components';
     import { calculateTime } from '$lib/helpers/timeConversion';
-    import type { Models } from '@appwrite.io/console';
+    import {
+        TableBody,
+        TableCellHead,
+        TableCellText,
+        TableHeader,
+        TableRow,
+        TableScroll
+    } from '$lib/elements/table';
+    import { beforeNavigate } from '$app/navigation';
+    import { Pill } from '$lib/elements';
+    import { isCloud } from '$lib/system';
+    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
+    import { wizard } from '$lib/stores/wizard';
+    import { getServiceLimit, tierToPlan } from '$lib/stores/billing';
+    import { organization } from '$lib/stores/organization';
 
-    let selectedTab: string;
-    let rawData: string;
+    let selectedRequest = 'parameters';
+    let selectedResponse = 'logs';
 
-    function isDeployment(data: Models.Deployment | Models.Execution): data is Models.Deployment {
-        if ('buildId' in data) {
-            selectedTab = 'logs';
-            rawData = `${sdk.forConsole.client.config.endpoint}/functions/${$log.func.$id}/deployment/${$log.data.$id}?mode=admin&project=${$page.params.project}`;
-            return true;
-        }
-    }
-
-    function isExecution(data: Models.Deployment | Models.Execution): data is Models.Execution {
-        if ('trigger' in data) {
-            selectedTab = 'response';
-            rawData = `${sdk.forConsole.client.config.endpoint}/functions/${$log.func.$id}/execution/${$log.data.$id}?mode=admin&project=${$page.params.project}`;
-            return true;
-        }
-    }
-
-    function scrollToTop() {
-        document
-            .getElementsByClassName('code-panel-content')[0]
-            .scrollTo({ top: 0, left: 0, behavior: 'smooth' });
-    }
+    const limit = getServiceLimit('logs');
+    const tier = tierToPlan($organization?.billingPlan)?.name;
 
     function handleKeydown(event: KeyboardEvent) {
         if (event.key === 'Escape') {
@@ -42,14 +31,48 @@
             $log.show = false;
         }
     }
+
+    function parseUrl(url: string) {
+        if (!url) return;
+        const queryString = url.includes('?') ? url.split('?')[1] : '';
+        const queries: Record<string, string>[] = [];
+        for (const param of queryString.split('&')) {
+            let [key, ...valueArr] = param.split('=');
+            const value = valueArr.join('=');
+
+            if (key) {
+                queries.push({ key, value: value ?? '' });
+            }
+        }
+        return queries;
+    }
+
+    beforeNavigate((n) => {
+        if (!$log.show) return;
+        if (n.type === 'popstate') {
+            n.cancel();
+        }
+        $log.show = false;
+    });
+
+    $: parameters = parseUrl(execution?.requestPath);
+    $: execution = $log.data;
+    $: func = $log.func;
+    $: if (execution?.errors) {
+        selectedResponse = 'errors';
+    }
+    $: host = execution?.requestHeaders?.find((header) => header.name === 'host')?.value;
 </script>
 
 <svelte:window on:keydown={handleKeydown} />
 
-{#if $log.data}
+{#if execution}
     <section class="cover-frame" data-private>
         <header class="cover-frame-header u-flex u-gap-16 u-main-space-between u-cross-center">
-            <h1 class="body-text-1 u-bold">Function ID: {$log.func.$id}</h1>
+            <div class="u-flex u-gap-8 u-cross-center">
+                <h1 class="body-text-1 u-bold">Function ID:</h1>
+                <Id value={func.$id}>{func.$id}</Id>
+            </div>
             <button
                 on:click={() => ($log.show = false)}
                 class="button is-text is-only-icon"
@@ -58,158 +81,304 @@
                 <span class="icon-x" aria-hidden="true" />
             </button>
         </header>
-        {#if isDeployment($log.data)}
-            {@const size = humanFileSize($log.data.size)}
-            <div class="cover-frame-content u-flex u-flex-vertical">
-                <div class="u-flex u-gap-16">
-                    <div class="avatar is-size-large">
-                        <img
-                            height="28"
-                            width="28"
-                            src={`${base}/icons/${$app.themeInUse}/color/${
-                                $log.func.runtime.split('-')[0]
-                            }.svg`}
-                            alt="technology" />
-                    </div>
-                    <div>
-                        <div class="u-flex u-gap-12 u-cross-center">
-                            <h2 class="body-text-2 u-bold">Deployment ID:</h2>
-                            <Output value={$log.data.$id}>
-                                {$log.data.$id}
-                            </Output>
-                        </div>
-                        <time class="u-block"
-                            >Created at: {toLocaleDateTime($log.data.$createdAt)}</time>
-                        <div>Size: {size.value} {size.unit}</div>
-                    </div>
-                    <div class="status u-margin-inline-start-auto">
-                        <div class="status u-margin-inline-start-auto">
-                            <Status status={$log.data.status}>{$log.data.status}</Status>
 
-                            <time>{calculateTime($log.data.buildTime)}</time>
+        <div class="cover-frame-content u-flex u-flex-vertical">
+            <div class="grid-1-2">
+                <div class="grid-1-2-col-1">
+                    <div class="u-flex u-gap-16">
+                        <div class="avatar is-size-large">
+                            <SvgIcon
+                                size={56}
+                                type="color"
+                                name={func.runtime.split('-')[0]}
+                                iconSize="large" />
                         </div>
-                    </div>
-                </div>
-                <div class="tabs u-margin-block-start-48 u-sep-block-end">
-                    <Tabs>
-                        <Tab
-                            selected={selectedTab === 'logs'}
-                            on:click={() => (selectedTab = 'logs')}>
-                            Logs
-                        </Tab>
-                        <Tab
-                            selected={selectedTab === 'errors'}
-                            on:click={() => (selectedTab = 'errors')}>
-                            Errors
-                        </Tab>
-                    </Tabs>
-                </div>
-                <div class="theme-dark u-stretch u-margin-block-start-32 u-overflow-hidden">
-                    <section class="code-panel">
-                        <header class="code-panel-header">
-                            <div class="u-flex u-gap-16 u-margin-inline-start-auto">
-                                <Button text external href={rawData}>
-                                    <span class="icon-external-link" aria-hidden="true" />
-                                    <span class="text">Raw data</span>
-                                </Button>
-                                <Button secondary on:click={scrollToTop}>
-                                    <span class="text">Scroll to top</span>
-                                </Button>
-                            </div>
-                        </header>
-                        {#if selectedTab === 'logs'}
-                            <code class="code-panel-content">
-                                {$log.data.buildStdout ? $log.data.buildStdout : 'No logs recorded'}
-                            </code>
-                        {:else}
-                            <code class="code-panel-content">
-                                {$log.data.buildStderr
-                                    ? $log.data.buildStderr
-                                    : 'No errors recorded'}
-                            </code>
-                        {/if}
-                    </section>
-                </div>
-            </div>
-        {:else if isExecution($log.data)}
-            <div class="cover-frame-content u-flex u-flex-vertical">
-                <div class="u-flex u-gap-16">
-                    <div class="avatar is-size-large">
-                        <img
-                            height="28"
-                            width="28"
-                            src={`${base}/icons/${$app.themeInUse}/color/${
-                                $log.func.runtime.split('-')[0]
-                            }.svg`}
-                            alt="technology" />
-                    </div>
-                    <div>
-                        <div class="u-flex u-gap-12 u-cross-center">
+                        <div class="u-grid-equal-row-size u-gap-4 u-line-height-1">
                             <h2 class="body-text-2 u-bold">Execution ID:</h2>
-                            <Output value={$log.data.$id}>
-                                {$log.data.$id}
-                            </Output>
+                            <Id value={execution.$id}>{execution.$id}</Id>
                         </div>
-                        <time class="u-block">
-                            Created at: {toLocaleDateTime($log.data.$createdAt)}</time>
                     </div>
-                    <div>
-                        <p>Triggered by: <b>{$log.data.trigger}</b></p>
-                    </div>
-                    <div class="status u-margin-inline-start-auto">
-                        <Status status={$log.data.status}>{$log.data.status}</Status>
+                </div>
+                <div class="grid-1-2-col-2 u-flex u-main-space-between">
+                    <ul class="u-grid-equal-row-size u-gap-4 u-line-height-1">
+                        <li class="text">
+                            <b>Duration: </b>
+                            <time>
+                                {calculateTime(execution.duration)}
+                            </time>
+                        </li>
 
-                        <time>{calculateTime($log.data.duration)}</time>
-                    </div>
-                </div>
-                <div class="tabs u-margin-block-start-48 u-sep-block-end">
-                    <Tabs>
-                        <Tab
-                            selected={selectedTab === 'response'}
-                            on:click={() => (selectedTab = 'response')}>
-                            Response
-                        </Tab>
-                        <Tab
-                            selected={selectedTab === 'logs'}
-                            on:click={() => (selectedTab = 'logs')}>
-                            Logs
-                        </Tab>
-                        <Tab
-                            selected={selectedTab === 'errors'}
-                            on:click={() => (selectedTab = 'errors')}>
-                            Errors
-                        </Tab>
-                    </Tabs>
-                </div>
-                <div class="theme-dark u-stretch u-margin-block-start-32 u-overflow-hidden">
-                    <section class="code-panel">
-                        <header class="code-panel-header">
-                            <div class="u-flex u-gap-16 u-margin-inline-start-auto">
-                                <Button text external href={rawData}>
-                                    <span class="icon-external-link" aria-hidden="true" />
-                                    <span class="text">Raw data</span>
-                                </Button>
-                                <Button secondary on:click={scrollToTop}>
-                                    <span class="text">Scroll to top</span>
-                                </Button>
-                            </div>
-                        </header>
-                        {#if selectedTab === 'logs'}
-                            <code class="code-panel-content">
-                                {$log.data.stdout ? $log.data.stdout : 'No logs recorded'}
-                            </code>
-                        {:else if selectedTab === 'errors'}
-                            <code class="code-panel-content">
-                                {$log.data.stderr ? $log.data.stderr : 'No errors recorded'}
-                            </code>
-                        {:else}
-                            <code class="code-panel-content">
-                                {$log.data.response ? $log.data.response : 'No response recorded'}
-                            </code>
+                        <li class="text">
+                            <b>Created at:</b>
+                            <time>
+                                {toLocaleDateTime(execution.$createdAt)}
+                            </time>
+                        </li>
+                        {#if host}
+                            <li class="text">
+                                <b>Host:</b>
+                                <span>
+                                    {host}
+                                </span>
+                            </li>
                         {/if}
-                    </section>
+                    </ul>
+                    <div class="status u-margin-inline-start-auto">
+                        <Pill
+                            warning={execution.status === 'waiting' ||
+                                execution.status === 'building'}
+                            danger={execution.status === 'failed'}
+                            info={execution.status === 'completed' || execution.status === 'ready'}>
+                            {execution.status}
+                        </Pill>
+                    </div>
                 </div>
             </div>
-        {/if}
+
+            <div class="u-stretch u-margin-block-start-32 u-overflow-hidden">
+                <section class="code-panel">
+                    <header class="code-panel-header u-flex u-main-space-between u-width-full-line">
+                        <div class="u-flex u-gap-24">
+                            <div class="u-flex u-gap-16">
+                                <h4 class="text u-bold">Method:</h4>
+                                <span class="u-text-color-gray">{execution.requestMethod}</span>
+                            </div>
+                            <div class="u-flex u-gap-16">
+                                <h4 class="text u-bold">Path:</h4>
+                                <span class="u-text-color-gray">{execution.requestPath}</span>
+                            </div>
+                        </div>
+
+                        <div class="u-flex u-gap-24">
+                            <div class="u-flex u-gap-16">
+                                <h4 class="text u-bold">Triggered by:</h4>
+                                <span class="u-text-color-gray">{execution.trigger}</span>
+                            </div>
+                            <div class="u-flex u-gap-16">
+                                <h4 class="text u-bold">Status Code:</h4>
+                                <span class="u-text-color-gray"
+                                    >{execution.responseStatusCode}</span>
+                            </div>
+                        </div>
+                    </header>
+                    <div class="code-panel-content grid-1-2" style="u-grid">
+                        <div class="grid-1-2-col-1 u-flex u-flex-vertical u-gap-16">
+                            <Heading tag="h3" size="6">Request</Heading>
+                            <div class="u-sep-block-end">
+                                <Tabs>
+                                    <Tab
+                                        selected={selectedRequest === 'parameters'}
+                                        on:click={() => (selectedRequest = 'parameters')}>
+                                        Parameters
+                                    </Tab>
+                                    <Tab
+                                        selected={selectedRequest === 'headers'}
+                                        on:click={() => (selectedRequest = 'headers')}>
+                                        Headers
+                                    </Tab>
+                                    <Tab
+                                        selected={selectedRequest === 'body'}
+                                        on:click={() => (selectedRequest = 'body')}>
+                                        Body
+                                    </Tab>
+                                </Tabs>
+                            </div>
+                            {#if selectedRequest === 'parameters'}
+                                {#if parameters?.length}
+                                    <div class="u-margin-block-start-24">
+                                        <TableScroll noMargin>
+                                            <TableHeader>
+                                                <TableCellHead>Name</TableCellHead>
+                                                <TableCellHead>Value</TableCellHead>
+                                            </TableHeader>
+                                            <TableBody>
+                                                {#each parameters as param}
+                                                    <TableRow>
+                                                        <TableCellText title="Key">
+                                                            {param.key}
+                                                        </TableCellText>
+                                                        <TableCellText title="Value">
+                                                            {param.value}
+                                                        </TableCellText>
+                                                    </TableRow>
+                                                {/each}
+                                            </TableBody>
+                                        </TableScroll>
+                                    </div>
+                                {/if}
+
+                                <p class="text u-text-center u-padding-24">
+                                    {parameters?.length
+                                        ? 'Not all parameters data is'
+                                        : 'Parameters data is not'} captured by Appwrite for your user's
+                                    security and privacy. To display parameters data in the Logs tab,
+                                    use
+                                    <b>context.log()</b>.
+                                    <a
+                                        href="https://appwrite.io/docs/products/functions/development#logging"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="link">Learn more</a
+                                    >.
+                                </p>
+                            {:else if selectedRequest === 'headers'}
+                                {#if execution.requestHeaders.length}
+                                    <div class="u-margin-block-start-24">
+                                        <TableScroll noMargin>
+                                            <TableHeader>
+                                                <TableCellHead>Name</TableCellHead>
+                                                <TableCellHead>Value</TableCellHead>
+                                            </TableHeader>
+                                            <TableBody>
+                                                {#each execution.requestHeaders as header}
+                                                    <TableRow>
+                                                        <TableCellText title="Name">
+                                                            {header.name}
+                                                        </TableCellText>
+                                                        <TableCellText title="Value">
+                                                            {header.value}
+                                                        </TableCellText>
+                                                    </TableRow>
+                                                {/each}
+                                            </TableBody>
+                                        </TableScroll>
+                                    </div>
+                                {/if}
+
+                                <p class="text u-text-center u-padding-24">
+                                    {execution.requestHeaders?.length
+                                        ? 'Not all header data is'
+                                        : 'Header data is not'}
+                                    captured by Appwrite for your user's security and privacy. To display
+                                    header data in the Logs tab, use
+                                    <b>context.log()</b>.
+                                    <a
+                                        href="https://appwrite.io/docs/products/functions/development#logging"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="link">Learn more</a
+                                    >.
+                                </p>
+                            {:else if selectedRequest === 'body'}
+                                <p class="text u-text-center u-padding-24">
+                                    Body data is not captured by Appwrite for your user's security
+                                    and privacy. To display body data in the Logs tab, use
+                                    <b>context.log()</b>.
+                                    <a
+                                        href="https://appwrite.io/docs/products/functions/development#logging"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="link">Learn more</a
+                                    >.
+                                </p>
+                            {/if}
+                        </div>
+                        <div class="grid-1-2-col-2 u-flex u-flex-vertical u-gap-16 u-min-width-0">
+                            <Heading tag="h3" size="6">Response</Heading>
+                            <div class="u-sep-block-end">
+                                <Tabs>
+                                    <Tab
+                                        selected={selectedResponse === 'logs'}
+                                        on:click={() => (selectedResponse = 'logs')}>
+                                        Logs
+                                    </Tab>
+                                    <Tab
+                                        selected={selectedResponse === 'errors'}
+                                        on:click={() => (selectedResponse = 'errors')}>
+                                        Errors
+                                    </Tab>
+                                    <Tab
+                                        selected={selectedResponse === 'headers'}
+                                        on:click={() => (selectedResponse = 'headers')}>
+                                        Headers
+                                    </Tab>
+                                    <Tab
+                                        selected={selectedResponse === 'body'}
+                                        on:click={() => (selectedResponse = 'body')}>
+                                        Body
+                                    </Tab>
+                                </Tabs>
+                            </div>
+                            {#if selectedResponse === 'logs'}
+                                {#if execution?.logs}
+                                    {#if isCloud && limit !== 0 && limit < Infinity}
+                                        <Alert>
+                                            Logs are retained in rolling {hoursToDays(limit)} intervals
+                                            with the {tier} plan.
+                                            <button
+                                                class="link"
+                                                type="button"
+                                                on:click|preventDefault={() =>
+                                                    wizard.start(ChangeOrganizationTierCloud)}
+                                                >Upgrade</button> to increase your log retention for
+                                            a longer period.
+                                        </Alert>
+                                    {/if}
+                                    <Code withCopy noMargin code={execution.logs} language="sh" />
+                                {:else}
+                                    <Card isDashed isTile>
+                                        <p class="text u-text-center">No response was recorded.</p>
+                                    </Card>
+                                {/if}
+                            {:else if selectedResponse === 'errors'}
+                                {#if execution?.errors}
+                                    <Code withCopy noMargin code={execution.errors} language="sh" />
+                                {:else}
+                                    <Card isDashed isTile>
+                                        <p class="text u-text-center">No response was recorded.</p>
+                                    </Card>
+                                {/if}
+                            {:else if selectedResponse === 'headers'}
+                                {#if execution.responseHeaders.length}
+                                    <TableScroll noMargin>
+                                        <TableHeader>
+                                            <TableCellHead>Name</TableCellHead>
+                                            <TableCellHead>Value</TableCellHead>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {#each execution.responseHeaders as header}
+                                                <TableRow>
+                                                    <TableCellText title="Name">
+                                                        {header.name}
+                                                    </TableCellText>
+                                                    <TableCellText title="Value"
+                                                        >{header.value}</TableCellText>
+                                                </TableRow>
+                                            {/each}
+                                        </TableBody>
+                                    </TableScroll>
+                                {/if}
+                                <p class="text u-text-center u-padding-24">
+                                    {execution.responseHeaders?.length
+                                        ? 'Not all header data is'
+                                        : 'Header data is not'}
+                                    captured by Appwrite for your user's security and privacy. To display
+                                    header data in the Logs tab, use
+                                    <b>context.log()</b>.
+                                    <a
+                                        href="https://appwrite.io/docs/products/functions/development#logging"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="link">Learn more</a
+                                    >.
+                                </p>
+                            {:else if selectedResponse === 'body'}
+                                <p class="text u-text-center u-padding-24">
+                                    Body data is not captured by Appwrite for your user's security
+                                    and privacy. To display body data in the Logs tab, use
+                                    <b>context.log()</b>.
+                                    <a
+                                        href="https://appwrite.io/docs/products/functions/development#logging"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="link">Learn more</a
+                                    >.
+                                </p>
+                            {/if}
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
     </section>
 {/if}

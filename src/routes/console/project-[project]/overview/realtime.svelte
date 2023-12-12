@@ -2,8 +2,8 @@
     import { page } from '$app/stores';
     import { BarChart } from '$lib/charts';
     import { Card } from '$lib/components';
+    import { formatNum } from '$lib/helpers/string';
     import { stats } from '../store';
-    import { format } from './+layout.svelte';
 
     $: projectId = $page.params.project;
     $: projectStats = $stats?.get(projectId);
@@ -12,7 +12,7 @@
 </script>
 
 <div class="heading-level-4">
-    {format(current)}
+    {formatNum(current)}
 </div>
 <div>Realtime Connections</div>
 {#if total}
@@ -37,7 +37,7 @@
             <p class="u-bold">No data to show</p>
             <a
                 class="link"
-                href="https://appwrite.io/docs/realtime"
+                href="https://appwrite.io/docs/apis/realtime"
                 target="_blank"
                 rel="noopener noreferrer">Get started with Realtime</a>
         </div>

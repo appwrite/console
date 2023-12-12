@@ -1,18 +1,23 @@
 <script lang="ts">
-    import { FormItem, Helper, Label } from '.';
+    import { FormItem, FormItemPart, Helper, Label } from '.';
+    import type { FormItemTag } from './formItem.svelte';
 
     export let id: string;
-    export let label: string;
+    export let label: string | undefined = undefined;
     export let optionalText: string | undefined = undefined;
     export let showLabel = true;
     export let value: string | number | boolean;
     export let placeholder = '';
     export let required = false;
+    export let hideRequired = false;
     export let disabled = false;
+    export let wrapperTag: FormItemTag = 'li';
     export let options: {
         value: string | boolean | number;
         label: string;
     }[];
+    export let isMultiple = false;
+    export let fullWidth = false;
 
     let element: HTMLSelectElement;
     let error: string;
@@ -27,25 +32,30 @@
         error = element.validationMessage;
     };
 
-    $: if (element && required && !value) {
-        element.setCustomValidity('This field is required');
+    const isNotEmpty = (value: string | number | boolean) => {
+        return typeof value === 'boolean' ? true : !!value;
+    };
+
+    $: if (required && !isNotEmpty(value)) {
+        element?.setCustomValidity('This field is required');
+    } else {
+        element?.setCustomValidity('');
     }
 
-    $: if (element && required && value) {
-        element.setCustomValidity('');
-    }
-
-    $: if (value) {
+    $: if (isNotEmpty(value)) {
         error = null;
     }
 
     $: hasNullOption = options.some((option) => option.value === null);
+    $: wrapper = isMultiple ? FormItemPart : FormItem;
 </script>
 
-<FormItem>
-    <Label {required} {optionalText} hide={!showLabel} for={id}>
-        {label}
-    </Label>
+<svelte:component this={wrapper} {fullWidth} tag={wrapperTag}>
+    {#if label}
+        <Label {required} {hideRequired} {optionalText} hide={!showLabel} for={id}>
+            {label}
+        </Label>
+    {/if}
 
     <div class="select">
         <select
@@ -72,4 +82,4 @@
     {:else}
         <slot name="helper" />
     {/if}
-</FormItem>
+</svelte:component>

@@ -14,7 +14,9 @@
     export let fullWidth = false;
     export let fixed = false;
 
-    const dispatch = createEventDispatcher();
+    const dispatch = createEventDispatcher<{
+        blur: undefined;
+    }>();
 
     let element: HTMLDivElement;
     let tooltip: HTMLDivElement;
@@ -77,16 +79,26 @@
                 event.target === element ||
                 element.contains(event.target as Node) ||
                 event.target === tooltip ||
-                tooltip.contains(event.target as Node)
+                tooltip.contains(event.target as Node) ||
+                // Avoid deleted elements triggering blur
+                !document.body.contains(event.target as Node)
             )
         ) {
             show = false;
             dispatch('blur');
         }
     };
+
+    const onKeyDown = (event: KeyboardEvent) => {
+        if (event.key === 'Escape' && show) {
+            event.preventDefault();
+            show = false;
+            dispatch('blur');
+        }
+    };
 </script>
 
-<svelte:window on:click={onBlur} />
+<svelte:window on:click={onBlur} on:keydown={onKeyDown} />
 
 <div class:drop-wrapper={!noStyle} class:u-cross-child-start={childStart} bind:this={element}>
     <slot />
@@ -103,6 +115,7 @@
     {/if}
 </div>
 
+<!-- svelte-ignore css-unused-selector -->
 <style global lang="scss">
     .drop-tooltip[data-popper-placement^='top'] > .drop-arrow {
         bottom: -4px;
@@ -130,7 +143,7 @@
     .drop-arrow::before {
         content: '';
         transform: rotate(45deg);
-        background: hsl(var(--color-neutral-200));
+        background: hsl(var(--color-neutral-85));
 
         body.theme-light & {
             background: hsl(var(--color-neutral-10));

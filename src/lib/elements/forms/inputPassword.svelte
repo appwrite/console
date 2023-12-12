@@ -51,7 +51,7 @@
         {label}
     </Label>
 
-    <div class="input-text-wrapper">
+    <div class="input-text-wrapper" style={showPasswordButton ? '--amount-of-buttons: 1' : ''}>
         {#if showInPlainText}
             <input
                 {id}

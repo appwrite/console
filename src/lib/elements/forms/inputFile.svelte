@@ -2,7 +2,7 @@
     import { Trim } from '$lib/components';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { onMount } from 'svelte';
-    import { Helper } from '.';
+    import { Helper, Label } from '.';
 
     export let label: string = null;
     export let files: FileList;
@@ -10,12 +10,27 @@
     export let allowedFileExtensions: string[] = [];
     export let maxSize: number = null;
     export let required = false;
+    export let optionalText: string = null;
+    export let tooltip: string = null;
     export let error: string = null;
 
     let input: HTMLInputElement;
     let hovering = false;
 
     function setFiles(value: FileList) {
+        if (!value) return;
+
+        const hasInvalidExt = Array.from(value).some((file) => {
+            const fileExtension = file.name.split('.').pop();
+            return allowedFileExtensions?.length
+                ? !allowedFileExtensions.includes(fileExtension)
+                : false;
+        });
+        if (hasInvalidExt) {
+            error = 'Invalid file extension';
+            return;
+        }
+
         files = value;
         input.files = value;
     }
@@ -28,7 +43,6 @@
         ev.dataTransfer.dropEffect = 'move';
         hovering = false;
         if (!ev.dataTransfer.items) return;
-
         for (let i = 0; i < ev.dataTransfer.items.length; i++) {
             if (ev.dataTransfer.items[i].kind === 'file') {
                 const dataTransfer = new DataTransfer();
@@ -61,10 +75,15 @@
     onMount(() => {
         setFiles(files);
     });
+
+    const handleChange = (event: Event) => {
+        const target = event.currentTarget as HTMLInputElement;
+        setFiles(target.files);
+    };
 </script>
 
 <input
-    bind:files
+    on:change={handleChange}
     bind:this={input}
     accept={allowedFileExtensions.map((n) => `.${n}`).join(',')}
     type="file"
@@ -74,11 +93,15 @@
 
 <div>
     {#if label}
-        <p class="text">{label}</p>
+        <Label {required} {optionalText} {tooltip} hide={!label}>
+            {label}
+        </Label>
     {/if}
     <div
+        role="region"
         class="box is-no-shadow u-padding-24"
         style="--box-border-radius:var(--border-radius-xsmall); z-index: 1"
+        class:u-margin-block-start-8={!!label}
         class:is-border-dashed={!hovering}
         class:is-hover-with-file={hovering}
         on:drop|preventDefault={dropHandler}
@@ -137,7 +160,7 @@
                                 {fileSize.value + fileSize.unit}
                             </span>
                             <button
-                                on:click={resetFiles}
+                                on:click|preventDefault={resetFiles}
                                 type="button"
                                 class="button is-text is-only-icon u-margin-inline-start-auto"
                                 aria-label="remove file"

@@ -19,6 +19,7 @@
     import type { Models } from '@appwrite.io/console';
     import { Button } from '$lib/elements/forms';
     import CreateAttributeDropdown from '../attributes/createAttributeDropdown.svelte';
+    import type { Option } from '../attributes/store';
 
     let showDropdown = [];
     let selectedIndex: Models.Index = null;
@@ -27,7 +28,7 @@
     let showDelete = false;
     let showCreateAttribute = false;
     let showCreateDropdown = false;
-    let selectedAttribute: string = null;
+    let selectedAttribute: Option['name'] = null;
 </script>
 
 <Container>
@@ -116,22 +117,22 @@
         {:else}
             <Empty
                 single
-                href="https://appwrite.io/docs/databases#indexes"
+                href="https://appwrite.io/docs/products/databases/collections#indexes"
                 target="index"
                 on:click={() => (showCreateIndex = true)} />
         {/if}
     {:else}
         <Empty single target="attribute" on:click={() => (showCreateDropdown = true)}>
             <div class="u-text-center">
-                <Heading size="7" tag="h2">Create your first attribute to get started.</Heading>
+                <Heading size="7" tag="h2">Create an attribute to get started.</Heading>
                 <p class="body-text-2 u-bold u-margin-block-start-4">
-                    Need a hand? Check out our documentation.
+                    Need a hand? Learn more in our documentation.
                 </p>
             </div>
             <div class="u-flex u-gap-16 u-main-center">
                 <Button
                     external
-                    href="https://appwrite.io/docs/databases#attributes"
+                    href="https://appwrite.io/docs/products/databases/collections#attributes"
                     text
                     event="empty_documentation"
                     ariaLabel={`create {target}`}>Documentation</Button>

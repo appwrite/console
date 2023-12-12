@@ -54,14 +54,16 @@
 
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { Box, CardGrid, Heading } from '$lib/components';
+    import { BoxAvatar, CardGrid, Heading } from '$lib/components';
     import { Permissions } from '$lib/components/permissions';
     import { Dependencies } from '$lib/constants';
     import { Pill } from '$lib/elements';
     import {
         Button,
         Form,
+        FormItem,
         FormList,
+        InputChoice,
         InputSelect,
         InputSwitch,
         InputTags,
@@ -78,6 +80,7 @@
     import Delete from '../deleteBucket.svelte';
     import { bucket } from '../store';
     import UpdateMaxFileSize from './updateMaxFileSize.svelte';
+    import { readOnly } from '$lib/stores/billing';
 
     let showDelete = false;
 
@@ -224,12 +227,14 @@
                                 bind:value={enabled} />
                         </FormList>
                         <p class="text">Created: {toLocaleDateTime($bucket.$createdAt)}</p>
-                        <p class="text">Last Updated: {toLocaleDateTime($bucket.$updatedAt)}</p>
+                        <p class="text">Last updated: {toLocaleDateTime($bucket.$updatedAt)}</p>
                     </div>
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">
-                    <Button disabled={enabled === $bucket.enabled} submit>Update</Button>
+                    <Button disabled={enabled === $bucket.enabled || $readOnly} submit>
+                        Update
+                    </Button>
                 </svelte:fragment>
             </CardGrid>
         </Form>
@@ -243,13 +248,15 @@
                             id="name"
                             label="Name"
                             placeholder="Enter name"
-                            autocomplete={false}
+                            readonly={$readOnly}
                             bind:value={bucketName} />
                     </FormList>
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">
-                    <Button disabled={bucketName === $bucket.name || !bucketName} submit>
+                    <Button
+                        disabled={bucketName === $bucket.name || !bucketName || $readOnly}
+                        submit>
                         Update
                     </Button>
                 </svelte:fragment>
@@ -257,16 +264,15 @@
         </Form>
 
         <Form onSubmit={updatePermissions}>
-            <CardGrid>
-                <Heading tag="h6" size="7">Permissions</Heading>
+            <CardGrid hideOverflow>
+                <Heading tag="h6" size="7" id="permissions">Permissions</Heading>
                 <p class="text">
-                    Choose who can access your buckets and files. For more information, check out
-                    the <a
-                        href="https://appwrite.io/docs/permissions"
+                    Choose who can access your buckets and files. For more information, visit our <a
+                        href="https://appwrite.io/docs/advanced/platform/permissions"
                         target="_blank"
                         rel="noopener noreferrer"
                         class="link">
-                        Permissions Guide
+                        Permissions guide
                     </a>.
                 </p>
                 <svelte:fragment slot="aside">
@@ -282,13 +288,13 @@
 
         <Form onSubmit={updateFileSecurity}>
             <CardGrid>
-                <Heading tag="h6" size="7">File Security</Heading>
+                <Heading tag="h6" size="7" id="file-security">File security</Heading>
                 <svelte:fragment slot="aside">
                     <FormList>
                         <InputSwitch
                             bind:value={bucketFileSecurity}
                             id="security"
-                            label="File Security" />
+                            label="File security" />
                     </FormList>
                     <p class="text">
                         When file security is enabled, users will be able to access files for which
@@ -301,7 +307,9 @@
                     </p>
                 </svelte:fragment>
                 <svelte:fragment slot="actions">
-                    <Button disabled={bucketFileSecurity === $bucket.fileSecurity} submit>
+                    <Button
+                        disabled={bucketFileSecurity === $bucket.fileSecurity || $readOnly}
+                        submit>
                         Update
                     </Button>
                 </svelte:fragment>
@@ -310,61 +318,36 @@
 
         <Form onSubmit={updateSecurity}>
             <CardGrid>
-                <Heading tag="h2" size="7">Security Settings</Heading>
+                <Heading tag="h2" size="7">Security settings</Heading>
                 <p class="text">
                     Enable or disable security services for the bucket including <b>Ecryption</b>
                     and <b>Antivirus scanning.</b>
                 </p>
                 <svelte:fragment slot="aside">
                     <FormList>
-                        <li class="form-item">
-                            <label class="choice-item" for="encryption">
-                                <div class="input-text-wrapper">
-                                    <input
-                                        name="encryption"
-                                        id="encryption"
-                                        type="checkbox"
-                                        class="switch"
-                                        role="switch"
-                                        aria-checked={encryption}
-                                        bind:checked={encryption} />
-                                </div>
-                                <div class="choice-item-content">
-                                    <div class="choice-item-title">Encryption</div>
+                        <FormItem>
+                            <InputChoice
+                                label="Encryption"
+                                id="encryption"
+                                type="switchbox"
+                                bind:value={encryption}>
+                                This parameter allows you to configure whether or not the files
+                                inside the bucket will be encrypted. We don't encrypt files bigger
+                                than 20MB.
+                            </InputChoice>
+                        </FormItem>
 
-                                    <div class="choice-item-paragraph">
-                                        This parameter allows you to configure whether or not the
-                                        files inside the bucket will be encrypted. We don't encrypt
-                                        files bigger than 20MB.
-                                    </div>
-                                </div>
-                            </label>
-                        </li>
-                        <li class="form-item">
-                            <label class="choice-item" for="antivirus">
-                                <div class="input-text-wrapper">
-                                    <input
-                                        name="antivirus"
-                                        id="antivirus"
-                                        type="checkbox"
-                                        class="switch"
-                                        role="switch"
-                                        aria-checked={antivirus}
-                                        bind:checked={antivirus} />
-                                </div>
-                                <div class="choice-item-content">
-                                    <div class="choice-item-title">Antivirus</div>
-
-                                    <div class="choice-item-paragraph">
-                                        This parameter allows you to configure whether or not the
-                                        files inside the bucket should be scanned by the Appwrite
-                                        Antivirus scanner.
-                                    </div>
-                                </div>
-                            </label>
-                        </li>
-
-                        <li />
+                        <FormItem>
+                            <InputChoice
+                                label="Antivirus"
+                                id="antivirus"
+                                type="switchbox"
+                                bind:value={antivirus}>
+                                This parameter allows you to configure whether or not the files
+                                inside the bucket should be scanned by the Appwrite Antivirus
+                                scanner.
+                            </InputChoice>
+                        </FormItem>
                     </FormList>
                 </svelte:fragment>
 
@@ -405,8 +388,8 @@
         <UpdateMaxFileSize />
 
         <Form onSubmit={updateAllowedExtensions}>
-            <CardGrid>
-                <Heading tag="h6" size="7">File Extensions</Heading>
+            <CardGrid hideOverflow>
+                <Heading tag="h6" size="7" id="extensions">Allowed file Extensions</Heading>
                 <p class="text">
                     Allowed file extensions. A maximum of 100 file extensions can be added. Leave
                     blank to allow all file types.
@@ -439,24 +422,24 @@
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">
-                    <Button disabled={isExtensionsDisabled} submit>Update</Button>
+                    <Button disabled={isExtensionsDisabled || $readOnly} submit>Update</Button>
                 </svelte:fragment>
             </CardGrid>
         </Form>
 
         <CardGrid danger>
-            <Heading tag="h6" size="7">Delete Bucket</Heading>
+            <Heading tag="h6" size="7">Delete bucket</Heading>
             <p class="text">
                 The bucket will be permanently deleted, including all the files within it. This
                 action is irreversible.
             </p>
             <svelte:fragment slot="aside">
-                <Box>
+                <BoxAvatar>
                     <svelte:fragment slot="title">
                         <h6 class="u-bold u-trim-1">{$bucket.name}</h6>
                     </svelte:fragment>
-                    <p class="text">Last Updated: {toLocaleDateTime($bucket.$updatedAt)}</p>
-                </Box>
+                    <p class="text">Last updated: {toLocaleDateTime($bucket.$updatedAt)}</p>
+                </BoxAvatar>
             </svelte:fragment>
 
             <svelte:fragment slot="actions">

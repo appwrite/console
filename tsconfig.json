@@ -3,6 +3,7 @@
     "compilerOptions": {
         "lib": ["webworker", "DOM", "ESNext"],
         "module": "ESNext",
+        "target": "ESNext",
         "moduleResolution": "Node",
         "importsNotUsedAsValues": "error",
         "noUncheckedIndexedAccess": true,

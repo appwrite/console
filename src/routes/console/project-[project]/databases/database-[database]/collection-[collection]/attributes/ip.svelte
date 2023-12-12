@@ -38,9 +38,30 @@
     export let editing = false;
     export let data: Partial<Models.AttributeIp>;
 
-    $: if (data.required || data.array) {
-        data.default = null;
+    import { createConservative } from '$lib/helpers/stores';
+
+    let savedDefault = data.default;
+
+    function handleDefaultState(hideDefault: boolean) {
+        if (hideDefault) {
+            savedDefault = data.default;
+            data.default = null;
+        } else {
+            data.default = savedDefault;
+        }
     }
+
+    const {
+        stores: { required, array },
+        listen
+    } = createConservative<Partial<Models.AttributeIp>>({
+        required: false,
+        array: false,
+        ...data
+    });
+    $: listen(data);
+
+    $: handleDefaultState($required || $array);
 </script>
 
 <InputText
@@ -48,10 +69,12 @@
     label="Default value"
     placeholder="Enter value"
     bind:value={data.default}
-    disabled={data.required || data.array} />
+    disabled={data.required || data.array}
+    nullable={!data.required && !data.array} />
 <InputChoice id="required" label="Required" bind:value={data.required} disabled={data.array}>
     Indicate whether this is a required attribute
 </InputChoice>
 <InputChoice id="array" label="Array" bind:value={data.array} disabled={data.required || editing}>
-    Indicate whether this attribute should act as an array
+    Indicate whether this attribute should act as an array, with the default value set as an empty
+    array.
 </InputChoice>

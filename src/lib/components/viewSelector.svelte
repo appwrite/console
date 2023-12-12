@@ -1,12 +1,3 @@
-<script context="module" lang="ts">
-    export type Column = {
-        id: string;
-        title: string;
-        show: boolean;
-        width?: number;
-    };
-</script>
-
 <script lang="ts">
     import { Button, InputChoice } from '$lib/elements/forms';
     import { DropList } from '.';
@@ -16,6 +7,7 @@
     import { onMount } from 'svelte';
     import { View } from '$lib/helpers/load';
     import { tooltip } from '$lib/actions/tooltip';
+    import type { Column } from '$lib/helpers/types';
 
     export let columns: Writable<Column[]>;
     export let view: View;
@@ -23,6 +15,7 @@
     export let hideView = false;
     export let hideColumns = false;
     export let allowNoColumns = false;
+    export let showColsTextMobile = false;
 
     let showSelectColumns = false;
 
@@ -46,7 +39,7 @@
             );
         }
 
-        return columns.subscribe((ctx) => {
+        columns.subscribe((ctx) => {
             const columns = ctx.filter((n) => n.show).map((n) => n.id);
 
             if (isCustomCollection) {
@@ -84,7 +77,7 @@
                         class="icon-view-boards u-opacity-50"
                         aria-hidden="true"
                         aria-label="columns" />
-                    <span class="text is-only-desktop">Columns</span>
+                    <span class="text {showColsTextMobile ? '' : 'is-only-desktop'}">Columns</span>
                     <span class="inline-tag">{selectedColumnsNumber}</span>
                 </Button>
                 <svelte:fragment slot="list">

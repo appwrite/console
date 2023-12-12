@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { AvatarInitials, Box, CardGrid, Heading } from '$lib/components';
+    import { AvatarInitials, BoxAvatar, CardGrid, Heading } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import DeleteTeam from './deleteTeam.svelte';
     import { team } from './store';
@@ -9,7 +9,7 @@
 
 <CardGrid danger>
     <div>
-        <Heading tag="h6" size="7">Delete Team</Heading>
+        <Heading tag="h6" size="7">Delete team</Heading>
     </div>
 
     <p>
@@ -17,7 +17,7 @@
         action is irreversible.
     </p>
     <svelte:fragment slot="aside">
-        <Box>
+        <BoxAvatar>
             <svelte:fragment slot="image">
                 <AvatarInitials size={48} name={$team.name} />
             </svelte:fragment>
@@ -25,7 +25,7 @@
                 <h6 class="u-bold u-trim-1">{$team.name}</h6>
                 <span>{$team.total} Members</span>
             </svelte:fragment>
-        </Box>
+        </BoxAvatar>
     </svelte:fragment>
 
     <svelte:fragment slot="actions">

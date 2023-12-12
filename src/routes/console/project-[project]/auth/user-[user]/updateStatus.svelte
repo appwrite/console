@@ -5,7 +5,7 @@
     import { Dependencies } from '$lib/constants';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
-    import { toLocaleDateTime } from '$lib/helpers/date';
+    import { toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { user } from './store';
@@ -19,7 +19,7 @@
             await invalidate(Dependencies.USER);
             addNotification({
                 message: `${$user.name || $user.email || $user.phone || 'The account'} has been ${
-                    $user.emailVerification ? 'unverified' : 'verified'
+                    !$user.emailVerification ? 'unverified' : 'verified'
                 }`,
                 type: 'success'
             });
@@ -71,6 +71,9 @@
             trackError(error, Submit.UserUpdateStatus);
         }
     }
+
+    // TODO: Remove this when the console SDK is updated
+    $: accessedAt = ($user as unknown as { accessedAt: string }).accessedAt;
 </script>
 
 <CardGrid>
@@ -100,6 +103,7 @@
                     <p class="title">{$user.phone}</p>
                 {/if}
                 <p>Joined: {toLocaleDateTime($user.registration)}</p>
+                <p>Last activity: {accessedAt ? toLocaleDate(accessedAt) : 'never'}</p>
             </div>
             {#if !$user.status}
                 <Pill danger>blocked</Pill>
@@ -108,18 +112,18 @@
                     {$user.emailVerification && $user.phoneVerification
                         ? 'verified'
                         : $user.emailVerification
-                        ? 'verified email'
-                        : $user.phoneVerification
-                        ? 'verified phone'
-                        : 'unverified'}
+                          ? 'verified email'
+                          : $user.phoneVerification
+                            ? 'verified phone'
+                            : 'unverified'}
                 </Pill>
             {:else}
                 <Pill success={$user.emailVerification || $user.phoneVerification}>
                     {$user.emailVerification
                         ? 'verified '
                         : $user.phoneVerification
-                        ? 'verified '
-                        : 'unverified'}
+                          ? 'verified '
+                          : 'unverified'}
                 </Pill>
             {/if}
         </div>
@@ -135,7 +139,8 @@
                     <Button
                         secondary
                         on:click={() => (showVerifcationDropdown = !showVerifcationDropdown)}>
-                        {$user.emailVerification ? 'Unverify' : 'Verify'} account
+                        {$user.emailVerification && $user.phoneVerification ? 'Unverify' : 'Verify'}
+                        account
                     </Button>
                     <svelte:fragment slot="list">
                         <DropListItem icon="mail" on:click={() => updateVerificationEmail()}>

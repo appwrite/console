@@ -4,31 +4,36 @@ We would ❤️ for you to contribute to Appwrite and help make it better! We wa
 
 ## How to Start?
 
-If you are worried about or don’t know where to start, check out the next section that explains what kind of help is needed and how you can get involved. You can reach out with any questions on our [Discord](https://appwrite.io/discord) server. You can also submit an issue and a maintainer can guide you!
+If you are worried about or don't know where to start, check out the next section that explains what kind of help is needed and how you can get involved. You can reach out with any questions on our [Discord](https://appwrite.io/discord) server. You can also submit an issue and a maintainer can guide you!
 
 ## Repo Structure
 
 ```
 ├── src
-│   ├── lib                             // All non-route components, accessible over "import ... from '$lib'"
-│   │   ├── components                  // Re-usable components
-│   │   ├── elements                    // Re-usable elements
-│   │   ├── layout                      // Global components for the layout (Nav/Content/Container)
-│   │   └── stores                      // Global stores (state management)
-│   └─── routes
-│       ├── console                     // Routes that need authentication
-│       │   ├──[project]
-│       │   │   ├── database            // Database Service
-│       │   │   │   ├── [collection]    // Nested Route for the collection "/console/[PROJECT_ID]/database/[COLLECTION_ID]"
-│       │   │   │   ├── _create.svelte  // Component to Create collections
-│       │   │   │   └── index.svelte    // Entrypoint for "/console/[PROJECT_ID]/database"
-│       │   │   ├── storage             // Storage Service "/console/[PROJECT]/storage"
-│       │   │   └── auth                // Users Service "/console/[PROJECT]/auth"
-│       │   └──...
-│       ├── login.svelte                // Component for Login "/console/login"
-│       └── register.svelte             // Component for Register "/console/register"
-├── build // Compiled application
-└── static // Static assets
+│   ├── lib                                       // Reusable logic (accessible with '$lib')
+│   │   ├── actions                               // Svelte actions
+│   │   ├── charts                                // Chart components
+│   │   ├── components                            // Re-usable components
+│   │   ├── elements                              // Re-usable elements
+│   │   ├── helpers                               // Small functions used through out the console
+│   │   ├── images                                // Images used in the console
+│   │   ├── layout                                // Global components for the layout (Nav/Content/Container)
+│   │   ├── mock                                  // Mock components used for testing
+│   │   └── stores                                // Global stores (state management)
+│   └── routes
+│       └── console                               // Routes that need authentication
+│       │   └── project-[project]
+│       │   │   └── database                      // Database Service
+│       │   │   │   ├── +layout.svelte            // Layout head and other logic like realtime events is set here
+│       │   │   │   ├── +layout.ts                // Layout data is set here (Header, Breadcrumbs, ...)
+│       │   │   │   ├── +page.svelte              // Page displayed on "/console/project-[PROJECT_ID]/database"
+│       │   │   │   ├── +page.ts                  // Necessary data for the page is fetched here
+│       │   │   │   └── create.svelte             // Component to create databases
+│       │   │   └── ...                           // Other services
+│       │   └── ...
+│       └── ...                                   // Routes that don't need authentication
+├── build                                         // Compiled application
+└── static                                        // Static assets
 ```
 
 ## Development
@@ -41,11 +46,19 @@ git clone https://github.com/appwrite/console.git appwrite-console
 
 ### 2. Install dependencies with npm
 
+Navigate to the Appwrite Console repository and install dependencies.
+
 ```bash
-npm install
+cd appwrite-console && npm install
 ```
 
-### 3. Setup environment variables
+### 3. Install and run Appwrite locally
+
+When you run the Appwrite Console locally, it needs to point to a backend as well. The easiest way to do this is to run an Appwrite instance locally.
+
+Follow the [install instructions](https://appwrite.io/docs/advanced/self-hosting) in the Appwrite docs.
+
+### 4. Setup environment variables
 
 Add a `.env` file by copying the `.env.example` file as a template in the project's root directory.
 
@@ -229,7 +242,7 @@ When blogging, speaking about, or creating tutorials about one of Appwrite's man
 
 ### Presenting at Meetups
 
-Presenting at meetups and conferences about your Appwrite projects is another excellent way to get the word out about Appwrite. Your unique challenges and successes in building things with Appwrite can provide great speaking material. We’d love to review your talk abstract/CFP, so get in touch with us if you’d like some help!
+Presenting at meetups and conferences about your Appwrite projects is another excellent way to get the word out about Appwrite. Your unique challenges and successes in building things with Appwrite can provide great speaking material. We'd love to review your talk abstract/CFP, so get in touch with us if you'd like some help!
 
 ### Sending Feedback & Reporting Bugs
 

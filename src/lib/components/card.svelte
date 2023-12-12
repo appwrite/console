@@ -46,6 +46,7 @@
     class:is-allowed-focus={href}
     on:click
     on:keyup={clickOnEnter}
+    role={href || isButton ? 'button' : 'generic'}
     {href}>
     <slot />
 </svelte:element>

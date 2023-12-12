@@ -11,7 +11,7 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     export let showDelete = false;
-
+    let error: string;
     const deleteUser = async () => {
         try {
             await sdk.forProject.users.delete($user.$id);
@@ -22,23 +22,21 @@
             });
             trackEvent(Submit.UserDelete);
             await goto(`${base}/console/project-${$page.params.project}/auth`);
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
-            trackError(error, Submit.UserDelete);
+        } catch (e) {
+            error = e.message;
+            trackError(e, Submit.UserDelete);
         }
     };
 </script>
 
 <Modal
+    title="Delete user"
     bind:show={showDelete}
     onSubmit={deleteUser}
     icon="exclamation"
     state="warning"
-    headerDivider={false}>
-    <svelte:fragment slot="header">Delete User</svelte:fragment>
+    headerDivider={false}
+    bind:error>
     <p data-private>Are you sure you want to delete <b>{$user.name}</b> from '{$project.name}'?</p>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)}>Cancel</Button>

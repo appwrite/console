@@ -1,35 +1,42 @@
+<script lang="ts" context="module">
+    export let showCreateUser = writable(false);
+</script>
+
 <script lang="ts">
+    import { goto } from '$app/navigation';
+    import { base } from '$app/paths';
     import { page } from '$app/stores';
     import {
+        AvatarInitials,
+        Copy,
         Empty,
         EmptySearch,
-        Copy,
-        SearchQuery,
-        AvatarInitials,
-        PaginationWithLimit
+        PaginationWithLimit,
+        SearchQuery
     } from '$lib/components';
+    import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import {
         Table,
-        TableHeader,
         TableBody,
-        TableCellHead,
         TableCell,
+        TableCellHead,
         TableCellText,
+        TableHeader,
         TableRowLink
     } from '$lib/elements/table';
-    import { Pill } from '$lib/elements';
-    import { toLocaleDateTime } from '$lib/helpers/date';
-    import { Container } from '$lib/layout';
-    import { base } from '$app/paths';
-    import { goto } from '$app/navigation';
-    import Create from './createUser.svelte';
+    import { toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
+    import { Container, ContainerHeader } from '$lib/layout';
     import type { Models } from '@appwrite.io/console';
+    import { writable } from 'svelte/store';
     import type { PageData } from './$types';
+    import Create from './createUser.svelte';
+    import { readOnly } from '$lib/stores/billing';
+    import { isCloud } from '$lib/system';
+    import { tooltip } from '$lib/actions/tooltip';
 
     export let data: PageData;
 
-    let showCreate = false;
     const projectId = $page.params.project;
     async function userCreated(event: CustomEvent<Models.User<Record<string, unknown>>>) {
         await goto(`${base}/console/project-${projectId}/auth/user-${event.detail.$id}`);
@@ -37,11 +44,27 @@
 </script>
 
 <Container>
-    <SearchQuery search={data.search} placeholder="Search by name, email, phone, or ID">
-        <Button on:click={() => (showCreate = true)} event="create_user">
-            <span class="icon-plus" aria-hidden="true" /> <span class="text">Create user</span>
-        </Button>
-    </SearchQuery>
+    <ContainerHeader
+        title="Users"
+        isFlex={false}
+        total={data.users.total}
+        buttonDisabled={isCloud && $readOnly}
+        let:isButtonDisabled>
+        <SearchQuery search={data.search} placeholder="Search by name, email, phone, or ID">
+            <div
+                use:tooltip={{
+                    content: `Upgrade to add more users`,
+                    disabled: !isButtonDisabled
+                }}>
+                <Button
+                    on:click={() => ($showCreateUser = true)}
+                    event="create_user"
+                    disabled={isCloud && $readOnly}>
+                    <span class="icon-plus" aria-hidden="true" />
+                    <span class="text">Create user</span>
+                </Button>
+            </div></SearchQuery>
+    </ContainerHeader>
     {#if data.users.total}
         <Table>
             <TableHeader>
@@ -49,7 +72,9 @@
                 <TableCellHead onlyDesktop>Identifiers</TableCellHead>
                 <TableCellHead onlyDesktop width={130}>Status</TableCellHead>
                 <TableCellHead onlyDesktop width={100}>ID</TableCellHead>
+                <TableCellHead onlyDesktop width={100}>Labels</TableCellHead>
                 <TableCellHead onlyDesktop>Joined</TableCellHead>
+                <TableCellHead onlyDesktop>Last Activity</TableCellHead>
             </TableHeader>
             <TableBody>
                 {#each data.users.users as user}
@@ -85,10 +110,10 @@
                                     {user.emailVerification && user.phoneVerification
                                         ? 'verified'
                                         : user.emailVerification
-                                        ? 'verified email'
-                                        : user.phoneVerification
-                                        ? 'verified phone'
-                                        : 'unverified'}
+                                          ? 'verified email'
+                                          : user.phoneVerification
+                                            ? 'verified phone'
+                                            : 'unverified'}
                                 </Pill>
                             {:else}
                                 <Pill danger>blocked</Pill>
@@ -102,8 +127,14 @@
                                 </Pill>
                             </Copy>
                         </TableCell>
+                        <TableCellText onlyDesktop title="Labels">
+                            {user.labels.join(', ')}
+                        </TableCellText>
                         <TableCellText onlyDesktop title="Joined">
                             {toLocaleDateTime(user.registration)}
+                        </TableCellText>
+                        <TableCellText onlyDesktop title="Last Activity">
+                            {user.accessedAt ? toLocaleDate(user.accessedAt) : 'never'}
                         </TableCellText>
                     </TableRowLink>
                 {/each}
@@ -126,10 +157,10 @@
     {:else}
         <Empty
             single
-            href="https://appwrite.io/docs/server/users"
+            href="https://appwrite.io/docs/references/cloud/server-nodejs/users"
             target="user"
-            on:click={() => (showCreate = true)} />
+            on:click={() => showCreateUser.set(true)} />
     {/if}
 </Container>
 
-<Create bind:showCreate on:created={userCreated} />
+<Create bind:showCreate={$showCreateUser} on:created={userCreated} />

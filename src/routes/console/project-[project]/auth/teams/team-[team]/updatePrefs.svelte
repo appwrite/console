@@ -3,7 +3,7 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { CardGrid, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, Form } from '$lib/elements/forms';
+    import { Button, Form, FormItem, FormItemPart, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
@@ -21,11 +21,11 @@
         }
     }
 
-    let prefs: [string, unknown][] = null;
+    let prefs: [string, string][] = null;
     let arePrefsDisabled = true;
 
     onMount(async () => {
-        prefs = Object.entries($team.prefs);
+        prefs = Object.entries($team.prefs as Record<string, string>);
         if (!prefs?.length) {
             prefs.push(['', '']);
         }
@@ -56,7 +56,7 @@
 
 <Form onSubmit={updatePrefs}>
     <CardGrid>
-        <Heading tag="h6" size="7">Team Preferences</Heading>
+        <Heading tag="h6" size="7">Team preferences</Heading>
         <p>
             You can update your team's preferences by storing shared information on the teams's
             objects so they can easily be shared across members.
@@ -66,30 +66,25 @@
                 <ul class="form-list">
                     {#if prefs}
                         {#each prefs as [key, value], index}
-                            <li class="form-item is-multiple">
-                                <div class="form-item-part u-stretch">
-                                    <label class="label" for={`key-${index}`}>Key</label>
-                                    <div class="input-text-wrapper">
-                                        <input
-                                            id={`key-${key}`}
-                                            placeholder="Enter key"
-                                            type="text"
-                                            class="input-text"
-                                            bind:value={key} />
-                                    </div>
-                                </div>
-                                <div class="form-item-part u-stretch">
-                                    <label class="label" for={`value-${index}`}> Value </label>
-                                    <div class="input-text-wrapper">
-                                        <input
-                                            id={`value-${value}`}
-                                            placeholder="Enter value"
-                                            type="text"
-                                            class="input-text"
-                                            bind:value />
-                                    </div>
-                                </div>
-                                <div class="form-item-part u-cross-child-end">
+                            <FormItem isMultiple>
+                                <InputText
+                                    id={`key-${index}`}
+                                    isMultiple
+                                    fullWidth
+                                    bind:value={key}
+                                    placeholder="Enter key"
+                                    label="Key"
+                                    required />
+
+                                <InputText
+                                    id={`value-${index}`}
+                                    isMultiple
+                                    fullWidth
+                                    bind:value
+                                    placeholder="Enter value"
+                                    label="Value"
+                                    required />
+                                <FormItemPart alignEnd>
                                     <Button
                                         text
                                         disabled={(!key || !value) && index === 0}
@@ -103,8 +98,8 @@
                                         }}>
                                         <span class="icon-x" aria-hidden="true" />
                                     </Button>
-                                </div>
-                            </li>
+                                </FormItemPart>
+                            </FormItem>
                         {/each}
                     {/if}
                 </ul>

@@ -34,8 +34,7 @@
 </script>
 
 <script lang="ts">
-    import { InputChoice } from '$lib/elements/forms';
-    import Boolean from '../document-[document]/attributes/boolean.svelte';
+    import { InputChoice, InputSelect } from '$lib/elements/forms';
 
     export let editing = false;
     export let data: Partial<Models.AttributeBoolean> = {
@@ -44,26 +43,47 @@
         default: null
     };
 
-    $: if (data.required || data.array) {
-        data.default = null;
+    import { createConservative } from '$lib/helpers/stores';
+
+    let savedDefault = data.default;
+
+    function handleDefaultState(hideDefault: boolean) {
+        if (hideDefault) {
+            savedDefault = data.default;
+            data.default = null;
+        } else {
+            data.default = savedDefault;
+        }
     }
+
+    const {
+        stores: { required, array },
+        listen
+    } = createConservative<Partial<Models.AttributeBoolean>>({
+        required: false,
+        array: false,
+        ...data
+    });
+    $: listen(data);
+
+    $: handleDefaultState($required || $array);
 </script>
 
-<Boolean
+<InputSelect
     id="default"
     label="Default value"
-    bind:value={data.default}
-    attribute={{
-        key: data.key,
-        required: data.required,
-        status: 'enabled',
-        type: 'boolean',
-        array: data.array
-    }}
-    disabled={data.array || data.required} />
+    placeholder="Select a value"
+    disabled={data.required || data.array}
+    options={[
+        { label: 'NULL', value: null },
+        { label: 'True', value: true },
+        { label: 'False', value: false }
+    ]}
+    bind:value={data.default} />
 <InputChoice id="required" label="Required" bind:value={data.required} disabled={data.array}>
     Indicate whether this is a required attribute
 </InputChoice>
 <InputChoice id="array" label="Array" bind:value={data.array} disabled={data.required || editing}>
-    Indicate whether this attribute should act as an array
+    Indicate whether this attribute should act as an array, with the default value set as an empty
+    array.
 </InputChoice>

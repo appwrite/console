@@ -8,7 +8,7 @@
 <footer class="main-footer u-cross-center">
     <div class="main-footer-start">
         <ul class="inline-links is-no-padding-first-and-last u-x-small">
-            <li class="inline-links-item">
+            <li class="inline-links-item" style="line-height: 1.01;">
                 <div class="u-flex u-cross-center u-gap-8">
                     {#if isCloud}
                         <span class="icon-cloud" />
@@ -25,12 +25,17 @@
                 </div>
             </li>
             <li class="inline-links-item">
-                <a href="https://appwrite.io/policy/terms" target="_blank" rel="noreferrer">
+                <a href="https://appwrite.io/docs" target="_blank" rel="noreferrer">
+                    <span class="text">Docs</span>
+                </a>
+            </li>
+            <li class="inline-links-item">
+                <a href="https://appwrite.io/terms" target="_blank" rel="noreferrer">
                     <span class="text">Terms</span>
                 </a>
             </li>
             <li class="inline-links-item">
-                <a href="https://appwrite.io/policy/privacy" target="_blank" rel="noreferrer">
+                <a href="https://appwrite.io/privacy" target="_blank" rel="noreferrer">
                     <span class="text">Privacy</span>
                 </a>
             </li>

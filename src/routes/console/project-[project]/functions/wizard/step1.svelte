@@ -3,17 +3,16 @@
     import { Pill } from '$lib/elements';
     import { InputText, InputSelect, FormList } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
-    import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { createFunction } from './store';
+    import { runtimesList } from '../store';
 
     let showCustomId = false;
 
     let options = [];
 
     onMount(async () => {
-        let runtimes = await sdk.forProject.functions.listRuntimes();
-        options = runtimes.runtimes.map((runtime) => ({
+        options = (await $runtimesList).runtimes.map((runtime) => ({
             label: `${runtime.name} - ${runtime.version}`,
             value: runtime.$id
         }));
@@ -21,16 +20,22 @@
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">Create your function</svelte:fragment>
-    <svelte:fragment slot="subtitle">Let’s create a function.</svelte:fragment>
+    <svelte:fragment slot="title">Configuration function</svelte:fragment>
+    <svelte:fragment slot="subtitle">Create your new Appwrite Function.</svelte:fragment>
     <FormList>
         <InputText
             label="Name"
             id="name"
             placeholder="Function name"
+            autofocus
             bind:value={$createFunction.name}
             required />
-
+        <InputText
+            label="Entrypoint"
+            id="entrypoint"
+            placeholder="Entrypoint"
+            bind:value={$createFunction.entrypoint}
+            required />
         <InputSelect
             label="Runtime"
             id="runtime"
@@ -38,7 +43,6 @@
             bind:value={$createFunction.runtime}
             {options}
             required />
-
         {#if !showCustomId}
             <div>
                 <Pill button on:click={() => (showCustomId = !showCustomId)}>
@@ -47,7 +51,11 @@
                 </Pill>
             </div>
         {:else}
-            <CustomId bind:show={showCustomId} name="Function" bind:id={$createFunction.id} />
+            <CustomId
+                bind:show={showCustomId}
+                name="Function"
+                bind:id={$createFunction.id}
+                fullWidth />
         {/if}
     </FormList>
 </WizardStep>

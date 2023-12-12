@@ -49,14 +49,46 @@
         array: false
     };
 
-    $: if (data.required || data.array) {
-        data.default = null;
+    import { createConservative } from '$lib/helpers/stores';
+
+    let savedDefault = data.default;
+
+    function handleDefaultState(hideDefault: boolean) {
+        if (hideDefault) {
+            savedDefault = data.default;
+            data.default = null;
+        } else {
+            data.default = savedDefault;
+        }
     }
+
+    const {
+        stores: { required, array },
+        listen
+    } = createConservative<Partial<Models.AttributeFloat>>({
+        required: false,
+        array: false,
+        ...data
+    });
+    $: listen(data);
+
+    $: handleDefaultState($required || $array);
 </script>
 
-<InputNumber id="min" label="Min" placeholder="Enter size" bind:value={data.min} />
-<InputNumber id="max" label="Max" placeholder="Enter size" bind:value={data.max} />
-
+<InputNumber
+    id="min"
+    label="Min"
+    placeholder="Enter size"
+    bind:value={data.min}
+    step="any"
+    required={editing} />
+<InputNumber
+    id="max"
+    label="Max"
+    placeholder="Enter size"
+    bind:value={data.max}
+    step="any"
+    required={editing} />
 <InputNumber
     id="default"
     label="Default value"
@@ -65,10 +97,12 @@
     max={data.max}
     bind:value={data.default}
     disabled={data.required || data.array}
+    nullable={!data.required && !data.array}
     step="any" />
 <InputChoice id="required" label="Required" bind:value={data.required} disabled={data.array}>
     Indicate whether this is a required attribute
 </InputChoice>
 <InputChoice id="array" label="Array" bind:value={data.array} disabled={data.required || editing}>
-    Indicate whether this attribute should act as an array
+    Indicate whether this attribute should act as an array, with the default value set as an empty
+    array.
 </InputChoice>

@@ -61,8 +61,7 @@
     }
 </script>
 
-<Modal bind:show onSubmit={create} on:close={reset} size="big">
-    <svelte:fragment slot="header">Select users</svelte:fragment>
+<Modal title="Select users" bind:show onSubmit={create} on:close={reset} size="big">
     <p class="text">Grant access to any authenticated or anonymous user.</p>
     <InputSearch
         autofocus
@@ -139,7 +138,7 @@
                     <p>There are no Users that match your search.</p>
                 </div>
                 <div class="u-flex u-gap-16 common-section u-main-center">
-                    <Button external href="https://appwrite.io/docs/server/users" text
+                    <Button external href="https://appwrite.io/docs/products/auth/accounts" text
                         >Documentation</Button>
                     <Button secondary on:click={() => (search = '')}>Clear search</Button>
                 </div>
@@ -153,8 +152,8 @@
                         You have no users. Create a user to see them here.
                     </p>
                     <p class="text u-line-height-1-5">
-                        Need a hand? Check out our <a
-                            href="https://appwrite.io/docs/server/users"
+                        Need a hand? Learn more in our <a
+                            href="https://appwrite.io/docs/products/auth/quick-start"
                             target="_blank"
                             rel="noopener noreferrer">
                             documentation</a

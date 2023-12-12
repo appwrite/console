@@ -6,12 +6,12 @@ import { Tab } from '../../../src/lib/components';
 test('shows tab', () => {
     const { getByRole } = render(Tab);
 
-    expect(getByRole('button')).toBeInTheDocument();
+    expect(getByRole('tab')).toBeInTheDocument();
 });
 test('shows tab - is selected', () => {
     const { getByRole } = render(Tab, { selected: true });
 
-    expect(getByRole('button')).toHaveClass('is-selected');
+    expect(getByRole('tab')).toHaveClass('is-selected');
 });
 
 test('shows tab - is link', () => {
@@ -23,7 +23,7 @@ test('shows tab - is link', () => {
 
 test('shows tab - on:click', async () => {
     const { getByRole, component } = render(Tab);
-    const tab = getByRole('button');
+    const tab = getByRole('tab');
     const callback = vi.fn();
     component.$on('click', callback);
 

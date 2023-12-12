@@ -44,8 +44,7 @@
     }
 </script>
 
-<Modal {error} onSubmit={create} size="big" bind:show>
-    <svelte:fragment slot="header">Create Project</svelte:fragment>
+<Modal title="Create project" {error} onSubmit={create} size="big" bind:show>
     <FormList>
         <InputText id="name" label="Name" bind:value={name} required autofocus={true} />
         {#if !showCustomId}
@@ -57,7 +56,7 @@
                 </Pill>
             </div>
         {:else}
-            <CustomId bind:show={showCustomId} name="Project" bind:id />
+            <CustomId bind:show={showCustomId} name="Project" isProject bind:id />
         {/if}
     </FormList>
     <svelte:fragment slot="footer">

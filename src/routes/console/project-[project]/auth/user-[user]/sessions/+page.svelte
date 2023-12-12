@@ -1,17 +1,17 @@
 <script lang="ts">
     import { EmptySearch } from '$lib/components';
+    import { Pill } from '$lib/elements';
+    import { Button } from '$lib/elements/forms';
     import {
         Table,
         TableBody,
-        TableHeader,
-        TableRow,
-        TableCellHead,
         TableCell,
-        TableCellText
+        TableCellHead,
+        TableCellText,
+        TableHeader,
+        TableRow
     } from '$lib/elements/table';
-    import { Pill } from '$lib/elements';
-    import { Button } from '$lib/elements/forms';
-    import { Container } from '$lib/layout';
+    import { Container, ContainerHeader } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import DeleteAllSessions from '../deleteAllSessions.svelte';
     import DeleteSessions from '../deleteSession.svelte';
@@ -28,15 +28,17 @@
 </script>
 
 <Container>
-    {#if data.sessions.total}
-        <div class="u-flex u-main-end common-section">
+    <ContainerHeader title="Sessions">
+        {#if data.sessions.total}
             <Button secondary on:click={() => (showDeleteAll = true)}>
                 <span class="text">Delete All</span>
             </Button>
-        </div>
+        {/if}
+    </ContainerHeader>
+    {#if data.sessions.total}
         <Table>
             <TableHeader>
-                <TableCellHead width={140}>Browser and Device</TableCellHead>
+                <TableCellHead width={140}>Browser and device</TableCellHead>
                 <TableCellHead width={140}>Session</TableCellHead>
                 <TableCellHead width={140}>Location</TableCellHead>
                 <TableCellHead width={140}>IP</TableCellHead>
@@ -47,7 +49,7 @@
                     <TableRow>
                         <TableCell title="Client">
                             <div class="u-flex u-gap-12 u-cross-center">
-                                <div class="image-item">
+                                <div class="avatar">
                                     <img
                                         height="20"
                                         width="20"
@@ -91,7 +93,7 @@
                 <Button
                     external
                     secondary
-                    href="https://appwrite.io/docs/client/account#accountCreateEmailSession">
+                    href="https://appwrite.io/docs/products/auth/email-password">
                     Documentation
                 </Button>
             </div>

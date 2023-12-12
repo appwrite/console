@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Card, DropList, DropListItem } from '$lib/components';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
-    import { total } from './+layout.svelte';
+    import { totalMetrics } from './+layout.svelte';
     import { usage } from './store';
     import type { UsagePeriods } from '$lib/layout';
     import { createEventDispatcher } from 'svelte';
@@ -17,7 +17,8 @@
         date: number;
         value: number;
     }>;
-    $: bandwith = humanFileSize(total($usage.network));
+
+    $: bandwith = humanFileSize(totalMetrics($usage?.network));
 
     $: if (period) {
         showPeriod = false;
@@ -28,7 +29,7 @@
     <div>
         <div class="heading-level-4">
             {bandwith.value}
-            <span class="body-text-2 u-bold">{bandwith.unit}</span>
+            <span class="body-text-2">{bandwith.unit}</span>
         </div>
         <div>Bandwidth</div>
     </div>

@@ -115,6 +115,7 @@
     </div>
 </div>
 
+<!-- svelte-ignore css-unused-selector -->
 <style lang="scss" global>
     .tippy-user .tippy-box {
         --p-drop-bg-color: var(--color-neutral-500);

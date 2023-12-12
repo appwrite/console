@@ -32,11 +32,10 @@
     }
 </script>
 
-<Modal bind:show onSubmit={regenerate}>
-    <svelte:fragment slot="header">Regenerate Key</svelte:fragment>
+<Modal title="Regenerate Key" bind:show onSubmit={regenerate}>
     <p class="u-text">
         Are you sure you want to generate a new Signature Key?
-        <b>You will not be able to recover your current key.</b>
+        <b>You will not be able to recover the current key.</b>
     </p>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (show = false)}>Cancel</Button>

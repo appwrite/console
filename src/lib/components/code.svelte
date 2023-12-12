@@ -1,3 +1,12 @@
+<script lang="ts" context="module">
+    const langArr = ['js', 'html', 'dart', 'kotlin', 'json', 'sh', 'yml', 'swift'] as const;
+    export type Language = (typeof langArr)[number];
+
+    export function isLanguage(str: string): str is Language {
+        return langArr.includes(str as Language);
+    }
+</script>
+
 <script lang="ts">
     import { Pill } from '$lib/elements';
     import Prism from 'prismjs';
@@ -20,6 +29,8 @@
     export let withLineNumbers = false;
     export let withCopy = false;
     export let noMargin = false;
+    export let noBoxPadding = false;
+    export let allowScroll = false;
 
     Prism.plugins.customClass.prefix('prism-');
 
@@ -28,7 +39,7 @@
     });
 </script>
 
-<section class="box u-overflow-hidden" class:common-section={!noMargin}>
+<section class="box u-overflow-hidden" class:common-section={!noMargin} class:noBoxPadding>
     <div
         class="controls u-position-absolute u-inset-inline-end-8 u-inset-block-start-8 u-flex u-gap-8">
         {#if label}
@@ -47,11 +58,13 @@
             </Copy>
         {/if}
     </div>
-
-    <pre class={`language-${language}`} class:line-numbers={withLineNumbers}><code
-            >{code}</code></pre>
+    <pre
+        class:with-scroll={allowScroll}
+        class={`language-${language}`}
+        class:line-numbers={withLineNumbers}><code>{code}</code></pre>
 </section>
 
+<!-- svelte-ignore css-unused-selector -->
 <style lang="scss" global>
     @import 'prismjs/themes/prism.css';
     @import 'prismjs/plugins/line-numbers/prism-line-numbers.css';
@@ -66,6 +79,15 @@
         .controls {
             z-index: 2;
         }
+    }
+
+    .noBoxPadding {
+        padding: 0 !important;
+    }
+
+    .with-scroll {
+        height: 100%;
+        overflow: auto;
     }
 
     code,
@@ -100,7 +122,7 @@
     :not(pre) > code[class*='language-'],
     pre[class*='language-'] {
         background: hsl(var(--p-box-background-color));
-        padding: 0;
+
         margin: 0;
     }
     .prism-token {
@@ -168,9 +190,14 @@
                 color: #62aed2;
             }
         }
-        &.prism-regex,
         &.prism-important,
         &.prism-variable {
+            color: #a1c4ff;
+            body.theme-light & {
+                color: #62aed2;
+            }
+        }
+        &.prism-regex {
             color: #a1c4ff;
             body.theme-light & {
                 color: #62aed2;

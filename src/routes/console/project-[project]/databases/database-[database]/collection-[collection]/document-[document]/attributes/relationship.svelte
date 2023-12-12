@@ -3,12 +3,12 @@
     import { PaginationInline } from '$lib/components';
     import { SelectSearchItem } from '$lib/elements';
     import { Button, InputSelectSearch, Label } from '$lib/elements/forms';
+    import { preferences } from '$lib/stores/preferences';
     import { sdk } from '$lib/stores/sdk';
     import { Query, type Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { doc } from '../store';
     import { isRelationshipToMany } from './store';
-    import { preferences } from '$lib/stores/preferences';
 
     export let id: string;
     export let label: string;
@@ -32,7 +32,7 @@
     onMount(async () => {
         if (value) {
             if (isRelationshipToMany(attribute)) {
-                relatedList = value as string[];
+                relatedList = (value as string[]).slice();
             } else {
                 singleRel = value as string;
             }
@@ -61,7 +61,7 @@
             const documents = await sdk.forProject.databases.listDocuments(
                 databaseId,
                 attribute.relatedCollection,
-                [Query.search('$id', search), Query.orderDesc('$createdAt')]
+                [Query.startsWith('$id', search), Query.orderDesc('')]
             );
             return documents;
         } else {
@@ -131,7 +131,7 @@
                             <SelectSearchItem data={o.data}>
                                 {o.label}
                             </SelectSearchItem>
-                            <svelte:fragment slot="output">
+                            <svelte:fragment slot="output" let:option={o}>
                                 <output class="input-text is-read-only">
                                     <SelectSearchItem data={o.data}>
                                         {o.label}
@@ -173,7 +173,7 @@
                         <SelectSearchItem data={o.data}>
                             {o.label}
                         </SelectSearchItem>
-                        <svelte:fragment slot="output">
+                        <svelte:fragment slot="output" let:option={o}>
                             <output class="input-text is-read-only">
                                 <SelectSearchItem data={o.data}>
                                     {o.label}
@@ -205,7 +205,7 @@
                             <SelectSearchItem data={o.data}>
                                 {o.label}
                             </SelectSearchItem>
-                            <svelte:fragment slot="output">
+                            <svelte:fragment slot="output" let:option={o}>
                                 <output class="input-text is-read-only">
                                     <SelectSearchItem data={o.data}>
                                         {o.label}
@@ -265,7 +265,7 @@
         <SelectSearchItem data={o.data}>
             {o.label}
         </SelectSearchItem>
-        <svelte:fragment slot="output">
+        <svelte:fragment slot="output" let:option={o}>
             <output class="input-text">
                 <SelectSearchItem data={o.data}>
                     {o.label}

@@ -58,12 +58,13 @@
             </TableHeader>
             <TableBody>
                 {#each data.memberships.memberships as membership}
+                    {@const username = membership.userName ? membership.userName : '-'}
                     <TableRowLink
                         href={`${base}/console/project-${project}/auth/user-${membership.userId}`}>
                         <TableCellText title="Name">
                             <div class="u-flex u-gap-12 u-cross-center">
-                                <AvatarInitials size={32} name={membership.userName} />
-                                <span>{membership.userName ? membership.userName : 'n/a'}</span>
+                                <AvatarInitials size={32} name={username} />
+                                <span>{username}</span>
                             </div>
                         </TableCellText>
                         <TableCellText onlyDesktop title="Roles">{membership.roles}</TableCellText>
@@ -95,12 +96,12 @@
     {:else if data.search}
         <EmptySearch>
             <div class="u-text-center">
-                <b>Sorry, we couldn’t find ‘{data.search}’</b>
+                <b>Sorry, we couldn't find ‘{data.search}'</b>
                 <p>There are no members that match your search.</p>
             </div>
             <Button
                 external
-                href="https://appwrite.io/docs/client/teams?sdk=web-default#teamsCreateMembership"
+                href="https://appwrite.io/docs/products/auth/teams#create-membership"
                 text>
                 Documentation
             </Button>
@@ -109,7 +110,7 @@
     {:else}
         <Empty
             single
-            href="https://appwrite.io/docs/client/teams?sdk=web-default#teamsCreateMembership"
+            href="https://appwrite.io/docs/products/auth/teams"
             target="membership"
             on:click={() => (showCreate = true)} />
     {/if}

@@ -1,18 +1,53 @@
+import Analytics, { type AnalyticsPlugin } from 'analytics';
+import Plausible from 'plausible-tracker';
+import { get } from 'svelte/store';
 import { page } from '$app/stores';
 import { user } from '$lib/stores/user';
-import { ENV, MODE, VARS } from '$lib/system';
-import googleAnalytics from '@analytics/google-analytics';
+import { ENV, MODE, VARS, isCloud } from '$lib/system';
 import { AppwriteException } from '@appwrite.io/console';
-import Analytics from 'analytics';
-import { get } from 'svelte/store';
+import { browser } from '$app/environment';
+
+function plausible(domain: string): AnalyticsPlugin {
+    if (!browser) return { name: 'analytics-plugin-plausible' };
+
+    const instance = Plausible({
+        domain
+    });
+
+    return {
+        name: 'analytics-plugin-plausible',
+        page: ({ payload }) => {
+            instance.trackPageview({
+                url: payload.properties.path,
+                referrer: payload.properties.referrer,
+                deviceWidth: payload.properties.width
+            });
+        },
+        track: ({ payload }) => {
+            instance.trackEvent(
+                payload.event,
+                {
+                    props: payload.properties
+                },
+                {
+                    url: payload.properties.path,
+                    deviceWidth: payload.properties.width
+                }
+            );
+        },
+        loaded: () => true
+    };
+}
+
+const PLAUSIBLE_DOMAINS = {
+    CLOUD: 'cloud.appwrite.io',
+    GLOBAL: 'console.appwrite',
+    SELF_HOSTED: 'self-hosted.appwrite'
+};
 
 const analytics = Analytics({
     app: 'appwrite',
-    plugins: [
-        googleAnalytics({
-            measurementIds: [VARS.GOOGLE_ANALYTICS || 'G-R4YJ9JN8L4']
-        })
-    ]
+    plugins: [plausible(isCloud ? PLAUSIBLE_DOMAINS.CLOUD : PLAUSIBLE_DOMAINS.SELF_HOSTED)]
 });
 
 export function trackEvent(name: string, data: object = null): void {
@@ -118,6 +153,7 @@ export enum Submit {
     UserCreate = 'submit_user_create',
     UserDelete = 'submit_user_delete',
     UserUpdateEmail = 'submit_user_update_email',
+    UserUpdateLabels = 'submit_user_update_labels',
     UserUpdateName = 'submit_user_update_name',
     UserUpdatePassword = 'submit_user_update_password',
     UserUpdatePhone = 'submit_user_update_phone',
@@ -131,7 +167,9 @@ export enum Submit {
     ProjectCreate = 'submit_project_create',
     ProjectDelete = 'submit_project_delete',
     ProjectUpdateName = 'submit_project_update_name',
+    ProjectUpdateTeam = 'submit_project_update_team',
     ProjectService = 'submit_project_service',
+    ProjectUpdateSMTP = 'submit_project_update_smtp',
     MemberCreate = 'submit_member_create',
     MemberDelete = 'submit_member_delete',
     MembershipUpdateStatus = 'submit_membership_update_status',
@@ -143,6 +181,7 @@ export enum Submit {
     AuthStatusUpdate = 'submit_auth_status_update',
     AuthPasswordHistoryUpdate = 'submit_auth_password_history_limit_update',
     AuthPasswordDictionaryUpdate = 'submit_auth_password_dictionary_update',
+    AuthPersonalDataCheckUpdate = 'submit_auth_personal_data_check_update',
     SessionsLengthUpdate = 'submit_sessions_length_update',
     SessionsLimitUpdate = 'submit_sessions_limit_update',
     SessionDelete = 'submit_session_delete',
@@ -171,8 +210,13 @@ export enum Submit {
     FunctionUpdateName = 'submit_function_update_name',
     FunctionUpdatePermissions = 'submit_function_update_permissions',
     FunctionUpdateSchedule = 'submit_function_update_schedule',
+    FunctionUpdateConfiguration = 'submit_function_update_configuration',
+    FunctionUpdateLogging = 'submit_function_update_logging',
     FunctionUpdateTimeout = 'submit_function_update_timeout',
     FunctionUpdateEvents = 'submit_function_update_events',
+    FunctionConnectRepo = 'submit_function_connect_repo',
+    FunctionDisconnectRepo = 'submit_function_disconnect_repo',
+    FunctionRedeploy = 'submit_function_redeploy',
     DeploymentCreate = 'submit_deployment_create',
     DeploymentDelete = 'submit_deployment_delete',
     DeploymentUpdate = 'submit_deployment_update',
@@ -180,6 +224,7 @@ export enum Submit {
     VariableCreate = 'submit_variable_create',
     VariableDelete = 'submit_variable_delete',
     VariableUpdate = 'submit_variable_update',
+    VariableEditor = 'submit_variable_editor',
     KeyCreate = 'submit_key_create',
     KeyDelete = 'submit_key_delete',
     KeyUpdateName = 'submit_key_update_name',
@@ -210,5 +255,37 @@ export enum Submit {
     BucketUpdateExtensions = 'submit_bucket_update_extensions',
     FileCreate = 'submit_file_create',
     FileDelete = 'submit_file_delete',
-    FileUpdatePermissions = 'submit_file_update_permissions'
+    FileUpdatePermissions = 'submit_file_update_permissions',
+    BudgetCapUpdate = 'submit_budget_cap_update',
+    BudgetAlertsUpdate = 'submit_budget_alert_conditions_update',
+    CreditRedeem = 'submit_credit_redeem',
+    PaymentMethodCreate = 'submit_payment_method_create',
+    PaymentMethodUpdate = 'submit_payment_method_update',
+    PaymentMethodDelete = 'submit_payment_method_delete',
+    BillingAddressCreate = 'submit_billing_address_create',
+    BillingAddressUpdate = 'submit_billing_address_update',
+    BillingAddressDelete = 'submit_billing_address_delete',
+    OrganizationPaymentUpdate = 'submit_organization_payment_update',
+    OrganizationPaymentDelete = 'submit_organization_payment_delete',
+    OrganizationBackupPaymentUpdate = 'submit_organization_backup_payment_update',
+    OrganizationBackupPaymentDelete = 'submit_organization_backup_payment_delete',
+    OrganizationBillingAddressUpdate = 'submit_organization_billing_address_update',
+    OrganizationBillingAddressDelete = 'submit_organization_billing_address_delete',
+    OrganizationUpgrade = 'submit_organization_upgrade',
+    OrganizationDowngrade = 'submit_organization_downgrade',
+    OrganizationBillingTaxIdUpdate = 'submit_organization_billing_tax_id_update',
+    SupportTicket = 'submit_support_ticket',
+    InstallationCreate = 'submit_installation_create',
+    InstallationDelete = 'submit_installation_delete',
+    EmailChangeLocale = 'submit_email_change_locale',
+    EmailResetTemplate = 'submit_email_reset_template',
+    EmailUpdateInviteTemplate = 'submit_email_update_invite_template',
+    EmailUpdateMagicUrlTemplate = 'submit_email_update_magic_url_template',
+    EmailUpdateRecoveryTemplate = 'submit_email_update_recovery_template',
+    EmailUpdateVerificationTemplate = 'submit_email_update_verification_template',
+    SmsChangeLocale = 'submit_sms_change_locale',
+    SmsResetTemplate = 'submit_sms_reset_template',
+    SmsUpdateInviteTemplate = 'submit_sms_update_invite_template',
+    SmsUpdateLoginTemplate = 'submit_sms_update_login_template',
+    SmsUpdateVerificationTemplate = 'submit_sms_update_verification_template'
 }

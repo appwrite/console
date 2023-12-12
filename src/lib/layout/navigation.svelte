@@ -5,6 +5,14 @@
     import { tooltip } from '$lib/actions/tooltip';
     import { isMac } from '$lib/helpers/platform';
     import { slide } from '$lib/helpers/transition';
+    import { organization } from '$lib/stores/organization';
+    import { wizard } from '$lib/stores/wizard';
+    import { isCloud } from '$lib/system';
+    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
+    import Create from '$routes/console/feedbackWizard.svelte';
+    import { showSupportModal } from '$routes/console/wizard/support/store';
+
+    export let isOpen = false;
 
     $: project = $page.params.project;
     $: projectPath = `${base}/console/project-${project}`;
@@ -26,6 +34,16 @@
             event.preventDefault();
             narrow = !narrow;
         }
+    }
+
+    function openFeedback() {
+        isOpen = false;
+        wizard.start(Create);
+    }
+
+    function openSupport() {
+        isOpen = false;
+        $showSupportModal = true;
     }
 </script>
 
@@ -122,6 +140,24 @@
                                 <span class="text">Storage</span>
                             </a>
                         </li>
+                        <li class="drop-list-item is-only-mobile">
+                            <a
+                                class="drop-button"
+                                href={`${projectPath}/settings`}
+                                on:click={() => trackEvent('click_menu_settings')}
+                                class:is-selected={$page.url.pathname.startsWith(
+                                    `${projectPath}/settings`
+                                )}
+                                title="Settings"
+                                use:tooltip={{
+                                    content: 'Settings',
+                                    placement: 'right',
+                                    disabled: !narrow
+                                }}>
+                                <span class="icon-cog" aria-hidden="true" />
+                                <span class="text">Settings</span>
+                            </a>
+                        </li>
                     </ul>
                 </section>
             </div>
@@ -129,7 +165,7 @@
             <div class="side-nav-bottom">
                 <section class="drop-section">
                     <a
-                        class="drop-button"
+                        class="drop-button is-only-desktop"
                         href={`${projectPath}/settings`}
                         on:click={() => trackEvent('click_menu_settings')}
                         class:is-selected={$page.url.pathname.startsWith(`${projectPath}/settings`)}
@@ -142,6 +178,28 @@
                         <span class="icon-cog" aria-hidden="true" />
                         <span class="text">Settings</span>
                     </a>
+
+                    <ul class="drop-list is-only-mobile">
+                        {#if isCloud && $organization?.billingPlan !== 'tier-2'}
+                            <li class="drop-list-item">
+                                <button
+                                    class="drop-button"
+                                    on:click={() => wizard.start(ChangeOrganizationTierCloud)}>
+                                    <span class="text">Upgrade</span>
+                                </button>
+                            </li>
+                        {/if}
+                        <li class="drop-list-item">
+                            <button class="drop-button" on:click={openSupport}>
+                                <span class="text">Support</span>
+                            </button>
+                        </li>
+                        <li class="drop-list-item">
+                            <button class="drop-button" on:click={openFeedback}>
+                                <span class="text">Feedback</span>
+                            </button>
+                        </li>
+                    </ul>
                 </section>
             </div>
         {/if}
@@ -163,7 +221,7 @@
     </div>
 
     {#if subNavigation}
-        <div class="side-nav-level-2 is-open" transition:slide|local={{ axis: 'x', duration: 250 }}>
+        <div class="side-nav-level-2 is-open" transition:slide={{ axis: 'x', duration: 250 }}>
             <div class="side-nav-main">
                 <svelte:component this={subNavigation} />
             </div>

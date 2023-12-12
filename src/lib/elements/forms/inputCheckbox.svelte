@@ -1,15 +1,32 @@
 <script lang="ts">
     import { FormItem, Helper, Label } from '.';
+    import type { FormItemTag } from './formItem.svelte';
 
-    export let label: string;
-    export let optionalText: string | undefined = undefined;
-    export let showLabel = true;
+    interface $$Props extends Partial<HTMLLabelElement> {
+        id: string;
+        label?: string;
+        optionalText?: string;
+        tooltip?: string;
+        showLabel?: boolean;
+        checked?: boolean;
+        required?: boolean;
+        disabled?: boolean;
+        element?: HTMLInputElement | undefined;
+        indeterminate?: boolean;
+        wrapperTag?: FormItemTag;
+    }
+
     export let id: string;
-    export let value = false;
+    export let label: string | undefined = undefined;
+    export let optionalText: string | undefined = undefined;
+    export let tooltip: string = null;
+    export let showLabel = true;
+    export let checked = false;
     export let required = false;
     export let disabled = false;
+    export let element: HTMLInputElement | undefined = undefined;
+    export let wrapperTag: FormItemTag = 'li';
 
-    let element: HTMLInputElement;
     let error: string;
 
     const handleInvalid = (event: Event) => {
@@ -21,25 +38,30 @@
         error = element.validationMessage;
     };
 
-    $: if (value) {
+    $: if (checked) {
         error = null;
     }
 </script>
 
-<FormItem>
-    <Label {required} {optionalText} hide={!showLabel} for={id}>
-        {label}
-    </Label>
+<FormItem tag={wrapperTag}>
+    {#if label}
+        <Label {required} {tooltip} {optionalText} hide={!showLabel} for={id}>
+            {label}
+        </Label>
+    {/if}
 
     <div class="input-text-wrapper">
         <input
             {id}
             {disabled}
             {required}
+            {...$$restProps}
             type="checkbox"
             bind:this={element}
-            bind:checked={value}
-            on:invalid={handleInvalid} />
+            bind:checked
+            on:invalid={handleInvalid}
+            on:click
+            on:change />
     </div>
     {#if error}
         <Helper type="warning">{error}</Helper>

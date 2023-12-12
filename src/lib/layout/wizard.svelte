@@ -3,8 +3,9 @@
         number,
         {
             label: string;
-            component: typeof SvelteComponent;
+            component: typeof SvelteComponent<unknown>;
             optional?: boolean;
+            disabled?: boolean;
         }
     >;
 </script>
@@ -26,7 +27,6 @@
 
     const dispatch = createEventDispatcher();
 
-    let currentStep = 1;
     let showExitModal = false;
 
     function handleKeydown(event: KeyboardEvent) {
@@ -55,36 +55,78 @@
 
     function handleStepClick(e: CustomEvent<number>) {
         const step = e.detail;
-        if (step < currentStep) {
-            currentStep = step;
+        if (step < $wizard.step) {
+            $wizard.step = step;
         }
     }
 
     async function submit() {
         if ($wizard.interceptor) {
+            $wizard.nextDisabled = true;
             try {
                 await $wizard.interceptor();
             } catch (error) {
+                if (!$wizard.interceptorNotificationEnabled) return;
                 addNotification({
                     message: error.message,
                     type: 'error'
                 });
                 return;
+            } finally {
+                $wizard.nextDisabled = false;
             }
         }
 
         wizard.setInterceptor(null);
         if (isLastStep) {
-            trackEvent('wizard_finish');
-            dispatch('finish');
+            if ($wizard.finalAction) {
+                $wizard.nextDisabled = true;
+                try {
+                    await $wizard.finalAction();
+                    trackEvent('wizard_finish');
+                } catch (error) {
+                    addNotification({
+                        message: error.message,
+                        type: 'error'
+                    });
+                } finally {
+                    $wizard.nextDisabled = false;
+                }
+            } else {
+                $wizard.nextDisabled = true;
+                trackEvent('wizard_finish');
+                dispatch('finish');
+                setTimeout(() => {
+                    $wizard.nextDisabled = false;
+                }, 2000);
+            }
         } else {
+            if (steps.get($wizard.step + 1)?.disabled) {
+                $wizard.step++;
+                while (steps.get($wizard.step)?.disabled) {
+                    $wizard.step++;
+                }
+            } else {
+                $wizard.step++;
+            }
             trackEvent('wizard_next');
-            currentStep++;
         }
     }
 
+    function previousStep() {
+        if (steps.get($wizard.step - 1)?.disabled) {
+            $wizard.step--;
+            while (steps.get($wizard.step)?.disabled) {
+                $wizard.step--;
+            }
+        } else {
+            $wizard.step--;
+        }
+        trackEvent('wizard_back');
+    }
+
     $: sortedSteps = [...steps].sort(([a], [b]) => (a > b ? 1 : -1));
-    $: isLastStep = currentStep === steps.size;
+    $: isLastStep = $wizard.step === steps.size;
 </script>
 
 <svelte:window on:keydown={handleKeydown} />
@@ -108,13 +150,16 @@
     </header>
 
     <aside class="wizard-side">
-        <Steps
-            on:step={handleStepClick}
-            steps={sortedSteps.map(([, { label, optional }]) => ({
-                text: label,
-                optional
-            }))}
-            {currentStep} />
+        <slot name="aside">
+            <Steps
+                on:step={handleStepClick}
+                steps={sortedSteps.map(([, { label, optional, disabled }]) => ({
+                    text: label,
+                    optional,
+                    disabled
+                }))}
+                currentStep={$wizard.step} />
+        </slot>
     </aside>
     <div class="wizard-media">
         {#if $wizard.media}
@@ -124,33 +169,27 @@
     <div class="wizard-main">
         <Form noStyle onSubmit={submit}>
             {#each sortedSteps as [step, { component }]}
-                {#if currentStep === step}
+                {#if $wizard.step === step}
                     <svelte:component this={component} />
                 {/if}
             {/each}
             <div class="form-footer">
                 <div class="u-flex u-main-end u-gap-12">
-                    {#if !isLastStep && sortedSteps[currentStep - 1][1].optional}
+                    {#if !isLastStep && sortedSteps[$wizard.step - 1]?.[1]?.optional}
                         <Button text on:click={() => dispatch('finish')}>
                             Skip optional steps
                         </Button>
                     {/if}
-                    {#if currentStep === 1}
+
+                    {#if $wizard.step === 1}
                         <Button secondary on:click={handleExit}>Cancel</Button>
-                        <Button submit>Next</Button>
-                    {:else if isLastStep}
-                        <Button
-                            secondary
-                            on:click={() => currentStep--}
-                            on:click={() => trackEvent('wizard_back')}>Back</Button>
-                        <Button submit>{finalAction}</Button>
                     {:else}
-                        <Button
-                            secondary
-                            on:click={() => currentStep--}
-                            on:click={() => trackEvent('wizard_back')}>Back</Button>
-                        <Button submit>Next</Button>
+                        <Button secondary on:click={previousStep}>Back</Button>
                     {/if}
+
+                    <Button submit disabled={$wizard.nextDisabled}>
+                        {isLastStep ? finalAction : 'Next'}
+                    </Button>
                 </div>
             </div>
         </Form>

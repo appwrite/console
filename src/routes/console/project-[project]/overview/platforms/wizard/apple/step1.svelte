@@ -5,13 +5,7 @@
     import { WizardStep } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { createPlatform } from '../store';
-    import { wizard } from '$lib/stores/wizard';
-    import { app } from '$lib/stores/app';
-    import Light from './light.svg';
-    import Dark from './dark.svg';
     import { Submit, trackEvent } from '$lib/actions/analytics';
-
-    $wizard.media = $app.themeInUse === 'dark' ? Dark : Light;
 
     enum Platform {
         iOS = 'apple-ios',
@@ -48,11 +42,11 @@
 </script>
 
 <WizardStep {beforeSubmit}>
-    <svelte:fragment slot="title">Register your Apple app</svelte:fragment>
+    <svelte:fragment slot="title">Register your bundle ID</svelte:fragment>
 
     <FormList isCommonSection>
         <FormItem>
-            <p>Choose a platform</p>
+            <p>Choose an Apple platform</p>
             <div class="u-flex u-gap-16 u-margin-block-start-8">
                 <Pill
                     button

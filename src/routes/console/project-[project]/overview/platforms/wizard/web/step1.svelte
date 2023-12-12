@@ -5,17 +5,12 @@
     import { FormList, InputText } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
-    import { wizard } from '$lib/stores/wizard';
     import { createPlatform } from '../store';
-    import { app } from '$lib/stores/app';
-    import Light from './light.svg';
-    import Dark from './dark.svg';
     import { Submit, trackEvent } from '$lib/actions/analytics';
 
     const projectId = $page.params.project;
     const suggestions = ['*.vercel.app', '*.netlify.app', '*.gitpod.io'];
 
-    $wizard.media = $app.themeInUse === 'dark' ? Dark : Light;
     async function beforeSubmit() {
         if ($createPlatform.$id) {
             await sdk.forConsole.projects.updatePlatform(
@@ -48,7 +43,7 @@
 </script>
 
 <WizardStep {beforeSubmit}>
-    <svelte:fragment slot="title">Register your Web app</svelte:fragment>
+    <svelte:fragment slot="title">Register your hostname</svelte:fragment>
     <FormList>
         <InputText
             id="name"

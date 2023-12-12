@@ -7,6 +7,8 @@
     export let icon: Notification['icon'] = null;
     export let title: Notification['title'];
     export let buttons: Notification['buttons'];
+    export let message: Notification['message'];
+    export let html: Notification['isHtml'] = false;
 
     const dispatch = createEventDispatcher();
 </script>
@@ -17,7 +19,7 @@
     class:is-warning={type === 'warning'}
     class:is-danger={type === 'error'}
     class:is-info={type === 'info'}
-    transition:fly={{ x: 50 }}>
+    transition:fly|global={{ x: 50 }}>
     <button
         class="button is-text is-only-icon"
         style="--button-size:1.5rem;"
@@ -38,7 +40,11 @@
         {#if title}
             <h4 class="alert-sticky-title">{title}</h4>
         {/if}
-        <p><slot /></p>
+        {#if html}
+            {@html message}
+        {:else}
+            <p>{message}</p>
+        {/if}
     </div>
     {#if buttons}
         <div class="alert-sticky-buttons u-flex">

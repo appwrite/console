@@ -8,31 +8,53 @@ export function objectEntries<T extends object>(obj: T) {
     return Object.entries(obj) as Array<[keyof T, T[keyof T]]>;
 }
 
+export function isRegExp(value: unknown): value is RegExp {
+    return value instanceof RegExp;
+}
+
 /**
- * Recursively compares two objects to see if they are equal. Returns true if they are equal, false otherwise.
- * @param obj1 the first object
- * @param obj2 the second object
- * @returns true if the objects are equal, false otherwise
+ * Creates a deep clone of the given object. This function uses the JSON methods for cloning,
+ * so it may not be suitable for objects with functions, symbols, or other non-JSON-safe data.
+ *
+ * @param obj the object to be cloned
+ * @returns a deep clone of the provided object
  */
-export function deepEqual<T>(obj1: T, obj2: T): boolean {
-    if (obj1 === obj2) return true;
+export function deepClone<T>(obj: T): T {
+    return JSON.parse(JSON.stringify(obj));
+}
 
-    if (typeof obj1 !== 'object' || typeof obj2 !== 'object' || obj1 === null || obj2 === null)
-        return false;
+export type DeepObj<T> = {
+    [K in keyof T]: T[K] extends object ? DeepObj<T[K]> : T[K];
+};
 
-    const keys1 = Object.keys(obj1);
-    const keys2 = Object.keys(obj2);
+/* eslint  @typescript-eslint/no-explicit-any: 'off' */
+export function deepMap<T, U>(
+    obj: DeepObj<T>,
+    fn: (value: T, key: string, parentKey?: string) => unknown,
+    parentKey?: string
+): U {
+    const entries = objectEntries(obj);
+    const result = {} as U;
 
-    if (keys1.length !== keys2.length) return false;
-
-    for (const key of keys1) {
-        if (
-            !keys2.includes(key) ||
-            !Object.prototype.hasOwnProperty.call(obj2, key) ||
-            !deepEqual(obj1[key], obj2[key])
-        )
-            return false;
+    for (const [key, value] of entries) {
+        if (typeof value === 'object' && value !== null) {
+            result[key as any] = deepMap(value as any, fn, key as string) as any;
+        } else {
+            result[key as any] = fn(value as any, key as any, parentKey);
+        }
     }
 
-    return true;
+    return result;
+}
+
+export function parseIfString(value: unknown): unknown {
+    if (typeof value === 'string') {
+        try {
+            return JSON.parse(value);
+        } catch {
+            return value;
+        }
+    }
+
+    return value;
 }

@@ -37,7 +37,7 @@
 </script>
 
 <Modal {error} size="big" show onSubmit={update} on:close>
-    <svelte:fragment slot="header">{provider.name} OAuth2 Settings</svelte:fragment>
+    <svelte:fragment slot="title">{provider.name} OAuth2 Settings</svelte:fragment>
     <FormList>
         <p>
             To use {provider.name} authentication in your application, first fill in this form. For more
@@ -70,9 +70,7 @@
         <div>
             <p>URI</p>
             <CopyInput
-                value={`${
-                    sdk.forConsole.client.config.endpoint
-                }/account/sessions/oauth2/callback/${provider.name.toLocaleLowerCase()}/${projectId}`} />
+                value={`${sdk.forConsole.client.config.endpoint}/account/sessions/oauth2/callback/${provider.key}/${projectId}`} />
         </div>
     </FormList>
     <svelte:fragment slot="footer">
@@ -81,7 +79,7 @@
             disabled={(secret === provider.secret &&
                 enabled === provider.enabled &&
                 appId === provider.appId) ||
-                !(appId && clientSecret && endpoint)}
+                !(appId && clientSecret)}
             submit>Update</Button>
     </svelte:fragment>
 </Modal>

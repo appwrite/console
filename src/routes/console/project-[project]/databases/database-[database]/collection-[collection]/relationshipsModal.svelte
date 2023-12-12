@@ -12,7 +12,10 @@
     const databaseId = $page.params.database;
     const limit = 10;
 
-    $: args = preferences.getDisplayNames()?.[selectedRelationship?.relatedCollection] ?? [];
+    $: args =
+        preferences
+            .getDisplayNames()
+            ?.[selectedRelationship?.relatedCollection]?.filter((p) => p !== '$id') ?? [];
 
     $: if (!show) {
         data = null;
@@ -21,7 +24,7 @@
 </script>
 
 <Modal size="big" bind:show icon="relationship" headerDivider={false}>
-    <svelte:fragment slot="header">
+    <svelte:fragment slot="title">
         <span data-private>
             {selectedRelationship.key}
         </span>

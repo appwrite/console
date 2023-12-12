@@ -38,7 +38,7 @@
     import { InputText, InputSelect, InputSelectSearch } from '$lib/elements/forms';
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
-    import { LabelCard } from '$lib/components';
+    import { Box, LabelCard } from '$lib/components';
     import { collection } from '../store';
     import arrowOne from './arrow-one.svg';
     import arrowTwo from './arrow-two.svg';
@@ -74,7 +74,7 @@
         if (search) {
             const collections = await sdk.forProject.databases.listCollections(
                 databaseId,
-                [Query.orderDesc('$createdAt')],
+                [Query.orderDesc('')],
                 search
             );
             return collections;
@@ -98,7 +98,6 @@
     });
 
     // Reactive statements
-
     $: getCollections(search).then((res) => (collectionList = res));
     $: collections = collectionList?.collections?.filter((n) => n.$id !== $collection.$id) ?? [];
 
@@ -161,7 +160,7 @@
     <SelectSearchItem data={o.data}>
         {o.label}
     </SelectSearchItem>
-    <svelte:fragment slot="output">
+    <svelte:fragment slot="output" let:option={o}>
         <output class="input-text" class:is-read-only={editing}>
             <SelectSearchItem data={o.data}>
                 {o.label}
@@ -219,9 +218,8 @@
         placeholder="Select a relation"
         options={relationshipType}
         disabled={editing} />
-
     <div class="u-flex u-flex-vertical u-gap-16">
-        <div class="box">
+        <Box>
             <div class="u-flex u-align u-cross-center u-main-center u-gap-32">
                 <span data-private>{camelize($collection.name)}</span>
                 {#if data.twoWay}
@@ -231,7 +229,7 @@
                 {/if}
                 <span>{data.key}</span>
             </div>
-        </div>
+        </Box>
         {#if data.relationType}
             <div>
                 <p class="u-text-center">

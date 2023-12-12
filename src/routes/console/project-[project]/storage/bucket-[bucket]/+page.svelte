@@ -1,3 +1,11 @@
+<script lang="ts" context="module">
+    let showCreate = writable(false);
+
+    export const showCreateFile = () => {
+        wizard.start(Create);
+    };
+</script>
+
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { base } from '$app/paths';
@@ -27,18 +35,19 @@
         TableRowLink
     } from '$lib/elements/table';
     import { toLocaleDate } from '$lib/helpers/date';
-    import { calculateSize } from '$lib/helpers/sizeConvertion';
-    import { Container } from '$lib/layout';
+    import { bytesToSize, calculateSize } from '$lib/helpers/sizeConvertion';
+    import { Container, ContainerHeader } from '$lib/layout';
+    import type { Models } from '@appwrite.io/console';
     import { addNotification } from '$lib/stores/notifications';
     import { uploader } from '$lib/stores/uploader';
     import { wizard } from '$lib/stores/wizard';
-    import type { Models } from '@appwrite.io/console';
-    import type { PageData } from './$types';
-    import CreateWizard from './create-file/create.svelte';
-    import Delete from './deleteFile.svelte';
-    import { sdk } from '$lib/stores/sdk';
+    import { tooltip } from '$lib/actions/tooltip';
+    import { readOnly, showUsageRatesModal } from '$lib/stores/billing';
+    import { writable } from 'svelte/store';
+    import { sdk } from '$lib/stores/sdk.js';
+    import Create from './create-file/create.svelte';
 
-    export let data: PageData;
+    export let data;
 
     let showDelete = false;
     let showDropdown = [];
@@ -46,8 +55,14 @@
 
     const projectId = $page.params.project;
     const bucketId = $page.params.bucket;
+    const usedStorage = bytesToSize(data.oraganizationUsage.storage, 'MB');
     const getPreview = (fileId: string) =>
         sdk.forProject.storage.getFilePreview(bucketId, fileId, 32, 32).toString() + '&mode=admin';
+
+    async function fileCreated() {
+        $showCreate = false;
+        await invalidate(Dependencies.FILES);
+    }
 
     async function fileDeleted(event: CustomEvent<Models.File>) {
         showDelete = false;
@@ -72,12 +87,50 @@
 </script>
 
 <Container>
-    <SearchQuery search={data.search} placeholder="Search by filename">
-        <Button on:click={() => wizard.start(CreateWizard)} event="create_file">
-            <span class="icon-plus" aria-hidden="true" />
-            <span class="text">Create file</span>
-        </Button>
-    </SearchQuery>
+    <ContainerHeader
+        title="Files"
+        serviceId="storage"
+        isFlex={false}
+        total={usedStorage}
+        buttonDisabled={$readOnly}>
+        <svelte:fragment let:isButtonDisabled>
+            <SearchQuery search={data.search} placeholder="Search by filename">
+                <div
+                    use:tooltip={{
+                        content: `Upgrade to add more files`,
+                        disabled: !isButtonDisabled
+                    }}>
+                    <Button
+                        on:click={() => wizard.start(Create)}
+                        event="create_file"
+                        disabled={isButtonDisabled}>
+                        <span class="icon-plus" aria-hidden="true" />
+                        <span class="text">Create file</span>
+                    </Button>
+                </div>
+            </SearchQuery>
+        </svelte:fragment>
+        <svelte:fragment slot="tooltip" let:limit let:tier let:upgradeMethod>
+            {#if tier === 'Starter'}
+                <p class="text">
+                    You are limited to {limit} GB of storage on the {tier} plan.
+                    <button class="link" type="button" on:click|preventDefault={upgradeMethod}
+                        >Upgrade</button>
+                    for addtional storage.
+                </p>
+            {:else}
+                <p class="text">
+                    You are limited to {limit} GB storage on the {tier} plan. After this amount
+                    <button
+                        class="link"
+                        type="button"
+                        on:click|preventDefault={() => ($showUsageRatesModal = true)}
+                        >usage fees will apply</button>
+                    .
+                </p>
+            {/if}
+        </svelte:fragment>
+    </ContainerHeader>
 
     {#if data.files.total}
         <Table>
@@ -188,11 +241,14 @@
     {:else if data.search}
         <EmptySearch>
             <div class="u-text-center">
-                <b>Sorry, we couldn’t find ‘{data.search}’</b>
+                <b>Sorry, we couldn't find '{data.search}'</b>
                 <p>There are no files that match your search.</p>
             </div>
             <div class="u-flex u-gap-16">
-                <Button external href="https://appwrite.io/docs/storage#createFile" text>
+                <Button
+                    external
+                    href="https://appwrite.io/docs/products/storage/upload-download"
+                    text>
                     Documentation
                 </Button>
                 <Button
@@ -205,9 +261,9 @@
     {:else}
         <Empty
             single
-            href="https://appwrite.io/docs/storage#createFile"
+            href="https://appwrite.io/docs/products/storage/upload-download"
             target="file"
-            on:click={() => wizard.start(CreateWizard)} />
+            on:click={() => wizard.start(Create)} />
     {/if}
 </Container>
 

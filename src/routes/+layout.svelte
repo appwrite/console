@@ -11,17 +11,21 @@
     import { ENV, isCloud } from '$lib/system';
     import * as Sentry from '@sentry/svelte';
     import LogRocket from 'logrocket';
-    import { BrowserTracing } from '@sentry/tracing';
     import { onMount } from 'svelte';
     import { onCLS, onFCP, onFID, onINP, onLCP, onTTFB } from 'web-vitals';
     import Loading from './loading.svelte';
-    import { loading } from './store';
+    import { loading, requestedMigration } from './store';
+    import { parseIfString } from '$lib/helpers/object';
 
     if (browser) {
         window.VERCEL_ANALYTICS_ID = import.meta.env.VERCEL_ANALYTICS_ID?.toString() ?? false;
     }
 
     onMount(async () => {
+        if ($page.url.searchParams.has('migrate')) {
+            const migrateData = $page.url.searchParams.get('migrate');
+            requestedMigration.set(parseIfString(migrateData) as Record<string, string>);
+        }
         /**
          * Reporting Web Vitals.
          */
@@ -40,7 +44,7 @@
              */
             Sentry.init({
                 dsn: 'https://c7ce178bdedd486480317b72f282fd39@o1063647.ingest.sentry.io/4504158071422976',
-                integrations: [new BrowserTracing()],
+                integrations: [new Sentry.BrowserTracing()],
                 tracesSampleRate: 1.0
             });
 
@@ -59,12 +63,21 @@
         /**
          * Handle initial load.
          */
-        if (!$page.url.pathname.startsWith('/auth')) {
-            const acceptedRoutes = ['/login', '/register', '/recover', '/invite'];
+        if (!$page.url.pathname.startsWith('/auth') && !$page.url.pathname.startsWith('/git')) {
+            const acceptedRoutes = [
+                '/login',
+                '/register',
+                '/recover',
+                '/invite',
+                '/card',
+                '/hackathon'
+            ];
             if ($user) {
                 if (
                     !$page.url.pathname.startsWith('/console') &&
-                    !$page.url.pathname.startsWith('/invite')
+                    !$page.url.pathname.startsWith('/invite') &&
+                    !$page.url.pathname.startsWith('/card') &&
+                    !$page.url.pathname.startsWith('/hackathon')
                 ) {
                     await goto(`${base}/console`, {
                         replaceState: true
@@ -92,17 +105,18 @@
 
     $: {
         if (browser) {
+            const isCloudClass = isCloud ? 'is-cloud' : '';
             if ($app.theme === 'auto') {
                 const darkThemeMq = window.matchMedia('(prefers-color-scheme: dark)');
                 if (darkThemeMq.matches) {
-                    document.body.setAttribute('class', `theme-dark`);
+                    document.body.setAttribute('class', `theme-dark ${isCloudClass}`);
                     $app.themeInUse = 'dark';
                 } else {
-                    document.body.setAttribute('class', `theme-light`);
+                    document.body.setAttribute('class', `theme-light ${isCloudClass}`);
                     $app.themeInUse = 'light';
                 }
             } else {
-                document.body.setAttribute('class', `theme-${$app.theme}`);
+                document.body.setAttribute('class', `theme-${$app.theme} ${isCloudClass}`);
                 $app.themeInUse = $app.theme;
             }
         }
@@ -119,10 +133,12 @@
 
 <Progress />
 
+<!-- svelte-ignore css-unused-selector -->
 <style lang="scss" global>
+    @import '@appwrite.io/pink/src/abstract/variables/_devices.scss';
     .tippy-box {
         --p-tooltip-text-color: var(--color-neutral-10);
-        --p-tooltip--bg-color: var(--color-neutral-100);
+        --p-tooltip--bg-color: var(--color-neutral-80);
 
         background-color: hsl(var(--p-tooltip--bg-color));
         color: hsl(var(--p-tooltip-text-color));
@@ -140,6 +156,77 @@
         }
         &[data-placement^='right'] > .tippy-arrow::before {
             border-right-color: hsl(var(--p-tooltip--bg-color));
+        }
+    }
+
+    .theme-dark .with-separators {
+        --separator-color: hsl(var(--color-neutral-85));
+        --separator-text: hsl(var(--color-neutral-60));
+    }
+
+    .with-separators {
+        --separator-color: hsl(var(--color-neutral-10));
+        --separator-text: hsl(var(--color-neutral-50));
+    }
+
+    .with-separators {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+
+        text-transform: uppercase;
+        width: 100%;
+
+        color: var(--separator-text);
+
+        &::before,
+        &::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--separator-color);
+        }
+    }
+
+    .border-gradient {
+        position: relative;
+    }
+
+    .border-gradient::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-radius: var(--border-radius);
+        border: var(--border-size) solid transparent;
+        background: var(--border-gradient) border-box;
+        mask:
+            linear-gradient(#fff 0 0) padding-box,
+            linear-gradient(#fff 0 0);
+        -webkit-mask:
+            linear-gradient(#fff 0 0) padding-box,
+            linear-gradient(#fff 0 0);
+        -webkit-mask-composite: destination-out;
+        mask-composite: exclude;
+        pointer-events: none;
+    }
+
+    .is-cloud {
+        --heading-font: 'Aeonik Pro', arial, sans-serif;
+        .heading-level {
+            @media #{$break3open} {
+                &-1,
+                &-2,
+                &-3,
+                &-4,
+                &-5,
+                &-6,
+                &-7 {
+                    font-weight: 500;
+                }
+            }
         }
     }
 </style>

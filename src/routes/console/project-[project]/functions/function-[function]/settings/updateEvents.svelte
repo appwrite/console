@@ -32,11 +32,20 @@
             await sdk.forProject.functions.update(
                 functionId,
                 $func.name,
+                $func.runtime,
                 $func.execute || undefined,
                 Array.from($eventSet),
                 $func.schedule || undefined,
                 $func.timeout || undefined,
-                $func.enabled
+                $func.enabled || undefined,
+                $func.logging || undefined,
+                $func.entrypoint || undefined,
+                $func.commands || undefined,
+                $func.installationId || undefined,
+                $func.providerRepositoryId || undefined,
+                $func.providerBranch || undefined,
+                $func.providerSilentMode || undefined,
+                $func.providerRootDirectory || undefined
             );
             await invalidate(Dependencies.FUNCTION);
             addNotification({
@@ -78,7 +87,7 @@
 
 <Form onSubmit={updateEvents}>
     <CardGrid>
-        <Heading tag="h6" size="7">Events</Heading>
+        <Heading tag="h6" size="7" id="events">Events</Heading>
         <p>Set the events that will trigger your function. Maximum 100 events allowed.</p>
         <svelte:fragment slot="aside">
             {#if $eventSet.size}
@@ -132,7 +141,7 @@
                     </Button>
                 </div>
             {:else}
-                <Empty on:click={() => (showEvents = true)}>Add an event to get started</Empty>
+                <Empty on:click={() => (showEvents = true)}>Add an event</Empty>
             {/if}
         </svelte:fragment>
 
@@ -145,7 +154,7 @@
 <EventModal bind:show={showEvents} initialValue={eventValue} on:created={handleEvent}>
     <p class="text">
         Select events in your Appwrite project that will trigger your function. <a
-            href="https://appwrite.io/docs/events"
+            href="https://appwrite.io/docs/advanced/platform/events"
             target="_blank"
             rel="noopener noreferrer"
             class="link">Learn more about Appwrite Events</a

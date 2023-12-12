@@ -34,12 +34,12 @@
 </script>
 
 <Modal
+    title="Delete platform"
     bind:show={showDelete}
     onSubmit={handleDelete}
     icon="exclamation"
     state="warning"
     headerDivider={false}>
-    <svelte:fragment slot="header">Delete Platform</svelte:fragment>
     <p>The Platform will be permanently deleted. This action is irreversible.</p>
 
     <svelte:fragment slot="footer">

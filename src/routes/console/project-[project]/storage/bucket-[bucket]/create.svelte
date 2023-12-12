@@ -48,8 +48,7 @@
     }
 </script>
 
-<Modal size="big" {error} bind:show={showCreate} onSubmit={create}>
-    <svelte:fragment slot="header">Create File</svelte:fragment>
+<Modal title="Create file" size="big" {error} bind:show={showCreate} onSubmit={create}>
     <FormList>
         <div>
             <InputFile
@@ -71,13 +70,13 @@
         {/if}
         <Heading tag="h6" size="7">Permissions</Heading>
         <p class="text">
-            Choose who can access your buckets and files. For more information, check out the
+            Choose who can access your buckets and files. For more information, visit our
             <a
-                href="https://appwrite.io/docs/permissions"
+                href="https://appwrite.io/docs/advanced/platform/permissions"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="link">
-                Permissions Guide
+                Permissions guide
             </a>.
         </p>
         {#if $bucket.fileSecurity}

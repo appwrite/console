@@ -15,6 +15,7 @@
         try {
             await sdk.forProject.users.deleteSession($page.params.user, selectedSessionId);
             await invalidate(Dependencies.SESSIONS);
+            showDelete = false;
             addNotification({
                 type: 'success',
                 message: 'Session has been deleted'
@@ -31,13 +32,12 @@
 </script>
 
 <Modal
+    title="Delete sessions"
     bind:show={showDelete}
     onSubmit={deleteSession}
     icon="exclamation"
     state="warning"
     headerDivider={false}>
-    <svelte:fragment slot="header">Delete Sessions</svelte:fragment>
-
     <p>Are you sure you want to delete this session?</p>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)}>Cancel</Button>

@@ -49,8 +49,8 @@
     icon="exclamation"
     state="warning"
     headerDivider={false}>
-    <svelte:fragment slot="header">
-        {isUser ? 'Leave Organization' : 'Delete Member'}
+    <svelte:fragment slot="title">
+        {isUser ? 'Leave organization' : 'Delete member'}
     </svelte:fragment>
     <p data-private>
         {isUser

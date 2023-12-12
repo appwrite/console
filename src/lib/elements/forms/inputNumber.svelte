@@ -1,9 +1,9 @@
 <script lang="ts">
     import { onMount } from 'svelte';
-    import { FormItem, Helper, Label } from '.';
+    import { FormItem, FormItemPart, Helper, Label } from '.';
     import NullCheckbox from './nullCheckbox.svelte';
 
-    export let label: string;
+    export let label: string | undefined = undefined;
     export let optionalText: string | undefined = undefined;
     export let showLabel = true;
     export let id: string;
@@ -17,6 +17,8 @@
     export let min: number = null;
     export let max: number = null;
     export let step: number | 'any' = 1;
+    export let isMultiple = false;
+    export let fullWidth = false;
 
     let element: HTMLInputElement;
     let error: string;
@@ -62,12 +64,16 @@
             value = prevValue;
         }
     }
+
+    $: wrapper = isMultiple ? FormItemPart : FormItem;
 </script>
 
-<FormItem>
-    <Label {required} {optionalText} hide={!showLabel} for={id}>
-        {label}
-    </Label>
+<svelte:component this={wrapper} {fullWidth}>
+    {#if label}
+        <Label {required} {optionalText} hide={!showLabel} for={id}>
+            {label}
+        </Label>
+    {/if}
 
     <div class="input-text-wrapper">
         <input
@@ -84,7 +90,7 @@
             bind:value
             bind:this={element}
             on:invalid={handleInvalid}
-            style:--amount-of-buttons={required ? 0 : 1.75} />
+            style:--amount-of-buttons={nullable && !required ? 1.75 : 0} />
         <ul
             class="buttons-list u-cross-center u-gap-8 u-position-absolute u-inset-block-start-8 u-inset-block-end-8 u-inset-inline-end-12">
             {#if nullable && !required}
@@ -97,4 +103,4 @@
     {#if error}
         <Helper type="warning">{error}</Helper>
     {/if}
-</FormItem>
+</svelte:component>

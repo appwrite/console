@@ -9,6 +9,8 @@ export { default as TableRowLink } from './rowLink.svelte';
 export { default as TableRowButton } from './rowButton.svelte';
 export { default as TableCell } from './cell.svelte';
 export { default as TableCellHead } from './cellHead.svelte';
+export { default as TableCellHeadCheck } from './cellHeadCheck.svelte';
 export { default as TableCellLink } from './cellLink.svelte';
 export { default as TableCellAvatar } from './cellAvatar.svelte';
 export { default as TableCellText } from './cellText.svelte';
+export { default as TableCellCheck } from './cellCheck.svelte';

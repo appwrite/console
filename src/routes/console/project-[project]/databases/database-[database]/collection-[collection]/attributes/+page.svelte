@@ -21,7 +21,7 @@
     import CreateAttributeDropdown from './createAttributeDropdown.svelte';
     import Delete from './deleteAttribute.svelte';
     import Edit from './edit.svelte';
-    import { options } from './store';
+    import { attributeOptions, type Option } from './store';
 
     const projectId = $page.params.project;
     const databaseId = $page.params.database;
@@ -29,7 +29,7 @@
     let showCreateDropdown = false;
     let showEmptyCreateDropdown = false;
     let showDropdown = [];
-    let selectedOption: string = null;
+    let selectedOption: Option['name'] = null;
     let selectedAttribute: Attributes = null;
     let showCreate = false;
     let showDelete = false;
@@ -40,7 +40,7 @@
         ip = 'location-marker',
         url = 'link',
         email = 'mail',
-        enum = 'list'
+        enum = 'view-list'
     }
 </script>
 
@@ -61,7 +61,9 @@
             </TableHeader>
             <TableBody>
                 {#each $attributes as attribute, index}
-                    {@const option = options.find((option) => option.type === attribute.type)}
+                    {@const option = attributeOptions.find(
+                        (option) => option.type === attribute.type
+                    )}
                     <TableRow>
                         <TableCell title="Key">
                             <div class="u-flex u-main-space-between u-cross-center">
@@ -84,7 +86,7 @@
                                                 aria-hidden="true" />
                                         {/if}
                                     </div>
-                                    <span class="text u-trim" data-private>{attribute.key}</span>
+                                    <span class="text u-trim-1" data-private>{attribute.key}</span>
                                 </div>
                                 {#if attribute.status !== 'available'}
                                     <Pill
@@ -180,13 +182,13 @@
             <div class="u-text-center">
                 <Heading size="7" tag="h2">Create your first attribute to get started.</Heading>
                 <p class="body-text-2 u-bold u-margin-block-start-4">
-                    Need a hand? Check out our documentation.
+                    Need a hand? Learn more in our documentation.
                 </p>
             </div>
             <div class="u-flex u-gap-16 u-main-center">
                 <Button
                     external
-                    href="https://appwrite.io/docs/databases#attributes"
+                    href="https://appwrite.io/docs/products/databases/collections#attributes"
                     text
                     event="empty_documentation"
                     ariaLabel={`create {target}`}>Documentation</Button>

@@ -2,20 +2,29 @@
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { Modal } from '$lib/components';
-    import { Button, FormList, InputPassword, InputText } from '$lib/elements/forms';
+    import { BoxAvatar, CardGrid, Heading, Modal } from '$lib/components';
+    import { Button, FormList, InputText } from '$lib/elements/forms';
+    import { toLocaleDateTime } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
+    import { isCloud } from '$lib/system';
+    import { onMount } from 'svelte';
     import { project } from '../store';
+    import type { RegionList } from '$lib/sdk/billing';
 
-    export let showDelete = false;
-
-    let password: string = null;
+    let showDelete = false;
     let name: string = null;
+
+    let regions: RegionList;
+    onMount(async () => {
+        if (isCloud) {
+            regions = await sdk.forConsole.billing.listRegions();
+        }
+    });
 
     const handleDelete = async () => {
         try {
-            await sdk.forConsole.projects.delete($project.$id, password);
+            await sdk.forConsole.projects.delete($project.$id);
             showDelete = false;
             addNotification({
                 type: 'success',
@@ -33,13 +42,39 @@
     };
 </script>
 
+<CardGrid danger>
+    <div>
+        <Heading tag="h6" size="7">Delete project</Heading>
+    </div>
+    <p>
+        The project will be permanently deleted, including all the metadata, resources and stats
+        within it. This action is irreversible.
+    </p>
+    <svelte:fragment slot="aside">
+        <BoxAvatar>
+            <svelte:fragment slot="title">
+                <h6 class="u-bold u-trim-1" data-private>{$project.name}</h6>
+            </svelte:fragment>
+            {#if isCloud && $project.region && regions?.total}
+                {@const projectRegion = regions.regions.find((r) => r.$id === $project?.region)}
+                <p>Region: {projectRegion.name}</p>
+            {/if}
+            <p>Last update: {toLocaleDateTime($project.$updatedAt)}</p>
+        </BoxAvatar>
+    </svelte:fragment>
+
+    <svelte:fragment slot="actions">
+        <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
+    </svelte:fragment>
+</CardGrid>
+
 <Modal
+    title="Delete project"
     bind:show={showDelete}
     onSubmit={handleDelete}
     icon="exclamation"
     state="warning"
     headerDivider={false}>
-    <svelte:fragment slot="header">Delete Project</svelte:fragment>
     <p>
         <b>This project will be deleted</b>, along with all of its metadata, stats, and other
         resources. <b>This action is irreversible</b>.
@@ -53,18 +88,9 @@
             autofocus
             required
             bind:value={name} />
-        <InputPassword
-            label="To verify, enter your password"
-            placeholder="Enter password"
-            id="password"
-            required
-            showPasswordButton={true}
-            bind:value={password} />
     </FormList>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-        <Button disabled={!name || !password || name !== $project.name} secondary submit>
-            Delete
-        </Button>
+        <Button disabled={!name || name !== $project.name} secondary submit>Delete</Button>
     </svelte:fragment>
 </Modal>

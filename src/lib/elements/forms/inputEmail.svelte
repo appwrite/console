@@ -15,6 +15,7 @@
     export let readonly = false;
     export let autofocus = false;
     export let autocomplete = false;
+    export let tooltip: string = null;
 
     let element: HTMLInputElement;
     let error: string;
@@ -28,7 +29,7 @@
     const handleInvalid = (event: Event) => {
         event.preventDefault();
         if (element.validity.typeMismatch) {
-            error = 'Your email should be formatted as: name@example.com';
+            error = 'Emails should be formatted as: name@example.com';
             return;
         }
         if (element.validity.valueMissing) {
@@ -55,11 +56,15 @@
 </script>
 
 <FormItem>
-    <Label {required} {optionalText} hide={!showLabel} for={id}>
+    <Label {required} {optionalText} {tooltip} hide={!showLabel} for={id}>
         {label}
     </Label>
 
-    <div class="input-text-wrapper">
+    <div
+        class:input-text-wrapper={!$$slots.default}
+        class:u-flex={$$slots.default}
+        class:u-gap-16={$$slots.default}
+        class:u-cross-center={$$slots.default}>
         <input
             {id}
             {placeholder}
@@ -80,6 +85,7 @@
                 </li>
             </ul>
         {/if}
+        <slot />
     </div>
     {#if error}
         <Helper type="warning">{error}</Helper>

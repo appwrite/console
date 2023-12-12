@@ -4,6 +4,7 @@
     import { createEventDispatcher, onMount } from 'svelte';
     import { Label } from '.';
 
+    /* eslint no-undef: "off" */
     type Option = $$Generic<{
         value: string | boolean | number;
         label: string;
@@ -16,13 +17,18 @@
     export let label: string;
     export let name = 'elements';
     export let optionalText: string | undefined = undefined;
+    export let tooltip: string | undefined = undefined;
     export let showLabel = true;
     export let placeholder = '';
     export let required = false;
+    export let hideRequired = false;
     export let disabled = false;
+    export let fullWidth = false;
+    export let fullWidthDrop = true;
     export let autofocus = false;
     export let interactiveOutput = false;
-    // Input value
+    // stretch is used inside of a flex container to give the element flex:1
+    export let stretch = true;
     export let search = '';
     // The actual selected value
     export let value: Option['value'];
@@ -82,9 +88,13 @@
         value = option.value;
         search = option.label;
         // It's not working without this line.
-        !$$slots.output && (element.value = search);
+        if (!$$slots.output) {
+            element.value = search;
+        } else {
+            search = '';
+        }
+
         hasFocus = false;
-        search = '';
         dispatch('select', option);
     }
 
@@ -99,7 +109,10 @@
     $: showClearBtn = (hasFocus && search) || value;
 </script>
 
-<li class="u-position-relative form-item u-stretch">
+<li
+    class="u-position-relative form-item"
+    class:u-width-full-line={fullWidth}
+    class:u-stretch={stretch}>
     <DropList
         bind:show={hasFocus}
         noStyle
@@ -107,9 +120,9 @@
         scrollable
         placement="bottom-end"
         position="static"
-        fullWidth={true}
+        fullWidth={fullWidthDrop}
         fixed>
-        <Label {required} {optionalText} hide={!showLabel} for={id}>
+        <Label {required} {hideRequired} {optionalText} hide={!showLabel} for={id} {tooltip}>
             {label}
         </Label>
 
@@ -117,6 +130,8 @@
             <div class="input-text-wrapper" style="--amount-of-buttons:2">
                 {#if $$slots.output && selectedOption}
                     <div
+                        role="button"
+                        tabindex="0"
                         on:keyup={clickOnEnter}
                         on:click={() => {
                             if (interactiveOutput) hasFocus = !hasFocus;

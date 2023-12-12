@@ -11,7 +11,12 @@
 </script>
 
 <Container>
-    <GridHeader title="Collections" {columns} view={data.view}>
+    <GridHeader
+        title="Collections"
+        {columns}
+        view={data.view}
+        hideColumns={!data.collections.total}
+        hideView={!data.collections.total}>
         <Button on:click={() => ($showCreate = true)} event="create_collection">
             <span class="icon-plus" aria-hidden="true" />
             <span class="text">Create collection</span>
@@ -20,7 +25,7 @@
 
     {#if data.collections.total}
         {#if data.view === 'grid'}
-            <Grid {data} />
+            <Grid {data} bind:showCreate={$showCreate} />
         {:else}
             <Table {data} />
         {/if}
@@ -33,7 +38,7 @@
     {:else}
         <Empty
             single
-            href="https://appwrite.io/docs/databases#collection"
+            href="https://appwrite.io/docs/products/databases/collections"
             target="collection"
             on:click={() => ($showCreate = true)} />
     {/if}

@@ -1,17 +1,17 @@
 <script lang="ts">
+    import { page } from '$app/stores';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid, Heading } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { InputSwitch } from '$lib/elements/forms';
     import { Container } from '$lib/layout';
+    import { app } from '$lib/stores/app';
+    import { authMethods, type AuthMethod } from '$lib/stores/auth-methods';
     import { addNotification } from '$lib/stores/notifications';
+    import type { Provider } from '$lib/stores/oauth-providers';
+    import { OAuthProviders } from '$lib/stores/oauth-providers';
     import { sdk } from '$lib/stores/sdk';
     import { project } from '../../store';
-    import { authMethods, type AuthMethod } from '$lib/stores/auth-methods';
-    import { OAuthProviders } from '$lib/stores/oauth-providers';
-    import { app } from '$lib/stores/app';
-    import { page } from '$app/stores';
-    import type { Provider } from '$lib/stores/oauth-providers';
-    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
     const projectId = $page.params.project;
 
@@ -47,7 +47,7 @@
 {#if $authMethods && $OAuthProviders}
     <Container>
         <CardGrid>
-            <Heading tag="h2" size="7">Auth Methods</Heading>
+            <Heading tag="h2" size="7">Auth methods</Heading>
             <p>Enable the authentication methods you wish to use.</p>
             <svelte:fragment slot="aside">
                 <form class="form">
@@ -75,10 +75,10 @@
                             on:click={() => {
                                 selectedProvider = provider;
                                 trackEvent(`click_select_provider`, {
-                                    provider: provider.name.toLowerCase()
+                                    provider: provider.key.toLowerCase()
                                 });
                             }}>
-                            <div class="image-item">
+                            <div class="avatar">
                                 <img
                                     height="20"
                                     width="20"

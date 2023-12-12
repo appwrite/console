@@ -14,11 +14,14 @@
     import { Unauthenticated } from '$lib/layout';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { isCloud } from '$lib/system';
+    import { page } from '$app/stores';
 
-    let mail: string, pass: string;
+    let mail: string, pass: string, disabled: boolean;
 
     async function login() {
         try {
+            disabled = true;
             await sdk.forConsole.account.createEmailSession(mail, pass);
             await invalidate(Dependencies.ACCOUNT);
             addNotification({
@@ -26,14 +29,42 @@
                 message: 'Successfully logged in.'
             });
             trackEvent(Submit.AccountCreate);
-            await goto(`${base}/console`);
+            if ($page.url.searchParams) {
+                const redirect = $page.url.searchParams.get('redirect');
+                $page.url.searchParams.delete('redirect');
+                if (redirect) {
+                    await goto(`${base}${redirect}${$page.url.search}`);
+                } else {
+                    await goto(`${base}/console${$page.url.search ?? ''}`);
+                }
+            } else {
+                await goto(`${base}/console`);
+            }
         } catch (error) {
+            disabled = false;
             addNotification({
                 type: 'error',
                 message: error.message
             });
             trackError(error, Submit.AccountCreate);
         }
+    }
+
+    function onGithubLogin() {
+        let url = window.location.origin;
+        if ($page.url.searchParams) {
+            const redirect = $page.url.searchParams.get('redirect');
+            $page.url.searchParams.delete('redirect');
+            if (redirect) {
+                url = `${base}${redirect}${$page.url.search}`;
+            } else {
+                url = `${base}/console${$page.url.search ?? ''}`;
+            }
+        }
+        sdk.forConsole.account.createOAuth2Session('github', url, window.location.origin, [
+            'read:user',
+            'user:email'
+        ]);
     }
 </script>
 
@@ -62,8 +93,17 @@
                     showPasswordButton={true}
                     bind:value={pass} />
                 <FormItem>
-                    <Button fullWidth submit>Sign in</Button>
+                    <Button fullWidth submit {disabled}>Sign in</Button>
                 </FormItem>
+                {#if isCloud}
+                    <span class="with-separators eyebrow-heading-3">or</span>
+                    <FormItem>
+                        <Button github fullWidth on:click={onGithubLogin} {disabled}>
+                            <span class="icon-github" aria-hidden="true" />
+                            <span class="text">Sign in with GitHub</span>
+                        </Button>
+                    </FormItem>
+                {/if}
             </FormList>
         </Form>
     </svelte:fragment>

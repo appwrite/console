@@ -3,19 +3,26 @@
     import { getContext, hasContext } from 'svelte';
     import { readable } from 'svelte/store';
     import type { FormContext } from './form.svelte';
+    import { multiAction, type MultiActionArray } from '$lib/actions/multi-actions';
 
     export let submit = false;
     export let secondary = false;
+    export let github = false;
     export let text = false;
     export let danger = false;
-    export let disabled = false;
     export let round = false;
+    export let link = false;
+    export let disabled = false;
     export let external = false;
     export let href: string = null;
     export let fullWidth = false;
+    export let fullWidthMobile = false;
     export let ariaLabel: string = null;
     export let noMargin = false;
     export let event: string = null;
+    let classes: string = undefined;
+    export { classes as class };
+    export let actions: MultiActionArray = [];
 
     const isSubmitting = hasContext('form')
         ? getContext<FormContext>('form').isSubmitting
@@ -32,6 +39,22 @@
             from: 'button'
         });
     }
+
+    $: resolvedClasses = [
+        link ? 'link' : 'button',
+        disabled && 'is-disabled',
+        round && 'is-only-icon',
+        secondary && 'is-secondary',
+        github && 'is-github',
+        text && 'is-text',
+        danger && 'is-danger',
+        fullWidth && 'is-full-width',
+        fullWidthMobile && 'is-full-width-mobile',
+        noMargin && 'u-padding-inline-0',
+        classes
+    ]
+        .filter(Boolean)
+        .join(' ');
 </script>
 
 {#if href}
@@ -40,15 +63,9 @@
         {href}
         target={external ? '_blank' : ''}
         rel={external ? 'noopener noreferrer' : ''}
-        class="button"
-        class:is-disabled={disabled}
-        class:is-only-icon={round}
-        class:is-secondary={secondary}
-        class:is-text={text}
-        class:is-danger={danger}
-        class:is-full-width={fullWidth}
-        class:u-padding-inline-0={noMargin}
-        aria-label={ariaLabel}>
+        class={resolvedClasses}
+        aria-label={ariaLabel}
+        use:multiAction={actions}>
         <slot />
     </a>
 {:else}
@@ -56,15 +73,10 @@
         on:click
         on:click={track}
         disabled={internalDisabled}
-        class="button"
-        class:is-only-icon={round}
-        class:is-secondary={secondary}
-        class:is-danger={danger}
-        class:is-text={text}
-        class:is-full-width={fullWidth}
-        class:u-padding-inline-0={noMargin}
+        class={resolvedClasses}
+        aria-label={ariaLabel}
         type={submit ? 'submit' : 'button'}
-        aria-label={ariaLabel}>
+        use:multiAction={actions}>
         <slot />
     </button>
 {/if}

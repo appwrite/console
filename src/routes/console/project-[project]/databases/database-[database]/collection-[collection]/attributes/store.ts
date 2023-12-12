@@ -13,8 +13,18 @@ import type { Attributes } from '../store';
 import Relationship, { submitRelationship, updateRelationship } from './relationship.svelte';
 
 export type Option = {
-    name: string;
-    component: typeof SvelteComponent;
+    name:
+        | 'String'
+        | 'Integer'
+        | 'Float'
+        | 'Boolean'
+        | 'Datetime'
+        | 'Email'
+        | 'IP'
+        | 'URL'
+        | 'Enum'
+        | 'Relationship';
+    component: typeof SvelteComponent<unknown>;
     type: 'string' | 'integer' | 'double' | 'boolean' | 'datetime' | 'relationship';
     create: (
         databaseId: string,
@@ -27,7 +37,7 @@ export type Option = {
     icon: string;
 };
 
-export const options: Option[] = [
+export const attributeOptions: Option[] = [
     {
         name: 'String',
         component: String,
@@ -102,7 +112,7 @@ export const options: Option[] = [
         format: 'enum',
         create: submitEnum,
         update: updateEnum,
-        icon: 'list'
+        icon: 'view-list'
     },
     {
         name: 'Relationship',

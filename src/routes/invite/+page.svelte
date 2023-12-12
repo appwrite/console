@@ -72,13 +72,13 @@
                         showLabel={false}>
                         By accepting the invitation, you agree to the <a
                             class="link"
-                            href="https://appwrite.io/policy/terms"
+                            href="https://appwrite.io/terms"
                             target="_blank"
                             rel="noopener noreferrer">Terms and Conditions</a>
                         and
                         <a
                             class="link"
-                            href="https://appwrite.io/policy/privacy"
+                            href="https://appwrite.io/privacy"
                             target="_blank"
                             rel="noopener noreferrer">
                             Privacy Policy</a

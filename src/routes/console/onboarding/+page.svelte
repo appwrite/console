@@ -10,6 +10,7 @@
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
+    import { isCloud } from '$lib/system';
     import { ID } from '@appwrite.io/console';
 
     let name: string;
@@ -23,7 +24,7 @@
                 id ?? ID.unique(),
                 name,
                 org.$id,
-                'default'
+                isCloud ? 'eu-de' : 'default'
             );
             await invalidate(Dependencies.ACCOUNT);
             goto(`/console/project-${project.$id}`);
@@ -41,7 +42,14 @@
     }
 
     async function createOrganization() {
-        return await sdk.forConsole.teams.create(ID.unique(), 'Personal Projects');
+        if (isCloud) {
+            return await sdk.forConsole.billing.createOrganization(
+                ID.unique(),
+                'Personal Projects',
+                'tier-0',
+                null
+            );
+        } else return await sdk.forConsole.teams.create(ID.unique(), 'Personal Projects');
     }
 </script>
 
@@ -64,7 +72,7 @@
                         </Pill>
                     </div>
                 {:else}
-                    <CustomId bind:show={showCustomId} name="Project" bind:id />
+                    <CustomId bind:show={showCustomId} name="Project" isProject bind:id />
                 {/if}
                 <Button fullWidth submit disabled={name === ''} event="create_project">
                     Create project

@@ -1,3 +1,7 @@
+<script lang="ts" context="module">
+    export let showCreateTeam = writable(false);
+</script>
+
 <script lang="ts">
     import { page } from '$app/stores';
     import {
@@ -20,14 +24,16 @@
     import Create from '../createTeam.svelte';
     import { goto } from '$app/navigation';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import { Container } from '$lib/layout';
+    import { Container, ContainerHeader } from '$lib/layout';
     import { base } from '$app/paths';
     import type { Models } from '@appwrite.io/console';
     import type { PageData } from './$types';
+    import { tooltip } from '$lib/actions/tooltip';
+    import { writable } from 'svelte/store';
+    import { readOnly } from '$lib/stores/billing';
+    import { isCloud } from '$lib/system';
 
     export let data: PageData;
-
-    let showCreate = false;
 
     const project = $page.params.project;
     const teamCreated = async (event: CustomEvent<Models.Team<Record<string, unknown>>>) => {
@@ -36,11 +42,29 @@
 </script>
 
 <Container>
-    <SearchQuery search={data.search} placeholder="Search by name">
-        <Button on:click={() => (showCreate = true)} event="create_team">
-            <span class="icon-plus" aria-hidden="true" /> <span class="text">Create team</span>
-        </Button>
-    </SearchQuery>
+    <ContainerHeader
+        title="Teams"
+        isFlex={false}
+        total={data.teams.total}
+        buttonDisabled={isCloud && $readOnly}
+        let:isButtonDisabled>
+        <SearchQuery search={data.search} placeholder="Search by name">
+            <div
+                use:tooltip={{
+                    content: `Upgrade to add more teams`,
+                    disabled: !isButtonDisabled
+                }}>
+                <Button
+                    on:click={() => ($showCreateTeam = true)}
+                    event="create_team"
+                    disabled={isButtonDisabled}>
+                    <span class="icon-plus" aria-hidden="true" />
+                    <span class="text">Create team</span>
+                </Button>
+            </div>
+        </SearchQuery>
+    </ContainerHeader>
+
     {#if data.teams.total}
         <Table>
             <TableHeader>
@@ -48,7 +72,7 @@
                 <TableCellHead onlyDesktop>Members</TableCellHead>
                 <TableCellHead onlyDesktop>Created</TableCellHead>
             </TableHeader>
-            <TableBody>
+            <TableBody service="teams" total={data.teams.total}>
                 {#each data.teams.teams as team}
                     <TableRowLink
                         href={`${base}/console/project-${project}/auth/teams/team-${team.$id}`}>
@@ -76,7 +100,7 @@
     {:else if data.search}
         <EmptySearch>
             <div class="u-text-center">
-                <b>Sorry, we couldn’t find ‘{data.search}’</b>
+                <b>Sorry, we couldn't find ‘{data.search}'</b>
                 <p>There are no teams that match your search.</p>
             </div>
             <Button secondary href={`/console/project-${$page.params.project}/auth/teams`}>
@@ -86,10 +110,10 @@
     {:else}
         <Empty
             single
-            on:click={() => (showCreate = true)}
-            href="https://appwrite.io/docs/client/teams"
+            on:click={() => ($showCreateTeam = true)}
+            href="https://appwrite.io/docs/references/cloud/client-web/teams"
             target="team" />
     {/if}
 </Container>
 
-<Create bind:showCreate on:created={teamCreated} />
+<Create bind:showCreate={$showCreateTeam} on:created={teamCreated} />

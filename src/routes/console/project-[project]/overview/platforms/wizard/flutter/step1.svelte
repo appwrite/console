@@ -5,13 +5,7 @@
     import { WizardStep } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { createPlatform } from '../store';
-    import { wizard } from '$lib/stores/wizard';
-    import { app } from '$lib/stores/app';
-    import Light from './light.svg';
-    import Dark from './dark.svg';
     import { Submit, trackEvent } from '$lib/actions/analytics';
-
-    $wizard.media = $app.themeInUse === 'dark' ? Dark : Light;
 
     enum Platform {
         Android = 'flutter-android',
@@ -65,7 +59,7 @@
         },
         [Platform.Web]: {
             name: 'My Web App',
-            hostname: 'com.company.appname',
+            hostname: 'localhost',
             tooltip:
                 'The hostname that your website will use to interact with the Appwrite APIs in production or development environments. No protocol or port number required.'
         },
@@ -106,10 +100,19 @@
         $createPlatform.$id = response.$id;
         $createPlatform.type = platform;
     }
+
+    $: registee = {
+        [Platform.Android]: 'package name',
+        [Platform.Ios]: 'bundle ID',
+        [Platform.Linux]: 'package name',
+        [Platform.Macos]: 'bundle ID',
+        [Platform.Windows]: 'package name',
+        [Platform.Web]: 'hostname'
+    }[platform];
 </script>
 
 <WizardStep {beforeSubmit}>
-    <svelte:fragment slot="title">Register your Flutter app</svelte:fragment>
+    <svelte:fragment slot="title">Register your {registee}</svelte:fragment>
     <svelte:fragment slot="subtitle">
         <div class="u-flex u-gap-16 u-margin-block-start-8 u-flex-wrap">
             <Pill
