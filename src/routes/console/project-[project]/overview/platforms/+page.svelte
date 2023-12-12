@@ -37,7 +37,6 @@
     import { app } from '$lib/stores/app';
     import type { PageData } from './$types';
     import { ContainerHeader } from '$lib/layout';
-    import { getServiceLimit, readOnly } from '$lib/stores/billing';
 
     export let data: PageData;
 
