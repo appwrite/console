@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { DropList } from '$lib/components';
     import { clickOnEnter } from '$lib/helpers/a11y';
+    import { createCombobox, melt } from '@melt-ui/svelte';
     import { createEventDispatcher, onMount } from 'svelte';
     import { Label } from '.';
 
@@ -29,17 +29,38 @@
     // stretch is used inside of a flex container to give the element flex:1
     export let stretch = true;
     export let search = '';
+
     // The actual selected value
     export let value: Option['value'];
+
+    const {
+        elements: { input, menu, option },
+        states: { selected: innerSelected, inputValue, open },
+        helpers: { isHighlighted },
+        options: comboOptions
+    } = createCombobox<Option['value']>({
+        onSelectedChange({ next }) {
+            if (next) {
+                value = next.value;
+                dispatch('select', next);
+            }
+            return next;
+        },
+        preventScroll: false
+    });
+
+    $: {
+        comboOptions.disabled.set(disabled);
+        comboOptions.required.set(required);
+    }
+
+    $: inputValue.set(search);
+    $: search = $inputValue;
     $: selectedOption = options.find((option) => option.value === value);
+    $: selectedOption && innerSelected.set(selectedOption);
 
     let element: HTMLInputElement;
     let hasFocus = false;
-    let selected: number = null;
-
-    $: if (!hasFocus) {
-        selected = null;
-    }
 
     const dispatch = createEventDispatcher();
 
@@ -53,158 +74,117 @@
         hasFocus = true;
     }
 
-    function handleKeydown(event: KeyboardEvent) {
-        event.stopImmediatePropagation();
-
-        switch (event.key) {
-            case 'Escape':
-                hasFocus = false;
-                break;
-            case 'ArrowDown':
-                if (selected === null) {
-                    selected = 0;
-                } else {
-                    selected = (selected + 1) % options.length;
-                }
-                break;
-            case 'ArrowUp':
-                if (selected === null) {
-                    selected = options.length - 1;
-                } else {
-                    selected = (selected - 1 + options.length) % options.length;
-                }
-                break;
-            case 'Enter':
-                if (selected !== null) {
-                    event.preventDefault();
-                    selectOption(options[selected]);
-                }
-                break;
-        }
-    }
-
-    function selectOption(option: Option) {
-        value = option.value;
-        search = option.label;
-        // It's not working without this line.
-        if (!$$slots.output) {
-            element.value = search;
-        } else {
-            search = '';
-        }
-
-        hasFocus = false;
-        dispatch('select', option);
-    }
-
     function clearOption() {
-        search = '';
-        value = null;
-        !$$slots.output && (element.value = search);
-        hasFocus = false;
+        inputValue.set('');
+        innerSelected.set(null);
         dispatch('reset');
     }
 
     $: showClearBtn = (hasFocus && search) || value;
+
+    $: console.log(disabled);
 </script>
 
-<li
+<div
     class="u-position-relative form-item"
     class:u-width-full-line={fullWidth}
     class:u-stretch={stretch}>
-    <DropList
-        bind:show={hasFocus}
-        noStyle
-        noArrow
-        scrollable
-        placement="bottom-end"
-        position="static"
-        fullWidth={true}
-        fixed>
-        <Label {required} {hideRequired} {optionalText} hide={!showLabel} for={id} {tooltip}>
-            {label}
-        </Label>
+    <Label {required} {hideRequired} {optionalText} hide={!showLabel} for={id} {tooltip}>
+        {label}
+    </Label>
 
-        <div class="custom-select">
-            <div class="input-text-wrapper" style="--amount-of-buttons:2">
-                {#if $$slots.output && selectedOption}
-                    <div
-                        role="button"
-                        tabindex="0"
-                        on:keyup={clickOnEnter}
-                        on:click={() => {
-                            if (interactiveOutput) hasFocus = !hasFocus;
-                        }}>
-                        <slot name="output" option={selectedOption} />
-                    </div>
-                {:else}
-                    <input
-                        type="text"
-                        class="input-text"
-                        {placeholder}
-                        {disabled}
-                        {required}
-                        bind:value={search}
-                        bind:this={element}
-                        on:focus={() => (hasFocus = true)}
-                        on:click={() => (hasFocus = true)}
-                        on:input={handleInput}
-                        on:keydown={handleKeydown} />
-                {/if}
+    <div class="custom-select">
+        <div class="input-text-wrapper" style="--amount-of-buttons:2">
+            {#if $$slots.output && selectedOption}
+                <div
+                    role="button"
+                    tabindex="0"
+                    on:keyup={clickOnEnter}
+                    on:click={() => {
+                        if (interactiveOutput) hasFocus = !hasFocus;
+                    }}>
+                    <slot name="output" option={selectedOption} />
+                </div>
+            {:else}
+                <input
+                    type="text"
+                    class="input-text"
+                    {placeholder}
+                    {required}
+                    on:input={handleInput}
+                    bind:this={element}
+                    use:melt={$input} />
+            {/if}
 
-                <div class="options-list">
-                    {#if showClearBtn}
-                        <button
-                            class="options-list-button"
-                            aria-label="clear field"
-                            type="button"
-                            disabled={!interactiveOutput}
-                            on:click|preventDefault={clearOption}>
-                            <span class="icon-x" aria-hidden="true" />
-                        </button>
-                    {/if}
+            <div class="options-list">
+                {#if showClearBtn}
                     <button
                         class="options-list-button"
+                        aria-label="clear field"
                         type="button"
                         disabled={!interactiveOutput}
-                        on:click={() => (hasFocus = !hasFocus)}>
-                        <span class="icon-cheveron-down" aria-hidden="true" />
+                        on:click|preventDefault={clearOption}>
+                        <span class="icon-x" aria-hidden="true" />
                     </button>
-                </div>
+                {/if}
+                <button
+                    class="options-list-button"
+                    type="button"
+                    disabled={!interactiveOutput}
+                    on:click={() => {
+                        hasFocus = !hasFocus;
+                        open.set(true);
+                    }}>
+                    <span class="icon-cheveron-down" aria-hidden="true" />
+                </button>
             </div>
         </div>
-        <svelte:fragment slot="list">
-            {#each options as option, i}
-                <li class="drop-list-item">
-                    <button
-                        class="drop-button"
-                        class:is-selected={selected === i}
-                        type="button"
-                        on:click|preventDefault={() => {
-                            selectOption(option);
-                        }}>
-                        <slot {option}>
-                            <span class="text" data-private>{option.label}</span>
-                        </slot>
-                    </button>
-                </li>
-            {:else}
-                <li class="drop-list-item">
-                    <span class="text">There are no {name} that match your search</span>
-                </li>
-            {/each}
-        </svelte:fragment>
-    </DropList>
-</li>
+
+        <div class="drop-wrapper" use:melt={$menu}>
+            <div class="drop is-no-arrow">
+                <section class="drop-section">
+                    <ul class="drop-list">
+                        {#each options as o}
+                            <li class="drop-list-item">
+                                <button
+                                    class="drop-button"
+                                    class:is-selected={$isHighlighted(o.value)}
+                                    type="button"
+                                    use:melt={$option({ value: o.value, label: o.label })}>
+                                    <slot option={o}>
+                                        <span class="text" data-private>{o.label}</span>
+                                    </slot>
+                                </button>
+                            </li>
+                        {:else}
+                            <li class="drop-list-item">
+                                <span class="text">There are no {name} that match your search</span>
+                            </li>
+                        {/each}
+                    </ul>
+                </section>
+            </div>
+        </div>
+    </div>
+</div>
 
 <style>
     .form-item :global(.drop) {
         translate: 0 4px;
     }
 
-    .form-item :global(.drop-section) {
-        width: 100%;
-        margin-inline: initial;
-        max-inline-size: initial;
+    .drop-section {
+        margin-inline: unset;
+        /* padding-inline: unset; */
+        max-inline-size: unset;
+    }
+
+    .drop {
+        position: static;
+        inset-inline-start: unset;
+        inset-block-end: unset;
+        min-inline-size: unset;
+        max-inline-size: unset;
+        inline-size: unset;
     }
 </style>

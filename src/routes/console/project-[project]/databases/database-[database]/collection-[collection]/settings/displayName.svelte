@@ -37,7 +37,10 @@
     $: options = ($attributes as Models.AttributeString[])
         .filter(
             (attr) =>
-                attr.type === 'string' && !attr?.array && !names?.some((name) => name === attr.key)
+                attr.type === 'string' &&
+                !attr?.array &&
+                !names?.some((name) => name === attr.key) &&
+                attr.key.toLowerCase().includes(search?.toLowerCase())
         )
         .map((attr) => {
             return {
