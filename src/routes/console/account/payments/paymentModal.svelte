@@ -30,7 +30,6 @@
             });
         } catch (e) {
             error = e.message;
-            console.log(e.message);
         }
     }
 
@@ -62,6 +61,7 @@
 
     onDestroy(() => {
         observer.disconnect();
+        document.documentElement.classList.remove('u-overflow-hidden');
     });
 </script>
 
@@ -75,7 +75,7 @@
             required
             autofocus={true}
             hideRequired />
-        <div class="aw-stripe-container">
+        <div class="aw-stripe-container" data-private>
             <div class="loader-container" bind:this={loader}>
                 <div class="loader"></div>
             </div>

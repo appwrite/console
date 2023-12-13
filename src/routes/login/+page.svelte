@@ -19,6 +19,8 @@
 
     let mail: string, pass: string, disabled: boolean;
 
+    $: console.log($page.url.search);
+
     async function login() {
         try {
             disabled = true;
@@ -112,7 +114,9 @@
             <a href={`${base}/recover`}><span class="text">Forgot Password?</span></a>
         </li>
         <li class="inline-links-item">
-            <a href={`${base}/register`}><span class="text">Sign Up</span></a>
+            <a href={`${base}/register${$page?.url?.search ?? ''}`}>
+                <span class="text">Sign Up</span>
+            </a>
         </li>
     </svelte:fragment>
 </Unauthenticated>

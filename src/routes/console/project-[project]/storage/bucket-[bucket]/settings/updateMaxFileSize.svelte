@@ -12,6 +12,7 @@
     import { bucket } from '../store';
     import { updateBucket } from './+page.svelte';
 
+    const service = getServiceLimit('fileSize');
     const { value, unit, baseValue, units } = createByteUnitPair($bucket.maximumFileSize);
     const options = units.map((v) => ({ label: v.name, value: v.name }));
 
@@ -26,8 +27,6 @@
             }
         );
     }
-
-    const service = getServiceLimit('fileSize');
 </script>
 
 <Form onSubmit={updateMaxSize}>
@@ -40,15 +39,23 @@
                 {@const plan = tierToPlan($organization?.billingPlan)}
                 <Alert type="info">
                     <p class="text">
-                        The {plan.name} plan has a maximum upload file size limit of {size.value}{size.unit}.
-                        Upgrade to allow files of a larger size.
+                        The {plan.name} plan has a maximum upload file size limit of {Math.floor(
+                            parseInt(size.value)
+                        )}{size.unit}.
+                        {#if $organization?.billingPlan === 'tier-0'}
+                            Upgrade to allow files of a larger size.
+                        {/if}
                     </p>
                     <svelte:fragment slot="action">
-                        <div class="alert-buttons u-flex">
-                            <Button text on:click={() => wizard.start(ChangeOrganizationTierCloud)}>
-                                Upgrade plan
-                            </Button>
-                        </div>
+                        {#if $organization?.billingPlan === 'tier-0'}
+                            <div class="alert-buttons u-flex">
+                                <Button
+                                    text
+                                    on:click={() => wizard.start(ChangeOrganizationTierCloud)}>
+                                    Upgrade plan
+                                </Button>
+                            </div>
+                        {/if}
                     </svelte:fragment>
                 </Alert>
             {/if}

@@ -5,7 +5,6 @@
     import LoginLight from '$lib/images/login/login-light-mode.png';
     import { app } from '$lib/stores/app';
     import { user } from '$lib/stores/user';
-    //import { isCloud } from '$lib/system';
 
     export let imgLight = LoginLight;
     export let imgDark = LoginDark;

@@ -15,7 +15,6 @@
 
     async function validateCoupon() {
         if (couponData?.status === 'active') return;
-        console.log(couponData);
         try {
             const response = await sdk.forConsole.billing.getCoupon(coupon);
             couponData = response;

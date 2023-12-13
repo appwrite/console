@@ -37,7 +37,6 @@
     import { app } from '$lib/stores/app';
     import type { PageData } from './$types';
     import { ContainerHeader } from '$lib/layout';
-    import { getServiceLimit, readOnly } from '$lib/stores/billing';
 
     export let data: PageData;
 
@@ -74,12 +73,14 @@
     };
 </script>
 
-<ContainerHeader title="Platforms" titleTag="h3" titleSize="7" total={data?.platforms?.total}>
+<ContainerHeader
+    title="Platforms"
+    titleTag="h3"
+    titleSize="7"
+    total={data?.platforms?.total}
+    let:isButtonDisabled>
     <DropList bind:show={showDropdown} placement="bottom-start">
-        <Button
-            on:click={() => (showDropdown = !showDropdown)}
-            disabled={data?.platforms?.platforms?.length >= getServiceLimit('platforms') ||
-                $readOnly}>
+        <Button on:click={() => (showDropdown = !showDropdown)} disabled={isButtonDisabled}>
             <span class="icon-plus" aria-hidden="true" />
             <span class="text">Add platform</span>
         </Button>
