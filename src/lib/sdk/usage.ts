@@ -1,3 +1,5 @@
+import type { Models } from '@appwrite.io/console';
+
 export function accumulateUsage(usage: Models.Metric[], base: number): Models.Metric[] {
     const accumulation = usage.reduce(
         (carry, item) => {

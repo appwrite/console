@@ -31,6 +31,7 @@
     import type { RegionList } from '$lib/sdk/billing';
     import { onMount } from 'svelte';
     import CreateOrganizationCloud from '../createOrganizationCloud.svelte';
+    // import HoodieCover from '../(billing-modal)/hoodieCover.svelte';
 
     export let data;
 
@@ -119,6 +120,7 @@
 
     let regions: RegionList;
     onMount(async () => {
+        // wizard.showCover(HoodieCover);
         if (isCloud) {
             regions = await sdk.forConsole.billing.listRegions();
             if ($page.url.searchParams.has('type')) {
@@ -129,6 +131,11 @@
             }
         }
     });
+
+    function findRegion(project: Partial<Models.Project & { region: string }>) {
+        const region = regions.regions.find((region) => region.$id === project.region);
+        return region;
+    }
 </script>
 
 <Container>
@@ -188,9 +195,7 @@
                         {/if}
                         <svelte:fragment slot="icons">
                             {#if isCloud && regions}
-                                {@const region = regions.regions.find(
-                                    (region) => region.$id === project.region
-                                )}
+                                {@const region = findRegion(project)}
                                 <span class="u-color-text-gray">
                                     {region.name}
                                 </span>

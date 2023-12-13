@@ -1,5 +1,4 @@
 <script lang="ts">
-    import type { Models } from '@appwrite.io/console';
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
     import { Container } from '$lib/layout';

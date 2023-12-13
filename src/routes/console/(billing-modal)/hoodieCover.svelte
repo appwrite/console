@@ -6,8 +6,9 @@
     import { fade } from 'svelte/transition';
     import Hoodie from './hoodie.png';
     import { Confetti } from 'svelte-confetti';
+    import { base } from '$app/paths';
 
-    $: twitterText = encodeURIComponent(
+    $: postText = encodeURIComponent(
         [
             `Appwrite Pro is now available! `,
             ``,
@@ -15,7 +16,7 @@
             ``,
             `Because`,
             ``,
-            `Discover Appwrite Pro and get started at https://appwrite.io/pro`
+            `Discover Appwrite Pro and get started at https://appwrite.io/pricing`
         ].join('\n')
     );
 
@@ -25,15 +26,17 @@
         'hsl(var(--color-primary-300))',
         '#F05088',
         '#FF86BB',
-        '#FFFFFF80'
+        '#FFFFFF80',
+        '#FE9567',
+        '#85DBD8',
+        '#E5E1FF'
     ];
 </script>
 
 <WizardCover>
-    <svelte:fragment slot="title">Win an Appwrite Pro hoodie</svelte:fragment>
-    <div class="wizard-container container">
-        <div class="u-grid-1-1 u-gap-24">
-            <Card class="u-grid-1-1-col-1">
+    <div class="wizard-container u-flex-vertical">
+        <div class="u-flex u-cross-center u-main-center hoodie-container">
+            <Card>
                 <div class="appwrite-pro">
                     <span class="text">APPWRITE</span>
                     <span class="appwrite-pro-text">
@@ -53,18 +56,9 @@
                     {'Share on social media'.toUpperCase()}
                 </p>
                 <div class="u-margin-block-start-16 u-flex u-gap-16">
-                    <Button
-                        secondary
-                        round
-                        href="https://twitter.com/intent/tweet?text={twitterText}"
-                        external>
-                        <span class="icon-twitter" aria-label="Share on X" />
-                    </Button>
-                    <Button
-                        secondary
-                        round
-                        href="https://twitter.com/intent/tweet?text={twitterText}">
-                        <span class="icon-linkedin" aria-label="Share on linkedin" />
+                    <Button secondary href="https://x.com/intent/tweet?text={postText}" external>
+                        <span class="icon-twitter" aria-hidden="true" />
+                        <span class="text">Share on X</span>
                     </Button>
                 </div>
 
@@ -75,24 +69,22 @@
                                 from: 'cover'
                             });
                         }}
-                        on:click>
+                        href={`${base}/console`}>
                         Go to console
                     </Button>
                 </div>
             </Card>
-            <div class="u-grid-1-1-col-2">
-                <img class="hoodie-image" src={Hoodie} alt="" srcset="" />
-            </div>
+            <img class="hoodie-image" src={Hoodie} alt="" srcset="" />
             <div class="cbc-confetti" transition:fade>
                 <Confetti
                     x={[-1.75, 1.85]}
                     y={[-1.875, 1]}
-                    amount={100}
+                    amount={200}
                     size={10}
                     infinite
                     delay={[2000, 7000]}
                     colorArray={confettiColors}
-                    fallDistance="400px" />
+                    fallDistance="200px" />
             </div>
         </div>
     </div>
@@ -103,14 +95,47 @@
     @import '@appwrite.io/pink/src/abstract/variables/_devices.scss';
     @import '@appwrite.io/pink/src/abstract/functions/_pxToRem.scss';
 
-    .hoodie-image {
-        border-radius: 1rem;
-        width: 100%;
-        max-width: 400px;
-        height: auto;
-        object-fit: contain;
-        position: relative;
+    .wizard-container {
+        height: 100%;
+        justify-content: center;
+        @media #{$break2} {
+            justify-content: flex-start;
+            margin-block-start: 2rem;
+        }
+        @media #{$break1} {
+            justify-content: flex-start;
+            margin-block-start: 2rem;
+        }
+    }
+    .hoodie-container {
+        height: 390px;
+        gap: 4rem;
         z-index: 1;
+        @media #{$break2} {
+            flex-wrap: wrap;
+            justify-content: start;
+            align-items: start;
+            gap: 2rem;
+        }
+        @media #{$break1} {
+            flex-wrap: wrap;
+            justify-content: start;
+            align-items: start;
+            gap: 2rem;
+        }
+    }
+    .hoodie-image {
+        height: 100%;
+        object-fit: contain;
+        @media #{$break2} {
+            width: 100%;
+            align-self: start;
+            height: auto;
+        }
+        @media #{$break1} {
+            align-self: start;
+            height: auto;
+        }
     }
 
     .appwrite-pro {
@@ -124,6 +149,13 @@
             gap: pxToRem(16);
             font-size: pxToRem(20);
             letter-spacing: pxToRem(8);
+            line-height: 120%;
+        }
+
+        @media #{$break1} {
+            gap: pxToRem(8);
+            font-size: pxToRem(16);
+            letter-spacing: pxToRem(4);
             line-height: 120%;
         }
 
@@ -153,9 +185,10 @@
 
     .cbc-confetti {
         position: absolute;
-        top: 20%;
-        right: 10%;
+        top: 40%;
+        right: 25%;
         translate: -50% -50%;
+        z-index: -1;
     }
 
     @keyframes shake {

@@ -2,11 +2,9 @@
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
     import { registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
-    import { isServiceLimited, readOnly } from '$lib/stores/billing';
-    import { organization } from '$lib/stores/organization';
+    import { readOnly } from '$lib/stores/billing';
     import { project } from '../store';
     import { showCreateUser } from './+page.svelte';
-    import { userList } from './store';
     import { showCreateTeam } from './teams/+page.svelte';
 
     $: $registerCommands([
