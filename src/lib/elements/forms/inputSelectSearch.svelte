@@ -1,6 +1,7 @@
 <script lang="ts">
     import { clickOnEnter } from '$lib/helpers/a11y';
     import { createCombobox, melt } from '@melt-ui/svelte';
+
     import { createEventDispatcher, onMount } from 'svelte';
     import { Label } from '.';
 
@@ -46,7 +47,8 @@
             }
             return next;
         },
-        preventScroll: false
+        preventScroll: false,
+        closeOnOutsideClick: false
     });
 
     $: {
@@ -59,14 +61,16 @@
     $: selectedOption = options.find((option) => option.value === value);
     $: selectedOption && innerSelected.set(selectedOption);
 
-    let element: HTMLInputElement;
+    let inputEl: HTMLInputElement;
+    let menuEl: HTMLElement;
+    let wrapperEl: HTMLElement;
     let hasFocus = false;
 
     const dispatch = createEventDispatcher();
 
     onMount(() => {
-        if (element && autofocus) {
-            element.focus();
+        if (inputEl && autofocus) {
+            inputEl.focus();
         }
     });
 
@@ -85,10 +89,27 @@
     $: console.log(disabled);
 </script>
 
+<svelte:window
+    on:click={function clickOutside(e) {
+        const el = e.target;
+        if (!(el instanceof HTMLElement || el instanceof SVGElement)) {
+            open.set(false);
+            return;
+        }
+
+        if (!menuEl || !wrapperEl) return;
+
+        if (!wrapperEl.contains(el) && !menuEl.contains(el)) {
+            hasFocus = false;
+            $open = false;
+        }
+    }} />
+
 <div
     class="u-position-relative form-item"
     class:u-width-full-line={fullWidth}
-    class:u-stretch={stretch}>
+    class:u-stretch={stretch}
+    bind:this={wrapperEl}>
     <Label {required} {hideRequired} {optionalText} hide={!showLabel} for={id} {tooltip}>
         {label}
     </Label>
@@ -112,7 +133,7 @@
                     {placeholder}
                     {required}
                     on:input={handleInput}
-                    bind:this={element}
+                    bind:this={inputEl}
                     use:melt={$input} />
             {/if}
 
@@ -133,14 +154,14 @@
                     disabled={!interactiveOutput}
                     on:click={() => {
                         hasFocus = !hasFocus;
-                        open.set(true);
+                        $open = !$open;
                     }}>
                     <span class="icon-cheveron-down" aria-hidden="true" />
                 </button>
             </div>
         </div>
 
-        <div class="drop-wrapper" use:melt={$menu}>
+        <div class="drop-wrapper" use:melt={$menu} bind:this={menuEl}>
             <div class="drop is-no-arrow">
                 <section class="drop-section">
                     <ul class="drop-list">
