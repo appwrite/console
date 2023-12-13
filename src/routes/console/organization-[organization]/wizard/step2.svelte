@@ -19,7 +19,7 @@
     async function notifyRegion(selectedRegion: Region) {
         try {
             let newPrefs = { ...prefs };
-            newPrefs.notifications = newPrefs.notifications ?? [];
+            newPrefs.notifications ??= [];
             newPrefs.notifications = [...newPrefs.notifications, selectedRegion.$id];
             const response = await sdk.forConsole.account.updatePrefs(newPrefs);
             prefs = response.prefs;
@@ -29,7 +29,10 @@
                 message: `You will be notified when <b>${selectedRegion.name}</b> region is available`
             });
         } catch (error) {
-            console.log(error);
+            addNotification({
+                type: 'success',
+                message: 'Something went wrong, please try again later'
+            });
         }
     }
     async function unNotifyRegion(selectedRegion: Region) {
@@ -48,7 +51,10 @@
                 message: `You won't be notified anymore when the <b>${selectedRegion.name}</b> region is available`
             });
         } catch (error) {
-            console.log(error);
+            addNotification({
+                type: 'success',
+                message: 'Something went wrong, please try again later'
+            });
         }
     }
 
@@ -64,7 +70,7 @@
         <ul
             class="grid-box u-margin-block-start-16"
             style="--p-grid-item-size:12em; --p-grid-item-size-small-screens:12rem; --grid-gap: 1rem;">
-            {#each regions.regions.filter(r => r.$id !== 'default') as region}
+            {#each regions.regions.filter((r) => r.$id !== 'default') as region}
                 <li>
                     <RegionCard
                         name="region"
