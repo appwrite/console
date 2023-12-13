@@ -37,13 +37,13 @@
         excess = {
             bandwidth: totBandwidth > plan.bandwidth ? totBandwidth - plan.bandwidth : 0,
             storage:
-                usage?.storage > sizeToBytes(plan.storage, 'GB')
-                    ? usage.storage - sizeToBytes(plan.storage, 'GB')
+                usage?.storageTotal > sizeToBytes(plan.storage, 'GB')
+                    ? usage.storageTotal - sizeToBytes(plan.storage, 'GB')
                     : 0,
             users: totUsers > (plan.users || Infinity) ? totUsers - plan.users : 0,
             executions:
-                usage?.executions > sizeToBytes(plan.executions, 'GB')
-                    ? usage.executions - sizeToBytes(plan.executions, 'GB')
+                usage?.executionsTotal > sizeToBytes(plan.executions, 'GB')
+                    ? usage.executionsTotal - sizeToBytes(plan.executions, 'GB')
                     : 0,
             members:
                 members?.total > (plan.members || Infinity)

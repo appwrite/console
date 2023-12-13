@@ -38,6 +38,23 @@
     export function total(set: Models.Metric[]): number {
         return set?.reduce((prev, curr) => prev + curr.value, 0) ?? 0;
     }
+
+    export function accumulateFromEndingTotal(
+        metrics: Models.Metric[],
+        endingTotal: number
+    ): Array<[string, number]> {
+        return metrics.reduceRight(
+            (acc, curr) => {
+                acc.total -= curr.value;
+                acc.data.unshift([curr.date, acc.total]);
+                return acc;
+            },
+            {
+                total: endingTotal,
+                data: []
+            }
+        ).data;
+    }
 </script>
 
 <script lang="ts">
@@ -58,23 +75,6 @@
     export let count: Models.Metric[];
     export let countMetadata: MetricMetadata;
     export let path: string = null;
-
-    function accumulateFromEndingTotal(
-        metrics: Models.Metric[],
-        endingTotal: number
-    ): Array<[string, number]> {
-        return metrics.reduceRight(
-            (acc, curr) => {
-                acc.total -= curr.value;
-                acc.data.unshift([curr.date, acc.total]);
-                return acc;
-            },
-            {
-                total: endingTotal,
-                data: []
-            }
-        ).data;
-    }
 </script>
 
 <Container>

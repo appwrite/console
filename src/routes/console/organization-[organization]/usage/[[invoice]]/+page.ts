@@ -9,8 +9,23 @@ export const load: PageLoad = async ({ params, parent }) => {
     const parentData = await parent();
     const org = parentData.organization as Organization;
 
-    let startDate: string = undefined;
-    let endDate: string = undefined;
+    /**
+     * Temporary fix during migration to billing system
+     */
+    if (org.billingCurrentInvoiceDate === null || org.billingNextInvoiceDate === null) {
+        return {
+            organizationUsage: {
+                bandwidth: null,
+                users: null,
+                usersTotal: null,
+                storageTotal: null,
+                executionsTotal: null
+            }
+        };
+    }
+
+    let startDate: string = org.billingCurrentInvoiceDate;
+    let endDate: string = org.billingNextInvoiceDate;
     let currentInvoice: Invoice = undefined;
 
     if (invoice) {

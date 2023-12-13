@@ -1,41 +1,36 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
-    import { CardGrid, Heading, ProgressBarBig } from '$lib/components';
+    import { Card, CardGrid, Heading, ProgressBarBig } from '$lib/components';
     import { getServiceLimit, showUsageRatesModal, tierToPlan } from '$lib/stores/billing';
     import { wizard } from '$lib/stores/wizard';
     import { organization } from '$lib/stores/organization';
-    import { Button, InputSelect } from '$lib/elements/forms';
-    import { page } from '$app/stores';
-    import { goto } from '$app/navigation';
-    import { toLocaleDate } from '$lib/helpers/date.js';
+    import { Button } from '$lib/elements/forms';
     import { bytesToSize, humanFileSize } from '$lib/helpers/sizeConvertion';
     import { BarChart } from '$lib/charts';
     import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
     import ProjectBreakdown from './ProjectBreakdown.svelte';
-    import { last } from '$lib/helpers/array';
     import { formatNum } from '$lib/helpers/string';
-    import { total } from '$lib/layout/usage.svelte';
+    import { accumulateFromEndingTotal, total } from '$lib/layout/usage.svelte';
 
     export let data;
 
     const tier = data?.currentInvoice?.tier ?? $organization?.billingPlan;
     const plan = tierToPlan(tier).name;
 
-    let invoice = null;
+    // let invoice = null;
+    // async function handlePeriodChange() {
+    //     const target = invoice
+    //         ? `/console/organization-${$organization.$id}/usage/${invoice}`
+    //         : `/console/organization-${$organization.$id}/usage`;
+    //     if ($page.url.pathname !== target) {
+    //         await goto(target);
+    //     }
+    // }
 
-    async function handlePeriodChange() {
-        const target = invoice
-            ? `/console/organization-${$organization.$id}/usage/${invoice}`
-            : `/console/organization-${$organization.$id}/usage`;
-        if ($page.url.pathname !== target) {
-            await goto(target);
-        }
-    }
-
-    const cycles = data.invoices.invoices.map((invoice) => ({
-        label: toLocaleDate(invoice.from),
-        value: invoice.$id
-    }));
+    // const cycles = data.invoices.invoices.map((invoice) => ({
+    //     label: toLocaleDate(invoice.from),
+    //     value: invoice.$id
+    // }));
 </script>
 
 <Container>
@@ -77,7 +72,7 @@
             </p>
         {/if}
 
-        <div class="u-flex u-gap-8 u-cross-center u-hide">
+        <!--<div class="u-flex u-gap-8 u-cross-center">
             <p class="text">Usage period:</p>
             <InputSelect
                 wrapperTag="div"
@@ -93,7 +88,7 @@
                     },
                     ...cycles
                 ]} />
-        </div>
+                </div>-->
     </div>
 
     <CardGrid>
@@ -104,42 +99,58 @@
         </p>
 
         <svelte:fragment slot="aside">
-            {@const current = total(data.organizationUsage.bandwidth)}
-            {@const currentHumanized = humanFileSize(current)}
-            {@const max = getServiceLimit('bandwidth', tier)}
-            <ProgressBarBig
-                currentUnit={currentHumanized.unit}
-                currentValue={currentHumanized.value}
-                maxUnit="GB"
-                maxValue={max.toString()}
-                progressValue={bytesToSize(current, 'GB')}
-                progressMax={max}
-                showBar={false} />
-            <BarChart
-                options={{
-                    yAxis: {
-                        axisLabel: {
-                            formatter: (value) =>
-                                value
-                                    ? `${humanFileSize(+value).value} ${humanFileSize(+value).unit}`
-                                    : '0'
+            {#if data.organizationUsage.bandwidth}
+                {@const current = total(data.organizationUsage.bandwidth)}
+                {@const currentHumanized = humanFileSize(current)}
+                {@const max = getServiceLimit('bandwidth', tier)}
+                <ProgressBarBig
+                    currentUnit={currentHumanized.unit}
+                    currentValue={currentHumanized.value}
+                    maxUnit="GB"
+                    maxValue={max.toString()}
+                    progressValue={bytesToSize(current, 'GB')}
+                    progressMax={max}
+                    showBar={false} />
+                <BarChart
+                    options={{
+                        yAxis: {
+                            axisLabel: {
+                                formatter: (value) =>
+                                    value
+                                        ? `${humanFileSize(+value).value} ${
+                                              humanFileSize(+value).unit
+                                          }`
+                                        : '0'
+                            }
                         }
-                    }
-                }}
-                series={[
-                    {
-                        name: 'Bandwidth',
-                        data: [...data.organizationUsage.bandwidth.map((e) => [e.date, e.value])],
-                        tooltip: {
-                            valueFormatter: (value) =>
-                                `${humanFileSize(+value).value} ${humanFileSize(+value).unit}`
+                    }}
+                    series={[
+                        {
+                            name: 'Bandwidth',
+                            data: [
+                                ...data.organizationUsage.bandwidth.map((e) => [e.date, e.value])
+                            ],
+                            tooltip: {
+                                valueFormatter: (value) =>
+                                    `${humanFileSize(+value).value} ${humanFileSize(+value).unit}`
+                            }
                         }
-                    }
-                ]} />
-            <ProjectBreakdown
-                projects={data.organizationUsage.projects}
-                metric="bandwidth"
-                {data} />
+                    ]} />
+                <ProjectBreakdown
+                    projects={data.organizationUsage.projects}
+                    metric="bandwidth"
+                    {data} />
+            {:else}
+                <Card isDashed>
+                    <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
+                        <span
+                            class="icon-chart-square-bar text-large"
+                            aria-hidden="true"
+                            style="font-size: 32px;" />
+                        <p class="u-bold">No data to show</p>
+                    </div>
+                </Card>
+            {/if}
         </svelte:fragment>
     </CardGrid>
 
@@ -149,31 +160,49 @@
         <p class="text">The total number of users across all projects in your organization.</p>
 
         <svelte:fragment slot="aside">
-            {@const current = last(data.organizationUsage.users)?.value ?? 0}
-            {@const max = getServiceLimit('users', tier)}
-            <ProgressBarBig
-                currentUnit="Users"
-                currentValue={formatNum(current)}
-                maxUnit="Users"
-                maxValue={formatNum(max)}
-                progressValue={current}
-                progressMax={max}
-                showBar={false} />
-            <BarChart
-                options={{
-                    yAxis: {
-                        axisLabel: {
-                            formatter: formatNum
+            {#if data.organizationUsage.users}
+                {@const current = data.organizationUsage.usersTotal}
+                {@const max = getServiceLimit('users', tier)}
+                <ProgressBarBig
+                    currentUnit="Users"
+                    currentValue={formatNum(current)}
+                    maxUnit="Users"
+                    maxValue={formatNum(max)}
+                    progressValue={current}
+                    progressMax={max}
+                    showBar={false} />
+                <BarChart
+                    options={{
+                        yAxis: {
+                            axisLabel: {
+                                formatter: formatNum
+                            }
                         }
-                    }
-                }}
-                series={[
-                    {
-                        name: 'Users',
-                        data: [...data.organizationUsage.users.map((e) => [e.date, e.value])]
-                    }
-                ]} />
-            <ProjectBreakdown projects={data.organizationUsage.projects} metric="users" {data} />
+                    }}
+                    series={[
+                        {
+                            name: 'Users',
+                            data: accumulateFromEndingTotal(
+                                data.organizationUsage.users,
+                                data.organizationUsage.usersTotal
+                            )
+                        }
+                    ]} />
+                <ProjectBreakdown
+                    projects={data.organizationUsage.projects}
+                    metric="users"
+                    {data} />
+            {:else}
+                <Card isDashed>
+                    <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
+                        <span
+                            class="icon-chart-square-bar text-large"
+                            aria-hidden="true"
+                            style="font-size: 32px;" />
+                        <p class="u-bold">No data to show</p>
+                    </div>
+                </Card>
+            {/if}
         </svelte:fragment>
     </CardGrid>
 
@@ -185,19 +214,31 @@
         </p>
 
         <svelte:fragment slot="aside">
-            {@const current = data.organizationUsage.executions}
-            {@const max = getServiceLimit('executions', tier)}
-            <ProgressBarBig
-                currentUnit="Executions"
-                currentValue={current.toString()}
-                maxUnit="Executions"
-                maxValue={formatNum(max)}
-                progressValue={current}
-                progressMax={max} />
-            <ProjectBreakdown
-                projects={data.organizationUsage.projects}
-                metric="executions"
-                {data} />
+            {#if data.organizationUsage.executionsTotal}
+                {@const current = data.organizationUsage.executionsTotal}
+                {@const max = getServiceLimit('executions', tier)}
+                <ProgressBarBig
+                    currentUnit="Executions"
+                    currentValue={current.toString()}
+                    maxUnit="Executions"
+                    maxValue={formatNum(max)}
+                    progressValue={current}
+                    progressMax={max} />
+                <ProjectBreakdown
+                    projects={data.organizationUsage.projects}
+                    metric="executions"
+                    {data} />
+            {:else}
+                <Card isDashed>
+                    <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
+                        <span
+                            class="icon-chart-square-bar text-large"
+                            aria-hidden="true"
+                            style="font-size: 32px;" />
+                        <p class="u-bold">No data to show</p>
+                    </div>
+                </Card>
+            {/if}
         </svelte:fragment>
     </CardGrid>
 
@@ -210,17 +251,32 @@
         </p>
 
         <svelte:fragment slot="aside">
-            {@const current = data.organizationUsage.storage}
-            {@const currentHumanized = humanFileSize(current)}
-            {@const max = getServiceLimit('storage', tier)}
-            <ProgressBarBig
-                currentUnit={currentHumanized.unit}
-                currentValue={currentHumanized.value}
-                maxUnit="GB"
-                maxValue={max.toString()}
-                progressValue={bytesToSize(current, 'GB')}
-                progressMax={max} />
-            <ProjectBreakdown projects={data.organizationUsage.projects} metric="storage" {data} />
+            {#if data.organizationUsage.storageTotal}
+                {@const current = data.organizationUsage.storageTotal}
+                {@const currentHumanized = humanFileSize(current)}
+                {@const max = getServiceLimit('storage', tier)}
+                <ProgressBarBig
+                    currentUnit={currentHumanized.unit}
+                    currentValue={currentHumanized.value}
+                    maxUnit="GB"
+                    maxValue={max.toString()}
+                    progressValue={bytesToSize(current, 'GB')}
+                    progressMax={max} />
+                <ProjectBreakdown
+                    projects={data.organizationUsage.projects}
+                    metric="storage"
+                    {data} />
+            {:else}
+                <Card isDashed>
+                    <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
+                        <span
+                            class="icon-chart-square-bar text-large"
+                            aria-hidden="true"
+                            style="font-size: 32px;" />
+                        <p class="u-bold">No data to show</p>
+                    </div>
+                </Card>
+            {/if}
         </svelte:fragment>
     </CardGrid>
 

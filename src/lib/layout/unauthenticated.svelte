@@ -13,7 +13,7 @@
 <main class="grid-1-1 is-full-page" id="main">
     <section class="u-flex u-flex-vertical side-bg">
         <div class="logo u-flex u-gap-16 u-margin-inline-auto is-not-mobile">
-            <a href={user ? '/console' : '/'}>
+            <a href={$user ? '/console' : '/'}>
                 {#if $app.themeInUse === 'dark'}
                     <img
                         src={AppwriteLogoDark}

@@ -1,4 +1,4 @@
-import type { Client, Query } from '@appwrite.io/console';
+import type { Client, Models, Query } from '@appwrite.io/console';
 import type { Organization } from '../stores/organization';
 import type { PaymentMethod } from '@stripe/stripe-js';
 import type { Tier } from '$lib/stores/billing';
@@ -155,15 +155,13 @@ export type Aggregation = {
      */
     resources: OrganizationUsage;
 };
-type UsageMetric = {
-    date: string;
-    value: number;
-};
+
 export type OrganizationUsage = {
-    bandwidth: Array<UsageMetric>;
-    executions: number;
-    storage: number;
-    users: Array<UsageMetric>;
+    bandwidth: Array<Models.Metric>;
+    executionsTotal: number;
+    storageTotal: number;
+    users: Array<Models.Metric>;
+    usersTotal: number;
     projects: Array<{
         projectId: string;
         storage: number;

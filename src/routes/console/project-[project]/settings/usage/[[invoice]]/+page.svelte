@@ -1,6 +1,4 @@
 <script lang="ts">
-    import { page } from '$app/stores';
-    import { goto } from '$app/navigation';
     import { Container } from '$lib/layout';
     import { CardGrid, Heading, Card } from '$lib/components';
     import {
@@ -15,8 +13,7 @@
     import { showUsageRatesModal, tierToPlan } from '$lib/stores/billing';
     import { wizard } from '$lib/stores/wizard';
     import { organization } from '$lib/stores/organization';
-    import { Button, InputSelect } from '$lib/elements/forms';
-    import { toLocaleDate } from '$lib/helpers/date';
+    import { Button } from '$lib/elements/forms';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { BarChart } from '$lib/charts';
     import { formatNum } from '$lib/helpers/string';
@@ -36,19 +33,18 @@
     const tier = data?.currentInvoice?.tier ?? $organization?.billingPlan;
     const plan = tierToPlan(tier).name;
 
-    let invoice = null;
+    // let invoice = null;
+    // async function handlePeriodChange() {
+    //     const target = invoice ? `${base}/settings/usage/${invoice}` : `${base}/settings/usage`;
+    //     if ($page.url.pathname !== target) {
+    //         await goto(target);
+    //     }
+    // }
 
-    async function handlePeriodChange() {
-        const target = invoice ? `${base}/settings/usage/${invoice}` : `${base}/settings/usage`;
-        if ($page.url.pathname !== target) {
-            await goto(target);
-        }
-    }
-
-    const cycles = data.invoices.invoices.map((invoice) => ({
-        label: toLocaleDate(invoice.from),
-        value: invoice.$id
-    }));
+    // const cycles = data.invoices.invoices.map((invoice) => ({
+    //     label: toLocaleDate(invoice.from),
+    //     value: invoice.$id
+    // }));
 </script>
 
 <Container>
@@ -87,7 +83,7 @@
             </p>
         {/if}
 
-        <div class="u-flex u-gap-8 u-cross-center u-hide">
+        <!--<div class="u-flex u-gap-8 u-cross-center">
             <p class="text">Usage period:</p>
             <InputSelect
                 wrapperTag="div"
@@ -103,7 +99,7 @@
                     },
                     ...cycles
                 ]} />
-        </div>
+                </div>-->
     </div>
     <CardGrid>
         <Heading tag="h4" size="7">Bandwidth</Heading>
@@ -157,29 +153,41 @@
         <p class="text">Total user in your project.</p>
 
         <svelte:fragment slot="aside">
-            {@const current = formatNum(usersTotal)}
-            <div class="u-flex u-flex-vertical">
-                <div class="u-flex u-main-space-between">
-                    <p>
-                        <span class="heading-level-4">{current}</span>
-                        <span class="body-text-1 u-bold">Users</span>
-                    </p>
+            {#if users}
+                {@const current = formatNum(usersTotal)}
+                <div class="u-flex u-flex-vertical">
+                    <div class="u-flex u-main-space-between">
+                        <p>
+                            <span class="heading-level-4">{current}</span>
+                            <span class="body-text-1 u-bold">Users</span>
+                        </p>
+                    </div>
                 </div>
-            </div>
-            <BarChart
-                options={{
-                    yAxis: {
-                        axisLabel: {
-                            formatter: formatNum
+                <BarChart
+                    options={{
+                        yAxis: {
+                            axisLabel: {
+                                formatter: formatNum
+                            }
                         }
-                    }
-                }}
-                series={[
-                    {
-                        name: 'Users',
-                        data: [...users.map((e) => [e.date, e.value])]
-                    }
-                ]} />
+                    }}
+                    series={[
+                        {
+                            name: 'Users',
+                            data: [...users.map((e) => [e.date, e.value])]
+                        }
+                    ]} />
+            {:else}
+                <Card isDashed>
+                    <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
+                        <span
+                            class="icon-chart-square-bar text-large"
+                            aria-hidden="true"
+                            style="font-size: 32px;" />
+                        <p class="u-bold">No data to show</p>
+                    </div>
+                </Card>
+            {/if}
         </svelte:fragment>
     </CardGrid>
     <CardGrid>
@@ -190,54 +198,66 @@
         </p>
 
         <svelte:fragment slot="aside">
-            {@const current = formatNum(executionsTotal)}
-            <div class="u-flex u-flex-vertical">
-                <div class="u-flex u-main-space-between">
-                    <p>
-                        <span class="heading-level-4">{current}</span>
-                        <span class="body-text-1 u-bold">Executions</span>
-                    </p>
+            {#if executions}
+                {@const current = formatNum(executionsTotal)}
+                <div class="u-flex u-flex-vertical">
+                    <div class="u-flex u-main-space-between">
+                        <p>
+                            <span class="heading-level-4">{current}</span>
+                            <span class="body-text-1 u-bold">Executions</span>
+                        </p>
+                    </div>
                 </div>
-            </div>
-            <BarChart
-                options={{
-                    yAxis: {
-                        axisLabel: {
-                            formatter: formatNum
+                <BarChart
+                    options={{
+                        yAxis: {
+                            axisLabel: {
+                                formatter: formatNum
+                            }
                         }
-                    }
-                }}
-                series={[
-                    {
-                        name: 'Executions',
-                        data: [...executions.map((e) => [e.date, e.value])]
-                    }
-                ]} />
-            {#if data.usage.executionsBreakdown.length > 0}
-                <Table noMargin noStyles>
-                    <TableHeader>
-                        <TableCellHead width={285}>Function</TableCellHead>
-                        <TableCellHead>Usage</TableCellHead>
-                        <TableCellHead width={140} />
-                    </TableHeader>
-                    <TableBody>
-                        {#each data.usage.executionsBreakdown as func}
-                            <TableRow>
-                                <TableCell title="Function">
-                                    {func.name ?? func.resourceId}
-                                </TableCell>
-                                <TableCell title="Usage">
-                                    {formatNum(func.value)} executions
-                                </TableCell>
-                                <TableCellLink
-                                    href={`${base}/functions/function-${func.resourceId}`}
-                                    title="View function">
-                                    View function
-                                </TableCellLink>
-                            </TableRow>
-                        {/each}
-                    </TableBody>
-                </Table>
+                    }}
+                    series={[
+                        {
+                            name: 'Executions',
+                            data: [...executions.map((e) => [e.date, e.value])]
+                        }
+                    ]} />
+                {#if data.usage.executionsBreakdown.length > 0}
+                    <Table noMargin noStyles>
+                        <TableHeader>
+                            <TableCellHead width={285}>Function</TableCellHead>
+                            <TableCellHead>Usage</TableCellHead>
+                            <TableCellHead width={140} />
+                        </TableHeader>
+                        <TableBody>
+                            {#each data.usage.executionsBreakdown as func}
+                                <TableRow>
+                                    <TableCell title="Function">
+                                        {func.name ?? func.resourceId}
+                                    </TableCell>
+                                    <TableCell title="Usage">
+                                        {formatNum(func.value)} executions
+                                    </TableCell>
+                                    <TableCellLink
+                                        href={`${base}/functions/function-${func.resourceId}`}
+                                        title="View function">
+                                        View function
+                                    </TableCellLink>
+                                </TableRow>
+                            {/each}
+                        </TableBody>
+                    </Table>
+                {/if}
+            {:else}
+                <Card isDashed>
+                    <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
+                        <span
+                            class="icon-chart-square-bar text-large"
+                            aria-hidden="true"
+                            style="font-size: 32px;" />
+                        <p class="u-bold">No data to show</p>
+                    </div>
+                </Card>
             {/if}
         </svelte:fragment>
     </CardGrid>
@@ -250,41 +270,53 @@
         </p>
 
         <svelte:fragment slot="aside">
-            {@const humanized = humanFileSize(storage)}
-            <div class="u-flex u-flex-vertical">
-                <div class="u-flex u-main-space-between">
-                    <p>
-                        <span class="heading-level-4">{humanized.value}</span>
-                        <span class="body-text-1 u-bold">{humanized.unit}</span>
-                    </p>
+            {#if storage}
+                {@const humanized = humanFileSize(storage)}
+                <div class="u-flex u-flex-vertical">
+                    <div class="u-flex u-main-space-between">
+                        <p>
+                            <span class="heading-level-4">{humanized.value}</span>
+                            <span class="body-text-1 u-bold">{humanized.unit}</span>
+                        </p>
+                    </div>
                 </div>
-            </div>
-            {#if data.usage.bucketsBreakdown.length > 0}
-                <Table noMargin noStyles>
-                    <TableHeader>
-                        <TableCellHead width={285}>Bucket</TableCellHead>
-                        <TableCellHead>Usage</TableCellHead>
-                        <TableCellHead width={140} />
-                    </TableHeader>
-                    <TableBody>
-                        {#each data.usage.bucketsBreakdown.sort((a, b) => b.value - a.value) as bucket}
-                            {@const humanized = humanFileSize(bucket.value)}
-                            <TableRow>
-                                <TableCell title="Function">
-                                    {bucket.name ?? bucket.resourceId}
-                                </TableCell>
-                                <TableCell title="Usage">
-                                    {humanized.value}{humanized.unit}
-                                </TableCell>
-                                <TableCellLink
-                                    href={`${base}/storage/bucket-${bucket.resourceId}`}
-                                    title="View bucket">
-                                    View bucket
-                                </TableCellLink>
-                            </TableRow>
-                        {/each}
-                    </TableBody>
-                </Table>
+                {#if data.usage.bucketsBreakdown.length > 0}
+                    <Table noMargin noStyles>
+                        <TableHeader>
+                            <TableCellHead width={285}>Bucket</TableCellHead>
+                            <TableCellHead>Usage</TableCellHead>
+                            <TableCellHead width={140} />
+                        </TableHeader>
+                        <TableBody>
+                            {#each data.usage.bucketsBreakdown.sort((a, b) => b.value - a.value) as bucket}
+                                {@const humanized = humanFileSize(bucket.value)}
+                                <TableRow>
+                                    <TableCell title="Function">
+                                        {bucket.name ?? bucket.resourceId}
+                                    </TableCell>
+                                    <TableCell title="Usage">
+                                        {humanized.value}{humanized.unit}
+                                    </TableCell>
+                                    <TableCellLink
+                                        href={`${base}/storage/bucket-${bucket.resourceId}`}
+                                        title="View bucket">
+                                        View bucket
+                                    </TableCellLink>
+                                </TableRow>
+                            {/each}
+                        </TableBody>
+                    </Table>
+                {/if}
+            {:else}
+                <Card isDashed>
+                    <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
+                        <span
+                            class="icon-chart-square-bar text-large"
+                            aria-hidden="true"
+                            style="font-size: 32px;" />
+                        <p class="u-bold">No data to show</p>
+                    </div>
+                </Card>
             {/if}
         </svelte:fragment>
     </CardGrid>
