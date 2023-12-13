@@ -40,6 +40,13 @@ export type Invoice = {
     dueAt: string;
     clientSecret: string;
     tier: Tier;
+    usage: {
+        name: string;
+        value: number /* service over the limit*/;
+        amount: number /* price of service over the limit*/;
+        rate: number;
+        desc: string;
+    }[];
 };
 
 export type InvoiceList = {

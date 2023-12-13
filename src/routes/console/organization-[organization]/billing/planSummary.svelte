@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { Box, CardGrid, Heading } from '$lib/components';
+    import { Box, CardGrid, EyebrowHeading, Heading } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
@@ -12,6 +12,7 @@
     import { sdk } from '$lib/stores/sdk';
     import type { Invoice } from '$lib/sdk/billing';
     import { Query } from '@appwrite.io/console';
+    import { abbreviateNumber, formatNumberWithCommas } from '$lib/helpers/numbers';
 
     let currentInvoice: Invoice;
     const today = new Date();
@@ -25,8 +26,9 @@
 
     $: currentPlan = $plansInfo.plans.find((p) => p.$id === $organization?.billingPlan);
     $: extraUsage = currentInvoice?.amount - currentPlan?.price;
-
     $: isTrial = new Date($organization?.billingTrialEndDate).getTime() - today.getTime() > 0;
+
+    $: console.log(currentInvoice);
 </script>
 
 {#if $organization}
@@ -62,15 +64,26 @@
                         ${isTrial ? 0 : currentPlan?.price}
                     </p>
                 </div>
-                {#if currentInvoice && $organization?.billingPlan !== 'tier-0' && extraUsage > 0 && !isTrial}
-                    <div class="u-flex u-main-space-between u-margin-block-start-8">
-                        <p class="text u-color-text-gray">Extra usage</p>
-                        <p class="text">${extraUsage}</p>
-                    </div>
-                    <div class="u-flex u-main-space-between">
-                        <p class="text u-color-text-gray">Total to-date:</p>
-                        <p class="text">${currentInvoice?.amount}</p>
-                    </div>
+                {#if currentInvoice?.usage?.length && $organization?.billingPlan !== 'tier-0' && !isTrial}
+                    <EyebrowHeading tag="h6" size={3}>Excess</EyebrowHeading>
+                    <ul>
+                        {#each currentInvoice.usage as excess}
+                            {#if ['users', 'executions'].includes(excess.name)}
+                                <li class="u-flex u-main-space-between u-margin-block-start-8">
+                                    <p class="text u-color-text-gray">
+                                        <span title={formatNumberWithCommas(excess.value)}
+                                            >{abbreviateNumber(excess.value)}</span>
+                                        {excess.name}
+                                    </p>
+                                    <p class="text">${excess.amount}</p>
+                                </li>
+                            {/if}
+                        {/each}
+                        <li class="u-flex u-main-space-between u-margin-block-start-16">
+                            <Heading tag="h6" size="7">Total to-date:</Heading>
+                            <Heading tag="h6" size="7">${currentInvoice?.amount}</Heading>
+                        </li>
+                    </ul>
                 {/if}
             </Box>
             <div class="u-flex u-main-space-between u-cross-center">
