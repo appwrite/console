@@ -13,6 +13,7 @@
     import type { Invoice } from '$lib/sdk/billing';
     import { Query } from '@appwrite.io/console';
     import { abbreviateNumber, formatNumberWithCommas } from '$lib/helpers/numbers';
+    import { bytesToSize, humanFileSize } from '$lib/helpers/sizeConvertion';
 
     let currentInvoice: Invoice;
     const today = new Date();
@@ -65,25 +66,41 @@
                     </p>
                 </div>
                 {#if currentInvoice?.usage?.length && $organization?.billingPlan !== 'tier-0' && !isTrial}
-                    <EyebrowHeading tag="h6" size={3}>Excess</EyebrowHeading>
-                    <ul>
-                        {#each currentInvoice.usage as excess}
-                            {#if ['users', 'executions'].includes(excess.name)}
-                                <li class="u-flex u-main-space-between u-margin-block-start-8">
-                                    <p class="text u-color-text-gray">
-                                        <span title={formatNumberWithCommas(excess.value)}
-                                            >{abbreviateNumber(excess.value)}</span>
-                                        {excess.name}
-                                    </p>
-                                    <p class="text">${excess.amount}</p>
-                                </li>
-                            {/if}
-                        {/each}
-                        <li class="u-flex u-main-space-between u-margin-block-start-16">
-                            <Heading tag="h6" size="7">Total to-date:</Heading>
-                            <Heading tag="h6" size="7">${currentInvoice?.amount}</Heading>
-                        </li>
-                    </ul>
+                    <div class="u-margin-block-start-24">
+                        <EyebrowHeading tag="h6" size={3}>Excess</EyebrowHeading>
+                        <ul>
+                            {#each currentInvoice.usage as excess}
+                                {#if ['storage', 'bandwidth'].includes(excess.name)}
+                                    {@const excessValue = humanFileSize(excess.value)}
+                                    <li class="u-flex u-main-space-between u-margin-block-start-8">
+                                        <p class="text u-color-text-gray">
+                                            <span
+                                                title={formatNumberWithCommas(excess.value) +
+                                                    'bytes'}>
+                                                {excessValue.value}{excessValue.unit}
+                                            </span>
+                                            {excess.name}
+                                        </p>
+                                        <p class="text">${excess.amount}</p>
+                                    </li>
+                                {/if}
+                                {#if ['users', 'executions'].includes(excess.name)}
+                                    <li class="u-flex u-main-space-between u-margin-block-start-8">
+                                        <p class="text u-color-text-gray">
+                                            <span title={formatNumberWithCommas(excess.value)}
+                                                >{abbreviateNumber(excess.value)}</span>
+                                            {excess.name}
+                                        </p>
+                                        <p class="text">${excess.amount}</p>
+                                    </li>
+                                {/if}
+                            {/each}
+                            <li class="u-flex u-main-space-between u-margin-block-start-16">
+                                <Heading tag="h6" size="7">Total to-date:</Heading>
+                                <Heading tag="h6" size="7">${currentInvoice?.amount}</Heading>
+                            </li>
+                        </ul>
+                    </div>
                 {/if}
             </Box>
             <div class="u-flex u-main-space-between u-cross-center">
