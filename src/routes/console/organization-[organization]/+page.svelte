@@ -31,7 +31,6 @@
     import type { RegionList } from '$lib/sdk/billing';
     import { onMount } from 'svelte';
     import CreateOrganizationCloud from '../createOrganizationCloud.svelte';
-    // import HoodieCover from '../(billing-modal)/hoodieCover.svelte';
 
     export let data;
 
@@ -120,7 +119,6 @@
 
     let regions: RegionList;
     onMount(async () => {
-        // wizard.showCover(HoodieCover);
         if (isCloud) {
             regions = await sdk.forConsole.billing.listRegions();
             if ($page.url.searchParams.has('type')) {
