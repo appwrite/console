@@ -11,6 +11,7 @@
     import ProjectBreakdown from './ProjectBreakdown.svelte';
     import { formatNum } from '$lib/helpers/string';
     import { accumulateFromEndingTotal, total } from '$lib/layout/usage.svelte';
+    import type { OrganizationUsage } from '$lib/sdk/billing';
 
     export let data;
 
@@ -31,6 +32,8 @@
     //     label: toLocaleDate(invoice.from),
     //     value: invoice.$id
     // }));
+
+    $: project = (data.organizationUsage as OrganizationUsage).projects;
 </script>
 
 <Container>
@@ -136,10 +139,7 @@
                             }
                         }
                     ]} />
-                <ProjectBreakdown
-                    projects={data.organizationUsage.projects}
-                    metric="bandwidth"
-                    {data} />
+                <ProjectBreakdown projects={project} metric="bandwidth" {data} />
             {:else}
                 <Card isDashed>
                     <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
@@ -188,10 +188,7 @@
                             )
                         }
                     ]} />
-                <ProjectBreakdown
-                    projects={data.organizationUsage.projects}
-                    metric="users"
-                    {data} />
+                <ProjectBreakdown projects={project} metric="users" {data} />
             {:else}
                 <Card isDashed>
                     <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
@@ -224,10 +221,7 @@
                     maxValue={formatNum(max)}
                     progressValue={current}
                     progressMax={max} />
-                <ProjectBreakdown
-                    projects={data.organizationUsage.projects}
-                    metric="executions"
-                    {data} />
+                <ProjectBreakdown projects={project} metric="executions" {data} />
             {:else}
                 <Card isDashed>
                     <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
@@ -262,10 +256,7 @@
                     maxValue={max.toString()}
                     progressValue={bytesToSize(current, 'GB')}
                     progressMax={max} />
-                <ProjectBreakdown
-                    projects={data.organizationUsage.projects}
-                    metric="storage"
-                    {data} />
+                <ProjectBreakdown projects={project} metric="storage" {data} />
             {:else}
                 <Card isDashed>
                     <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">

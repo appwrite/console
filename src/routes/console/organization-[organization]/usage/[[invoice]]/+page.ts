@@ -19,7 +19,8 @@ export const load: PageLoad = async ({ params, parent }) => {
                 users: null,
                 usersTotal: null,
                 storageTotal: null,
-                executionsTotal: null
+                executionsTotal: null,
+                projects: null
             }
         };
     }
