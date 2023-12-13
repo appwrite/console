@@ -13,7 +13,7 @@
     import type { Invoice } from '$lib/sdk/billing';
     import { Query } from '@appwrite.io/console';
     import { abbreviateNumber, formatNumberWithCommas } from '$lib/helpers/numbers';
-    import { bytesToSize, humanFileSize } from '$lib/helpers/sizeConvertion';
+    import { humanFileSize } from '$lib/helpers/sizeConvertion';
 
     let currentInvoice: Invoice;
     const today = new Date();
