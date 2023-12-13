@@ -115,7 +115,7 @@
 
 <div>
     <form on:submit|preventDefault={addFilter}>
-        <div class="selects u-flex u-gap-8 u-margin-block-start-16">
+        <ul class="selects u-flex u-gap-8 u-margin-block-start-16">
             <InputSelect
                 id="column"
                 options={$columns.map((c) => ({
@@ -130,7 +130,7 @@
                 options={operatorsForColumn}
                 placeholder="Select operator"
                 bind:value={operatorKey} />
-        </div>
+        </ul>
         {#if column && operator && !operator?.hideInput}
             <div class="u-margin-block-start-8">
                 {#if column.type === 'integer' || column.type === 'double'}
