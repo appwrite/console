@@ -17,14 +17,16 @@
         organizationList
     } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
-    import { isCloud } from '$lib/system';
+    import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
     import CreateOrganizationCloud from '../createOrganizationCloud.svelte';
 
     let areMembersLimited: boolean;
     $: organization.subscribe(() => {
         const limit = getServiceLimit('members') || Infinity;
         const isLimited = limit !== 0 && limit < Infinity;
-        areMembersLimited = isCloud && ($readOnly || (isLimited && $members?.total >= limit));
+        areMembersLimited =
+            isCloud &&
+            (($readOnly && !GRACE_PERIOD_OVERRIDE) || (isLimited && $members?.total >= limit));
     });
     let showDropdown = false;
 

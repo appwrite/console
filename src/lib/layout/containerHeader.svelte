@@ -11,7 +11,7 @@
     import { Alert, DropList, Heading } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { organization } from '$lib/stores/organization';
-    import { isCloud } from '$lib/system';
+    import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
     import { createEventDispatcher, onMount } from 'svelte';
     import { wizard } from '$lib/stores/wizard';
     import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
@@ -59,7 +59,9 @@
     $: isLimited = limit !== 0 && limit < Infinity;
     $: overflowingServices = limitedServices.filter((service) => service.value >= 0);
     $: isButtonDisabled =
-        buttonDisabled || $readOnly || (isLimited && total >= limit && !hasUsageFees);
+        buttonDisabled ||
+        ($readOnly && !GRACE_PERIOD_OVERRIDE) ||
+        (isLimited && total >= limit && !hasUsageFees);
 
     onMount(() => {
         dispatch('data', { isButtonDisabled, limit, tier });

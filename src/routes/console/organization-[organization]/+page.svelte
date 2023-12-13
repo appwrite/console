@@ -7,7 +7,7 @@
     import CreateProject from './createProject.svelte';
     import CreateOrganization from '../createOrganization.svelte';
     import { wizard } from '$lib/stores/wizard';
-    import { isCloud } from '$lib/system';
+    import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
     import { page } from '$app/stores';
     import { registerCommands } from '$lib/commandCenter';
     import {
@@ -89,7 +89,7 @@
                 showCreate = true;
             },
             keys: ['c'],
-            disabled: $readOnly,
+            disabled: $readOnly && !GRACE_PERIOD_OVERRIDE,
             group: 'projects',
             icon: 'plus'
         }
@@ -141,7 +141,10 @@
         <Heading tag="h2" size="5">Projects</Heading>
 
         <DropList bind:show={showDropdown} placement="bottom-end">
-            <Button on:click={handleCreateProject} event="create_project" disabled={$readOnly}>
+            <Button
+                on:click={handleCreateProject}
+                event="create_project"
+                disabled={$readOnly && !GRACE_PERIOD_OVERRIDE}>
                 <span class="icon-plus" aria-hidden="true" />
                 <span class="text">Create project</span>
             </Button>

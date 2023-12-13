@@ -40,7 +40,7 @@
     import DeploymentCreatedBy from './deploymentCreatedBy.svelte';
     import DeploymentDomains from './deploymentDomains.svelte';
     import { hoursToDays } from '$lib/helpers/date';
-    import { isCloud } from '$lib/system';
+    import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
     import { readOnly } from '$lib/stores/billing';
 
     export let data;
@@ -160,7 +160,9 @@
                         <Button
                             secondary
                             on:click={() => ($execute = $func)}
-                            disabled={isCloud && $readOnly}>Execute now</Button>
+                            disabled={isCloud && $readOnly && !GRACE_PERIOD_OVERRIDE}>
+                            Execute now
+                        </Button>
                     </div>
                 </svelte:fragment>
             </CardGrid>

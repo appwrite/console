@@ -265,14 +265,7 @@
         }, INTERVAL);
 
         if (isCloud && hasStripePublicKey) {
-            console.log('Environment is Cloud and Stripe public key deteted');
             $stripe = await loadStripe(VARS.STRIPE_PUBLIC_KEY);
-            console.log('Stripe loaded', $stripe);
-        } else {
-            console.log('Environment is not Cloud or Stripe public key not deteted');
-            console.log('isCloud:', isCloud);
-            console.log('hasStripePublicKey:', hasStripePublicKey);
-            console.log('Stripe key:', VARS.STRIPE_PUBLIC_KEY);
         }
     });
 

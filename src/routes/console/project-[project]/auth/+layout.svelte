@@ -3,6 +3,7 @@
     import { page } from '$app/stores';
     import { registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import { readOnly } from '$lib/stores/billing';
+    import { GRACE_PERIOD_OVERRIDE } from '$lib/system';
     import { project } from '../store';
     import { showCreateUser } from './+page.svelte';
     import { showCreateTeam } from './teams/+page.svelte';
@@ -20,7 +21,7 @@
             group: 'users',
             icon: 'plus',
             rank: $page.url.pathname.endsWith('auth') ? 10 : 0,
-            disabled: $readOnly
+            disabled: $readOnly && !GRACE_PERIOD_OVERRIDE
         },
         {
             label: 'Create team',
@@ -35,7 +36,7 @@
             group: 'teams',
             icon: 'plus',
             rank: $page.url.pathname.endsWith('teams') ? 10 : 0,
-            disabled: $readOnly
+            disabled: $readOnly && !GRACE_PERIOD_OVERRIDE
         },
         {
             label: 'Go to teams',

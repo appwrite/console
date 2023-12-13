@@ -40,7 +40,7 @@
     import { uploader } from '$lib/stores/uploader';
     import { wizard } from '$lib/stores/wizard';
     import { tooltip } from '$lib/actions/tooltip';
-    import { readOnly, showUsageRatesModal } from '$lib/stores/billing';
+    import { showUsageRatesModal } from '$lib/stores/billing';
     import { sdk } from '$lib/stores/sdk.js';
     import Create from './create-file/create.svelte';
     import DeleteFile from './deleteFile.svelte';
@@ -80,12 +80,7 @@
 </script>
 
 <Container>
-    <ContainerHeader
-        title="Files"
-        serviceId="storage"
-        isFlex={false}
-        total={usedStorage}
-        buttonDisabled={$readOnly}>
+    <ContainerHeader title="Files" serviceId="storage" isFlex={false} total={usedStorage}>
         <svelte:fragment let:isButtonDisabled>
             <SearchQuery search={data.search} placeholder="Search by filename">
                 <div

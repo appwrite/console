@@ -31,8 +31,6 @@
     import { writable } from 'svelte/store';
     import type { PageData } from './$types';
     import Create from './createUser.svelte';
-    import { readOnly } from '$lib/stores/billing';
-    import { isCloud } from '$lib/system';
     import { tooltip } from '$lib/actions/tooltip';
 
     export let data: PageData;
@@ -44,12 +42,7 @@
 </script>
 
 <Container>
-    <ContainerHeader
-        title="Users"
-        isFlex={false}
-        total={data.users.total}
-        buttonDisabled={isCloud && $readOnly}
-        let:isButtonDisabled>
+    <ContainerHeader title="Users" isFlex={false} total={data.users.total} let:isButtonDisabled>
         <SearchQuery search={data.search} placeholder="Search by name, email, phone, or ID">
             <div
                 use:tooltip={{
@@ -59,7 +52,7 @@
                 <Button
                     on:click={() => ($showCreateUser = true)}
                     event="create_user"
-                    disabled={isCloud && $readOnly}>
+                    disabled={isButtonDisabled}>
                     <span class="icon-plus" aria-hidden="true" />
                     <span class="text">Create user</span>
                 </Button>

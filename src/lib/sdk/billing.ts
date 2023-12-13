@@ -185,7 +185,8 @@ export type AllowedRegions =
     | 'eu-nl'
     | 'ap-sg'
     | 'ap-ca'
-    | 'ap-au';
+    | 'ap-au'
+    | 'default'; //TODO: remove after migration
 
 export type Region = {
     $id: AllowedRegions;

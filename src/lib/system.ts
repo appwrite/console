@@ -23,3 +23,4 @@ export const MODE = VARS.CONSOLE_MODE === Mode.CLOUD ? Mode.CLOUD : Mode.SELF_HO
 export const isCloud = MODE === Mode.CLOUD;
 export const isSelfHosted = MODE !== Mode.CLOUD;
 export const hasStripePublicKey = !!VARS.STRIPE_PUBLIC_KEY;
+export const GRACE_PERIOD_OVERRIDE = true;
