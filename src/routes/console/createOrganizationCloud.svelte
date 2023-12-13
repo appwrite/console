@@ -20,6 +20,7 @@
     import { wizard } from '$lib/stores/wizard';
     import { tierToPlan } from '$lib/stores/billing';
     import AddressDetails from './wizard/cloudOrganization/addressDetails.svelte';
+    import HoodieCover from './(billing-modal)/hoodieCover.svelte';
 
     async function onFinish() {
         await invalidate(Dependencies.ORGANIZATION);
@@ -96,8 +97,8 @@
                 budget_cap_enabled: !!$createOrganization?.billingBudget,
                 members_invited: $createOrganization?.collaborators?.length
             });
-            console.log('TEST');
             wizard.hide();
+            wizard.showCover(HoodieCover);
         } catch (e) {
             addNotification({
                 type: 'error',

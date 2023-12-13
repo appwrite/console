@@ -25,6 +25,7 @@
     import { tierToPlan } from '$lib/stores/billing';
     import { user } from '$lib/stores/user';
     import { feedback } from '$lib/stores/feedback';
+    import HoodieCover from './(billing-modal)/hoodieCover.svelte';
 
     const dispatch = createEventDispatcher();
 
@@ -145,6 +146,7 @@
                 await invalidate(Dependencies.ORGANIZATION);
 
                 dispatch('created');
+
                 await goto(`/console/organization-${org.$id}`);
                 if ($isUpgrade) {
                     addNotification({
@@ -156,9 +158,9 @@
                         type: 'success',
                         isHtml: true,
                         message: `
-                    <b>${$organization.name}</b> will change to ${
-                        tierToPlan($changeOrganizationTier.billingPlan).name
-                    } plan at the end of the current billing cycle.`
+                        <b>${$organization.name}</b> will change to ${
+                            tierToPlan($changeOrganizationTier.billingPlan).name
+                        } plan at the end of the current billing cycle.`
                     });
                 }
                 trackEvent($isUpgrade ? Submit.OrganizationUpgrade : Submit.OrganizationDowngrade, {
@@ -166,6 +168,7 @@
                     plan: tierToPlan($changeOrganizationTier.billingPlan)?.name
                 });
                 wizard.hide();
+                wizard.showCover(HoodieCover);
             } catch (e) {
                 addNotification({
                     type: 'error',

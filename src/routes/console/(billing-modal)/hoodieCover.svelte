@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { trackEvent } from '$lib/actions/analytics';
     import { Card, Heading } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import WizardCover from '$lib/layout/wizardCover.svelte';
@@ -7,6 +6,11 @@
     import Hoodie from './hoodie.png';
     import { Confetti } from 'svelte-confetti';
     import { base } from '$app/paths';
+    import { app } from '$lib/stores/app';
+    import { wizard } from '$lib/stores/wizard';
+    import { organization } from '$lib/stores/organization';
+    import AppwriteLogoDark from '$lib/images/appwrite-logo-dark.svg';
+    import AppwriteLogoLight from '$lib/images/appwrite-logo-light.svg';
 
     $: postText = encodeURIComponent(
         [
@@ -31,9 +35,31 @@
         '#85DBD8',
         '#E5E1FF'
     ];
+
+    $: href = $organization?.$id
+        ? `${base}/console/organization-${$organization.$id}`
+        : `${base}/console`;
 </script>
 
 <WizardCover>
+    <svelte:fragment slot="header">
+        <div class="u-flex u-main-space-between">
+            <a {href}>
+                <img
+                    src={$app.themeInUse == 'dark' ? AppwriteLogoDark : AppwriteLogoLight}
+                    width="120"
+                    height="22"
+                    alt="Appwrite" />
+            </a>
+            <button
+                on:click={wizard.hide}
+                class="button is-text is-only-icon"
+                style:--button-size="1.5rem"
+                aria-label="close popup">
+                <span class="icon-x" aria-hidden="true" />
+            </button>
+        </div>
+    </svelte:fragment>
     <div class="wizard-container u-flex-vertical">
         <div class="u-flex u-cross-center u-main-center hoodie-container">
             <Card>
@@ -52,26 +78,24 @@
                     Appwrite Pro hoodie.
                 </p>
 
-                <p class="eyebrow-heading-3 u-margin-block-start-24">
-                    {'Share on social media'.toUpperCase()}
-                </p>
                 <div class="u-margin-block-start-16 u-flex u-gap-16">
                     <Button secondary href="https://x.com/intent/tweet?text={postText}" external>
-                        <span class="icon-twitter" aria-hidden="true" />
-                        <span class="text">Share on X</span>
+                        <span class="text">Share on </span>
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="18"
+                            height="16"
+                            viewBox="0 0 18 16"
+                            fill="none">
+                            <path
+                                d="M13.8885 0.316772H16.4953L10.8002 6.82583L17.5 15.6832H12.2541L8.14539 10.3113L3.44405 15.6832H0.835697L6.92711 8.72103L0.5 0.316772H5.87904L9.59299 5.22694L13.8885 0.316772ZM12.9736 14.1229H14.418L5.09417 1.7951H3.54413L12.9736 14.1229Z"
+                                fill={$app?.themeInUse === 'dark' ? '#C3C3C6' : '#414146'} />
+                        </svg>
                     </Button>
                 </div>
 
                 <div class="common-section card-separator u-flex u-main-end">
-                    <Button
-                        on:click={() => {
-                            trackEvent('click_create_function_manual', {
-                                from: 'cover'
-                            });
-                        }}
-                        href={`${base}/console`}>
-                        Go to console
-                    </Button>
+                    <Button on:click={wizard.hide}>Go to console</Button>
                 </div>
             </Card>
             <img class="hoodie-image" src={Hoodie} alt="" srcset="" />
@@ -108,7 +132,7 @@
         }
     }
     .hoodie-container {
-        height: 390px;
+        height: 350px;
         gap: 4rem;
         z-index: 1;
         @media #{$break2} {
