@@ -64,7 +64,7 @@
         <ul
             class="grid-box u-margin-block-start-16"
             style="--p-grid-item-size:12em; --p-grid-item-size-small-screens:12rem; --grid-gap: 1rem;">
-            {#each regions.regions as region}
+            {#each regions.regions.filter(r => r.$id !== 'default') as region}
                 <li>
                     <RegionCard
                         name="region"
