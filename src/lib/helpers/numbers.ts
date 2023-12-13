@@ -14,3 +14,9 @@ export function abbreviateNumber(num: number, decimals: number = 1): string {
 export function toDecimals(num: number, decimals: number = 1): number {
     return parseFloat(num.toFixed(decimals));
 }
+
+export function formatNumberWithCommas(number: number): string {
+    if (isNaN(number)) return String(number);
+    const formatter = new Intl.NumberFormat('en');
+    return formatter.format(number);
+}

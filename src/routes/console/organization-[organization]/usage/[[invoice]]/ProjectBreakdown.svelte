@@ -63,7 +63,7 @@
                     <TableCellHead width={140} />
                 </TableHeader>
                 <TableBody>
-                    {#each groupByProject(metric) as project}
+                    {#each groupByProject(metric).sort((a, b) => b.usage - a.usage) as project}
                         <TableRow>
                             <TableCell title="Project">
                                 {getProjectName(project.projectId)}

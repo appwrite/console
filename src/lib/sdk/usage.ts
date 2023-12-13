@@ -1,3 +1,21 @@
+export function accumulateUsage(usage: Models.Metric[], base: number): Models.Metric[] {
+    const accumulation = usage.reduce(
+        (carry, item) => {
+            const value = item.value + carry.currentTotal;
+            return {
+                currentTotal: value,
+                metrics: [...carry.metrics, { ...item, value }]
+            };
+        },
+        {
+            currentTotal: base,
+            metrics: []
+        }
+    );
+
+    return accumulation.metrics;
+}
+
 export type Metric = {
     /**
      * The value of this metric at the timestamp.

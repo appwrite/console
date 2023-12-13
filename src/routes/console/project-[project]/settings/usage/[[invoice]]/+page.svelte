@@ -27,10 +27,11 @@
     export let data;
 
     $: base = `/console/project-${data.project.$id}`;
-    $: network = data.usage.network as unknown as Models.Metric[];
+    $: network = data.usage.network;
     $: users = data.usage.users;
     $: usersTotal = data.usage.usersTotal;
-    $: executions = data.usage.executionsTotal;
+    $: executions = data.usage.executions;
+    $: executionsTotal = data.usage.executionsTotal;
     $: storage = data.usage.filesStorageTotal;
 
     const tier = data?.currentInvoice?.tier ?? $organization?.billingPlan;
@@ -87,7 +88,7 @@
             </p>
         {/if}
 
-        <div class="u-flex u-gap-8 u-cross-center">
+        <div class="u-flex u-gap-8 u-cross-center u-hide">
             <p class="text">Usage period:</p>
             <InputSelect
                 wrapperTag="div"
@@ -183,14 +184,14 @@
         </svelte:fragment>
     </CardGrid>
     <CardGrid>
-        <Heading tag="h6" size="7">Function executions</Heading>
+        <Heading tag="h6" size="7">Executions</Heading>
 
         <p class="text">
             Calculated for all functions that are executed in all projects in your project.
         </p>
 
         <svelte:fragment slot="aside">
-            {@const current = formatNum(executions)}
+            {@const current = formatNum(executionsTotal)}
             <div class="u-flex u-flex-vertical">
                 <div class="u-flex u-main-space-between">
                     <p>
@@ -199,6 +200,20 @@
                     </p>
                 </div>
             </div>
+            <BarChart
+                options={{
+                    yAxis: {
+                        axisLabel: {
+                            formatter: formatNum
+                        }
+                    }
+                }}
+                series={[
+                    {
+                        name: 'Executions',
+                        data: [...executions.map((e) => [e.date, e.value])]
+                    }
+                ]} />
             {#if data.usage.executionsBreakdown.length > 0}
                 <Table noMargin noStyles>
                     <TableHeader>

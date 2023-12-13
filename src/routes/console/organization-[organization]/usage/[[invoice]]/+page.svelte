@@ -14,6 +14,7 @@
     import ProjectBreakdown from './ProjectBreakdown.svelte';
     import { last } from '$lib/helpers/array';
     import { formatNum } from '$lib/helpers/string';
+    import { total } from '$lib/layout/usage.svelte';
 
     export let data;
 
@@ -76,7 +77,7 @@
             </p>
         {/if}
 
-        <div class="u-flex u-gap-8 u-cross-center">
+        <div class="u-flex u-gap-8 u-cross-center u-hide">
             <p class="text">Usage period:</p>
             <InputSelect
                 wrapperTag="div"
@@ -103,7 +104,7 @@
         </p>
 
         <svelte:fragment slot="aside">
-            {@const current = last(data.organizationUsage.bandwidth)?.value ?? 0}
+            {@const current = total(data.organizationUsage.bandwidth)}
             {@const currentHumanized = humanFileSize(current)}
             {@const max = getServiceLimit('bandwidth', tier)}
             <ProgressBarBig
@@ -177,7 +178,7 @@
     </CardGrid>
 
     <CardGrid>
-        <Heading tag="h6" size="7">Function executions</Heading>
+        <Heading tag="h6" size="7">Executions</Heading>
 
         <p class="text">
             Calculated for all functions that are executed in all projects in your organization.

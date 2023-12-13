@@ -11,9 +11,9 @@
 <Usage
     title="Users"
     path={`/console/project-${$page.params.project}/auth/usage`}
-    {total}
-    {count}
     countMetadata={{
         legend: 'Users',
         title: 'Registered users'
-    }} />
+    }}
+    {total}
+    {count} />
