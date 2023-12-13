@@ -14,6 +14,9 @@
     let columns = 0;
 
     const limit = getServiceLimit(service) || Infinity;
+    const upgradeMethod = () => {
+        wizard.start(ChangeOrganizationTierCloud);
+    };
 
     $: limitReached = limit !== 0 && limit < Infinity && total >= limit;
 
@@ -29,10 +32,10 @@
     <tr class="table-row">
         <td class="table-col" width="100%" colspan={columns}>
             <span class="u-flex u-gap-24 u-main-center u-cross-center">
-                <span class="text">Upgrade your plan to add {name} to your organization</span>
-                <Button secondary on:click={() => wizard.start(ChangeOrganizationTierCloud)}>
-                    Upgrade plan
-                </Button>
+                <slot name="limit" {upgradeMethod} {limit}>
+                    <span class="text">Upgrade your plan to add {name} to your organization</span>
+                    <Button secondary on:click={upgradeMethod}>Upgrade plan</Button>
+                </slot>
             </span>
         </td>
     </tr>

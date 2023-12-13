@@ -39,9 +39,10 @@
     import DeploymentSource from './deploymentSource.svelte';
     import DeploymentCreatedBy from './deploymentCreatedBy.svelte';
     import DeploymentDomains from './deploymentDomains.svelte';
-    import { hoursToDays } from '$lib/helpers/date';
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
-    import { readOnly } from '$lib/stores/billing';
+    import { readOnly, tierToPlan } from '$lib/stores/billing';
+    import { hoursToDays } from '$lib/helpers/date';
+    import { organization } from '$lib/stores/organization';
 
     export let data;
 
@@ -59,14 +60,7 @@
 </script>
 
 <Container>
-    <ContainerHeader title="Deployments" serviceId="logs">
-        <svelte:fragment slot="tooltip" let:limit let:tier let:upgradeMethod>
-            <p class="text">
-                Logs are retained in rolling {hoursToDays(limit)} intervals with the {tier} plan.
-                <button class="link" type="button" on:click|preventDefault={upgradeMethod}
-                    >Upgrade</button> to increase your log retention for a longer period.
-            </p>
-        </svelte:fragment>
+    <ContainerHeader title="Deployments">
         <Create main />
     </ContainerHeader>
     {#if $deploymentList?.total}
@@ -221,7 +215,19 @@
                         <TableCellHead width={80}>Size</TableCellHead>
                         <TableCellHead width={40} />
                     </TableHeader>
-                    <TableBody>
+                    <TableBody service="logs" total={isCloud ? Infinity : 0}>
+                        <svelte:fragment slot="limit" let:limit let:upgradeMethod>
+                            <p class="text">
+                                Logs are retained in rolling {hoursToDays(limit)} intervals with the
+                                {tierToPlan($organization.billingPlan).name}
+                                plan.
+                                <button
+                                    class="link"
+                                    type="button"
+                                    on:click|preventDefault={upgradeMethod}>Upgrade</button> to increase
+                                your log retention for a longer period.
+                            </p>
+                        </svelte:fragment>
                         {#each $deploymentList.deployments as deployment, index (deployment.$id)}
                             {@const status = deployment.status}
                             <TableRow>
