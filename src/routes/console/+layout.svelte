@@ -248,12 +248,13 @@
 
         if (isCloud) {
             if (!$page.url.pathname.includes('/console/onboarding')) {
-                checkForPostReleaseProModal();
             }
             try {
                 const orgs = await sdk.forConsole.teams.list([
                     Query.equal('billingPlan', 'tier-0')
                 ]);
+
+                checkForPostReleaseProModal(orgs);
                 checkForFreeOrgOverflow(orgs);
             } catch (error) {
                 console.log(error);

@@ -291,7 +291,8 @@ export async function checkForFreeOrgOverflow(orgs: Models.TeamList<Record<strin
     }
 }
 
-export function checkForPostReleaseProModal() {
+export async function checkForPostReleaseProModal(orgs: Models.TeamList<Record<string, unknown>>) {
+    if (!orgs?.teams?.length) return;
     const modalTime = localStorage.getItem('postReleaseProModal');
     const now = Date.now();
     // show the modal if it was never shown
