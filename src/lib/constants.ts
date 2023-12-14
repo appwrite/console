@@ -50,6 +50,7 @@ export enum Dependencies {
     MESSAGING_PROVIDERS = 'dependency:messaging_providers',
     MESSAGING_PROVIDER = 'dependency:messaging_provider',
     MESSAGING_MESSAGE = 'dependency:messaging_message',
+    MESSAGING_TOPICS = 'dependency:messaging_topics',
     MESSAGING_TOPIC = 'dependency:messaging_topic',
     MESSAGING_TOPIC_SUBSCRIBERS = 'dependency:messaging_topic_subscribers'
 }

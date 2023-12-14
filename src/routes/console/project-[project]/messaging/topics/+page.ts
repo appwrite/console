@@ -1,11 +1,12 @@
 import { Query } from '@appwrite.io/console';
 import { sdk } from '$lib/stores/sdk';
 import { getLimit, getPage, getQuery, getSearch, pageToOffset } from '$lib/helpers/load';
-import { PAGE_LIMIT } from '$lib/constants';
+import { Dependencies, PAGE_LIMIT } from '$lib/constants';
 import { queryParamToMap, queries } from '$lib/components/filters/store';
 import type { Topic } from '../store';
 
-export const load = async ({ url, route }) => {
+export const load = async ({ depends, url, route }) => {
+    depends(Dependencies.MESSAGING_TOPICS);
     const page = getPage(url);
     const search = getSearch(url);
     const limit = getLimit(url, route, PAGE_LIMIT);

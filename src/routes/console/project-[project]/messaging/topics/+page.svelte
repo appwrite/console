@@ -1,16 +1,5 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import {
-        TableHeader,
-        TableBody,
-        TableRowLink,
-        TableCellHead,
-        TableCellText,
-        TableCell,
-        TableCellHeadCheck,
-        TableScroll,
-        TableCellCheck
-    } from '$lib/elements/table';
     import { Button } from '$lib/elements/forms';
     import {
         Empty,
@@ -18,12 +7,10 @@
         SearchQuery,
         PaginationWithLimit,
         Heading,
-        Id,
         ViewSelector
     } from '$lib/components';
     import Create from './create.svelte';
     import { goto } from '$app/navigation';
-    import { toLocaleDateTime } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
     import { base } from '$app/paths';
     import type { Models } from '@appwrite.io/console';
@@ -31,9 +18,9 @@
     import { columns, showCreate } from './store';
     import { View } from '$lib/helpers/load';
     import Filters from '$lib/components/filters/filters.svelte';
+    import Table from './table.svelte';
 
     export let data: PageData;
-    let selected: string[] = [];
 
     const project = $page.params.project;
     const topicCreated = async (event: CustomEvent<Models.Team<Record<string, unknown>>>) => {
@@ -85,50 +72,7 @@
         </div>
     </div>
     {#if data.topics.total}
-        <TableScroll>
-            <TableHeader>
-                <TableCellHeadCheck
-                    bind:selected
-                    pageItemsIds={data.topics.topics.map((d) => d.$id)} />
-                {#each $columns as column}
-                    {#if column.show}
-                        <TableCellHead width={column.width}>{column.title}</TableCellHead>
-                    {/if}
-                {/each}
-            </TableHeader>
-            <TableBody>
-                {#each data.topics.topics as topic (topic.$id)}
-                    <TableRowLink
-                        href={`${base}/console/project-${project}/messaging/topics/topic-${topic.$id}`}>
-                        <TableCellCheck bind:selectedIds={selected} id={topic.$id} />
-
-                        {#each $columns as column (column.id)}
-                            {#if column.show}
-                                {#if column.id === '$id'}
-                                    {#key $columns}
-                                        <TableCell title={column.title} width={column.width}>
-                                            <Id value={topic.$id}>{topic.$id}</Id>
-                                        </TableCell>
-                                    {/key}
-                                {:else if column.type === 'datetime'}
-                                    <TableCellText title={column.title} width={column.width}>
-                                        {#if !topic[column.id]}
-                                            -
-                                        {:else}
-                                            {toLocaleDateTime(topic[column.id])}
-                                        {/if}
-                                    </TableCellText>
-                                {:else}
-                                    <TableCellText title={column.title} width={column.width}>
-                                        {topic[column.id]}
-                                    </TableCellText>
-                                {/if}
-                            {/if}
-                        {/each}
-                    </TableRowLink>
-                {/each}
-            </TableBody>
-        </TableScroll>
+        <Table {data} />
 
         <PaginationWithLimit
             name="Topics"
