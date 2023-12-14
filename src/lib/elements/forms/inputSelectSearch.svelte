@@ -41,14 +41,24 @@
         options: comboOptions
     } = createCombobox<Option['value']>({
         onSelectedChange({ next }) {
-            if (next) {
-                value = next.value;
-                dispatch('select', next);
-            }
+            value = next ? next.value : null;
+            dispatch('select', next);
+
             return next;
         },
         preventScroll: false,
-        closeOnOutsideClick: false
+        closeOnOutsideClick: false,
+        positioning: {
+            strategy: 'fixed',
+            sameWidth: true,
+            placement: 'bottom'
+        },
+        portal: null,
+        ids: id
+            ? {
+                  trigger: id
+              }
+            : undefined
     });
 
     $: {
@@ -85,8 +95,7 @@
     }
 
     $: showClearBtn = (hasFocus && search) || value;
-
-    $: console.log(disabled);
+    $: showOutput = $$slots.output && selectedOption;
 </script>
 
 <svelte:window
@@ -116,17 +125,21 @@
 
     <div class="custom-select">
         <div class="input-text-wrapper" style="--amount-of-buttons:2">
-            {#if $$slots.output && selectedOption}
-                <div
-                    role="button"
-                    tabindex="0"
-                    on:keyup={clickOnEnter}
-                    on:click={() => {
-                        if (interactiveOutput) hasFocus = !hasFocus;
-                    }}>
-                    <slot name="output" option={selectedOption} />
-                </div>
-            {:else}
+            <div class="custom-wrapper" data-show-output={showOutput ? '' : undefined}>
+                {#if showOutput}
+                    <div
+                        role="button"
+                        tabindex="0"
+                        on:keyup={clickOnEnter}
+                        on:click={() => {
+                            if (interactiveOutput) {
+                                hasFocus = !hasFocus;
+                                open.set(true);
+                            }
+                        }}>
+                        <slot name="output" option={selectedOption} />
+                    </div>
+                {/if}
                 <input
                     type="text"
                     class="input-text"
@@ -135,7 +148,7 @@
                     on:input={handleInput}
                     bind:this={inputEl}
                     use:melt={$input} />
-            {/if}
+            </div>
 
             <div class="options-list">
                 {#if showClearBtn}
@@ -189,7 +202,7 @@
     </div>
 </div>
 
-<style>
+<style lang="scss">
     .form-item :global(.drop) {
         translate: 0 4px;
     }
@@ -200,6 +213,10 @@
         max-inline-size: unset;
     }
 
+    .drop-wrapper {
+        z-index: 99999;
+    }
+
     .drop {
         position: static;
         inset-inline-start: unset;
@@ -207,5 +224,18 @@
         min-inline-size: unset;
         max-inline-size: unset;
         inline-size: unset;
+    }
+
+    .custom-wrapper {
+        position: relative;
+
+        &[data-show-output] {
+            input {
+                position: absolute;
+                inset: 0;
+                pointer-events: none;
+                opacity: 0;
+            }
+        }
     }
 </style>
