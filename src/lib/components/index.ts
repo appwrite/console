@@ -15,6 +15,7 @@ export { default as UploadBox } from './uploadBox.svelte';
 export { default as List } from './list.svelte';
 export { default as ListItem } from './listItem.svelte';
 export { default as Empty } from './empty.svelte';
+export { default as EmptyFilter } from './emptyFilter.svelte';
 export { default as EmptySearch } from './emptySearch.svelte';
 export { default as Drop } from './drop.svelte';
 export { default as DropList } from './dropList.svelte';
