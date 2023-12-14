@@ -43,14 +43,14 @@
                 href="https://appwrite.io/pricing"
                 target="_blank"
                 rel="noopener noreferrer">
-                view our pricing guide.
+                view our pricing page.
             </a>
         </p>
         <svelte:fragment slot="aside">
             <Box class="u-flex-vertical u-gap-8">
                 <div class="u-flex u-main-space-between u-cross-center">
                     <div class="u-flex u-gap-8 u-cross-center">
-                        <h6 class="u-bold u-trim-1">
+                        <h6 class="body-text-1 u-bold u-trim-1">
                             {tierToPlan($organization?.billingPlan)?.name} plan
                         </h6>
                         {#if $organization?.billingPlan !== 'tier-0' && isTrial}
@@ -62,12 +62,29 @@
                         {#if !extraUsage}
                             <span class="text u-color-text-gray">Total to-date:</span>
                         {/if}
-                        ${isTrial ? 0 : currentPlan?.price}
+                        <span class="body-text-1">
+                            ${isTrial ? 0 : currentPlan?.price}
+                        </span>
                     </p>
                 </div>
                 {#if currentInvoice?.usage?.length && $organization?.billingPlan !== 'tier-0' && !isTrial}
+                    {@const extraMembers = currentInvoice.usage.find((u) => u.name === 'members')}
+                    {#if extraMembers}
+                        <div class="u-margin-block-start-24">
+                            <EyebrowHeading tag="h6" size={3}>Additional members</EyebrowHeading>
+                            <ul>
+                                <li class="u-flex u-main-space-between u-margin-block-start-8">
+                                    <p class="text u-color-text-gray">
+                                        <span> {extraMembers.value}</span>
+                                        {extraMembers.name}
+                                    </p>
+                                    <p class="text">${extraMembers.amount}</p>
+                                </li>
+                            </ul>
+                        </div>
+                    {/if}
                     <div class="u-margin-block-start-24">
-                        <EyebrowHeading tag="h6" size={3}>Excess</EyebrowHeading>
+                        <EyebrowHeading tag="h6" size={3}>Addons</EyebrowHeading>
                         <ul>
                             {#each currentInvoice.usage as excess}
                                 {#if ['storage', 'bandwidth'].includes(excess.name)}
@@ -96,16 +113,17 @@
                                 {/if}
                             {/each}
                             <li class="u-flex u-main-space-between u-margin-block-start-16">
-                                <Heading tag="h6" size="7">Total to-date:</Heading>
-                                <Heading tag="h6" size="7">${currentInvoice?.amount}</Heading>
+                                <p class="body-text-1 u-bold">Total to-date:</p>
+                                <p class="body-text-1 u-bold">${currentInvoice?.amount}</p>
                             </li>
                         </ul>
                     </div>
                 {/if}
             </Box>
             <div class="u-flex u-main-space-between u-cross-center">
+                <p class="body-text-1 u-bold">Billing period:</p>
                 <p class="text">
-                    Billing period: {toLocaleDate($organization?.billingCurrentInvoiceDate)} - {toLocaleDate(
+                    {toLocaleDate($organization?.billingCurrentInvoiceDate)} - {toLocaleDate(
                         $organization?.billingNextInvoiceDate
                     )}
                 </p>

@@ -34,10 +34,10 @@
             await sdk.forConsole.teams.createMembership(
                 $organization.$id,
                 member.roles,
-                url,
                 member.userEmail,
                 undefined,
                 undefined,
+                url,
                 member.userName || undefined
             );
             addNotification({

@@ -26,10 +26,10 @@
             const team = await sdk.forConsole.teams.createMembership(
                 $organization.$id,
                 ['owner'],
-                url,
                 email,
                 undefined,
                 undefined,
+                url,
                 name || undefined
             );
             await invalidate(Dependencies.ACCOUNT);
