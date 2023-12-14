@@ -121,8 +121,9 @@
                 {/if}
             </Box>
             <div class="u-flex u-main-space-between u-cross-center">
+                <p class="body-text-1 u-bold">Billing period:</p>
                 <p class="text">
-                    Billing period: {toLocaleDate($organization?.billingCurrentInvoiceDate)} - {toLocaleDate(
+                    {toLocaleDate($organization?.billingCurrentInvoiceDate)} - {toLocaleDate(
                         $organization?.billingNextInvoiceDate
                     )}
                 </p>
