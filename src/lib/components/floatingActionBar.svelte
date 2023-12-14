@@ -26,13 +26,13 @@
     }
 
     :global(.theme-dark) .floating-action-bar {
-        border: 1px solid hsl(var(--color-neutral-200));
-        background: hsl(var(--color-neutral-300));
+        border: 1px solid hsl(var(--color-neutral-85));
+        background: hsl(var(--color-neutral-90));
         box-shadow: 0px 6px 16px 8px #14141f;
     }
 
     :global(.theme-light) .floating-action-bar {
-        border: 1px solid hsl(var(--color-neutral-30));
+        border: 1px solid hsl(var(--color-neutral-15));
         background: hsl(var(--color-neutral-0));
         box-shadow: 0px 6px 16px 0px rgba(55, 59, 77, 0.14);
     }
