@@ -19,6 +19,13 @@ export type Column = {
     id: string;
     title: string;
     type: ColumnType;
+    /**
+     * Set to false to hide by default
+     */
     show: boolean;
     width?: number;
+    /**
+     * Set to false to disable filtering for this column
+     */
+    filter?: boolean;
 };
