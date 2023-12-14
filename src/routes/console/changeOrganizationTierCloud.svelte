@@ -127,9 +127,11 @@
                     $changeOrganizationTier.collaborators.forEach(async (collaborator) => {
                         await sdk.forConsole.teams.createMembership(
                             org.$id,
-                            ['collaborator'],
-                            `${$page.url.origin}/console/organization-${org.$id}`,
-                            collaborator
+                            ['owner'],
+                            collaborator,
+                            undefined,
+                            undefined,
+                            `${$page.url.origin}/console/organization-${org.$id}`
                         );
                     });
                 }

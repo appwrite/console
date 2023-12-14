@@ -31,8 +31,6 @@
     }
 
     const plan = $plansInfo.plans.find((p) => p.$id === $createOrganization.billingPlan);
-
-    $: console.log(plan);
 </script>
 
 <WizardStep>

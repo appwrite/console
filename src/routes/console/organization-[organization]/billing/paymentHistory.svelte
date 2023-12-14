@@ -37,9 +37,7 @@
     const limit = 5;
     const endpoint = VARS.APPWRITE_ENDPOINT ?? `${$page.url.origin}/v1`;
 
-    onMount(async () => {
-        request();
-    });
+    onMount(request);
 
     async function request() {
         invoiceList = await sdk.forConsole.billing.listInvoices($page.params.organization, [
@@ -65,10 +63,9 @@
         {#if invoiceList.total - 1 > 0}
             <TableScroll noMargin transparent>
                 <TableHeader>
-                    <TableCellHead width={100}>Invoice #</TableCellHead>
+                    <TableCellHead width={100}>Due Date</TableCellHead>
                     <TableCellHead width={80}>Status</TableCellHead>
                     <TableCellHead width={100}>Amount Due</TableCellHead>
-                    <TableCellHead width={100}>Due Date</TableCellHead>
                     <TableCellHead width={40} />
                 </TableHeader>
                 <TableBody>
@@ -76,8 +73,8 @@
                         {@const status = invoice.status}
                         {#if i !== 0}
                             <TableRow>
-                                <TableCellText title="invoice number">
-                                    {invoice.$id}
+                                <TableCellText title="date">
+                                    {toLocaleDate(invoice.dueAt)}
                                 </TableCellText>
 
                                 <TableCell title="status">
@@ -90,10 +87,7 @@
                                         {status === 'requires_authentication' ? 'failed' : status}
                                     </Pill>
                                 </TableCell>
-                                <TableCellText title="due">{invoice.amount}</TableCellText>
-                                <TableCellText title="date">
-                                    {toLocaleDate(invoice.dueAt)}
-                                </TableCellText>
+                                <TableCellText title="due">${invoice.amount}</TableCellText>
                                 <TableCell showOverflow>
                                     <DropList
                                         bind:show={showDropdown[i]}
