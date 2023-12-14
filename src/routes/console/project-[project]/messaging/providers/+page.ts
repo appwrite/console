@@ -9,7 +9,7 @@ import {
     getView,
     pageToOffset
 } from '$lib/helpers/load';
-import { PAGE_LIMIT } from '$lib/constants';
+import { Dependencies, PAGE_LIMIT } from '$lib/constants';
 import { providersById, type Provider } from '../store';
 import { queries, queryParamToMap } from '$lib/components/filters/store';
 
@@ -20,7 +20,9 @@ let data: { providers: Provider[]; total: number } = {
     total: providers.length
 };
 
-export const load = async ({ url, route }) => {
+export const load = async ({ depends, url, route }) => {
+    depends(Dependencies.MESSAGING_PROVIDERS);
+
     const page = getPage(url);
     const search = getSearch(url);
     const view = getView(url, route, View.Grid);
