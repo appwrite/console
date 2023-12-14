@@ -220,7 +220,24 @@
                     maxUnit="Executions"
                     maxValue={formatNum(max)}
                     progressValue={current}
-                    progressMax={max} />
+                    progressMax={max}
+                    showBar={false} />
+                <BarChart
+                    options={{
+                        yAxis: {
+                            axisLabel: {
+                                formatter: formatNum
+                            }
+                        }
+                    }}
+                    series={[
+                        {
+                            name: 'Executions',
+                            data: [
+                                ...data.organizationUsage.executions.map((e) => [e.date, e.value])
+                            ]
+                        }
+                    ]} />
                 <ProjectBreakdown projects={project} metric="executions" {data} />
             {:else}
                 <Card isDashed>
@@ -255,7 +272,8 @@
                     maxUnit="GB"
                     maxValue={max.toString()}
                     progressValue={bytesToSize(current, 'GB')}
-                    progressMax={max} />
+                    progressMax={max}
+                    minimum={1} />
                 <ProjectBreakdown projects={project} metric="storage" {data} />
             {:else}
                 <Card isDashed>

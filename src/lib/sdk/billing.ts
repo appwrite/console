@@ -165,6 +165,7 @@ export type Aggregation = {
 
 export type OrganizationUsage = {
     bandwidth: Array<Models.Metric>;
+    executions: Array<Models.Metric>;
     executionsTotal: number;
     storageTotal: number;
     users: Array<Models.Metric>;

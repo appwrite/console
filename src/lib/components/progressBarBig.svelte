@@ -6,8 +6,10 @@
     export let progressValue: number;
     export let progressMax: number;
     export let showBar = true;
+    export let minimum = 0;
+    export let maximum = 100;
 
-    $: progress = Math.min(Math.max(Math.round((progressValue / progressMax) * 100), 0), 100);
+    $: progress = Math.round((progressValue / progressMax) * 100);
 </script>
 
 <section class="progress-bar">
@@ -29,6 +31,6 @@
             class="progress-bar-container u-margin-block-start-16"
             class:is-warning={progress >= 75 && progress < 100}
             class:is-danger={progress >= 100}
-            style:--graph-size={progress + '%'} />
+            style:--graph-size={Math.max(Math.min(progress, maximum), minimum) + '%'} />
     {/if}
 </section>
