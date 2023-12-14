@@ -3,7 +3,7 @@ import { getLimit, getPage, getQuery, getView, pageToOffset, View } from '$lib/h
 import { sdk } from '$lib/stores/sdk';
 import { Query } from '@appwrite.io/console';
 import type { PageLoad } from './$types';
-import { queries, queryParamToMap } from '$lib/components/filters/store';
+import { queries, queryParamToMap } from '$lib/components/filters';
 
 export const load: PageLoad = async ({ params, depends, url, route }) => {
     depends(Dependencies.DOCUMENTS);

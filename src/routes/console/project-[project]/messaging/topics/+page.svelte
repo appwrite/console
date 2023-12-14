@@ -7,7 +7,8 @@
         SearchQuery,
         PaginationWithLimit,
         Heading,
-        ViewSelector
+        ViewSelector,
+        EmptyFilter
     } from '$lib/components';
     import Create from './create.svelte';
     import { goto } from '$app/navigation';
@@ -17,7 +18,7 @@
     import type { PageData } from './$types';
     import { columns, showCreate } from './store';
     import { View } from '$lib/helpers/load';
-    import Filters from '$lib/components/filters/filters.svelte';
+    import { Filters, hasPageQueries } from '$lib/components/filters';
     import Table from './table.svelte';
 
     export let data: PageData;
@@ -79,6 +80,8 @@
             limit={data.limit}
             offset={data.offset}
             total={data.topics.total} />
+    {:else if $hasPageQueries}
+        <EmptyFilter resource="topics" />
         <!-- TODO: remove data.search != 'empty' when the API is ready with data -->
     {:else if data.search && data.search != 'empty'}
         <EmptySearch>

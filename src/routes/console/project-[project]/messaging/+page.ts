@@ -13,7 +13,7 @@ import { messages as data, providersById } from './store';
 import type { Message } from './store';
 import { Query } from '@appwrite.io/console';
 import { sdk } from '$lib/stores/sdk';
-import { queries, queryParamToMap } from '$lib/components/filters/store';
+import { queries, queryParamToMap } from '$lib/components/filters';
 
 export const load: PageLoad = async ({ url, route }) => {
     const page = getPage(url);

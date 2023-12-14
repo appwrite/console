@@ -7,12 +7,13 @@
         SearchQuery,
         PaginationWithLimit,
         Heading,
-        ViewSelector
+        ViewSelector,
+        EmptyFilter
     } from '$lib/components';
     import { Container } from '$lib/layout';
     import type { PageData } from './$types';
     import { columns } from './store';
-    import Filters from '$lib/components/filters/filters.svelte';
+    import { Filters, hasPageQueries } from '$lib/components/filters';
     import CreateProviderDropdown from './createProviderDropdown.svelte';
     import Table from './table.svelte';
 
@@ -68,6 +69,8 @@
             limit={data.limit}
             offset={data.offset}
             total={data.providers.total} />
+    {:else if $hasPageQueries}
+        <EmptyFilter resource="providers" />
     {:else if data.search && data.search != 'empty'}
         <EmptySearch>
             <div class="u-text-center">
