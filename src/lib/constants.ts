@@ -47,6 +47,7 @@ export enum Dependencies {
     COLLECTIONS = 'dependency:collections',
     RUNTIMES = 'dependency:runtimes',
     CONSOLE_VARIABLES = 'dependency:console_variables',
+    MESSAGING_PROVIDERS = 'dependency:messaging_providers',
     MESSAGING_PROVIDER = 'dependency:messaging_provider'
 }
 
