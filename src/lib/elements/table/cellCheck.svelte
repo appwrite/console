@@ -22,7 +22,7 @@
     };
 </script>
 
-<TableCell class="u-position-relative">
+<TableCell>
     <div
         class="touch-area"
         role="button"
