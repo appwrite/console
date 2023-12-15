@@ -18,7 +18,9 @@
     import { Container, ContainerHeader } from '$lib/layout';
     import { hoursToDays, toLocaleDateTime } from '$lib/helpers/date';
     import type { Models } from '@appwrite.io/console';
-    import type { PlanServices } from '$lib/stores/billing';
+    import { tierToPlan, type PlanServices } from '$lib/stores/billing';
+    import { isCloud } from '$lib/system';
+    import { organization } from '$lib/stores/organization';
 
     export let logs: Models.LogList;
     export let offset = 0;
@@ -29,15 +31,7 @@
 
 <Container>
     {#if service}
-        <ContainerHeader title="Activity" alertType="info" serviceId={service}>
-            <svelte:fragment slot="tooltip" let:limit let:tier let:upgradeMethod>
-                <p class="text">
-                    Logs are retained in rolling {hoursToDays(limit)} intervals with the {tier} plan.
-                    <button class="link" type="button" on:click|preventDefault={upgradeMethod}
-                        >Upgrade</button> to increase your log retention for a longer period.
-                </p>
-            </svelte:fragment>
-        </ContainerHeader>
+        <ContainerHeader title="Activity" />
     {:else}
         <Heading tag="h2" size="5">Activity</Heading>
     {/if}
@@ -50,7 +44,16 @@
                 <TableCellHead width={90}>IP</TableCellHead>
                 <TableCellHead width={140}>Date</TableCellHead>
             </TableHeader>
-            <TableBody>
+            <TableBody service="logs" total={isCloud ? Infinity : 0}>
+                <svelte:fragment slot="limit" let:limit let:upgradeMethod>
+                    <p class="text">
+                        Logs are retained in rolling {hoursToDays(limit)} intervals with the
+                        {tierToPlan($organization.billingPlan).name}
+                        plan.
+                        <button class="link" type="button" on:click|preventDefault={upgradeMethod}
+                            >Upgrade</button> to increase your log retention for a longer period.
+                    </p>
+                </svelte:fragment>
                 {#each logs.logs as log}
                     <TableRow>
                         <TableCell title="Client">
