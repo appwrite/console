@@ -70,9 +70,9 @@ export type PlanServices =
 export function getServiceLimit(serviceId: PlanServices, tier: Tier = null): number {
     if (!isCloud) return 0;
     if (!serviceId) return 0;
-    const plan = get(plansInfo).plans.find(
-        (p) => p.$id === (tier ?? get(organization)?.billingPlan)
-    );
+    const info = get(plansInfo);
+    if (!info?.plans) return 0;
+    const plan = info.plans.find((p) => p.$id === (tier ?? get(organization)?.billingPlan));
     return plan?.[serviceId];
 }
 
