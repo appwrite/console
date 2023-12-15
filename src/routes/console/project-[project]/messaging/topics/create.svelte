@@ -12,7 +12,7 @@
 
     const dispatch = createEventDispatcher();
 
-    let name: string, id: string, error: string;
+    let name: string, description: string, id: string, error: string;
     let showCustomId = false;
 
     const create = async () => {
@@ -26,11 +26,13 @@
                     'X-Appwrite-Mode': 'admin'
                 },
                 {
-                    topicId: id ?? ID.unique(),
-                    name: name
+                    name,
+                    description,
+                    topicId: id ?? ID.unique()
                 }
             );
             name = '';
+            description = '';
             showCreate = false;
             showCustomId = false;
             addNotification({
@@ -62,6 +64,12 @@
             autofocus={true}
             required
             bind:value={name} />
+        <InputText
+            id="description"
+            label="Description"
+            placeholder="Enter description"
+            bind:value={description}>
+        </InputText>
         {#if !showCustomId}
             <div>
                 <Pill button on:click={() => (showCustomId = !showCustomId)}

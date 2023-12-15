@@ -100,5 +100,4 @@
     {/if}
 </Container>
 
-<!-- TODO: handle create -->
 <Create bind:showCreate={$showCreate} on:created={topicCreated} />
