@@ -22,6 +22,7 @@
     import type { Models } from '@appwrite.io/console';
     import type { PageData } from './$types';
     import Delete from '../deleteMember.svelte';
+    import { toLocaleDate } from '$lib/helpers/date';
 
     export let data: PageData;
 
@@ -68,6 +69,7 @@
             <TableHeader>
                 <TableCellHead width={140}>Name</TableCellHead>
                 <TableCellHead width={120}>Email</TableCellHead>
+                <TableCellHead width={100}>Joined</TableCellHead>
                 <TableCellHead width={90} />
                 <TableCellHead width={30} />
             </TableHeader>
@@ -86,6 +88,9 @@
                             </div>
                         </TableCell>
                         <TableCellText title="Email">{member.userEmail}</TableCellText>
+                        <TableCellText title="Joined">
+                            {member.joined ? toLocaleDate(member.joined) : ''}
+                        </TableCellText>
                         <TableCell>
                             {#if member.invited && !member.joined}
                                 <Button
@@ -94,7 +99,7 @@
                                     on:click={() => resend(member)}>Resend</Button>
                             {/if}
                         </TableCell>
-                        <TableCell>
+                        <TableCell right>
                             <button
                                 class="button is-only-icon is-text"
                                 aria-label="Delete item"
