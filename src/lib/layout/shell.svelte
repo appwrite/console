@@ -84,6 +84,11 @@
 
     .main-side {
         z-index: 25;
+        overflow: unset;
+    }
+
+    .main-content {
+        overflow: hidden;
     }
 
     @media (max-width: 550.99px), (min-width: 551px) and (max-width: 1198.99px) {
