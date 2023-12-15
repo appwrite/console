@@ -52,7 +52,9 @@
             title: 'Members',
             event: 'members',
             hasChildren: true
-        },
+        }
+    ];
+    $: permanentTabSettings = [
         {
             href: `${path}/settings`,
             event: 'settings',
@@ -72,7 +74,8 @@
                   href: `${path}/billing`,
                   event: 'billing',
                   title: 'Billing'
-              }
+              },
+              ...permanentTabSettings
           ]
         : permanentTabs;
 </script>
