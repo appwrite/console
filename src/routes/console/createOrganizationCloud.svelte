@@ -100,7 +100,9 @@
                 members_invited: $createOrganization?.collaborators?.length
             });
             wizard.hide();
-            wizard.showCover(HoodieCover);
+            if (org.billingPlan === 'tier-1') {
+                wizard.showCover(HoodieCover);
+            }
         } catch (e) {
             addNotification({
                 type: 'error',
