@@ -18,18 +18,12 @@
             href: `${path}/subscribers`,
             title: 'Subscribers',
             event: 'subscribers'
+        },
+        {
+            href: `${path}/activity`,
+            title: 'Activity',
+            event: 'activity'
         }
-        // {
-        //     href: `${path}/sessions`,
-        //     title: 'Sessions',
-        //     event: 'sessions'
-        // },
-        // {
-        //     href: `${path}/activity`,
-        //     title: 'Activity',
-        //     event: 'activity',
-        //     hasChildren: true
-        // }
     ];
 </script>
 
