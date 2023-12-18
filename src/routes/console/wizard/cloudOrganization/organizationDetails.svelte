@@ -79,8 +79,8 @@
                 bind:group={$createOrganization.billingPlan}
                 value="tier-0"
                 disabled={!!anyOrgFree}
-                tooltipShow="You are limited to 1 Free organization per account."
-                showTooltip={!!anyOrgFree}>
+                tooltipText="You are limited to 1 Free organization per account."
+                tooltipShow={!!anyOrgFree}>
                 <svelte:fragment slot="custom" let:disabled>
                     <div
                         class="u-flex u-flex-vertical u-gap-4 u-width-full-line"
