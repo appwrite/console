@@ -4,7 +4,6 @@
     import PaymentMethods from './paymentMethods.svelte';
     import BillingAddress from './billingAddress.svelte';
 
-    // export let data;
     let showPayment = false;
 </script>
 

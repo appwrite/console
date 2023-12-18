@@ -5,9 +5,6 @@
     import { Pill } from '$lib/elements';
     import { onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
-    // import { Collapsible, CollapsibleItem } from '$lib/components';
-
-    // let files: FileList;
 
     let options: {
         value: string;
@@ -61,15 +58,4 @@
                 required />
         </FormList>
     </div>
-    <!-- <div class="common-section">
-        <Collapsible>
-            <CollapsibleItem>
-                <svelte:fragment slot="title">Want to attach a file? (optional)</svelte:fragment>
-                <svelte:fragment slot="subtitle">
-                    A picture is worth a thousand words.
-                </svelte:fragment>
-                <InputFile bind:files label="Attach a file" />
-            </CollapsibleItem>
-        </Collapsible>
-    </div> -->
 </WizardStep>

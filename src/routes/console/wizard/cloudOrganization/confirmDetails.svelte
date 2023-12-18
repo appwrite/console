@@ -19,10 +19,9 @@
             const card = await sdk.forConsole.billing.getPaymentMethod(
                 $createOrganization.paymentMethodId
             );
-            console.log(card);
             return card;
         } catch (error) {
-            console.log(error);
+            throw new Error(error.message);
         }
     }
 

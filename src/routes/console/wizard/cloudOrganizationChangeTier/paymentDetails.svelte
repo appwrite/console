@@ -45,11 +45,10 @@
                 latestMethods.paymentMethods
             )[0] as PaymentMethodData;
 
-            console.log(paymentMethod);
             $changeOrganizationTier.paymentMethodId = paymentMethod.$id;
             invalidate(Dependencies.PAYMENT_METHODS);
         } catch (e) {
-            console.log(e.message);
+            throw new Error(e.message);
         }
     }
 

@@ -1,5 +1,4 @@
 <script lang="ts">
-    // import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Alert, Modal } from '$lib/components';
     import { Button, FormItem, FormList, InputNumber, InputSelect } from '$lib/elements/forms';
     import { invalidate } from '$app/navigation';

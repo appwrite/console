@@ -14,14 +14,8 @@
     import type { PaymentMethodData } from '$lib/sdk/billing';
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
-    import {
-        confirmPayment,
-        initializeStripe,
-        isStripeInitialized,
-        stripe
-    } from '$lib/stores/stripe';
+    import { confirmPayment, initializeStripe, isStripeInitialized } from '$lib/stores/stripe';
     import { sdk } from '$lib/stores/sdk';
-    import { addNotification } from '$lib/stores/notifications';
     import { toLocaleDate } from '$lib/helpers/date';
     import { wizard } from '$lib/stores/wizard';
     import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
