@@ -12,7 +12,7 @@
     export let backgroundColor: string = null;
     export let backgroundColorHover: string = null;
     export let tooltipText: string = null;
-    export let showTooltip = false;
+    export let tooltipShow = false;
 
     enum Radius {
         xsmall = '--border-radius-xsmall',
@@ -31,7 +31,7 @@
     style:--card-border-radius={`var(${Radius[borderRadius]})`}
     style:--p-card-bg-color-default={backgroundColor}
     style:--p-card-bg-color-hover={backgroundColorHover}
-    use:tooltip={{ content: tooltipText, disabled: !tooltipText || !showTooltip }}>
+    use:tooltip={{ content: tooltipText, disabled: !tooltipText || !tooltipShow }}>
     <div class="u-flex u-gap-8">
         <input
             class="is-small u-margin-block-start-2"

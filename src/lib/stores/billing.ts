@@ -24,14 +24,6 @@ export const plansInfo = derived(page, ($page) => $page.data.plansInfo as PlansI
 export const daysLeftInTrial = writable<number>(0);
 export const readOnly = writable<boolean>(false);
 
-// export type ReadOnlyData = {
-//     bandwidth: boolean;
-//     documents: boolean;
-//     executions: boolean;
-//     storage: boolean;
-//     users: boolean;
-// };
-
 export function tierToPlan(tier: Tier) {
     switch (tier) {
         case 'tier-0':

@@ -14,7 +14,12 @@
     import type { PaymentMethodData } from '$lib/sdk/billing';
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
-    import { initializeStripe, isStripeInitialized, stripe } from '$lib/stores/stripe';
+    import {
+        confirmPayment,
+        initializeStripe,
+        isStripeInitialized,
+        stripe
+    } from '$lib/stores/stripe';
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import { toLocaleDate } from '$lib/helpers/date';
@@ -36,45 +41,32 @@
         ) {
             wizard.start(ChangeOrganizationTierCloud);
         }
+        if ($page.url.searchParams.has('clientSecret')) {
+            if (!$isStripeInitialized) {
+                await initializeStripe();
+            }
+            const clientSecret = $page.url.searchParams.get('clientSecret');
+            await confirmPayment($organization.$id, clientSecret, $organization.paymentMethodId);
+        }
         if (
-            ($page.url.searchParams.has('invoice') &&
-                $page.url.searchParams.has('type') &&
-                $page.url.searchParams.get('type') === 'confirmation') ||
-            $page.url.searchParams.has('clientSecret')
+            $page.url.searchParams.has('invoice') &&
+            $page.url.searchParams.has('type') &&
+            $page.url.searchParams.get('type') === 'confirmation'
         ) {
             if (!$isStripeInitialized) {
                 await initializeStripe();
             }
-            try {
-                const invoiceId = $page.url.searchParams.get('invoice');
-                const invoice = await sdk.forConsole.billing.getInvoice(
-                    $page.params.organization,
-                    invoiceId
-                );
-                const paymentMethod = await sdk.forConsole.billing.getPaymentMethod(
-                    $organization.paymentMethodId
-                );
-                const url = `${window.location.origin}/console/organization-${$organization.$id}/billing`;
+            const invoiceId = $page.url.searchParams.get('invoice');
+            const invoice = await sdk.forConsole.billing.getInvoice(
+                $page.params.organization,
+                invoiceId
+            );
 
-                const { error } = await $stripe.confirmPayment({
-                    clientSecret: invoice.clientSecret,
-                    confirmParams: {
-                        return_url: url,
-                        payment_method: paymentMethod.providerMethodId
-                    }
-                });
-                if (error) {
-                    console.log('error', error);
-                    throw new Error();
-                }
-            } catch (e) {
-                addNotification({
-                    title: 'Error',
-                    message:
-                        'There was an error processing your payment, try again later. If the problem persists, please contact support.',
-                    type: 'error'
-                });
-            }
+            await confirmPayment(
+                $organization.$id,
+                invoice.clientSecret,
+                $organization.paymentMethodId
+            );
         }
     });
 </script>

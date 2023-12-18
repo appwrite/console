@@ -45,7 +45,8 @@
         <table
             class="table"
             class:is-sticky-scroll={isSticky && isOverflowing}
-            style={`${style} ${transparent ? '--p-table-bg-color: var(--transparent)' : ''}`}>
+            {style}
+            style:--p-table-bg-color={transparent ? 'var(--transparent)' : ''}>
             <slot />
         </table>
     </div>

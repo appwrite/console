@@ -31,8 +31,6 @@
     $: if ($value) {
         data = $value;
     }
-
-    $: console.log(data);
 </script>
 
 {#if label}
