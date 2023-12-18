@@ -1,19 +1,10 @@
 <script lang="ts">
-    import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { tooltip } from '$lib/actions/tooltip';
-    import {
-        CardContainer,
-        Empty,
-        GridItem1,
-        Heading,
-        Id,
-        PaginationWithLimit
-    } from '$lib/components';
+    // import { tooltip } from '$lib/actions/tooltip';
+    import { Empty, PaginationWithLimit } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import { toLocaleDateTime } from '$lib/helpers/date';
-    import { Container } from '$lib/layout';
-    import { app } from '$lib/stores/app';
+    import { Container, GridHeader } from '$lib/layout';
+    // import { app } from '$lib/stores/app';
     import { wizard } from '$lib/stores/wizard';
     import { onMount } from 'svelte';
     import Initial from '$lib/wizards/functions/cover.svelte';
@@ -24,12 +15,18 @@
         template as templateStore
     } from '$lib/wizards/functions/store.js';
     import { marketplace } from '$lib/stores/marketplace.js';
+    import type { PageData } from './$types';
+    import Grid from './grid.svelte';
+    import Table from './table.svelte';
 
-    export let data;
+    import { columns } from './store';
+    // import { vi } from 'vitest';
+
+    export let data: PageData;
 
     let offset = 0;
 
-    const project = $page.params.project;
+    // const project = $page.params.project;
 
     onMount(() => {
         const from = $page.url.searchParams.get('from');
@@ -72,55 +69,24 @@
 </script>
 
 <Container>
-    <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <Heading tag="h2" size="5">Functions</Heading>
-        <Button on:click={openWizard} event="create_function">
+    <GridHeader
+        title="Functions"
+        view={data.view}
+        {columns}
+        hideColumns={!data.functions.total}
+        hideView={!data.functions.total}>
+        <Button on:click={openWizard}>
             <span class="icon-plus" aria-hidden="true" />
-            <span class="text">Create function</span>
+            <span class="text">Create Function</span>
         </Button>
-    </div>
+    </GridHeader>
 
     {#if data.functions.total}
-        <CardContainer
-            {offset}
-            event="functions"
-            total={data.functions.total}
-            on:click={openWizard}>
-            {#each data.functions.functions as func}
-                <GridItem1
-                    href={`${base}/console/project-${project}/functions/function-${func.$id}`}>
-                    <svelte:fragment slot="title">
-                        <div class="u-flex u-gap-16 u-cross-center">
-                            <div class="avatar is-medium">
-                                <img
-                                    src={`${base}/icons/${$app.themeInUse}/color/${
-                                        func.runtime.split('-')[0]
-                                    }.svg`}
-                                    alt="technology" />
-                            </div>
-                            <span class="text">{func.name}</span>
-                        </div>
-                    </svelte:fragment>
-                    <svelte:fragment slot="icons">
-                        {#if func.schedule}
-                            <li>
-                                <span
-                                    class="icon-clock"
-                                    aria-hidden="true"
-                                    use:tooltip={{
-                                        content: `Next execution: 
-                                        ${toLocaleDateTime(func.schedule)}`
-                                    }} />
-                            </li>
-                        {/if}
-                    </svelte:fragment>
-                    <Id value={func.$id} event="function">{func.$id}</Id>
-                </GridItem1>
-            {/each}
-            <svelte:fragment slot="empty">
-                <p>Create a new function</p>
-            </svelte:fragment>
-        </CardContainer>
+        {#if data.view === 'grid'}
+            <Grid {data} {offset} {openWizard} />
+        {:else}
+            <Table {data} />
+        {/if}
 
         <PaginationWithLimit
             name="Functions"
