@@ -55,14 +55,16 @@
                 }
             }
         });
-
-        observer.observe(element, { childList: true });
     });
 
     onDestroy(() => {
         observer.disconnect();
         document.documentElement.classList.remove('u-overflow-hidden');
     });
+
+    $: if (element) {
+        observer.observe(element, { childList: true });
+    }
 </script>
 
 <FakeModal bind:show title="Add payment method" bind:error onSubmit={handleSubmit}>
