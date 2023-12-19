@@ -18,16 +18,17 @@
     let filteredMethods: PaymentMethodData[];
     let name: string;
     let budgetEnabled = false;
-
+    let initialPaymentMethodId: string;
     onMount(async () => {
         methods = await sdk.forConsole.billing.listPaymentMethods();
         filteredMethods = methods?.paymentMethods.filter((method) => !!method?.last4);
 
-        $changeOrganizationTier.paymentMethodId =
+        initialPaymentMethodId =
             $organization?.paymentMethodId ??
             $organization?.backupPaymentMethodId ??
             filteredMethods[0]?.$id ??
             null;
+        $changeOrganizationTier.paymentMethodId = initialPaymentMethodId;
         $changeOrganizationTier.billingBudget = $organization?.billingBudget;
         budgetEnabled = !!$organization?.billingBudget;
     });
@@ -36,19 +37,36 @@
         if ($changeOrganizationTier.billingBudget < 0) {
             throw new Error('Budget cannot be negative');
         }
+        if ($changeOrganizationTier.paymentMethodId) {
+            const card = await sdk.forConsole.billing.getPaymentMethod(
+                $changeOrganizationTier.paymentMethodId
+            );
+            if (!card?.last4) {
+                throw new Error(
+                    'The payment method you selected is not valid. Please select a different one.'
+                );
+            }
+        } else {
+            try {
+                await submitStripeCard(name);
+                const latestMethods = await sdk.forConsole.billing.listPaymentMethods();
+                const paymentMethod = symmetricDifference(
+                    methods.paymentMethods,
+                    latestMethods.paymentMethods
+                )[0] as PaymentMethodData;
+                const card = await sdk.forConsole.billing.getPaymentMethod(paymentMethod.$id);
+                if (card?.last4) {
+                    $changeOrganizationTier.paymentMethodId = paymentMethod.$id;
+                } else {
+                    throw new Error(
+                        'The payment method you selected is not valid. Please select a different one.'
+                    );
+                }
 
-        try {
-            await submitStripeCard(name);
-            const latestMethods = await sdk.forConsole.billing.listPaymentMethods();
-            const paymentMethod = symmetricDifference(
-                methods.paymentMethods,
-                latestMethods.paymentMethods
-            )[0] as PaymentMethodData;
-
-            $changeOrganizationTier.paymentMethodId = paymentMethod.$id;
-            invalidate(Dependencies.PAYMENT_METHODS);
-        } catch (e) {
-            throw new Error(e.message);
+                invalidate(Dependencies.PAYMENT_METHODS);
+            } catch (e) {
+                throw new Error(e.message);
+            }
         }
     }
 
