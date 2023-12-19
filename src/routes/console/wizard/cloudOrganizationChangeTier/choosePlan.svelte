@@ -69,8 +69,6 @@
             $changeOrganizationTier.isOverLimit = false;
             $changeTierSteps = updateStepStatus($changeTierSteps, 4, true);
         }
-
-        console.log($changeOrganizationTier.limitOverflow);
     }
 
     onMount(async () => {

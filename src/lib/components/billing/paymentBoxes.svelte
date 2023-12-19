@@ -71,3 +71,17 @@
         </div>
     </FormList>
 </RadioBoxes>
+
+<style lang="scss">
+    .aw-stripe-container {
+        min-height: 295px;
+        position: relative;
+        .loader-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 0;
+        }
+    }
+</style>

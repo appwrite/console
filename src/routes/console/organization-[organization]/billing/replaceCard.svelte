@@ -6,7 +6,7 @@
     import { organization } from '$lib/stores/organization';
     import { Dependencies } from '$lib/constants';
     import { initializeStripe, isStripeInitialized, submitStripeCard } from '$lib/stores/stripe';
-    import { onMount } from 'svelte';
+    import { onDestroy, onMount } from 'svelte';
     import type { PaymentList } from '$lib/sdk/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
@@ -18,6 +18,10 @@
     let selectedPaymentMethodId: string;
     let name: string;
     let error: string;
+    let element: HTMLDivElement;
+    let loader: HTMLDivElement;
+
+    let observer: MutationObserver;
 
     onMount(async () => {
         methods = await sdk.forConsole.billing.listPaymentMethods();
@@ -28,6 +32,29 @@
         selectedPaymentMethodId = isBackup
             ? $organization.backupPaymentMethodId
             : $organization.paymentMethodId;
+
+        observer = new MutationObserver((mutationsList) => {
+            for (let mutation of mutationsList) {
+                if (mutation.type === 'childList') {
+                    if (mutation.addedNodes.length > 0) {
+                        for (let node of Array.from(mutation.addedNodes)) {
+                            if (
+                                node instanceof Element &&
+                                node.className.toLowerCase().includes('__privatestripeelement')
+                            ) {
+                                loader.style.display = 'none';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        observer.observe(element, { childList: true });
+    });
+
+    onDestroy(() => {
+        observer.disconnect();
     });
 
     async function handleSubmit() {
@@ -154,9 +181,13 @@
                             bind:value={name}
                             required
                             autofocus={true} />
-
-                        <div id="payment-element" data-private>
-                            <!-- Stripe will create form elements here -->
+                        <div class="aw-stripe-container" data-private>
+                            <div class="loader-container" bind:this={loader}>
+                                <div class="loader"></div>
+                            </div>
+                            <div id="payment-element" bind:this={element}>
+                                <!-- Stripe will create form elements here -->
+                            </div>
                         </div>
                     </FormList>
                 {/if}
@@ -174,3 +205,17 @@
         </Button>
     </svelte:fragment>
 </FakeModal>
+
+<style lang="scss">
+    .aw-stripe-container {
+        min-height: 295px;
+        position: relative;
+        .loader-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 0;
+        }
+    }
+</style>

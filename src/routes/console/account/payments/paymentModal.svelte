@@ -90,7 +90,7 @@
     </svelte:fragment>
 </FakeModal>
 
-<style lang="scss" global>
+<style lang="scss">
     .aw-stripe-container {
         min-height: 295px;
         position: relative;
