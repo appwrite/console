@@ -98,7 +98,7 @@
                     <Button on:click={wizard.hide}>Go to console</Button>
                 </div>
             </Card>
-            <img class="hoodie-image" src={Hoodie} alt="" srcset="" />
+            <img class="hoodie-image" src={Hoodie} alt="" srcset="" style="aspect-ratio: 1.56 / 1;" />
             <div class="cbc-confetti" transition:fade>
                 <Confetti
                     x={[-1.75, 1.85]}
