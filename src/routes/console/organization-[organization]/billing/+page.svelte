@@ -14,7 +14,7 @@
     import type { PaymentMethodData } from '$lib/sdk/billing';
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
-    import { confirmPayment, initializeStripe, isStripeInitialized } from '$lib/stores/stripe';
+    import { confirmPayment } from '$lib/stores/stripe';
     import { sdk } from '$lib/stores/sdk';
     import { toLocaleDate } from '$lib/helpers/date';
     import { wizard } from '$lib/stores/wizard';
@@ -35,21 +35,12 @@
         ) {
             wizard.start(ChangeOrganizationTierCloud);
         }
-        if ($page.url.searchParams.has('clientSecret')) {
-            if (!$isStripeInitialized) {
-                await initializeStripe();
-            }
-            const clientSecret = $page.url.searchParams.get('clientSecret');
-            await confirmPayment($organization.$id, clientSecret, $organization.paymentMethodId);
-        }
+
         if (
             $page.url.searchParams.has('invoice') &&
             $page.url.searchParams.has('type') &&
             $page.url.searchParams.get('type') === 'confirmation'
         ) {
-            if (!$isStripeInitialized) {
-                await initializeStripe();
-            }
             const invoiceId = $page.url.searchParams.get('invoice');
             const invoice = await sdk.forConsole.billing.getInvoice(
                 $page.params.organization,
@@ -61,6 +52,10 @@
                 invoice.clientSecret,
                 $organization.paymentMethodId
             );
+        }
+        if ($page.url.searchParams.has('clientSecret')) {
+            const clientSecret = $page.url.searchParams.get('clientSecret');
+            await confirmPayment($organization.$id, clientSecret, $organization.paymentMethodId);
         }
     });
 </script>

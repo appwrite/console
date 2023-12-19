@@ -9,8 +9,8 @@
     const endpoint = VARS.APPWRITE_ENDPOINT ?? `${$page.url.origin}/v1`;
 </script>
 
-{#if $actionRequiredInvoices && $actionRequiredInvoices.total && !$page.url.pathname.includes('/console/account')}
-    <HeaderAlert title="Authorization required">
+{#if $actionRequiredInvoices && $actionRequiredInvoices?.invoices?.length && !$page.url.pathname.includes('/console/account')}
+    <HeaderAlert title="Authorization required" type="error">
         Please authorize your upcoming payment for {$organization.name}. Your bank requires this
         security measure to proceed with payment.
         <svelte:fragment slot="buttons">

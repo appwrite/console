@@ -42,7 +42,7 @@
     import ExcesLimitModal from './organization-[organization]/excesLimitModal.svelte';
     import { showExcess } from './organization-[organization]/store';
     import UsageRates from './wizard/cloudOrganization/usageRates.svelte';
-    import { consoleVariables, showPostReleaseModal } from './store';
+    import { activeHeaderAlert, consoleVariables, showPostReleaseModal } from './store';
     import { Query } from '@appwrite.io/console';
     import { headerAlert } from '$lib/stores/headerAlert';
     import PostReleaseModal from './(billing-modal)/postReleaseModal.svelte';
@@ -242,7 +242,6 @@
         }
     ]);
     let isOpen = false;
-    let selectedHeaderAlert = headerAlert.get();
     onMount(async () => {
         loading.set(false);
 
@@ -303,7 +302,7 @@
     $registerSearchers(orgSearcher, projectsSearcher);
 
     afterUpdate(() => {
-        selectedHeaderAlert = headerAlert.get();
+        $activeHeaderAlert = headerAlert.get();
     });
 </script>
 
@@ -317,8 +316,8 @@
         !$page.url.pathname.includes('/console/card') &&
         !$page.url.pathname.includes('/console/onboarding')}>
     <svelte:fragment slot="alert">
-        {#if selectedHeaderAlert?.show}
-            <svelte:component this={selectedHeaderAlert.component} />
+        {#if $activeHeaderAlert?.show}
+            <svelte:component this={$activeHeaderAlert.component} />
         {/if}
     </svelte:fragment>
     <Header slot="header" />

@@ -49,8 +49,6 @@
                 }
             }
         });
-
-        observer.observe(element, { childList: true });
     });
 
     onDestroy(() => {
@@ -115,6 +113,9 @@
 
     $: if (show) {
         isStripeInitialized.set(false);
+        if (element) {
+            observer.observe(element, { childList: true });
+        }
     }
 
     $: if (!show) {

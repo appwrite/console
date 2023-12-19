@@ -13,7 +13,7 @@ import { addNotification, notifications } from './notifications';
 import { goto } from '$app/navigation';
 import { base } from '$app/paths';
 import TooManyFreOrgs from '$lib/components/billing/alerts/tooManyFreeOrgs.svelte';
-import { showPostReleaseModal } from '$routes/console/store';
+import { activeHeaderAlert, showPostReleaseModal } from '$routes/console/store';
 import MarkedForDeletion from '$lib/components/billing/alerts/markedForDeletion.svelte';
 
 export type Tier = 'tier-0' | 'tier-1' | 'tier-2';
@@ -207,8 +207,7 @@ export async function checkPaymentAuthorizationRequired(org: Organization) {
         Query.equal('status', 'requires_authentication')
     ]);
 
-    actionRequiredInvoices.set(invoices);
-    if (get(actionRequiredInvoices) && get(actionRequiredInvoices)?.invoices?.length > 0) {
+    if (invoices?.invoices?.length > 0) {
         headerAlert.add({
             id: 'paymentAuthRequired',
             component: PaymentAuthRequired,
@@ -216,6 +215,9 @@ export async function checkPaymentAuthorizationRequired(org: Organization) {
             importance: 8
         });
     }
+    activeHeaderAlert.set(headerAlert.get());
+
+    actionRequiredInvoices.set(invoices);
 }
 
 export async function paymentExpired(org: Organization) {
