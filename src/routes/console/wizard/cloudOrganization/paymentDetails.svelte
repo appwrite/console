@@ -35,7 +35,7 @@
             $createOrganization.paymentMethodId = method.$id;
             invalidate(Dependencies.PAYMENT_METHODS);
         } catch (e) {
-            console.log(e.message);
+            throw new Error('Something went wrong. Please try again.');
         }
     }
 

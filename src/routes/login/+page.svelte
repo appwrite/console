@@ -19,8 +19,6 @@
 
     let mail: string, pass: string, disabled: boolean;
 
-    $: console.log($page.url.search);
-
     async function login() {
         try {
             disabled = true;

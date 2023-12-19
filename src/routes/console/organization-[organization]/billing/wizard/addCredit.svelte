@@ -20,7 +20,6 @@
             couponData = response;
             coupon = null;
         } catch (error) {
-            console.log('test');
             couponData.code = coupon;
             couponData.status = 'error';
             $wizard.interceptorNotificationEnabled = false;
