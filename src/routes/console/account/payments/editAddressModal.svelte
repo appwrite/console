@@ -22,6 +22,10 @@
 
     onMount(async () => {
         const countryList = await sdk.forProject.locale.listCountries();
+        const locale = await sdk.forProject.locale.get();
+        if (locale.countryCode) {
+            country = locale.countryCode;
+        }
         options = countryList.countries.map((country) => {
             return {
                 value: country.code,
@@ -38,7 +42,7 @@
                 selectedAddress.streetAddress,
                 selectedAddress.city,
                 selectedAddress.state,
-                selectedAddress.postalCode,
+                selectedAddress.postalCode ? selectedAddress.postalCode : undefined,
                 selectedAddress.addressLine2 ? selectedAddress.addressLine2 : undefined
             );
             await invalidate(Dependencies.ADDRESS);

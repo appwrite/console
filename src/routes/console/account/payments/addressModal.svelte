@@ -47,7 +47,7 @@
                 address,
                 city,
                 state,
-                zip,
+                zip ? zip : undefined,
                 address2 ? address2 : undefined
             );
             trackEvent(Submit.BillingAddressCreate);

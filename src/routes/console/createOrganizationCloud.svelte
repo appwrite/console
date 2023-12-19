@@ -49,7 +49,9 @@
                     $createOrganization.billingAddress.streetAddress,
                     $createOrganization.billingAddress.city,
                     $createOrganization.billingAddress.state,
-                    $createOrganization.billingAddress.postalCode,
+                    $createOrganization.billingAddress.postalCode
+                        ? $createOrganization.billingAddress.postalCode
+                        : undefined,
                     $createOrganization.billingAddress.addressLine2
                         ? $createOrganization.billingAddress.addressLine2
                         : undefined
