@@ -25,10 +25,10 @@
 
     async function handleUpgrade() {
         if (selectedOrg) {
-            await goto(`${base}/console/organization/${selectedOrg}/billing`);
+            await goto(`${base}/console/organization-${selectedOrg}/billing`);
         } else {
             const freeOrg = orgs.teams.find((o) => o.billingPlan === 'tier-0');
-            await goto(`${base}/console/organization/${freeOrg.$id}/billing`);
+            await goto(`${base}/console/organization-${freeOrg.$id}/billing`);
         }
         show = false;
         wizard.start(ChangeOrganizationTierCloud);
