@@ -1,5 +1,6 @@
 <script lang="ts">
     import { goto, invalidate } from '$app/navigation';
+    import { page } from '$app/stores';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Card } from '$lib/components';
     import CustomId from '$lib/components/customId.svelte';
@@ -10,11 +11,26 @@
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
+    import { wizard } from '$lib/stores/wizard';
+    import { isCloud } from '$lib/system';
     import { ID } from '@appwrite.io/console';
+    import { onMount } from 'svelte';
+    import CreateOrganizationCloud from '../createOrganizationCloud.svelte';
 
     let name: string;
     let id: string;
     let showCustomId = false;
+
+    onMount(() => {
+        if (isCloud) {
+            if ($page.url.searchParams.has('type')) {
+                const paramType = $page.url.searchParams.get('type');
+                if (paramType === 'createPro') {
+                    wizard.start(CreateOrganizationCloud);
+                }
+            }
+        }
+    });
 
     async function createProject() {
         try {
@@ -23,7 +39,7 @@
                 id ?? ID.unique(),
                 name,
                 org.$id,
-                'default'
+                isCloud ? 'eu-de' : 'default'
             );
             await invalidate(Dependencies.ACCOUNT);
             goto(`/console/project-${project.$id}`);
@@ -41,7 +57,14 @@
     }
 
     async function createOrganization() {
-        return await sdk.forConsole.teams.create(ID.unique(), 'Personal Projects');
+        if (isCloud) {
+            return await sdk.forConsole.billing.createOrganization(
+                ID.unique(),
+                'Personal Projects',
+                'tier-0',
+                null
+            );
+        } else return await sdk.forConsole.teams.create(ID.unique(), 'Personal Projects');
     }
 </script>
 

@@ -17,7 +17,7 @@
         [];
 </script>
 
-<Box radius="small" class="u-flex u-gap-16">
+<Box radius="small" class="u-flex u-gap-16 u-cross-center">
     <div class="u-un-break-text">
         <span class="icon-translate" />
         <span class="text">Template language</span>

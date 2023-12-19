@@ -1,9 +1,12 @@
-import { CARD_LIMIT } from '$lib/constants';
+import { CARD_LIMIT, Dependencies } from '$lib/constants';
 import { getPage, getSearch, getView, pageToOffset, View } from '$lib/helpers/load';
 import { marketplace } from '$lib/stores/marketplace';
+import { sdk } from '$lib/stores/sdk';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ url, route }) => {
+export const load: PageLoad = async ({ url, route, depends }) => {
+    depends(Dependencies.FUNCTIONS);
+
     const limit = CARD_LIMIT;
     const page = getPage(url);
     const search = getSearch(url);
@@ -52,6 +55,7 @@ export const load: PageLoad = async ({ url, route }) => {
         runtimes,
         useCases,
         sum: templates.length,
-        templates: templates.splice(((page === 0 ? 1 : page) - 1) * limit, limit)
+        templates: templates.splice(((page === 0 ? 1 : page) - 1) * limit, limit),
+        functions: await sdk.forProject.functions.list()
     };
 };

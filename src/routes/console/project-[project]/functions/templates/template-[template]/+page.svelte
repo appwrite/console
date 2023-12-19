@@ -2,7 +2,7 @@
     import { Alert, Card, Collapsible, Heading } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
-    import { Container } from '$lib/layout';
+    import { Container, ContainerButton } from '$lib/layout';
     import { isSelfHosted } from '$lib/system';
     import AppwriteLogoDark from '$lib/images/appwrite-logo-dark.svg';
     import AppwriteLogoLight from '$lib/images/appwrite-logo-light.svg';
@@ -10,8 +10,17 @@
     import { consoleVariables } from '$routes/console/store';
     import { template } from './store';
     import { app } from '$lib/stores/app';
+    import { isServiceLimited } from '$lib/stores/billing';
+    import { organization } from '$lib/stores/organization';
+    import { functionsList } from '../../store';
 
     const isVcsEnabled = $consoleVariables?._APP_VCS_ENABLED === true;
+
+    $: buttonDisabled = isServiceLimited(
+        'functions',
+        $organization?.billingPlan,
+        $functionsList?.total
+    );
 </script>
 
 <Container>
@@ -90,11 +99,13 @@
                         View source
                         <span class="icon-external-link" />
                     </Button>
-                    <Button
-                        disabled={isSelfHosted && !isVcsEnabled}
-                        on:click={() => connectTemplate($template)}>
-                        Create function
-                    </Button>
+                    <ContainerButton
+                        title="functions"
+                        disabled={buttonDisabled || (isSelfHosted && !isVcsEnabled)}
+                        buttonMethod={() => connectTemplate($template)}
+                        showIcon={false}
+                        buttonText="Create function"
+                        buttonEvent="create_function" />
                 </div>
             </Card>
         </section>

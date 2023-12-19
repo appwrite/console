@@ -8,9 +8,10 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { onMount } from 'svelte';
-    import Delete from '../deleteOrganization.svelte';
+    import Delete from './deleteOrganization.svelte';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
 
+    export let data;
     let name: string;
     let showDelete = false;
 
@@ -83,10 +84,13 @@
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
-                <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
+                <Button
+                    disabled={$organization?.markedForDeletion}
+                    secondary
+                    on:click={() => (showDelete = true)}>Delete</Button>
             </svelte:fragment>
         </CardGrid>
     {/if}
 </Container>
 
-<Delete bind:showDelete />
+<Delete bind:showDelete invoices={data.invoices} />

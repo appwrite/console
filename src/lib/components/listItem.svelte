@@ -1,16 +1,8 @@
 <script lang="ts">
-    export let avatar: string;
+    export let icon: string = null;
 </script>
 
-<li class="sessions-item">
-    <article class="card">
-        <img class="sessions-item-image avatar" src={avatar} alt="" />
-        <header class="sessions-item-header">
-            <slot name="header" />
-        </header>
-        <p class="sessions-item-info">
-            <slot name="info" />
-        </p>
-        <slot name="action" />
-    </article>
+<li class="list-item">
+    <span class={icon ? `icon-${icon}` : 'icon-check-circle'} aria-hidden="true" />
+    <slot />
 </li>

@@ -19,5 +19,7 @@
     <p class="common-section">
         You can also install the SDK using the Dart package manager from your terminal.
     </p>
-    <Code label="Bash" language="sh" code={example2} withCopy />
+    <div class="u-margin-block-start-16">
+        <Code label="Bash" language="sh" code={example2} withCopy noMargin />
+    </div>
 </WizardStep>

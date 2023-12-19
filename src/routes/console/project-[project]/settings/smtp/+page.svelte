@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { CardGrid, Heading } from '$lib/components';
+    import { Alert, CardGrid, Heading } from '$lib/components';
     import {
         Button,
         Form,
@@ -20,6 +20,9 @@
     import { base } from '$app/paths';
     import deepEqual from 'deep-equal';
     import { onMount } from 'svelte';
+    import { organization } from '$lib/stores/organization';
+    import { wizard } from '$lib/stores/wizard';
+    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
 
     let enabled = false;
     let senderName: string;
@@ -121,68 +124,87 @@
                     class="link">here</a>
             </p>
             <svelte:fragment slot="aside">
-                <FormList>
-                    <InputChoice
-                        type="switchbox"
-                        id="enabled"
-                        bind:value={enabled}
-                        label="Custom SMTP server">
-                        Enabling this option allows customizing email templates and prevents emails
-                        from being labeled as spam.
-                    </InputChoice>
-
-                    {#if enabled}
-                        <InputText
-                            id="senderName"
-                            label="Sender name"
-                            bind:value={senderName}
-                            required
-                            placeholder="Enter sender name" />
-                        <InputEmail
-                            id="senderEmail"
-                            label="Sender email"
-                            bind:value={senderEmail}
-                            required
-                            placeholder="user@example.io" />
-                        <InputEmail
-                            id="replyTo"
-                            label="Reply to"
-                            bind:value={replyTo}
-                            placeholder="user@example.io" />
-                        <InputText
-                            id="serverHost"
-                            label="Server host"
-                            bind:value={host}
-                            required
-                            placeholder="smtp.server.com" />
-                        <InputNumber
-                            id="serverPort"
-                            label="Server port"
-                            bind:value={port}
-                            required
-                            placeholder="587" />
-                        <InputText
-                            id="username"
-                            label="Username"
-                            bind:value={username}
-                            required
-                            placeholder="Enter username" />
-                        <InputPassword
-                            showPasswordButton
-                            id="passwort"
-                            label="Password"
-                            bind:value={password}
-                            required
-                            placeholder="Enter password" />
-
-                        <InputChoice bind:value={secure} id="tls" label="TLS secure protocol">
-                            Enable if TLS is supported on your SMTP server.
+                {#if $organization.billingPlan === 'tier-0'}
+                    <Alert type="info">
+                        Custom SMTP is a Pro plan feature. Upgrade to enable custom SMTP sever.
+                        <svelte:fragment slot="action">
+                            <div class="alert-buttons u-flex">
+                                <Button
+                                    text
+                                    on:click={() => wizard.start(ChangeOrganizationTierCloud)}>
+                                    Upgrade plan
+                                </Button>
+                            </div>
+                        </svelte:fragment>
+                    </Alert>
+                {:else}
+                    <FormList>
+                        <InputChoice
+                            type="switchbox"
+                            id="enabled"
+                            bind:value={enabled}
+                            label="Custom SMTP server">
+                            Enabling this option allows customizing email templates and prevents
+                            emails from being labeled as spam.
                         </InputChoice>
-                    {/if}
-                </FormList>
+
+                        {#if enabled}
+                            <InputText
+                                id="senderName"
+                                label="Sender name"
+                                bind:value={senderName}
+                                required
+                                placeholder="Enter sender name" />
+                            <InputEmail
+                                id="senderEmail"
+                                label="Sender email"
+                                bind:value={senderEmail}
+                                required
+                                placeholder="user@example.io" />
+                            <InputEmail
+                                id="replyTo"
+                                label="Reply to"
+                                bind:value={replyTo}
+                                placeholder="user@example.io" />
+                            <InputText
+                                id="serverHost"
+                                label="Server host"
+                                bind:value={host}
+                                required
+                                placeholder="smtp.server.com" />
+                            <InputNumber
+                                id="serverPort"
+                                label="Server port"
+                                bind:value={port}
+                                required
+                                placeholder="587" />
+                            <InputText
+                                id="username"
+                                label="Username"
+                                bind:value={username}
+                                required
+                                placeholder="Enter username" />
+                            <InputPassword
+                                showPasswordButton
+                                id="passwort"
+                                label="Password"
+                                bind:value={password}
+                                required
+                                placeholder="Enter password" />
+
+                            <InputChoice bind:value={secure} id="tls" label="TLS secure protocol">
+                                Enable if TLS is supported on your SMTP server.
+                            </InputChoice>
+                        {/if}
+                    </FormList>
+                {/if}
             </svelte:fragment>
             <svelte:fragment slot="actions">
-                <Button submit disabled={isButtonDisabled}>Update</Button>
+                <Button
+                    submit
+                    disabled={isButtonDisabled || $organization.billingPlan === 'tier-0'}>
+                    Update
+                </Button>
             </svelte:fragment>
         </CardGrid>
     </Form>

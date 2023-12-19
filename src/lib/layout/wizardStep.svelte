@@ -20,7 +20,7 @@
     }
 </script>
 
-<header class="form-header">
+<header class="form-header" class:hide-divider={!$$slots.subtitle}>
     <Heading tag="h1" size="6">
         <slot name="title" />
     </Heading>
@@ -32,3 +32,10 @@
 </header>
 
 <slot />
+
+<style>
+    .hide-divider {
+        padding-block-end: 0;
+        border-block-end: none;
+    }
+</style>

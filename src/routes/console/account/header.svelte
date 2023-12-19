@@ -9,10 +9,11 @@
     import { Cover, CoverTitle } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
+    import { isCloud } from '$lib/system';
 
     const path = `/console/account`;
 
-    $: tabs = [
+    $: permanentTabs = [
         {
             href: path,
             title: 'Overview',
@@ -36,6 +37,18 @@
             hasChildren: true
         }
     ];
+
+    $: tabs = isCloud
+        ? [
+              ...permanentTabs,
+              {
+                  href: `${path}/payments`,
+                  title: 'Payment details',
+                  event: 'payments',
+                  hasChildren: true
+              }
+          ]
+        : permanentTabs;
 
     async function logout() {
         await sdk.forConsole.account.deleteSession('current');

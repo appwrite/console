@@ -26,7 +26,7 @@
         TableScroll
     } from '$lib/elements/table';
     import { deploymentList, execute, func, proxyRuleList } from './store';
-    import { Container } from '$lib/layout';
+    import { Container, ContainerHeader } from '$lib/layout';
     import { app } from '$lib/stores/app';
     import { calculateSize, humanFileSize } from '$lib/helpers/sizeConvertion';
     import type { Models } from '@appwrite.io/console';
@@ -39,6 +39,10 @@
     import DeploymentSource from './deploymentSource.svelte';
     import DeploymentCreatedBy from './deploymentCreatedBy.svelte';
     import DeploymentDomains from './deploymentDomains.svelte';
+    import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
+    import { readOnly, tierToPlan } from '$lib/stores/billing';
+    import { hoursToDays } from '$lib/helpers/date';
+    import { organization } from '$lib/stores/organization';
 
     export let data;
 
@@ -56,10 +60,9 @@
 </script>
 
 <Container>
-    <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <Heading tag="h2" size="5">Deployments</Heading>
+    <ContainerHeader title="Deployments">
         <Create main />
-    </div>
+    </ContainerHeader>
     {#if $deploymentList?.total}
         {@const activeDeployment = data.activeDeployment}
         <div class="common-section">
@@ -148,7 +151,12 @@
                             Redeploy
                         </Button>
 
-                        <Button secondary on:click={() => ($execute = $func)}>Execute now</Button>
+                        <Button
+                            secondary
+                            on:click={() => ($execute = $func)}
+                            disabled={isCloud && $readOnly && !GRACE_PERIOD_OVERRIDE}>
+                            Execute now
+                        </Button>
                     </div>
                 </svelte:fragment>
             </CardGrid>
@@ -207,7 +215,19 @@
                         <TableCellHead width={80}>Size</TableCellHead>
                         <TableCellHead width={40} />
                     </TableHeader>
-                    <TableBody>
+                    <TableBody service="logs" total={isCloud ? Infinity : 0}>
+                        <svelte:fragment slot="limit" let:limit let:upgradeMethod>
+                            <p class="text">
+                                Logs are retained in rolling {hoursToDays(limit)} intervals with the
+                                {tierToPlan($organization.billingPlan).name}
+                                plan.
+                                <button
+                                    class="link"
+                                    type="button"
+                                    on:click|preventDefault={upgradeMethod}>Upgrade</button> to increase
+                                your log retention for a longer period.
+                            </p>
+                        </svelte:fragment>
                         {#each $deploymentList.deployments as deployment, index (deployment.$id)}
                             {@const status = deployment.status}
                             <TableRow>
