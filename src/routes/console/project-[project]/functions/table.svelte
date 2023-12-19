@@ -44,32 +44,32 @@
         {/each}
     </TableHeader>
     <TableBody>
-        {#each data.functions.functions as fn}
-            <TableRowLink href={`${base}/console/project-${project}/functions/function-${fn.$id}`}>
-                <TableCellCheck bind:selectedIds={selected} id={fn.$id} />
-                {#each $columns as column}
-                    {#if column.show}
-                        {#if column.id === '$id'}
-                            {#key $columns}
-                                <TableCell width={column.width} title={column.title}>
-                                    <Id value={fn.$id}>
-                                        {fn.$id}
-                                    </Id>
-                                </TableCell>
-                            {/key}
-                        {:else}
-                            <TableCellText width={column.width} title={column.title}>
-                                {#if column.transform}
-                                    {column.transform(fn[column.id])}
-                                {:else}
-                                    {fn[column.id]}
-                                {/if}
-                            </TableCellText>
-                        {/if}
-                    {/if}
-                {/each}
-            </TableRowLink>
-        {/each}
+      {#each data.functions.functions as fn}
+          <TableRowLink href={`${base}/console/project-${project}/functions/function-${fn.$id}`}>
+              <TableCellCheck bind:selectedIds={selected} id={fn.$id} />
+              {#each $columns as column}
+                  {#if column.show}
+                      {#if column.id === '$id'}
+                          {#key $columns}
+                              <TableCell width={column.width} title={column.title}>
+                                  <Id value={fn.$id}>
+                                      {fn.$id}
+                                  </Id>
+                              </TableCell>
+                          {/key}
+                      {:else}
+                          <TableCellText width={column.width} title={column.title}>
+                              {#if column.transform}
+                                  {column.transform(fn[column.id])}
+                              {:else}
+                                  {fn[column.id]}
+                              {/if}
+                          </TableCellText>
+                      {/if}
+                  {/if}
+              {/each}
+          </TableRowLink>
+      {/each}
     </TableBody>
 </TableScroll>
 
