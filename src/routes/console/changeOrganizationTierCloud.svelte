@@ -96,7 +96,9 @@
                         $changeOrganizationTier.billingAddress.streetAddress,
                         $changeOrganizationTier.billingAddress.city,
                         $changeOrganizationTier.billingAddress.state,
-                        $changeOrganizationTier.billingAddress.postalCode,
+                        $changeOrganizationTier.billingAddress.postalCode
+                            ? $changeOrganizationTier.billingAddress.postalCode
+                            : undefined,
                         $changeOrganizationTier.billingAddress.addressLine2
                             ? $changeOrganizationTier.billingAddress.addressLine2
                             : undefined
