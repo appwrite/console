@@ -62,7 +62,12 @@ export const scopes: {
     },
     {
         scope: 'sessions',
-        description: "Access to create and read your project's user sessions",
+        description: "Access to create sessions as one of your project's users",
+        category: 'Auth'
+    },
+    {
+        scope: 'account',
+        description: "Access to perform actions as one of your project's users",
         category: 'Auth'
     },
     {
