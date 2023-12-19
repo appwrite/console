@@ -43,11 +43,13 @@ export const load: PageLoad = async ({ params, parent }) => {
 
     const queries: string[] = [];
 
-    if(usage.projects.length > 0) {
-        queries.push(Query.equal(
-            '$id',
-            usage.projects.map((p) => p.projectId)
-        ));
+    if (usage.projects.length > 0) {
+        queries.push(
+            Query.equal(
+                '$id',
+                usage.projects.map((p) => p.projectId)
+            )
+        );
     }
 
     const projectNames = await sdk.forConsole.projects.list(queries);
