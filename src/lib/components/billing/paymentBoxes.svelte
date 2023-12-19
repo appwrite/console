@@ -29,13 +29,15 @@
                 }
             }
         });
-
-        observer.observe(element, { childList: true });
     });
 
     onDestroy(() => {
         observer.disconnect();
     });
+
+    $: if (element) {
+        observer.observe(element, { childList: true });
+    }
 </script>
 
 <RadioBoxes elements={methods} total={methods?.length} variableName="$id" name="payment" bind:group>
