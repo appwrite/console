@@ -35,7 +35,7 @@
         <p class="text">Set the maximum file size allowed in the bucket.</p>
         <svelte:fragment slot="aside">
             {#if isCloud}
-                {@const size = humanFileSize(sizeToBytes(service, 'MB', 1024))}
+                {@const size = humanFileSize(sizeToBytes(service, 'GB', 1024))}
                 {@const plan = tierToPlan($organization?.billingPlan)}
                 <Alert type="info">
                     <p class="text">

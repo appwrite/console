@@ -6,8 +6,8 @@
     import { app } from '$lib/stores/app';
     import { user } from '$lib/stores/user';
 
-    export let imgLight = LoginLight;
-    export let imgDark = LoginDark;
+    export const imgLight = LoginLight;
+    export const imgDark = LoginDark;
 </script>
 
 <main class="grid-1-1 is-full-page" id="main">
@@ -384,18 +384,18 @@
             padding-inline-end: 1rem;
         }
 
-        .tag-line {
-            font-family: 'Aeonik Pro';
-            font-size: 4rem;
-            font-style: normal;
-            font-weight: 400;
-            line-height: 100%; /* 80px */
-            letter-spacing: -1.6px;
-            backdrop-filter: blur(0.5 rem);
-            .underscore {
-                -webkit-text-fill-color: #f02e65;
-            }
-        }
+        // .tag-line {
+        //     font-family: 'Aeonik Pro';
+        //     font-size: 4rem;
+        //     font-style: normal;
+        //     font-weight: 400;
+        //     line-height: 100%; /* 80px */
+        //     letter-spacing: -1.6px;
+        //     backdrop-filter: blur(0.5 rem);
+        //     .underscore {
+        //         -webkit-text-fill-color: #f02e65;
+        //     }
+        // }
     }
 
     /* for smaller screens */
@@ -418,9 +418,9 @@
                 padding-inline-start: 5.625rem;
                 padding-inline-end: 5rem;
             }
-            .tag-line {
-                font-size: 5rem;
-            }
+            // .tag-line {
+            //     font-size: 5rem;
+            // }
         }
     }
 </style>
