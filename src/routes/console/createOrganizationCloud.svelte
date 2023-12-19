@@ -106,7 +106,7 @@
         } catch (e) {
             addNotification({
                 type: 'error',
-                message: e.mesage
+                message: e.message
             });
             trackError(e, Submit.OrganizationCreate);
         }
