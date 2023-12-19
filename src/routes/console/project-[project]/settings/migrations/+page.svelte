@@ -15,7 +15,7 @@
     import { isSameDay, toLocaleDate } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
-    import { isSelfHosted } from '$lib/system';
+    import { GRACE_PERIOD_OVERRIDE, isSelfHosted } from '$lib/system';
     import { onMount } from 'svelte';
     import { project } from '../../store';
     import { openImportWizard } from './(import)';
@@ -23,6 +23,7 @@
     import ExportModal from './exportModal.svelte';
     import Status from '$lib/components/status.svelte';
     import { capitalize } from '$lib/helpers/string';
+    import { readOnly } from '$lib/stores/billing';
 
     export let data;
     let details: string | null = null;
@@ -222,7 +223,11 @@
                     <div class="avatar u-margin-block-start-8" style="--size: {48 / 16}rem">
                         <span class="icon-cloud" />
                     </div>
-                    <Button class="u-margin-block-start-20" secondary on:click={openImportWizard}>
+                    <Button
+                        class="u-margin-block-start-20"
+                        secondary
+                        on:click={openImportWizard}
+                        disabled={$readOnly && !GRACE_PERIOD_OVERRIDE}>
                         Import data
                     </Button>
                 </div>
@@ -251,8 +256,9 @@
                             <span class="icon-cloud" />
                         </div>
                     </div>
-                    <Button class="u-margin-block-start-48" secondary on:click={deployToCloud}
-                        >Deploy to Cloud</Button>
+                    <Button class="u-margin-block-start-48" secondary on:click={deployToCloud}>
+                        Deploy to Cloud
+                    </Button>
                 </div>
             </svelte:fragment>
         </CardGrid>

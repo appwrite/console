@@ -1,6 +1,6 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { Alert, EmptySearch, Heading, Id, PaginationWithLimit } from '$lib/components';
+    import { Alert, EmptySearch, Id, PaginationWithLimit } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
@@ -15,18 +15,20 @@
     } from '$lib/elements/table';
     import { timeFromNow } from '$lib/helpers/date';
     import { calculateTime } from '$lib/helpers/timeConversion';
-    import { Container } from '$lib/layout';
+    import { Container, ContainerHeader } from '$lib/layout';
     import { log } from '$lib/stores/logs';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { func } from '../store';
     import type { Models } from '@appwrite.io/console';
-    import type { PageData } from './$types';
+    import { organization } from '$lib/stores/organization';
+    import { getServiceLimit, showUsageRatesModal } from '$lib/stores/billing';
     import { project } from '$routes/console/project-[project]/store';
     import Create from '../create.svelte';
     import Execute from '../execute.svelte';
+    import { abbreviateNumber } from '$lib/helpers/numbers';
 
-    export let data: PageData;
+    export let data;
 
     let selectedFunction: Models.Function = null;
 
@@ -43,16 +45,45 @@
         $log.func = $func;
         $log.data = execution;
     }
+
+    const logs = getServiceLimit('logs');
 </script>
 
 <Container>
-    <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <Heading tag="h2" size="5">Executions</Heading>
+    <ContainerHeader
+        title="Executions"
+        buttonText="Execute now"
+        buttonEvent="execute_function"
+        buttonMethod={() => (selectedFunction = $func)}>
+        <svelte:fragment slot="tooltip" let:tier let:limit let:upgradeMethod>
+            <p class="u-bold">The {tier} plan has limits</p>
+            <ul>
+                <li>
+                    {abbreviateNumber(limit)} function executions
+                </li>
+                <li>
+                    {logs} hour of logs
+                </li>
+            </ul>
+            {#if $organization?.billingPlan === 'tier-0'}
+                <p class="text">
+                    <button class="link" type="button" on:click|preventDefault={upgradeMethod}
+                        >Upgrade</button>
+                    to increase your resource limits.
+                </p>
+            {:else}
+                <p class="text">
+                    After this amount, <button
+                        class="link"
+                        type="button"
+                        on:click|preventDefault={() => ($showUsageRatesModal = true)}
+                        >usage fees will apply</button
+                    >.
+                </p>
+            {/if}
+        </svelte:fragment>
+    </ContainerHeader>
 
-        <Button on:click={() => (selectedFunction = $func)} event="execute_function">
-            <span class="text">Execute now</span>
-        </Button>
-    </div>
     {#if !$func.logging}
         <div class="common-section">
             <Alert type="info" isStandalone>
@@ -138,5 +169,7 @@
         </EmptySearch>
     {/if}
 </Container>
+
+<!-- <CreateDeployment bind:showCreate /> -->
 
 <Execute {selectedFunction} />

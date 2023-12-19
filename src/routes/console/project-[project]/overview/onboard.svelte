@@ -177,6 +177,13 @@
 <style lang="scss">
     @import '@appwrite.io/pink/src/abstract/variables/_devices.scss';
 
+    .card {
+        background: #fbfbfc;
+
+        :global(.theme-dark) & {
+            background: #19191c !important;
+        }
+    }
     @media #{$break2open} {
         .card-header {
             background-image: var(--url);

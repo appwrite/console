@@ -8,14 +8,23 @@
     import Shell from '$lib/layout/shell.svelte';
     import { app } from '$lib/stores/app';
     import { log } from '$lib/stores/logs';
-    import { newOrgModal } from '$lib/stores/organization';
+    import { newOrgModal, organization } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
-    import { onMount } from 'svelte';
+    import { afterUpdate, onMount } from 'svelte';
     import { loading, requestedMigration } from '../store';
     import Create from './createOrganization.svelte';
-
+    import {
+        showUsageRatesModal,
+        checkForUsageLimit,
+        checkPaymentAuthorizationRequired,
+        calculateTrialDay,
+        checkForTrialEnding,
+        paymentExpired,
+        checkForFreeOrgOverflow,
+        checkForPostReleaseProModal,
+        checkForMarkedForDeletion
+    } from '$lib/stores/billing';
     import { goto } from '$app/navigation';
-
     import { CommandCenter, registerCommands, registerSearchers } from '$lib/commandCenter';
     import { AIPanel, OrganizationsPanel, ProjectsPanel } from '$lib/commandCenter/panels';
     import { orgSearcher, projectsSearcher } from '$lib/commandCenter/searchers';
@@ -24,7 +33,19 @@
     import { openMigrationWizard } from './(migration-wizard)';
     import { project } from './project-[project]/store';
     import { feedback } from '$lib/stores/feedback';
-    import { consoleVariables } from './store';
+    import { VARS, hasStripePublicKey, isCloud } from '$lib/system';
+    import { sdk } from '$lib/stores/sdk';
+    import { loadStripe } from '@stripe/stripe-js';
+    import { stripe } from '$lib/stores/stripe';
+    import MobileSupportModal from './wizard/support/mobileSupportModal.svelte';
+    import { showSupportModal } from './wizard/support/store';
+    import ExcesLimitModal from './organization-[organization]/excesLimitModal.svelte';
+    import { showExcess } from './organization-[organization]/store';
+    import UsageRates from './wizard/cloudOrganization/usageRates.svelte';
+    import { activeHeaderAlert, consoleVariables, showPostReleaseModal } from './store';
+    import { Query } from '@appwrite.io/console';
+    import { headerAlert } from '$lib/stores/headerAlert';
+    import PostReleaseModal from './(billing-modal)/postReleaseModal.svelte';
 
     function kebabToSentenceCase(str: string) {
         return str
@@ -221,13 +242,27 @@
         }
     ]);
     let isOpen = false;
-
-    onMount(() => {
+    onMount(async () => {
         loading.set(false);
+
+        if (isCloud) {
+            if (!$page.url.pathname.includes('/console/onboarding')) {
+                const orgs = await sdk.forConsole.teams.list([
+                    Query.equal('billingPlan', 'tier-0')
+                ]);
+
+                checkForPostReleaseProModal(orgs);
+                checkForFreeOrgOverflow(orgs);
+            }
+        }
 
         setInterval(() => {
             checkForFeedback(INTERVAL);
         }, INTERVAL);
+
+        if (isCloud && hasStripePublicKey) {
+            $stripe = await loadStripe(VARS.STRIPE_PUBLIC_KEY);
+        }
     });
 
     function checkForFeedback(interval: number) {
@@ -243,6 +278,18 @@
         }
     }
 
+    organization.subscribe(async (org) => {
+        if (!org) return;
+        if (isCloud) {
+            calculateTrialDay(org);
+            checkForTrialEnding(org);
+            await paymentExpired(org);
+            checkForUsageLimit(org);
+            checkForMarkedForDeletion(org);
+            await checkPaymentAuthorizationRequired(org);
+        }
+    });
+
     $: if (!$log.show) {
         $log.data = null;
         $log.func = null;
@@ -253,6 +300,10 @@
     }
 
     $registerSearchers(orgSearcher, projectsSearcher);
+
+    afterUpdate(() => {
+        $activeHeaderAlert = headerAlert.get();
+    });
 </script>
 
 <CommandCenter />
@@ -264,6 +315,11 @@
         !$page.url.pathname.includes('/console/account') &&
         !$page.url.pathname.includes('/console/card') &&
         !$page.url.pathname.includes('/console/onboarding')}>
+    <svelte:fragment slot="alert">
+        {#if $activeHeaderAlert?.show}
+            <svelte:component this={$activeHeaderAlert.component} />
+        {/if}
+    </svelte:fragment>
     <Header slot="header" />
     <SideNavigation slot="side" bind:isOpen />
     <slot />
@@ -280,4 +336,19 @@
 
 {#if $log.show}
     <Logs />
+{/if}
+
+{#if $showSupportModal}
+    <MobileSupportModal bind:show={$showSupportModal}></MobileSupportModal>
+{/if}
+
+{#if isCloud && $showExcess}
+    <ExcesLimitModal bind:show={$showExcess}></ExcesLimitModal>
+{/if}
+{#if isCloud && $showUsageRatesModal}
+    <UsageRates bind:show={$showUsageRatesModal} tier={$organization?.billingPlan} />
+{/if}
+{#if isCloud && $showPostReleaseModal && !$page.url.pathname.includes('/console/onboarding')}
+    <!-- {#if true} -->
+    <PostReleaseModal show={true} />
 {/if}

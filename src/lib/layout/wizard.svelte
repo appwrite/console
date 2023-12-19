@@ -5,6 +5,7 @@
             label: string;
             component: typeof SvelteComponent<unknown>;
             optional?: boolean;
+            disabled?: boolean;
         }
     >;
 </script>
@@ -61,30 +62,67 @@
 
     async function submit() {
         if ($wizard.interceptor) {
+            $wizard.nextDisabled = true;
             try {
                 await $wizard.interceptor();
             } catch (error) {
+                if (!$wizard.interceptorNotificationEnabled) return;
                 addNotification({
                     message: error.message,
                     type: 'error'
                 });
                 return;
+            } finally {
+                $wizard.nextDisabled = false;
             }
         }
 
         wizard.setInterceptor(null);
         if (isLastStep) {
-            $wizard.nextDisabled = true;
-            trackEvent('wizard_finish');
-            dispatch('finish');
-            //Reactivate button in case there are errors
-            setTimeout(() => {
-                $wizard.nextDisabled = false;
-            }, 2000);
+            if ($wizard.finalAction) {
+                $wizard.nextDisabled = true;
+                try {
+                    await $wizard.finalAction();
+                    trackEvent('wizard_finish');
+                } catch (error) {
+                    addNotification({
+                        message: error.message,
+                        type: 'error'
+                    });
+                } finally {
+                    $wizard.nextDisabled = false;
+                }
+            } else {
+                $wizard.nextDisabled = true;
+                trackEvent('wizard_finish');
+                dispatch('finish');
+                setTimeout(() => {
+                    $wizard.nextDisabled = false;
+                }, 2000);
+            }
         } else {
+            if (steps.get($wizard.step + 1)?.disabled) {
+                $wizard.step++;
+                while (steps.get($wizard.step)?.disabled) {
+                    $wizard.step++;
+                }
+            } else {
+                $wizard.step++;
+            }
             trackEvent('wizard_next');
-            $wizard.step++;
         }
+    }
+
+    function previousStep() {
+        if (steps.get($wizard.step - 1)?.disabled) {
+            $wizard.step--;
+            while (steps.get($wizard.step)?.disabled) {
+                $wizard.step--;
+            }
+        } else {
+            $wizard.step--;
+        }
+        trackEvent('wizard_back');
     }
 
     $: sortedSteps = [...steps].sort(([a], [b]) => (a > b ? 1 : -1));
@@ -112,13 +150,16 @@
     </header>
 
     <aside class="wizard-side">
-        <Steps
-            on:step={handleStepClick}
-            steps={sortedSteps.map(([, { label, optional }]) => ({
-                text: label,
-                optional
-            }))}
-            currentStep={$wizard.step} />
+        <slot name="aside">
+            <Steps
+                on:step={handleStepClick}
+                steps={sortedSteps.map(([, { label, optional, disabled }]) => ({
+                    text: label,
+                    optional,
+                    disabled
+                }))}
+                currentStep={$wizard.step} />
+        </slot>
     </aside>
     <div class="wizard-media">
         {#if $wizard.media}
@@ -143,10 +184,7 @@
                     {#if $wizard.step === 1}
                         <Button secondary on:click={handleExit}>Cancel</Button>
                     {:else}
-                        <Button
-                            secondary
-                            on:click={() => $wizard.step--}
-                            on:click={() => trackEvent('wizard_back')}>Back</Button>
+                        <Button secondary on:click={previousStep}>Back</Button>
                     {/if}
 
                     <Button submit disabled={$wizard.nextDisabled}>

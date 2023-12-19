@@ -39,6 +39,7 @@
             label="Name"
             id="name"
             placeholder="Function name"
+            autofocus
             bind:value={$templateConfig.name}
             required />
         {#await loadRuntimes()}

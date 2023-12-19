@@ -162,8 +162,10 @@
                 <i class="icon-trending-up" />
             </div>
             <div>
-                <p class="u-bold">Keep your project plan limits in mind</p>
-                <p>Make sure to have enough storage in your project plan when importing files</p>
+                <p class="u-bold">Keep your organization plan's limits in mind</p>
+                <p>
+                    Make sure to have enough storage in your organization plan when importing files.
+                </p>
             </div>
         </div>
         {#if $provider.provider === 'firebase'}

@@ -15,6 +15,7 @@
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { isCloud } from '$lib/system';
+    import { page } from '$app/stores';
 
     let mail: string, pass: string, disabled: boolean;
 
@@ -28,7 +29,17 @@
                 message: 'Successfully logged in.'
             });
             trackEvent(Submit.AccountCreate);
-            await goto(`${base}/console`);
+            if ($page.url.searchParams) {
+                const redirect = $page.url.searchParams.get('redirect');
+                $page.url.searchParams.delete('redirect');
+                if (redirect) {
+                    await goto(`${base}${redirect}${$page.url.search}`);
+                } else {
+                    await goto(`${base}/console${$page.url.search ?? ''}`);
+                }
+            } else {
+                await goto(`${base}/console`);
+            }
         } catch (error) {
             disabled = false;
             addNotification({
@@ -40,12 +51,20 @@
     }
 
     function onGithubLogin() {
-        sdk.forConsole.account.createOAuth2Session(
-            'github',
-            window.location.origin,
-            window.location.origin,
-            ['read:user', 'user:email']
-        );
+        let url = window.location.origin;
+        if ($page.url.searchParams) {
+            const redirect = $page.url.searchParams.get('redirect');
+            $page.url.searchParams.delete('redirect');
+            if (redirect) {
+                url = `${base}${redirect}${$page.url.search}`;
+            } else {
+                url = `${base}/console${$page.url.search ?? ''}`;
+            }
+        }
+        sdk.forConsole.account.createOAuth2Session('github', url, window.location.origin, [
+            'read:user',
+            'user:email'
+        ]);
     }
 </script>
 
@@ -93,7 +112,9 @@
             <a href={`${base}/recover`}><span class="text">Forgot Password?</span></a>
         </li>
         <li class="inline-links-item">
-            <a href={`${base}/register`}><span class="text">Sign Up</span></a>
+            <a href={`${base}/register${$page?.url?.search ?? ''}`}>
+                <span class="text">Sign Up</span>
+            </a>
         </li>
     </svelte:fragment>
 </Unauthenticated>

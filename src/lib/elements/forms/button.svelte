@@ -10,11 +10,13 @@
     export let github = false;
     export let text = false;
     export let danger = false;
-    export let disabled = false;
     export let round = false;
+    export let link = false;
+    export let disabled = false;
     export let external = false;
     export let href: string = null;
     export let fullWidth = false;
+    export let fullWidthMobile = false;
     export let ariaLabel: string = null;
     export let noMargin = false;
     export let event: string = null;
@@ -39,7 +41,7 @@
     }
 
     $: resolvedClasses = [
-        'button',
+        link ? 'link' : 'button',
         disabled && 'is-disabled',
         round && 'is-only-icon',
         secondary && 'is-secondary',
@@ -47,6 +49,7 @@
         text && 'is-text',
         danger && 'is-danger',
         fullWidth && 'is-full-width',
+        fullWidthMobile && 'is-full-width-mobile',
         noMargin && 'u-padding-inline-0',
         classes
     ]

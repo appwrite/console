@@ -1,5 +1,13 @@
 <script lang="ts">
     import { base } from '$app/paths';
+    import { Pill } from '$lib/elements';
+    import { Button } from '$lib/elements/forms';
+    import { Container } from '$lib/layout';
+    import Create from './createProjectCloud.svelte';
+    import CreateProject from './createProject.svelte';
+    import CreateOrganization from '../createOrganization.svelte';
+    import { wizard } from '$lib/stores/wizard';
+    import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
     import { page } from '$app/stores';
     import { registerCommands } from '$lib/commandCenter';
     import {
@@ -11,26 +19,23 @@
         Heading,
         PaginationWithLimit
     } from '$lib/components';
-    import { Pill } from '$lib/elements';
-    import { Button } from '$lib/elements/forms';
-
     import { goto } from '$app/navigation';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { Container } from '$lib/layout';
     import { services } from '$lib/stores/project-services';
     import { sdk } from '$lib/stores/sdk';
     import { loading } from '$routes/store';
     import type { Models } from '@appwrite.io/console';
     import { ID } from '@appwrite.io/console';
-    import CreateOrganization from '../createOrganization.svelte';
     import { openImportWizard } from '../project-[project]/settings/migrations/(import)';
-    import type { PageData } from './$types';
-    import CreateProject from './createProject.svelte';
+    import { readOnly } from '$lib/stores/billing';
+    import type { RegionList } from '$lib/sdk/billing';
+    import { onMount } from 'svelte';
+    import CreateOrganizationCloud from '../createOrganizationCloud.svelte';
 
-    export let data: PageData;
+    export let data;
 
-    let showCreate = false;
     let addOrganization = false;
+    let showCreate = false;
 
     const getPlatformInfo = (platform: string) => {
         let name: string, icon: string;
@@ -73,6 +78,10 @@
         );
     }
 
+    function handleCreateProject() {
+        if (isCloud) wizard.start(Create);
+        else showCreate = true;
+    }
     $: $registerCommands([
         {
             label: 'Create project',
@@ -80,7 +89,7 @@
                 showCreate = true;
             },
             keys: ['c'],
-            disabled: showCreate,
+            disabled: $readOnly && !GRACE_PERIOD_OVERRIDE,
             group: 'projects',
             icon: 'plus'
         }
@@ -107,13 +116,35 @@
             trackError(e, Submit.ProjectCreate);
         }
     };
+
+    let regions: RegionList;
+    onMount(async () => {
+        if (isCloud) {
+            regions = await sdk.forConsole.billing.listRegions();
+            if ($page.url.searchParams.has('type')) {
+                const paramType = $page.url.searchParams.get('type');
+                if (paramType === 'createPro') {
+                    wizard.start(CreateOrganizationCloud);
+                }
+            }
+        }
+    });
+
+    function findRegion(project: Partial<Models.Project & { region: string }>) {
+        const region = regions.regions.find((region) => region.$id === project.region);
+        return region;
+    }
 </script>
 
 <Container>
     <div class="u-flex u-gap-12 common-section u-main-space-between">
         <Heading tag="h2" size="5">Projects</Heading>
+
         <DropList bind:show={showDropdown} placement="bottom-end">
-            <Button on:click={() => (showDropdown = true)} event="create_project">
+            <Button
+                on:click={handleCreateProject}
+                event="create_project"
+                disabled={$readOnly && !GRACE_PERIOD_OVERRIDE}>
                 <span class="icon-plus" aria-hidden="true" />
                 <span class="text">Create project</span>
             </Button>
@@ -132,8 +163,7 @@
         <CardContainer
             total={data.projects.total}
             offset={data.offset}
-            event="project"
-            on:click={() => (showCreate = true)}>
+            on:click={handleCreateProject}>
             {#each data.projects.projects as project}
                 <li>
                     <GridItem1 href={`${base}/console/project-${project.$id}`}>
@@ -164,6 +194,14 @@
                                 +{project.platforms.length - 3}
                             </Pill>
                         {/if}
+                        <svelte:fragment slot="icons">
+                            {#if isCloud && regions}
+                                {@const region = findRegion(project)}
+                                <span class="u-color-text-gray">
+                                    {region.name}
+                                </span>
+                            {/if}
+                        </svelte:fragment>
                     </GridItem1>
                 </li>
             {/each}
@@ -172,9 +210,11 @@
             </svelte:fragment>
         </CardContainer>
     {:else}
-        <Empty single on:click={() => (showCreate = true)}>
-            <p>Create a new project</p>
-        </Empty>
+        <Empty
+            single
+            on:click={handleCreateProject}
+            target="project"
+            href="https://appwrite.io/docs/quick-starts"></Empty>
     {/if}
 
     <PaginationWithLimit

@@ -20,6 +20,7 @@ import {
     Users,
     Vcs
 } from '@appwrite.io/console';
+import { Billing } from '../sdk/billing';
 
 const endpoint = VARS.APPWRITE_ENDPOINT ?? `${globalThis?.location?.origin}/v1`;
 
@@ -28,6 +29,7 @@ clientConsole.setEndpoint(endpoint).setProject('console');
 
 const clientProject = new Client();
 clientProject.setEndpoint(endpoint).setMode('admin');
+
 const sdkForProject = {
     client: clientProject,
     account: new Account(clientProject),
@@ -67,7 +69,8 @@ export const sdk = {
         users: new Users(clientConsole),
         migrations: new Migrations(clientConsole),
         console: new Console(clientConsole),
-        assistant: new Assistant(clientConsole)
+        assistant: new Assistant(clientConsole),
+        billing: new Billing(clientConsole)
     },
     get forProject() {
         const projectId = getProjectId();

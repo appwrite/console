@@ -23,11 +23,14 @@ val client = Client(context)
             value={project}>Project ID</Id
         >.
     </p>
-    <Code
-        label="Android SDK"
-        labelIcon="android"
-        language="kotlin"
-        {code}
-        withCopy
-        withLineNumbers />
+    <div class="u-margin-block-start-16">
+        <Code
+            label="Android SDK"
+            labelIcon="android"
+            language="kotlin"
+            {code}
+            withCopy
+            withLineNumbers
+            noMargin />
+    </div>
 </WizardStep>

@@ -13,8 +13,8 @@
     bind:show
     onSubmit={handleDisableAll}>
     <p class="text" data-private>
-        Are you sure you want to disable all services? This will disable API requests to your
-        project.
+        Are you sure you want to disable all services? This will disable API requests to this
+        project for all Client SDKs.
     </p>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (show = false)}>Cancel</Button>
