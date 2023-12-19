@@ -1,6 +1,4 @@
 <script lang="ts">
-    // import { base } from '$app/paths';
-    // import { Button } from '$lib/elements/forms';
     import { HeaderAlert } from '$lib/layout';
     import { failedInvoice } from '$lib/stores/billing';
 </script>
