@@ -40,13 +40,13 @@
     }
 
     function format(value: number): string {
+        const humanized = humanFileSize(value);
         switch (metric) {
             case 'executions':
             case 'users':
                 return abbreviateNumber(value);
             case 'storage':
             case 'bandwidth':
-                const humanized = humanFileSize(value);
                 return humanized.value + humanized.unit;
         }
     }

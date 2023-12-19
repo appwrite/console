@@ -18,27 +18,23 @@ export async function initializeStripe() {
     if (!get(stripe)) return;
     isStripeInitialized.set(true);
 
-    try {
-        const methods = await sdk.forConsole.billing.listPaymentMethods();
-        clientSecret = methods.paymentMethods[0]?.clientSecret;
-        // If there is no payment method, create an empty one and get the client secret
-        if (!clientSecret) {
-            paymentMethod = await sdk.forConsole.billing.createPaymentMethod();
-            clientSecret = paymentMethod.clientSecret;
-        }
-
-        // Set up the options for the stripe elements
-        const options = {
-            clientSecret: clientSecret,
-            appearance: get(app).themeInUse === 'dark' ? apperanceDark : apperanceLight
-        };
-        // Set up Elements and then create form
-        elements = get(stripe).elements(options);
-        paymentElement = elements.create('payment');
-        paymentElement.mount('#payment-element');
-    } catch (e) {
-        throw e;
+    const methods = await sdk.forConsole.billing.listPaymentMethods();
+    clientSecret = methods.paymentMethods[0]?.clientSecret;
+    // If there is no payment method, create an empty one and get the client secret
+    if (!clientSecret) {
+        paymentMethod = await sdk.forConsole.billing.createPaymentMethod();
+        clientSecret = paymentMethod.clientSecret;
     }
+
+    // Set up the options for the stripe elements
+    const options = {
+        clientSecret: clientSecret,
+        appearance: get(app).themeInUse === 'dark' ? apperanceDark : apperanceLight
+    };
+    // Set up Elements and then create form
+    elements = get(stripe).elements(options);
+    paymentElement = elements.create('payment');
+    paymentElement.mount('#payment-element');
 }
 
 // TODO: fix redirect
