@@ -10,7 +10,7 @@
 
 <ModalWrapper bind:show let:close {style}>
     <div class="grid-1-1 u-width-full-line mk-grid">
-        <div class="mk-grid-item-1 u-width-full-line">
+        <div class="mk-grid-item-1 u-width-full-line is-not-mobile">
             <slot name="side" />
         </div>
         <div class="u-padding-32 mk-grid-item-2">
