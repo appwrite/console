@@ -61,6 +61,11 @@ export const scopes: {
         category: 'Auth'
     },
     {
+        scope: 'sessions',
+        description: "Access to create and read your project's user sessions",
+        category: 'Auth'
+    },
+    {
         scope: 'teams.read',
         description: "Access to read your project's teams",
         category: 'Auth'
