@@ -71,7 +71,7 @@ export async function submitStripeCard(name: string, urlRoute?: string) {
         if (error) {
             const e = new Error(error.message);
             trackError(e, Submit.PaymentMethodCreate);
-            throw error;
+            throw e;
         }
 
         if (setupIntent && setupIntent.status === 'succeeded') {
@@ -87,11 +87,11 @@ export async function submitStripeCard(name: string, urlRoute?: string) {
         } else {
             const e = new Error('Something went wrong');
             trackError(e, Submit.PaymentMethodCreate);
-            throw e;
+            throw e.message;
         }
     } catch (e) {
         trackError(e, Submit.PaymentMethodCreate);
-        throw e;
+        throw e.message;
     }
 }
 
@@ -109,7 +109,7 @@ export async function confirmPayment(orgId: string, clientSecret: string, paymen
             }
         });
         if (error) {
-            throw new Error();
+            throw error.message;
         }
     } catch (e) {
         addNotification({
