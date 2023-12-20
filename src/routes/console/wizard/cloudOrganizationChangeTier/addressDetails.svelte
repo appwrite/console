@@ -15,6 +15,30 @@
         }
     ];
     let addressList: AddressesList;
+    let country: string;
+    let streetAddress: string;
+    let city: string;
+    let state: string;
+    let postalCode: string;
+    let addressLine2: string;
+
+    async function handleAddress() {
+        if (!$changeOrganizationTier.billingAddressId) {
+            try {
+                const response = await sdk.forConsole.billing.createAddress(
+                    country,
+                    streetAddress,
+                    city,
+                    state,
+                    postalCode ? postalCode : undefined,
+                    addressLine2 ? addressLine2 : undefined
+                );
+                $changeOrganizationTier.billingAddressId = response.$id;
+            } catch (error) {
+                throw new Error(error.message);
+            }
+        }
+    }
 
     onMount(async () => {
         addressList = await sdk.forConsole.billing.listAddresses();
@@ -23,7 +47,7 @@
             : addressList.billingAddresses?.[0]?.$id ?? null;
         const locale = await sdk.forProject.locale.get();
         if (locale?.countryCode && !$changeOrganizationTier.billingAddressId) {
-            $changeOrganizationTier.billingAddress.country = locale.countryCode;
+            country = locale.countryCode;
         }
         const countryList = await sdk.forProject.locale.listCountries();
         options = countryList.countries.map((country) => {
@@ -35,7 +59,7 @@
     });
 </script>
 
-<WizardStep>
+<WizardStep beforeSubmit={handleAddress}>
     <svelte:fragment slot="title">Billing address</svelte:fragment>
     <svelte:fragment slot="subtitle">Add a billing address for your organization.</svelte:fragment>
 
@@ -73,25 +97,25 @@
                         placeholder="Enter tax ID"
                         optionalText="(optional)" />
                     <InputSelect
-                        bind:value={$changeOrganizationTier.billingAddress.country}
+                        bind:value={country}
                         {options}
                         label="Country or region"
                         placeholder="Select country or region"
                         id="country"
                         required />
                     <InputText
-                        bind:value={$changeOrganizationTier.billingAddress.streetAddress}
+                        bind:value={streetAddress}
                         id="address"
                         label="Street address"
                         placeholder="Enter street address"
                         required />
                     <InputText
-                        bind:value={$changeOrganizationTier.billingAddress.addressLine2}
+                        bind:value={addressLine2}
                         id="address2"
                         label="Address line 2"
                         placeholder="Unit number, floor, etc." />
                     <InputText
-                        bind:value={$changeOrganizationTier.billingAddress.city}
+                        bind:value={city}
                         id="city"
                         label="City or suburb"
                         placeholder="Enter your city"
@@ -100,7 +124,7 @@
                         <InputText
                             isMultiple
                             fullWidth
-                            bind:value={$changeOrganizationTier.billingAddress.state}
+                            bind:value={state}
                             id="state"
                             label="State"
                             placeholder="Enter your state"
@@ -108,7 +132,7 @@
                         <InputText
                             isMultiple
                             fullWidth
-                            bind:value={$changeOrganizationTier.billingAddress.postalCode}
+                            bind:value={postalCode}
                             id="zip"
                             label="Postal code"
                             placeholder="Enter postal code" />

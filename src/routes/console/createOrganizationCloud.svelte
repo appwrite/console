@@ -32,33 +32,9 @@
                 $createOrganization.id ?? ID.unique(),
                 $createOrganization.name,
                 $createOrganization.billingPlan,
-                $createOrganization.paymentMethodId
+                $createOrganization.paymentMethodId,
+                $createOrganization.billingAddressId
             );
-            //Add billing address
-            if ($createOrganization.billingAddressId) {
-                await sdk.forConsole.billing.setBillingAddress(
-                    org.$id,
-                    $createOrganization.billingAddressId
-                );
-            } else if (
-                $createOrganization.billingAddress &&
-                $createOrganization.billingAddress.streetAddress
-            ) {
-                const response = await sdk.forConsole.billing.createAddress(
-                    $createOrganization.billingAddress.country,
-                    $createOrganization.billingAddress.streetAddress,
-                    $createOrganization.billingAddress.city,
-                    $createOrganization.billingAddress.state,
-                    $createOrganization.billingAddress.postalCode
-                        ? $createOrganization.billingAddress.postalCode
-                        : undefined,
-                    $createOrganization.billingAddress.addressLine2
-                        ? $createOrganization.billingAddress.addressLine2
-                        : undefined
-                );
-
-                await sdk.forConsole.billing.setBillingAddress(org.$id, response.$id);
-            }
 
             //Add budget
             if ($createOrganization?.billingBudget) {
@@ -121,15 +97,6 @@
             paymentMethodId: null,
             collaborators: [],
             billingAddressId: null,
-            billingAddress: {
-                $id: null,
-                streetAddress: null,
-                addressLine2: null,
-                city: null,
-                state: null,
-                postalCode: null,
-                country: null
-            },
             taxId: null
         };
     });
