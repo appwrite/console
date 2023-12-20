@@ -221,11 +221,10 @@
                                 Logs are retained in rolling {hoursToDays(limit)} intervals with the
                                 {tierToPlan($organization.billingPlan).name}
                                 plan.
-                                <button
-                                    class="link"
-                                    type="button"
-                                    on:click|preventDefault={upgradeMethod}>Upgrade</button> to increase
-                                your log retention for a longer period.
+                                {#if $organization.billingPlan === 'tier-0'}
+                                    <Button link on:click={upgradeMethod}>Upgrade</Button> to increase
+                                    your log retention for a longer period.
+                                {/if}
                             </p>
                         </svelte:fragment>
                         {#each $deploymentList.deployments as deployment, index (deployment.$id)}
