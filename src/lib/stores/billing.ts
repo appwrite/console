@@ -282,8 +282,8 @@ export async function checkForFreeOrgOverflow(orgs: Models.TeamList<Record<strin
             show: true,
             importance: 10
         });
+        activeHeaderAlert.set(headerAlert.get());
     }
-    activeHeaderAlert.set(headerAlert.get());
 }
 
 export async function checkForPostReleaseProModal(orgs: Models.TeamList<Record<string, unknown>>) {
