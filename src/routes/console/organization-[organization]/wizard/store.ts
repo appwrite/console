@@ -7,5 +7,5 @@ export const createProject = writable<{
 }>({
     id: null,
     name: null,
-    region: 'eu-fra'
+    region: 'fra'
 });
