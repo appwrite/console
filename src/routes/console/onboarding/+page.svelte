@@ -62,6 +62,7 @@
                 ID.unique(),
                 'Personal Projects',
                 'tier-0',
+                null,
                 null
             );
         } else return await sdk.forConsole.teams.create(ID.unique(), 'Personal Projects');
