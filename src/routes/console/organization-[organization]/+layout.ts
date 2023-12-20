@@ -9,6 +9,7 @@ import Header from './header.svelte';
 import { headerAlert } from '$lib/stores/headerAlert';
 import ProjectsAtRisk from '$lib/components/billing/alerts/projectsAtRisk.svelte';
 import { get } from 'svelte/store';
+import { preferences } from '$lib/stores/preferences';
 
 export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.ORGANIZATION);
@@ -28,6 +29,10 @@ export const load: LayoutLoad = async ({ params, depends }) => {
     }
 
     try {
+        const prefs = await sdk.forConsole.account.getPrefs();
+        const newPrefs = { ...prefs, organization: params.organization };
+        sdk.forConsole.account.updatePrefs(newPrefs);
+        preferences.loadTeamPrefs(params.organization);
         return {
             header: Header,
             breadcrumbs: Breadcrumbs,
@@ -35,6 +40,9 @@ export const load: LayoutLoad = async ({ params, depends }) => {
             members: await sdk.forConsole.teams.listMemberships(params.organization)
         };
     } catch (e) {
+        const prefs = await sdk.forConsole.account.getPrefs();
+        const newPrefs = { ...prefs, organization: '' };
+        sdk.forConsole.account.updatePrefs(newPrefs);
         localStorage.removeItem('organization');
         throw error(e.code, e.message);
     }
