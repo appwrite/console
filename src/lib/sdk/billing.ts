@@ -185,15 +185,15 @@ export type AggregationList = {
 };
 
 export type AllowedRegions =
-    | 'eu-de'
-    | 'us-nyc'
-    | 'us-sfo'
-    | 'ap-in'
-    | 'eu-gb'
-    | 'eu-nl'
-    | 'ap-sg'
-    | 'ap-ca'
-    | 'ap-au'
+    | 'fra'
+    | 'nyc'
+    | 'sfo'
+    | 'blr'
+    | 'lon'
+    | 'ams'
+    | 'sgp'
+    | 'tor'
+    | 'syd'
     | 'default'; //TODO: remove after migration
 
 export type Region = {

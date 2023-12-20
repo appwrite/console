@@ -52,7 +52,7 @@
         $createProject = {
             id: null,
             name: null,
-            region: 'eu-de'
+            region: 'fra'
         };
     });
 
