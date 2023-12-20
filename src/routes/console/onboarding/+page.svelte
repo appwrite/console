@@ -39,7 +39,7 @@
                 id ?? ID.unique(),
                 name,
                 org.$id,
-                isCloud ? 'eu-de' : 'default'
+                isCloud ? 'eu-fra' : 'default'
             );
             await invalidate(Dependencies.ACCOUNT);
             goto(`/console/project-${project.$id}`);

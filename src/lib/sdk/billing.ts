@@ -185,7 +185,7 @@ export type AggregationList = {
 };
 
 export type AllowedRegions =
-    | 'eu-de'
+    | 'eu-fra'
     | 'us-nyc'
     | 'us-sfo'
     | 'ap-in'
