@@ -16,29 +16,27 @@
             <Id value={bucket.$id}>{bucket.$id}</Id>
 
             <svelte:fragment slot="icons">
-                        <li>
-                            <span
-                                class:u-opacity-20={!bucket.encryption}
-                                class="icon-lock-closed"
-                                aria-hidden="true"
-                                use:tooltip={{
-                                    content: bucket.encryption
-                                        ? 'Encryption enabled'
-                                        : 'Encryption disabled'
-                                }} />
-                        </li>
-                        <li>
-                            <span
-                                class:u-opacity-20={!bucket.antivirus}
-                                class="icon-shield-check"
-                                aria-hidden="true"
-                                use:tooltip={{
-                                    content: bucket.antivirus
-                                        ? 'Antivirus enabled'
-                                        : 'Antivirus disabled'
-                                }} />
-                        </li>
-                    </svelte:fragment>
+                <li>
+                    <span
+                        class:u-opacity-20={!bucket.encryption}
+                        class="icon-lock-closed"
+                        aria-hidden="true"
+                        use:tooltip={{
+                            content: bucket.encryption
+                                ? 'Encryption enabled'
+                                : 'Encryption disabled'
+                        }} />
+                </li>
+                <li>
+                    <span
+                        class:u-opacity-20={!bucket.antivirus}
+                        class="icon-shield-check"
+                        aria-hidden="true"
+                        use:tooltip={{
+                            content: bucket.antivirus ? 'Antivirus enabled' : 'Antivirus disabled'
+                        }} />
+                </li>
+            </svelte:fragment>
         </GridItem1>
     {/each}
     <svelte:fragment slot="empty">
