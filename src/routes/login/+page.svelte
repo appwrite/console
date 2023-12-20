@@ -61,10 +61,12 @@
                 url = `${base}/console${$page.url.search ?? ''}`;
             }
         }
-        sdk.forConsole.account.createOAuth2Session('github', url, window.location.origin, [
-            'read:user',
-            'user:email'
-        ]);
+        sdk.forConsole.account.createOAuth2Session(
+            'github',
+            window.location.origin + url,
+            window.location.origin,
+            ['read:user', 'user:email']
+        );
     }
 </script>
 
