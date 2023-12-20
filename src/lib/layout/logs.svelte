@@ -19,6 +19,7 @@
     import { getServiceLimit, tierToPlan } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { app } from '$lib/stores/app';
+    import { Button } from '$lib/elements/forms';
 
     let selectedRequest = 'parameters';
     let selectedResponse = 'logs';
@@ -310,13 +311,14 @@
                                         <Alert>
                                             Logs are retained in rolling {hoursToDays(limit)} intervals
                                             with the {tier} plan.
-                                            <button
-                                                class="link"
-                                                type="button"
-                                                on:click|preventDefault={() =>
-                                                    wizard.start(ChangeOrganizationTierCloud)}
-                                                >Upgrade</button> to increase your log retention for
-                                            a longer period.
+                                            {#if $organization.billingPlan === 'tier-0'}
+                                                <Button
+                                                    link
+                                                    on:click={() =>
+                                                        wizard.start(ChangeOrganizationTierCloud)}
+                                                    >Upgrade</Button> to increase your log retention
+                                                for a longer period.
+                                            {/if}
                                         </Alert>
                                     {/if}
                                     <Code withCopy noMargin code={execution.logs} language="sh" />

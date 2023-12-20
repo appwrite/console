@@ -40,9 +40,7 @@
     import DeploymentCreatedBy from './deploymentCreatedBy.svelte';
     import DeploymentDomains from './deploymentDomains.svelte';
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
-    import { readOnly, tierToPlan } from '$lib/stores/billing';
-    import { hoursToDays } from '$lib/helpers/date';
-    import { organization } from '$lib/stores/organization';
+    import { readOnly } from '$lib/stores/billing';
 
     export let data;
 
@@ -215,19 +213,7 @@
                         <TableCellHead width={80}>Size</TableCellHead>
                         <TableCellHead width={40} />
                     </TableHeader>
-                    <TableBody service="logs" total={isCloud ? Infinity : 0}>
-                        <svelte:fragment slot="limit" let:limit let:upgradeMethod>
-                            <p class="text">
-                                Logs are retained in rolling {hoursToDays(limit)} intervals with the
-                                {tierToPlan($organization.billingPlan).name}
-                                plan.
-                                <button
-                                    class="link"
-                                    type="button"
-                                    on:click|preventDefault={upgradeMethod}>Upgrade</button> to increase
-                                your log retention for a longer period.
-                            </p>
-                        </svelte:fragment>
+                    <TableBody>
                         {#each $deploymentList.deployments as deployment, index (deployment.$id)}
                             {@const status = deployment.status}
                             <TableRow>
