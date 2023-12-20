@@ -3,7 +3,7 @@
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import {
-        Table,
+        TableScroll,
         TableBody,
         TableCell,
         TableCellHead,
@@ -36,7 +36,7 @@
         {/if}
     </ContainerHeader>
     {#if data.sessions.total}
-        <Table>
+        <TableScroll>
             <TableHeader>
                 <TableCellHead width={140}>Browser and device</TableCellHead>
                 <TableCellHead width={140}>Session</TableCellHead>
@@ -85,7 +85,7 @@
                     </TableRow>
                 {/each}
             </TableBody>
-        </Table>
+        </TableScroll>
     {:else}
         <EmptySearch>
             <div class="u-flex u-flex-vertical u-cross-center u-gap-24">
