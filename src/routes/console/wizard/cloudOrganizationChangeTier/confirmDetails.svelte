@@ -125,7 +125,9 @@
                 <p class="text">Estimated total</p>
                 <p class="text">
                     ${couponData?.status === 'active'
-                        ? totalExpences - couponData.credits || 0
+                        ? totalExpences - couponData.credits >= 0
+                            ? totalExpences - couponData.credits
+                            : 0
                         : totalExpences}
                 </p>
             </span>
