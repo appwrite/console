@@ -80,7 +80,7 @@
         : permanentTabs;
 </script>
 
-{#if $organization.$id}
+{#if $organization?.$id}
     <Cover>
         <svelte:fragment slot="header">
             <DropList bind:show={showDropdown} placement="bottom-start" noArrow scrollable>
