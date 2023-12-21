@@ -131,7 +131,6 @@
     });
 
     function findRegion(project: Partial<Models.Project & { region: string }>) {
-        console.log(project, regions);
         const region = regions.regions.find((region) => region.$id === project.region);
         return region;
     }
