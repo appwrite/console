@@ -1,7 +1,6 @@
 <script lang="ts">
     import { Box, CreditCardBrandImage } from '$lib/components';
     import { CouponInput } from '$lib/components/billing';
-    import { Pill } from '$lib/elements';
     import { FormList, InputTextarea } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
     import { WizardStep } from '$lib/layout';
@@ -72,9 +71,6 @@
         <p class="body-text-1 u-bold">Organization name</p>
         <div class="u-flex u-gap-8 u-cross-center u-margin-block-start-8">
             <p class="text">{$organization.name}</p>
-            {#if $changeOrganizationTier?.id}
-                <Pill>{$changeOrganizationTier.id}</Pill>
-            {/if}
         </div>
 
         {#if $changeOrganizationTier.billingPlan !== 'tier-0'}

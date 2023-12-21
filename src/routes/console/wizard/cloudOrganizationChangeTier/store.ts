@@ -7,7 +7,6 @@ export const isUpgrade = writable<boolean>(false);
 export const changeOrganizationFinalAction = writable<string>('Start trial');
 
 export const changeOrganizationTier = writable<{
-    id?: string;
     billingPlan: Tier;
     paymentMethodId: string;
     billingAddressId: string;
@@ -25,7 +24,6 @@ export const changeOrganizationTier = writable<{
     feedbackMessage?: string;
     couponCode?: string;
 }>({
-    id: null,
     billingPlan: 'tier-1',
     paymentMethodId: null,
     collaborators: [],
