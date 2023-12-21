@@ -131,6 +131,7 @@
     });
 
     function findRegion(project: Partial<Models.Project & { region: string }>) {
+        console.log(project, regions);
         const region = regions.regions.find((region) => region.$id === project.region);
         return region;
     }
@@ -165,6 +166,9 @@
             offset={data.offset}
             on:click={handleCreateProject}>
             {#each data.projects.projects as project}
+                {@const platforms = filterPlatforms(
+                    project.platforms.map((platform) => getPlatformInfo(platform.type))
+                )}
                 <li>
                     <GridItem1 href={`${base}/console/project-${project.$id}`}>
                         <svelte:fragment slot="eyebrow">
@@ -178,9 +182,7 @@
                                 <span class="icon-pause" aria-hidden="true" /> All services are disabled.
                             </p>
                         {/if}
-                        {@const platforms = filterPlatforms(
-                            project.platforms.map((platform) => getPlatformInfo(platform.type))
-                        )}
+
                         {#each platforms as platform, i}
                             {#if i < 3}
                                 <Pill>
@@ -198,7 +200,7 @@
                             {#if isCloud && regions}
                                 {@const region = findRegion(project)}
                                 <span class="u-color-text-gray">
-                                    {region.name}
+                                    {region?.name}
                                 </span>
                             {/if}
                         </svelte:fragment>
