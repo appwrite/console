@@ -86,7 +86,7 @@
                                     class="u-flex u-cross-center"
                                     use:tooltip={{
                                         content: `Your trial ends on ${toLocaleDate(
-                                            organization.billingTrialEndDate
+                                            organization.billingStartDate
                                         )}. ${$daysLeftInTrial} days remaining.`
                                     }}>
                                     <Pill>FREE TRIAL</Pill>
