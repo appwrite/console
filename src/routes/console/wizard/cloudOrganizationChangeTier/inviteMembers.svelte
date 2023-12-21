@@ -24,9 +24,11 @@
     onMount(async () => {
         const members = await sdk.forConsole.teams.listMemberships($changeOrganizationTier.id);
         if (members.total) {
-            $changeOrganizationTier.collaborators = members.memberships.map((m) => {
-                if (m.userEmail !== $user.email) return m.userEmail;
-            });
+            $changeOrganizationTier.collaborators = members.memberships
+                .map((m) => {
+                    if (m.userEmail !== $user.email) return m.userEmail;
+                })
+                .filter(Boolean);
         }
     });
 
