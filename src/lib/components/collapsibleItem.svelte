@@ -9,7 +9,7 @@
     <details class="collapsible-wrapper" {open}>
         <!-- svelte-ignore a11y-no-redundant-roles -->
         <summary
-            class="collapsible-button"
+            class="collapsible-button u-position-relative"
             on:keyup={clickOnEnter}
             on:click
             role="button"
