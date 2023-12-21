@@ -57,11 +57,12 @@
             members: members.total > plan.members ? members.total - (plan.members || Infinity) : 0
         };
         if (
-            $changeOrganizationTier.limitOverflow.bandwidth > 0 ||
-            $changeOrganizationTier.limitOverflow.storage > 0 ||
-            $changeOrganizationTier.limitOverflow.users > 0 ||
-            $changeOrganizationTier.limitOverflow.executions > 0 ||
-            $changeOrganizationTier.limitOverflow.members > 0
+            ($changeOrganizationTier.limitOverflow.bandwidth > 0 ||
+                $changeOrganizationTier.limitOverflow.storage > 0 ||
+                $changeOrganizationTier.limitOverflow.users > 0 ||
+                $changeOrganizationTier.limitOverflow.executions > 0 ||
+                $changeOrganizationTier.limitOverflow.members > 0) &&
+            $changeOrganizationTier.billingPlan === 'tier-0'
         ) {
             $changeOrganizationTier.isOverLimit = true;
             $changeTierSteps = updateStepStatus($changeTierSteps, 5, false);

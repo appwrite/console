@@ -61,7 +61,6 @@
                 wizard.hide();
 
                 trackEvent(Submit.OrganizationDowngrade, {
-                    customId: !!$changeOrganizationTier.id,
                     plan: tierToPlan($changeOrganizationTier.billingPlan)?.name
                 });
             } catch (e) {
@@ -144,7 +143,6 @@
                     });
                 }
                 trackEvent($isUpgrade ? Submit.OrganizationUpgrade : Submit.OrganizationDowngrade, {
-                    customId: !!$changeOrganizationTier.id,
                     plan: tierToPlan($changeOrganizationTier.billingPlan)?.name
                 });
                 wizard.hide();
@@ -164,7 +162,6 @@
 
     onDestroy(() => {
         $changeOrganizationTier = {
-            id: null,
             billingPlan: 'tier-1',
             paymentMethodId: null,
             collaborators: [],

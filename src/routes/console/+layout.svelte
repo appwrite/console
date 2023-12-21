@@ -284,7 +284,7 @@
             calculateTrialDay(org);
             checkForTrialEnding(org);
             await paymentExpired(org);
-            checkForUsageLimit(org);
+            await checkForUsageLimit(org);
             checkForMarkedForDeletion(org);
             await checkPaymentAuthorizationRequired(org);
         }

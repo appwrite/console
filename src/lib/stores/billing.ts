@@ -183,18 +183,23 @@ export function checkForTrialEnding(org: Organization) {
     }
 }
 
-export function checkForUsageLimit(org: Organization) {
+export async function checkForUsageLimit(org: Organization) {
     if (!org?.billingLimits) {
         readOnly.set(false);
         return;
     }
     const { bandwidth, documents, executions, storage, users } = org.billingLimits;
+    const members = await sdk.forConsole.teams.listMemberships(org.$id);
+    const plan = get(plansInfo).plans.find((plan) => plan.$id === org.billingPlan);
+    const membersOverflow =
+        members?.total > plan.members ? members.total - (plan.members || Infinity) : 0;
     if (
         bandwidth >= 100 ||
         documents >= 100 ||
         executions >= 100 ||
         storage >= 100 ||
-        users >= 100
+        users >= 100 ||
+        membersOverflow > 0
     ) {
         readOnly.set(true);
     } else readOnly.set(false);

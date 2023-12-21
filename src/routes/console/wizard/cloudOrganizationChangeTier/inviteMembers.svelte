@@ -16,13 +16,14 @@
     import { changeOrganizationTier } from './store';
     import { sdk } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
+    import { organization } from '$lib/stores/organization';
 
     const plan = $plansInfo.plans.find((p) => p.$id === $changeOrganizationTier.billingPlan);
 
     let email: string;
 
     onMount(async () => {
-        const members = await sdk.forConsole.teams.listMemberships($changeOrganizationTier.id);
+        const members = await sdk.forConsole.teams.listMemberships($organization.$id);
         if (members.total) {
             $changeOrganizationTier.collaborators = members.memberships
                 .map((m) => {

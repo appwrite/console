@@ -59,12 +59,14 @@
         {#if currentTier === 'tier-0'}
             <Button
                 text
+                external
                 href="https://appwrite.io/docs/advanced/platform/starter#reaching-resource-limits">
                 Learn more
             </Button>
         {:else if currentTier === 'tier-1'}
             <Button
                 text
+                external
                 href="https://appwrite.io/docs/advanced/platform/pro#reaching-resource-limits">
                 Learn more
             </Button>
