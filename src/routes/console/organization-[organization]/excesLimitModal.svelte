@@ -62,7 +62,7 @@
 
     Appwrite Pro is now available. To facilitate a smooth transition for your projects, Starter plan
     will maintain its current state of unlimited resource usage. This extension will be in effect
-    until February 1st, 2024.
+    until January 31st, 2024.
 
     {#if $organization.billingPlan === 'tier-0'}
         <p class="text">
