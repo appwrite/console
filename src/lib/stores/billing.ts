@@ -188,11 +188,12 @@ export async function checkForUsageLimit(org: Organization) {
         readOnly.set(false);
         return;
     }
-    const { bandwidth, documents, executions, storage, users } = org?.billingLimits;
+    const { bandwidth, documents, executions, storage, users } = org?.billingLimits ?? {};
     const members = await sdk.forConsole.teams.listMemberships(org.$id);
     const plan = get(plansInfo).plans.find((plan) => plan.$id === org.billingPlan);
     const membersOverflow =
-        members?.total > plan.members ? members.total - (plan.members || Infinity) : 0;
+        members?.total > plan.members ? members.total - (plan.members || members.total) : 0;
+
     if (
         bandwidth >= 100 ||
         documents >= 100 ||
