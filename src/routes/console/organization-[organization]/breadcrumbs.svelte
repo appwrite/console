@@ -4,8 +4,8 @@
 
     $: breadcrumbs = [
         {
-            href: `/console/organization-${$organization.$id}`,
-            title: $organization.name
+            href: `/console/organization-${$organization?.$id}`,
+            title: $organization?.name
         }
     ];
 </script>
