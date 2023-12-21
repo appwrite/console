@@ -64,10 +64,10 @@
             $changeOrganizationTier.limitOverflow.members > 0
         ) {
             $changeOrganizationTier.isOverLimit = true;
-            $changeTierSteps = updateStepStatus($changeTierSteps, 4, false);
+            $changeTierSteps = updateStepStatus($changeTierSteps, 5, false);
         } else {
             $changeOrganizationTier.isOverLimit = false;
-            $changeTierSteps = updateStepStatus($changeTierSteps, 4, true);
+            $changeTierSteps = updateStepStatus($changeTierSteps, 5, true);
         }
     }
 

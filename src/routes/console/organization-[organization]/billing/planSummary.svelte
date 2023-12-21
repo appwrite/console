@@ -27,7 +27,7 @@
 
     $: currentPlan = $plansInfo.plans.find((p) => p.$id === $organization?.billingPlan);
     $: extraUsage = currentInvoice?.amount - currentPlan?.price;
-    $: isTrial = new Date($organization?.billingTrialEndDate).getTime() - today.getTime() > 0;
+    $: isTrial = new Date($organization?.billingStartDate).getTime() - today.getTime() > 0;
 </script>
 
 {#if $organization}

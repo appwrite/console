@@ -158,7 +158,7 @@ export function isServiceLimited(serviceId: PlanServices, plan: Tier, total: num
 
 export function calculateTrialDay(org: Organization) {
     if (org?.billingPlan === 'tier-0') return false;
-    const endDate = new Date(org?.billingTrialEndDate);
+    const endDate = new Date(org?.billingStartDate);
     const today = new Date();
     const days = diffDays(today, endDate);
     daysLeftInTrial.set(days);
@@ -176,7 +176,7 @@ export function checkForTrialEnding(org: Organization) {
                 tierToPlan(org.billingPlan).name
             } plan.</b>
                 You will be billed on a recurring 30-day cycle after your trial period ends on <b>${toLocaleDate(
-                    org.billingTrialEndDate
+                    org.billingStartDate
                 )}</b>`
         });
         localStorage.setItem('trialEndingNotification', 'true');

@@ -12,11 +12,25 @@
     } from '$lib/elements/table';
     import { WizardStep } from '$lib/layout';
     import { plansInfo } from '$lib/stores/billing';
+    import { onMount } from 'svelte';
     import { changeOrganizationTier } from './store';
+    import { sdk } from '$lib/stores/sdk';
+    import { user } from '$lib/stores/user';
 
     const plan = $plansInfo.plans.find((p) => p.$id === $changeOrganizationTier.billingPlan);
 
     let email: string;
+
+    onMount(async () => {
+        const members = await sdk.forConsole.teams.listMemberships($changeOrganizationTier.id);
+        if (members.total) {
+            $changeOrganizationTier.collaborators = members.memberships
+                .map((m) => {
+                    if (m.userEmail !== $user.email) return m.userEmail;
+                })
+                .filter(Boolean);
+        }
+    });
 
     function addCollaborator() {
         if (!email) return;
