@@ -29,9 +29,9 @@
         $createOrgSteps = updateStepStatus($createOrgSteps, 4, false);
     }
 
-    $: freePlan = $plansInfo.plans.find((p) => p.$id === 'tier-0');
-    $: proPlan = $plansInfo.plans.find((p) => p.$id === 'tier-1');
-    $: scalePlan = $plansInfo.plans.find((p) => p.$id === 'tier-2');
+    $: freePlan = $plansInfo.get('tier-0');
+    $: proPlan = $plansInfo.get('tier-1');
+    $: scalePlan = $plansInfo.get('tier-2');
 </script>
 
 <WizardStep>

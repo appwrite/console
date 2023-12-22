@@ -18,7 +18,7 @@
     import { user } from '$lib/stores/user';
     import { organization } from '$lib/stores/organization';
 
-    const plan = $plansInfo.plans.find((p) => p.$id === $changeOrganizationTier.billingPlan);
+    const plan = $plansInfo.get($changeOrganizationTier.billingPlan);
 
     let email: string;
 

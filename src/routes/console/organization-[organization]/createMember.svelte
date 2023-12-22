@@ -17,7 +17,7 @@
     const dispatch = createEventDispatcher();
 
     const url = `${$page.url.origin}/invite`;
-    $: plan = $plansInfo?.plans?.find((p) => p.$id === $organization?.billingPlan);
+    $: plan = $plansInfo?.get($organization?.billingPlan);
 
     let email: string, name: string, error: string;
 

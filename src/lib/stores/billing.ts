@@ -2,7 +2,7 @@ import { page } from '$app/stores';
 import { derived, get, writable } from 'svelte/store';
 import { sdk } from './sdk';
 import { organization, type Organization } from './organization';
-import type { InvoiceList, AddressesList, Invoice, PaymentList, PlansInfo } from '$lib/sdk/billing';
+import type { InvoiceList, AddressesList, Invoice, PaymentList, PlansMap } from '$lib/sdk/billing';
 import { isCloud } from '$lib/system';
 import { cachedStore } from '$lib/helpers/cache';
 import { Query, type Models } from '@appwrite.io/console';
@@ -20,7 +20,7 @@ export type Tier = 'tier-0' | 'tier-1' | 'tier-2';
 
 export const paymentMethods = derived(page, ($page) => $page.data.paymentMethods as PaymentList);
 export const addressList = derived(page, ($page) => $page.data.addressList as AddressesList);
-export const plansInfo = derived(page, ($page) => $page.data.plansInfo as PlansInfo);
+export const plansInfo = derived(page, ($page) => $page.data.plansInfo as PlansMap);
 export const daysLeftInTrial = writable<number>(0);
 export const readOnly = writable<boolean>(false);
 
@@ -63,8 +63,8 @@ export function getServiceLimit(serviceId: PlanServices, tier: Tier = null): num
     if (!isCloud) return 0;
     if (!serviceId) return 0;
     const info = get(plansInfo);
-    if (!info?.plans) return 0;
-    const plan = info.plans.find((p) => p.$id === (tier ?? get(organization)?.billingPlan));
+    if (!info) return 0;
+    const plan = info.get(tier ?? get(organization)?.billingPlan);
     return plan?.[serviceId];
 }
 
@@ -190,7 +190,7 @@ export async function checkForUsageLimit(org: Organization) {
     }
     const { bandwidth, documents, executions, storage, users } = org?.billingLimits ?? {};
     const members = await sdk.forConsole.teams.listMemberships(org.$id);
-    const plan = get(plansInfo).plans.find((plan) => plan.$id === org.billingPlan);
+    const plan = get(plansInfo)?.get(org.billingPlan);
     const membersOverflow =
         members?.total > plan.members ? members.total - (plan.members || members.total) : 0;
 

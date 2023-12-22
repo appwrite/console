@@ -15,7 +15,7 @@
     import { last } from '$lib/helpers/array';
 
     export let show = false;
-    const plan = $plansInfo.plans.find((plan) => plan.$id === $organization.billingPlan);
+    const plan = $plansInfo?.get($organization.billingPlan);
     let usage: OrganizationUsage = null;
     let members: Models.MembershipList = null;
     let excess: Record<string, number> = null;

@@ -7,7 +7,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { createOrganization, createOrganizationFinalAction } from './store';
 
-    const plan = $plansInfo.plans.find((p) => p.$id === $createOrganization.billingPlan);
+    const plan = $plansInfo?.get($createOrganization.billingPlan);
     const collaboratorPrice = plan?.addons.member?.price ?? 0;
     const collaboratorsNumber = $createOrganization?.collaborators?.length ?? 0;
     const totalExpences = plan.price + collaboratorPrice * collaboratorsNumber;

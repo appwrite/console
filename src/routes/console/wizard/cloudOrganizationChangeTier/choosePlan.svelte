@@ -37,9 +37,7 @@
 
     function checkOverUsage() {
         if (!usage) return;
-        const plan = $plansInfo.plans.find(
-            (plan) => plan.$id === $changeOrganizationTier.billingPlan
-        );
+        const plan = $plansInfo?.get($changeOrganizationTier.billingPlan);
 
         const totBandwidth = usage?.bandwidth?.length > 0 ? usage.bandwidth[0].value : 0;
         const totUsers = usage?.users?.length > 0 ? usage.users[0].value : 0;
@@ -97,9 +95,9 @@
         }
     }
 
-    $: freePlan = $plansInfo.plans.find((p) => p.$id === 'tier-0');
-    $: proPlan = $plansInfo.plans.find((p) => p.$id === 'tier-1');
-    $: scalePlan = $plansInfo.plans.find((p) => p.$id === 'tier-2');
+    $: freePlan = $plansInfo?.get('tier-0');
+    $: proPlan = $plansInfo?.get('tier-1');
+    $: scalePlan = $plansInfo?.get('tier-2');
 </script>
 
 <WizardStep beforeSubmit={handleBefore}>

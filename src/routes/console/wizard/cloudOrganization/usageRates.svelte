@@ -12,13 +12,13 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { organization } from '$lib/stores/organization';
     import { createOrganization } from './store';
-    import { plansInfo } from '$lib/stores/billing';
+    import { plansInfo, type Tier } from '$lib/stores/billing';
     import { abbreviateNumber } from '$lib/helpers/numbers';
 
     export let show = false;
-    export let tier: string;
+    export let tier: Tier;
 
-    $: plan = $plansInfo.plans.find((p) => p.$id === tier);
+    $: plan = $plansInfo?.get(tier);
 
     $: nextDate = $createOrganization?.name
         ? new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1).toString()

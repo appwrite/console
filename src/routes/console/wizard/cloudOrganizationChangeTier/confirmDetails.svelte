@@ -10,7 +10,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { changeOrganizationFinalAction, changeOrganizationTier, isUpgrade } from './store';
 
-    const plan = $plansInfo.plans.find((p) => p.$id === $changeOrganizationTier.billingPlan);
+    const plan = $plansInfo.get($changeOrganizationTier.billingPlan);
     const collaboratorPrice = plan?.addons.member?.price ?? 0;
     const collaboratorsNumber = $changeOrganizationTier?.collaborators?.length ?? 0;
     const totalExpences = plan.price + collaboratorPrice * collaboratorsNumber;

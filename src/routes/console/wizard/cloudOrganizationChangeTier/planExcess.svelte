@@ -26,7 +26,7 @@
     } = null;
     export let currentTier: Tier;
 
-    const plan = $plansInfo.plans.find((p) => p.$id === currentTier);
+    const plan = $plansInfo?.get(currentTier);
     const collaboratorPrice = plan?.addons.member?.price ?? 0;
 </script>
 

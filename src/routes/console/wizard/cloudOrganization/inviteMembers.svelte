@@ -30,7 +30,7 @@
         );
     }
 
-    const plan = $plansInfo.plans.find((p) => p.$id === $createOrganization.billingPlan);
+    const plan = $plansInfo?.get($createOrganization.billingPlan);
 </script>
 
 <WizardStep>
