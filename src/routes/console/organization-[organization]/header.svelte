@@ -101,7 +101,7 @@
                                             $organization.billingStartDate
                                         )}. ${$daysLeftInTrial} days remaining.`
                                     }}>
-                                    <Pill>FREE TRIAL</Pill>
+                                    <Pill>TRIAL</Pill>
                                 </div>
                             {/if}
                         </span>
