@@ -67,11 +67,11 @@
         on:click={handleBLur}
         bind:this={backdrop}>
         <div
-            class="modal payment-modal"
+            class="modal"
             class:is-small={size === 'small'}
             class:is-big={size === 'big'}
             class:is-separate-header={headerDivider}>
-            <Form isModal {onSubmit} class="payment-form">
+            <Form isModal {onSubmit}>
                 <header class="modal-header">
                     <div class="u-flex u-main-space-between u-cross-center u-gap-16">
                         <div class="u-flex u-cross-center u-gap-16">
@@ -150,15 +150,5 @@
         :global() {
             background-color: hsl(240 5% 8% / 0.6);
         }
-    }
-
-    .payment-modal {
-        height: 100%;
-        overflow: hidden;
-    }
-
-    .payment-form {
-        height: 100%;
-        overflow: auto;
     }
 </style>
