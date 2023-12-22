@@ -34,8 +34,7 @@
 
     let showDropdown = false;
 
-    const { bandwidth, documents, storage, users, executions } = ($organization ?? {})
-        .billingLimits;
+    const { bandwidth, documents, storage, users, executions } = $organization?.billingLimits ?? {};
     const limitedServices = [
         { name: 'bandwidth', value: bandwidth },
         { name: 'documents', value: documents },
