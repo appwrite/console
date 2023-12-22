@@ -19,6 +19,7 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { wizard } from '$lib/stores/wizard';
     import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
+    import { BillingPlan } from '$lib/constants';
 
     $: defaultPaymentMethod = $paymentMethods?.paymentMethods?.find(
         (method: PaymentMethodData) => method.$id === $organization?.paymentMethodId
@@ -95,7 +96,7 @@
     <BillingAddress />
     <TaxId />
     <BudgetCap />
-    {#if $organization?.billingPlan !== 'tier-0' && !!$organization?.billingBudget}
+    {#if $organization?.billingPlan !== BillingPlan.STARTER && !!$organization?.billingBudget}
         <BudgetAlert />
     {/if}
     <AvailableCredit />

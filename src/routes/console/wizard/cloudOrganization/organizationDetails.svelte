@@ -1,5 +1,6 @@
 <script lang="ts">
     import { CustomId, LabelCard } from '$lib/components';
+    import { BillingPlan } from '$lib/constants';
     import { Pill } from '$lib/elements';
     import { InputText, FormList } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
@@ -11,27 +12,27 @@
     let showCustomId = false;
 
     $: anyOrgFree = $organizationList.teams?.find(
-        (org) => (org as Organization)?.billingPlan === 'tier-0'
+        (org) => (org as Organization)?.billingPlan === BillingPlan.STARTER
     );
 
-    $: if ($createOrganization.billingPlan === 'tier-0' && $createOrgSteps) {
+    $: if ($createOrganization.billingPlan === BillingPlan.STARTER && $createOrgSteps) {
         $createOrgSteps = updateStepStatus($createOrgSteps, 2, true);
         $createOrgSteps = updateStepStatus($createOrgSteps, 3, true);
         $createOrgSteps = updateStepStatus($createOrgSteps, 4, true);
     }
 
     $: if (
-        $createOrganization.billingPlan === 'tier-2' ||
-        $createOrganization.billingPlan === 'tier-1'
+        $createOrganization.billingPlan === BillingPlan.SCALE ||
+        $createOrganization.billingPlan === BillingPlan.PRO
     ) {
         $createOrgSteps = updateStepStatus($createOrgSteps, 2, false);
         $createOrgSteps = updateStepStatus($createOrgSteps, 3, false);
         $createOrgSteps = updateStepStatus($createOrgSteps, 4, false);
     }
 
-    $: freePlan = $plansInfo.plans.find((p) => p.$id === 'tier-0');
-    $: proPlan = $plansInfo.plans.find((p) => p.$id === 'tier-1');
-    $: scalePlan = $plansInfo.plans.find((p) => p.$id === 'tier-2');
+    $: freePlan = $plansInfo.plans.find((p) => p.$id === BillingPlan.STARTER);
+    $: proPlan = $plansInfo.plans.find((p) => p.$id === BillingPlan.PRO);
+    $: scalePlan = $plansInfo.plans.find((p) => p.$id === BillingPlan.SCALE);
 </script>
 
 <WizardStep>

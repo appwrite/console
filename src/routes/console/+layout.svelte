@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { INTERVAL } from '$lib/constants';
+    import { BillingPlan, INTERVAL } from '$lib/constants';
     import { Logs } from '$lib/layout';
     import Footer from '$lib/layout/footer.svelte';
     import Header from '$lib/layout/header.svelte';
@@ -248,7 +248,7 @@
         if (isCloud) {
             if (!$page.url.pathname.includes('/console/onboarding')) {
                 const orgs = await sdk.forConsole.teams.list([
-                    Query.equal('billingPlan', 'tier-0')
+                    Query.equal('billingPlan', BillingPlan.STARTER)
                 ]);
 
                 checkForPostReleaseProModal(orgs);

@@ -616,3 +616,9 @@ export const limitRates = {
         }
     ]
 };
+
+export enum BillingPlan {
+    STARTER = 'tier-0',
+    PRO = 'tier-1',
+    SCALE = 'tier-2'
+}

@@ -20,6 +20,7 @@
     import { organization } from '$lib/stores/organization';
     import { app } from '$lib/stores/app';
     import { Button } from '$lib/elements/forms';
+    import { BillingPlan } from '$lib/constants';
 
     let selectedRequest = 'parameters';
     let selectedResponse = 'logs';
@@ -311,7 +312,7 @@
                                         <Alert>
                                             Logs are retained in rolling {hoursToDays(limit)} intervals
                                             with the {tier} plan.
-                                            {#if $organization.billingPlan === 'tier-0'}
+                                            {#if $organization.billingPlan === BillingPlan.STARTER}
                                                 <Button
                                                     link
                                                     on:click={() =>

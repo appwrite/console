@@ -7,7 +7,7 @@
     import { createEventDispatcher } from 'svelte';
     import { organization } from '$lib/stores/organization';
     import { invalidate } from '$app/navigation';
-    import { Dependencies } from '$lib/constants';
+    import { BillingPlan, Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { isCloud } from '$lib/system';
     import { plansInfo } from '$lib/stores/billing';
@@ -57,9 +57,9 @@
 <Modal title="Invite Member" {error} size="big" bind:show={showCreate} onSubmit={create}>
     {#if isCloud}
         <Alert type="info">
-            {#if $organization?.billingPlan === 'tier-2'}
+            {#if $organization?.billingPlan === BillingPlan.SCALE}
                 You can add unlimited organization members on the {plan.name} plan at no cost.
-            {:else if $organization?.billingPlan === 'tier-1'}
+            {:else if $organization?.billingPlan === BillingPlan.PRO}
                 You can add unlimited organization members on the {plan.name} plan for
                 <b>${plan.addons.member.price} each per billing period</b>.
             {/if}
