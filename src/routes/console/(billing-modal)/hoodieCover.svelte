@@ -14,13 +14,15 @@
 
     $: postText = encodeURIComponent(
         [
-            `Appwrite Pro is now available! `,
+            `@appwrite Pro just launched!`,
             ``,
-            `Why did I upgrade?`,
+            `I am one of the first to join🔥`,
             ``,
-            `Because`,
+            `Learn more about Appwrite Pro here: https://apwr.dev/AppwritePro`,
             ``,
-            `Discover Appwrite Pro and get started at https://appwrite.io/pricing`
+            `Ps. Limited edition Appwrite Pro zipper hoodies are up for grabs.`,
+            ``,
+            `#AppwritePro`
         ].join('\n')
     );
 
