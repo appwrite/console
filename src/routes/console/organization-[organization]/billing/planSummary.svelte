@@ -52,7 +52,7 @@
                             {tierToPlan($organization?.billingPlan)?.name} plan
                         </h6>
                         {#if $organization?.billingPlan !== 'tier-0' && isTrial}
-                            <Pill>FREE TRIAL</Pill>
+                            <Pill>TRIAL</Pill>
                         {/if}
                     </div>
 
