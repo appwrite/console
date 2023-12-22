@@ -16,7 +16,7 @@
         [
             `@appwrite Pro just launched!`,
             ``,
-            `I am one of the first to join🔥`,
+            `I am one of the first to join 🔥`,
             ``,
             `Learn more about Appwrite Pro here: https://apwr.dev/AppwritePro`,
             ``,
