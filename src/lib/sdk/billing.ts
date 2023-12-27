@@ -702,6 +702,46 @@ export class Billing {
         );
     }
 
+    async getOrganizationPaymentMethod(
+        organizationId: string,
+        paymentMethodId: string
+    ): Promise<PaymentMethodData> {
+        const path = `/organizations/${organizationId}/payment-methods/${paymentMethodId}`;
+        const params = {
+            organizationId,
+            paymentMethodId
+        };
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'GET',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            params
+        );
+    }
+
+    async getOrganizationBillingAddress(
+        organizationId: string,
+        billingAddressId: string
+    ): Promise<PaymentMethodData> {
+        const path = `/organizations/${organizationId}/payment-methods/${billingAddressId}`;
+        const params = {
+            organizationId,
+            billingAddressId
+        };
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'GET',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            params
+        );
+    }
+
     //ACCOUNT
 
     async listPaymentMethods(queries: [] = []): Promise<PaymentList> {
