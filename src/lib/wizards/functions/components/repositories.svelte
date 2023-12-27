@@ -87,13 +87,13 @@
                     ]}
                     value={null} />
             </div>
-            <div class="u-width-full-line">
+            <ul class="u-width-full-line">
                 <InputSearch placeholder="Search repositories" disabled />
-            </div>
+            </ul>
         </div>
     {:then installations}
         <div class="u-flex u-gap-16">
-            <div class="u-width-full-line">
+            <ul class="u-width-full-line">
                 <InputSelect
                     id="installation"
                     label="Select installation"
@@ -111,10 +111,10 @@
                         );
                     }}
                     bind:value={selectedInstallation} />
-            </div>
-            <div class="u-width-full-line">
+            </ul>
+            <ul class="u-width-full-line">
                 <InputSearch placeholder="Search repositories" bind:value={search} />
-            </div>
+            </ul>
         </div>
     {/await}
     <p class="text u-margin-block-start-16">

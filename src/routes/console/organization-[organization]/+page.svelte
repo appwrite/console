@@ -200,7 +200,7 @@
                             <svelte:fragment slot="icons">
                                 {#if isCloud && regions}
                                     {@const region = findRegion(project)}
-                                    <span class="u-color-text-gray">
+                                    <span class="u-color-text-gray u-medium u-line-height-2">
                                         {region?.name}
                                     </span>
                                 {/if}
