@@ -120,7 +120,6 @@
         {#if isCloud && $organization?.billingPlan === 'tier-0' && !$page.url.pathname.startsWith('/console/account')}
             <Button
                 disabled={$organization?.markedForDeletion}
-                secondary
                 on:click={() => wizard.start(ChangeOrganizationTierCloud)}>
                 Upgrade
             </Button>

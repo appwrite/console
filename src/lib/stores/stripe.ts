@@ -91,7 +91,7 @@ export async function submitStripeCard(name: string, urlRoute?: string) {
         }
     } catch (e) {
         trackError(e, Submit.PaymentMethodCreate);
-        throw e.message;
+        throw e;
     }
 }
 

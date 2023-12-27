@@ -74,7 +74,12 @@
                 </Alert>
             {:else}
                 <FormList>
-                    <InputSwitch id="capActive" label="Enable budget cap" bind:value={capActive} />
+                    <InputSwitch id="cap-active" label="Enable budget cap" bind:value={capActive}>
+                        <svelte:fragment slot="description">
+                            Budget cap limits do not include the base amount of your plan. Cap usage
+                            is reset at the beginning of each billing cycle.
+                        </svelte:fragment>
+                    </InputSwitch>
                     {#if capActive}
                         <InputNumber
                             placeholder="Add budget cap"
