@@ -2,7 +2,7 @@ import { page } from '$app/stores';
 import { derived, get, writable } from 'svelte/store';
 import { sdk } from './sdk';
 import { organization, type Organization } from './organization';
-import type { InvoiceList, AddressesList, Invoice, PaymentList, PlansInfo } from '$lib/sdk/billing';
+import type { InvoiceList, AddressesList, Invoice, PaymentList, PlansMap } from '$lib/sdk/billing';
 import { isCloud } from '$lib/system';
 import { cachedStore } from '$lib/helpers/cache';
 import { Query, type Models } from '@appwrite.io/console';
@@ -15,22 +15,23 @@ import { base } from '$app/paths';
 import TooManyFreOrgs from '$lib/components/billing/alerts/tooManyFreeOrgs.svelte';
 import { activeHeaderAlert, showPostReleaseModal } from '$routes/console/store';
 import MarkedForDeletion from '$lib/components/billing/alerts/markedForDeletion.svelte';
+import { BillingPlan } from '$lib/constants';
 
 export type Tier = 'tier-0' | 'tier-1' | 'tier-2';
 
 export const paymentMethods = derived(page, ($page) => $page.data.paymentMethods as PaymentList);
 export const addressList = derived(page, ($page) => $page.data.addressList as AddressesList);
-export const plansInfo = derived(page, ($page) => $page.data.plansInfo as PlansInfo);
+export const plansInfo = derived(page, ($page) => $page.data.plansInfo as PlansMap);
 export const daysLeftInTrial = writable<number>(0);
 export const readOnly = writable<boolean>(false);
 
 export function tierToPlan(tier: Tier) {
     switch (tier) {
-        case 'tier-0':
+        case BillingPlan.STARTER:
             return tierFree;
-        case 'tier-1':
+        case BillingPlan.PRO:
             return tierPro;
-        case 'tier-2':
+        case BillingPlan.SCALE:
             return tierScale;
         default:
             return tierFree;
@@ -63,8 +64,8 @@ export function getServiceLimit(serviceId: PlanServices, tier: Tier = null): num
     if (!isCloud) return 0;
     if (!serviceId) return 0;
     const info = get(plansInfo);
-    if (!info?.plans) return 0;
-    const plan = info.plans.find((p) => p.$id === (tier ?? get(organization)?.billingPlan));
+    if (!info) return 0;
+    const plan = info.get(tier ?? get(organization)?.billingPlan);
     return plan?.[serviceId];
 }
 
@@ -117,7 +118,7 @@ export const tierScale: TierData = {
 export const showUsageRatesModal = writable<boolean>(false);
 
 export function checkForUsageFees(plan: Tier, id: PlanServices) {
-    if (plan === 'tier-1' || plan === 'tier-2') {
+    if (plan === BillingPlan.PRO || plan === BillingPlan.SCALE) {
         switch (id) {
             case 'bandwidth':
             case 'storage':
@@ -157,7 +158,7 @@ export function isServiceLimited(serviceId: PlanServices, plan: Tier, total: num
 }
 
 export function calculateTrialDay(org: Organization) {
-    if (org?.billingPlan === 'tier-0') return false;
+    if (org?.billingPlan === BillingPlan.STARTER) return false;
     const endDate = new Date(org?.billingStartDate);
     const today = new Date();
     const days = diffDays(today, endDate);
@@ -190,7 +191,7 @@ export async function checkForUsageLimit(org: Organization) {
     }
     const { bandwidth, documents, executions, storage, users } = org?.billingLimits ?? {};
     const members = await sdk.forConsole.teams.listMemberships(org.$id);
-    const plan = get(plansInfo).plans.find((plan) => plan.$id === org.billingPlan);
+    const plan = get(plansInfo)?.get(org.billingPlan);
     const membersOverflow =
         members?.total > plan.members ? members.total - (plan.members || members.total) : 0;
 
@@ -207,7 +208,7 @@ export async function checkForUsageLimit(org: Organization) {
 }
 
 export async function checkPaymentAuthorizationRequired(org: Organization) {
-    if (org.billingPlan === 'tier-0') return;
+    if (org.billingPlan === BillingPlan.STARTER) return;
 
     const invoices = await sdk.forConsole.billing.listInvoices(org.$id, [
         Query.equal('status', 'requires_authentication')

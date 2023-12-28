@@ -1,6 +1,7 @@
 <script lang="ts">
     import { Submit } from '$lib/actions/analytics';
     import { Alert, CardGrid, Heading } from '$lib/components';
+    import { BillingPlan } from '$lib/constants';
     import { Button, Form, FormItem, InputNumber, InputSelect } from '$lib/elements/forms';
     import { humanFileSize, sizeToBytes } from '$lib/helpers/sizeConvertion';
     import { createByteUnitPair } from '$lib/helpers/unit';
@@ -42,12 +43,12 @@
                         The {plan.name} plan has a maximum upload file size limit of {Math.floor(
                             parseInt(size.value)
                         )}{size.unit}.
-                        {#if $organization?.billingPlan === 'tier-0'}
+                        {#if $organization?.billingPlan === BillingPlan.STARTER}
                             Upgrade to allow files of a larger size.
                         {/if}
                     </p>
                     <svelte:fragment slot="action">
-                        {#if $organization?.billingPlan === 'tier-0'}
+                        {#if $organization?.billingPlan === BillingPlan.STARTER}
                             <div class="alert-buttons u-flex">
                                 <Button
                                     text

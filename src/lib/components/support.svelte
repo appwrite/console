@@ -10,10 +10,13 @@
     import { isSupportOnline, showSupportModal } from '../../routes/console/wizard/support/store';
     import { isCloud } from '$lib/system';
     import { organization } from '$lib/stores/organization';
+    import { BillingPlan } from '$lib/constants';
 
     export let show = false;
 
-    $: isPaid = $organization?.billingPlan === 'tier-1' || $organization?.billingPlan === 'tier-2';
+    $: isPaid =
+        $organization?.billingPlan === BillingPlan.PRO ||
+        $organization?.billingPlan === BillingPlan.SCALE;
 </script>
 
 {#if isCloud}
@@ -39,7 +42,7 @@
                 </p>
             {/if}
         </div>
-        {#if $organization?.billingPlan === 'tier-0'}
+        {#if $organization?.billingPlan === BillingPlan.STARTER}
             <Button fullWidth href="https://appwrite.io/pricing" external>
                 <span class="text">Get Premium support</span>
             </Button>

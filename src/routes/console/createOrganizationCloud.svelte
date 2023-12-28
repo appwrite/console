@@ -13,7 +13,7 @@
         createOrgSteps
     } from './wizard/cloudOrganization/store';
     import { goto, invalidate, preloadData } from '$app/navigation';
-    import { Dependencies } from '$lib/constants';
+    import { BillingPlan, Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { ID } from '@appwrite.io/console';
     import { page } from '$app/stores';
@@ -78,7 +78,7 @@
                 members_invited: $createOrganization?.collaborators?.length
             });
             wizard.hide();
-            if (org.billingPlan === 'tier-1') {
+            if (org.billingPlan === BillingPlan.PRO) {
                 wizard.showCover(HoodieCover);
             }
         } catch (e) {
@@ -93,7 +93,7 @@
         $createOrganization = {
             id: null,
             name: null,
-            billingPlan: 'tier-1',
+            billingPlan: BillingPlan.PRO,
             paymentMethodId: null,
             collaborators: [],
             billingAddressId: null,

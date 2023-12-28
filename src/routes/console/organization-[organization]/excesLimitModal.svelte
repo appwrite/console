@@ -13,9 +13,10 @@
     import ChangeOrganizationTierCloud from '../changeOrganizationTierCloud.svelte';
     import { goto } from '$app/navigation';
     import { last } from '$lib/helpers/array';
+    import { BillingPlan } from '$lib/constants';
 
     export let show = false;
-    const plan = $plansInfo.plans.find((plan) => plan.$id === $organization.billingPlan);
+    const plan = $plansInfo?.get($organization.billingPlan);
     let usage: OrganizationUsage = null;
     let members: Models.MembershipList = null;
     let excess: Record<string, number> = null;
@@ -64,7 +65,7 @@
     will maintain its current state of unlimited resource usage. This extension will be in effect
     until January 31st, 2024.
 
-    {#if $organization.billingPlan === 'tier-0'}
+    {#if $organization.billingPlan === BillingPlan.STARTER}
         <p class="text">
             Usage for <b>{$organization.name}</b> organization has reached the limits of the {tierToPlan(
                 $organization.billingPlan

@@ -1,3 +1,4 @@
+import { BillingPlan } from '$lib/constants';
 import type { WizardStepsType } from '$lib/layout/wizard.svelte';
 import type { Tier } from '$lib/stores/billing';
 import { writable } from 'svelte/store';
@@ -17,7 +18,7 @@ export const createOrganization = writable<{
 }>({
     id: null,
     name: null,
-    billingPlan: 'tier-1',
+    billingPlan: BillingPlan.PRO,
     paymentMethodId: null,
     collaborators: [],
     billingAddressId: null,
