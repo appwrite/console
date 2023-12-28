@@ -160,4 +160,5 @@
     title="Create organization"
     steps={$createOrgSteps}
     finalAction={$createOrganizationFinalAction}
-    on:exit={onFinish} />
+    on:exit={onFinish}
+    confirmExit />
