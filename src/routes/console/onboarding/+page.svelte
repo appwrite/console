@@ -41,12 +41,13 @@
     });
 
     async function handleSubmit() {
+        const orgName = name?.length ? name : 'Personal Projects';
         if (isCloud) {
             if (plan === BillingPlan.STARTER) {
                 try {
                     const org = await sdk.forConsole.billing.createOrganization(
                         id ?? ID.unique(),
-                        name ?? 'Personal Projects',
+                        orgName,
                         plan,
                         null,
                         null
@@ -64,9 +65,7 @@
                     await invalidate(Dependencies.ACCOUNT);
                     await goto(`/console/organization-${org.$id}`);
                     addNotification({
-                        message: `${
-                            name?.length ? name : 'Personal Projects'
-                        } organization successfully created`,
+                        message: `${orgName} organization successfully created`,
                         type: 'success'
                     });
                 } catch (error) {
@@ -78,16 +77,13 @@
                 }
             } else {
                 wizard.start(CreateOrganizationCloud, null, 2);
-                $createOrganization.name = name?.length ? name : 'Personal Projects';
+                $createOrganization.name = orgName;
                 $createOrganization.billingPlan = plan;
                 $createOrganization.id = id;
             }
         } else {
             try {
-                const org = await sdk.forConsole.teams.create(
-                    id ?? ID.unique(),
-                    name?.length ? name : 'Personal Projects'
-                );
+                const org = await sdk.forConsole.teams.create(id ?? ID.unique(), orgName);
                 const project = await sdk.forConsole.projects.create(
                     ID.unique(),
                     'My first project',
@@ -97,7 +93,7 @@
                 await invalidate(Dependencies.ACCOUNT);
                 await goto(`/console/project-${project.$id}`);
                 addNotification({
-                    message: `${name ?? 'Personal Projects'} organization successfully created`,
+                    message: `${orgName} organization successfully created`,
                     type: 'success'
                 });
             } catch (error) {
