@@ -39,9 +39,7 @@ export async function initializeStripe() {
 
 export async function unmountPaymentElement() {
     isStripeInitialized.set(false);
-    if (paymentElement) {
-        paymentElement.unmount();
-    }
+    paymentElement?.unmount();
     clientSecret = null;
     paymentMethod = null;
     elements = null;

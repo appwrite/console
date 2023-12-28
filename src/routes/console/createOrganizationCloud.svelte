@@ -88,7 +88,7 @@
                 members_invited: $createOrganization?.collaborators?.length
             });
 
-            //Create first pro project if onboarding
+            // Create first pro project if onboarding
             if ($page.url.pathname.includes('/console/onboarding')) {
                 await sdk.forConsole.projects.create(
                     ID.unique(),
