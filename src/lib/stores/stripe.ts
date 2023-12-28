@@ -37,7 +37,15 @@ export async function initializeStripe() {
     paymentElement.mount('#payment-element');
 }
 
-// TODO: fix redirect
+export async function unmountPaymentElement() {
+    isStripeInitialized.set(false);
+    if (paymentElement) {
+        paymentElement.unmount();
+    }
+    clientSecret = null;
+    paymentMethod = null;
+    elements = null;
+}
 
 export async function submitStripeCard(name: string, urlRoute?: string) {
     try {

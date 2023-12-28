@@ -122,6 +122,7 @@
         } else {
             $wizard.step--;
         }
+        wizard.setInterceptor(null);
         trackEvent('wizard_back');
     }
 
