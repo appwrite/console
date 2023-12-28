@@ -152,8 +152,18 @@
                         </FormList>
                     </div>
                 {/if}
-                <Button fullWidth submit disabled={isCloud && !plan} event="create_organization">
-                    Get started
+                <Button
+                    fullWidth
+                    submit
+                    disabled={isCloud && !plan}
+                    event="create_organization"
+                    submissionLoader
+                    let:isSubmitting>
+                    {#if isSubmitting}
+                        Creating your first organization
+                    {:else}
+                        Get started
+                    {/if}
                 </Button>
             </FormList>
         </Form>
