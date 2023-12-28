@@ -2,7 +2,7 @@
     import { invalidate } from '$app/navigation';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Alert, CardGrid, Heading } from '$lib/components';
-    import { Dependencies } from '$lib/constants';
+    import { BillingPlan, Dependencies } from '$lib/constants';
     import { Button, Form, FormList, InputNumber, InputSwitch } from '$lib/elements/forms';
     import { showUsageRatesModal } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
@@ -59,7 +59,7 @@
                 class="link">Learn more about usage rates.</button>
         </p>
         <svelte:fragment slot="aside">
-            {#if $organization?.billingPlan === 'tier-0'}
+            {#if $organization?.billingPlan === BillingPlan.STARTER}
                 <Alert type="info">
                     <svelte:fragment slot="title">
                         Budget caps are a Pro plan feature

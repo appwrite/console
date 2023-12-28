@@ -15,6 +15,7 @@ import { base } from '$app/paths';
 import TooManyFreOrgs from '$lib/components/billing/alerts/tooManyFreeOrgs.svelte';
 import { activeHeaderAlert, showPostReleaseModal } from '$routes/console/store';
 import MarkedForDeletion from '$lib/components/billing/alerts/markedForDeletion.svelte';
+import { BillingPlan } from '$lib/constants';
 
 export type Tier = 'tier-0' | 'tier-1' | 'tier-2';
 
@@ -26,11 +27,11 @@ export const readOnly = writable<boolean>(false);
 
 export function tierToPlan(tier: Tier) {
     switch (tier) {
-        case 'tier-0':
+        case BillingPlan.STARTER:
             return tierFree;
-        case 'tier-1':
+        case BillingPlan.PRO:
             return tierPro;
-        case 'tier-2':
+        case BillingPlan.SCALE:
             return tierScale;
         default:
             return tierFree;
@@ -117,7 +118,7 @@ export const tierScale: TierData = {
 export const showUsageRatesModal = writable<boolean>(false);
 
 export function checkForUsageFees(plan: Tier, id: PlanServices) {
-    if (plan === 'tier-1' || plan === 'tier-2') {
+    if (plan === BillingPlan.PRO || plan === BillingPlan.SCALE) {
         switch (id) {
             case 'bandwidth':
             case 'storage':
@@ -157,7 +158,7 @@ export function isServiceLimited(serviceId: PlanServices, plan: Tier, total: num
 }
 
 export function calculateTrialDay(org: Organization) {
-    if (org?.billingPlan === 'tier-0') return false;
+    if (org?.billingPlan === BillingPlan.STARTER) return false;
     const endDate = new Date(org?.billingStartDate);
     const today = new Date();
     const days = diffDays(today, endDate);
@@ -207,7 +208,7 @@ export async function checkForUsageLimit(org: Organization) {
 }
 
 export async function checkPaymentAuthorizationRequired(org: Organization) {
-    if (org.billingPlan === 'tier-0') return;
+    if (org.billingPlan === BillingPlan.STARTER) return;
 
     const invoices = await sdk.forConsole.billing.listInvoices(org.$id, [
         Query.equal('status', 'requires_authentication')

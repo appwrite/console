@@ -1,6 +1,7 @@
 <script lang="ts">
     import { Box, CreditCardBrandImage } from '$lib/components';
     import { CouponInput } from '$lib/components/billing';
+    import { BillingPlan } from '$lib/constants';
     import { FormList, InputTextarea } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
     import { WizardStep } from '$lib/layout';
@@ -39,7 +40,7 @@
         }
     }
 
-    $: downgradeToStarter = $changeOrganizationTier.billingPlan === 'tier-0';
+    $: downgradeToStarter = $changeOrganizationTier.billingPlan === BillingPlan.STARTER;
     $: if (!$isUpgrade) {
         $changeOrganizationFinalAction = 'Confirm plan change';
     }
@@ -73,7 +74,7 @@
             <p class="text">{$organization.name}</p>
         </div>
 
-        {#if $changeOrganizationTier.billingPlan !== 'tier-0'}
+        {#if $changeOrganizationTier.billingPlan !== BillingPlan.STARTER}
             <div class="u-margin-block-start-32">
                 <p class="body-text-1 u-bold">Additional members</p>
                 <p class="text u-margin-block-start-8">{collaboratorsNumber} members</p>
@@ -100,7 +101,7 @@
                 bind:coupon
                 bind:couponData
                 on:validation={(e) => ($changeOrganizationTier.couponCode = e.detail.code)} />
-            {#if $changeOrganizationTier.billingPlan !== 'tier-0'}
+            {#if $changeOrganizationTier.billingPlan !== BillingPlan.STARTER}
                 <span class="u-flex u-main-space-between">
                     <p class="text">{plan.name} plan</p>
                     <p class="text">${plan.price}</p>

@@ -14,6 +14,7 @@
     import { createOrganization } from './store';
     import { plansInfo, type Tier } from '$lib/stores/billing';
     import { abbreviateNumber } from '$lib/helpers/numbers';
+    import { BillingPlan } from '$lib/constants';
 
     export let show = false;
     export let tier: Tier;
@@ -49,7 +50,7 @@
         }
     ];
 
-    $: isFree = tier === 'tier-0';
+    $: isFree = tier === BillingPlan.STARTER;
 </script>
 
 <Modal bind:show size="big" headerDivider={false} title="Usage rates">
@@ -57,12 +58,12 @@
         Usage on the Starter plan is limited for the following resources. Next billing period: {toLocaleDate(
             nextDate
         )}.
-    {:else if tier === 'tier-1'}
+    {:else if tier === BillingPlan.PRO}
         <p>
             Usage on the Pro plan will be charged at the end of each billing period at the following
             rates. Next billing period: {toLocaleDate(nextDate)}.
         </p>
-    {:else if tier === 'tier-2'}
+    {:else if tier === BillingPlan.SCALE}
         <p>
             Usage on the Scale plan will be charged at the end of each billing period at the
             following rates. Next billing period: {toLocaleDate(nextDate)}.

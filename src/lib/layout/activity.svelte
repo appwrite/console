@@ -22,6 +22,7 @@
     import { isCloud } from '$lib/system';
     import { organization } from '$lib/stores/organization';
     import { Button } from '$lib/elements/forms';
+    import { BillingPlan } from '$lib/constants';
 
     export let logs: Models.LogList;
     export let offset = 0;
@@ -51,7 +52,7 @@
                         Logs are retained in rolling {hoursToDays(limit)} intervals with the
                         {tierToPlan($organization.billingPlan).name}
                         plan.
-                        {#if $organization?.billingPlan === 'tier-0'}
+                        {#if $organization?.billingPlan === BillingPlan.STARTER}
                             <Button link on:click={upgradeMethod}>Upgrade</Button> to increase your log
                             retention for a longer period.
                         {/if}

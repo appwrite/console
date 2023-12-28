@@ -4,7 +4,7 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Card } from '$lib/components';
     import CustomId from '$lib/components/customId.svelte';
-    import { Dependencies } from '$lib/constants';
+    import { BillingPlan, Dependencies } from '$lib/constants';
     import { Pill } from '$lib/elements';
     import { Button, Form, InputText } from '$lib/elements/forms';
     import FormList from '$lib/elements/forms/formList.svelte';
@@ -61,7 +61,7 @@
             return await sdk.forConsole.billing.createOrganization(
                 ID.unique(),
                 'Personal Projects',
-                'tier-0',
+                BillingPlan.STARTER,
                 null,
                 null
             );

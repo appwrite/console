@@ -3,6 +3,7 @@
     import { page } from '$app/stores';
     import { trackEvent } from '$lib/actions/analytics';
     import { tooltip } from '$lib/actions/tooltip';
+    import { BillingPlan } from '$lib/constants';
     import { isMac } from '$lib/helpers/platform';
     import { slide } from '$lib/helpers/transition';
     import { organization } from '$lib/stores/organization';
@@ -180,7 +181,7 @@
                     </a>
 
                     <ul class="drop-list is-only-mobile">
-                        {#if isCloud && $organization?.billingPlan !== 'tier-2'}
+                        {#if isCloud && $organization?.billingPlan !== BillingPlan.SCALE}
                             <li class="drop-list-item">
                                 <button
                                     class="drop-button"
