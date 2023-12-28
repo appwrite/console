@@ -31,7 +31,11 @@
                 Legal document outlining the terms and conditions under which personal data is
                 processed.
             </p>
-            <Button secondary class="u-margin-block-start-16" on:click={downloadPdf}>
+            <Button
+                secondary
+                class="u-margin-block-start-16"
+                on:click={downloadPdf}
+                event="download_dpa">
                 <span class="icon-download" aria-hidden="true" />
                 <span class="text">Download</span>
             </Button>
