@@ -34,6 +34,8 @@
             );
             await invalidate(Dependencies.ACCOUNT);
             await invalidate(Dependencies.ORGANIZATION);
+            await invalidate(Dependencies.MEMBERS);
+
             showCreate = false;
             addNotification({
                 type: 'success',
