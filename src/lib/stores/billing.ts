@@ -8,7 +8,7 @@ import { cachedStore } from '$lib/helpers/cache';
 import { Query, type Models } from '@appwrite.io/console';
 import { headerAlert } from './headerAlert';
 import PaymentAuthRequired from '$lib/components/billing/alerts/paymentAuthRequired.svelte';
-import { diffDays, toLocaleDate } from '$lib/helpers/date';
+import { diffDays } from '$lib/helpers/date';
 import { addNotification, notifications } from './notifications';
 import { goto } from '$app/navigation';
 import { base } from '$app/paths';
@@ -166,24 +166,6 @@ export function calculateTrialDay(org: Organization) {
     return days;
 }
 
-export function checkForTrialEnding(org: Organization) {
-    const days = calculateTrialDay(org);
-    if (localStorage.getItem('trialEndingNotification') === 'true' || !days) return;
-    else if (days <= 5) {
-        addNotification({
-            type: 'info',
-            isHtml: true,
-            message: `<b>We hope you've been enjoying the ${
-                tierToPlan(org.billingPlan).name
-            } plan.</b>
-                You will be billed on a recurring 30-day cycle after your trial period ends on <b>${toLocaleDate(
-                    org.billingStartDate
-                )}</b>`
-        });
-        localStorage.setItem('trialEndingNotification', 'true');
-    }
-}
-
 export async function checkForUsageLimit(org: Organization) {
     if (!org?.billingLimits) {
         readOnly.set(false);
@@ -295,6 +277,7 @@ export async function checkForFreeOrgOverflow(orgs: Models.TeamList<Record<strin
 
 export async function checkForPostReleaseProModal(orgs: Models.TeamList<Record<string, unknown>>) {
     if (!orgs?.teams?.length) return;
+    if (orgs.total > orgs.teams.length) return; // if the total is greater that the free orgs it means that there are pro orgs
     const modalTime = localStorage.getItem('postReleaseProModal');
     const now = Date.now();
     // show the modal if it was never shown
