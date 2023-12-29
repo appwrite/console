@@ -8,6 +8,7 @@ export enum Dependencies {
     ADDRESS = 'dependency:address',
     PAYMENT_METHODS = 'dependency:paymentMethods',
     ORGANIZATION = 'dependency:organization',
+    MEMBERS = 'dependency:members',
     PROJECT = 'dependency:project',
     PROJECT_VARIABLES = 'dependency:project_variables',
     PROJECT_INSTALLATIONS = 'dependency:project_installations',
