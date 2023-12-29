@@ -1,8 +1,14 @@
 <script lang="ts">
     import { Box, CardGrid, Heading } from '$lib/components';
     import { Button } from '$lib/elements/forms';
+    import { sdk } from '$lib/stores/sdk';
 
     async function downloadPdf() {
+        const today = new Date().toISOString();
+        const prefs = await sdk.forConsole.account.getPrefs();
+        const newPrefs = { ...prefs, DPA: today };
+        sdk.forConsole.account.updatePrefs(newPrefs);
+
         const baseUrl = window.location.origin;
         const response = await fetch(`${baseUrl}/Appwrite_DPA.pdf`);
         const blob = await response.blob();
