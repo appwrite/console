@@ -18,7 +18,6 @@
         checkForUsageLimit,
         checkPaymentAuthorizationRequired,
         calculateTrialDay,
-        checkForTrialEnding,
         paymentExpired,
         checkForFreeOrgOverflow,
         checkForPostReleaseProModal,
@@ -282,7 +281,6 @@
         if (!org) return;
         if (isCloud) {
             calculateTrialDay(org);
-            checkForTrialEnding(org);
             await paymentExpired(org);
             await checkForUsageLimit(org);
             checkForMarkedForDeletion(org);
