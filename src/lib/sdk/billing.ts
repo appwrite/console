@@ -265,6 +265,8 @@ export type PlansInfo = {
     total: number;
 };
 
+export type PlansMap = Map<Tier, Plan>;
+
 export class Billing {
     client: Client;
 

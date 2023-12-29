@@ -16,6 +16,7 @@
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { abbreviateNumber } from '$lib/helpers/numbers';
     import { formatNum } from '$lib/helpers/string';
+    import { BillingPlan } from '$lib/constants';
 
     export let excess: {
         bandwidth?: number;
@@ -26,13 +27,13 @@
     } = null;
     export let currentTier: Tier;
 
-    const plan = $plansInfo.plans.find((p) => p.$id === currentTier);
+    const plan = $plansInfo?.get(currentTier);
     const collaboratorPrice = plan?.addons.member?.price ?? 0;
 </script>
 
 <Alert type="error">
     <svelte:fragment slot="title">
-        {#if currentTier === 'tier-0'}
+        {#if currentTier === BillingPlan.STARTER}
             Your usage exceeds the {plan.name} plan limits
         {:else}
             Changing your plan now will result in removal of organization members and more
@@ -40,10 +41,10 @@
     </svelte:fragment>
 
     {#if excess?.members > 0}
-        {#if currentTier === 'tier-0'}
+        {#if currentTier === BillingPlan.STARTER}
             The Starter plan has a limit of one organization member. By proceeding, all but the
             creator of the organization admin will be removed.
-        {:else if currentTier === 'tier-1'}
+        {:else if currentTier === BillingPlan.PRO}
             Additional organization members on the Pro plan cost {collaboratorPrice} per member per billing
             period. By proceeding, you acknowledge your fees may increase in your next billing period.
         {/if}
@@ -56,14 +57,14 @@
     {/if}
 
     <svelte:fragment slot="buttons">
-        {#if currentTier === 'tier-0'}
+        {#if currentTier === BillingPlan.STARTER}
             <Button
                 text
                 external
                 href="https://appwrite.io/docs/advanced/platform/starter#reaching-resource-limits">
                 Learn more
             </Button>
-        {:else if currentTier === 'tier-1'}
+        {:else if currentTier === BillingPlan.PRO}
             <Button
                 text
                 external

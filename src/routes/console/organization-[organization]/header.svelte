@@ -3,6 +3,7 @@
     import { page } from '$app/stores';
     import { tooltip } from '$lib/actions/tooltip';
     import { AvatarGroup, DropList, DropListItem, DropListLink, Tab, Tabs } from '$lib/components';
+    import { BillingPlan } from '$lib/constants';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
@@ -90,7 +91,7 @@
                     <h1 class="heading-level-4 u-flex u-cross-center u-gap-8">
                         <span class="u-flex u-cross-center u-gap-8">
                             {$organization.name}
-                            {#if isCloud && $organization?.billingPlan === 'tier-0'}
+                            {#if isCloud && $organization?.billingPlan === BillingPlan.STARTER}
                                 <Pill>FREE</Pill>
                             {/if}
                             {#if isCloud && $organization?.billingTrialStartDate && $daysLeftInTrial > 0}
@@ -136,7 +137,7 @@
                     <div
                         use:tooltip={{
                             content:
-                                $organization?.billingPlan === 'tier-0'
+                                $organization?.billingPlan === BillingPlan.STARTER
                                     ? `Upgrade to add more members`
                                     : `You've reached the members limit for the ${
                                           tierToPlan($organization?.billingPlan)?.name

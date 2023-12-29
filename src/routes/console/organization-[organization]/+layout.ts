@@ -41,7 +41,7 @@ export const load: LayoutLoad = async ({ params, depends }) => {
         };
     } catch (e) {
         const prefs = await sdk.forConsole.account.getPrefs();
-        const newPrefs = { ...prefs, organization: '' };
+        const newPrefs = { ...prefs, organization: null };
         sdk.forConsole.account.updatePrefs(newPrefs);
         localStorage.removeItem('organization');
         throw error(e.code, e.message);

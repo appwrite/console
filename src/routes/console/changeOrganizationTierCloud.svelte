@@ -17,7 +17,7 @@
         isUpgrade
     } from './wizard/cloudOrganizationChangeTier/store';
     import { goto, invalidate } from '$app/navigation';
-    import { Dependencies } from '$lib/constants';
+    import { BillingPlan, Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { page } from '$app/stores';
     import { organization } from '$lib/stores/organization';
@@ -35,7 +35,7 @@
 
     async function changeTier() {
         //Downgrade
-        if ($changeOrganizationTier.billingPlan === 'tier-0') {
+        if ($changeOrganizationTier.billingPlan === BillingPlan.STARTER) {
             try {
                 await sdk.forConsole.billing.updatePlan(
                     $organization.$id,
@@ -162,7 +162,7 @@
 
     onDestroy(() => {
         $changeOrganizationTier = {
-            billingPlan: 'tier-1',
+            billingPlan: BillingPlan.PRO,
             paymentMethodId: null,
             collaborators: [],
             billingAddressId: null,
@@ -204,4 +204,5 @@
     title="Change plan"
     steps={$changeTierSteps}
     finalAction={$changeOrganizationFinalAction}
-    on:exit={onFinish} />
+    on:exit={onFinish}
+    confirmExit />

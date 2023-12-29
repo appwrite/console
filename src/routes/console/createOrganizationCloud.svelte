@@ -13,7 +13,7 @@
         createOrgSteps
     } from './wizard/cloudOrganization/store';
     import { goto, invalidate, preloadData } from '$app/navigation';
-    import { Dependencies } from '$lib/constants';
+    import { BillingPlan, Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { ID } from '@appwrite.io/console';
     import { page } from '$app/stores';
@@ -28,6 +28,17 @@
 
     async function create() {
         try {
+            // Create free organization if coming from onboarding
+            if ($page.url.pathname.includes('/console/onboarding')) {
+                await sdk.forConsole.billing.createOrganization(
+                    ID.unique(),
+                    'Personal Projects',
+                    BillingPlan.STARTER,
+                    null,
+                    null
+                );
+            }
+
             const org = await sdk.forConsole.billing.createOrganization(
                 $createOrganization.id ?? ID.unique(),
                 $createOrganization.name,
@@ -64,6 +75,13 @@
                 await sdk.forConsole.billing.updateTaxId(org.$id, $createOrganization.taxId);
             }
 
+            trackEvent(Submit.OrganizationCreate, {
+                customId: !!$createOrganization.id,
+                plan: tierToPlan($createOrganization.billingPlan)?.name,
+                budget_cap_enabled: !!$createOrganization?.billingBudget,
+                members_invited: $createOrganization?.collaborators?.length
+            });
+
             await invalidate(Dependencies.ACCOUNT);
             await preloadData(`/console/organization-${org.$id}`);
             await goto(`/console/organization-${org.$id}`);
@@ -71,14 +89,9 @@
                 type: 'success',
                 message: `${$createOrganization.name ?? 'Organization'} has been created`
             });
-            trackEvent(Submit.OrganizationCreate, {
-                customId: !!$createOrganization.id,
-                plan: tierToPlan($createOrganization.billingPlan)?.name,
-                budget_cap_enabled: !!$createOrganization?.billingBudget,
-                members_invited: $createOrganization?.collaborators?.length
-            });
+
             wizard.hide();
-            if (org.billingPlan === 'tier-1') {
+            if (org.billingPlan === BillingPlan.PRO) {
                 wizard.showCover(HoodieCover);
             }
         } catch (e) {
@@ -93,7 +106,7 @@
         $createOrganization = {
             id: null,
             name: null,
-            billingPlan: 'tier-1',
+            billingPlan: BillingPlan.PRO,
             paymentMethodId: null,
             collaborators: [],
             billingAddressId: null,
@@ -129,4 +142,5 @@
     title="Create organization"
     steps={$createOrgSteps}
     finalAction={$createOrganizationFinalAction}
-    on:exit={onFinish} />
+    on:exit={onFinish}
+    confirmExit />
