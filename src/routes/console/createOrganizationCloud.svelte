@@ -28,6 +28,17 @@
 
     async function create() {
         try {
+            // Create free organization if coming from onboarding
+            if ($page.url.pathname.includes('/console/onboarding')) {
+                await sdk.forConsole.billing.createOrganization(
+                    ID.unique(),
+                    'Personal Projects',
+                    BillingPlan.STARTER,
+                    null,
+                    null
+                );
+            }
+
             const org = await sdk.forConsole.billing.createOrganization(
                 $createOrganization.id ?? ID.unique(),
                 $createOrganization.name,
@@ -64,6 +75,13 @@
                 await sdk.forConsole.billing.updateTaxId(org.$id, $createOrganization.taxId);
             }
 
+            trackEvent(Submit.OrganizationCreate, {
+                customId: !!$createOrganization.id,
+                plan: tierToPlan($createOrganization.billingPlan)?.name,
+                budget_cap_enabled: !!$createOrganization?.billingBudget,
+                members_invited: $createOrganization?.collaborators?.length
+            });
+
             await invalidate(Dependencies.ACCOUNT);
             await preloadData(`/console/organization-${org.$id}`);
             await goto(`/console/organization-${org.$id}`);
@@ -71,12 +89,7 @@
                 type: 'success',
                 message: `${$createOrganization.name ?? 'Organization'} has been created`
             });
-            trackEvent(Submit.OrganizationCreate, {
-                customId: !!$createOrganization.id,
-                plan: tierToPlan($createOrganization.billingPlan)?.name,
-                budget_cap_enabled: !!$createOrganization?.billingBudget,
-                members_invited: $createOrganization?.collaborators?.length
-            });
+
             wizard.hide();
             if (org.billingPlan === BillingPlan.PRO) {
                 wizard.showCover(HoodieCover);
@@ -129,4 +142,5 @@
     title="Create organization"
     steps={$createOrgSteps}
     finalAction={$createOrganizationFinalAction}
-    on:exit={onFinish} />
+    on:exit={onFinish}
+    confirmExit />
