@@ -9,13 +9,20 @@
     import { onMount } from 'svelte';
     import { user } from './store';
 
-    $: if (prefs) {
-        if (JSON.stringify(prefs) !== JSON.stringify(Object.entries($user.prefs))) {
-            if (!!prefs[prefs.length - 1][0] && !!prefs[prefs.length - 1][1]) {
-                arePrefsDisabled = false;
-            } else {
-                arePrefsDisabled = true;
-            }
+    $: if (prefs !== null) {
+        const prefString = JSON.stringify(prefs);
+        const userPrefString = JSON.stringify(Object.entries($user.prefs));
+
+        if (prefString !== userPrefString) {
+
+          const key = (prefs[prefs.length - 1][0] ?? '').trim();
+          const val = (prefs[prefs.length - 1][1] ?? '').trim();
+
+          if(prefs.length === 1) {
+            arePrefsDisabled = !((key.length === 0 && val.length === 0) || (key.length > 0 && val.length > 0));
+          } else {            
+            arePrefsDisabled = !(key.length > 0 && val.length > 0);
+          }
         } else {
             arePrefsDisabled = true;
         }
@@ -92,6 +99,7 @@
                                                 prefs.splice(index, 1);
                                                 prefs = prefs;
                                             }
+                                            
                                         }}>
                                         <span class="icon-x" aria-hidden="true" />
                                     </Button>
