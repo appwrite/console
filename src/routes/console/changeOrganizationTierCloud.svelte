@@ -204,4 +204,5 @@
     title="Change plan"
     steps={$changeTierSteps}
     finalAction={$changeOrganizationFinalAction}
-    on:exit={onFinish} />
+    on:exit={onFinish}
+    confirmExit />
