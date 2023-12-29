@@ -13,6 +13,7 @@ import { preferences } from '$lib/stores/preferences';
 
 export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.ORGANIZATION);
+    depends(Dependencies.MEMBERS);
     depends(Dependencies.PAYMENT_METHODS);
 
     if (isCloud) {
