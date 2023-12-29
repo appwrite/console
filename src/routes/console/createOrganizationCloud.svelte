@@ -30,18 +30,12 @@
         try {
             // Create free organization if coming from onboarding
             if ($page.url.pathname.includes('/console/onboarding')) {
-                const freeOrg = await sdk.forConsole.billing.createOrganization(
+                await sdk.forConsole.billing.createOrganization(
                     ID.unique(),
                     'Personal Projects',
                     BillingPlan.STARTER,
                     null,
                     null
-                );
-                await sdk.forConsole.projects.create(
-                    ID.unique(),
-                    'My first project',
-                    freeOrg.$id,
-                    'fra'
                 );
             }
 
@@ -87,18 +81,6 @@
                 budget_cap_enabled: !!$createOrganization?.billingBudget,
                 members_invited: $createOrganization?.collaborators?.length
             });
-
-            // Create first pro project if onboarding
-            if ($page.url.pathname.includes('/console/onboarding')) {
-                await sdk.forConsole.projects.create(
-                    ID.unique(),
-                    'My first Pro project',
-                    org.$id,
-                    'fra'
-                );
-
-                trackEvent(Submit.ProjectCreate);
-            }
 
             await invalidate(Dependencies.ACCOUNT);
             await preloadData(`/console/organization-${org.$id}`);

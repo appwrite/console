@@ -25,8 +25,8 @@
     let plan: Tier;
 
     const options = [
-        { value: BillingPlan.STARTER, label: 'Starter - $0/billing period' },
-        { value: BillingPlan.PRO, label: 'Pro - $15/billing period + add-ons' }
+        { value: BillingPlan.STARTER, label: 'Starter - $0/month' },
+        { value: BillingPlan.PRO, label: 'Pro - $15/month + add-ons' }
     ];
 
     onMount(() => {
@@ -56,12 +56,6 @@
                         customId: !!id,
                         plan: tierToPlan(plan)?.name
                     });
-                    await sdk.forConsole.projects.create(
-                        ID.unique(),
-                        'My first project',
-                        org.$id,
-                        'fra'
-                    );
                     await invalidate(Dependencies.ACCOUNT);
                     await goto(`/console/organization-${org.$id}`);
                     addNotification({
@@ -84,14 +78,10 @@
         } else {
             try {
                 const org = await sdk.forConsole.teams.create(id ?? ID.unique(), orgName);
-                const project = await sdk.forConsole.projects.create(
-                    ID.unique(),
-                    'My first project',
-                    org.$id,
-                    'default'
-                );
+
                 await invalidate(Dependencies.ACCOUNT);
-                await goto(`/console/project-${project.$id}`);
+                await goto(`/console/organization-${org.$id}`);
+
                 addNotification({
                     message: `${orgName} organization successfully created`,
                     type: 'success'
