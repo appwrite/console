@@ -17,7 +17,7 @@ export const load: PageLoad = async ({ params, url, route, depends, parent }) =>
         projects: await sdk.forConsole.projects.list([
             Query.offset(offset),
             Query.equal('teamId', params.organization),
-            Query.limit(CARD_LIMIT),
+            Query.limit(limit),
             Query.orderDesc('')
         ])
     };
