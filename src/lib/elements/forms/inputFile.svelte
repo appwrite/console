@@ -28,6 +28,7 @@
         });
         if (hasInvalidExt) {
             error = 'Invalid file extension';
+            input.value = null;
             return;
         }
 
