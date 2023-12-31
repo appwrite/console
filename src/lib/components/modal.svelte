@@ -55,11 +55,13 @@
                         style="--button-size:1.5rem;"
                         aria-label="Close Modal"
                         title="Close Modal"
-                        on:click={() =>
-                            trackEvent('click_close_modal', {
-                                from: 'button'
-                            })}
-                        on:click={close}>
+                        on:click={() => {
+                             trackEvent('click_close_modal', {
+                                 from: 'button' 
+                             });
+                             close();
+                         }}>
+
                         <span class="icon-x" aria-hidden="true" />
                     </button>
                 {/if}
