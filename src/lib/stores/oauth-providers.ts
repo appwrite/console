@@ -150,6 +150,9 @@ const setProviders = (project: Models.Project): Provider[] => {
                 case 'yandex':
                     docs = 'https://tech.yandex.com/oauth/';
                     break;
+                case 'zoho':
+                    docs = 'https://www.zoho.com/accounts/protocol/oauth/sign-in-using-zoho.html';
+                    break;
                 case 'zoom':
                     docs = 'https://marketplace.zoom.us/docs/guides/auth/oauth/';
                     break;
