@@ -258,10 +258,6 @@
         }
     }
 
-    onDestroy(() => {
-        console.log('destroy');
-    });
-
     const stepsComponents: WizardStepsType = new Map();
     stepsComponents.set(1, {
         label: 'Configure',
