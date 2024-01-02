@@ -2,8 +2,10 @@
     import { Box, CardGrid, Heading } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
+    import { Submit, trackEvent } from '$lib/actions/analytics';
 
     async function downloadPdf() {
+      trackEvent(Submit.DownloadDPA);
         const today = new Date().toISOString();
         const prefs = await sdk.forConsole.account.getPrefs();
         const newPrefs = { ...prefs, DPA: today };
@@ -17,6 +19,7 @@
         link.href = url;
         link.download = 'Appwrite_DPA.pdf';
         link.click();
+        
     }
 </script>
 
