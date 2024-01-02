@@ -4,25 +4,25 @@ on:
     push:
         branches: [main]
         paths-ignore:
-          - "**/*.md"
-          - ".prettierrc"
-          - ".npmrc"
-          - ".gitignore"
-          - ".env.example"
-          - ".eslintrc.cjs" 
-          - ".eslintignore"
-          - "static/**/*"
+            - '**/*.md'
+            - '.prettierrc'
+            - '.npmrc'
+            - '.gitignore'
+            - '.env.example'
+            - '.eslintrc.cjs'
+            - '.eslintignore'
+            - 'static/**/*'
     pull_request:
         branches: [main]
         paths-ignore:
-          - "**/*.md"
-          - ".prettierrc"
-          - ".npmrc"
-          - ".gitignore"
-          - ".env.example"
-          - ".eslintrc.cjs" 
-          - ".eslintignore"
-          - "static/**/*"
+            - '**/*.md'
+            - '.prettierrc'
+            - '.npmrc'
+            - '.gitignore'
+            - '.env.example'
+            - '.eslintrc.cjs'
+            - '.eslintignore'
+            - 'static/**/*'
 
 env:
     VITE_APPWRITE_ENDPOINT: http://appwrite.test/v1
