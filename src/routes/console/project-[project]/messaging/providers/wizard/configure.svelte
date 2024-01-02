@@ -39,7 +39,6 @@
             promises.push(promise);
         }
         await Promise.all(promises);
-        console.log($providerParams[$provider]);
     }
 </script>
 
