@@ -59,6 +59,7 @@
             label="Name"
             id="name"
             placeholder="Function name"
+            autofocus
             bind:value={$createFunction.name}
             required />
         {#if !showCustomId}

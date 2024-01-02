@@ -1,6 +1,7 @@
 <script lang="ts">
     import { createEventDispatcher } from 'svelte';
     import type { Buttons } from '../stores/notifications';
+    import { Button } from '$lib/elements/forms';
 
     export let dismissible = false;
     export let type: 'info' | 'success' | 'warning' | 'error' | 'default' = 'info';
@@ -44,20 +45,23 @@
                     <slot name="title" />
                 </h6>
             {/if}
+
             {#if $$slots.default}
                 <p class="alert-message"><slot /></p>
             {/if}
-            {#if ($$slots.buttons || buttons?.length) && !isAction}
-                <div class="alert-buttons u-flex">
-                    <slot name="buttons">
-                        {#each buttons as button}
-                            <button type="button" class="button is-text" on:click={button.method}>
-                                <span class="text">{button.name}</span>
-                            </button>
-                        {/each}
-                    </slot>
-                </div>
-            {/if}
+            <slot name="action">
+                {#if ($$slots.buttons || buttons?.length) && !isAction}
+                    <div class="alert-buttons u-flex">
+                        <slot name="buttons">
+                            {#each buttons as button}
+                                <Button text on:click={button.method}>
+                                    <span class="text">{button.name}</span>
+                                </Button>
+                            {/each}
+                        </slot>
+                    </div>
+                {/if}
+            </slot>
         </div>
         {#if ($$slots.buttons || buttons?.length) && isAction}
             <div class="alert-buttons u-flex u-gap-16 u-cross-child-center">

@@ -3,8 +3,8 @@
     import { onDestroy } from 'svelte';
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
     import { feedbackData } from '$lib/stores/feedback';
-    import Step1 from './wizardFeedback/step1.svelte';
-    import Step2 from './wizardFeedback/step2.svelte';
+    import Step1 from './wizard/feedback/step1.svelte';
+    import Step2 from './wizard/feedback/step2.svelte';
 
     onDestroy(() => {
         feedbackData.reset();

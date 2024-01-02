@@ -5,4 +5,4 @@
     export let data: PageData;
 </script>
 
-<Activity logs={data.logs} offset={data.offset} />
+<Activity logs={data.logs} offset={data.offset} service="logs" />

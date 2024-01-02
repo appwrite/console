@@ -15,17 +15,28 @@
         TableCellText,
         TableScroll
     } from '$lib/elements/table';
-    import { Container } from '$lib/layout';
-    import { toLocaleDateTime } from '$lib/helpers/date';
+    import { Container, ContainerHeader } from '$lib/layout';
+    import { hoursToDays, toLocaleDateTime } from '$lib/helpers/date';
     import type { Models } from '@appwrite.io/console';
+    import { tierToPlan, type PlanServices } from '$lib/stores/billing';
+    import { isCloud } from '$lib/system';
+    import { organization } from '$lib/stores/organization';
+    import { Button } from '$lib/elements/forms';
+    import { BillingPlan } from '$lib/constants';
 
     export let logs: Models.LogList;
     export let offset = 0;
     export let limit = 0;
+
+    export let service: PlanServices = null;
 </script>
 
 <Container>
-    <Heading tag="h2" size="5">Activity</Heading>
+    {#if service}
+        <ContainerHeader title="Activity" />
+    {:else}
+        <Heading tag="h2" size="5">Activity</Heading>
+    {/if}
     {#if logs.total}
         <TableScroll>
             <TableHeader>
@@ -35,7 +46,18 @@
                 <TableCellHead width={90}>IP</TableCellHead>
                 <TableCellHead width={140}>Date</TableCellHead>
             </TableHeader>
-            <TableBody>
+            <TableBody service="logs" total={isCloud ? Infinity : 0}>
+                <svelte:fragment slot="limit" let:limit let:upgradeMethod>
+                    <p class="text">
+                        Logs are retained in rolling {hoursToDays(limit)} intervals with the
+                        {tierToPlan($organization.billingPlan).name}
+                        plan.
+                        {#if $organization?.billingPlan === BillingPlan.STARTER}
+                            <Button link on:click={upgradeMethod}>Upgrade</Button> to increase your log
+                            retention for a longer period.
+                        {/if}
+                    </p>
+                </svelte:fragment>
                 {#each logs.logs as log}
                     <TableRow>
                         <TableCell title="Client">

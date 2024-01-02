@@ -18,7 +18,7 @@
             await sdk.forProject.vcs.deleteInstallation(selectedInstallation.$id);
             await invalidate(Dependencies.PROJECT_INSTALLATIONS);
             addNotification({
-                message: `${selectedInstallation.organization} has been disconnected from your project`,
+                message: `${selectedInstallation.organization} has been disconnected from this project`,
                 type: 'success'
             });
             trackEvent(Submit.InstallationDelete, {

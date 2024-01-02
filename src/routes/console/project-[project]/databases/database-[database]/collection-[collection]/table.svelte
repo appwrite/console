@@ -158,9 +158,11 @@
                 <TableCellCheck bind:selectedIds={selectedDb} id={document.$id} />
 
                 <TableCell width={150}>
-                    <Id value={document.$id}>
-                        {document.$id}
-                    </Id>
+                    {#key document.$id}
+                        <Id value={document.$id}>
+                            {document.$id}
+                        </Id>
+                    {/key}
                 </TableCell>
 
                 {#each $columns as column}

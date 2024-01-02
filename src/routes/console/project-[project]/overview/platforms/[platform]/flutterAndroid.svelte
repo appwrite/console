@@ -46,7 +46,7 @@
 
 <Form onSubmit={updateHostname}>
     <CardGrid>
-        <Heading tag="h6" size="7">Package Name</Heading>
+        <Heading tag="h6" size="7">Package name</Heading>
         <p class="text">
             Your package name is generally the applicationId in your app-level build.gradle file.
         </p>

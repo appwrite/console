@@ -13,7 +13,7 @@ export const load: LayoutLoad = async ({ depends, url }) => {
     depends(Dependencies.ACCOUNT);
 
     try {
-        const account = await sdk.forConsole.account.get();
+        const account = await sdk.forConsole.account.get<{ organization?: string }>();
 
         LogRocket.identify(account.$id, {
             name: account.name,
@@ -38,7 +38,10 @@ export const load: LayoutLoad = async ({ depends, url }) => {
         ];
 
         if (!acceptedRoutes.some((n) => url.pathname.startsWith(n))) {
-            throw redirect(303, '/login');
+            const redirectUrl =
+                url.pathname && url.pathname !== '/' ? `redirect=${url.pathname}` : '';
+            const path = url.search ? `${url.search}&${redirectUrl}` : `?${redirectUrl}`;
+            throw redirect(303, `/login${path}`);
         }
     }
 };

@@ -56,7 +56,7 @@
 
 <Form onSubmit={updatePrefs}>
     <CardGrid>
-        <Heading tag="h6" size="7">Team Preferences</Heading>
+        <Heading tag="h6" size="7">Team preferences</Heading>
         <p>
             You can update your team's preferences by storing shared information on the teams's
             objects so they can easily be shared across members.

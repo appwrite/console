@@ -7,7 +7,7 @@ const TemplateRuntimes = {
     NODE: { name: 'node', versions: ['20.0', '19.0', '18.0', '16.0', '14.5'] },
     PHP: { name: 'php', versions: ['8.2', '8.1', '8.0'] },
     RUBY: { name: 'ruby', versions: ['3.2', '3.1', '3.0'] },
-    PYTHON: { name: 'python', versions: ['3.11', '3.10', '3.9', '3.8'] },
+    PYTHON: { name: 'python', versions: ['3.12', '3.11', '3.10', '3.9', '3.8'] },
     DART: { name: 'dart', versions: ['3.1', '3.0', '2.19', '2.18', '2.17', '2.16', '2.16'] },
     BUN: { name: 'bun', versions: ['1.0'] }
 };
@@ -37,7 +37,7 @@ export const marketplace: MarketplaceTemplate[] = [
         id: 'starter',
         name: 'Starter function',
         tagline:
-            'A simple function to get started. Edit this function to explore endless possibilities with Appwrite Functions. 🚀',
+            'A simple function to get started. Edit this function to explore endless possibilities with Appwrite Functions.',
         permissions: ['any'],
         events: [],
         cron: '',

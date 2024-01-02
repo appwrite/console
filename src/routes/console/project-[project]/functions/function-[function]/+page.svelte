@@ -26,7 +26,7 @@
         TableScroll
     } from '$lib/elements/table';
     import { deploymentList, execute, func, proxyRuleList } from './store';
-    import { Container } from '$lib/layout';
+    import { Container, ContainerHeader } from '$lib/layout';
     import { app } from '$lib/stores/app';
     import { calculateSize, humanFileSize } from '$lib/helpers/sizeConvertion';
     import type { Models } from '@appwrite.io/console';
@@ -39,6 +39,8 @@
     import DeploymentSource from './deploymentSource.svelte';
     import DeploymentCreatedBy from './deploymentCreatedBy.svelte';
     import DeploymentDomains from './deploymentDomains.svelte';
+    import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
+    import { readOnly } from '$lib/stores/billing';
 
     export let data;
 
@@ -56,10 +58,9 @@
 </script>
 
 <Container>
-    <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <Heading tag="h2" size="5">Deployments</Heading>
+    <ContainerHeader title="Deployments">
         <Create main />
-    </div>
+    </ContainerHeader>
     {#if $deploymentList?.total}
         {@const activeDeployment = data.activeDeployment}
         <div class="common-section">
@@ -148,10 +149,34 @@
                             Redeploy
                         </Button>
 
-                        <Button secondary on:click={() => ($execute = $func)}>Execute now</Button>
+                        <Button
+                            secondary
+                            on:click={() => ($execute = $func)}
+                            disabled={isCloud && $readOnly && !GRACE_PERIOD_OVERRIDE}>
+                            Execute now
+                        </Button>
                     </div>
                 </svelte:fragment>
             </CardGrid>
+        {:else if $deploymentList.total}
+            <Empty noMedia single>
+                <Create secondary round>
+                    <i class="icon-plus" />
+                </Create>
+                <div class="u-text-center">
+                    <p class="body-text-2 u-margin-block-start-4">
+                        Add a new deployment, or activate an existing one to see your function in
+                        action. <br />Learn more about deployments in our
+                        <a
+                            class="link"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            href="https://appwrite.io/docs/products/functions/deployment"
+                            >documentation</a
+                        >.
+                    </p>
+                </div>
+            </Empty>
         {:else}
             <Empty single target="deployment">
                 <div class="u-text-center">
