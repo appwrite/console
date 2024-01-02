@@ -6,6 +6,7 @@
     import { message } from './store';
     import { ProviderTypes } from '../providerType.svelte';
     import SMSPreview from './smsPreview.svelte';
+    import PushPreview from './pushPreview.svelte';
 </script>
 
 <Container>
@@ -14,6 +15,8 @@
         <EmailPreview />
     {:else if $message.providerType === ProviderTypes.Sms}
         <SMSPreview />
+    {:else if $message.providerType === ProviderTypes.Push}
+        <PushPreview />
     {/if}
     <Delete />
 </Container>
