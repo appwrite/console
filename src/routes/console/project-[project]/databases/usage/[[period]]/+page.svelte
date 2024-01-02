@@ -4,39 +4,16 @@
     import type { PageData } from './$types';
 
     export let data: PageData;
-
-    $: count = data.count;
-    $: created = data.created;
-    $: read = data.read;
-    $: updated = data.updated;
-    $: deleted = data.deleted;
+    $: total = data.databasesTotal;
+    $: count = data.databases;
 </script>
 
 <Usage
     title="Databases"
     path={`/console/project-${$page.params.project}/databases/usage`}
+    {total}
     {count}
-    {created}
-    {read}
-    {updated}
-    {deleted}
     countMetadata={{
         legend: 'Databases',
         title: 'Total databases'
-    }}
-    createdMetadata={{
-        legend: 'Create',
-        title: 'Databases created'
-    }}
-    readMetadata={{
-        legend: 'Read',
-        title: 'Databases read'
-    }}
-    updatedMetadata={{
-        legend: 'Update',
-        title: 'Databases updated'
-    }}
-    deletedMetadata={{
-        legend: 'Delete',
-        title: 'Databases deleted'
     }} />

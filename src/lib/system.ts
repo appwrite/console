@@ -9,8 +9,7 @@ export const VARS = {
         | string
         | undefined,
     CONSOLE_MODE: import.meta.env?.VITE_CONSOLE_MODE?.toString() as string | undefined,
-    GOOGLE_ANALYTICS: import.meta.env?.VITE_GA_PROJECT?.toString() as string | undefined,
-    GOOGLE_TAG: import.meta.env?.VITE_GTM_PROJECT?.toString() as string | undefined
+    STRIPE_PUBLIC_KEY: import.meta.env?.VITE_STRIPE_PUBLIC_KEY?.toString() as string | undefined
 };
 
 export const ENV = {
@@ -23,3 +22,5 @@ export const ENV = {
 export const MODE = VARS.CONSOLE_MODE === Mode.CLOUD ? Mode.CLOUD : Mode.SELF_HOSTED;
 export const isCloud = MODE === Mode.CLOUD;
 export const isSelfHosted = MODE !== Mode.CLOUD;
+export const hasStripePublicKey = !!VARS.STRIPE_PUBLIC_KEY;
+export const GRACE_PERIOD_OVERRIDE = true;

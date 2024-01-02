@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount } from 'svelte';
-    import { FormItem, Helper, Label } from '.';
+    import { FormItem, FormItemPart, Helper, Label } from '.';
     import NullCheckbox from './nullCheckbox.svelte';
 
     export let label: string | undefined = undefined;
@@ -17,6 +17,8 @@
     export let min: number = null;
     export let max: number = null;
     export let step: number | 'any' = 1;
+    export let isMultiple = false;
+    export let fullWidth = false;
 
     let element: HTMLInputElement;
     let error: string;
@@ -62,9 +64,11 @@
             value = prevValue;
         }
     }
+
+    $: wrapper = isMultiple ? FormItemPart : FormItem;
 </script>
 
-<FormItem>
+<svelte:component this={wrapper} {fullWidth}>
     {#if label}
         <Label {required} {optionalText} hide={!showLabel} for={id}>
             {label}
@@ -99,4 +103,4 @@
     {#if error}
         <Helper type="warning">{error}</Helper>
     {/if}
-</FormItem>
+</svelte:component>

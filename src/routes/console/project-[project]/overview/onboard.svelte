@@ -55,7 +55,7 @@
 <div class="card">
     <header class="card-header common-section grid-1-2" style:--url={`url(${onBoardIntro})`}>
         <div class="grid-1-2-col-1">
-            <h2 class="heading-level-5">Getting started guide</h2>
+            <h2 class="heading-level-5">Getting started</h2>
             <p class="u-line-height-1-5 u-margin-block-start-12">
                 Here are some next steps to start building
             </p>
@@ -161,10 +161,6 @@
             <div class="common-section u-text-center">
                 <h7 class="heading-level-7">Add a platform to view data about your project</h7>
             </div>
-            <div class="u-margin-block-start-16 u-text-center" style:max-width="550px">
-                Get insights on bandwidth usage, requests, realtime connections and more after
-                making your first API call
-            </div>
         </div>
     </div>
 </article>
@@ -181,6 +177,13 @@
 <style lang="scss">
     @import '@appwrite.io/pink/src/abstract/variables/_devices.scss';
 
+    .card {
+        background: #fbfbfc;
+
+        :global(.theme-dark) & {
+            background: #19191c !important;
+        }
+    }
     @media #{$break2open} {
         .card-header {
             background-image: var(--url);

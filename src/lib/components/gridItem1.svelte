@@ -7,7 +7,7 @@
     <div class="grid-item-1">
         <div class="grid-item-1-start-start">
             <div class="eyebrow-heading-3"><slot name="eyebrow" /></div>
-            <Heading tag="h2" size="6"><slot name="title" /></Heading>
+            <Heading tag="h2" size="7"><slot name="title" /></Heading>
         </div>
         <div class="grid-item-1-start-end">
             <slot name="status" />

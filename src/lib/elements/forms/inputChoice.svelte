@@ -9,6 +9,7 @@
     export let required = false;
     export let disabled = false;
     export let tooltip: string = null;
+    export let fullWidth = false;
 
     let element: HTMLInputElement;
     let error: string;
@@ -35,11 +36,12 @@
             {required}
             type="checkbox"
             class:switch={type === 'switchbox'}
+            aria-checked={value}
             bind:this={element}
             bind:checked={value}
             on:invalid={handleInvalid} />
 
-        <div class="choice-item-content">
+        <div class="choice-item-content" class:u-width-full-line={fullWidth}>
             {#if (label && showLabel) || tooltip}
                 <div class="u-flex u-gap-4">
                     {#if label}

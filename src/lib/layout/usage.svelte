@@ -1,24 +1,69 @@
 <script context="module" lang="ts">
     export type UsagePeriods = '24h' | '30d' | '90d';
 
+    export function periodToDates(period: UsagePeriods): {
+        start: string;
+        end: string;
+        period: '1h' | '1d';
+    } {
+        const start = new Date();
+        switch (period) {
+            case '24h':
+                start.setUTCHours(start.getHours() - 24);
+                break;
+            case '30d':
+                start.setUTCHours(0, 0, 0, 0);
+                start.setUTCDate(start.getDate() - 30);
+                break;
+            case '90d':
+                start.setUTCHours(0, 0, 0, 0);
+                start.setUTCDate(start.getDate() - 90);
+                break;
+        }
+        const end = new Date();
+        end.setUTCDate(end.getUTCDate() + 1);
+        end.setUTCHours(0, 0, 0, 0);
+        return {
+            start: start.toISOString(),
+            end: end.toISOString(),
+            period: period === '24h' ? '1h' : '1d'
+        };
+    }
+
     export function last(set: Models.Metric[]): Models.Metric | null {
         if (!set) return null;
         return set.slice(-1)[0] ?? null;
     }
 
     export function total(set: Models.Metric[]): number {
-        return set.reduce((prev, curr) => prev + curr.value, 0);
+        return set?.reduce((prev, curr) => prev + curr.value, 0) ?? 0;
+    }
+
+    export function accumulateFromEndingTotal(
+        metrics: Models.Metric[],
+        endingTotal: number
+    ): Array<[string, number]> {
+        return metrics.reduceRight(
+            (acc, curr) => {
+                acc.total -= curr.value;
+                acc.data.unshift([curr.date, acc.total]);
+                return acc;
+            },
+            {
+                total: endingTotal,
+                data: []
+            }
+        ).data;
     }
 </script>
 
 <script lang="ts">
     import { Container } from '$lib/layout';
-    import { BarChart, LineChart } from '$lib/charts';
+    import { BarChart } from '$lib/charts';
+    import { formatNumberWithCommas } from '$lib/helpers/numbers';
     import { Card, SecondaryTabs, SecondaryTabsItem, Heading } from '$lib/components';
-    import { Colors } from '$lib/charts/config';
     import type { Models } from '@appwrite.io/console';
     import { page } from '$app/stores';
-    import { Tiles } from '../components/index.js';
 
     type MetricMetadata = {
         title: string;
@@ -26,17 +71,9 @@
     };
 
     export let title: string;
+    export let total: number;
     export let count: Models.Metric[];
-    export let created: Models.Metric[];
-    export let read: Models.Metric[];
-    export let updated: Models.Metric[];
-    export let deleted: Models.Metric[];
-
     export let countMetadata: MetricMetadata;
-    export let createdMetadata: MetricMetadata;
-    export let readMetadata: MetricMetadata;
-    export let updatedMetadata: MetricMetadata;
-    export let deletedMetadata: MetricMetadata;
     export let path: string = null;
 </script>
 
@@ -59,7 +96,7 @@
     </div>
     <Card>
         {#if count}
-            <Heading tag="h6" size="6">{total(count)}</Heading>
+            <Heading tag="h6" size="6">{formatNumberWithCommas(total)}</Heading>
             <p>{countMetadata.title}</p>
             <div class="u-margin-block-start-16" />
             <div class="chart-container">
@@ -67,82 +104,12 @@
                     series={[
                         {
                             name: countMetadata.legend,
-                            data: [...count.map((e) => [e.date, e.value])]
+                            data: accumulateFromEndingTotal(count, total)
                         }
                     ]} />
             </div>
         {/if}
     </Card>
-    <Tiles>
-        <Card isTile>
-            {#if created}
-                <Heading tag="h6" size="6">{total(created)}</Heading>
-                <p>{createdMetadata.title}</p>
-                <div class="u-margin-block-start-16" />
-                <div class="chart-container">
-                    <LineChart
-                        series={[
-                            {
-                                name: createdMetadata.legend,
-                                data: [...created.map((e) => [e.date, e.value])],
-                                color: Colors.Secondary
-                            }
-                        ]} />
-                </div>
-            {/if}
-        </Card>
-        <Card isTile>
-            {#if read}
-                <Heading tag="h6" size="6">{total(read)}</Heading>
-                <p>{readMetadata.title}</p>
-                <div class="u-margin-block-start-16" />
-                <div class="chart-container">
-                    <LineChart
-                        series={[
-                            {
-                                name: readMetadata.legend,
-                                data: [...read.map((e) => [e.date, e.value])],
-                                color: Colors.Tertiary
-                            }
-                        ]} />
-                </div>
-            {/if}
-        </Card>
-        <Card isTile>
-            {#if updated}
-                <Heading tag="h6" size="6">{total(updated)}</Heading>
-                <p>{updatedMetadata.title}</p>
-                <div class="u-margin-block-start-16" />
-                <div class="chart-container">
-                    <LineChart
-                        series={[
-                            {
-                                name: updatedMetadata.legend,
-                                data: [...updated.map((e) => [e.date, e.value])],
-                                color: Colors.Quaternary
-                            }
-                        ]} />
-                </div>
-            {/if}
-        </Card>
-        <Card isTile>
-            {#if deleted}
-                <Heading tag="h6" size="6">{total(deleted)}</Heading>
-                <p>{deletedMetadata.title}</p>
-                <div class="u-margin-block-start-16" />
-                <div class="chart-container">
-                    <LineChart
-                        series={[
-                            {
-                                name: deletedMetadata.legend,
-                                data: [...deleted.map((e) => [e.date, e.value])],
-                                color: Colors.Quinary
-                            }
-                        ]} />
-                </div>
-            {/if}
-        </Card>
-    </Tiles>
 </Container>
 
 <style lang="scss">

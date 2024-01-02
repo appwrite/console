@@ -7,7 +7,7 @@ const TemplateRuntimes = {
     NODE: { name: 'node', versions: ['20.0', '19.0', '18.0', '16.0', '14.5'] },
     PHP: { name: 'php', versions: ['8.2', '8.1', '8.0'] },
     RUBY: { name: 'ruby', versions: ['3.2', '3.1', '3.0'] },
-    PYTHON: { name: 'python', versions: ['3.11', '3.10', '3.9', '3.8'] },
+    PYTHON: { name: 'python', versions: ['3.12', '3.11', '3.10', '3.9', '3.8'] },
     DART: { name: 'dart', versions: ['3.1', '3.0', '2.19', '2.18', '2.17', '2.16', '2.16'] },
     BUN: { name: 'bun', versions: ['1.0'] }
 };
@@ -37,7 +37,7 @@ export const marketplace: MarketplaceTemplate[] = [
         id: 'starter',
         name: 'Starter function',
         tagline:
-            'A simple function to get started. Edit this function to explore endless possibilities with Appwrite Functions. 🚀',
+            'A simple function to get started. Edit this function to explore endless possibilities with Appwrite Functions.',
         permissions: ['any'],
         events: [],
         cron: '',
@@ -458,6 +458,13 @@ export const marketplace: MarketplaceTemplate[] = [
                 name: 'APPWRITE_COLLECTION_ID',
                 description: `The ID of the collection in the Appwrite database to sync. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/products/databases/collections">Learn more</a>.`,
                 placeholder: '7c3e8...2a9f1',
+                required: true,
+                type: 'text'
+            },
+            {
+                name: 'ALGOLIA_APP_ID',
+                description: `The ID of the application in Algolia. <a class="u-bold" target="_blank" href="https://support.algolia.com/hc/en-us/articles/11040113398673-Where-can-I-find-my-application-ID-and-the-index-name-">Learn more</a>.`,
+                placeholder: 'OFCNCOG2CU',
                 required: true,
                 type: 'text'
             },

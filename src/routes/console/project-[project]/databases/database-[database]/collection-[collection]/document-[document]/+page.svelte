@@ -68,9 +68,15 @@
     <CardGrid>
         <Heading tag="h6" size="7">Permissions</Heading>
         <p>
-            Assign read or write permissions at the <b>collection level</b> or
-            <b>document level</b>. If collection level permissions are assigned, permissions applied
-            to individual documents are ignored.
+            A user requires appropriate permissions at either the <b>collection level</b> or
+            <b>document level</b> to access a document. If no permissions are configured, no user
+            can access the document
+            <a
+                href="https://appwrite.io/docs/products/databases/permissions"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="link">Learn more about database permissions</a
+            >.
         </p>
 
         <svelte:fragment slot="aside">
@@ -92,8 +98,8 @@
                 <Alert type="info">
                     <svelte:fragment slot="title">Document security is disabled</svelte:fragment>
                     <p class="text">
-                        If you want to assign document permissions, navigate to Collection settings
-                        and enable document security. Otherwise, only collection permissions will be
+                        If you want to assign document permissions. Go to Collection settings and
+                        enable document security. Otherwise, only collection permissions will be
                         used.
                     </p>
                 </Alert>

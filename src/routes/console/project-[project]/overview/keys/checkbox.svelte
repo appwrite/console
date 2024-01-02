@@ -1,6 +1,6 @@
 <script lang="ts">
-    export let indeterminate: boolean = false;
-    export let checked: boolean = false;
+    export let indeterminate = false;
+    export let checked = false;
 
     interface $$Props extends Partial<HTMLInputElement> {
         indeterminate?: boolean;

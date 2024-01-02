@@ -1,6 +1,4 @@
 import Analytics, { type AnalyticsPlugin } from 'analytics';
-import googleAnalytics from '@analytics/google-analytics';
-import googleTagManager from '@analytics/google-tag-manager';
 import Plausible from 'plausible-tracker';
 import { get } from 'svelte/store';
 import { page } from '$app/stores';
@@ -49,19 +47,7 @@ const PLAUSIBLE_DOMAINS = {
 
 const analytics = Analytics({
     app: 'appwrite',
-    plugins: isCloud
-        ? [
-              plausible(PLAUSIBLE_DOMAINS.CLOUD),
-              googleTagManager({
-                  containerId: [VARS.GOOGLE_TAG || 'GTM-P3T9TBV']
-              })
-          ]
-        : [
-              plausible(PLAUSIBLE_DOMAINS.SELF_HOSTED),
-              googleAnalytics({
-                  measurementIds: [VARS.GOOGLE_ANALYTICS || 'G-R4YJ9JN8L4']
-              })
-          ]
+    plugins: [plausible(isCloud ? PLAUSIBLE_DOMAINS.CLOUD : PLAUSIBLE_DOMAINS.SELF_HOSTED)]
 });
 
 export function trackEvent(name: string, data: object = null): void {
@@ -270,6 +256,25 @@ export enum Submit {
     FileCreate = 'submit_file_create',
     FileDelete = 'submit_file_delete',
     FileUpdatePermissions = 'submit_file_update_permissions',
+    BudgetCapUpdate = 'submit_budget_cap_update',
+    BudgetAlertsUpdate = 'submit_budget_alert_conditions_update',
+    CreditRedeem = 'submit_credit_redeem',
+    PaymentMethodCreate = 'submit_payment_method_create',
+    PaymentMethodUpdate = 'submit_payment_method_update',
+    PaymentMethodDelete = 'submit_payment_method_delete',
+    BillingAddressCreate = 'submit_billing_address_create',
+    BillingAddressUpdate = 'submit_billing_address_update',
+    BillingAddressDelete = 'submit_billing_address_delete',
+    OrganizationPaymentUpdate = 'submit_organization_payment_update',
+    OrganizationPaymentDelete = 'submit_organization_payment_delete',
+    OrganizationBackupPaymentUpdate = 'submit_organization_backup_payment_update',
+    OrganizationBackupPaymentDelete = 'submit_organization_backup_payment_delete',
+    OrganizationBillingAddressUpdate = 'submit_organization_billing_address_update',
+    OrganizationBillingAddressDelete = 'submit_organization_billing_address_delete',
+    OrganizationUpgrade = 'submit_organization_upgrade',
+    OrganizationDowngrade = 'submit_organization_downgrade',
+    OrganizationBillingTaxIdUpdate = 'submit_organization_billing_tax_id_update',
+    SupportTicket = 'submit_support_ticket',
     InstallationCreate = 'submit_installation_create',
     InstallationDelete = 'submit_installation_delete',
     EmailChangeLocale = 'submit_email_change_locale',

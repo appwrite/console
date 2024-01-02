@@ -8,10 +8,17 @@
 
     function handleSubmit() {
         dispatch('exit');
+        show = false;
     }
 </script>
 
-<Modal title="Exit Process" bind:show onSubmit={handleSubmit} icon="exclamation" state="warning">
+<Modal
+    title="Exit Process"
+    bind:show
+    onSubmit={handleSubmit}
+    icon="exclamation"
+    state="warning"
+    headerDivider={false}>
     <p>
         Are you sure you want to exit from <slot />? All data will be deleted. This action is
         irreversible.

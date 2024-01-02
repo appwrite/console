@@ -32,6 +32,10 @@ export function getSearch(url: URL): string | undefined {
     return url.searchParams.get('search') ?? undefined;
 }
 
+export function getQuery(url: URL): string | undefined {
+    return url.searchParams.get('query') ?? undefined;
+}
+
 type TabElement = { href: string; title: string; hasChildren?: boolean };
 
 export function isTabSelected(

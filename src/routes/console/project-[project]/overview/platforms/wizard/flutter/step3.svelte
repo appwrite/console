@@ -21,11 +21,20 @@ client
     <svelte:fragment slot="title">Initialize SDK</svelte:fragment>
 
     <h2 class="heading-level-7">Initialize your SDK</h2>
-    <p>
+    <p data-private>
         Initialize your SDK by pointing the client to your Appwrite project using your <Id
             value={project}>Project ID</Id>
     </p>
-    <Code label="Flutter SDK" labelIcon="flutter" language="dart" {code} withCopy withLineNumbers />
+    <div class="u-margin-block-start-16">
+        <Code
+            label="Flutter SDK"
+            labelIcon="flutter"
+            language="dart"
+            {code}
+            withCopy
+            withLineNumbers
+            noMargin />
+    </div>
     <p class="common-section">
         Before sending any API calls to your new Appwrite project, make sure your device or emulator
         has network access to your Appwrite project's hostname or IP address.

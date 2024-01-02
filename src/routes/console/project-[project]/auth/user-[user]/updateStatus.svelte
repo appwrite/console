@@ -112,18 +112,18 @@
                     {$user.emailVerification && $user.phoneVerification
                         ? 'verified'
                         : $user.emailVerification
-                        ? 'verified email'
-                        : $user.phoneVerification
-                        ? 'verified phone'
-                        : 'unverified'}
+                          ? 'verified email'
+                          : $user.phoneVerification
+                            ? 'verified phone'
+                            : 'unverified'}
                 </Pill>
             {:else}
                 <Pill success={$user.emailVerification || $user.phoneVerification}>
                     {$user.emailVerification
                         ? 'verified '
                         : $user.phoneVerification
-                        ? 'verified '
-                        : 'unverified'}
+                          ? 'verified '
+                          : 'unverified'}
                 </Pill>
             {/if}
         </div>

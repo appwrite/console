@@ -15,7 +15,6 @@
     const { input, handleSubmit, completion, isLoading, complete, error } = useCompletion({
         api: endpoint + '/console/assistant',
         headers: {
-            'content-type': 'application/json',
             'x-appwrite-project': 'console'
         },
         credentials: 'include'

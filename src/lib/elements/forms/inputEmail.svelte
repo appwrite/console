@@ -29,7 +29,7 @@
     const handleInvalid = (event: Event) => {
         event.preventDefault();
         if (element.validity.typeMismatch) {
-            error = 'Your email should be formatted as: name@example.com';
+            error = 'Emails should be formatted as: name@example.com';
             return;
         }
         if (element.validity.valueMissing) {
@@ -60,7 +60,11 @@
         {label}
     </Label>
 
-    <div class="input-text-wrapper">
+    <div
+        class:input-text-wrapper={!$$slots.default}
+        class:u-flex={$$slots.default}
+        class:u-gap-16={$$slots.default}
+        class:u-cross-center={$$slots.default}>
         <input
             {id}
             {placeholder}
@@ -81,6 +85,7 @@
                 </li>
             </ul>
         {/if}
+        <slot />
     </div>
     {#if error}
         <Helper type="warning">{error}</Helper>

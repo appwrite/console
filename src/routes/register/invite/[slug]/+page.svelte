@@ -73,7 +73,9 @@
                 throw new Error((await res.json()).message);
             } else {
                 await sdk.forConsole.account.createEmailSession(mail, pass);
-                await sdk.forConsole.account.updatePrefs({ code });
+                const prefs = await sdk.forConsole.account.getPrefs();
+                const newPrefs = { ...prefs, code };
+                await sdk.forConsole.account.updatePrefs(newPrefs);
                 await invalidate(Dependencies.ACCOUNT);
                 await goto(`${base}/console`);
                 trackEvent('submit_account_create', { code: code });

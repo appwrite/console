@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { trackEvent } from '$lib/actions/analytics';
+
     export let disabled = false;
     export let selected = false;
     export let success = false;
@@ -9,6 +11,17 @@
     export let submit = false;
     export let external = false;
     export let href: string = null;
+    export let event: string = null;
+
+    function track() {
+        if (!event) {
+            return;
+        }
+
+        trackEvent(`click_${event}`, {
+            from: 'tag'
+        });
+    }
 </script>
 
 {#if href}
@@ -28,6 +41,7 @@
 {:else if button}
     <button
         on:click
+        on:click={track}
         {disabled}
         type={submit ? 'submit' : 'button'}
         class="tag"

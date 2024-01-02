@@ -69,10 +69,12 @@
     id="default"
     label="Default value"
     bind:value={data.default}
-    disabled={data.required || data.array} />
+    disabled={data.required || data.array}
+    nullable={!data.required && !data.array} />
 <InputChoice id="required" label="Required" bind:value={data.required} disabled={data.array}>
     Indicate whether this is a required attribute
 </InputChoice>
 <InputChoice id="array" label="Array" bind:value={data.array} disabled={data.required || editing}>
-    Indicate whether this attribute should act as an array
+    Indicate whether this attribute should act as an array, with the default value set as an empty
+    array.
 </InputChoice>
