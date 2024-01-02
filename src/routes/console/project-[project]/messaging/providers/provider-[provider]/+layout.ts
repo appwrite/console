@@ -18,7 +18,6 @@ export const load: LayoutLoad = async ({ params, depends }) => {
         }
     );
 
-
     try {
         return {
             header: Header,
