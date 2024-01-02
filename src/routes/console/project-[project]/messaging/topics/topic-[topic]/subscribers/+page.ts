@@ -4,7 +4,7 @@ import { getLimit, getPage, getQuery, getSearch, pageToOffset } from '$lib/helpe
 import { Dependencies, PAGE_LIMIT } from '$lib/constants';
 import type { PageLoad } from './$types';
 import type { Target } from '../../../store';
-import { queryParamToMap, queries } from '$lib/components/filters/store';
+import { queryParamToMap, queries } from '$lib/components/filters';
 
 export type Subscriber = {
     $id: string;

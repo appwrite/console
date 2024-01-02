@@ -8,7 +8,9 @@
 <CardGrid>
     <div class="grid-1-2-col-1 u-flex-vertical u-cross-start u-gap-16">
         <Heading tag="h6" size="7">Preview</Heading>
-        <PushPhone title={$message.data.title} body={$message.data.body} />
+        <div class="u-flex u-main-center u-margin-block-start-24 u-width-full-line">
+            <PushPhone title={$message.data.title} body={$message.data.body} />
+        </div>
     </div>
     <svelte:fragment slot="aside">
         <FormList>

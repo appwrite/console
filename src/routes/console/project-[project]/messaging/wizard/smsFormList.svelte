@@ -60,7 +60,7 @@
 </script>
 
 <div class="u-flex u-gap-24">
-    <FormList class="u-stretch">
+    <FormList class="u-stretch u-cross-child-start">
         <div class="u-colum-gap-2">
             <InputTextarea
                 id="message"
@@ -132,5 +132,8 @@
                 autofocus={false} />
         {/if}
     </FormList>
-    <SMSPhone content={$messageParams[$providerType]['content']} />
+    <SMSPhone content={$messageParams[$providerType]['content']} classes="is-only-desktop" />
+</div>
+<div class="u-flex u-main-center u-margin-block-start-24">
+    <SMSPhone content={$messageParams[$providerType]['content']} classes="is-not-desktop" />
 </div>

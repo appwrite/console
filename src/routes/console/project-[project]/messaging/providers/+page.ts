@@ -11,7 +11,7 @@ import {
 } from '$lib/helpers/load';
 import { Dependencies, PAGE_LIMIT } from '$lib/constants';
 import { providersById, type Provider } from '../store';
-import { queries, queryParamToMap } from '$lib/components/filters/store';
+import { queries, queryParamToMap } from '$lib/components/filters';
 
 const providers = Object.values(providersById);
 

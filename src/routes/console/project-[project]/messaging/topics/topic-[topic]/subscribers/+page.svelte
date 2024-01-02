@@ -7,7 +7,8 @@
         SearchQuery,
         PaginationWithLimit,
         Heading,
-        ViewSelector
+        ViewSelector,
+        EmptyFilter
     } from '$lib/components';
     import { Container } from '$lib/layout';
     import { ID } from '@appwrite.io/console';
@@ -22,7 +23,7 @@
     import UserTargetsModal from '../../../userTargetsModal.svelte';
     import { onMount } from 'svelte';
     import type { Subscriber } from './+page';
-    import Filters from '$lib/components/filters/filters.svelte';
+    import { Filters, hasPageQueries } from '$lib/components/filters';
     import { columns } from './store';
     import { View } from '$lib/helpers/load';
 
@@ -137,6 +138,8 @@
             limit={data.limit}
             offset={data.offset}
             total={data.subscribers.total} />
+    {:else if $hasPageQueries}
+        <EmptyFilter resource="subscribers" />
         <!-- TODO: remove data.search != 'empty' when the API is ready with data -->
     {:else if data.search && data.search != 'empty'}
         <EmptySearch>
