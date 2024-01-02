@@ -118,10 +118,12 @@
         <div class="selects u-flex u-gap-8 u-margin-block-start-16">
             <InputSelect
                 id="column"
-                options={$columns.map((c) => ({
-                    label: c.title,
-                    value: c.id
-                }))}
+                options={$columns
+                    .filter((c) => c.filter !== false)
+                    .map((c) => ({
+                        label: c.title,
+                        value: c.id
+                    }))}
                 placeholder="Select column"
                 bind:value={columnId} />
             <InputSelect

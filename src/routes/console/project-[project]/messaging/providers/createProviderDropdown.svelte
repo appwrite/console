@@ -16,7 +16,7 @@
     ): value is T[keyof T] => Object.values<string>(enumType).includes(value);
 </script>
 
-<DropList bind:show={showCreateDropdown} scrollable>
+<DropList bind:show={showCreateDropdown} scrollable placement="bottom-end">
     <slot>
         <Button on:click={() => (showCreateDropdown = !showCreateDropdown)} event="create_provider">
             <span class="icon-plus" aria-hidden="true" />

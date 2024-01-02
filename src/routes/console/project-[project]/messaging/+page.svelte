@@ -3,6 +3,7 @@
     import { page } from '$app/stores';
     import {
         Empty,
+        EmptyFilter,
         EmptySearch,
         FloatingActionBar,
         Heading,
@@ -30,7 +31,7 @@
     import MessageStatusPill from './messageStatusPill.svelte';
     import CreateMessageDropdown from './createMessageDropdown.svelte';
     import ProviderType, { ProviderTypes } from './providerType.svelte';
-    import Filters from '$lib/components/filters/filters.svelte';
+    import { Filters, hasPageQueries } from '$lib/components/filters';
     import FailedModal from './failedModal.svelte';
 
     export let data: PageData;
@@ -183,6 +184,8 @@
             limit={data.limit}
             offset={data.offset}
             total={data.messages.total} />
+    {:else if $hasPageQueries}
+        <EmptyFilter resource="messages" />
         <!-- TODO: remove data.search != 'empty' when the API is ready with data -->
     {:else if data.search && data.search != 'empty'}
         <EmptySearch>
