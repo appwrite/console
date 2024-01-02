@@ -7,7 +7,6 @@
     import SmsFormList from './smsFormList.svelte';
 
     async function beforeSubmit() {
-        console.log($messageParams[$providerType]);
     }
 </script>
 
