@@ -41,7 +41,6 @@
 
     async function sendTestSMS() {
         const email = selected === 'self' ? $user.email : otherEmail;
-        console.log(email);
 
         createSMSMessage({
             topics: $messageParams[ProviderTypes.Email]?.topics || [],
