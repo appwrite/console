@@ -1,7 +1,6 @@
 <script lang="ts">
     import { Card } from '$lib/components';
     import UserTargetsModal, { type Target } from '../userTargetsModal.svelte';
-    import { ProviderTypes } from '../providerType.svelte';
     import { Button } from '$lib/elements/forms';
     import {
         Table,
@@ -93,7 +92,7 @@
 </WizardStep>
 
 <UserTargetsModal
-    providerType={ProviderTypes.Email}
+    providerType={$providerType}
     bind:show={showDropdown}
     bind:targetsById={$targetsById}
     on:update={update} />
