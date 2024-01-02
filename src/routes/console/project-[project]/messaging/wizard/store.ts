@@ -1,6 +1,6 @@
 import { ProviderTypes } from '../providerType.svelte';
-import type { Target } from '../userTargetsModal.svelte';
 import { writable } from 'svelte/store';
+import type { Target } from '../store';
 
 export enum MessageStatuses {
     DRAFT = 'draft',

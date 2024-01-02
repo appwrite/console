@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { onDestroy } from 'svelte';
     import { Wizard } from '$lib/layout';
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
     import Step1 from './wizard/step1.svelte';
@@ -96,10 +95,6 @@
             trackError(error, Submit.MessagingProviderCreate);
         }
     }
-
-    onDestroy(() => {
-        console.log('destroy');
-    });
 
     const stepsComponents: WizardStepsType = new Map();
     stepsComponents.set(1, {

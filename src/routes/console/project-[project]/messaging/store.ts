@@ -15,6 +15,9 @@ export const columns = writable<Column[]>([
     { id: 'deliveredAt', title: 'Delivered at', type: 'datetime', show: false, width: 120 }
 ]);
 
+export const targetsById = writable<Record<string, Target>>({});
+export const topicsById = writable<Record<string, Topic>>({});
+
 // TODO: remove this when the SDK and API are ready
 export type Message = {
     $id: string;
@@ -237,4 +240,26 @@ export const providersById: { [providerId: string]: Provider } = {
         credentials: {},
         options: {}
     }
+};
+
+// TODO: remove when sdk has the model
+export type Topic = {
+    $id: string;
+    $createdAt: string;
+    $updatedAt: string;
+    providerId: string;
+    name: string;
+    total: number;
+    description: string;
+};
+
+export type Target = {
+    $id: string;
+    $createdAt: string;
+    $updatedAt: string;
+    name: string;
+    userId: string;
+    providerId: string;
+    providerType: ProviderTypes;
+    identifier: string;
 };

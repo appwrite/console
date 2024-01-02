@@ -1,16 +1,3 @@
-<script context="module" lang="ts">
-    export type Target = {
-        $id: string;
-        $createdAt: string;
-        $updatedAt: string;
-        name: string;
-        userId: string;
-        providerId: string;
-        providerType: ProviderTypes;
-        identifier: string;
-    };
-</script>
-
 <script lang="ts">
     import { Button, FormList, InputCheckbox, InputSearch } from '$lib/elements/forms';
     import { createEventDispatcher } from 'svelte';
@@ -24,6 +11,7 @@
         Modal,
         PaginationInline
     } from '$lib/components';
+    import type { Target } from './store';
 
     export let show: boolean;
     export let targetsById: Record<string, Target>;
