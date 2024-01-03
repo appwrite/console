@@ -1,13 +1,10 @@
 <script lang="ts">
-    import { FormItem, Helper, Label } from '.';
+    import { FormItem, Helper } from '.';
     import type { FormItemTag } from './formItem.svelte';
 
     interface $$Props extends Partial<HTMLLabelElement> {
         id: string;
         label?: string;
-        optionalText?: string;
-        tooltip?: string;
-        showLabel?: boolean;
         checked?: boolean;
         required?: boolean;
         disabled?: boolean;
@@ -26,7 +23,6 @@
     export let disabled = false;
     export let element: HTMLInputElement | undefined = undefined;
     export let wrapperTag: FormItemTag = 'li';
-
     let error: string;
 
     const handleInvalid = (event: Event) => {
@@ -44,25 +40,27 @@
 </script>
 
 <FormItem tag={wrapperTag}>
-    {#if label}
-        <Label {required} {tooltip} {optionalText} hide={!showLabel} for={id}>
-            {label}
-        </Label>
-    {/if}
-
-    <div class="input-text-wrapper">
-        <input
-            {id}
-            {disabled}
-            {required}
-            {...$$restProps}
-            type="checkbox"
-            bind:this={element}
-            bind:checked
-            on:invalid={handleInvalid}
-            on:click
-            on:change />
-    </div>
+    <label class="choice-item" for={id}>
+        <div class="input-text-wrapper">
+            <input
+                {id}
+                {disabled}
+                {required}
+                {...$$restProps}
+                type="checkbox"
+                bind:this={element}
+                bind:checked
+                on:invalid={handleInvalid}
+                on:click
+                on:change />
+        </div>
+        <div class="choice-item-content">
+            {#if label}
+                <div class="choice-item-title">{label}</div>
+            {/if}
+            <slot name="description" />
+        </div>
+    </label>
     {#if error}
         <Helper type="warning">{error}</Helper>
     {/if}

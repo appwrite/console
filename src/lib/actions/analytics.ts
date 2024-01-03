@@ -287,5 +287,16 @@ export enum Submit {
     SmsResetTemplate = 'submit_sms_reset_template',
     SmsUpdateInviteTemplate = 'submit_sms_update_invite_template',
     SmsUpdateLoginTemplate = 'submit_sms_update_login_template',
-    SmsUpdateVerificationTemplate = 'submit_sms_update_verification_template'
+    SmsUpdateVerificationTemplate = 'submit_sms_update_verification_template',
+    MessagingProviderCreate = 'submit_messaging_provider_create',
+    MessagingProviderDelete = 'submit_messaging_provider_delete',
+    MessagingProviderUpdate = 'submit_messaging_provider_update',
+    MessagingMessageCreate = 'submit_messaging_message_create',
+    MessagingMessageDelete = 'submit_messaging_message_delete',
+    MessagingTopicCreate = 'submit_messaging_topic_create',
+    MessagingTopicDelete = 'submit_messaging_topic_delete',
+    MessagingTopicUpdateName = 'submit_messaging_topic_update_name',
+    MessagingTopicUpdateDescription = 'submit_messaging_topic_update_description',
+    MessagingTopicSubscriberAdd = 'submit_messaging_topic_subscriber_add',
+    MessagingTopicSubscriberDelete = 'submit_messaging_topic_subscriber_delete'
 }
