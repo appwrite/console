@@ -206,26 +206,6 @@
                         }
                     );
                     break;
-                case Providers.MQTT:
-                    response = await sdk.forProject.client.call(
-                        'POST',
-                        new URL(
-                            sdk.forProject.client.config.endpoint + '/messaging/providers/mqtt'
-                        ),
-                        {
-                            'X-Appwrite-Project': sdk.forProject.client.config.project,
-                            'content-type': 'application/json',
-                            'X-Appwrite-Mode': 'admin'
-                        },
-                        {
-                            providerId: providerId,
-                            name: $providerParams[$provider].name,
-                            default: $providerParams[$provider].default,
-                            enabled: $providerParams[$provider].enabled,
-                            serverKey: $providerParams[$provider].serverKey
-                        }
-                    );
-                    break;
             }
             wizard.hide();
             addNotification({

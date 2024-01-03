@@ -144,18 +144,6 @@ export const providersById: { [providerId: string]: Provider } = {
         credentials: {},
         options: {}
     },
-    '637a40ba7a703e3936e3': {
-        $id: '637a40ba7a703e3936e3',
-        $createdAt: '2021-08-31T12:00:00.000Z',
-        $updatedAt: '2021-08-31T12:00:00.000Z',
-        name: 'My MQTT',
-        provider: Providers.MQTT,
-        type: ProviderTypes.Push,
-        default: false,
-        enabled: false,
-        credentials: {},
-        options: {}
-    },
     '637a40ba7a703e3936e4': {
         $id: '637a40ba7a703e3936e4',
         $createdAt: '2021-08-31T12:00:00.000Z',
