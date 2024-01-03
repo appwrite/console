@@ -5,7 +5,8 @@
     import { Submit, trackEvent } from '$lib/actions/analytics';
 
     async function downloadPdf() {
-      trackEvent(Submit.DownloadDPA);
+        trackEvent(Submit.DownloadDPA);
+
         const today = new Date().toISOString();
         const prefs = await sdk.forConsole.account.getPrefs();
         const newPrefs = { ...prefs, DPA: today };
@@ -19,7 +20,6 @@
         link.href = url;
         link.download = 'Appwrite_DPA.pdf';
         link.click();
-        
     }
 </script>
 
