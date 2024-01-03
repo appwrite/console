@@ -34,7 +34,6 @@
                         {
                             providerId: providerId,
                             name: $providerParams[$provider].name,
-                            default: $providerParams[$provider].default,
                             enabled: $providerParams[$provider].enabled,
                             accountSid: $providerParams[$provider].accountSid,
                             authToken: $providerParams[$provider].authToken,
@@ -56,7 +55,6 @@
                         {
                             providerId: providerId,
                             name: $providerParams[$provider].name,
-                            default: $providerParams[$provider].default,
                             enabled: $providerParams[$provider].enabled,
                             from: $providerParams[$provider].from,
                             senderId: $providerParams[$provider].senderId,
@@ -78,7 +76,6 @@
                         {
                             providerId: providerId,
                             name: $providerParams[$provider].name,
-                            default: $providerParams[$provider].default,
                             enabled: $providerParams[$provider].enabled,
                             from: $providerParams[$provider].from,
                             username: $providerParams[$provider].username,
@@ -100,7 +97,6 @@
                         {
                             providerId: providerId,
                             name: $providerParams[$provider].name,
-                            default: $providerParams[$provider].default,
                             enabled: $providerParams[$provider].enabled,
                             from: $providerParams[$provider].from,
                             username: $providerParams[$provider].username,
@@ -122,7 +118,6 @@
                         {
                             providerId: providerId,
                             name: $providerParams[$provider].name,
-                            default: $providerParams[$provider].default,
                             enabled: $providerParams[$provider].enabled,
                             from: $providerParams[$provider].from,
                             apiKey: $providerParams[$provider].apiKey,
@@ -144,7 +139,6 @@
                         {
                             providerId: providerId,
                             name: $providerParams[$provider].name,
-                            default: $providerParams[$provider].default,
                             enabled: $providerParams[$provider].enabled,
                             isEuRegion: $providerParams[$provider].isEuRegion,
                             from: $providerParams[$provider].from,
@@ -167,7 +161,6 @@
                         {
                             providerId: providerId,
                             name: $providerParams[$provider].name,
-                            default: $providerParams[$provider].default,
                             enabled: $providerParams[$provider].enabled,
                             from: $providerParams[$provider].from,
                             apiKey: $providerParams[$provider].apiKey
@@ -186,7 +179,6 @@
                         {
                             providerId: providerId,
                             name: $providerParams[$provider].name,
-                            default: $providerParams[$provider].default,
                             enabled: $providerParams[$provider].enabled,
                             serverKey: $providerParams[$provider].serverKey
                         }
@@ -206,7 +198,6 @@
                         {
                             providerId: providerId,
                             name: $providerParams[$provider].name,
-                            default: $providerParams[$provider].default,
                             enabled: $providerParams[$provider].enabled,
                             authKey: $providerParams[$provider].authKey,
                             authKeyId: $providerParams[$provider].authKeyId,

@@ -19,7 +19,6 @@
                 $providerParams[$provider] = {
                     providerId: id,
                     name: name,
-                    default: false,
                     enabled: false,
                     accountSid: '',
                     authToken: '',
@@ -30,7 +29,6 @@
                 $providerParams[$provider] = {
                     providerId: id,
                     name: name,
-                    default: false,
                     enabled: false,
                     from: '',
                     senderId: '',
@@ -41,7 +39,6 @@
                 $providerParams[$provider] = {
                     providerId: id,
                     name: name,
-                    default: false,
                     enabled: false,
                     username: '',
                     password: '',
@@ -52,7 +49,6 @@
                 $providerParams[$provider] = {
                     providerId: id,
                     name: name,
-                    default: false,
                     enabled: false,
                     username: '',
                     apiKey: '',
@@ -63,7 +59,6 @@
                 $providerParams[$provider] = {
                     providerId: id,
                     name: name,
-                    default: false,
                     enabled: false,
                     apiKey: '',
                     apiSecret: '',
@@ -74,7 +69,6 @@
                 $providerParams[$provider] = {
                     providerId: id,
                     name: name,
-                    default: false,
                     enabled: false,
                     isEuRegion: false,
                     from: '',
@@ -86,7 +80,6 @@
                 $providerParams[$provider] = {
                     providerId: id,
                     name: name,
-                    default: false,
                     enabled: false,
                     apiKey: '',
                     from: ''
@@ -96,7 +89,6 @@
                 $providerParams[$provider] = {
                     providerId: id,
                     name: name,
-                    default: false,
                     enabled: false,
                     serverKey: ''
                 };
@@ -105,7 +97,6 @@
                 $providerParams[$provider] = {
                     providerId: id,
                     name: name,
-                    default: false,
                     enabled: false,
                     authKey: '',
                     authKeyId: '',
