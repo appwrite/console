@@ -20,18 +20,6 @@
     function setFiles(value: FileList) {
         if (!value) return;
 
-        const hasInvalidExt = Array.from(value).some((file) => {
-            const fileExtension = file.name.split('.').pop();
-            return allowedFileExtensions?.length
-                ? !allowedFileExtensions.includes(fileExtension)
-                : false;
-        });
-        if (hasInvalidExt) {
-            error = 'Invalid file extension';
-            input.value = null;
-            return;
-        }
-
         files = value;
         input.files = value;
     }
@@ -79,6 +67,20 @@
 
     const handleChange = (event: Event) => {
         const target = event.currentTarget as HTMLInputElement;
+
+        const isValidFiles = Array.from(target.files).every((file) => {
+            const fileExtension = file.name.split('.').pop();
+            return allowedFileExtensions?.length
+                ? allowedFileExtensions.includes(fileExtension)
+                : true;
+        });
+
+        if (!isValidFiles) {
+            error = 'Invalid file extension';
+            target.value = '';
+            return;
+        }
+
         setFiles(target.files);
     };
 </script>
