@@ -5,7 +5,6 @@ import { writable } from 'svelte/store';
 type ProviderParams = {
     providerId: string;
     name: string;
-    default: boolean;
     enabled: boolean;
 };
 

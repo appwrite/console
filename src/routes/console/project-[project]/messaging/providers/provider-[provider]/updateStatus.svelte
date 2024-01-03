@@ -30,7 +30,6 @@
                 $providerParams[$wizardProvider] = {
                     providerId: $provider.$id,
                     name: $provider.name,
-                    default: $provider.default,
                     enabled: $provider.enabled,
                     accountSid: $provider.credentials['accountSid'],
                     authToken: $provider.credentials['authToken'],
@@ -41,7 +40,6 @@
                 $providerParams[$wizardProvider] = {
                     providerId: $provider.$id,
                     name: $provider.name,
-                    default: $provider.default,
                     enabled: $provider.enabled,
                     from: $provider.options['from'],
                     senderId: $provider.credentials['senderId'],
@@ -52,7 +50,6 @@
                 $providerParams[$wizardProvider] = {
                     providerId: $provider.$id,
                     name: $provider.name,
-                    default: $provider.default,
                     enabled: $provider.enabled,
                     username: $provider.credentials['username'],
                     password: $provider.credentials['password'],
@@ -63,7 +60,6 @@
                 $providerParams[$wizardProvider] = {
                     providerId: $provider.$id,
                     name: $provider.name,
-                    default: $provider.default,
                     enabled: $provider.enabled,
                     username: $provider.credentials['username'],
                     apiKey: $provider.credentials['apiKey'],
@@ -74,7 +70,6 @@
                 $providerParams[$wizardProvider] = {
                     providerId: $provider.$id,
                     name: $provider.name,
-                    default: $provider.default,
                     enabled: $provider.enabled,
                     apiKey: $provider.credentials['apiKey'],
                     apiSecret: $provider.credentials['apiSecret'],
@@ -85,7 +80,6 @@
                 $providerParams[$wizardProvider] = {
                     providerId: $provider.$id,
                     name: $provider.name,
-                    default: $provider.default,
                     enabled: $provider.enabled,
                     isEuRegion: false,
                     from: $provider.options['from'],
@@ -97,7 +91,6 @@
                 $providerParams[$wizardProvider] = {
                     providerId: $provider.$id,
                     name: $provider.name,
-                    default: $provider.default,
                     enabled: $provider.enabled,
                     apiKey: $provider.credentials['apiKey'],
                     from: $provider.options['from']
@@ -107,7 +100,6 @@
                 $providerParams[$wizardProvider] = {
                     providerId: $provider.$id,
                     name: $provider.name,
-                    default: $provider.default,
                     enabled: $provider.enabled,
                     serverKey: $provider.credentials['serverKey']
                 };
@@ -116,7 +108,6 @@
                 $providerParams[$wizardProvider] = {
                     providerId: $provider.$id,
                     name: $provider.name,
-                    default: $provider.default,
                     enabled: $provider.enabled,
                     authKey: $provider.credentials['authKey'],
                     authKeyId: $provider.credentials['authKeyId'],
