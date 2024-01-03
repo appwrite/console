@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { onDestroy } from 'svelte';
     import { Wizard } from '$lib/layout';
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
     import Configure from './wizard/configure.svelte';
@@ -204,25 +203,6 @@
                             authKeyId: $providerParams[$provider].authKeyId,
                             teamId: $providerParams[$provider].teamId,
                             bundleId: $providerParams[$provider].bundleId
-                        }
-                    );
-                    break;
-                case Providers.MQTT:
-                    response = await sdk.forProject.client.call(
-                        'PATCH',
-                        new URL(
-                            `${sdk.forProject.client.config.endpoint}/messaging/providers/mqtt/${providerId}`
-                        ),
-                        {
-                            'X-Appwrite-Project': sdk.forProject.client.config.project,
-                            'content-type': 'application/json',
-                            'X-Appwrite-Mode': 'admin'
-                        },
-                        {
-                            providerId: providerId,
-                            name: $providerParams[$provider].name,
-                            enabled: $providerParams[$provider].enabled,
-                            serverKey: $providerParams[$provider].serverKey
                         }
                     );
                     break;

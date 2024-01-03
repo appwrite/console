@@ -104,8 +104,6 @@
                     bundleId: ''
                 };
                 break;
-            case Providers.MQTT:
-                break;
         }
     }
 </script>

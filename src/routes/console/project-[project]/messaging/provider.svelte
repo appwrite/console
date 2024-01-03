@@ -9,7 +9,6 @@
         Sendgrid = 'sendgrid',
         FCM = 'fcm',
         APNS = 'apns',
-        MQTT = 'mqtt'
     }
 </script>
 
@@ -43,10 +42,6 @@
         case Providers.APNS:
             icon = 'apple';
             displayName = name || 'APNS';
-            break;
-        case Providers.MQTT:
-            icon = 'mqtt';
-            displayName = name || 'MQTT';
             break;
         case Providers.Sendgrid:
             icon = 'sendgrid';
