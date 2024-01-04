@@ -106,7 +106,11 @@
                     tooltip="Set up an SMTP server to edit the sender email"
                     placeholder="Enter sender email"
                     readonly={!isSmtpEnabled} />
-                <InputEmail id="replyTo" label="Reply to" placeholder="noreply@appwrite.io" />
+                <InputEmail
+                    bind:value={$emailTemplate.replyTo}
+                    id="replyTo"
+                    label="Reply to"
+                    placeholder="noreply@appwrite.io" />
                 {#if $$slots.default}
                     <li style="margin-block: 1rem;">
                         <p class="text">
