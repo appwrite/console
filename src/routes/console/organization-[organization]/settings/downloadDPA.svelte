@@ -33,7 +33,7 @@
     <svelte:fragment slot="aside">
         <Box>
             <h6>
-                <b>DPA document (Data Processing Agreement)</b>
+                <b>Data Processing Agreement (DPA) document</b>
             </h6>
             <p class="text u-margin-block-start-8">
                 Legal document outlining the terms and conditions under which personal data is
