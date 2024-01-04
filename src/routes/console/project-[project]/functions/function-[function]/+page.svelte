@@ -133,7 +133,7 @@
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">
-                    <div class="u-flex u-flex-wrap">
+                    <div class="u-flex u-flex-wrap u-gap-16">
                         <Button
                             text
                             href={`/console/project-${$page.params.project}/functions/function-${$page.params.function}/deployment-${activeDeployment.$id}`}>
@@ -141,14 +141,12 @@
                         </Button>
                         <Button
                             text
-                            class="u-margin-inline-end-16"
                             on:click={() => {
                                 selectedDeployment = activeDeployment;
                                 showRedeploy = true;
                             }}>
                             Redeploy
                         </Button>
-
                         <Button
                             secondary
                             on:click={() => ($execute = $func)}
