@@ -37,8 +37,7 @@
                 <b>DPA document (Data Processing Agreement)</b>
             </h6>
             <p class="text u-margin-block-start-8">
-                Legal document outlining the terms and conditions under which personal data is
-                processed.
+              The DPA is a legal document that describes the roles and responsibilities of Appwrite and the organization when personal data is processed. Learn more about the DPA.
             </p>
             <Button
                 secondary
