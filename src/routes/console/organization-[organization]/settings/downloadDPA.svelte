@@ -28,13 +28,12 @@
         <Heading tag="h6" size="7">Download DPA document</Heading>
     </div>
     <p class="text">
-        After downloading, have the DPA signed by your organization's compliance authority (e.g.,
-        CEO or Compliance Manager) and submit it to privacy@appwrite.io.
+        After downloading, have the DPA signed by your organization's compliance authority, such as your CEO or Compliance Manager, and submit it to privacy@appwrite.io.
     </p>
     <svelte:fragment slot="aside">
         <Box>
             <h6>
-                <b>DPA document (Data Processing Agreement)</b>
+                <b>Data Processing Agreement (DPA) document</b>
             </h6>
             <p class="text u-margin-block-start-8">
               The DPA is a legal document that describes the roles and responsibilities of Appwrite and the organization when personal data is processed. Learn more about the DPA.
