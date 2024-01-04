@@ -1,31 +1,35 @@
+<script lang="ts" context="module">
+    export const settings = writable<boolean>(false);
+    export const show = writable<boolean>(false);
+</script>
+
 <script lang="ts">
     import { createEventDispatcher, onMount } from 'svelte';
     import { Modal } from '.';
     import { Button } from '$lib/elements/forms';
+    import { writable } from 'svelte/store';
 
     type Consent = {
         key: string;
-        accepted: string[];
+        accepted: Record<string, boolean>;
     };
 
     const key = new Date('2023-11-07');
     const dispatch = createEventDispatcher();
 
-    let show = false;
-    let settings = false;
-    let selected = [];
+    let selected = {};
 
     onMount(() => {
         const consent: Consent = JSON.parse(localStorage.getItem('consent'));
         if (consent) {
             const date = new Date(consent.key);
             if (key > date) {
-                show = true;
+                show.set(true);
             } else {
                 dispatch('confirm', consent);
             }
         } else {
-            show = true;
+            show.set(true);
         }
     });
 
@@ -40,15 +44,18 @@
         };
         saveSettings(consent);
         dispatch('confirm', consent);
-        show = settings = false;
+        show.set(false);
+        settings.set(false);
     }
 
     function acceptAll() {
-        confirmChoices(['logrocket']);
+        confirmChoices({
+            logrocket: true
+        });
     }
 
     function rejectAll() {
-        confirmChoices([]);
+        confirmChoices({});
     }
 </script>
 
@@ -61,18 +68,18 @@
 
         <div class="u-flex u-margin-block-start-16 u-main-space-between u-cross-center">
             <div>
-                <Button secondary on:click={() => (settings = true)}>Cookie settings</Button>
+                <Button secondary on:click={() => (settings.set(true))}>Cookie settings</Button>
             </div>
             <div class="u-flex u-gap-16">
                 <Button on:click={rejectAll} secondary>Only required</Button>
-                <Button on:click={acceptAll}>Accept all</Button>
+                <Button on:click={acceptAll} secondary>Accept all</Button>
             </div>
         </div>
     </div>
 {/if}
 
 {#if settings}
-    <Modal bind:show={settings} title="Cookie Preferences">
+    <Modal bind:show={$settings} title="Cookie Preferences">
         <p>
             We use cookies to improve your site experience. The "strictly necessary" cookies are
             required for Appwrite to function.
@@ -97,7 +104,7 @@
             <li class="collapsible-item">
                 <details class="collapsible-wrapper">
                     <summary class="collapsible-button">
-                        <input type="checkbox" />
+                        <input type="checkbox" bind:checked={selected['logrocket']} />
                         <span class="text">Product Analytics</span>
                         <span class="collapsible-button-optional">(optional)</span>
                         <div class="icon">
@@ -114,9 +121,8 @@
             </li>
         </ul>
         <svelte:fragment slot="footer">
-            <Button on:click={() => confirmChoices(selected)} text>Confirm my choices</Button>
-            <Button on:click={rejectAll} secondary>Only required</Button>
-            <Button on:click={acceptAll}>Allow all</Button>
+            <Button text external href="https://appwrite.io/privacy">Privacy Policy</Button>
+            <Button on:click={() => confirmChoices(selected)}>Save preferences</Button>
         </svelte:fragment>
     </Modal>
 {/if}
