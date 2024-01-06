@@ -12,6 +12,8 @@ export const proxyRuleList = derived(
     ($page) => $page.data.proxyRuleList as Models.ProxyRuleList
 );
 export const execute: Writable<Models.Function> = writable();
+export const showFunctionExecute: Writable<boolean> = writable(false);
+
 export const repositories: Writable<{
     search: string;
     installationId: string;

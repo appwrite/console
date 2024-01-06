@@ -2,7 +2,7 @@
     import { CardGrid, Heading, SvgIcon } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import { execute, func } from '../store';
+    import { execute, func, showFunctionExecute } from '../store';
 </script>
 
 <CardGrid>
@@ -26,6 +26,11 @@
     </svelte:fragment>
 
     <svelte:fragment slot="actions">
-        <Button secondary on:click={() => ($execute = $func)}>Execute now</Button>
+        <Button
+            secondary
+            on:click={() => {
+                $execute = $func;
+                $showFunctionExecute = true;
+            }}>Execute now</Button>
     </svelte:fragment>
 </CardGrid>

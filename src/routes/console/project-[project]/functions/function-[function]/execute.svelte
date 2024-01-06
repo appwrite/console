@@ -16,6 +16,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
+    import { showFunctionExecute } from './store';
 
     export let selectedFunction: Models.Function = null;
 
@@ -34,12 +35,7 @@
         { label: 'OPTIONS', value: 'OPTIONS' }
     ];
 
-    let show = false;
     let submitting = false;
-
-    $: if (selectedFunction && !show) {
-        show = true;
-    }
 
     const handleSubmit = async () => {
         submitting = true;
@@ -80,7 +76,7 @@
 
     function close() {
         selectedFunction = null;
-        show = false;
+        $showFunctionExecute = false;
     }
 
     afterNavigate(close);
@@ -89,10 +85,9 @@
 <Modal
     title="Execute function"
     headerDivider={false}
-    bind:show
+    bind:show={$showFunctionExecute}
     size="big"
     onSubmit={handleSubmit}
-    on:close={close}
     bind:error>
     <p class="text">
         Manually execute your function. <a
