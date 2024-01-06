@@ -4,6 +4,7 @@
     import UpdatePasswordHistory from './updatePasswordHistory.svelte';
     import UpdatePersonalDataCheck from './updatePersonalDataCheck.svelte';
     import UpdateSessionLength from './updateSessionLength.svelte';
+    import UpdateJwtExpiration from './updateJwtExpiration.svelte';
     import UpdateSessionsLimit from './updateSessionsLimit.svelte';
     import UpdateUsersLimit from './updateUsersLimit.svelte';
 </script>
@@ -12,6 +13,7 @@
     <UpdateUsersLimit />
     <UpdateSessionLength />
     <UpdateSessionsLimit />
+    <UpdateJwtExpiration />
     <UpdatePasswordHistory />
     <UpdatePasswordDictionary />
     <UpdatePersonalDataCheck />
