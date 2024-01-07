@@ -25,7 +25,7 @@ function createHeaderAlertStore() {
                 if (n.components.some((c) => c.id === component.id)) return n;
                 else {
                     n.components.push(component);
-                    n.components = n.components;
+                    n.components = [...n.components];
                     return n;
                 }
             });

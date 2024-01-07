@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { INTERVAL } from '$lib/constants';
+    import { BillingPlan, INTERVAL } from '$lib/constants';
     import { Logs } from '$lib/layout';
     import Footer from '$lib/layout/footer.svelte';
     import Header from '$lib/layout/header.svelte';
@@ -18,7 +18,6 @@
         checkForUsageLimit,
         checkPaymentAuthorizationRequired,
         calculateTrialDay,
-        checkForTrialEnding,
         paymentExpired,
         checkForFreeOrgOverflow,
         checkForPostReleaseProModal,
@@ -42,7 +41,7 @@
     import ExcesLimitModal from './organization-[organization]/excesLimitModal.svelte';
     import { showExcess } from './organization-[organization]/store';
     import UsageRates from './wizard/cloudOrganization/usageRates.svelte';
-    import { consoleVariables, showPostReleaseModal } from './store';
+    import { activeHeaderAlert, consoleVariables, showPostReleaseModal } from './store';
     import { Query } from '@appwrite.io/console';
     import { headerAlert } from '$lib/stores/headerAlert';
     import PostReleaseModal from './(billing-modal)/postReleaseModal.svelte';
@@ -242,22 +241,17 @@
         }
     ]);
     let isOpen = false;
-    let selectedHeaderAlert = headerAlert.get();
     onMount(async () => {
         loading.set(false);
 
         if (isCloud) {
             if (!$page.url.pathname.includes('/console/onboarding')) {
-            }
-            try {
                 const orgs = await sdk.forConsole.teams.list([
-                    Query.equal('billingPlan', 'tier-0')
+                    Query.equal('billingPlan', BillingPlan.STARTER)
                 ]);
 
                 checkForPostReleaseProModal(orgs);
                 checkForFreeOrgOverflow(orgs);
-            } catch (error) {
-                console.log(error);
             }
         }
 
@@ -287,9 +281,8 @@
         if (!org) return;
         if (isCloud) {
             calculateTrialDay(org);
-            checkForTrialEnding(org);
             await paymentExpired(org);
-            checkForUsageLimit(org);
+            await checkForUsageLimit(org);
             checkForMarkedForDeletion(org);
             await checkPaymentAuthorizationRequired(org);
         }
@@ -307,7 +300,7 @@
     $registerSearchers(orgSearcher, projectsSearcher);
 
     afterUpdate(() => {
-        selectedHeaderAlert = headerAlert.get();
+        $activeHeaderAlert = headerAlert.get();
     });
 </script>
 
@@ -321,8 +314,8 @@
         !$page.url.pathname.includes('/console/card') &&
         !$page.url.pathname.includes('/console/onboarding')}>
     <svelte:fragment slot="alert">
-        {#if selectedHeaderAlert?.show}
-            <svelte:component this={selectedHeaderAlert.component} />
+        {#if $activeHeaderAlert?.show}
+            <svelte:component this={$activeHeaderAlert.component} />
         {/if}
     </svelte:fragment>
     <Header slot="header" />

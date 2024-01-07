@@ -155,7 +155,7 @@
                         <svelte:fragment slot="list">
                             <DropListItem on:click={() => addPlatform(Platform.Web)}>
                                 Web
-                            </DropListItem>Ï
+                            </DropListItem>
                             <DropListItem on:click={() => addPlatform(Platform.Flutter)}>
                                 Flutter
                             </DropListItem>

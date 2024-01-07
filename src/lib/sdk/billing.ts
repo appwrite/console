@@ -185,15 +185,15 @@ export type AggregationList = {
 };
 
 export type AllowedRegions =
-    | 'eu-de'
-    | 'us-nyc'
-    | 'us-sfo'
-    | 'ap-in'
-    | 'eu-gb'
-    | 'eu-nl'
-    | 'ap-sg'
-    | 'ap-ca'
-    | 'ap-au'
+    | 'fra'
+    | 'nyc'
+    | 'sfo'
+    | 'blr'
+    | 'lon'
+    | 'ams'
+    | 'sgp'
+    | 'tor'
+    | 'syd'
     | 'default'; //TODO: remove after migration
 
 export type Region = {
@@ -265,6 +265,8 @@ export type PlansInfo = {
     total: number;
 };
 
+export type PlansMap = Map<Tier, Plan>;
+
 export class Billing {
     client: Client;
 
@@ -276,14 +278,16 @@ export class Billing {
         organizationId: string,
         name: string,
         billingPlan: string,
-        paymentMethodId: string
+        paymentMethodId: string,
+        billingAddressId: string
     ): Promise<Organization> {
         const path = `/organizations`;
         const params = {
             organizationId,
             name,
             billingPlan,
-            paymentMethodId
+            paymentMethodId,
+            billingAddressId
         };
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
@@ -331,13 +335,15 @@ export class Billing {
     async updatePlan(
         organizationId: string,
         billingPlan: string,
-        paymentMethodId: string
+        paymentMethodId: string,
+        billingAddressId: string
     ): Promise<Organization> {
         const path = `/organizations/${organizationId}/plan`;
         const params = {
             organizationId,
             billingPlan,
-            paymentMethodId
+            paymentMethodId,
+            billingAddressId
         };
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(

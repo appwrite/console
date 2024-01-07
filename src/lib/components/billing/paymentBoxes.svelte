@@ -2,6 +2,7 @@
     import { FormList, InputText } from '$lib/elements/forms';
     import { onDestroy, onMount } from 'svelte';
     import { CreditCardBrandImage, RadioBoxes } from '..';
+    import { unmountPaymentElement } from '$lib/stores/stripe';
 
     export let methods: Record<string, unknown>[];
     export let group: string;
@@ -29,13 +30,16 @@
                 }
             }
         });
-
-        observer.observe(element, { childList: true });
     });
 
     onDestroy(() => {
         observer.disconnect();
+        unmountPaymentElement();
     });
+
+    $: if (element) {
+        observer.observe(element, { childList: true });
+    }
 </script>
 
 <RadioBoxes elements={methods} total={methods?.length} variableName="$id" name="payment" bind:group>
@@ -71,3 +75,17 @@
         </div>
     </FormList>
 </RadioBoxes>
+
+<style lang="scss">
+    .aw-stripe-container {
+        min-height: 295px;
+        position: relative;
+        .loader-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 0;
+        }
+    }
+</style>

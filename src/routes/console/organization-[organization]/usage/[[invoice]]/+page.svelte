@@ -12,6 +12,7 @@
     import { formatNum } from '$lib/helpers/string';
     import { accumulateFromEndingTotal, total } from '$lib/layout/usage.svelte';
     import type { OrganizationUsage } from '$lib/sdk/billing';
+    import { BillingPlan } from '$lib/constants';
 
     export let data;
 
@@ -40,14 +41,14 @@
     <div class="u-flex u-cross-center u-main-space-between">
         <Heading tag="h2" size="5">Usage</Heading>
 
-        {#if $organization?.billingPlan === 'tier-0'}
+        {#if $organization?.billingPlan === BillingPlan.STARTER}
             <Button on:click={() => wizard.start(ChangeOrganizationTierCloud)}>
                 <span class="text">Upgrade</span>
             </Button>
         {/if}
     </div>
     <div class="u-flex u-main-space-between common-section u-cross-center">
-        {#if $organization.billingPlan === 'tier-2'}
+        {#if $organization.billingPlan === BillingPlan.SCALE}
             <p class="text">
                 On the Scale plan, you'll be charged only for any usage that exceeds the thresholds
                 per resource listed below. <button
@@ -55,7 +56,7 @@
                     class="link"
                     type="button">Learn more about plan usage limits.</button>
             </p>
-        {:else if $organization.billingPlan === 'tier-1'}
+        {:else if $organization.billingPlan === BillingPlan.PRO}
             <p class="text">
                 On the Pro plan, you'll be charged only for any usage that exceeds the thresholds
                 per resource listed below. <button
@@ -63,7 +64,7 @@
                     class="link"
                     type="button">Learn more about plan usage limits.</button>
             </p>
-        {:else if $organization.billingPlan === 'tier-0'}
+        {:else if $organization.billingPlan === BillingPlan.STARTER}
             <p class="text">
                 If you exceed the limits of the {plan} plan, services for your organization's projects
                 may be disrupted.

@@ -25,10 +25,10 @@
 
     async function handleUpgrade() {
         if (selectedOrg) {
-            await goto(`${base}/console/organization/${selectedOrg}/billing`);
+            await goto(`${base}/console/organization-${selectedOrg}/billing`);
         } else {
             const freeOrg = orgs.teams.find((o) => o.billingPlan === 'tier-0');
-            await goto(`${base}/console/organization/${freeOrg.$id}/billing`);
+            await goto(`${base}/console/organization-${freeOrg.$id}/billing`);
         }
         show = false;
         wizard.start(ChangeOrganizationTierCloud);
@@ -37,11 +37,11 @@
         });
     }
 
-    $: isNewUser = new Date($user.$createdAt) > new Date(2023, 11, 18);
-    //user creation date after the 18th of December 2023
+    $: isNewUser = new Date($user.$createdAt) > new Date(2023, 11, 19);
+    //user creation date after the 19th of December 2023
     $: event = isNewUser ? 'billing_new_user_modal' : 'billing_release_modal';
-    $: freeOrgs = orgs?.teams.filter((o) => o.billingPlan === 'tier-0');
-    $: options = freeOrgs.map((o) => ({ label: o.name, value: o.$id }));
+    $: freeOrgs = orgs?.teams?.filter((o) => o.billingPlan === 'tier-0');
+    $: options = freeOrgs?.map((o) => ({ label: o.name, value: o.$id }));
 </script>
 
 <ModalSideCol bind:show title="Claim your Pro credit today" style="max-width: min(53rem,95%)">
@@ -86,7 +86,7 @@
                 }}>Learn more on our pricing page.</Button>
         </p>
 
-        {#if freeOrgs.length > 1 && options.length}
+        {#if freeOrgs?.length > 1 && options?.length}
             <FormList class="u-margin-block-start-24">
                 <InputSelect
                     label="Organization to upgrade"

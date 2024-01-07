@@ -19,23 +19,44 @@
     let methods: PaymentList;
     let name: string;
     let budgetEnabled = false;
+    let initialPaymentMethodId: string;
 
     onMount(async () => {
         methods = await sdk.forConsole.billing.listPaymentMethods();
-        $createOrganization.paymentMethodId =
+        initialPaymentMethodId =
             methods.paymentMethods.find((method) => !!method?.last4)?.$id ?? null;
+        $createOrganization.paymentMethodId = initialPaymentMethodId;
     });
 
     async function handleSubmit() {
         if ($createOrganization.billingBudget < 0) {
             throw new Error('Budget cannot be negative');
         }
-        try {
-            const method = await submitStripeCard(name);
-            $createOrganization.paymentMethodId = method.$id;
-            invalidate(Dependencies.PAYMENT_METHODS);
-        } catch (e) {
-            console.log(e.message);
+        if ($createOrganization.paymentMethodId) {
+            const card = await sdk.forConsole.billing.getPaymentMethod(
+                $createOrganization.paymentMethodId
+            );
+            if (!card?.last4) {
+                throw new Error(
+                    'The payment method you selected is not valid. Please select a different one.'
+                );
+            }
+        } else {
+            try {
+                const method = await submitStripeCard(name);
+                const card = await sdk.forConsole.billing.getPaymentMethod(method.$id);
+                if (card?.last4) {
+                    $createOrganization.paymentMethodId = card.$id;
+                } else {
+                    throw new Error(
+                        'The payment method you selected is not valid. Please select a different one.'
+                    );
+                }
+                invalidate(Dependencies.PAYMENT_METHODS);
+            } catch (e) {
+                $createOrganization.paymentMethodId = initialPaymentMethodId;
+                throw new Error(e.message);
+            }
         }
     }
 

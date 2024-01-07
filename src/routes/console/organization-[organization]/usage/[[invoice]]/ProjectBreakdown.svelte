@@ -3,12 +3,12 @@
     import { Collapsible, CollapsibleItem } from '$lib/components';
     import {
         TableBody,
-        TableCell,
         TableCellLink,
         TableCellHead,
         TableHeader,
         TableRow,
-        Table
+        TableScroll,
+        TableCellText
     } from '$lib/elements/table';
     import { abbreviateNumber } from '$lib/helpers/numbers';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
@@ -40,13 +40,13 @@
     }
 
     function format(value: number): string {
+        const humanized = humanFileSize(value);
         switch (metric) {
             case 'executions':
             case 'users':
                 return abbreviateNumber(value);
             case 'storage':
             case 'bandwidth':
-                const humanized = humanFileSize(value);
                 return humanized.value + humanized.unit;
         }
     }
@@ -55,29 +55,27 @@
 <Collapsible>
     <CollapsibleItem>
         <svelte:fragment slot="title">Project breakdown</svelte:fragment>
-        <div class="table-wrapper" data-sveltekit-preload-data="off">
-            <Table noMargin noStyles>
-                <TableHeader>
-                    <TableCellHead width={285}>Project</TableCellHead>
-                    <TableCellHead>Usage</TableCellHead>
-                    <TableCellHead width={140} />
-                </TableHeader>
-                <TableBody>
-                    {#each groupByProject(metric).sort((a, b) => b.usage - a.usage) as project}
-                        <TableRow>
-                            <TableCell title="Project">
-                                {getProjectName(project.projectId)}
-                            </TableCell>
-                            <TableCell title="Usage">{format(project.usage)}</TableCell>
-                            <TableCellLink
-                                title="Go to project usage"
-                                href={getProjectUsageLink(project.projectId)}>
-                                View project usage
-                            </TableCellLink>
-                        </TableRow>
-                    {/each}
-                </TableBody>
-            </Table>
-        </div>
+        <TableScroll noMargin>
+            <TableHeader>
+                <TableCellHead width={185}>Project</TableCellHead>
+                <TableCellHead width={100}>Usage</TableCellHead>
+                <TableCellHead width={140} />
+            </TableHeader>
+            <TableBody>
+                {#each groupByProject(metric).sort((a, b) => b.usage - a.usage) as project}
+                    <TableRow>
+                        <TableCellText title="Project">
+                            {getProjectName(project.projectId)}
+                        </TableCellText>
+                        <TableCellText title="Usage">{format(project.usage)}</TableCellText>
+                        <TableCellLink
+                            title="Go to project usage"
+                            href={getProjectUsageLink(project.projectId)}>
+                            View project usage
+                        </TableCellLink>
+                    </TableRow>
+                {/each}
+            </TableBody>
+        </TableScroll>
     </CollapsibleItem>
 </Collapsible>

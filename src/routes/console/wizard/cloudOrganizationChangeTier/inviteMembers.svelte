@@ -12,11 +12,27 @@
     } from '$lib/elements/table';
     import { WizardStep } from '$lib/layout';
     import { plansInfo } from '$lib/stores/billing';
+    import { onMount } from 'svelte';
     import { changeOrganizationTier } from './store';
+    import { sdk } from '$lib/stores/sdk';
+    import { user } from '$lib/stores/user';
+    import { organization } from '$lib/stores/organization';
+    import { BillingPlan } from '$lib/constants';
 
-    const plan = $plansInfo.plans.find((p) => p.$id === $changeOrganizationTier.billingPlan);
+    const plan = $plansInfo.get($changeOrganizationTier.billingPlan);
 
     let email: string;
+
+    onMount(async () => {
+        const members = await sdk.forConsole.teams.listMemberships($organization.$id);
+        if (members.total) {
+            $changeOrganizationTier.collaborators = members.memberships
+                .map((m) => {
+                    if (m.userEmail !== $user.email) return m.userEmail;
+                })
+                .filter(Boolean);
+        }
+    });
 
     function addCollaborator() {
         if (!email) return;
@@ -42,10 +58,10 @@
     </svelte:fragment>
 
     <Alert type="info">
-        {#if $changeOrganizationTier.billingPlan === 'tier-2'}
+        {#if $changeOrganizationTier.billingPlan === BillingPlan.SCALE}
             You can add unlimited organization members on the {plan.name} plan at no cost. Each member
             added will receive an email invite to your organization on completion.
-        {:else if $changeOrganizationTier.billingPlan === 'tier-1'}
+        {:else if $changeOrganizationTier.billingPlan === BillingPlan.PRO}
             You can add unlimited organization members on the {plan.name} plan for
             <b>${plan.addons.member.price} each per month</b>. Each member added will receive an
             email invite to your organization on completion.
@@ -71,7 +87,7 @@
             <Table noStyles noMargin>
                 <TableHeader>
                     <TableCellHead>Collaborator</TableCellHead>
-                    {#if $changeOrganizationTier.billingPlan === 'tier-1'}
+                    {#if $changeOrganizationTier.billingPlan === BillingPlan.PRO}
                         <TableCellHead width={80}>Cost</TableCellHead>
                     {/if}
                     <TableCellHead width={40} />
@@ -80,7 +96,7 @@
                     {#each $changeOrganizationTier.collaborators as collaborator}
                         <TableRow>
                             <TableCellText title="collaborator">{collaborator}</TableCellText>
-                            {#if $changeOrganizationTier.billingPlan === 'tier-1'}
+                            {#if $changeOrganizationTier.billingPlan === BillingPlan.PRO}
                                 <TableCellText title="cost">15$</TableCellText>
                             {/if}
                             <TableCell>

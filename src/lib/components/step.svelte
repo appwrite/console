@@ -10,7 +10,7 @@
     class:steps-item={!isSub}
     class:steps-sub-item={isSub}
     class:u-opacity-50={step.disabled}
-    style={`cursor: ${completed ? 'pointer' : 'default'};`}
+    style:cursor={completed ? 'pointer' : 'default'}
     aria-label={`${completed ? 'done' : current ? 'current' : ''} step`}>
     <button
         type="button"

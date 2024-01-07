@@ -11,19 +11,20 @@
     import type { Models } from '@appwrite.io/console';
     import { sizeToBytes } from '$lib/helpers/sizeConvertion';
     import { Pill } from '$lib/elements';
+    import { BillingPlan } from '$lib/constants';
 
     let usage: OrganizationUsage = null;
     let members: Models.MembershipList = null;
 
-    $: if ($changeOrganizationTier.billingPlan === 'tier-0' && $changeTierSteps) {
+    $: if ($changeOrganizationTier.billingPlan === BillingPlan.STARTER && $changeTierSteps) {
         $changeTierSteps = updateStepStatus($changeTierSteps, 2, true);
         $changeTierSteps = updateStepStatus($changeTierSteps, 3, true);
         $changeTierSteps = updateStepStatus($changeTierSteps, 4, true);
     }
 
     $: if (
-        $changeOrganizationTier.billingPlan === 'tier-2' ||
-        $changeOrganizationTier.billingPlan === 'tier-1'
+        $changeOrganizationTier.billingPlan === BillingPlan.SCALE ||
+        $changeOrganizationTier.billingPlan === BillingPlan.PRO
     ) {
         $changeTierSteps = updateStepStatus($changeTierSteps, 2, false);
         $changeTierSteps = updateStepStatus($changeTierSteps, 3, false);
@@ -37,9 +38,7 @@
 
     function checkOverUsage() {
         if (!usage) return;
-        const plan = $plansInfo.plans.find(
-            (plan) => plan.$id === $changeOrganizationTier.billingPlan
-        );
+        const plan = $plansInfo?.get($changeOrganizationTier.billingPlan);
 
         const totBandwidth = usage?.bandwidth?.length > 0 ? usage.bandwidth[0].value : 0;
         const totUsers = usage?.users?.length > 0 ? usage.users[0].value : 0;
@@ -57,20 +56,19 @@
             members: members.total > plan.members ? members.total - (plan.members || Infinity) : 0
         };
         if (
-            $changeOrganizationTier.limitOverflow.bandwidth > 0 ||
-            $changeOrganizationTier.limitOverflow.storage > 0 ||
-            $changeOrganizationTier.limitOverflow.users > 0 ||
-            $changeOrganizationTier.limitOverflow.executions > 0 ||
-            $changeOrganizationTier.limitOverflow.members > 0
+            ($changeOrganizationTier.limitOverflow.bandwidth > 0 ||
+                $changeOrganizationTier.limitOverflow.storage > 0 ||
+                $changeOrganizationTier.limitOverflow.users > 0 ||
+                $changeOrganizationTier.limitOverflow.executions > 0 ||
+                $changeOrganizationTier.limitOverflow.members > 0) &&
+            $changeOrganizationTier.billingPlan === BillingPlan.STARTER
         ) {
             $changeOrganizationTier.isOverLimit = true;
-            $changeTierSteps = updateStepStatus($changeTierSteps, 4, false);
+            $changeTierSteps = updateStepStatus($changeTierSteps, 5, false);
         } else {
             $changeOrganizationTier.isOverLimit = false;
-            $changeTierSteps = updateStepStatus($changeTierSteps, 4, true);
+            $changeTierSteps = updateStepStatus($changeTierSteps, 5, true);
         }
-
-        console.log($changeOrganizationTier.limitOverflow);
     }
 
     onMount(async () => {
@@ -78,14 +76,14 @@
         members = await sdk.forConsole.teams.listMemberships($organization.$id);
 
         //Select closest tier from starting one
-        // if ($organization.billingPlan === 'tier-2') {
-        //     $changeOrganizationTier.billingPlan = 'tier-1';
+        // if ($organization.billingPlan === BillingPlan.SCALE) {
+        //     $changeOrganizationTier.billingPlan = BillingPlan.PRO;
         // }
         // else
-        if ($organization.billingPlan === 'tier-1') {
-            $changeOrganizationTier.billingPlan = 'tier-0';
-        } else if ($organization.billingPlan === 'tier-0') {
-            $changeOrganizationTier.billingPlan = 'tier-1';
+        if ($organization.billingPlan === BillingPlan.PRO) {
+            $changeOrganizationTier.billingPlan = BillingPlan.STARTER;
+        } else if ($organization.billingPlan === BillingPlan.STARTER) {
+            $changeOrganizationTier.billingPlan = BillingPlan.PRO;
         }
     });
 
@@ -93,14 +91,14 @@
         if (!$changeOrganizationTier.billingPlan) {
             throw new Error('Please select a plan.');
         }
-        if ($changeOrganizationTier.billingPlan === 'tier-0') {
+        if ($changeOrganizationTier.billingPlan === BillingPlan.STARTER) {
             $changeOrganizationTier.collaborators = [];
         }
     }
 
-    $: freePlan = $plansInfo.plans.find((p) => p.$id === 'tier-0');
-    $: proPlan = $plansInfo.plans.find((p) => p.$id === 'tier-1');
-    $: scalePlan = $plansInfo.plans.find((p) => p.$id === 'tier-2');
+    $: freePlan = $plansInfo?.get(BillingPlan.STARTER);
+    $: proPlan = $plansInfo?.get(BillingPlan.PRO);
+    $: scalePlan = $plansInfo?.get(BillingPlan.SCALE);
 </script>
 
 <WizardStep beforeSubmit={handleBefore}>
@@ -123,7 +121,7 @@
                 name="plan"
                 bind:group={$changeOrganizationTier.billingPlan}
                 value="tier-0"
-                disabled={$organization.billingPlan === 'tier-0'}>
+                disabled={$organization.billingPlan === BillingPlan.STARTER}>
                 <svelte:fragment slot="custom" let:disabled>
                     <div
                         class="u-flex u-flex-vertical u-gap-4 u-width-full-line"
@@ -134,7 +132,7 @@
                         <p class="u-color-text-gray u-small">{tierFree.description}</p>
                     </div>
                     <div class:u-opacity-50={disabled}>
-                        {#if $organization.billingPlan === 'tier-0'}
+                        {#if $organization.billingPlan === BillingPlan.STARTER}
                             <Pill disabled>CURRENT PLAN</Pill>
                         {/if}
                     </div>
@@ -146,7 +144,7 @@
                 name="plan"
                 bind:group={$changeOrganizationTier.billingPlan}
                 value="tier-1"
-                disabled={$organization.billingPlan === 'tier-1'}>
+                disabled={$organization.billingPlan === BillingPlan.PRO}>
                 <svelte:fragment slot="custom" let:disabled>
                     <div
                         class="u-flex u-flex-vertical u-gap-4 u-width-full-line"
@@ -160,7 +158,7 @@
                         </p>
                     </div>
                     <div class:u-opacity-50={disabled}>
-                        {#if $organization.billingPlan === 'tier-1'}
+                        {#if $organization.billingPlan === BillingPlan.PRO}
                             <Pill disabled>CURRENT PLAN</Pill>
                         {:else}
                             <Pill>14 DAY FREE TRIAL</Pill>

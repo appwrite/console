@@ -17,7 +17,7 @@
         isUpgrade
     } from './wizard/cloudOrganizationChangeTier/store';
     import { goto, invalidate } from '$app/navigation';
-    import { Dependencies } from '$lib/constants';
+    import { BillingPlan, Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { page } from '$app/stores';
     import { organization } from '$lib/stores/organization';
@@ -35,12 +35,13 @@
 
     async function changeTier() {
         //Downgrade
-        if ($changeOrganizationTier.billingPlan === 'tier-0') {
+        if ($changeOrganizationTier.billingPlan === BillingPlan.STARTER) {
             try {
                 await sdk.forConsole.billing.updatePlan(
                     $organization.$id,
                     $changeOrganizationTier.billingPlan,
-                    $changeOrganizationTier.paymentMethodId
+                    $changeOrganizationTier.paymentMethodId,
+                    $changeOrganizationTier.billingAddressId
                 );
                 feedback.submitFeedback(
                     'downgrade',
@@ -60,7 +61,6 @@
                 wizard.hide();
 
                 trackEvent(Submit.OrganizationDowngrade, {
-                    customId: !!$changeOrganizationTier.id,
                     plan: tierToPlan($changeOrganizationTier.billingPlan)?.name
                 });
             } catch (e) {
@@ -78,32 +78,9 @@
                 const org = await sdk.forConsole.billing.updatePlan(
                     $organization.$id,
                     $changeOrganizationTier.billingPlan,
-                    $changeOrganizationTier.paymentMethodId
+                    $changeOrganizationTier.paymentMethodId,
+                    $changeOrganizationTier.billingAddressId
                 );
-
-                //Add billing address
-                if ($changeOrganizationTier.billingAddressId) {
-                    await sdk.forConsole.billing.setBillingAddress(
-                        org.$id,
-                        $changeOrganizationTier.billingAddressId
-                    );
-                } else if (
-                    $changeOrganizationTier.billingAddress &&
-                    $changeOrganizationTier.billingAddress.streetAddress
-                ) {
-                    const response = await sdk.forConsole.billing.createAddress(
-                        $changeOrganizationTier.billingAddress.country,
-                        $changeOrganizationTier.billingAddress.streetAddress,
-                        $changeOrganizationTier.billingAddress.city,
-                        $changeOrganizationTier.billingAddress.state,
-                        $changeOrganizationTier.billingAddress.postalCode,
-                        $changeOrganizationTier.billingAddress.addressLine2
-                            ? $changeOrganizationTier.billingAddress.addressLine2
-                            : undefined
-                    );
-
-                    await sdk.forConsole.billing.setBillingAddress(org.$id, response.$id);
-                }
 
                 //Add coupon
                 if ($changeOrganizationTier.couponCode) {
@@ -166,7 +143,6 @@
                     });
                 }
                 trackEvent($isUpgrade ? Submit.OrganizationUpgrade : Submit.OrganizationDowngrade, {
-                    customId: !!$changeOrganizationTier.id,
                     plan: tierToPlan($changeOrganizationTier.billingPlan)?.name
                 });
                 wizard.hide();
@@ -174,7 +150,7 @@
             } catch (e) {
                 addNotification({
                     type: 'error',
-                    message: e.mesage
+                    message: e.message
                 });
                 trackError(
                     e,
@@ -186,20 +162,10 @@
 
     onDestroy(() => {
         $changeOrganizationTier = {
-            id: null,
-            billingPlan: 'tier-1',
+            billingPlan: BillingPlan.PRO,
             paymentMethodId: null,
             collaborators: [],
             billingAddressId: null,
-            billingAddress: {
-                $id: null,
-                streetAddress: null,
-                addressLine2: null,
-                city: null,
-                state: null,
-                postalCode: null,
-                country: null
-            },
             taxId: null,
             feedbackMessage: null
         };
@@ -238,4 +204,5 @@
     title="Change plan"
     steps={$changeTierSteps}
     finalAction={$changeOrganizationFinalAction}
-    on:exit={onFinish} />
+    on:exit={onFinish}
+    confirmExit />

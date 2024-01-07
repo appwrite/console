@@ -27,9 +27,7 @@
     let show = false;
     let reloadOnWizardClose = false;
 
-    onMount(async () => {
-        request();
-    });
+    onMount(request);
 
     const limit = 5;
 

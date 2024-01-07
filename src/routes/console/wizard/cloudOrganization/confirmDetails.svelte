@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Box, CreditCardBrandImage } from '$lib/components';
+    import { BillingPlan } from '$lib/constants';
     import { Pill } from '$lib/elements';
     import { toLocaleDate } from '$lib/helpers/date';
     import { WizardStep } from '$lib/layout';
@@ -7,7 +8,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { createOrganization, createOrganizationFinalAction } from './store';
 
-    const plan = $plansInfo.plans.find((p) => p.$id === $createOrganization.billingPlan);
+    const plan = $plansInfo?.get($createOrganization.billingPlan);
     const collaboratorPrice = plan?.addons.member?.price ?? 0;
     const collaboratorsNumber = $createOrganization?.collaborators?.length ?? 0;
     const totalExpences = plan.price + collaboratorPrice * collaboratorsNumber;
@@ -19,10 +20,9 @@
             const card = await sdk.forConsole.billing.getPaymentMethod(
                 $createOrganization.paymentMethodId
             );
-            console.log(card);
             return card;
         } catch (error) {
-            console.log(error);
+            throw new Error(error.message);
         }
     }
 
@@ -30,12 +30,12 @@
         if (!$createOrganization.billingPlan) {
             throw new Error('Please select a plan.');
         }
-        if ($createOrganization.billingPlan === 'tier-0') {
+        if ($createOrganization.billingPlan === BillingPlan.STARTER) {
             $createOrganization.collaborators = [];
         }
     }
 
-    $: if ($createOrganization.billingPlan === 'tier-0') {
+    $: if ($createOrganization.billingPlan === BillingPlan.STARTER) {
         $createOrganizationFinalAction = 'Create organization';
     }
 </script>
@@ -54,7 +54,7 @@
         {/if}
     </div>
 
-    {#if $createOrganization.billingPlan !== 'tier-0'}
+    {#if $createOrganization.billingPlan !== BillingPlan.STARTER}
         <div class="u-margin-block-start-32">
             <p class="body-text-1 u-bold">Additional members</p>
             <p class="text u-margin-block-start-8">{collaboratorsNumber} members</p>
@@ -76,7 +76,7 @@
         </div>
     {/if}
     <Box class="u-margin-block-start-32 u-flex u-flex-vertical u-gap-16" radius="small">
-        {#if $createOrganization.billingPlan !== 'tier-0'}
+        {#if $createOrganization.billingPlan !== BillingPlan.STARTER}
             <span class="u-flex u-main-space-between">
                 <p class="text">{plan.name} plan</p>
                 <p class="text">${plan.price}</p>
@@ -92,7 +92,7 @@
             <p class="text">${totalExpences}</p>
         </span>
 
-        {#if $createOrganization.billingPlan !== 'tier-0'}
+        {#if $createOrganization.billingPlan !== BillingPlan.STARTER}
             <p class="text u-margin-block-start-16">
                 This amount, and any additional usage fees, will be charged on a recurring 30-day
                 billing cycle after your trial period ends on <b

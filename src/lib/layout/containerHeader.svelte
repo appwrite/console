@@ -17,6 +17,7 @@
     import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
     import { ContainerButton } from '.';
     import { Button } from '$lib/elements/forms';
+    import { BillingPlan } from '$lib/constants';
 
     export let isFlex = true;
     export let title: string;
@@ -34,7 +35,7 @@
 
     let showDropdown = false;
 
-    const { bandwidth, documents, storage, users, executions } = $organization?.billingLimits;
+    const { bandwidth, documents, storage, users, executions } = $organization?.billingLimits ?? {};
     const limitedServices = [
         { name: 'bandwidth', value: bandwidth },
         { name: 'documents', value: documents },
@@ -52,7 +53,7 @@
 
     $: tier = tierToPlan($organization?.billingPlan)?.name;
     $: hasProjectLimitation =
-        checkForProjectLimitation(serviceId) && $organization?.billingPlan === 'tier-0';
+        checkForProjectLimitation(serviceId) && $organization?.billingPlan === BillingPlan.STARTER;
     $: hasUsageFees = hasProjectLimitation
         ? checkForUsageFees($organization?.billingPlan, serviceId)
         : false;
@@ -77,7 +78,7 @@
             })
             .join(', ')}
         <slot name="alert" {limit} {tier} {title} {upgradeMethod} {hasUsageFees} {services}>
-            {#if $organization?.billingPlan !== 'tier-0' && hasUsageFees}
+            {#if $organization?.billingPlan !== BillingPlan.STARTER && hasUsageFees}
                 <Alert type="info" isStandalone>
                     <span class="text">
                         You've reached the {services} limit for the {tier} plan.
@@ -101,7 +102,7 @@
 {/if}
 
 <header class:u-flex={isFlex} class="u-gap-12 common-section u-main-space-between u-flex-wrap">
-    <div class="u-flex u-cross-child-center u-gap-16 u-flex-wrap">
+    <div class="u-flex u-cross-child-center u-cross-center u-gap-16 u-flex-wrap">
         <Heading tag={titleTag} size={titleSize}>{title}</Heading>
         {#if isCloud && isLimited}
             <DropList bind:show={showDropdown} width="16">
@@ -121,7 +122,7 @@
                             <p class="text">
                                 Your are limited to {limit}
                                 {title.toLocaleLowerCase()} per project on the {tier} plan.
-                                {#if $organization?.billingPlan === 'tier-0'}<Button
+                                {#if $organization?.billingPlan === BillingPlan.STARTER}<Button
                                         link
                                         on:click={upgradeMethod}>Upgrade</Button>
                                     for addtional {title.toLocaleLowerCase()}.
@@ -139,7 +140,7 @@
                             <p class="text">
                                 You are limited to {limit}
                                 {title.toLocaleLowerCase()} per organization on the {tier} plan.
-                                {#if $organization?.billingPlan === 'tier-0'}
+                                {#if $organization?.billingPlan === BillingPlan.STARTER}
                                     <Button link on:click={upgradeMethod}>Upgrade</Button>
                                     for additional {title.toLocaleLowerCase()}.
                                 {/if}

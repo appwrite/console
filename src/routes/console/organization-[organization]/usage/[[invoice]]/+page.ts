@@ -41,12 +41,18 @@ export const load: PageLoad = async ({ params, parent }) => {
         sdk.forConsole.billing.listUsage(params.organization, startDate, endDate)
     ]);
 
-    const projectNames = await sdk.forConsole.projects.list([
-        Query.equal(
-            '$id',
-            usage.projects.map((p) => p.projectId)
-        )
-    ]);
+    const queries: string[] = [];
+
+    if (usage?.projects?.length > 0) {
+        queries.push(
+            Query.equal(
+                '$id',
+                usage.projects.map((p) => p.projectId)
+            )
+        );
+    }
+
+    const projectNames = await sdk.forConsole.projects.list(queries);
 
     return {
         organizationUsage: usage,

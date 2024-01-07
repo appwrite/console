@@ -27,6 +27,7 @@
             label: 'United States'
         }
     ];
+
     onMount(async () => {
         addresses = await sdk.forConsole.billing.listAddresses();
 
@@ -61,8 +62,8 @@
                     streetAddress,
                     city,
                     state,
-                    postalCode,
-                    addressLine2
+                    postalCode ? postalCode : undefined,
+                    addressLine2 ? postalCode : undefined
                 );
                 await sdk.forConsole.billing.setBillingAddress($organization.$id, address.$id);
 

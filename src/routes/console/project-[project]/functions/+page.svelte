@@ -66,8 +66,6 @@
     ]);
 
     $updateCommandGroupRanks({ functions: 1000 });
-
-    $: console.log($functionsList);
 </script>
 
 <Container>

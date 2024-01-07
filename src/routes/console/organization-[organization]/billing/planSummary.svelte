@@ -14,6 +14,7 @@
     import { Query } from '@appwrite.io/console';
     import { abbreviateNumber, formatNumberWithCommas } from '$lib/helpers/numbers';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
+    import { BillingPlan } from '$lib/constants';
 
     let currentInvoice: Invoice;
     const today = new Date();
@@ -25,11 +26,9 @@
         currentInvoice = invoices.invoices[0];
     });
 
-    $: currentPlan = $plansInfo.plans.find((p) => p.$id === $organization?.billingPlan);
+    $: currentPlan = $plansInfo?.get($organization?.billingPlan);
     $: extraUsage = currentInvoice?.amount - currentPlan?.price;
-    $: isTrial = new Date($organization?.billingTrialEndDate).getTime() - today.getTime() > 0;
-
-    $: console.log(currentInvoice);
+    $: isTrial = new Date($organization?.billingStartDate).getTime() - today.getTime() > 0;
 </script>
 
 {#if $organization}
@@ -53,8 +52,8 @@
                         <h6 class="body-text-1 u-bold u-trim-1">
                             {tierToPlan($organization?.billingPlan)?.name} plan
                         </h6>
-                        {#if $organization?.billingPlan !== 'tier-0' && isTrial}
-                            <Pill>FREE TRIAL</Pill>
+                        {#if $organization?.billingPlan !== BillingPlan.STARTER && isTrial}
+                            <Pill>TRIAL</Pill>
                         {/if}
                     </div>
 
@@ -67,7 +66,7 @@
                         </span>
                     </p>
                 </div>
-                {#if currentInvoice?.usage?.length && $organization?.billingPlan !== 'tier-0' && !isTrial}
+                {#if currentInvoice?.usage?.length && $organization?.billingPlan !== BillingPlan.STARTER && !isTrial}
                     {@const extraMembers = currentInvoice.usage.find((u) => u.name === 'members')}
                     {#if extraMembers}
                         <div class="u-margin-block-start-24">
@@ -130,7 +129,7 @@
             </div>
         </svelte:fragment>
         <svelte:fragment slot="actions">
-            {#if $organization?.billingPlan === 'tier-0'}
+            {#if $organization?.billingPlan === BillingPlan.STARTER}
                 <div class="u-flex u-gap-16 u-flex-wrap">
                     <Button text href={`${base}/console/organization-${$organization?.$id}/usage`}>
                         View estimated usage

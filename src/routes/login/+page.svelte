@@ -19,8 +19,6 @@
 
     let mail: string, pass: string, disabled: boolean;
 
-    $: console.log($page.url.search);
-
     async function login() {
         try {
             disabled = true;
@@ -63,10 +61,12 @@
                 url = `${base}/console${$page.url.search ?? ''}`;
             }
         }
-        sdk.forConsole.account.createOAuth2Session('github', url, window.location.origin, [
-            'read:user',
-            'user:email'
-        ]);
+        sdk.forConsole.account.createOAuth2Session(
+            'github',
+            window.location.origin + url,
+            window.location.origin,
+            ['read:user', 'user:email']
+        );
     }
 </script>
 

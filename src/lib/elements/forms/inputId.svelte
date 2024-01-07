@@ -8,7 +8,7 @@
 
     let element: HTMLInputElement;
     let icon = 'info';
-    const pattern = String.raw`^[a-zA-Z0-9][a-zA-Z0-9._-]*$`;
+    const pattern = String.raw`^[a-zA-Z0-9][a-zA-Z0-9._\-]*$`;
 
     onMount(() => {
         if (element && autofocus) {

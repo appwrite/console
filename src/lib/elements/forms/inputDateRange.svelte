@@ -31,15 +31,12 @@
     $: if ($value) {
         data = $value;
     }
-
-    $: console.log(data);
 </script>
 
 {#if label}
     <Label {required} {hideRequired} {tooltip} {optionalText} hide={!showLabel} for={id}>
         {label}
     </Label>
-    <!-- <span class="label" use:label>Hotel Nights</span> -->
 {/if}
 <div class="u-flex u-gap-4">
     {#if showDates}
@@ -139,10 +136,10 @@
         border-radius: 100%;
         user-select: none;
 
-        [aria-disabled='true'] {
-            pointer-events: none;
-            opacity: 0.4;
-        }
+        // [aria-disabled='true'] {
+        //     pointer-events: none;
+        //     opacity: 0.4;
+        // }
     }
     .dt-button {
         aspect-ratio: 1/1;

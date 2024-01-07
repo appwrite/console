@@ -3,7 +3,6 @@ import type { Models } from '@appwrite.io/console';
 import type { BarSeriesOption } from 'echarts/charts';
 import { derived, writable } from 'svelte/store';
 
-// TODO: remove region type once the SDK is updated
 export const project = derived(
     page,
     ($page) => $page.data.project as Models.Project & { region?: string }
