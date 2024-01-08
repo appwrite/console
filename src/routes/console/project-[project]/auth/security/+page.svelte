@@ -8,6 +8,9 @@
     import UpdateSessionLength from './updateSessionLength.svelte';
     import UpdateSessionsLimit from './updateSessionsLimit.svelte';
     import UpdateUsersLimit from './updateUsersLimit.svelte';
+    import type { PageData } from './$types';
+
+    export let data: PageData;
 </script>
 
 <Container>
@@ -18,6 +21,6 @@
     <UpdatePasswordDictionary />
     <UpdatePersonalDataCheck />
     {#if isCloud}
-        <UpdatePwned />
+        <UpdatePwned compromisedUsersCount={data.compromisedUsersCount} />
     {/if}
 </Container>

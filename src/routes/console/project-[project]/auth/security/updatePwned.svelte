@@ -7,6 +7,7 @@
     import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
 
     let value = false;
+    export let compromisedUsersCount: number;
 </script>
 
 <CardGrid>
@@ -20,7 +21,7 @@
         {#if isCloud && $organization.billingPlan === 'tier-0'}
             <Alert type="warning">
                 <p class="text">
-                    You have 234 users with compromised passwords. To view the full list of
+                    You have {compromisedUsersCount} users with compromised passwords. To view the full list of
                     compromised users, upgrade you plan.
                 </p>
                 <svelte:fragment slot="buttons">

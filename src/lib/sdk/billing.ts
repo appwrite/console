@@ -209,6 +209,11 @@ export type RegionList = {
     total: number;
 };
 
+export type UserList = {
+    users: User[];
+    total: number;
+};
+
 export type Address = {
     $id: string;
     streetAddress: string;
@@ -948,6 +953,24 @@ export class Billing {
     async getPlansInfo(): Promise<PlansInfo> {
         const path = `/console/plans`;
         const params = {};
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'GET',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            params
+        );
+    }
+
+    async getHIBP(queries: Query[] = [], search: string = ''): Promise<UserList> {
+        const path = `/project/users-pwned`;
+
+        const params = {
+            queries,
+            search
+        };
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
             'GET',
