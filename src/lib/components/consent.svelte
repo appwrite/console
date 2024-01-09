@@ -80,8 +80,8 @@
                 <Button secondary on:click={() => settings.set(true)}>Cookie settings</Button>
             </div>
             <div class="u-flex u-gap-16">
-                <Button on:click={rejectAll} secondary>Only required</Button>
-                <Button on:click={acceptAll} secondary>Accept all</Button>
+                <Button secondary on:click={rejectAll}>Only required</Button>
+                <Button secondary on:click={acceptAll}>Accept all</Button>
             </div>
         </div>
     </div>
@@ -92,33 +92,25 @@
         We use cookies to improve your site experience. The "strictly necessary" cookies are
         required for Appwrite to function.
     </p>
-    <div class="u-width-full-line">
-        <div class="collapsible-item">
-            <div class="collapsible-wrapper">
-                <div class="collapsible-button">
-                    <input type="checkbox" checked disabled />
-                    <span class="text">Strictly Necessary Cookies</span>
-                </div>
-                <div class="collapsible-content">
-                    <p class="text u-margin-block-start-8">
-                        These are the cookies required for Appwrite to function.
-                    </p>
-                </div>
+    <div class="u-flex-vertical u-gap-24 u-width-full-line" style:margin-block-end="24px">
+        <div class="u-flex u-gap-8">
+            <input type="checkbox" checked disabled />
+            <div>
+                <span class="text u-bold">Strictly Necessary Cookies</span>
+                <p class="text u-margin-block-start-8">
+                    These are the cookies required for Appwrite to function.
+                </p>
             </div>
         </div>
-        <div class="collapsible-item">
-            <div class="collapsible-wrapper">
-                <div class="collapsible-button">
-                    <input id="analytics" type="checkbox" bind:checked={selected['analytics']} />
-                    <label for="analytics" class="text">Product Analytics</label>
-                    <span class="collapsible-button-optional">(optional)</span>
-                </div>
-                <div class="collapsible-content">
-                    <p class="text u-margin-block-start-8">
-                        We include analytics cookies to understand how you use our product and
-                        design better experiences.
-                    </p>
-                </div>
+        <div class="u-flex u-gap-8">
+            <input id="analytics" type="checkbox" bind:checked={selected['analytics']} />
+            <div>
+                <label for="analytics" class="text u-bold">Product Analytics</label>
+                <span class="">(optional)</span>
+                <p class="text u-margin-block-start-8">
+                    We include analytics cookies to understand how you use our product and design
+                    better experiences.
+                </p>
             </div>
         </div>
     </div>
