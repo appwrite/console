@@ -5,12 +5,7 @@
     import { Submit, trackEvent } from '$lib/actions/analytics';
 
     async function downloadPdf() {
-<<<<<<< HEAD
-        console.log('download pdf');
-=======
         trackEvent(Submit.DownloadDPA);
-
->>>>>>> 57c476ccfc9c1cacf95f1b2cb3eced2e88c67afe
         const today = new Date().toISOString();
         const prefs = await sdk.forConsole.account.getPrefs();
         const newPrefs = { ...prefs, DPA: today };
