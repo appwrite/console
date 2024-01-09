@@ -1,6 +1,7 @@
 <script>
     import { settings } from '$lib/components/consent.svelte';
     import Button from '$lib/elements/forms/button.svelte';
+    import { clickOnEnter } from '$lib/helpers/a11y';
     import { isCloud } from '$lib/system';
     import { version } from '$routes/console/store';
 
@@ -42,9 +43,14 @@
                 </a>
             </li>
             <li class="inline-links-item">
-                <Button text on:click={() => settings.set(true)}>
-                    <span class="text">Support</span>
-                </Button>
+                <span
+                    style:cursor="pointer"
+                    role="button"
+                    tabindex="0"
+                    on:keyup={clickOnEnter}
+                    on:click={() => settings.set(true)}>
+                    <span class="text">Cookies</span>
+                </span>
             </li>
         </ul>
     </div>

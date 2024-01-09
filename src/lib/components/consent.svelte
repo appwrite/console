@@ -36,6 +36,10 @@
         } else {
             show.set(true);
         }
+
+        return consent.subscribe((value) => {
+            selected = value.accepted;
+        });
     });
 
     function saveSettings(obj: Consent) {
@@ -55,7 +59,7 @@
 
     function acceptAll() {
         confirmChoices({
-            logrocket: true
+            analytics: true
         });
     }
 
@@ -106,8 +110,11 @@
             <div class="collapsible-item">
                 <div class="collapsible-wrapper">
                     <div class="collapsible-button">
-                        <input type="checkbox" bind:checked={selected['logrocket']} />
-                        <span class="text">Product Analytics</span>
+                        <input
+                            id="analytics"
+                            type="checkbox"
+                            bind:checked={selected['analytics']} />
+                        <label for="analytics" class="text">Product Analytics</label>
                         <span class="collapsible-button-optional">(optional)</span>
                     </div>
                     <div class="collapsible-content">

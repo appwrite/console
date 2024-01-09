@@ -52,7 +52,7 @@
             /**
              * LogRocket
              */
-            if ($consent?.accepted?.logrocket && isCloud && isTrackingAllowed()) {
+            if ($consent?.accepted?.analytics && isCloud && isTrackingAllowed()) {
                 LogRocket.init('rgthvf/appwrite', {
                     dom: {
                         inputSanitizer: true
