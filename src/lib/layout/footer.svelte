@@ -1,4 +1,6 @@
 <script>
+    import { settings } from '$lib/components/consent.svelte';
+    import Button from '$lib/elements/forms/button.svelte';
     import { isCloud } from '$lib/system';
     import { version } from '$routes/console/store';
 
@@ -38,6 +40,11 @@
                 <a href="https://appwrite.io/privacy" target="_blank" rel="noreferrer">
                     <span class="text">Privacy</span>
                 </a>
+            </li>
+            <li class="inline-links-item">
+                <Button text on:click={() => settings.set(true)}>
+                    <span class="text">Support</span>
+                </Button>
             </li>
         </ul>
     </div>

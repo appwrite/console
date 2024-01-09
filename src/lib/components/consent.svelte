@@ -1,6 +1,18 @@
 <script lang="ts" context="module">
+    type Consent = {
+        key: string;
+        accepted: Record<string, boolean>;
+    };
     export const settings = writable<boolean>(false);
     export const show = writable<boolean>(false);
+    export const consent = writable<Consent>(
+        JSON.parse(globalThis?.localStorage?.getItem('consent') ?? null)
+    );
+    consent.subscribe((value) => {
+        if (browser) {
+            globalThis.localStorage.setItem('consent', JSON.stringify(value));
+        }
+    });
 </script>
 
 <script lang="ts">
@@ -8,11 +20,7 @@
     import { Modal } from '.';
     import { Button } from '$lib/elements/forms';
     import { writable } from 'svelte/store';
-
-    type Consent = {
-        key: string;
-        accepted: Record<string, boolean>;
-    };
+    import { browser } from '$app/environment';
 
     const key = new Date('2023-11-07');
     const dispatch = createEventDispatcher();
@@ -20,13 +28,10 @@
     let selected = {};
 
     onMount(() => {
-        const consent: Consent = JSON.parse(localStorage.getItem('consent'));
-        if (consent) {
-            const date = new Date(consent.key);
+        if ($consent) {
+            const date = new Date($consent.key);
             if (key > date) {
                 show.set(true);
-            } else {
-                dispatch('confirm', consent);
             }
         } else {
             show.set(true);
@@ -34,7 +39,7 @@
     });
 
     function saveSettings(obj: Consent) {
-        localStorage.setItem('consent', JSON.stringify(obj));
+        consent.set(obj);
     }
 
     function confirmChoices(choices: Consent['accepted']) {
@@ -59,7 +64,7 @@
     }
 </script>
 
-{#if show}
+{#if $show}
     <div class="card is-consent">
         <p>
             By clicking "Accept all", you agree to the storing of cookies on your device to analyze
@@ -68,7 +73,7 @@
 
         <div class="u-flex u-margin-block-start-16 u-main-space-between u-cross-center">
             <div>
-                <Button secondary on:click={() => (settings.set(true))}>Cookie settings</Button>
+                <Button secondary on:click={() => settings.set(true)}>Cookie settings</Button>
             </div>
             <div class="u-flex u-gap-16">
                 <Button on:click={rejectAll} secondary>Only required</Button>
@@ -78,7 +83,7 @@
     </div>
 {/if}
 
-{#if settings}
+{#if $settings}
     <Modal bind:show={$settings} title="Cookie Preferences">
         <p>
             We use cookies to improve your site experience. The "strictly necessary" cookies are

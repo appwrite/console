@@ -16,7 +16,7 @@
     import Loading from './loading.svelte';
     import { loading, requestedMigration } from './store';
     import { parseIfString } from '$lib/helpers/object';
-    import Consent from '$lib/components/consent.svelte';
+    import Consent, { consent } from '$lib/components/consent.svelte';
 
     if (browser) {
         window.VERCEL_ANALYTICS_ID = import.meta.env.VERCEL_ANALYTICS_ID?.toString() ?? false;
@@ -52,7 +52,7 @@
             /**
              * LogRocket
              */
-            if (isCloud && isTrackingAllowed()) {
+            if ($consent?.accepted?.logrocket && isCloud && isTrackingAllowed()) {
                 LogRocket.init('rgthvf/appwrite', {
                     dom: {
                         inputSanitizer: true
@@ -125,7 +125,9 @@
 </script>
 
 <Notifications />
-<Consent />
+{#if isCloud}
+    <Consent />
+{/if}
 
 <slot />
 
