@@ -97,7 +97,7 @@
         <div class="u-flex u-gap-8">
             <input type="checkbox" checked disabled />
             <div>
-                <span class="text u-bold">Strictly Necessary Cookies</span>
+                <span class="text u-bold">Strictly necessary cookies</span>
                 <p class="text u-margin-block-start-8">
                     These are the cookies required for Appwrite to function.
                 </p>
@@ -106,7 +106,7 @@
         <div class="u-flex u-gap-8">
             <input id="analytics" type="checkbox" bind:checked={selected['analytics']} />
             <div>
-                <label for="analytics" class="text u-bold">Product Analytics</label>
+                <label for="analytics" class="text u-bold">Product analytics</label>
                 <span class="">(optional)</span>
                 <p class="text u-margin-block-start-8">
                     We include analytics cookies to understand how you use our product and design
