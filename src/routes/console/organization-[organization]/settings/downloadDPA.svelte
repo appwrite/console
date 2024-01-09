@@ -2,9 +2,15 @@
     import { Box, CardGrid, Heading } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
+    import { Submit, trackEvent } from '$lib/actions/analytics';
 
     async function downloadPdf() {
+<<<<<<< HEAD
         console.log('download pdf');
+=======
+        trackEvent(Submit.DownloadDPA);
+
+>>>>>>> 57c476ccfc9c1cacf95f1b2cb3eced2e88c67afe
         const today = new Date().toISOString();
         const prefs = await sdk.forConsole.account.getPrefs();
         const newPrefs = { ...prefs, DPA: today };
@@ -17,8 +23,8 @@
         <Heading tag="h6" size="7">Download DPA document</Heading>
     </div>
     <p class="text">
-        After downloading, have the DPA signed by your organization's compliance authority (e.g.,
-        CEO or Compliance Manager) and submit it to <a
+        After downloading, have the DPA signed by your organization's compliance authority, such as
+        your CEO or Compliance Manager, and submit it to <a
             class="link"
             href="mailto:privacy@appwrite.io">privacy@appwrite.io</a
         >.
@@ -26,11 +32,12 @@
     <svelte:fragment slot="aside">
         <Box>
             <h6>
-                <b>DPA document (Data Processing Agreement)</b>
+                <b>Data Processing Agreement (DPA) document</b>
             </h6>
             <p class="text u-margin-block-start-8">
-                Legal document outlining the terms and conditions under which personal data is
-                processed.
+                The DPA is a legal document that describes the roles and responsibilities of
+                Appwrite and the organization when personal data is processed. Learn more about the
+                DPA.
             </p>
             <Button
                 secondary
