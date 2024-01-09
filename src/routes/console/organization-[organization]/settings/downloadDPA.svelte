@@ -39,7 +39,7 @@
                 external
                 class="u-margin-block-start-16"
                 on:click={downloadPdf}
-                href="/Appwrite_DPA.pdf"
+                href="/legal/dpa.pdf"
                 event="download_dpa">
                 <span class="icon-download" aria-hidden="true" />
                 <span class="text">Download</span>
