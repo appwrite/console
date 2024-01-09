@@ -77,7 +77,8 @@
 
         <div class="u-flex u-margin-block-start-16 u-main-space-between u-cross-center">
             <div>
-                <Button secondary on:click={() => settings.set(true)}>Cookie settings</Button>
+                <Button class="u-padding-inline-0" text on:click={() => settings.set(true)}
+                    >Cookie settings</Button>
             </div>
             <div class="u-flex u-gap-16">
                 <Button secondary on:click={rejectAll}>Only required</Button>
