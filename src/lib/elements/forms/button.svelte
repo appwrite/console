@@ -60,6 +60,7 @@
 
 {#if href}
     <a
+        on:click
         on:click={track}
         {href}
         target={external ? '_blank' : ''}
