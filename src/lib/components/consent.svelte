@@ -27,6 +27,10 @@
 
     let selected = {};
 
+    $: if ($settings) {
+        selected = $consent?.accepted ?? {};
+    }
+
     onMount(() => {
         if ($consent) {
             const date = new Date($consent.key);
@@ -36,10 +40,6 @@
         } else {
             show.set(true);
         }
-
-        return consent.subscribe((value) => {
-            selected = value.accepted;
-        });
     });
 
     function saveSettings(obj: Consent) {
@@ -87,51 +87,46 @@
     </div>
 {/if}
 
-{#if $settings}
-    <Modal bind:show={$settings} title="Cookie Preferences">
-        <p>
-            We use cookies to improve your site experience. The "strictly necessary" cookies are
-            required for Appwrite to function.
-        </p>
-        <div class="u-width-full-line">
-            <div class="collapsible-item">
-                <div class="collapsible-wrapper">
-                    <div class="collapsible-button">
-                        <input type="checkbox" checked disabled />
-                        <span class="text">Strictly Necessary Cookies</span>
-                    </div>
-                    <div class="collapsible-content">
-                        <p class="text u-margin-block-start-8">
-                            These are the cookies required for Appwrite to function.
-                        </p>
-                    </div>
+<Modal bind:show={$settings} title="Cookie Preferences">
+    <p>
+        We use cookies to improve your site experience. The "strictly necessary" cookies are
+        required for Appwrite to function.
+    </p>
+    <div class="u-width-full-line">
+        <div class="collapsible-item">
+            <div class="collapsible-wrapper">
+                <div class="collapsible-button">
+                    <input type="checkbox" checked disabled />
+                    <span class="text">Strictly Necessary Cookies</span>
                 </div>
-            </div>
-            <div class="collapsible-item">
-                <div class="collapsible-wrapper">
-                    <div class="collapsible-button">
-                        <input
-                            id="analytics"
-                            type="checkbox"
-                            bind:checked={selected['analytics']} />
-                        <label for="analytics" class="text">Product Analytics</label>
-                        <span class="collapsible-button-optional">(optional)</span>
-                    </div>
-                    <div class="collapsible-content">
-                        <p class="text u-margin-block-start-8">
-                            We include analytics cookies to understand how you use our product and
-                            design better experiences.
-                        </p>
-                    </div>
+                <div class="collapsible-content">
+                    <p class="text u-margin-block-start-8">
+                        These are the cookies required for Appwrite to function.
+                    </p>
                 </div>
             </div>
         </div>
-        <svelte:fragment slot="footer">
-            <Button text external href="https://appwrite.io/privacy">Privacy Policy</Button>
-            <Button on:click={() => confirmChoices(selected)}>Save preferences</Button>
-        </svelte:fragment>
-    </Modal>
-{/if}
+        <div class="collapsible-item">
+            <div class="collapsible-wrapper">
+                <div class="collapsible-button">
+                    <input id="analytics" type="checkbox" bind:checked={selected['analytics']} />
+                    <label for="analytics" class="text">Product Analytics</label>
+                    <span class="collapsible-button-optional">(optional)</span>
+                </div>
+                <div class="collapsible-content">
+                    <p class="text u-margin-block-start-8">
+                        We include analytics cookies to understand how you use our product and
+                        design better experiences.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <svelte:fragment slot="footer">
+        <Button text external href="https://appwrite.io/privacy">Privacy Policy</Button>
+        <Button on:click={() => confirmChoices(selected)}>Save preferences</Button>
+    </svelte:fragment>
+</Modal>
 
 <style lang="scss">
     .card.is-consent {
