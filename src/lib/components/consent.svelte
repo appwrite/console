@@ -75,11 +75,11 @@
             site usage.
         </p>
 
-        <div class="u-flex u-margin-block-start-16 u-main-space-between u-cross-center">
-            <div>
-                <Button class="u-padding-inline-0" text on:click={() => settings.set(true)}
-                    >Cookie settings</Button>
-            </div>
+        <div
+            class="is-consent-buttons u-flex u-margin-block-start-16 u-main-space-between u-cross-center">
+            <Button class="u-padding-inline-0" text on:click={() => settings.set(true)}>
+                Cookie settings
+            </Button>
             <div class="u-flex u-gap-16">
                 <Button secondary on:click={rejectAll}>Only required</Button>
                 <Button secondary on:click={acceptAll}>Accept all</Button>
@@ -122,12 +122,28 @@
 </Modal>
 
 <style lang="scss">
-    .card.is-consent {
+    @import '@appwrite.io/pink/src/abstract/variables/_devices.scss';
+
+    .card {
         position: fixed;
         padding: 1.5rem;
         bottom: 1rem;
         right: 1rem;
         z-index: 100;
         max-width: 600px;
+    }
+
+    @media #{$break1} {
+        .card {
+            bottom: 0.5rem;
+            left: 0.5rem;
+            right: 0.5rem;
+            max-width: 100%;
+
+            .is-consent-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
     }
 </style>
