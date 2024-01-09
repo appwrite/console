@@ -89,42 +89,36 @@
             We use cookies to improve your site experience. The "strictly necessary" cookies are
             required for Appwrite to function.
         </p>
-        <ul class="collapsible u-width-full-line">
-            <li class="collapsible-item">
-                <details class="collapsible-wrapper">
-                    <summary class="collapsible-button">
+        <div class="u-width-full-line">
+            <div class="collapsible-item">
+                <div class="collapsible-wrapper">
+                    <div class="collapsible-button">
                         <input type="checkbox" checked disabled />
                         <span class="text">Strictly Necessary Cookies</span>
-                        <div class="icon">
-                            <span class="icon-cheveron-down" aria-hidden="true"></span>
-                        </div>
-                    </summary>
+                    </div>
                     <div class="collapsible-content">
                         <p class="text u-margin-block-start-8">
                             These are the cookies required for Appwrite to function.
                         </p>
                     </div>
-                </details>
-            </li>
-            <li class="collapsible-item">
-                <details class="collapsible-wrapper">
-                    <summary class="collapsible-button">
+                </div>
+            </div>
+            <div class="collapsible-item">
+                <div class="collapsible-wrapper">
+                    <div class="collapsible-button">
                         <input type="checkbox" bind:checked={selected['logrocket']} />
                         <span class="text">Product Analytics</span>
                         <span class="collapsible-button-optional">(optional)</span>
-                        <div class="icon">
-                            <span class="icon-cheveron-down" aria-hidden="true"></span>
-                        </div>
-                    </summary>
+                    </div>
                     <div class="collapsible-content">
                         <p class="text u-margin-block-start-8">
                             We include analytics cookies to understand how you use our product and
                             design better experiences.
                         </p>
                     </div>
-                </details>
-            </li>
-        </ul>
+                </div>
+            </div>
+        </div>
         <svelte:fragment slot="footer">
             <Button text external href="https://appwrite.io/privacy">Privacy Policy</Button>
             <Button on:click={() => confirmChoices(selected)}>Save preferences</Button>
