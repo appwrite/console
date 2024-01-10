@@ -31,8 +31,13 @@
             </h6>
             <p class="text u-margin-block-start-8">
                 The DPA is a legal document that describes the roles and responsibilities of
-                Appwrite and the organization when personal data is processed. Learn more about the
-                DPA.
+                Appwrite and the organization when personal data is processed. <a
+                    class="link"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    href="https://appwrite.io/docs/advanced/security/gdpr#dpa"
+                    >Learn more about the DPA</a
+                >.
             </p>
             <Button
                 secondary
