@@ -1,8 +1,8 @@
 <script lang="ts">
-    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { Modal, CustomId } from '$lib/components';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { CustomId, Modal } from '$lib/components';
     import { Pill } from '$lib/elements';
-    import { InputText, Button, FormList } from '$lib/elements/forms';
+    import { Button, FormList, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { ID } from '@appwrite.io/console';
@@ -27,7 +27,7 @@
                 },
                 {
                     name,
-                    description,
+                    description: description || undefined,
                     topicId: id ?? ID.unique()
                 }
             );
