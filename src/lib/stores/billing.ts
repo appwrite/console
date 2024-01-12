@@ -164,7 +164,7 @@ export function calculateTrialDay(org: Organization) {
     let diffTime = endDate.getTime() - today.getTime();
     diffTime = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
 
-    let days = diffTime < 1 ? 0 : diffTime;
+    const days = diffTime < 1 ? 0 : diffTime;
 
     daysLeftInTrial.set(days);
     return days;
