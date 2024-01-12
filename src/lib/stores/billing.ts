@@ -8,7 +8,6 @@ import { cachedStore } from '$lib/helpers/cache';
 import { Query, type Models } from '@appwrite.io/console';
 import { headerAlert } from './headerAlert';
 import PaymentAuthRequired from '$lib/components/billing/alerts/paymentAuthRequired.svelte';
-import { diffDays } from '$lib/helpers/date';
 import { addNotification, notifications } from './notifications';
 import { goto } from '$app/navigation';
 import { base } from '$app/paths';
