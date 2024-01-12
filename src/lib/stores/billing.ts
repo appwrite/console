@@ -161,7 +161,13 @@ export function calculateTrialDay(org: Organization) {
     if (org?.billingPlan === BillingPlan.STARTER) return false;
     const endDate = new Date(org?.billingStartDate);
     const today = new Date();
-    const days = diffDays(today, endDate);
+    
+    let diffTime = Math.abs(endDate.getTime() - today.getTime());
+    diffTime = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+    diffTime = -9;
+    
+    let days = diffTime < 1 ? 0 : diffTime;
+
     daysLeftInTrial.set(days);
     return days;
 }
