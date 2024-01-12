@@ -182,14 +182,12 @@
                                 id="username"
                                 label="Username"
                                 bind:value={username}
-                                required
                                 placeholder="Enter username" />
                             <InputPassword
                                 showPasswordButton
                                 id="passwort"
                                 label="Password"
                                 bind:value={password}
-                                required
                                 placeholder="Enter password" />
 
                             <InputChoice bind:value={secure} id="tls" label="TLS secure protocol">
