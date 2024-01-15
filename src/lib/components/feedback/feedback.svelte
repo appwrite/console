@@ -40,8 +40,8 @@
             type="button"
             class="button is-text is-only-icon u-margin-inline-start-auto"
             style="--button-size:1.5rem;"
-            aria-label="Close Modal"
-            title="Close Modal"
+            aria-label="Close feedback"
+            title="Close feedback"
             on:click={() => feedback.toggleFeedback()}>
             <span class="icon-x" aria-hidden="true" />
         </button>
