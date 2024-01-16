@@ -1,6 +1,5 @@
 <script lang="ts">
     import { isHTMLInputElement } from '$lib/helpers/types';
-
     import { TableCellHead } from '.';
     import { InputCheckbox } from '../forms';
 
@@ -27,7 +26,8 @@
 <TableCellHead width={10}>
     <InputCheckbox
         id="select-all"
+        wrapperTag="div"
         indeterminate={someSelected && !allSelected}
-        value={allSelected}
+        checked={allSelected}
         on:click={handleClick} />
 </TableCellHead>

@@ -8,6 +8,7 @@
     import { showCreateDeployment } from './store';
 
     export let secondary = false;
+    export let round = false;
     // This allows us to know which one to open when the user uses the shortcut in the command center
     export let main = false;
     let show = false;
@@ -23,11 +24,13 @@
 </script>
 
 <DropList bind:show placement="bottom-end">
-    <Button {secondary} on:click={() => (show = !show)} event="create_deployment">
-        {#if !secondary}
-            <span class="icon-plus" aria-hidden="true" />
-        {/if}
-        <span class="text">Create deployment</span>
+    <Button {secondary} {round} on:click={() => (show = !show)} event="create_deployment">
+        <slot>
+            {#if !secondary}
+                <span class="icon-plus" aria-hidden="true" />
+            {/if}
+            <span class="text">Create deployment</span>
+        </slot>
     </Button>
     <svelte:fragment slot="list">
         <DropListItem

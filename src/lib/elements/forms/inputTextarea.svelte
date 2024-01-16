@@ -62,7 +62,7 @@
         {label}
     </Label>
 
-    <div class="input-text-wrapper" on:click on:keyup={clickOnEnter}>
+    <div class="input-text-wrapper" on:click on:keyup={clickOnEnter} role="textbox" tabindex="-1">
         <textarea
             {id}
             {name}
@@ -73,11 +73,10 @@
             {maxlength}
             class="input-text"
             class:u-padding-block-end-32={maxlength}
-            style={maxlength ? '--amount-of-buttons: 0.25' : ''}
             bind:value
             bind:this={element}
             on:invalid={handleInvalid}
-            style:--amount-of-buttons={required ? undefined : 0.25} />
+            style:--amount-of-buttons={maxlength ? 0.25 : required ? undefined : 0.25} />
         {#if showTextCounter || showNullCheckbox}
             <ul
                 class="buttons-list u-gap-8 u-cross-center u-position-absolute d u-inset-block-end-1 u-inset-inline-end-1 u-padding-block-8 u-padding-inline-12"

@@ -1,6 +1,4 @@
 <script lang="ts">
-    import { clickOnEnter } from '$lib/helpers/a11y';
-
     export let value: number = null;
 </script>
 
@@ -9,9 +7,10 @@
         <slot />
     </legend>
     <ul class="u-flex u-main-space-between u-margin-block-start-16">
-        {#each Array(10) as _, i}
-            <li on:keyup={clickOnEnter} on:click={() => (value = i)}>
+        {#each Array(11) as _, i}
+            <li>
                 <input
+                    on:click={() => (value = i)}
                     type="radio"
                     name="recommend"
                     class="radio-button"

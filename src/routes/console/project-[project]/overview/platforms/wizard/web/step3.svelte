@@ -21,5 +21,14 @@ client
             value={project}>Project ID</Id
         >.
     </p>
-    <Code label="Web SDK" labelIcon="code" language="js" {code} withCopy withLineNumbers />
+    <div class="u-margin-block-start-16">
+        <Code
+            label="Web SDK"
+            labelIcon="code"
+            language="js"
+            {code}
+            withCopy
+            withLineNumbers
+            noMargin />
+    </div>
 </WizardStep>

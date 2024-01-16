@@ -2,6 +2,7 @@
     export let noMargin = false;
     export let noStyles = false;
     export let style = '';
+    export let transparent = false;
 </script>
 
 <div
@@ -9,6 +10,7 @@
     class:u-margin-block-start-32={!noMargin}
     class:is-remove-outer-styles={noStyles}
     {style}
+    style:--p-table-bg-color={transparent ? 'var(--transparent)' : ''}
     role="table"
     data-private>
     <slot />

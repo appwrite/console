@@ -3,9 +3,11 @@
 
     export let isSticky = false;
     export let noMargin = false;
+    export let style = '';
+    export let transparent = false;
     let isOverflowing = false;
 
-    const hasOverflow: Action<HTMLDivElement> = (node) => {
+    const hasOverflow: Action<HTMLDivElement, unknown> = (node) => {
         const observer = new ResizeObserver((entries) => {
             for (const entry of entries) {
                 let overflowing = false;
@@ -40,7 +42,11 @@
 
 <div class="table-with-scroll" class:u-margin-block-start-32={!noMargin} data-private>
     <div class="table-wrapper" use:hasOverflow={(v) => (isOverflowing = v)}>
-        <table class="table" class:is-sticky-scroll={isSticky && isOverflowing}>
+        <table
+            class="table"
+            class:is-sticky-scroll={isSticky && isOverflowing}
+            {style}
+            style:--p-table-bg-color={transparent ? 'var(--transparent)' : ''}>
             <slot />
         </table>
     </div>

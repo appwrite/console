@@ -64,6 +64,7 @@
         class:line-numbers={withLineNumbers}><code>{code}</code></pre>
 </section>
 
+<!-- svelte-ignore css-unused-selector -->
 <style lang="scss" global>
     @import 'prismjs/themes/prism.css';
     @import 'prismjs/plugins/line-numbers/prism-line-numbers.css';
@@ -189,9 +190,14 @@
                 color: #62aed2;
             }
         }
-        &.prism-regex,
         &.prism-important,
         &.prism-variable {
+            color: #a1c4ff;
+            body.theme-light & {
+                color: #62aed2;
+            }
+        }
+        &.prism-regex {
             color: #a1c4ff;
             body.theme-light & {
                 color: #62aed2;

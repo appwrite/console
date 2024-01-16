@@ -34,6 +34,8 @@
 
 <span
     data-private
+    role="button"
+    tabindex="0"
     style:cursor="pointer"
     on:click|preventDefault={handleClick}
     on:keyup={clickOnEnter}

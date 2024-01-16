@@ -26,6 +26,8 @@ export function deepClone<T>(obj: T): T {
 export type DeepObj<T> = {
     [K in keyof T]: T[K] extends object ? DeepObj<T[K]> : T[K];
 };
+
+/* eslint  @typescript-eslint/no-explicit-any: 'off' */
 export function deepMap<T, U>(
     obj: DeepObj<T>,
     fn: (value: T, key: string, parentKey?: string) => unknown,

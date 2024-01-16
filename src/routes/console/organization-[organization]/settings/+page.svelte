@@ -8,9 +8,12 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { onMount } from 'svelte';
-    import Delete from '../deleteOrganization.svelte';
+    import Delete from './deleteOrganizationModal.svelte';
+    import DownloadDPA from './downloadDPA.svelte';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { isCloud } from '$lib/system';
 
+    export let data;
     let name: string;
     let showDelete = false;
 
@@ -62,6 +65,10 @@
             </CardGrid>
         </Form>
 
+        {#if isCloud}
+            <DownloadDPA />
+        {/if}
+
         <CardGrid danger>
             <div>
                 <Heading tag="h6" size="7">Delete organization</Heading>
@@ -76,17 +83,20 @@
                         <AvatarGroup {avatars} total={$members.total} />
                     </svelte:fragment>
                     <svelte:fragment slot="title">
-                        <h6 class="u-bold u-trim-1">{$organization.name}</h6>
+                        <h6 class="u-bold u-trim-1" data-private>{$organization.name}</h6>
                     </svelte:fragment>
                     <p>{$organization.total} members</p>
                 </BoxAvatar>
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
-                <Button secondary on:click={() => (showDelete = true)}>Delete</Button>
+                <Button
+                    disabled={$organization?.markedForDeletion}
+                    secondary
+                    on:click={() => (showDelete = true)}>Delete</Button>
             </svelte:fragment>
         </CardGrid>
     {/if}
 </Container>
 
-<Delete bind:showDelete />
+<Delete bind:showDelete invoices={data.invoices} />

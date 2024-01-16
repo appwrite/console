@@ -33,12 +33,12 @@
 {:catch}
     <article class="card u-padding-16">
         <div class="u-flex u-flex-vertical u-gap-16">
-            <Heading tag="h1" size="4">Missing Redirect URL</Heading>
+            <Heading tag="h1" size="4">Missing redirect URL</Heading>
             <p class="text">
                 Your OAuth login flow is missing a proper redirect URL. Please check the
                 <a
                     class="link"
-                    href="https://appwrite.io/docs/client/account?sdk=web#createOAuth2Session"
+                    href="https://appwrite.io/docs/references/cloud/client-web/account#createOAuth2Session"
                     >OAuth docs</a>
                 and send request for new session with a valid callback URL.
             </p>

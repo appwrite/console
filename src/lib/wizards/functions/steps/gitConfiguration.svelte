@@ -26,9 +26,9 @@
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">Git</svelte:fragment>
+    <svelte:fragment slot="title">Branch</svelte:fragment>
     <svelte:fragment slot="subtitle">
-        Configure the Git repository that will trigger your function deployments when updated.
+        Choose the Git branch that will trigger your function deployments when updated.
     </svelte:fragment>
 
     <Box radius="small">

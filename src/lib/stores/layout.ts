@@ -14,12 +14,12 @@ export type Breadcrumb = {
 export type View = 'list' | 'grid';
 
 export type updateLayoutArguments = {
-    header?: typeof SvelteComponent;
-    breadcrumb?: typeof SvelteComponent;
+    header?: typeof SvelteComponent<unknown>;
+    breadcrumb?: typeof SvelteComponent<unknown>;
 };
 
-export const header = writable<typeof SvelteComponent>();
-export const breadcrumb = writable<typeof SvelteComponent>();
+export const header = writable<typeof SvelteComponent<unknown>>();
+export const breadcrumb = writable<typeof SvelteComponent<unknown>>();
 
 export function updateLayout(args: updateLayoutArguments) {
     header.set(args.header ?? null);

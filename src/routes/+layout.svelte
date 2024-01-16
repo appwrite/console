@@ -10,13 +10,13 @@
     import { user } from '$lib/stores/user';
     import { ENV, isCloud } from '$lib/system';
     import * as Sentry from '@sentry/svelte';
-    import { BrowserTracing } from '@sentry/tracing';
     import LogRocket from 'logrocket';
     import { onMount } from 'svelte';
     import { onCLS, onFCP, onFID, onINP, onLCP, onTTFB } from 'web-vitals';
     import Loading from './loading.svelte';
     import { loading, requestedMigration } from './store';
     import { parseIfString } from '$lib/helpers/object';
+    import Consent, { consent } from '$lib/components/consent.svelte';
 
     if (browser) {
         window.VERCEL_ANALYTICS_ID = import.meta.env.VERCEL_ANALYTICS_ID?.toString() ?? false;
@@ -45,14 +45,14 @@
              */
             Sentry.init({
                 dsn: 'https://c7ce178bdedd486480317b72f282fd39@o1063647.ingest.sentry.io/4504158071422976',
-                integrations: [new BrowserTracing()],
+                integrations: [new Sentry.BrowserTracing()],
                 tracesSampleRate: 1.0
             });
 
             /**
              * LogRocket
              */
-            if (isCloud && isTrackingAllowed()) {
+            if ($consent?.accepted?.analytics && isCloud && isTrackingAllowed()) {
                 LogRocket.init('rgthvf/appwrite', {
                     dom: {
                         inputSanitizer: true
@@ -106,17 +106,18 @@
 
     $: {
         if (browser) {
+            const isCloudClass = isCloud ? 'is-cloud' : '';
             if ($app.theme === 'auto') {
                 const darkThemeMq = window.matchMedia('(prefers-color-scheme: dark)');
                 if (darkThemeMq.matches) {
-                    document.body.setAttribute('class', `theme-dark`);
+                    document.body.setAttribute('class', `theme-dark ${isCloudClass}`);
                     $app.themeInUse = 'dark';
                 } else {
-                    document.body.setAttribute('class', `theme-light`);
+                    document.body.setAttribute('class', `theme-light ${isCloudClass}`);
                     $app.themeInUse = 'light';
                 }
             } else {
-                document.body.setAttribute('class', `theme-${$app.theme}`);
+                document.body.setAttribute('class', `theme-${$app.theme} ${isCloudClass}`);
                 $app.themeInUse = $app.theme;
             }
         }
@@ -124,6 +125,9 @@
 </script>
 
 <Notifications />
+{#if isCloud}
+    <Consent />
+{/if}
 
 <slot />
 
@@ -133,10 +137,12 @@
 
 <Progress />
 
+<!-- svelte-ignore css-unused-selector -->
 <style lang="scss" global>
+    @import '@appwrite.io/pink/src/abstract/variables/_devices.scss';
     .tippy-box {
         --p-tooltip-text-color: var(--color-neutral-10);
-        --p-tooltip--bg-color: var(--color-neutral-100);
+        --p-tooltip--bg-color: var(--color-neutral-80);
 
         background-color: hsl(var(--p-tooltip--bg-color));
         color: hsl(var(--p-tooltip-text-color));
@@ -158,12 +164,12 @@
     }
 
     .theme-dark .with-separators {
-        --separator-color: hsl(var(--color-neutral-200));
-        --separator-text: hsl(var(--color-neutral-100));
+        --separator-color: hsl(var(--color-neutral-85));
+        --separator-text: hsl(var(--color-neutral-60));
     }
 
     .with-separators {
-        --separator-color: hsl(var(--color-neutral-5));
+        --separator-color: hsl(var(--color-neutral-10));
         --separator-text: hsl(var(--color-neutral-50));
     }
 
@@ -200,10 +206,31 @@
         border-radius: var(--border-radius);
         border: var(--border-size) solid transparent;
         background: var(--border-gradient) border-box;
-        mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
-        -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+        mask:
+            linear-gradient(#fff 0 0) padding-box,
+            linear-gradient(#fff 0 0);
+        -webkit-mask:
+            linear-gradient(#fff 0 0) padding-box,
+            linear-gradient(#fff 0 0);
         -webkit-mask-composite: destination-out;
         mask-composite: exclude;
         pointer-events: none;
+    }
+
+    .is-cloud {
+        --heading-font: 'Aeonik Pro', arial, sans-serif;
+        .heading-level {
+            @media #{$break3open} {
+                &-1,
+                &-2,
+                &-3,
+                &-4,
+                &-5,
+                &-6,
+                &-7 {
+                    font-weight: 500;
+                }
+            }
+        }
     }
 </style>

@@ -17,8 +17,8 @@
     };
 
     const onFinish = async () => {
-        const resources = migrationFormToResources($formData);
         if ($provider.provider !== 'appwrite') return;
+        const resources = migrationFormToResources($formData, $provider.provider);
 
         await getSdkForProject($selectedProject).migrations.createAppwriteMigration(
             resources,

@@ -46,7 +46,7 @@
     <svelte:fragment slot="title">Variables</svelte:fragment>
     <svelte:fragment slot="subtitle">
         Create the environment variables or secret keys that will be passed to your function. <a
-            href="https://appwrite.io/docs/permissions"
+            href="https://appwrite.io/docs/advanced/platform/permissions"
             target="_blank"
             rel="noopener noreferrer"
             class="link">
@@ -114,7 +114,7 @@
             </Button>
         </div>
     {:else}
-        <Empty on:click={() => (showCreate = !showCreate)}>Create a variable to get started</Empty>
+        <Empty on:click={() => (showCreate = !showCreate)}>Create a variable</Empty>
     {/if}
 </WizardStep>
 

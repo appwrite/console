@@ -97,7 +97,7 @@
     <p class="text">
         Manually execute your function. <a
             class="link"
-            href="https://appwrite.io/docs/functions#execute"
+            href="https://appwrite.io/docs/products/functions/execution"
             target="_blank"
             rel="noopener noreferrer">
             Learn more
@@ -113,7 +113,10 @@
                 Update your function version to make use of new features including customizable HTTP
                 data in your executions.
                 <svelte:fragment slot="buttons">
-                    <Button href="https://appwrite.io/docs/functions-develop#upgrade" external text>
+                    <Button
+                        href="https://appwrite.io/docs/products/functions/development"
+                        external
+                        text>
                         Learn more
                     </Button>
                 </svelte:fragment>

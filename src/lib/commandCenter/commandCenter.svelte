@@ -112,7 +112,7 @@
 <svelte:window on:mousedown={handleBlur} on:keydown={handleKeydown} />
 
 {#if openSubPanel}
-    <div class="dialog" bind:this={dialog} transition:fade={{ duration: 100 }}>
+    <div class="dialog" bind:this={dialog} transition:fade|global={{ duration: 100 }}>
         <svelte:component this={openSubPanel.component} />
     </div>
 {/if}
@@ -120,7 +120,7 @@
 {#if dev && debugOverlayEnabled}
     <div class="debug-keys" use:portal>
         {#each keys as key, i (i)}
-            <kbd class="kbd" transition:fade|local={{ duration: 150 }}>
+            <kbd class="kbd" transition:fade={{ duration: 150 }}>
                 {key.length === 1 ? key.toUpperCase() : key}
             </kbd>
         {/each}

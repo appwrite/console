@@ -14,6 +14,8 @@
     export let noStyle = false;
     export let isModal = false;
     export let onSubmit: (e: SubmitEvent) => Promise<void> | void;
+    let classes = '';
+    export { classes as class };
 
     const { isSubmitting } = setContext<FormContext>('form', {
         isSubmitting: writable(false)
@@ -27,6 +29,7 @@
 </script>
 
 <form
+    class={classes}
     class:form={!noStyle}
     class:common-section={!noMargin}
     class:modal-form={isModal}

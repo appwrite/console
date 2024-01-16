@@ -5,7 +5,7 @@
     export { classes as class };
 
     enum radiuses {
-        xsmall = '--border-radius-extra-large',
+        xsmall = '--border-radius-xsmall',
         small = '--border-radius-small',
         medium = '--border-radius-medium',
         large = '--border-radius-large'

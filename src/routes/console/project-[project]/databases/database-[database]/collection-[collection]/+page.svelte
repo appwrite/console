@@ -1,14 +1,15 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { Empty, EmptySearch, Heading, PaginationWithLimit } from '$lib/components';
+    import Filters from '$lib/components/filters/filters.svelte';
+    import { hasPageQueries, queries } from '$lib/components/filters/store';
     import ViewSelector from '$lib/components/viewSelector.svelte';
     import { Button } from '$lib/elements/forms';
+    import type { ColumnType } from '$lib/helpers/types';
     import { Container } from '$lib/layout';
     import { preferences } from '$lib/stores/preferences';
     import { wizard } from '$lib/stores/wizard';
     import type { PageData } from './$types';
-    import Filters from './(filters)/filters.svelte';
-    import { hasPageQueries, queries } from './(filters)/store';
     import CreateAttributeDropdown from './attributes/createAttributeDropdown.svelte';
     import type { Option } from './attributes/store';
     import CreateAttribute from './createAttribute.svelte';
@@ -27,7 +28,7 @@
         $collection.attributes.map((attribute) => ({
             id: attribute.key,
             title: attribute.key,
-            type: attribute.type,
+            type: attribute.type as ColumnType,
             show: selected?.includes(attribute.key) ?? true
         }))
     );
@@ -54,7 +55,7 @@
             </Button>
         </div>
 
-        <Filters />
+        <Filters query={data.query} {columns} />
 
         <div class="u-flex u-main-end u-gap-16">
             <ViewSelector
@@ -107,14 +108,14 @@
         {:else}
             <Empty
                 single
-                href="https://appwrite.io/docs/databases#create-documents"
+                href="https://appwrite.io/docs/products/databases/documents"
                 target="document"
                 on:click={openWizard} />
         {/if}
     {:else}
         <Empty single target="attribute" on:click={() => (showCreateDropdown = true)}>
             <div class="u-text-center">
-                <Heading size="7" tag="h2">Create your first attribute to get started.</Heading>
+                <Heading size="7" tag="h2">Create an attribute to get started.</Heading>
                 <p class="body-text-2 u-bold u-margin-block-start-4">
                     Need a hand? Learn more in our documentation.
                 </p>
@@ -122,7 +123,7 @@
             <div class="u-flex u-gap-16 u-main-center">
                 <Button
                     external
-                    href="https://appwrite.io/docs/databases#attributes"
+                    href="https://appwrite.io/docs/products/databases/collections#attributes"
                     text
                     event="empty_documentation"
                     ariaLabel={`create {target}`}>Documentation</Button>
@@ -144,7 +145,7 @@
     {/if}
 </Container>
 
-<CreateAttribute bind:showCreate={showCreateAttribute} selectedOption={selectedAttribute} />
+<CreateAttribute bind:showCreate={showCreateAttribute} bind:selectedOption={selectedAttribute} />
 
 <style lang="scss">
     .heading-grid {

@@ -9,6 +9,7 @@
 
     import { clearSubPanels, popSubPanel, subPanels } from '../subPanels';
 
+    /* eslint no-undef: "off" */
     type Option = $$Generic<Omit<Command, 'group'> & { group?: string }>;
     export let options: Option[] | null = null;
     export let search = '';
@@ -368,33 +369,39 @@
         --cmd-center-border: hsl(var(--color-neutral-10));
         --cmd-center-shadow: 0px 16px 32px 0px rgba(55, 59, 77, 0.04);
 
-        --kbd-bg: hsl(var(--color-neutral-30));
+        --kbd-bg: hsl(var(--color-neutral-15));
+        --kbd-color: hsl(var(--color-neutral-60));
 
         --crumb-bg: hsl(var(--color-neutral-10));
         --crumb-color: hsl(var(--color-neutral-100));
 
         --result-bg: hsl(var(--color-neutral-10));
-        --footer-bg: linear-gradient(180deg, #fff 49.38%, #e8e9f0 100%);
+        --footer-bg: linear-gradient(180deg, #fff 0%, #e8e9f0 100%);
 
         --icon-color: hsl(var(--color-neutral-50));
-        --label-color: hsl(var(--color-neutral-100));
+        --label-color: hsl(var(--color-neutral-60));
     }
 
     :global(.theme-dark) .card {
-        --cmd-center-bg: rgba(27, 27, 40, 0.8);
-        --cmd-center-border: hsl(var(--color-neutral-150));
+        --cmd-center-bg: hsl(var(--color-neutral-90));
+        --cmd-center-border: hsl(var(--color-neutral-80));
         --cmd-center-shadow: 0px 16px 32px 0px #14141f;
 
-        --kbd-bg: hsl(var(--color-neutral-150));
+        --kbd-bg: hsl(var(--color-neutral-80));
+        --kbd-color: hsl(var(--color-neutral-15));
 
         --crumb-bg: hsl(var(--color-neutral-150));
         --crumb-color: hsl(var(--color-neutral-30));
 
-        --result-bg: hsl(var(--color-neutral-200));
-        --footer-bg: linear-gradient(180deg, #1b1b28 0%, #282a3b 100%);
+        --result-bg: hsl(var(--color-neutral-85));
+        --footer-bg: linear-gradient(
+            180deg,
+            hsl(var(--color-neutral-100)) 0%,
+            hsl(var(--color-neutral-85)) 100%
+        );
 
         --icon-color: hsl(var(--color-neutral-70));
-        --label-color: hsl(var(--color-neutral-30));
+        --label-color: hsl(var(--color-neutral-15));
     }
 
     // Elements
@@ -425,6 +432,7 @@
         }
 
         :global(.kbd) {
+            color: var(--kbd-color);
             background-color: var(--kbd-bg);
             padding-inline: 0.25rem;
         }

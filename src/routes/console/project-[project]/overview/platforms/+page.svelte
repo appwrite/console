@@ -36,6 +36,7 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { app } from '$lib/stores/app';
     import type { PageData } from './$types';
+    import { ContainerHeader } from '$lib/layout';
 
     export let data: PageData;
 
@@ -72,27 +73,25 @@
     };
 </script>
 
-<div class="common-section u-flex u-gap-12">
-    <Heading tag="h3" size="7">Platforms</Heading>
-    <span class="u-margin-inline-start-auto">
-        <DropList bind:show={showDropdown} placement="bottom-start">
-            <Button on:click={() => (showDropdown = !showDropdown)}>
-                <span class="icon-plus" aria-hidden="true" />
-                <span class="text">Add platform</span>
-            </Button>
-            <svelte:fragment slot="list">
-                <DropListItem on:click={() => addPlatform(Platform.Web)}>Web App</DropListItem>
-                <DropListItem on:click={() => addPlatform(Platform.Flutter)}>
-                    Flutter App
-                </DropListItem>
-                <DropListItem on:click={() => addPlatform(Platform.Android)}>
-                    Android App
-                </DropListItem>
-                <DropListItem on:click={() => addPlatform(Platform.Apple)}>Apple App</DropListItem>
-            </svelte:fragment>
-        </DropList>
-    </span>
-</div>
+<ContainerHeader
+    title="Platforms"
+    titleTag="h3"
+    titleSize="7"
+    total={data?.platforms?.total}
+    let:isButtonDisabled>
+    <DropList bind:show={showDropdown} placement="bottom-start">
+        <Button on:click={() => (showDropdown = !showDropdown)} disabled={isButtonDisabled}>
+            <span class="icon-plus" aria-hidden="true" />
+            <span class="text">Add platform</span>
+        </Button>
+        <svelte:fragment slot="list">
+            <DropListItem on:click={() => addPlatform(Platform.Web)}>Web App</DropListItem>
+            <DropListItem on:click={() => addPlatform(Platform.Flutter)}>Flutter App</DropListItem>
+            <DropListItem on:click={() => addPlatform(Platform.Android)}>Android App</DropListItem>
+            <DropListItem on:click={() => addPlatform(Platform.Apple)}>Apple App</DropListItem>
+        </svelte:fragment>
+    </DropList>
+</ContainerHeader>
 
 {#if data.platforms.platforms.length}
     <div
@@ -140,7 +139,7 @@
             {/if}
             <slot>
                 <div class="u-text-center">
-                    <Heading size="7" tag="h4">Create your first platform to get started.</Heading>
+                    <Heading size="7" tag="h4">Create a platform to get started.</Heading>
                     <p class="body-text-2 u-bold u-margin-block-start-4">
                         Need a hand? Learn more in our documentation.
                     </p>
@@ -155,16 +154,16 @@
                         </Button>
                         <svelte:fragment slot="list">
                             <DropListItem on:click={() => addPlatform(Platform.Web)}>
-                                Web App
-                            </DropListItem>Ï
+                                Web
+                            </DropListItem>
                             <DropListItem on:click={() => addPlatform(Platform.Flutter)}>
-                                Flutter App
+                                Flutter
                             </DropListItem>
                             <DropListItem on:click={() => addPlatform(Platform.Android)}>
-                                Android App
+                                Android
                             </DropListItem>
                             <DropListItem on:click={() => addPlatform(Platform.Apple)}>
-                                Apple App
+                                Apple
                             </DropListItem>
                         </svelte:fragment>
                     </DropList>

@@ -6,21 +6,12 @@
     import { sdk } from '$lib/stores/sdk';
     import { isSelfHosted } from '$lib/system';
     import { func } from '$routes/console/project-[project]/functions/function-[function]/store';
-    import { onMount } from 'svelte';
     import { ProxyTypes } from '../index.svelte';
     import { domain, typeStore } from './store';
     import { consoleVariables } from '$routes/console/store';
 
     let error = null;
-    let isDomainsEnabled = false;
-
-    onMount(async () => {
-        if (!isSelfHosted) {
-            return;
-        }
-
-        isDomainsEnabled = (await $consoleVariables)?._APP_DOMAIN_ENABLED === true;
-    });
+    const isDomainsEnabled = $consoleVariables?._APP_DOMAIN_ENABLED === true;
 
     async function createDomain() {
         try {
@@ -46,7 +37,7 @@
     <svelte:fragment slot="title">Add function domain</svelte:fragment>
     <svelte:fragment slot="subtitle">
         Use your self-owned domain as the endpoint of your Appwrite API. <a
-            href="https://appwrite.io/docs/custom-domains"
+            href="https://appwrite.io/docs/advanced/platform/custom-domains"
             target="_blank"
             rel="noopener noreferrer"
             class="link">Learn more</a
@@ -67,7 +58,7 @@
             <p>
                 You can find a list of domain providers and their DNS setting documentation <a
                     class="link"
-                    href="https://appwrite.io/docs/custom-domains#addCNAME"
+                    href="https://appwrite.io/docs/advanced/platform/custom-domains#cname-record"
                     target="_blank"
                     rel="noreferrer">here</a
                 >. If your domain provider isn't listed, please contact us, and we'll include their
@@ -84,7 +75,7 @@
             domain.
             <svelte:fragment slot="buttons">
                 <Button
-                    href="https://appwrite.io/docs/environment-variables#vcs_(version_control_system)"
+                    href="https://appwrite.io/docs/advanced/self-hosting/functions#git"
                     external
                     text>
                     Learn more

@@ -56,7 +56,7 @@ cd appwrite-console && npm install
 
 When you run the Appwrite Console locally, it needs to point to a backend as well. The easiest way to do this is to run an Appwrite instance locally.
 
-Follow the [install instructions](https://appwrite.io/docs/installation) in the Appwrite docs.
+Follow the [install instructions](https://appwrite.io/docs/advanced/self-hosting) in the Appwrite docs.
 
 ### 4. Setup environment variables
 

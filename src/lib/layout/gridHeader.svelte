@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Heading, ViewSelector } from '$lib/components';
     import type { View } from '$lib/helpers/load';
-    import type { Column } from '$lib/components/viewSelector.svelte';
+    import type { Column } from '$lib/helpers/types';
     import type { Writable } from 'svelte/store';
 
     export let title: string;

@@ -48,7 +48,7 @@
         <Heading tag="h2" size="5">Sessions</Heading>
 
         <Button secondary on:click={logoutAll}>
-            <span class="text">Logout all sessions</span>
+            <span class="text">Sign out all sessions</span>
         </Button>
     </div>
 
@@ -100,7 +100,7 @@
                         </TableCellText>
                         <TableCellText title="IP">{session.ip}</TableCellText>
                         <TableCell title="Client">
-                            <Button secondary on:click={() => logout(session)}>Logout</Button>
+                            <Button secondary on:click={() => logout(session)}>Sign out</Button>
                         </TableCell>
                     </TableRow>
                 {/each}
@@ -116,7 +116,7 @@
                     <Button
                         external
                         secondary
-                        href="https://appwrite.io/docs/client/account#accountCreateEmailSession">
+                        href="https://appwrite.io/docs/references/cloud/client-web/account#createEmailSession">
                         Documentation
                     </Button>
                 </div>

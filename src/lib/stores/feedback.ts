@@ -24,7 +24,7 @@ export type FeedbackOption = {
     type: Feedback['type'];
     title: string;
     desc: string;
-    component: typeof SvelteComponent;
+    component: typeof SvelteComponent<unknown>;
 };
 
 export const feedbackOptions: FeedbackOption[] = [
@@ -45,13 +45,14 @@ export const feedbackOptions: FeedbackOption[] = [
 export const selectedFeedback = writable<FeedbackOption>();
 
 function createFeedbackDataStore() {
-    const { subscribe, update } = writable<FeedbackData>({
+    const { set, subscribe, update } = writable<FeedbackData>({
         message: '',
         name: '',
         email: '',
         value: 0
     });
     return {
+        set,
         subscribe,
         update,
         reset: () => {

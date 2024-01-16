@@ -59,7 +59,7 @@
         Manually deploy a function by uploading a zip file containing the source code and a relative
         path to the entry point.
         <a
-            href="https://appwrite.io/docs/functions#deployFunction"
+            href="https://appwrite.io/docs/products/functions/deployment"
             target="_blank"
             rel="noopener noreferrer"
             class="link">Learn more about function deployments</a
@@ -83,8 +83,10 @@
                 </svelte:fragment>
                 Update your function version to make use of new features including build commands.
                 <svelte:fragment slot="buttons">
-                    <Button href="https://appwrite.io/docs/functions-develop#upgrade" external text
-                        >Learn more</Button>
+                    <Button
+                        href="https://appwrite.io/docs/products/functions/development"
+                        external
+                        text>Learn more</Button>
                 </svelte:fragment>
             </Alert>
         {:else}

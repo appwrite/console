@@ -35,9 +35,9 @@ test('state', async () => {
     const { component, getByLabelText } = render(InputCheckbox, { id: 'input', label: 'checkbox' });
     const checkbox = getByLabelText('checkbox');
 
-    expect(component.value).toEqual(false);
+    expect(component.checked).toEqual(false);
     await userEvent.click(checkbox);
-    expect(component.value).toEqual(true);
+    expect(component.checked).toEqual(true);
 });
 
 test('state', async () => {
@@ -45,21 +45,21 @@ test('state', async () => {
     const checkbox = getByLabelText('checkbox');
 
     expect(checkbox).not.toBeChecked();
-    expect(component.value).toStrictEqual(false);
+    expect(component.checked).toStrictEqual(false);
 
     await fireEvent.click(checkbox);
     expect(checkbox).toBeChecked();
-    expect(component.value).toStrictEqual(true);
+    expect(component.checked).toStrictEqual(true);
 
     await fireEvent.click(checkbox);
     expect(checkbox).not.toBeChecked();
-    expect(component.value).toStrictEqual(false);
+    expect(component.checked).toStrictEqual(false);
 
-    component.value = true;
+    component.checked = true;
     expect(checkbox).toBeChecked();
-    expect(component.value).toStrictEqual(true);
+    expect(component.checked).toStrictEqual(true);
 
-    component.value = false;
+    component.checked = false;
     expect(checkbox).not.toBeChecked();
-    expect(component.value).toStrictEqual(false);
+    expect(component.checked).toStrictEqual(false);
 });

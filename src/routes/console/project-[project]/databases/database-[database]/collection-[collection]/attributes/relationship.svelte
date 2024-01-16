@@ -160,7 +160,7 @@
     <SelectSearchItem data={o.data}>
         {o.label}
     </SelectSearchItem>
-    <svelte:fragment slot="output">
+    <svelte:fragment slot="output" let:option={o}>
         <output class="input-text" class:is-read-only={editing}>
             <SelectSearchItem data={o.data}>
                 {o.label}

@@ -4,6 +4,7 @@
     import { createEventDispatcher, onMount } from 'svelte';
     import { Label } from '.';
 
+    /* eslint no-undef: "off" */
     type Option = $$Generic<{
         value: string | boolean | number;
         label: string;
@@ -23,6 +24,7 @@
     export let hideRequired = false;
     export let disabled = false;
     export let fullWidth = false;
+    export let fullWidthDrop = true;
     export let autofocus = false;
     export let interactiveOutput = false;
     // stretch is used inside of a flex container to give the element flex:1
@@ -118,7 +120,7 @@
         scrollable
         placement="bottom-end"
         position="static"
-        fullWidth={true}
+        fullWidth={fullWidthDrop}
         fixed>
         <Label {required} {hideRequired} {optionalText} hide={!showLabel} for={id} {tooltip}>
             {label}
@@ -128,6 +130,8 @@
             <div class="input-text-wrapper" style="--amount-of-buttons:2">
                 {#if $$slots.output && selectedOption}
                     <div
+                        role="button"
+                        tabindex="0"
                         on:keyup={clickOnEnter}
                         on:click={() => {
                             if (interactiveOutput) hasFocus = !hasFocus;

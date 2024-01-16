@@ -198,7 +198,7 @@ export const commandCenterKeyDownHandler = derived(
 
                 const commandKeyCodes = keys?.map((key) => key.toUpperCase().charCodeAt(0));
                 const allKeysPressed = commandKeyCodes
-                    ? recentKeyCodes.join('').includes(commandKeyCodes.join(''))
+                    ? recentKeyCodes.join(',').includes(commandKeyCodes.join(','))
                     : false;
 
                 if (allKeysPressed && isMetaPressed && isShiftPressed && isAltPressed) {

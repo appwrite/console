@@ -24,11 +24,17 @@
 </script>
 
 <TableCell class="u-position-relative">
-    <div class="touch-area" on:click={handleClick} on:keypress={handleClick} />
+    <div
+        class="touch-area"
+        role="button"
+        tabindex="-1"
+        on:click={handleClick}
+        on:keypress={handleClick} />
     <InputCheckbox
         bind:element={el}
         id="select-{id}"
-        value={selectedIds.includes(id)}
+        wrapperTag="div"
+        checked={selectedIds.includes(id)}
         on:click={handleClick} />
 </TableCell>
 

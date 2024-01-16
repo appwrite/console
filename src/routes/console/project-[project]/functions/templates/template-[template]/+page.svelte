@@ -1,14 +1,19 @@
 <script lang="ts">
-    import { base } from '$app/paths';
     import { Alert, Card, Collapsible, Heading } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
-    import { Container } from '$lib/layout';
+    import { Container, ContainerButton } from '$lib/layout';
     import { isSelfHosted } from '$lib/system';
+    import AppwriteLogoDark from '$lib/images/appwrite-logo-dark.svg';
+    import AppwriteLogoLight from '$lib/images/appwrite-logo-light.svg';
     import { connectTemplate } from '$lib/wizards/functions/cover.svelte';
     import { afterUpdate, onMount } from 'svelte';
-    import { consoleVariables, isVcsEnabled } from '$routes/console/store';
+    import { consoleVariables } from '$routes/console/store';
     import { template } from './store';
+    import { app } from '$lib/stores/app';
+    import { isServiceLimited } from '$lib/stores/billing';
+    import { organization } from '$lib/stores/organization';
+    import { functionsList } from '../../store';
 
     let html = '';
     let container: HTMLDivElement;
@@ -101,6 +106,14 @@
         const readmeHTML = await response.text();
         return readmeHTML;
     }
+
+    const isVcsEnabled = $consoleVariables?._APP_VCS_ENABLED === true;
+
+    $: buttonDisabled = isServiceLimited(
+        'functions',
+        $organization?.billingPlan,
+        $functionsList?.total
+    );
 </script>
 
 <Container>
@@ -132,9 +145,10 @@
                         <h4 class="body-text-1 u-bold">Published by</h4>
                         <img
                             class="u-margin-block-start-8"
-                            width="130"
-                            src={`${base}/logos/appwrite-full.svg`}
-                            alt="" />
+                            src={$app.themeInUse == 'dark' ? AppwriteLogoDark : AppwriteLogoLight}
+                            width="120"
+                            height="22"
+                            alt="Appwrite" />
                     </section>
                 </li>
             </Collapsible>
@@ -153,7 +167,7 @@
                     </span>
                 </Heading>
                 <p class="u-margin-block-start-24">{$template.tagline}</p>
-                {#if isSelfHosted && !isVcsEnabled($consoleVariables)}
+                {#if isSelfHosted && !isVcsEnabled}
                     <Alert class="u-margin-block-start-24" type="info">
                         <svelte:fragment slot="title">
                             Cloning templates to a self-hosted instance
@@ -161,7 +175,10 @@
                         In order to clone a template to a locally hosted Appwrite project, you must set
                         up a Git integration and configure your environment variables.
                         <svelte:fragment slot="buttons">
-                            <Button href="https://appwrite.io/docs/configuration#git" external text>
+                            <Button
+                                href="https://appwrite.io/docs/advanced/self-hosting/functions"
+                                external
+                                text>
                                 Learn more
                             </Button>
                         </svelte:fragment>
@@ -175,11 +192,13 @@
                         View source
                         <span class="icon-external-link" />
                     </Button>
-                    <Button
-                        disabled={isSelfHosted && !isVcsEnabled}
-                        on:click={() => connectTemplate($template)}>
-                        Create function
-                    </Button>
+                    <ContainerButton
+                        title="functions"
+                        disabled={buttonDisabled || (isSelfHosted && !isVcsEnabled)}
+                        buttonMethod={() => connectTemplate($template)}
+                        showIcon={false}
+                        buttonText="Create function"
+                        buttonEvent="create_function" />
                 </div>
             </Card>
             <Card>{@html $template.instructions}</Card>

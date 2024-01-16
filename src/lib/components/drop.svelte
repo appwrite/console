@@ -115,6 +115,7 @@
     {/if}
 </div>
 
+<!-- svelte-ignore css-unused-selector -->
 <style global lang="scss">
     .drop-tooltip[data-popper-placement^='top'] > .drop-arrow {
         bottom: -4px;
@@ -142,7 +143,7 @@
     .drop-arrow::before {
         content: '';
         transform: rotate(45deg);
-        background: hsl(var(--color-neutral-200));
+        background: hsl(var(--color-neutral-85));
 
         body.theme-light & {
             background: hsl(var(--color-neutral-10));

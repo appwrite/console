@@ -1,26 +1,53 @@
+import Analytics, { type AnalyticsPlugin } from 'analytics';
+import Plausible from 'plausible-tracker';
+import { get } from 'svelte/store';
 import { page } from '$app/stores';
 import { user } from '$lib/stores/user';
 import { ENV, MODE, VARS, isCloud } from '$lib/system';
-import googleAnalytics from '@analytics/google-analytics';
 import { AppwriteException } from '@appwrite.io/console';
-import googleTagManager from '@analytics/google-tag-manager';
-import Analytics from 'analytics';
-import { get } from 'svelte/store';
+import { browser } from '$app/environment';
+
+function plausible(domain: string): AnalyticsPlugin {
+    if (!browser) return { name: 'analytics-plugin-plausible' };
+
+    const instance = Plausible({
+        domain
+    });
+
+    return {
+        name: 'analytics-plugin-plausible',
+        page: ({ payload }) => {
+            instance.trackPageview({
+                url: payload.properties.path,
+                referrer: payload.properties.referrer,
+                deviceWidth: payload.properties.width
+            });
+        },
+        track: ({ payload }) => {
+            instance.trackEvent(
+                payload.event,
+                {
+                    props: payload.properties
+                },
+                {
+                    url: payload.properties.path,
+                    deviceWidth: payload.properties.width
+                }
+            );
+        },
+        loaded: () => true
+    };
+}
+
+const PLAUSIBLE_DOMAINS = {
+    CLOUD: 'cloud.appwrite.io',
+    GLOBAL: 'console.appwrite',
+    SELF_HOSTED: 'self-hosted.appwrite'
+};
 
 const analytics = Analytics({
     app: 'appwrite',
-    plugins: [
-        googleAnalytics({
-            measurementIds: [VARS.GOOGLE_ANALYTICS || 'G-R4YJ9JN8L4']
-        }),
-        ...(isCloud
-            ? [
-                  googleTagManager({
-                      containerId: [VARS.GOOGLE_TAG || 'GTM-P3T9TBV']
-                  })
-              ]
-            : [])
-    ]
+    plugins: [plausible(isCloud ? PLAUSIBLE_DOMAINS.CLOUD : PLAUSIBLE_DOMAINS.SELF_HOSTED)]
 });
 
 export function trackEvent(name: string, data: object = null): void {
@@ -112,6 +139,7 @@ export function isTrackingAllowed() {
 }
 
 export enum Submit {
+    DownloadDPA = 'submit_download_dpa',
     Error = 'submit_error',
     AccountCreate = 'submit_account_create',
     AccountLogin = 'submit_account_login',
@@ -187,7 +215,7 @@ export enum Submit {
     FunctionUpdateLogging = 'submit_function_update_logging',
     FunctionUpdateTimeout = 'submit_function_update_timeout',
     FunctionUpdateEvents = 'submit_function_update_events',
-    FunctionConnectRepo = 'submit_function_disconnect_repo',
+    FunctionConnectRepo = 'submit_function_connect_repo',
     FunctionDisconnectRepo = 'submit_function_disconnect_repo',
     FunctionRedeploy = 'submit_function_redeploy',
     DeploymentCreate = 'submit_deployment_create',
@@ -229,6 +257,25 @@ export enum Submit {
     FileCreate = 'submit_file_create',
     FileDelete = 'submit_file_delete',
     FileUpdatePermissions = 'submit_file_update_permissions',
+    BudgetCapUpdate = 'submit_budget_cap_update',
+    BudgetAlertsUpdate = 'submit_budget_alert_conditions_update',
+    CreditRedeem = 'submit_credit_redeem',
+    PaymentMethodCreate = 'submit_payment_method_create',
+    PaymentMethodUpdate = 'submit_payment_method_update',
+    PaymentMethodDelete = 'submit_payment_method_delete',
+    BillingAddressCreate = 'submit_billing_address_create',
+    BillingAddressUpdate = 'submit_billing_address_update',
+    BillingAddressDelete = 'submit_billing_address_delete',
+    OrganizationPaymentUpdate = 'submit_organization_payment_update',
+    OrganizationPaymentDelete = 'submit_organization_payment_delete',
+    OrganizationBackupPaymentUpdate = 'submit_organization_backup_payment_update',
+    OrganizationBackupPaymentDelete = 'submit_organization_backup_payment_delete',
+    OrganizationBillingAddressUpdate = 'submit_organization_billing_address_update',
+    OrganizationBillingAddressDelete = 'submit_organization_billing_address_delete',
+    OrganizationUpgrade = 'submit_organization_upgrade',
+    OrganizationDowngrade = 'submit_organization_downgrade',
+    OrganizationBillingTaxIdUpdate = 'submit_organization_billing_tax_id_update',
+    SupportTicket = 'submit_support_ticket',
     InstallationCreate = 'submit_installation_create',
     InstallationDelete = 'submit_installation_delete',
     EmailChangeLocale = 'submit_email_change_locale',

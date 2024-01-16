@@ -13,7 +13,7 @@ const getTeamCommand = (team: Models.Team<Models.Preferences>, projectId: string
         },
         group: 'teams',
         icon: 'user-circle'
-    } satisfies Command);
+    }) satisfies Command;
 
 export const teamSearcher = (async (query: string) => {
     const { teams } = await sdk.forProject.teams.list([], query);

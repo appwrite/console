@@ -98,6 +98,7 @@
         </Label>
     {/if}
     <div
+        role="region"
         class="box is-no-shadow u-padding-24"
         style="--box-border-radius:var(--border-radius-xsmall); z-index: 1"
         class:u-margin-block-start-8={!!label}

@@ -91,7 +91,7 @@
                         delay={i === 0 ? [500, 500] : [0, 100]}
                         x={[0.5, 2]}
                         y={[0, 1.5]}
-                        amount="30"
+                        amount={30}
                         fallDistance="50px"
                         colorArray={confettiColors} />
                 {/each}
@@ -151,12 +151,12 @@
     </div>
     <div class="cbc-wrapper">
         {#if !cardActive}
-            <div class="cbc-confetti" transition:fade|local>
+            <div class="cbc-confetti" transition:fade>
                 <Confetti
                     x={[-1.75, 1.85]}
                     y={[-1.875, 1]}
                     amount={100}
-                    size="10"
+                    size={10}
                     infinite
                     delay={[2000, 7000]}
                     colorArray={confettiColors}
@@ -174,7 +174,9 @@
             on:keydown={() => {
                 /* no-op */
             }}
-            transition:fade|local />
+            transition:fade
+            role="button"
+            tabindex="0" />
     {/if}
     <div class="controls" class:invisible={!cardActive}>
         <button

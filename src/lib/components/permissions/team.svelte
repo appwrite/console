@@ -119,7 +119,7 @@
                     <p>There are no teams that match your search.</p>
                 </div>
                 <div class="u-flex u-gap-16 common-section u-main-center">
-                    <Button external href="https://appwrite.io/docs/client/teams" text
+                    <Button external href="https://appwrite.io/docs/products/auth/teams" text
                         >Documentation</Button>
                     <Button secondary on:click={() => (search = '')}>Clear search</Button>
                 </div>
@@ -134,7 +134,7 @@
                     </p>
                     <p class="text u-line-height-1-5">
                         Need a hand? Learn more in our <a
-                            href="https://appwrite.io/docs/client/teams"
+                            href="https://appwrite.io/docs/products/auth/teams"
                             target="_blank"
                             rel="noopener noreferrer">
                             documentation</a

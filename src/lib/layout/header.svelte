@@ -1,27 +1,36 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
+    import { AvatarInitials, DropList, DropListItem, DropListLink, Support } from '$lib/components';
+    import { app } from '$lib/stores/app';
+    import { user } from '$lib/stores/user';
+    import { organizationList, organization, newOrgModal } from '$lib/stores/organization';
     import { page } from '$app/stores';
     import { Submit, trackEvent } from '$lib/actions/analytics';
     import { tooltip } from '$lib/actions/tooltip';
     import { toggleCommandCenter } from '$lib/commandCenter/commandCenter.svelte';
-    import { AvatarInitials, DropList, DropListItem, DropListLink } from '$lib/components';
-    import { Feedback } from '$lib/components/feedback';
     import Button from '$lib/elements/forms/button.svelte';
     import { isMac } from '$lib/helpers/platform';
-    import AppwriteLogo from '$lib/images/appwrite-gray-light.svg';
+    import AppwriteLogoDark from '$lib/images/appwrite-logo-dark.svg';
+    import AppwriteLogoLight from '$lib/images/appwrite-logo-light.svg';
     import DarkMode from '$lib/images/mode/dark-mode.svg';
     import LightMode from '$lib/images/mode/light-mode.svg';
     import SystemMode from '$lib/images/mode/system-mode.svg';
-    import { app } from '$lib/stores/app';
     import { feedback } from '$lib/stores/feedback';
-    import { newOrgModal, organization, organizationList } from '$lib/stores/organization';
-    import { sdk } from '$lib/stores/sdk';
-    import { user } from '$lib/stores/user';
-    import { isCloud } from '$lib/system';
     import { slide } from 'svelte/transition';
+    import { sdk } from '$lib/stores/sdk';
+    import { isCloud } from '$lib/system';
+    import { wizard } from '$lib/stores/wizard';
+    import CreateOrganizationCloud from '$routes/console/createOrganizationCloud.svelte';
+    import { Feedback } from '$lib/components/feedback';
+    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
+    import { Pill } from '$lib/elements';
+    import { showExcess } from '$routes/console/organization-[organization]/store';
+    import { readOnly } from '$lib/stores/billing';
+    import { BillingPlan } from '$lib/constants';
 
     let showDropdown = false;
+    let showSupport = false;
     let droplistElement: HTMLDivElement;
 
     function toggleFeedback() {
@@ -47,6 +56,13 @@
         }
     }
 
+    function createOrg() {
+        showDropdown = false;
+        if (isCloud) {
+            wizard.start(CreateOrganizationCloud);
+        } else newOrgModal.set(true);
+    }
+
     $: if (showDropdown) {
         trackEvent('click_menu_dropdown');
     }
@@ -65,18 +81,51 @@
 
 <svelte:window on:click={onBlur} />
 
-<a
-    class="logo"
-    href={$organization ? `${base}/console/organization-${$organization.$id}` : `${base}/console`}>
-    <img src={AppwriteLogo} width="132" height="34" alt="Appwrite" />
-</a>
+<div class="logo u-inline-flex u-gap-16 u-cross-center">
+    <a
+        href={$organization
+            ? `${base}/console/organization-${$organization.$id}`
+            : `${base}/console`}>
+        <img
+            src={$app.themeInUse == 'dark' ? AppwriteLogoDark : AppwriteLogoLight}
+            width="120"
+            height="22"
+            alt="Appwrite" />
+    </a>
+    {#if isCloud}
+        <div
+            class="tag eyebrow-heading-3"
+            style="--p-tag-height: 1.785rem; --p-tag-content-height: 1.15rem; padding-block: 0.25rem;">
+            <span class="text u-x-small" style="font-weight: 500">Beta</span>
+        </div>
+    {/if}
+</div>
 
 {#if $page.data.breadcrumbs}
     <svelte:component this={$page.data.breadcrumbs} />
 {/if}
 
+{#if !$page.url.pathname.includes('/console/account') && $readOnly}
+    <div style="min-inline-size: fit-content">
+        <Pill danger button on:click={() => ($showExcess = true)}>
+            <div>
+                <span class="icon-exclamation-circle" aria-hidden="true" />
+                <span>limit reached</span>
+            </div>
+        </Pill>
+    </div>
+{/if}
+
 <div class="main-header-end">
-    <nav class="u-flex is-only-desktop">
+    <nav class="u-flex is-only-desktop u-cross-center">
+        {#if isCloud && $organization?.billingPlan === BillingPlan.STARTER && !$page.url.pathname.startsWith('/console/account')}
+            <Button
+                disabled={$organization?.markedForDeletion}
+                on:click={() => wizard.start(ChangeOrganizationTierCloud)}>
+                Upgrade
+            </Button>
+        {/if}
+
         {#if $feedback.notification}
             <div class="u-flex u-cross-center">
                 <div class="pulse-notification" />
@@ -90,13 +139,17 @@
                 <Feedback />
             </svelte:fragment>
         </DropList>
-        <a
-            href="https://appwrite.io/support"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="button is-small is-text">
-            <span class="text">Support</span>
-        </a>
+
+        {#if isCloud}
+            <DropList width="18.5" bind:show={showSupport} scrollable={true}>
+                <Button text on:click={() => (showSupport = !showSupport)}>
+                    <span class="text">Support</span>
+                </Button>
+                <svelte:fragment slot="other">
+                    <Support bind:show={showSupport} />
+                </svelte:fragment>
+            </DropList>
+        {/if}
         <Button
             actions={[
                 (node) => {
@@ -118,9 +171,9 @@
                 <button class="user-profile-button" on:click={() => (showDropdown = !showDropdown)}>
                     <AvatarInitials size={40} name={$user.name} />
                     <span class="user-profile-info is-only-desktop">
-                        <span class="name">{$user.name}</span>
+                        <span class="name" data-private>{$user.name}</span>
                         {#if $organization}
-                            <span class="title">{$organization.name}</span>
+                            <span class="title" data-private>{$organization.name}</span>
                         {/if}
                     </span>
                     <span
@@ -132,7 +185,7 @@
                 {#if showDropdown}
                     <div
                         class="drop is-no-arrow is-block-end is-inline-end"
-                        transition:slideFade={{ duration: 150 }}>
+                        transition:slideFade|global={{ duration: 150 }}>
                         {#if $organizationList?.total}
                             <section class="drop-section u-overflow-y-auto u-max-height-200">
                                 <ul class="drop-list">
@@ -148,12 +201,7 @@
                         {/if}
                         <section class="drop-section">
                             <ul class="drop-list">
-                                <DropListItem
-                                    icon="plus"
-                                    on:click={() => {
-                                        showDropdown = false;
-                                        newOrgModal.set(true);
-                                    }}>
+                                <DropListItem icon="plus" on:click={createOrg}>
                                     New organization
                                 </DropListItem>
                                 <DropListLink
@@ -220,81 +268,9 @@
                                 </li>
                             </ul>
                         </section>
-                        {#if isCloud}
-                            <section class="drop-section">
-                                <a
-                                    class="claim"
-                                    title="Gradient Border"
-                                    href="/card"
-                                    data-sveltekit-reload>
-                                    Claim your Cloud card
-                                </a>
-                            </section>
-                        {/if}
                     </div>
                 {/if}
             </div>
         {/if}
     </nav>
 </div>
-
-<style lang="scss">
-    .claim {
-        display: block;
-        background-image: linear-gradient(90deg, #fd7f34, #bd155b);
-
-        padding: 0.6875rem 0.625rem;
-        position: relative;
-        z-index: 0;
-        border-radius: 0.5rem;
-        text-align: center;
-        width: 100%;
-
-        font-family: 'Inter';
-        font-style: normal;
-        font-weight: 500;
-        font-size: 12px;
-        line-height: 150%;
-
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-
-        color: #ffffff;
-
-        transition: 150ms ease;
-
-        &::before {
-            content: '';
-            position: absolute;
-            left: -1px;
-            top: -1px;
-            width: calc(100% + 2px);
-            height: calc(100% + 2px);
-            background: linear-gradient(
-                113.48deg,
-                #3b3b4eaa -15.8%,
-                rgba(255, 255, 255, 0.7) 27.72%,
-                #3b3b4eaa 109.47%
-            );
-            z-index: -2;
-            border-radius: 0.3125rem;
-        }
-
-        &::after {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(180deg, #1b1b28 0%, #272739 62.73%, #c81b4c 136.87%);
-            z-index: -1;
-
-            border-radius: 0.25rem;
-        }
-
-        &:hover {
-            opacity: 0.75;
-        }
-    }
-</style>

@@ -1,46 +1,65 @@
+type TemplateRuntime = {
+    name: string;
+    versions: string[];
+};
+
+const TemplateRuntimes = {
+    NODE: { name: 'node', versions: ['20.0', '19.0', '18.0', '16.0', '14.5'] },
+    PHP: { name: 'php', versions: ['8.2', '8.1', '8.0'] },
+    RUBY: { name: 'ruby', versions: ['3.2', '3.1', '3.0'] },
+    PYTHON: { name: 'python', versions: ['3.12', '3.11', '3.10', '3.9', '3.8'] },
+    DART: { name: 'dart', versions: ['3.1', '3.0', '2.19', '2.18', '2.17', '2.16', '2.16'] },
+    BUN: { name: 'bun', versions: ['1.0'] }
+};
+
+const getRuntimes = (
+    runtime: TemplateRuntime,
+    commands: string,
+    entrypoint: string,
+    providerRootDirectory: string,
+    versionsDenyList: string[] = []
+) => {
+    return runtime.versions
+        .filter((version) => !versionsDenyList.includes(version))
+        .map((version) => {
+            return {
+                name: `${runtime.name}-${version}`,
+                commands,
+                entrypoint,
+                providerRootDirectory
+            };
+        });
+};
+
 export const marketplace: MarketplaceTemplate[] = [
     {
         icon: 'icon-lightning-bolt',
         id: 'starter',
         name: 'Starter function',
         tagline:
-            'A simple function to get started. Edit this function to explore endless possibilities with Appwrite Functions. 🚀',
+            'A simple function to get started. Edit this function to explore endless possibilities with Appwrite Functions.',
         permissions: ['any'],
         events: [],
         cron: '',
         timeout: 15,
         usecases: ['Starter'],
         runtimes: [
-            {
-                name: 'node-18.0',
-                commands: 'npm install',
-                entrypoint: 'src/main.js',
-                providerRootDirectory: 'node/starter'
-            },
-            {
-                name: 'php-8.0',
-                commands: 'composer install',
-                entrypoint: 'src/index.php',
-                providerRootDirectory: 'php/starter'
-            },
-            {
-                name: 'ruby-3.0',
-                commands: 'bundle install',
-                entrypoint: 'lib/main.rb',
-                providerRootDirectory: 'ruby/starter'
-            },
-            {
-                name: 'python-3.9',
-                commands: 'pip install -r requirements.txt',
-                entrypoint: 'src/main.py',
-                providerRootDirectory: 'python/starter'
-            },
-            {
-                name: 'dart-2.17',
-                commands: 'dart pub get',
-                entrypoint: 'lib/main.dart',
-                providerRootDirectory: 'dart/starter'
-            }
+            ...getRuntimes(TemplateRuntimes.NODE, 'npm install', 'src/main.js', 'node/starter'),
+            ...getRuntimes(
+                TemplateRuntimes.PHP,
+                'composer install',
+                'src/index.php',
+                'php/starter'
+            ),
+            ...getRuntimes(TemplateRuntimes.RUBY, 'bundle install', 'lib/main.rb', 'ruby/starter'),
+            ...getRuntimes(
+                TemplateRuntimes.PYTHON,
+                'pip install -r requirements.txt',
+                'src/main.py',
+                'python/starter'
+            ),
+            ...getRuntimes(TemplateRuntimes.DART, 'dart pub get', 'lib/main.dart', 'dart/starter'),
+            ...getRuntimes(TemplateRuntimes.BUN, 'bun install', 'src/main.ts', 'bun/starter')
         ],
         instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/starter">file</a>.`,
         vcsProvider: 'github',
@@ -50,7 +69,7 @@ export const marketplace: MarketplaceTemplate[] = [
         variables: [
             {
                 name: 'APPWRITE_API_KEY',
-                description: `The API Key to talk to Appwrite backend APIs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/getting-started-for-server">Learn more</a>.`,
+                description: `The API Key to authenticate against Appwrite's Server APIs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/advanced/platform/api-keys">Learn more</a>.`,
                 value: '',
                 placeholder: 'd1efb...aec35',
                 required: false,
@@ -69,30 +88,30 @@ export const marketplace: MarketplaceTemplate[] = [
         timeout: 15,
         usecases: ['AI'],
         runtimes: [
-            {
-                name: 'node-18.0',
-                commands: 'npm install',
-                entrypoint: 'src/main.js',
-                providerRootDirectory: 'node/prompt-chatgpt'
-            },
-            {
-                name: 'python-3.9',
-                commands: 'pip install -r requirements.txt',
-                entrypoint: 'src/main.py',
-                providerRootDirectory: 'python/prompt_chatgpt'
-            },
-            {
-                name: 'php-8.0',
-                commands: 'composer install',
-                entrypoint: 'src/index.php',
-                providerRootDirectory: 'php/prompt-chatgpt'
-            },
-            {
-                name: 'dart-2.17',
-                commands: 'dart pub get',
-                entrypoint: 'lib/main.dart',
-                providerRootDirectory: 'dart/prompt_chatgpt'
-            }
+            ...getRuntimes(
+                TemplateRuntimes.NODE,
+                'npm install',
+                'src/main.js',
+                'node/prompt-chatgpt'
+            ),
+            ...getRuntimes(
+                TemplateRuntimes.PYTHON,
+                'pip install -r requirements.txt',
+                'src/main.py',
+                'python/prompt_chatgpt'
+            ),
+            ...getRuntimes(
+                TemplateRuntimes.PHP,
+                'composer install',
+                'src/index.php',
+                'php/prompt-chatgpt'
+            ),
+            ...getRuntimes(
+                TemplateRuntimes.DART,
+                'dart pub get',
+                'lib/main.dart',
+                'dart/prompt_chatgpt'
+            )
         ],
         instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/prompt-chatgpt">file</a>.`,
         vcsProvider: 'github',
@@ -129,18 +148,18 @@ export const marketplace: MarketplaceTemplate[] = [
         timeout: 15,
         usecases: ['Messaging'],
         runtimes: [
-            {
-                name: 'node-18.0',
-                commands: 'npm install && npm run setup',
-                entrypoint: 'src/main.js',
-                providerRootDirectory: 'node/discord-command-bot'
-            },
-            {
-                name: 'python-3.9',
-                commands: 'pip install -r requirements.txt && python src/setup.py',
-                entrypoint: 'src/main.py',
-                providerRootDirectory: 'python/discord_command_bot'
-            }
+            ...getRuntimes(
+                TemplateRuntimes.NODE,
+                'npm install && npm run setup',
+                'src/main.js',
+                'node/discord-command-bot'
+            ),
+            ...getRuntimes(
+                TemplateRuntimes.PYTHON,
+                'pip install -r requirements.txt && python src/setup.py',
+                'src/main.py',
+                'python/discord_command_bot'
+            )
         ],
         instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/discord-command-bot">file</a>.`,
         vcsProvider: 'github',
@@ -185,12 +204,12 @@ export const marketplace: MarketplaceTemplate[] = [
         timeout: 15,
         usecases: ['AI'],
         runtimes: [
-            {
-                name: 'node-18.0',
-                commands: 'npm install',
-                entrypoint: 'src/main.js',
-                providerRootDirectory: 'node/analyze-with-perspectiveapi'
-            }
+            ...getRuntimes(
+                TemplateRuntimes.NODE,
+                'npm install',
+                'src/main.js',
+                'node/analyze-with-perspectiveapi'
+            )
         ],
         instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/analyze-with-perspectiveapi">file</a>.`,
         vcsProvider: 'github',
@@ -220,24 +239,24 @@ export const marketplace: MarketplaceTemplate[] = [
         timeout: 15,
         usecases: ['AI'],
         runtimes: [
-            {
-                name: 'node-18.0',
-                commands: 'npm install',
-                entrypoint: 'src/main.js',
-                providerRootDirectory: 'node/censor-with-redact'
-            },
-            {
-                name: 'python-3.9',
-                commands: 'pip install -r requirements.txt',
-                entrypoint: 'src/main.py',
-                providerRootDirectory: 'python/censor_with_redact'
-            },
-            {
-                name: 'dart-2.17',
-                commands: 'dart pub get',
-                entrypoint: 'lib/main.dart',
-                providerRootDirectory: 'dart/censor_with_redact'
-            }
+            ...getRuntimes(
+                TemplateRuntimes.NODE,
+                'npm install',
+                'src/main.js',
+                'node/censor-with-redact'
+            ),
+            ...getRuntimes(
+                TemplateRuntimes.PYTHON,
+                'pip install -r requirements.txt',
+                'src/main.py',
+                'python/censor_with_redact'
+            ),
+            ...getRuntimes(
+                TemplateRuntimes.DART,
+                'dart pub get',
+                'lib/main.dart',
+                'dart/censor_with_redact'
+            )
         ],
         instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/censor-with-redact">file</a>.`,
         vcsProvider: 'github',
@@ -266,12 +285,7 @@ export const marketplace: MarketplaceTemplate[] = [
         timeout: 15,
         usecases: ['Utilities'],
         runtimes: [
-            {
-                name: 'node-18.0',
-                commands: 'npm install',
-                entrypoint: 'src/main.js',
-                providerRootDirectory: 'node/generate-pdf'
-            }
+            ...getRuntimes(TemplateRuntimes.NODE, 'npm install', 'src/main.js', 'node/generate-pdf')
         ],
         instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/generate-pdf">file</a>.`,
         vcsProvider: 'github',
@@ -292,12 +306,12 @@ export const marketplace: MarketplaceTemplate[] = [
         timeout: 15,
         usecases: ['Dev Tools'],
         runtimes: [
-            {
-                name: 'node-18.0',
-                commands: 'npm install',
-                entrypoint: 'src/main.js',
-                providerRootDirectory: 'node/github-issue-bot'
-            }
+            ...getRuntimes(
+                TemplateRuntimes.NODE,
+                'npm install',
+                'src/main.js',
+                'node/github-issue-bot'
+            )
         ],
         instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/github-issue-bot">file</a>.`,
         vcsProvider: 'github',
@@ -334,12 +348,12 @@ export const marketplace: MarketplaceTemplate[] = [
         timeout: 15,
         usecases: ['Utilities'],
         runtimes: [
-            {
-                name: 'node-18.0',
-                commands: 'npm install',
-                entrypoint: 'src/main.js',
-                providerRootDirectory: 'node/url-shortener'
-            }
+            ...getRuntimes(
+                TemplateRuntimes.NODE,
+                'npm install',
+                'src/main.js',
+                'node/url-shortener'
+            )
         ],
         instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/url-shortener">file</a>.`,
         vcsProvider: 'github',
@@ -349,7 +363,7 @@ export const marketplace: MarketplaceTemplate[] = [
         variables: [
             {
                 name: 'APPWRITE_API_KEY',
-                description: `The API Key to talk to Appwrite backend APIs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/getting-started-for-server">Learn more</a>.`,
+                description: `The API Key to authenticate against Appwrite's Server APIs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/advanced/platform/api-keys">Learn more</a>.`,
                 value: '',
                 placeholder: 'd1efb...aec35',
                 required: true,
@@ -357,7 +371,7 @@ export const marketplace: MarketplaceTemplate[] = [
             },
             {
                 name: 'APPWRITE_ENDPOINT',
-                description: `The URL endpoint of the Appwrite server. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/getting-started-for-server">Learn more</a>.`,
+                description: `The API endpoint of the Appwrite. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/references#api">Learn more</a>.`,
                 value: 'https://cloud.appwrite.io/v1',
                 placeholder: 'https://cloud.appwrite.io/v1',
                 required: false,
@@ -365,7 +379,7 @@ export const marketplace: MarketplaceTemplate[] = [
             },
             {
                 name: 'APPWRITE_DATABASE_ID',
-                description: `The ID of the database to store the short URLs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/databases">Learn more</a>.`,
+                description: `The ID of the database to store the short URLs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/products/databases/databases">Learn more</a>.`,
                 value: 'urlShortener',
                 placeholder: 'urlShortener',
                 required: false,
@@ -373,7 +387,7 @@ export const marketplace: MarketplaceTemplate[] = [
             },
             {
                 name: 'APPWRITE_COLLECTION_ID',
-                description: `The ID of the collection to store the short URLs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/collections">Learn more</a>.`,
+                description: `The ID of the collection to store the short URLs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/products/databases/collections">Learn more</a>.`,
                 value: 'urls',
                 placeholder: 'urls',
                 required: false,
@@ -400,24 +414,24 @@ export const marketplace: MarketplaceTemplate[] = [
         timeout: 15,
         usecases: ['Databases'],
         runtimes: [
-            {
-                name: 'node-18.0',
-                commands: 'npm install',
-                entrypoint: 'src/main.js',
-                providerRootDirectory: 'node/sync-with-algolia'
-            },
-            {
-                name: 'python-3.9',
-                commands: 'pip install -r requirements.txt',
-                entrypoint: 'src/main.py',
-                providerRootDirectory: 'python/sync_with_algolia'
-            },
-            {
-                name: 'php-8.0',
-                commands: 'composer install',
-                entrypoint: 'src/index.php',
-                providerRootDirectory: 'php/sync-with-algolia'
-            }
+            ...getRuntimes(
+                TemplateRuntimes.NODE,
+                'npm install',
+                'src/main.js',
+                'node/sync-with-algolia'
+            ),
+            ...getRuntimes(
+                TemplateRuntimes.PYTHON,
+                'pip install -r requirements.txt',
+                'src/main.py',
+                'python/sync_with_algolia'
+            ),
+            ...getRuntimes(
+                TemplateRuntimes.PHP,
+                'composer install',
+                'src/index.php',
+                'php/sync-with-algolia'
+            )
         ],
         instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/sync-with-algolia">file</a>.`,
         vcsProvider: 'github',
@@ -427,7 +441,7 @@ export const marketplace: MarketplaceTemplate[] = [
         variables: [
             {
                 name: 'APPWRITE_API_KEY',
-                description: `The API Key to talk to Appwrite backend APIs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/getting-started-for-server">Learn more</a>.`,
+                description: `The API Key to authenticate against Appwrite's Server APIs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/advanced/platform/api-keys">Learn more</a>.`,
                 value: '',
                 placeholder: 'd1efb...aec35',
                 required: true,
@@ -435,15 +449,22 @@ export const marketplace: MarketplaceTemplate[] = [
             },
             {
                 name: 'APPWRITE_DATABASE_ID',
-                description: `The ID of the Appwrite database that contains the collection to sync. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/databases">Learn more</a>.`,
+                description: `The ID of the Appwrite database that contains the collection to sync. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/products/databases/databases">Learn more</a>.`,
                 placeholder: '64a55...7b912',
                 required: true,
                 type: 'text'
             },
             {
                 name: 'APPWRITE_COLLECTION_ID',
-                description: `The ID of the collection in the Appwrite database to sync. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/collections">Learn more</a>.`,
+                description: `The ID of the collection in the Appwrite database to sync. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/products/databases/collections">Learn more</a>.`,
                 placeholder: '7c3e8...2a9f1',
+                required: true,
+                type: 'text'
+            },
+            {
+                name: 'ALGOLIA_APP_ID',
+                description: `The ID of the application in Algolia. <a class="u-bold" target="_blank" href="https://support.algolia.com/hc/en-us/articles/11040113398673-Where-can-I-find-my-application-ID-and-the-index-name-">Learn more</a>.`,
+                placeholder: 'OFCNCOG2CU',
                 required: true,
                 type: 'text'
             },
@@ -470,7 +491,7 @@ export const marketplace: MarketplaceTemplate[] = [
             },
             {
                 name: 'APPWRITE_ENDPOINT',
-                description: `The URL endpoint of the Appwrite server. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/getting-started-for-server">Learn more</a>.`,
+                description: `The URL endpoint of the Appwrite server. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/references#api">Learn more</a>.`,
                 value: 'https://cloud.appwrite.io/v1',
                 placeholder: 'https://cloud.appwrite.io/v1',
                 required: false,
@@ -489,12 +510,12 @@ export const marketplace: MarketplaceTemplate[] = [
         timeout: 15,
         usecases: ['Databases'],
         runtimes: [
-            {
-                name: 'node-18.0',
-                commands: 'npm install',
-                entrypoint: 'src/main.js',
-                providerRootDirectory: 'node/sync-with-meilisearch'
-            }
+            ...getRuntimes(
+                TemplateRuntimes.NODE,
+                'npm install',
+                'src/main.js',
+                'node/sync-with-meilisearch'
+            )
         ],
         instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/sync-with-meilisearch">file</a>.`,
         vcsProvider: 'github',
@@ -504,7 +525,7 @@ export const marketplace: MarketplaceTemplate[] = [
         variables: [
             {
                 name: 'APPWRITE_API_KEY',
-                description: `The API Key to talk to Appwrite backend APIs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/getting-started-for-server">Learn more</a>.`,
+                description: `The API Key to authenticate against Appwrite's Server APIs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/advanced/platform/api-keys">Learn more</a>.`,
                 value: '',
                 placeholder: 'd1efb...aec35',
                 required: true,
@@ -512,14 +533,14 @@ export const marketplace: MarketplaceTemplate[] = [
             },
             {
                 name: 'APPWRITE_DATABASE_ID',
-                description: `The ID of the Appwrite database that contains the collection to sync. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/databases">Learn more</a>.`,
+                description: `The ID of the Appwrite database that contains the collection to sync. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/products/databases/databases">Learn more</a>.`,
                 placeholder: '64a55...7b912',
                 required: true,
                 type: 'text'
             },
             {
                 name: 'APPWRITE_COLLECTION_ID',
-                description: `The ID of the collection in the Appwrite database to sync. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/collections">Learn more</a>.`,
+                description: `The ID of the collection in the Appwrite database to sync. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/products/databases/collections">Learn more</a>.`,
                 placeholder: '7c3e8...2a9f1',
                 required: true,
                 type: 'text'
@@ -554,7 +575,7 @@ export const marketplace: MarketplaceTemplate[] = [
             },
             {
                 name: 'APPWRITE_ENDPOINT',
-                description: `The URL endpoint of the Appwrite server. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/getting-started-for-server">Learn more</a>.`,
+                description: `The URL endpoint of the Appwrite server. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/references#api">Learn more</a>.`,
                 value: 'https://cloud.appwrite.io/v1',
                 placeholder: 'https://cloud.appwrite.io/v1',
                 required: false,
@@ -573,12 +594,12 @@ export const marketplace: MarketplaceTemplate[] = [
         timeout: 15,
         usecases: ['Messaging'],
         runtimes: [
-            {
-                name: 'node-18.0',
-                commands: 'npm install',
-                entrypoint: 'src/main.js',
-                providerRootDirectory: 'node/whatsapp-with-vonage'
-            }
+            ...getRuntimes(
+                TemplateRuntimes.NODE,
+                'npm install',
+                'src/main.js',
+                'node/whatsapp-with-vonage'
+            )
         ],
         instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/whatsapp-with-vonage">file</a>.`,
         vcsProvider: 'github',
@@ -628,12 +649,12 @@ export const marketplace: MarketplaceTemplate[] = [
         timeout: 15,
         usecases: ['Messaging'],
         runtimes: [
-            {
-                name: 'node-18.0',
-                commands: 'npm install',
-                entrypoint: 'src/main.js',
-                providerRootDirectory: 'node/push-notification-with-fcm'
-            }
+            ...getRuntimes(
+                TemplateRuntimes.NODE,
+                'npm install',
+                'src/main.js',
+                'node/push-notification-with-fcm'
+            )
         ],
         instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/push-notification-with-fcm">file</a>.`,
         vcsProvider: 'github',
@@ -683,24 +704,24 @@ export const marketplace: MarketplaceTemplate[] = [
         timeout: 15,
         usecases: ['Utilities'],
         runtimes: [
-            {
-                name: 'node-18.0',
-                commands: 'npm install',
-                entrypoint: 'src/main.js',
-                providerRootDirectory: 'node/email-contact-form'
-            },
-            {
-                name: 'python-3.9',
-                commands: 'pip install -r requirements.txt',
-                entrypoint: 'src/main.py',
-                providerRootDirectory: 'python/email_contact_form'
-            },
-            {
-                name: 'php-8.0',
-                commands: 'composer install',
-                entrypoint: 'src/index.php',
-                providerRootDirectory: 'php/email-contact-form'
-            }
+            ...getRuntimes(
+                TemplateRuntimes.NODE,
+                'npm install',
+                'src/main.js',
+                'node/email-contact-form'
+            ),
+            ...getRuntimes(
+                TemplateRuntimes.PYTHON,
+                'pip install -r requirements.txt',
+                'src/main.py',
+                'python/email_contact_form'
+            ),
+            ...getRuntimes(
+                TemplateRuntimes.PHP,
+                'composer install',
+                'src/index.php',
+                'php/email-contact-form'
+            )
         ],
         instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/email-contact-form">file</a>.`,
         vcsProvider: 'github',
@@ -765,12 +786,12 @@ export const marketplace: MarketplaceTemplate[] = [
         timeout: 15,
         usecases: ['Utilities'],
         runtimes: [
-            {
-                name: 'node-18.0',
-                commands: 'npm install',
-                entrypoint: 'src/main.js',
-                providerRootDirectory: 'node/subscriptions-with-stripe'
-            }
+            ...getRuntimes(
+                TemplateRuntimes.NODE,
+                'npm install',
+                'src/main.js',
+                'node/subscriptions-with-stripe'
+            )
         ],
         instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/subscriptions-with-stripe">file</a>.`,
         vcsProvider: 'github',
@@ -780,7 +801,7 @@ export const marketplace: MarketplaceTemplate[] = [
         variables: [
             {
                 name: 'APPWRITE_API_KEY',
-                description: `The API Key to talk to Appwrite backend APIs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/getting-started-for-server">Learn more</a>.`,
+                description: `The API Key to authenticate against Appwrite's Server APIs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/advanced/platform/api-keys">Learn more</a>.`,
                 value: '',
                 placeholder: 'd1efb...aec35',
                 required: true,
@@ -788,7 +809,7 @@ export const marketplace: MarketplaceTemplate[] = [
             },
             {
                 name: 'APPWRITE_ENDPOINT',
-                description: `The URL endpoint of the Appwrite server. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/getting-started-for-server">Learn more</a>.`,
+                description: `The URL endpoint of the Appwrite server. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/references#api">Learn more</a>.`,
                 value: 'https://cloud.appwrite.io/v1',
                 placeholder: 'https://cloud.appwrite.io/v1',
                 required: false,
@@ -821,12 +842,12 @@ export const marketplace: MarketplaceTemplate[] = [
         timeout: 15,
         usecases: ['Utilities'],
         runtimes: [
-            {
-                name: 'node-18.0',
-                commands: 'npm install && npm run setup',
-                entrypoint: 'src/main.js',
-                providerRootDirectory: 'node/payments-with-stripe'
-            }
+            ...getRuntimes(
+                TemplateRuntimes.NODE,
+                'npm install',
+                'src/main.js',
+                'node/payments-with-stripe'
+            )
         ],
         instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/payments-with-stripe">file</a>.`,
         vcsProvider: 'github',
@@ -836,7 +857,7 @@ export const marketplace: MarketplaceTemplate[] = [
         variables: [
             {
                 name: 'APPWRITE_API_KEY',
-                description: `The API Key to talk to Appwrite backend APIs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/getting-started-for-server">Learn more</a>.`,
+                description: `The API Key to authenticate against Appwrite's Server APIs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/advanced/platform/api-keys">Learn more</a>.`,
                 value: '',
                 placeholder: 'd1efb...aec35',
                 required: true,
@@ -844,7 +865,7 @@ export const marketplace: MarketplaceTemplate[] = [
             },
             {
                 name: 'APPWRITE_ENDPOINT',
-                description: `The URL endpoint of the Appwrite server. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/getting-started-for-server">Learn more</a>.`,
+                description: `The URL endpoint of the Appwrite server. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/references#api">Learn more</a>.`,
                 value: 'https://cloud.appwrite.io/v1',
                 placeholder: 'https://cloud.appwrite.io/v1',
                 required: false,
@@ -866,7 +887,7 @@ export const marketplace: MarketplaceTemplate[] = [
             },
             {
                 name: 'APPWRITE_DATABASE_ID',
-                description: `The ID of the database to store paid orders. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/databases">Learn more</a>.`,
+                description: `The ID of the database to store paid orders. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/products/databases/databases">Learn more</a>.`,
                 value: 'orders',
                 placeholder: 'orders',
                 required: false,
@@ -874,7 +895,7 @@ export const marketplace: MarketplaceTemplate[] = [
             },
             {
                 name: 'APPWRITE_COLLECTION_ID',
-                description: `The ID of the collection to store paid orders. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/collections">Learn more</a>.`,
+                description: `The ID of the collection to store paid orders. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/products/databases/collections">Learn more</a>.`,
                 value: 'orders',
                 placeholder: 'orders',
                 required: false,

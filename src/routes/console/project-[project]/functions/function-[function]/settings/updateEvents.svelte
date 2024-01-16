@@ -141,7 +141,7 @@
                     </Button>
                 </div>
             {:else}
-                <Empty on:click={() => (showEvents = true)}>Add an event to get started</Empty>
+                <Empty on:click={() => (showEvents = true)}>Add an event</Empty>
             {/if}
         </svelte:fragment>
 
@@ -154,7 +154,7 @@
 <EventModal bind:show={showEvents} initialValue={eventValue} on:created={handleEvent}>
     <p class="text">
         Select events in your Appwrite project that will trigger your function. <a
-            href="https://appwrite.io/docs/events"
+            href="https://appwrite.io/docs/advanced/platform/events"
             target="_blank"
             rel="noopener noreferrer"
             class="link">Learn more about Appwrite Events</a

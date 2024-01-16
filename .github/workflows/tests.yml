@@ -3,8 +3,14 @@ name: Tests
 on:
     push:
         branches: [main]
+        paths-ignore:
+            - '**/*.md'
+            - 'static/**/*'
     pull_request:
         branches: [main]
+        paths-ignore:
+            - '**/*.md'
+            - 'static/**/*'
 
 env:
     VITE_APPWRITE_ENDPOINT: http://appwrite.test/v1

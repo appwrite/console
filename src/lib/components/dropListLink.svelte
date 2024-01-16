@@ -1,14 +1,27 @@
 <script lang="ts">
-    import { clickOnEnter } from '$lib/helpers/a11y';
+    import { trackEvent } from '$lib/actions/analytics';
 
     export let href: string;
     export let icon: string = null;
     export let disabled = false;
     export let external = false;
+    export let event: string = null;
+
+    function track() {
+        if (!event) {
+            return;
+        }
+
+        trackEvent(`click_${event}`, {
+            from: 'drop-list-link'
+        });
+    }
 </script>
 
-<li class="drop-list-item" on:click on:keyup={clickOnEnter}>
+<li class="drop-list-item">
     <a
+        on:click
+        on:click={track}
         {href}
         class="drop-button"
         class:is-disabled={disabled}

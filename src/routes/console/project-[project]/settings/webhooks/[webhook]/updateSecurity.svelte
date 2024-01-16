@@ -89,7 +89,7 @@
                     <span class="u-color-text-danger">Warning:</span> Untrusted or self-signed
                     certificates may not be secure.
                     <a
-                        href="https://appwrite.io/docs/custom-domains#enjoySSLCert"
+                        href="https://appwrite.io/docs/advanced/self-hosting/tls-certificates"
                         target="_blank"
                         rel="noopener noreferrer"
                         class="link">

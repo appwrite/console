@@ -26,20 +26,14 @@
         TableRowLink
     } from '$lib/elements/table';
     import { toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
-    import { Container } from '$lib/layout';
+    import { Container, ContainerHeader } from '$lib/layout';
     import type { Models } from '@appwrite.io/console';
     import { writable } from 'svelte/store';
     import type { PageData } from './$types';
     import Create from './createUser.svelte';
+    import { tooltip } from '$lib/actions/tooltip';
 
     export let data: PageData;
-
-    // TODO: Remove this when the console SDK is updated
-    const users = data.users.users.map((user) => {
-        const labels: string[] = [];
-        const accessedAt = '';
-        return { accessedAt, labels, ...user };
-    });
 
     const projectId = $page.params.project;
     async function userCreated(event: CustomEvent<Models.User<Record<string, unknown>>>) {
@@ -48,11 +42,22 @@
 </script>
 
 <Container>
-    <SearchQuery search={data.search} placeholder="Search by name, email, phone, or ID">
-        <Button on:click={() => ($showCreateUser = true)} event="create_user">
-            <span class="icon-plus" aria-hidden="true" /> <span class="text">Create user</span>
-        </Button>
-    </SearchQuery>
+    <ContainerHeader title="Users" isFlex={false} total={data.users.total} let:isButtonDisabled>
+        <SearchQuery search={data.search} placeholder="Search by name, email, phone, or ID">
+            <div
+                use:tooltip={{
+                    content: `Upgrade to add more users`,
+                    disabled: !isButtonDisabled
+                }}>
+                <Button
+                    on:click={() => ($showCreateUser = true)}
+                    event="create_user"
+                    disabled={isButtonDisabled}>
+                    <span class="icon-plus" aria-hidden="true" />
+                    <span class="text">Create user</span>
+                </Button>
+            </div></SearchQuery>
+    </ContainerHeader>
     {#if data.users.total}
         <Table>
             <TableHeader>
@@ -65,7 +70,7 @@
                 <TableCellHead onlyDesktop>Last Activity</TableCellHead>
             </TableHeader>
             <TableBody>
-                {#each users as user}
+                {#each data.users.users as user}
                     <TableRowLink
                         href={`${base}/console/project-${projectId}/auth/user-${user.$id}`}>
                         <TableCell title="Name">
@@ -98,10 +103,10 @@
                                     {user.emailVerification && user.phoneVerification
                                         ? 'verified'
                                         : user.emailVerification
-                                        ? 'verified email'
-                                        : user.phoneVerification
-                                        ? 'verified phone'
-                                        : 'unverified'}
+                                          ? 'verified email'
+                                          : user.phoneVerification
+                                            ? 'verified phone'
+                                            : 'unverified'}
                                 </Pill>
                             {:else}
                                 <Pill danger>blocked</Pill>
@@ -145,7 +150,7 @@
     {:else}
         <Empty
             single
-            href="https://appwrite.io/docs/server/users"
+            href="https://appwrite.io/docs/references/cloud/server-nodejs/users"
             target="user"
             on:click={() => showCreateUser.set(true)} />
     {/if}

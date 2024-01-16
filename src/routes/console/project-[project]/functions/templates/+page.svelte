@@ -12,9 +12,13 @@
         SvgIcon
     } from '$lib/components';
     import { Button, InputSearch } from '$lib/elements/forms';
-    import { Container } from '$lib/layout';
+    import { Container, ContainerButton } from '$lib/layout';
     import { app } from '$lib/stores/app';
+    import { isServiceLimited } from '$lib/stores/billing';
+    import type { Runtime } from '$lib/stores/marketplace.js';
+    import { organization } from '$lib/stores/organization';
     import { connectTemplate } from '$lib/wizards/functions/cover.svelte';
+    import { functionsList } from '../store';
 
     export let data;
 
@@ -39,6 +43,18 @@
         goto(target.toString());
     }
 
+    function getBaseRuntimes(runtimes: Runtime[]): Runtime[] {
+        const baseRuntimes = new Map<string, Runtime>();
+        for (const runtime of runtimes) {
+            const [baseRuntime] = runtime.name.split('-');
+            baseRuntimes.set(baseRuntime, {
+                ...runtime,
+                name: baseRuntime
+            });
+        }
+        return [...baseRuntimes.values()];
+    }
+
     function getIconFromRuntime(runtime: string) {
         switch (true) {
             case runtime.includes('node'):
@@ -51,6 +67,8 @@
                 return 'python';
             case runtime.includes('dart'):
                 return 'dart';
+            case runtime.includes('bun'):
+                return 'bun';
             default:
                 return undefined;
         }
@@ -68,6 +86,12 @@
         target.searchParams.delete('page');
         goto(target.toString(), { keepFocus: true });
     }
+
+    $: buttonDisabled = isServiceLimited(
+        'functions',
+        $organization?.billingPlan,
+        $functionsList?.total ?? 0
+    );
 </script>
 
 <Container>
@@ -151,8 +175,9 @@
                     class="grid-box"
                     style="--grid-item-size:22rem; --grid-item-size-small-screens:19rem">
                     {#each data.templates as template}
-                        {@const displayed = template.runtimes.slice(0, 2)}
-                        {@const hidden = template.runtimes.slice(1, -1)}
+                        {@const baseRuntimes = getBaseRuntimes(template.runtimes)}
+                        {@const displayed = baseRuntimes.slice(0, 2)}
+                        {@const hidden = baseRuntimes.slice(1, -1)}
                         <li>
                             <article class="card u-min-height-100-percent">
                                 <div class="u-flex u-gap-16 u-cross-center u-main-space-between">
@@ -202,9 +227,14 @@
                                         <span class="text">View details</span>
                                     </Button>
 
-                                    <Button secondary on:click={() => connectTemplate(template)}>
-                                        <span class="text">Create function</span>
-                                    </Button>
+                                    <ContainerButton
+                                        title="functions"
+                                        disabled={buttonDisabled}
+                                        buttonType="secondary"
+                                        buttonMethod={() => connectTemplate(template)}
+                                        showIcon={false}
+                                        buttonText="Create function"
+                                        buttonEvent="create_function" />
                                 </div>
                             </article>
                         </li>

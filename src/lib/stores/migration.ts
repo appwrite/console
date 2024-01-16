@@ -71,7 +71,7 @@ export const providerResources: Record<Provider, Resource[]> = {
 
 export const migrationFormToResources = (
     formData: MigrationFormData,
-    provider?: Provider
+    provider: Provider
 ): Resource[] => {
     const resources: Resource[] = [];
     const addResource = (resource: Resource) => {

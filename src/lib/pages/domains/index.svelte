@@ -178,7 +178,7 @@
 {:else}
     <Empty
         single
-        href="https://appwrite.io/docs/custom-domains"
+        href="https://appwrite.io/docs/advanced/platform/custom-domains"
         target="domain"
         on:click={openWizard} />
 {/if}
