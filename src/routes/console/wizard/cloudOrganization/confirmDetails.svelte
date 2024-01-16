@@ -98,11 +98,23 @@
                 <p class="text">Additional members ({collaboratorsNumber})</p>
                 <p class="text">${collaboratorPrice * collaboratorsNumber}</p>
             </span>
+            {#if couponData?.status === 'active'}
+                <span class="u-flex u-main-space-between">
+                    <p class="text">Credits applied ({couponData.credits})</p>
+                    <p class="text">-${couponData.credits}</p>
+                </span>
+            {/if}
             <div class="u-sep-block-start" />
         {/if}
         <span class="u-flex u-main-space-between">
             <p class="text">Estimated total</p>
-            <p class="text">${totalExpences}</p>
+            <p class="text">
+                ${couponData?.status === 'active'
+                    ? totalExpences - couponData.credits >= 0
+                        ? totalExpences - couponData.credits
+                        : 0
+                    : totalExpences}
+            </p>
         </span>
 
         {#if $createOrganization.billingPlan !== BillingPlan.STARTER}
