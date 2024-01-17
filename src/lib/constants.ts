@@ -66,13 +66,18 @@ export const scopes: {
         category: 'Auth'
     },
     {
-        scope: 'sessions',
-        description: "Access to create sessions as one of your project's users",
+        scope: 'sessions.write',
+        description: "Access to create, update and delete your project's sessions",
         category: 'Auth'
     },
     {
-        scope: 'account',
-        description: "Access to perform actions as one of your project's users",
+        scope: 'accounts.read',
+        description: 'Access to read your active acount',
+        category: 'Auth'
+    },
+    {
+        scope: 'accounts.write',
+        description: 'Access to create, update and delete your active acount',
         category: 'Auth'
     },
     {
