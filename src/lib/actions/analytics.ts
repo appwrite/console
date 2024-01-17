@@ -171,6 +171,7 @@ export enum Submit {
     ProjectUpdateTeam = 'submit_project_update_team',
     ProjectService = 'submit_project_service',
     ProjectUpdateSMTP = 'submit_project_update_smtp',
+    ProjectTestSMTP = 'submit_project_test_smtp',
     MemberCreate = 'submit_member_create',
     MemberDelete = 'submit_member_delete',
     MembershipUpdateStatus = 'submit_membership_update_status',
@@ -288,5 +289,5 @@ export enum Submit {
     SmsResetTemplate = 'submit_sms_reset_template',
     SmsUpdateInviteTemplate = 'submit_sms_update_invite_template',
     SmsUpdateLoginTemplate = 'submit_sms_update_login_template',
-    SmsUpdateVerificationTemplate = 'submit_sms_update_verification_template'
+    SmsUpdateVerificationTemplate = 'submit_sms_update_verification_template',
 }
