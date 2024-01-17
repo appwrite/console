@@ -1,9 +1,4 @@
 <script lang="ts">
-    import { Button, FormList, InputCheckbox, InputSearch } from '$lib/elements/forms';
-    import { createEventDispatcher } from 'svelte';
-    import { sdk } from '$lib/stores/sdk';
-    import { Query, type Models } from '@appwrite.io/console';
-    import ProviderType, { ProviderTypes } from './providerType.svelte';
     import {
         Collapsible,
         CollapsibleItem,
@@ -11,6 +6,11 @@
         Modal,
         PaginationInline
     } from '$lib/components';
+    import { Button, FormList, InputCheckbox, InputSearch } from '$lib/elements/forms';
+    import { sdk } from '$lib/stores/sdk';
+    import { Query, type Models } from '@appwrite.io/console';
+    import { createEventDispatcher } from 'svelte';
+    import ProviderType, { ProviderTypes } from './providerType.svelte';
     import type { Target } from './store';
 
     export let show: boolean;
@@ -140,7 +140,7 @@
 </script>
 
 <Modal {title} bind:show onSubmit={submit} on:close={reset} size="big">
-    <p class="text">Grant access to any authenticated or anonymous user.</p>
+    <p class="text">Select recipients for this message from your users.</p>
     <InputSearch
         autofocus
         disabled={totalResults === 0 && !search}
