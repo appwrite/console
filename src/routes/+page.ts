@@ -7,6 +7,6 @@ export const load: PageLoad = async () => {
     if (user) {
         return;
     } else {
-        throw redirect(302, `${base}/login`);
+        redirect(302, `${base}/login`);
     }
 };

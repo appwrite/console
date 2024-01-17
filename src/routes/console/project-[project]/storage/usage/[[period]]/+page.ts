@@ -14,6 +14,6 @@ export const load: PageLoad = async ({ params }) => {
             buckets: response.buckets as Metric[]
         };
     } catch (e) {
-        throw error(e.code, e.message);
+        error(e.code, e.message);
     }
 };

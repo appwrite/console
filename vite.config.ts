@@ -19,9 +19,6 @@ const config = defineConfig({
     define: {
         'import.meta.env.VERCEL_ANALYTICS_ID': JSON.stringify(process.env.VERCEL_ANALYTICS_ID)
     },
-    legacy: {
-        buildSsrCjsExternalHeuristics: true
-    },
     server: {
         port: 3000
     }
