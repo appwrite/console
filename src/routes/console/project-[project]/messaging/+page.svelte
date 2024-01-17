@@ -98,7 +98,7 @@
                 {/each}
             </TableHeader>
             <TableBody>
-                {#each data.messages.messages as message}
+                {#each data.messages.messages as message (message.$id)}
                     <TableRowLink
                         href={`${base}/console/project-${project}/messaging/message-${message.$id}`}>
                         <TableCellCheck bind:selectedIds={selected} id={message.$id} />
