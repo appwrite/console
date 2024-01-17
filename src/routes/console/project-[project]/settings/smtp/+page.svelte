@@ -202,28 +202,31 @@
             </svelte:fragment>
             <svelte:fragment slot="actions">
                 <div class="u-flex u-main-end u-gap-16">
-                <Button text on:click={() => showTestSMTPModal = true}>
-                    Send test email
-                </Button>
+                    <Button text on:click={() => (showTestSMTPModal = true)}>
+                        Send test email
+                    </Button>
 
-                <Button
-                submit
-                disabled={isButtonDisabled ||
-                    $organization.billingPlan === BillingPlan.STARTER}>
-                Update
-            </Button>
-            </div>
+                    <Button
+                        submit
+                        disabled={isButtonDisabled ||
+                            $organization.billingPlan === BillingPlan.STARTER}>
+                        Update
+                    </Button>
+                </div>
             </svelte:fragment>
         </CardGrid>
     </Form>
 </Container>
 
-
-
 {#if showTestSMTPModal}
-<SmtpTestModal
-{senderName} {senderEmail} {replyTo} {host} {port} {username} {password} {secure}
-bind:showModal={showTestSMTPModal}
-    />
-
+    <SmtpTestModal
+        {senderName}
+        {senderEmail}
+        {replyTo}
+        {host}
+        {port}
+        {username}
+        {password}
+        {secure}
+        bind:showModal={showTestSMTPModal} />
 {/if}
