@@ -8,7 +8,7 @@ export const showCreate = writable(false);
 export const columns = writable<Column[]>([
     { id: '$id', title: 'Message ID', type: 'string', show: true, width: 140 },
     { id: 'description', title: 'Description', type: 'string', show: true, width: 140 },
-    { id: 'message', title: 'Message', type: 'string', show: false, width: 140 },
+    { id: 'message', title: 'Message', type: 'string', show: false, filter: false, width: 140 },
     { id: 'providerType', title: 'Type', type: 'string', show: true, width: 100 },
     { id: 'status', title: 'Status', type: 'string', show: true, width: 120 },
     { id: 'scheduledAt', title: 'Scheduled at', type: 'datetime', show: true, width: 120 },
