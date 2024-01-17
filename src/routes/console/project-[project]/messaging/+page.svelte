@@ -12,6 +12,7 @@
         SearchQuery,
         ViewSelector
     } from '$lib/components';
+    import { Filters, hasPageQueries } from '$lib/components/filters';
     import { Button } from '$lib/elements/forms';
     import {
         TableBody,
@@ -27,12 +28,11 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
     import type { PageData } from './$types';
-    import { columns, showCreate } from './store';
-    import MessageStatusPill from './messageStatusPill.svelte';
     import CreateMessageDropdown from './createMessageDropdown.svelte';
-    import ProviderType, { ProviderTypes } from './providerType.svelte';
-    import { Filters, hasPageQueries } from '$lib/components/filters';
     import FailedModal from './failedModal.svelte';
+    import MessageStatusPill from './messageStatusPill.svelte';
+    import ProviderType, { ProviderTypes } from './providerType.svelte';
+    import { columns, showCreate } from './store';
 
     export let data: PageData;
     let selected: string[] = [];
@@ -55,7 +55,9 @@
             </div>
         </div>
         <!-- TODO: fix width of search input in mobile -->
-        <SearchQuery search={data.search} placeholder="Search by channel, topic, provider, or ID">
+        <SearchQuery
+            search={data.search}
+            placeholder="Search by message ID, description, type, or status">
             <div class="u-flex u-gap-16 is-not-mobile">
                 <!-- TODO: make this not database-specific -->
                 <Filters query={data.query} {columns} />
