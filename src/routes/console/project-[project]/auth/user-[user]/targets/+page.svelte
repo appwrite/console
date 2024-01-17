@@ -25,11 +25,30 @@
     <div class="u-flex u-flex-vertical">
         <div class="u-flex u-main-space-between">
             <Heading tag="h2" size="5">Targets</Heading>
+            <!-- TODO: Remove u-hide to add creating a target -->
             <div class="is-only-mobile u-hide">
                 <Button on:click={() => (showAdd = true)} event="create_user_target">
                     <span class="icon-plus" aria-hidden="true" />
                     <span class="text">Add target</span>
                 </Button>
+            </div>
+            <!-- TODO: Remove when searching is added -->
+            <div class="u-flex u-main-end u-gap-16 is-not-mobile">
+                <Filters query={data.query} {columns} />
+                <div>
+                    <ViewSelector
+                        view={View.Table}
+                        {columns}
+                        hideView
+                        allowNoColumns
+                        showColsTextMobile />
+                    <div class="u-hide">
+                        <Button on:click={() => (showAdd = true)} event="create_user_target">
+                            <span class="icon-plus" aria-hidden="true" />
+                            <span class="text">Add target</span>
+                        </Button>
+                    </div>
+                </div>
             </div>
         </div>
         <!-- TODO: Add searching when API supports it -->
@@ -48,24 +67,6 @@
                 </Button>
             </div>
         </SearchQuery> -->
-        <!-- TODO: Remove when searching is added -->
-        <div class="u-flex u-main-end u-gap-16 is-not-mobile">
-            <Filters query={data.query} {columns} />
-            <div>
-                <ViewSelector
-                    view={View.Table}
-                    {columns}
-                    hideView
-                    allowNoColumns
-                    showColsTextMobile />
-                <div class="u-hide">
-                    <Button on:click={() => (showAdd = true)} event="create_user_target">
-                        <span class="icon-plus" aria-hidden="true" />
-                        <span class="text">Add target</span>
-                    </Button>
-                </div>
-            </div>
-        </div>
         <div class="u-flex u-gap-16 is-only-mobile u-margin-block-start-16">
             <div class="u-flex-basis-50-percent">
                 <!-- TODO: fix width -->
