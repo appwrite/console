@@ -43,7 +43,7 @@ export const load: PageLoad = async ({ params, parent }) => {
 
     const queries: string[] = [];
 
-    if (usage.projects.length > 0) {
+    if (usage?.projects?.length > 0) {
         queries.push(
             Query.equal(
                 '$id',

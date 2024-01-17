@@ -8,8 +8,10 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { onMount } from 'svelte';
-    import Delete from './deleteOrganization.svelte';
+    import Delete from './deleteOrganizationModal.svelte';
+    import DownloadDPA from './downloadDPA.svelte';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { isCloud } from '$lib/system';
 
     export let data;
     let name: string;
@@ -62,6 +64,10 @@
                 </svelte:fragment>
             </CardGrid>
         </Form>
+
+        {#if isCloud}
+            <DownloadDPA />
+        {/if}
 
         <CardGrid danger>
             <div>

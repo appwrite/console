@@ -14,7 +14,7 @@ export type Organization = Models.Team<Record<string, unknown>> & {
     billingCurrentInvoiceDate: string;
     billingNextInvoiceDate: string;
     billingTrialStartDate?: string;
-    billingTrialEndDate?: string;
+    billingStartDate?: string;
     billingTrialDays?: number;
     billingAddressId?: string;
     amount: number;

@@ -13,7 +13,7 @@
     import InputPassword from '$lib/elements/forms/inputPassword.svelte';
     import { sdk } from '$lib/stores/sdk';
     import { invalidate } from '$app/navigation';
-    import { Dependencies } from '$lib/constants';
+    import { BillingPlan, Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import InputNumber from '$lib/elements/forms/inputNumber.svelte';
@@ -124,7 +124,7 @@
                     class="link">here</a>
             </p>
             <svelte:fragment slot="aside">
-                {#if $organization.billingPlan === 'tier-0'}
+                {#if $organization.billingPlan === BillingPlan.STARTER}
                     <Alert type="info">
                         Custom SMTP is a Pro plan feature. Upgrade to enable custom SMTP sever.
                         <svelte:fragment slot="action">
@@ -182,14 +182,12 @@
                                 id="username"
                                 label="Username"
                                 bind:value={username}
-                                required
                                 placeholder="Enter username" />
                             <InputPassword
                                 showPasswordButton
                                 id="passwort"
                                 label="Password"
                                 bind:value={password}
-                                required
                                 placeholder="Enter password" />
 
                             <InputChoice bind:value={secure} id="tls" label="TLS secure protocol">
@@ -202,7 +200,8 @@
             <svelte:fragment slot="actions">
                 <Button
                     submit
-                    disabled={isButtonDisabled || $organization.billingPlan === 'tier-0'}>
+                    disabled={isButtonDisabled ||
+                        $organization.billingPlan === BillingPlan.STARTER}>
                     Update
                 </Button>
             </svelte:fragment>

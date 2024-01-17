@@ -21,6 +21,8 @@
     import { tierToPlan, type PlanServices } from '$lib/stores/billing';
     import { isCloud } from '$lib/system';
     import { organization } from '$lib/stores/organization';
+    import { Button } from '$lib/elements/forms';
+    import { BillingPlan } from '$lib/constants';
 
     export let logs: Models.LogList;
     export let offset = 0;
@@ -50,8 +52,10 @@
                         Logs are retained in rolling {hoursToDays(limit)} intervals with the
                         {tierToPlan($organization.billingPlan).name}
                         plan.
-                        <button class="link" type="button" on:click|preventDefault={upgradeMethod}
-                            >Upgrade</button> to increase your log retention for a longer period.
+                        {#if $organization?.billingPlan === BillingPlan.STARTER}
+                            <Button link on:click={upgradeMethod}>Upgrade</Button> to increase your log
+                            retention for a longer period.
+                        {/if}
                     </p>
                 </svelte:fragment>
                 {#each logs.logs as log}

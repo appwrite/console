@@ -2,35 +2,35 @@ import { page } from '$app/stores';
 import { derived, get, writable } from 'svelte/store';
 import { sdk } from './sdk';
 import { organization, type Organization } from './organization';
-import type { InvoiceList, AddressesList, Invoice, PaymentList, PlansInfo } from '$lib/sdk/billing';
+import type { InvoiceList, AddressesList, Invoice, PaymentList, PlansMap } from '$lib/sdk/billing';
 import { isCloud } from '$lib/system';
 import { cachedStore } from '$lib/helpers/cache';
 import { Query, type Models } from '@appwrite.io/console';
 import { headerAlert } from './headerAlert';
 import PaymentAuthRequired from '$lib/components/billing/alerts/paymentAuthRequired.svelte';
-import { diffDays, toLocaleDate } from '$lib/helpers/date';
 import { addNotification, notifications } from './notifications';
 import { goto } from '$app/navigation';
 import { base } from '$app/paths';
 import TooManyFreOrgs from '$lib/components/billing/alerts/tooManyFreeOrgs.svelte';
 import { activeHeaderAlert, showPostReleaseModal } from '$routes/console/store';
 import MarkedForDeletion from '$lib/components/billing/alerts/markedForDeletion.svelte';
+import { BillingPlan } from '$lib/constants';
 
 export type Tier = 'tier-0' | 'tier-1' | 'tier-2';
 
 export const paymentMethods = derived(page, ($page) => $page.data.paymentMethods as PaymentList);
 export const addressList = derived(page, ($page) => $page.data.addressList as AddressesList);
-export const plansInfo = derived(page, ($page) => $page.data.plansInfo as PlansInfo);
+export const plansInfo = derived(page, ($page) => $page.data.plansInfo as PlansMap);
 export const daysLeftInTrial = writable<number>(0);
 export const readOnly = writable<boolean>(false);
 
 export function tierToPlan(tier: Tier) {
     switch (tier) {
-        case 'tier-0':
+        case BillingPlan.STARTER:
             return tierFree;
-        case 'tier-1':
+        case BillingPlan.PRO:
             return tierPro;
-        case 'tier-2':
+        case BillingPlan.SCALE:
             return tierScale;
         default:
             return tierFree;
@@ -63,8 +63,8 @@ export function getServiceLimit(serviceId: PlanServices, tier: Tier = null): num
     if (!isCloud) return 0;
     if (!serviceId) return 0;
     const info = get(plansInfo);
-    if (!info?.plans) return 0;
-    const plan = info.plans.find((p) => p.$id === (tier ?? get(organization)?.billingPlan));
+    if (!info) return 0;
+    const plan = info.get(tier ?? get(organization)?.billingPlan);
     return plan?.[serviceId];
 }
 
@@ -117,7 +117,7 @@ export const tierScale: TierData = {
 export const showUsageRatesModal = writable<boolean>(false);
 
 export function checkForUsageFees(plan: Tier, id: PlanServices) {
-    if (plan === 'tier-1' || plan === 'tier-2') {
+    if (plan === BillingPlan.PRO || plan === BillingPlan.SCALE) {
         switch (id) {
             case 'bandwidth':
             case 'storage':
@@ -157,51 +157,44 @@ export function isServiceLimited(serviceId: PlanServices, plan: Tier, total: num
 }
 
 export function calculateTrialDay(org: Organization) {
-    if (org?.billingPlan === 'tier-0') return false;
-    const endDate = new Date(org?.billingTrialEndDate);
+    if (org?.billingPlan === BillingPlan.STARTER) return false;
+    const endDate = new Date(org?.billingStartDate);
     const today = new Date();
-    const days = diffDays(today, endDate);
+
+    let diffTime = endDate.getTime() - today.getTime();
+    diffTime = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+
+    const days = diffTime < 1 ? 0 : diffTime;
+
     daysLeftInTrial.set(days);
     return days;
 }
 
-export function checkForTrialEnding(org: Organization) {
-    const days = calculateTrialDay(org);
-    if (localStorage.getItem('trialEndingNotification') === 'true' || !days) return;
-    else if (days <= 5) {
-        addNotification({
-            type: 'info',
-            isHtml: true,
-            message: `<b>We hope you've been enjoying the ${
-                tierToPlan(org.billingPlan).name
-            } plan.</b>
-                You will be billed on a recurring 30-day cycle after your trial period ends on <b>${toLocaleDate(
-                    org.billingTrialEndDate
-                )}</b>`
-        });
-        localStorage.setItem('trialEndingNotification', 'true');
-    }
-}
-
-export function checkForUsageLimit(org: Organization) {
+export async function checkForUsageLimit(org: Organization) {
     if (!org?.billingLimits) {
         readOnly.set(false);
         return;
     }
-    const { bandwidth, documents, executions, storage, users } = org.billingLimits;
+    const { bandwidth, documents, executions, storage, users } = org?.billingLimits ?? {};
+    const members = await sdk.forConsole.teams.listMemberships(org.$id);
+    const plan = get(plansInfo)?.get(org.billingPlan);
+    const membersOverflow =
+        members?.total > plan.members ? members.total - (plan.members || members.total) : 0;
+
     if (
         bandwidth >= 100 ||
         documents >= 100 ||
         executions >= 100 ||
         storage >= 100 ||
-        users >= 100
+        users >= 100 ||
+        membersOverflow > 0
     ) {
         readOnly.set(true);
     } else readOnly.set(false);
 }
 
 export async function checkPaymentAuthorizationRequired(org: Organization) {
-    if (org.billingPlan === 'tier-0') return;
+    if (org.billingPlan === BillingPlan.STARTER) return;
 
     const invoices = await sdk.forConsole.billing.listInvoices(org.$id, [
         Query.equal('status', 'requires_authentication')
@@ -282,11 +275,13 @@ export async function checkForFreeOrgOverflow(orgs: Models.TeamList<Record<strin
             show: true,
             importance: 10
         });
+        activeHeaderAlert.set(headerAlert.get());
     }
 }
 
 export async function checkForPostReleaseProModal(orgs: Models.TeamList<Record<string, unknown>>) {
     if (!orgs?.teams?.length) return;
+    if (orgs.total > orgs.teams.length) return; // if the total is greater that the free orgs it means that there are pro orgs
     const modalTime = localStorage.getItem('postReleaseProModal');
     const now = Date.now();
     // show the modal if it was never shown

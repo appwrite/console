@@ -27,6 +27,7 @@
     import { Pill } from '$lib/elements';
     import { showExcess } from '$routes/console/organization-[organization]/store';
     import { readOnly } from '$lib/stores/billing';
+    import { BillingPlan } from '$lib/constants';
 
     let showDropdown = false;
     let showSupport = false;
@@ -117,10 +118,9 @@
 
 <div class="main-header-end">
     <nav class="u-flex is-only-desktop u-cross-center">
-        {#if isCloud && $organization?.billingPlan === 'tier-0' && !$page.url.pathname.startsWith('/console/account')}
+        {#if isCloud && $organization?.billingPlan === BillingPlan.STARTER && !$page.url.pathname.startsWith('/console/account')}
             <Button
                 disabled={$organization?.markedForDeletion}
-                secondary
                 on:click={() => wizard.start(ChangeOrganizationTierCloud)}>
                 Upgrade
             </Button>

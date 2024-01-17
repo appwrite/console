@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Alert } from '$lib/components';
+    import { BillingPlan } from '$lib/constants';
     import { Button, Form, FormList, InputEmail } from '$lib/elements/forms';
     import {
         Table,
@@ -30,7 +31,7 @@
         );
     }
 
-    const plan = $plansInfo.plans.find((p) => p.$id === $createOrganization.billingPlan);
+    const plan = $plansInfo?.get($createOrganization.billingPlan);
 </script>
 
 <WizardStep>
@@ -41,10 +42,10 @@
     </svelte:fragment>
 
     <Alert type="info">
-        {#if $createOrganization.billingPlan === 'tier-2'}
+        {#if $createOrganization.billingPlan === BillingPlan.SCALE}
             You can add unlimited organization members on the {plan.name} plan at no cost. Each member
             added will receive an email invite to your organization on completion.
-        {:else if $createOrganization.billingPlan === 'tier-1'}
+        {:else if $createOrganization.billingPlan === BillingPlan.PRO}
             You can add unlimited organization members on the {plan.name} plan for
             <b>${plan.addons.member.price} each per month</b>. Each member added will receive an
             email invite to your organization on completion.
@@ -70,7 +71,7 @@
             <Table noStyles noMargin>
                 <TableHeader>
                     <TableCellHead>Collaborator</TableCellHead>
-                    {#if $createOrganization.billingPlan === 'tier-1'}
+                    {#if $createOrganization.billingPlan === BillingPlan.PRO}
                         <TableCellHead width={80}>Cost</TableCellHead>
                     {/if}
                     <TableCellHead width={40} />
@@ -79,7 +80,7 @@
                     {#each $createOrganization.collaborators as collaborator}
                         <TableRow>
                             <TableCellText title="collaborator">{collaborator}</TableCellText>
-                            {#if $createOrganization.billingPlan === 'tier-1'}
+                            {#if $createOrganization.billingPlan === BillingPlan.PRO}
                                 <TableCellText title="cost">15$</TableCellText>
                             {/if}
                             <TableCell>

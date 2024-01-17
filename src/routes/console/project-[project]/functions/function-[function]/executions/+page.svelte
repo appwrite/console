@@ -1,7 +1,7 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { Alert, EmptySearch, Id, PaginationWithLimit } from '$lib/components';
-    import { Dependencies } from '$lib/constants';
+    import { BillingPlan, Dependencies } from '$lib/constants';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import {
@@ -65,7 +65,7 @@
                     {logs} hour of logs
                 </li>
             </ul>
-            {#if $organization?.billingPlan === 'tier-0'}
+            {#if $organization?.billingPlan === BillingPlan.STARTER}
                 <p class="text">
                     <button class="link" type="button" on:click|preventDefault={upgradeMethod}
                         >Upgrade</button>

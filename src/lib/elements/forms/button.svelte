@@ -23,6 +23,7 @@
     let classes: string = undefined;
     export { classes as class };
     export let actions: MultiActionArray = [];
+    export let submissionLoader = false;
 
     const isSubmitting = hasContext('form')
         ? getContext<FormContext>('form').isSubmitting
@@ -59,6 +60,7 @@
 
 {#if href}
     <a
+        on:click
         on:click={track}
         {href}
         target={external ? '_blank' : ''}
@@ -77,6 +79,12 @@
         aria-label={ariaLabel}
         type={submit ? 'submit' : 'button'}
         use:multiAction={actions}>
-        <slot />
+        {#if $isSubmitting && submissionLoader}
+            <span
+                class="loader is-small"
+                style:--p-loader-base-full-color="transparent"
+                aria-hidden="true" />
+        {/if}
+        <slot isSubmitting={$isSubmitting} />
     </button>
 {/if}

@@ -43,6 +43,7 @@
     import { organization } from '$lib/stores/organization';
     import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
     import { wizard } from '$lib/stores/wizard';
+    import { BillingPlan } from '$lib/constants';
 
     const projectId = $page.params.project;
 
@@ -117,7 +118,7 @@
         </p>
 
         <svelte:fragment slot="aside">
-            {#if $organization.billingPlan === 'tier-0'}
+            {#if $organization.billingPlan === BillingPlan.STARTER}
                 <Alert
                     buttons={[
                         {

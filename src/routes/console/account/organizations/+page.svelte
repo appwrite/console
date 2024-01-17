@@ -22,6 +22,7 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { wizard } from '$lib/stores/wizard';
     import CreateOrganizationCloud from '$routes/console/createOrganizationCloud.svelte';
+    import { BillingPlan } from '$lib/constants';
 
     export let data: PageData;
     let addOrganization = false;
@@ -71,7 +72,7 @@
                     </svelte:fragment>
                     <svelte:fragment slot="status">
                         {#if isCloudOrg(organization)}
-                            {#if organization?.billingPlan === 'tier-0'}
+                            {#if organization?.billingPlan === BillingPlan.STARTER}
                                 <div
                                     class="u-flex u-cross-center"
                                     use:tooltip={{
@@ -86,10 +87,10 @@
                                     class="u-flex u-cross-center"
                                     use:tooltip={{
                                         content: `Your trial ends on ${toLocaleDate(
-                                            organization.billingTrialEndDate
+                                            organization.billingStartDate
                                         )}. ${$daysLeftInTrial} days remaining.`
                                     }}>
-                                    <Pill>FREE TRIAL</Pill>
+                                    <Pill>TRIAL</Pill>
                                 </div>
                             {/if}
                         {/if}

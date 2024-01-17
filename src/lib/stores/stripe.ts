@@ -37,7 +37,13 @@ export async function initializeStripe() {
     paymentElement.mount('#payment-element');
 }
 
-// TODO: fix redirect
+export async function unmountPaymentElement() {
+    isStripeInitialized.set(false);
+    paymentElement?.unmount();
+    clientSecret = null;
+    paymentMethod = null;
+    elements = null;
+}
 
 export async function submitStripeCard(name: string, urlRoute?: string) {
     try {
@@ -71,7 +77,7 @@ export async function submitStripeCard(name: string, urlRoute?: string) {
         if (error) {
             const e = new Error(error.message);
             trackError(e, Submit.PaymentMethodCreate);
-            throw error;
+            throw e;
         }
 
         if (setupIntent && setupIntent.status === 'succeeded') {
@@ -87,7 +93,7 @@ export async function submitStripeCard(name: string, urlRoute?: string) {
         } else {
             const e = new Error('Something went wrong');
             trackError(e, Submit.PaymentMethodCreate);
-            throw e;
+            throw e.message;
         }
     } catch (e) {
         trackError(e, Submit.PaymentMethodCreate);
@@ -109,7 +115,7 @@ export async function confirmPayment(orgId: string, clientSecret: string, paymen
             }
         });
         if (error) {
-            throw new Error();
+            throw error.message;
         }
     } catch (e) {
         addNotification({

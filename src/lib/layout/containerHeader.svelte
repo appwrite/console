@@ -1,22 +1,23 @@
 <script lang="ts">
-    import {
-        tierToPlan,
-        getServiceLimit,
-        type PlanServices,
-        showUsageRatesModal,
-        checkForUsageFees,
-        readOnly,
-        checkForProjectLimitation
-    } from '$lib/stores/billing';
     import { Alert, DropList, Heading } from '$lib/components';
+    import { BillingPlan } from '$lib/constants';
     import { Pill } from '$lib/elements';
-    import { organization } from '$lib/stores/organization';
-    import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
-    import { createEventDispatcher, onMount } from 'svelte';
-    import { wizard } from '$lib/stores/wizard';
-    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
-    import { ContainerButton } from '.';
     import { Button } from '$lib/elements/forms';
+    import {
+        checkForProjectLimitation,
+        checkForUsageFees,
+        getServiceLimit,
+        readOnly,
+        showUsageRatesModal,
+        tierToPlan,
+        type PlanServices
+    } from '$lib/stores/billing';
+    import { organization } from '$lib/stores/organization';
+    import { wizard } from '$lib/stores/wizard';
+    import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
+    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
+    import { createEventDispatcher, onMount } from 'svelte';
+    import { ContainerButton } from '.';
 
     export let isFlex = true;
     export let title: string;
@@ -35,8 +36,7 @@
     let showDropdown = false;
 
     // TODO: remove the default billing limits when backend is updated with billing code
-    const { bandwidth, documents, storage, users, executions } = ($organization ?? {})
-        .billingLimits ?? {
+    const { bandwidth, documents, storage, users, executions } = $organization?.billingLimits ?? {
         bandwidth: 1,
         documents: 1,
         storage: 1,
@@ -60,7 +60,7 @@
 
     $: tier = tierToPlan($organization?.billingPlan)?.name;
     $: hasProjectLimitation =
-        checkForProjectLimitation(serviceId) && $organization?.billingPlan === 'tier-0';
+        checkForProjectLimitation(serviceId) && $organization?.billingPlan === BillingPlan.STARTER;
     $: hasUsageFees = hasProjectLimitation
         ? checkForUsageFees($organization?.billingPlan, serviceId)
         : false;
@@ -85,7 +85,7 @@
             })
             .join(', ')}
         <slot name="alert" {limit} {tier} {title} {upgradeMethod} {hasUsageFees} {services}>
-            {#if $organization?.billingPlan !== 'tier-0' && hasUsageFees}
+            {#if $organization?.billingPlan !== BillingPlan.STARTER && hasUsageFees}
                 <Alert type="info" isStandalone>
                     <span class="text">
                         You've reached the {services} limit for the {tier} plan.
@@ -129,7 +129,7 @@
                             <p class="text">
                                 Your are limited to {limit}
                                 {title.toLocaleLowerCase()} per project on the {tier} plan.
-                                {#if $organization?.billingPlan === 'tier-0'}<Button
+                                {#if $organization?.billingPlan === BillingPlan.STARTER}<Button
                                         link
                                         on:click={upgradeMethod}>Upgrade</Button>
                                     for addtional {title.toLocaleLowerCase()}.
@@ -147,7 +147,7 @@
                             <p class="text">
                                 You are limited to {limit}
                                 {title.toLocaleLowerCase()} per organization on the {tier} plan.
-                                {#if $organization?.billingPlan === 'tier-0'}
+                                {#if $organization?.billingPlan === BillingPlan.STARTER}
                                     <Button link on:click={upgradeMethod}>Upgrade</Button>
                                     for additional {title.toLocaleLowerCase()}.
                                 {/if}

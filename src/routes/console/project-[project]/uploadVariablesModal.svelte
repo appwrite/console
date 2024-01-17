@@ -85,7 +85,7 @@
         {/if}
     </div>
 
-    <InputFile bind:files allowedFileExtensions={['.env']} />
+    <InputFile bind:files />
 
     <svelte:fragment slot="footer">
         <Button text on:click={() => (show = false)}>Cancel</Button>

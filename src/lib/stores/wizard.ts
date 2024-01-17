@@ -31,14 +31,18 @@ function createWizardStore() {
     return {
         subscribe,
         set,
-        start: (component: typeof SvelteComponent<unknown>, media: string = null) =>
+        start: (
+            component: typeof SvelteComponent<unknown>,
+            media: string = null,
+            step: number = 1
+        ) =>
             update((n) => {
                 n.show = true;
                 n.component = component;
                 n.interceptor = null;
                 n.interceptorNotificationEnabled = true;
                 n.media = media;
-                n.step = 1;
+                n.step = step;
                 n.cover = null;
                 n.nextDisabled = false;
                 n.finalAction = null;

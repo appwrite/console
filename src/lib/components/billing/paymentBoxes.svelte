@@ -2,6 +2,7 @@
     import { FormList, InputText } from '$lib/elements/forms';
     import { onDestroy, onMount } from 'svelte';
     import { CreditCardBrandImage, RadioBoxes } from '..';
+    import { unmountPaymentElement } from '$lib/stores/stripe';
 
     export let methods: Record<string, unknown>[];
     export let group: string;
@@ -33,6 +34,7 @@
 
     onDestroy(() => {
         observer.disconnect();
+        unmountPaymentElement();
     });
 
     $: if (element) {

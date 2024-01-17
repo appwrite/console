@@ -53,7 +53,7 @@
 
     const projectId = $page.params.project;
     const bucketId = $page.params.bucket;
-    const usedStorage = bytesToSize(data.organizationUsage.storageTotal, 'MB');
+    const usedStorage = bytesToSize(data.organizationUsage.storageTotal, 'GB');
     const getPreview = (fileId: string) =>
         sdk.forProject.storage.getFilePreview(bucketId, fileId, 32, 32).toString() + '&mode=admin';
 

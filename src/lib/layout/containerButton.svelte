@@ -1,12 +1,13 @@
 <script lang="ts">
     import { tooltip } from '$lib/actions/tooltip';
+    import { BillingPlan } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { tierToPlan } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
 
     export let title: string;
     export let tooltipContent =
-        $organization.billingPlan === 'tier-0'
+        $organization.billingPlan === BillingPlan.STARTER
             ? `Upgrade to add more ${title.toLocaleLowerCase()}`
             : `You've reached the ${title.toLocaleLowerCase()} limit for the ${
                   tierToPlan($organization.billingPlan).name

@@ -139,6 +139,7 @@ export function isTrackingAllowed() {
 }
 
 export enum Submit {
+    DownloadDPA = 'submit_download_dpa',
     Error = 'submit_error',
     AccountCreate = 'submit_account_create',
     AccountLogin = 'submit_account_login',

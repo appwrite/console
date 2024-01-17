@@ -1,4 +1,6 @@
 import { Dependencies } from '$lib/constants';
+import type { Plan } from '$lib/sdk/billing';
+import type { Tier } from '$lib/stores/billing';
 import { sdk } from '$lib/stores/sdk';
 import { isCloud } from '$lib/system';
 import type { LayoutLoad } from './$types';
@@ -18,9 +20,13 @@ export const load: LayoutLoad = async ({ fetch, depends }) => {
 
     const [data, variables] = await Promise.all([versionPromise, variablesPromise]);
 
-    let plansInfo = null;
+    let plansInfo = new Map<Tier, Plan>();
     if (isCloud) {
-        plansInfo = await sdk.forConsole.billing.getPlansInfo();
+        const plansArray = await sdk.forConsole.billing.getPlansInfo();
+        plansInfo = plansArray.plans.reduce((map, plan) => {
+            map.set(plan.$id as Tier, plan);
+            return map;
+        }, new Map<Tier, Plan>());
     }
 
     return {
