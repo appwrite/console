@@ -30,14 +30,14 @@ export type FeedbackOption = {
 export const feedbackOptions: FeedbackOption[] = [
     {
         type: 'general',
-        title: 'How can we improve?',
+        title: 'Your feedback is important to us',
         desc: 'Your feedback is important to us. Please be honest and tell us what you think.',
         component: FeedbackGeneral
     },
     {
         type: 'nps',
-        title: 'How are we doing?',
-        desc: "At Appwrite, we value the feedback of our users. That means you! We'd love to hear what you think.",
+        title: 'Your feedback is important to us',
+        desc: 'Please be honest and tell us what you think. If you would like to be contacted regarding your feedback, please share your details below.',
         component: FeedbackNps
     }
 ];
