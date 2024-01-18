@@ -4,11 +4,13 @@
     import UpdateName from './updateName.svelte';
     import UpdateEmail from './updateEmail.svelte';
     import DeleteAccount from './deleteAccount.svelte';
+    import UpdateMfa from './updateMfa.svelte';
 </script>
 
 <Container>
     <UpdateName />
     <UpdateEmail />
     <UpdatePassword />
+    <UpdateMfa />
     <DeleteAccount />
 </Container>
