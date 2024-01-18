@@ -255,6 +255,9 @@
             }
         }
 
+        if (!localStorage.getItem('feedbackElapsed')) {
+            localStorage.setItem('feedbackElapsed', '0');
+        }
         setInterval(() => {
             checkForFeedback(INTERVAL);
         }, INTERVAL);
