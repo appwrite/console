@@ -35,7 +35,7 @@
 
 <section class="drop-section u-padding-24">
     <header class="u-flex u-main-space-between u-gap-16">
-        <h4 class="body-text-1 u-bold">{$selectedFeedback.title}</h4>
+        <h4 class="label u-bold" style:font-size="var(--font-size-1)">{$selectedFeedback.title}</h4>
         <button
             type="button"
             class="button is-text is-only-icon u-margin-inline-start-auto"

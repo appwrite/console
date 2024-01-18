@@ -49,7 +49,7 @@ function createFeedbackDataStore() {
         message: '',
         name: '',
         email: '',
-        value: 0
+        value: null
     });
     return {
         set,
@@ -60,7 +60,7 @@ function createFeedbackDataStore() {
                 feedbackData.message = '';
                 feedbackData.name = '';
                 feedbackData.email = '';
-                feedbackData.value = 0;
+                feedbackData.value = null;
                 return feedbackData;
             });
         }
