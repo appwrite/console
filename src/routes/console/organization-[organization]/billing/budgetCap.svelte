@@ -8,6 +8,8 @@
     import { addNotification } from '$lib/stores/notifications';
     import { organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
+    import { wizard } from '$lib/stores/wizard';
+    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
     import { onMount } from 'svelte';
 
     let capActive = false;
@@ -92,7 +94,18 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={$organization?.billingBudget === budget} submit>Update</Button>
+            {#if $organization?.billingPlan === BillingPlan.STARTER}
+                <Button
+                    on:click={() => {
+                        wizard.start(ChangeOrganizationTierCloud);
+                        trackEvent('click_organization_upgrade', {
+                            from: 'button',
+                            source: 'billing_budget_cap'
+                        });
+                    }}>Upgrade to Pro</Button>
+            {:else}
+                <Button disabled={$organization?.billingBudget === budget} submit>Update</Button>
+            {/if}
         </svelte:fragment>
     </CardGrid>
 </Form>
