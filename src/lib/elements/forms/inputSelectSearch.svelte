@@ -120,7 +120,6 @@
         scrollable
         placement="bottom-end"
         position="static"
-        fullWidth={fullWidthDrop}
         fixed>
         <Label {required} {hideRequired} {optionalText} hide={!showLabel} for={id} {tooltip}>
             {label}
