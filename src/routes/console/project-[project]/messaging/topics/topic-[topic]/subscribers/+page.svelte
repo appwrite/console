@@ -99,7 +99,7 @@
             </div>
         </div>
         <!-- TODO: fix width of search input in mobile -->
-        <SearchQuery search={data.search} placeholder="Search by name">
+        <SearchQuery search={data.search} placeholder="Search by subscriber ID, target ID, user ID, or type">
             <div class="u-flex u-gap-16 is-not-mobile">
                 <Filters query={data.query} {columns} />
                 <ViewSelector
