@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { Button, InputCheckbox, InputSearch } from '$lib/elements/forms';
-    import { createEventDispatcher } from 'svelte';
+    import { EmptySearch, Modal, PaginationInline } from '$lib/components';
+    import { Button, FormList, InputCheckbox, InputSearch } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
     import { Query } from '@appwrite.io/console';
-    import { EmptySearch, Modal, PaginationInline } from '$lib/components';
+    import { createEventDispatcher } from 'svelte';
     import type { Topic } from './store';
 
     export let show: boolean;
@@ -105,23 +105,25 @@
         placeholder="Search for topics"
         bind:value={search} />
     {#if Object.keys(topicResultsById).length > 0}
-        {#each Object.entries(topicResultsById) as [topicId, topic]}
-            <InputCheckbox
-                id={topicId}
-                disabled={!!topicsById[topicId]}
-                checked={!!selected[topicId]}
-                on:change={(event) => onTopicSelection(event, topic)}>
-                <svelte:fragment slot="description">
-                    <span class="title"
-                        ><span class="u-line-height-1-5">
-                            <span class="body-text-2 u-bold" data-private>
-                                {topic.name}
-                            </span><span class="collapsible-button-optional"
-                                >({topic.total} subscribers)</span>
-                        </span></span>
-                </svelte:fragment>
-            </InputCheckbox>
-        {/each}
+        <FormList>
+            {#each Object.entries(topicResultsById) as [topicId, topic]}
+                <InputCheckbox
+                    id={topicId}
+                    disabled={!!topicsById[topicId]}
+                    checked={!!selected[topicId]}
+                    on:change={(event) => onTopicSelection(event, topic)}>
+                    <svelte:fragment slot="description">
+                        <span class="title"
+                            ><span class="u-line-height-1-5">
+                                <span class="body-text-2 u-bold" data-private>
+                                    {topic.name}
+                                </span><span class="collapsible-button-optional"
+                                    >({topic.total} subscribers)</span>
+                            </span></span>
+                    </svelte:fragment>
+                </InputCheckbox>
+            {/each}
+        </FormList>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {totalResults}</p>
             <PaginationInline limit={5} bind:offset sum={totalResults} hidePages />
