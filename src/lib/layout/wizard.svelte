@@ -6,6 +6,10 @@
             component: typeof SvelteComponent<unknown>;
             optional?: boolean;
             disabled?: boolean;
+            actions?: {
+                label: string;
+                onClick: () => Promise<void>;
+            }[];
         }
     >;
 </script>
@@ -127,6 +131,7 @@
 
     $: sortedSteps = [...steps].sort(([a], [b]) => (a > b ? 1 : -1));
     $: isLastStep = $wizard.step === steps.size;
+    $: currentStep = steps.get($wizard.step);
 </script>
 
 <svelte:window on:keydown={handleKeydown} />
@@ -175,7 +180,7 @@
             {/each}
             <div class="form-footer">
                 <div class="u-flex u-main-end u-gap-12">
-                    {#if !isLastStep && sortedSteps[$wizard.step - 1]?.[1]?.optional}
+                    {#if !isLastStep && currentStep?.optional}
                         <Button text on:click={() => dispatch('finish')}>
                             Skip optional steps
                         </Button>
@@ -185,6 +190,13 @@
                         <Button secondary on:click={handleExit}>Cancel</Button>
                     {:else}
                         <Button secondary on:click={previousStep}>Back</Button>
+                    {/if}
+
+                    {#if currentStep?.actions}
+                        {#each currentStep.actions as action}
+                            <Button secondary on:click={action.onClick}>
+                                {action.label}</Button>
+                        {/each}
                     {/if}
 
                     <Button submit disabled={$wizard.nextDisabled}>
