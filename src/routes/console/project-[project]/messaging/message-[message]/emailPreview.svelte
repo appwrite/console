@@ -1,7 +1,10 @@
 <script lang="ts">
     import { CardGrid, Heading } from '$lib/components';
-    import { FormList, InputText, InputTextarea } from '$lib/elements/forms';
-    import { message } from './store';
+    import { Button, FormList, InputText, InputTextarea } from '$lib/elements/forms';
+    import type { Message } from '../store';
+
+    export let message: Message;
+    export let onEdit: () => void = null;
 </script>
 
 <CardGrid>
@@ -14,20 +17,17 @@
                 id="subject"
                 label="Subject"
                 disabled={true}
-                bind:value={$message.data.subject}>
+                bind:value={message.data.subject}>
             </InputText>
             <InputTextarea
                 id="message"
                 label="Message"
                 disabled={true}
-                bind:value={$message.data.content}>
+                bind:value={message.data.content}>
             </InputTextarea>
+            <div class="u-flex u-main-end">
+                <Button secondary disabled={onEdit == null} on:click={onEdit}>Edit message</Button>
+            </div>
         </FormList>
-    </svelte:fragment>
-
-    <svelte:fragment slot="actions">
-        <!-- TODO: Add support for editing draft messages -->
-        <!-- <Button disabled={$message.status !== 'draft'} on:click={() => console.log('click')}
-            >Edit message</Button> -->
     </svelte:fragment>
 </CardGrid>

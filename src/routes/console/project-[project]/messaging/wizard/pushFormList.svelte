@@ -39,7 +39,13 @@
 </script>
 
 <script lang="ts">
-    import { messageParams, providerType, MessageStatuses, type PushMessageParams } from './store';
+    import {
+        messageParams,
+        providerType,
+        MessageStatuses,
+        type PushMessageParams,
+        operation
+    } from './store';
     import {
         Button,
         FormItem,
@@ -222,19 +228,21 @@
             tooltip="Provide a summary of the message. Users won't see this description."
             bind:value={$messageParams[$providerType]['description']}>
         </InputText>
-        {#if !showCustomId}
-            <div>
-                <Pill button on:click={() => (showCustomId = !showCustomId)}
-                    ><span class="icon-pencil" aria-hidden="true" /><span class="text">
-                        Message ID
-                    </span></Pill>
-            </div>
-        {:else}
-            <CustomId
-                bind:show={showCustomId}
-                name="Message"
-                bind:id={$messageParams[$providerType].messageId}
-                autofocus={false} />
+        {#if $operation === 'create'}
+            {#if !showCustomId}
+                <div>
+                    <Pill button on:click={() => (showCustomId = !showCustomId)}
+                        ><span class="icon-pencil" aria-hidden="true" /><span class="text">
+                            Message ID
+                        </span></Pill>
+                </div>
+            {:else}
+                <CustomId
+                    bind:show={showCustomId}
+                    name="Message"
+                    bind:id={$messageParams[$providerType].messageId}
+                    autofocus={false} />
+            {/if}
         {/if}
     </FormList>
     <PushPhone

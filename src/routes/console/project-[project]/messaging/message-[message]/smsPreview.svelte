@@ -1,14 +1,17 @@
 <script lang="ts">
     import { CardGrid, Heading } from '$lib/components';
-    import { FormList, InputTextarea } from '$lib/elements/forms';
-    import { message } from './store';
+    import { Button, FormList, InputTextarea } from '$lib/elements/forms';
     import SMSPhone from '../smsPhone.svelte';
+    import type { Message } from '../store';
+
+    export let message: Message;
+    export let onEdit: () => void = null;
 </script>
 
 <CardGrid>
     <div class="grid-1-2-col-1 u-flex-vertical u-cross-start u-gap-16">
         <Heading tag="h6" size="7">Preview</Heading>
-        <SMSPhone content={$message.data.content} />
+        <SMSPhone content={message.data.content} />
     </div>
     <svelte:fragment slot="aside">
         <FormList>
@@ -16,14 +19,11 @@
                 id="message"
                 label="Message"
                 disabled={true}
-                bind:value={$message.data.content}>
+                bind:value={message.data.content}>
             </InputTextarea>
+            <div class="u-flex u-main-end">
+                <Button secondary disabled={onEdit == null} on:click={onEdit}>Edit message</Button>
+            </div>
         </FormList>
-    </svelte:fragment>
-
-    <svelte:fragment slot="actions">
-        <!-- TODO: Add support for editing draft messages -->
-        <!-- <Button disabled={$message.status !== 'draft'} on:click={() => console.log('click')}
-            >Edit message</Button> -->
     </svelte:fragment>
 </CardGrid>
