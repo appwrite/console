@@ -40,17 +40,13 @@
         $targetsById = rest;
     }
 
-    async function beforeSubmit() {
-        $messageParams[$providerType].targets = Object.keys($targetsById);
-        $messageParams[$providerType].topics = Object.keys($topicsById);
-        console.log($messageParams[$providerType]);
-    }
-
     $: topicIdsLength = Object.keys($topicsById).length;
     $: targetIdsLength = Object.keys($targetsById).length;
+    $: $messageParams[$providerType].targets = Object.keys($targetsById);
+    $: $messageParams[$providerType].topics = Object.keys($topicsById);
 </script>
 
-<WizardStep {beforeSubmit}>
+<WizardStep>
     <svelte:fragment slot="title">Targets</svelte:fragment>
     <!-- TODO: add support for topics -->
     <svelte:fragment slot="subtitle"

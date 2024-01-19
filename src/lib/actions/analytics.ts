@@ -294,6 +294,7 @@ export enum Submit {
     MessagingProviderDelete = 'submit_messaging_provider_delete',
     MessagingProviderUpdate = 'submit_messaging_provider_update',
     MessagingMessageCreate = 'submit_messaging_message_create',
+    MessagingMessageUpdate = 'submit_messaging_message_update',
     MessagingMessageDelete = 'submit_messaging_message_delete',
     MessagingTopicCreate = 'submit_messaging_topic_create',
     MessagingTopicDelete = 'submit_messaging_topic_delete',

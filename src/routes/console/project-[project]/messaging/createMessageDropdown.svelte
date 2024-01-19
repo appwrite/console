@@ -3,8 +3,8 @@
     import { Button } from '$lib/elements/forms';
     import { wizard } from '$lib/stores/wizard';
     import { providers } from './providers/store';
-    import Create from './create.svelte';
-    import { messageParams, providerType, targetsById } from './wizard/store';
+    import Wizard from './wizard.svelte';
+    import { messageParams, operation, providerType, targetsById } from './wizard/store';
     import { ProviderTypes } from './providerType.svelte';
     import { topicsById } from './store';
 
@@ -30,6 +30,7 @@
                     )
                         return;
                     $providerType = type;
+                    $operation = 'create';
                     $topicsById = {};
                     $targetsById = {};
                     const common = {
@@ -60,7 +61,7 @@
                             break;
                     }
                     showCreateDropdown = false;
-                    wizard.start(Create);
+                    wizard.start(Wizard);
                 }}>
                 {option.name}
             </DropListItem>
