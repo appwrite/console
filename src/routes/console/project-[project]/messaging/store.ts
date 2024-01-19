@@ -38,6 +38,14 @@ export type Message = {
         body?: string;
         subject?: string;
         title?: string;
+        html?: boolean;
+        data?: Record<string, unknown>;
+        action?: string;
+        icon?: string;
+        sound?: string;
+        color?: string;
+        tag?: string;
+        badge?: string;
     };
 };
 

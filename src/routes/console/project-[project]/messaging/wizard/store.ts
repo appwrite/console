@@ -4,7 +4,10 @@ import type { Target } from '../store';
 
 export enum MessageStatuses {
     DRAFT = 'draft',
-    PROCESSING = 'processing'
+    SCHEDULED = 'scheduled',
+    PROCESSING = 'processing',
+    SENT = 'sent',
+    FAILED = 'failed'
 }
 
 export type MessageParams = {
@@ -39,6 +42,7 @@ export type PushMessageParams = MessageParams & {
     badge?: string;
 };
 
+export const operation = writable<'create' | 'update'>('create');
 export const providerType = writable<ProviderTypes>(null);
 export const targetsById = writable<Record<string, Target>>({});
 export const messageParams = writable<{
