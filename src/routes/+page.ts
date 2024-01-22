@@ -4,9 +4,7 @@ import type { PageLoad } from './$types';
 import { user } from '$lib/stores/user';
 
 export const load: PageLoad = async () => {
-    if (user) {
-        return;
-    } else {
+    if (!user) {
         redirect(302, `${base}/login`);
     }
 };
