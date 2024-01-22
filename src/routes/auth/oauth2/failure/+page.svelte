@@ -9,7 +9,7 @@
         if (!project) {
             reject('no-project');
         }
-        window.location = link;
+        window.location.href = link;
     });
 </script>
 

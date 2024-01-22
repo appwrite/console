@@ -17,7 +17,7 @@
         const secret = $page.url.searchParams.get('secret');
 
         await account.updateMagicURLSession(userId, secret);
-        window.location = `appwrite-callback-${projectId}://${$page.url.search}`;
+        window.location.href = `appwrite-callback-${projectId}://${$page.url.search}`;
     });
 </script>
 
