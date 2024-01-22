@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
     import { page } from '$app/stores';
     import { Heading } from '$lib/components';
     import { Account, Client } from '@appwrite.io/console';

@@ -1,12 +1,11 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
     import { page } from '$app/stores';
     import { Heading } from '$lib/components';
 
     const project = $page.url.searchParams.get('project');
     const link = `appwrite-callback-${project}://${$page.url.search}`;
 
-    const redirect = new Promise((resolve, reject) => {
+    const redirect = new Promise((_resolve, reject) => {
         if (!project) {
             reject('no-project');
         }
