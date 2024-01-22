@@ -33,9 +33,7 @@ const testConfig = defineConfig({
         include: ['tests/unit/**/*.test.ts'],
         environment: 'jsdom',
         globals: true,
-        pool: {
-            threads: true,
-        },
+        pool: 'threads',
         setupFiles: ['./tests/unit/setup.ts'],
         deps: {
             inline: ['@analytics/type-utils']
