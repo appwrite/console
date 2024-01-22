@@ -71,9 +71,10 @@
     <p class="text">Appwrite credit will automatically be applied to your next invoice.</p>
     <svelte:fragment slot="aside">
         <div class="u-flex u-cross-center u-main-space-between">
-            <h4 class="body-text-1 u-bold">
-                Credit balance <span class="inline-tag">${balance}</span>
-            </h4>
+            <div class="u-flex u-gap-8 u-cross-center">
+                <h4 class="body-text-1 u-bold">Credit balance</h4>
+                <span class="inline-tag">${balance}</span>
+            </div>
             {#if creditList?.total}
                 <Button secondary on:click={handleCredits}>
                     <span class="icon-plus" aria-hidden="true"></span>

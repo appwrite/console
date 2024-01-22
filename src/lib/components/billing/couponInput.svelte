@@ -68,7 +68,7 @@
                     </span>
                 </slot>
             </div>
-            <Button text on:click={removeCoupon}>Remove</Button>
+            <Button round text on:click={removeCoupon}><span class="icon-x"></span></Button>
         </div>
     {/if}
 </FormList>
