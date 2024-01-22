@@ -3,14 +3,12 @@
 
     export let label: string = null;
     export let showLabel = true;
-    // export let label: string;
     export let id: string;
     export let group: string;
     export let value: string;
     export let name: string;
     export let required = false;
     export let disabled = false;
-    export let fullWidth = false;
 
     let element: HTMLInputElement;
     let error: string;

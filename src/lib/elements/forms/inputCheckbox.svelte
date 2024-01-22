@@ -15,9 +15,6 @@
 
     export let id: string;
     export let label: string | undefined = undefined;
-    export let optionalText: string | undefined = undefined;
-    export let tooltip: string = null;
-    export let showLabel = true;
     export let checked = false;
     export let required = false;
     export let disabled = false;
