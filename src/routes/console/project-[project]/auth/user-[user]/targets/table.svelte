@@ -15,7 +15,9 @@
     import type { PageData } from './$types';
     import { columns } from './store';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import ProviderType, { ProviderTypes } from '$routes/console/project-[project]/messaging/providerType.svelte';
+    import ProviderType, {
+        ProviderTypes
+    } from '$routes/console/project-[project]/messaging/providerType.svelte';
     import Provider from '$routes/console/project-[project]/messaging/provider.svelte';
     import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/stores';
@@ -23,7 +25,6 @@
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
     import { invalidate } from '$app/navigation';
-
 
     export let data: PageData;
 
@@ -57,9 +58,7 @@
             });
             addNotification({
                 type: 'success',
-                message: `${selectedIds.length} target${
-                    selectedIds.length > 1 ? 's' : ''
-                } deleted`
+                message: `${selectedIds.length} target${selectedIds.length > 1 ? 's' : ''} deleted`
             });
             invalidate(Dependencies.USER_TARGETS);
         } catch (error) {
@@ -73,7 +72,6 @@
             showDelete = false;
         }
     }
-
 </script>
 
 <TableScroll>
@@ -97,11 +95,11 @@
                     {#if column.show}
                         {#if column.id === '$id'}
                             {#key $columns}
-                            <TableCell title={column.title}>
-                                <Id value={target[column.id]}>
-                                    {target[column.id]}
-                                </Id>
-                            </TableCell>
+                                <TableCell title={column.title}>
+                                    <Id value={target[column.id]}>
+                                        {target[column.id]}
+                                    </Id>
+                                </TableCell>
                             {/key}
                         {:else if column.id === 'target'}
                             <TableCell title={column.title}>
@@ -121,7 +119,7 @@
                                     <Provider provider={provider.provider} size="s" />
                                 {/if}
                             </TableCellText>
-                            {:else if column.id === '$createdAt'}
+                        {:else if column.id === '$createdAt'}
                             <TableCellText title={column.title} width={column.width}>
                                 {toLocaleDateTime(target[column.id])}
                             </TableCellText>

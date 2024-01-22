@@ -32,19 +32,16 @@ export const load: PageLoad = async ({ params, url, route, depends }) => {
 
     // TODO: remove when the API is ready with data
     // This allows us to mock w/ data and when search returns 0 results
-    const targets: { targets: Target[]; total: number } =
-        await sdk.forProject.client.call(
-            'GET',
-            new URL(
-                `${sdk.forProject.client.config.endpoint}/users/${params.user}/targets`
-            ),
-            {
-                'X-Appwrite-Project': sdk.forProject.client.config.project,
-                'content-type': 'application/json',
-                'X-Appwrite-Mode': 'admin'
-            },
-            payload
-        );
+    const targets: { targets: Target[]; total: number } = await sdk.forProject.client.call(
+        'GET',
+        new URL(`${sdk.forProject.client.config.endpoint}/users/${params.user}/targets`),
+        {
+            'X-Appwrite-Project': sdk.forProject.client.config.project,
+            'content-type': 'application/json',
+            'X-Appwrite-Mode': 'admin'
+        },
+        payload
+    );
 
     const promisesById: Record<string, Promise<any>> = {};
     targets.targets.forEach((target) => {
@@ -71,13 +68,13 @@ export const load: PageLoad = async ({ params, url, route, depends }) => {
             providersById[provider.$id] = provider;
         }
     });
-    
+
     return {
         offset,
         limit,
         search,
         query,
         targets,
-        providersById,
+        providersById
     };
 };

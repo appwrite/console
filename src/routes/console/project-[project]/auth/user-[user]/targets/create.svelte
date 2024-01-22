@@ -24,7 +24,7 @@
     const providerTypeOptions = [
         { label: 'Push', value: ProviderTypes.Push },
         { label: 'Email', value: ProviderTypes.Email },
-        { label: 'SMS', value: ProviderTypes.Sms },
+        { label: 'SMS', value: ProviderTypes.Sms }
     ];
 
     const create = async () => {
@@ -53,7 +53,7 @@
                     'content-type': 'application/json',
                     'X-Appwrite-Mode': 'admin'
                 },
-                payload,
+                payload
             );
             show = false;
             addNotification({
@@ -64,7 +64,7 @@
             invalidate(Dependencies.USER_TARGETS);
             trackEvent(Submit.UserTargetCreate, {
                 customId: !!id,
-                providerType: providerType,
+                providerType: providerType
             });
         } catch (error) {
             addNotification({
@@ -92,18 +92,22 @@
 
 <Modal title="Create target" size="big" bind:show onSubmit={create}>
     <FormList>
-        <InputSelect id="provider-type" label="Provider Type" bind:value={providerType} options={providerTypeOptions} />
+        <InputSelect
+            id="provider-type"
+            label="Provider Type"
+            bind:value={providerType}
+            options={providerTypeOptions} />
         {#if providerType === ProviderTypes.Push}
             <InputText
                 id="provider-id"
                 label="Provider ID"
-                placeholder='Enter provider ID'
+                placeholder="Enter provider ID"
                 bind:value={providerId}
                 required />
             <InputText
                 id="identifier"
                 label="Identifier"
-                placeholder='Enter push token'
+                placeholder="Enter push token"
                 bind:value={identifier}
                 required />
             <InputText
@@ -116,14 +120,14 @@
             <InputEmail
                 id="identifier"
                 label="Identifier"
-                placeholder='Enter email'
+                placeholder="Enter email"
                 bind:value={identifier}
                 required />
         {:else if providerType === ProviderTypes.Sms}
             <InputPhone
                 id="identifier"
                 label="Identifier"
-                placeholder='Enter phone number'
+                placeholder="Enter phone number"
                 bind:value={identifier}
                 required />
         {/if}

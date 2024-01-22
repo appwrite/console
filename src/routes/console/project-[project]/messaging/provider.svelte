@@ -8,7 +8,7 @@
         Mailgun = 'mailgun',
         Sendgrid = 'sendgrid',
         FCM = 'fcm',
-        APNS = 'apns',
+        APNS = 'apns'
     }
 </script>
 
