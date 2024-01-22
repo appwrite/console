@@ -10,11 +10,7 @@
         if (!project) {
             reject('no-project');
         }
-        // this timeout is needed because goto does not
-        // throw an exception if the redirect does not work
-        setTimeout(() => reject('timeout'), 500);
-        // goto will resolve on successful redirect
-        goto(link).then(resolve);
+        window.location = link;
     });
 </script>
 
