@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { browser } from '$app/environment';
     import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import {
@@ -74,49 +75,55 @@
     <title>Sign in - Appwrite</title>
 </svelte:head>
 
+<!-- if browser checks allow us to partially prerender on the server to improve FCP and LCP -->
 <Unauthenticated>
-    <svelte:fragment slot="title">Sign in</svelte:fragment>
+    <svelte:fragment slot="title"
+        >{#if browser}Sign in{/if}</svelte:fragment>
     <svelte:fragment>
-        <Form onSubmit={login}>
-            <FormList>
-                <InputEmail
-                    id="email"
-                    label="Email"
-                    placeholder="Email"
-                    autofocus={true}
-                    required={true}
-                    bind:value={mail} />
-                <InputPassword
-                    id="password"
-                    label="Password"
-                    placeholder="Password"
-                    required={true}
-                    meter={false}
-                    showPasswordButton={true}
-                    bind:value={pass} />
-                <FormItem>
-                    <Button fullWidth submit {disabled}>Sign in</Button>
-                </FormItem>
-                {#if isCloud}
-                    <span class="with-separators eyebrow-heading-3">or</span>
+        {#if browser}
+            <Form onSubmit={login}>
+                <FormList>
+                    <InputEmail
+                        id="email"
+                        label="Email"
+                        placeholder="Email"
+                        autofocus={true}
+                        required={true}
+                        bind:value={mail} />
+                    <InputPassword
+                        id="password"
+                        label="Password"
+                        placeholder="Password"
+                        required={true}
+                        meter={false}
+                        showPasswordButton={true}
+                        bind:value={pass} />
                     <FormItem>
-                        <Button github fullWidth on:click={onGithubLogin} {disabled}>
-                            <span class="icon-github" aria-hidden="true" />
-                            <span class="text">Sign in with GitHub</span>
-                        </Button>
+                        <Button fullWidth submit {disabled}>Sign in</Button>
                     </FormItem>
-                {/if}
-            </FormList>
-        </Form>
+                    {#if isCloud}
+                        <span class="with-separators eyebrow-heading-3">or</span>
+                        <FormItem>
+                            <Button github fullWidth on:click={onGithubLogin} {disabled}>
+                                <span class="icon-github" aria-hidden="true" />
+                                <span class="text">Sign in with GitHub</span>
+                            </Button>
+                        </FormItem>
+                    {/if}
+                </FormList>
+            </Form>
+        {/if}
     </svelte:fragment>
     <svelte:fragment slot="links">
-        <li class="inline-links-item">
-            <a href={`${base}/recover`}><span class="text">Forgot Password?</span></a>
-        </li>
-        <li class="inline-links-item">
-            <a href={`${base}/register${$page?.url?.search ?? ''}`}>
-                <span class="text">Sign Up</span>
-            </a>
-        </li>
+        {#if browser}
+            <li class="inline-links-item">
+                <a href={`${base}/recover`}><span class="text">Forgot Password?</span></a>
+            </li>
+            <li class="inline-links-item">
+                <a href={`${base}/register${$page?.url?.search ?? ''}`}>
+                    <span class="text">Sign Up</span>
+                </a>
+            </li>
+        {/if}
     </svelte:fragment>
 </Unauthenticated>

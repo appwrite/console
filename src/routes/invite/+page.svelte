@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { browser } from '$app/environment';
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { Button, Form, FormList, InputChoice } from '$lib/elements/forms';
@@ -43,53 +44,59 @@
     <title>Accept invite - Appwrite</title>
 </svelte:head>
 
+<!-- if browser checks allow us to partially prerender on the server to improve FCP and LCP -->
 <Unauthenticated>
-    <svelte:fragment slot="title">
-        {#if !userId || !secret || !membershipId || !teamId}
-            Invalid invite
-        {:else}
-            Invite
-        {/if}
+    <svelte:fragment slot="title"
+        ><span
+            >{#if browser}
+                {#if !userId || !secret || !membershipId || !teamId}
+                    Invalid invite
+                {:else}
+                    Invite
+                {/if}{/if}</span>
     </svelte:fragment>
-    <svelte:fragment>
-        {#if !userId || !secret || !membershipId || !teamId}
-            <Alert type="warning">
-                <svelte:fragment slot="title">The invite link is not valid</svelte:fragment>
-                Please ask the project owner to send you a new invite.
-            </Alert>
-            <div class="u-flex u-main-end u-margin-block-start-40">
-                <Button href={`${base}/register`}>Sign up to Appwrite</Button>
-            </div>
-        {:else}
-            <p class="text">You have been invited to join a team project on Appwrite</p>
-            <Form onSubmit={acceptInvite}>
-                <FormList>
-                    <InputChoice
-                        required
-                        bind:value={terms}
-                        id="terms"
-                        label="terms"
-                        showLabel={false}>
-                        By accepting the invitation, you agree to the <a
-                            class="link"
-                            href="https://appwrite.io/terms"
-                            target="_blank"
-                            rel="noopener noreferrer">Terms and Conditions</a>
-                        and
-                        <a
-                            class="link"
-                            href="https://appwrite.io/privacy"
-                            target="_blank"
-                            rel="noopener noreferrer">
-                            Privacy Policy</a
-                        >.</InputChoice>
-
-                    <div class="u-flex u-main-end u-gap-12">
-                        <Button secondary href={`${base}/login`}>Cancel</Button>
-                        <Button submit>Accept</Button>
+    <svelte:fragment
+        ><div>
+            {#if browser}
+                {#if !userId || !secret || !membershipId || !teamId}
+                    <Alert type="warning">
+                        <svelte:fragment slot="title">The invite link is not valid</svelte:fragment>
+                        Please ask the project owner to send you a new invite.
+                    </Alert>
+                    <div class="u-flex u-main-end u-margin-block-start-40">
+                        <Button href={`${base}/register`}>Sign up to Appwrite</Button>
                     </div>
-                </FormList>
-            </Form>
-        {/if}
+                {:else}
+                    <p class="text">You have been invited to join a team project on Appwrite</p>
+                    <Form onSubmit={acceptInvite}>
+                        <FormList>
+                            <InputChoice
+                                required
+                                bind:value={terms}
+                                id="terms"
+                                label="terms"
+                                showLabel={false}>
+                                By accepting the invitation, you agree to the <a
+                                    class="link"
+                                    href="https://appwrite.io/terms"
+                                    target="_blank"
+                                    rel="noopener noreferrer">Terms and Conditions</a>
+                                and
+                                <a
+                                    class="link"
+                                    href="https://appwrite.io/privacy"
+                                    target="_blank"
+                                    rel="noopener noreferrer">
+                                    Privacy Policy</a
+                                >.</InputChoice>
+
+                            <div class="u-flex u-main-end u-gap-12">
+                                <Button secondary href={`${base}/login`}>Cancel</Button>
+                                <Button submit>Accept</Button>
+                            </div>
+                        </FormList>
+                    </Form>
+                {/if}{/if}
+        </div>
     </svelte:fragment>
 </Unauthenticated>

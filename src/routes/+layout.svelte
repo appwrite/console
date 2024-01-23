@@ -22,6 +22,11 @@
         window.VERCEL_ANALYTICS_ID = import.meta.env.VERCEL_ANALYTICS_ID?.toString() ?? false;
     }
 
+    const prerenderedRoutes = ['/login', '/register', '/recover', '/invite'];
+    if (prerenderedRoutes.some((n) => $page.url.pathname.startsWith(n))) {
+        loading.set(false);
+    }
+
     onMount(async () => {
         if ($page.url.searchParams.has('migrate')) {
             const migrateData = $page.url.searchParams.get('migrate');
@@ -65,14 +70,7 @@
          * Handle initial load.
          */
         if (!$page.url.pathname.startsWith('/auth') && !$page.url.pathname.startsWith('/git')) {
-            const acceptedRoutes = [
-                '/login',
-                '/register',
-                '/recover',
-                '/invite',
-                '/card',
-                '/hackathon'
-            ];
+            const acceptedRoutes = prerenderedRoutes.concat(['/card', '/hackathon']);
             if ($user) {
                 if (
                     !$page.url.pathname.startsWith('/console') &&
@@ -106,20 +104,10 @@
 
     $: {
         if (browser) {
-            const isCloudClass = isCloud ? 'is-cloud' : '';
-            if ($app.theme === 'auto') {
-                const darkThemeMq = window.matchMedia('(prefers-color-scheme: dark)');
-                if (darkThemeMq.matches) {
-                    document.body.setAttribute('class', `theme-dark ${isCloudClass}`);
-                    $app.themeInUse = 'dark';
-                } else {
-                    document.body.setAttribute('class', `theme-light ${isCloudClass}`);
-                    $app.themeInUse = 'light';
-                }
-            } else {
-                document.body.setAttribute('class', `theme-${$app.theme} ${isCloudClass}`);
-                $app.themeInUse = $app.theme;
-            }
+            document.body.setAttribute(
+                'class',
+                `theme-${$app.themeInUse} ${isCloud ? 'is-cloud' : ''}`
+            );
         }
     }
 </script>

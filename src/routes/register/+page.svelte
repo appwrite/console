@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { browser } from '$app/environment';
     import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import {
@@ -65,65 +66,72 @@
     <title>Sign up - Appwrite</title>
 </svelte:head>
 
+<!-- if browser checks allow us to partially prerender on the server to improve FCP and LCP -->
 <Unauthenticated>
-    <svelte:fragment slot="title">Sign up</svelte:fragment>
-    <svelte:fragment>
-        <Form onSubmit={register}>
-            <FormList>
-                <InputText
-                    id="name"
-                    label="Name"
-                    placeholder="Your name"
-                    autofocus
-                    required
-                    bind:value={name} />
-                <InputEmail
-                    id="email"
-                    label="Email"
-                    placeholder="Your email"
-                    required
-                    bind:value={mail} />
-                <InputPassword
-                    id="password"
-                    label="Password"
-                    placeholder="Your password"
-                    required
-                    showPasswordButton
-                    bind:value={pass} />
-                <InputChoice required value={terms} id="terms" label="terms" showLabel={false}>
-                    By registering, you agree that you have read, understand, and acknowledge our <a
-                        class="link"
-                        href="https://appwrite.io/privacy"
-                        target="_blank"
-                        rel="noopener noreferrer">
-                        Privacy Policy</a>
-                    and accept our
-                    <a
-                        class="link"
-                        href="https://appwrite.io/terms"
-                        target="_blank"
-                        rel="noopener noreferrer">General Terms of Use</a
-                    >.</InputChoice>
-                <FormItem>
-                    <Button fullWidth submit {disabled}>Sign up</Button>
-                </FormItem>
-                {#if isCloud}
-                    <span class="with-separators eyebrow-heading-3">or</span>
+    <svelte:fragment slot="title"
+        >{#if browser}Sign up{/if}</svelte:fragment>
+    <svelte:fragment
+        >{#if browser}
+            <Form onSubmit={register}>
+                <FormList>
+                    <InputText
+                        id="name"
+                        label="Name"
+                        placeholder="Your name"
+                        autofocus
+                        required
+                        bind:value={name} />
+                    <InputEmail
+                        id="email"
+                        label="Email"
+                        placeholder="Your email"
+                        required
+                        bind:value={mail} />
+                    <InputPassword
+                        id="password"
+                        label="Password"
+                        placeholder="Your password"
+                        required
+                        showPasswordButton
+                        bind:value={pass} />
+                    <InputChoice required value={terms} id="terms" label="terms" showLabel={false}>
+                        By registering, you agree that you have read, understand, and acknowledge
+                        our <a
+                            class="link"
+                            href="https://appwrite.io/privacy"
+                            target="_blank"
+                            rel="noopener noreferrer">
+                            Privacy Policy</a>
+                        and accept our
+                        <a
+                            class="link"
+                            href="https://appwrite.io/terms"
+                            target="_blank"
+                            rel="noopener noreferrer">General Terms of Use</a
+                        >.</InputChoice>
                     <FormItem>
-                        <Button github fullWidth on:click={onGithubLogin} {disabled}>
-                            <span class="icon-github" aria-hidden="true" />
-                            <span class="text">Sign up with GitHub</span>
-                        </Button>
+                        <Button fullWidth submit {disabled}>Sign up</Button>
                     </FormItem>
-                {/if}
-            </FormList>
-        </Form>
+                    {#if isCloud}
+                        <span class="with-separators eyebrow-heading-3">or</span>
+                        <FormItem>
+                            <Button github fullWidth on:click={onGithubLogin} {disabled}>
+                                <span class="icon-github" aria-hidden="true" />
+                                <span class="text">Sign up with GitHub</span>
+                            </Button>
+                        </FormItem>
+                    {/if}
+                </FormList>
+            </Form>
+        {/if}
     </svelte:fragment>
     <svelte:fragment slot="links">
-        <li class="inline-links-item">
-            <span class="text">
-                Already got an account? <a class="link" href={`${base}/login`}>Sign in</a>
-            </span>
-        </li>
+        {#if browser}
+            <li class="inline-links-item">
+                <span class="text">
+                    Already got an account? <a class="link" href={`${base}/login`}>Sign in</a>
+                </span>
+            </li>
+        {/if}
     </svelte:fragment>
 </Unauthenticated>
