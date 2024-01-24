@@ -96,6 +96,7 @@
         <svelte:fragment slot="actions">
             {#if $organization?.billingPlan === BillingPlan.STARTER}
                 <Button
+                    secondary
                     on:click={() => {
                         wizard.start(ChangeOrganizationTierCloud);
                         trackEvent('click_organization_upgrade', {
