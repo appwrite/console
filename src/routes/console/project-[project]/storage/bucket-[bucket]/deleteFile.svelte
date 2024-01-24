@@ -12,6 +12,13 @@
 
     const dispatch = createEventDispatcher();
 
+    const truncateFile = (name:string) => {
+      const parts = name.split('.');
+      const truncated = parts[0].split('').slice(0, 10).join();
+
+      return `${truncated}...${parts[parts.length - 1]}`;
+    }
+
     const deleteFile = async () => {
         try {
             await sdk.forProject.storage.deleteFile(file.bucketId, file.$id);
@@ -19,7 +26,7 @@
             dispatch('deleted', file);
             addNotification({
                 type: 'success',
-                message: `${file.name} has been deleted`
+                message: `${truncateFile(file.name)} has been deleted`
             });
             trackEvent(Submit.FileDelete);
         } catch (error) {
