@@ -71,7 +71,10 @@
                     name: name,
                     enabled: true,
                     isEuRegion: false,
-                    from: '',
+                    fromEmail: '',
+                    fromName: '',
+                    replyToEmail: '',
+                    replyToName: '',
                     apiKey: '',
                     domain: ''
                 };
@@ -82,7 +85,10 @@
                     name: name,
                     enabled: true,
                     apiKey: '',
-                    from: ''
+                    fromEmail: '',
+                    fromName: '',
+                    replyToEmail: '',
+                    replyToName: '',
                 };
                 break;
             case Providers.FCM:

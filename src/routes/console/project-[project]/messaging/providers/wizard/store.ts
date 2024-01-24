@@ -47,14 +47,20 @@ export type VonageProviderParams = ProviderParams & {
  */
 
 export type MailgunProviderParams = ProviderParams & {
+    fromEmail: string;
+    fromName: string;
+    replyToEmail: string;
+    replyToName: string;
     isEuRegion: boolean;
-    from: string;
     apiKey: string;
     domain: string;
 };
 
 export type SendgridProviderParams = ProviderParams & {
-    from: string;
+    fromEmail: string;
+    fromName: string;
+    replyToEmail: string;
+    replyToName: string;
     apiKey: string;
 };
 

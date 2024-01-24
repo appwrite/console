@@ -133,7 +133,7 @@ export const providers: ProvidersMap = {
             // [Providers.MQTT]: {
             //     imageIcon: 'mqtt',
             //     title: 'MQTT',
-            //     description: 'Message Queuing Telemtry Transport'
+            //     description: 'Message Queuing Telemetry Transport'
             // }
         }
     },
@@ -178,9 +178,27 @@ export const providers: ProvidersMap = {
                     },
                     {
                         label: 'Sender email',
-                        name: 'from',
+                        name: 'fromEmail',
                         type: 'email',
                         placeholder: 'Enter email'
+                    },
+                    {
+                        label: 'Sender name',
+                        name: 'fromName',
+                        type: 'text',
+                        placeholder: 'Enter name'
+                    },
+                    {
+                        label: 'Reply-to email',
+                        name: 'replyToEmail',
+                        type: 'email',
+                        placeholder: 'Enter email'
+                    },
+                    {
+                        label: 'Reply-to name',
+                        name: 'replyToName',
+                        type: 'text',
+                        placeholder: 'Enter name'
                     }
                 ]
             },
@@ -202,9 +220,27 @@ export const providers: ProvidersMap = {
                     },
                     {
                         label: 'Sender email',
-                        name: 'from',
+                        name: 'fromEmail',
                         type: 'email',
                         placeholder: 'Enter email'
+                    },
+                    {
+                        label: 'Sender name',
+                        name: 'fromName',
+                        type: 'text',
+                        placeholder: 'Enter name'
+                    },
+                    {
+                        label: 'Reply-to email',
+                        name: 'replyToEmail',
+                        type: 'email',
+                        placeholder: 'Enter email'
+                    },
+                    {
+                        label: 'Reply-to name',
+                        name: 'replyToName',
+                        type: 'text',
+                        placeholder: 'Enter name'
                     }
                 ]
             }
