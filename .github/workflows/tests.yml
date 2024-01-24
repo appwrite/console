@@ -2,7 +2,7 @@ name: Tests
 
 on:
     pull_request:
-        branches: [main]
+        branches: ["**"]
         paths-ignore:
             - '**/*.md'
             - 'static/**/*'
