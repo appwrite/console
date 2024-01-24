@@ -63,7 +63,7 @@ export type SendgridProviderParams = ProviderParams & {
  */
 
 export type FCMProviderParams = ProviderParams & {
-    serverKey: string;
+    serviceAccountJSON: string;
 };
 
 export type APNSProviderParams = ProviderParams & {

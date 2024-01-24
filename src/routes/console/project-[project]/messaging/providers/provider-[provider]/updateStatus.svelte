@@ -101,7 +101,7 @@
                     providerId: $provider.$id,
                     name: $provider.name,
                     enabled: $provider.enabled,
-                    serverKey: $provider.credentials['serverKey']
+                    serviceAccountJSON: $provider.credentials['serviceAccountJSON']
                 };
                 break;
             case Providers.APNS:
