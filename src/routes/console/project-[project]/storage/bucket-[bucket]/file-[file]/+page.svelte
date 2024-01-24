@@ -25,8 +25,8 @@
     let filePermissions = $file?.$permissions;
     let arePermsDisabled = true;
 
-    const imgWidth = 410
-    const imgHeight = 250
+    const imgWidth = 410;
+    const imgHeight = 250;
 
     const getPreview = (fileId: string) =>
         sdk.forProject.storage.getFilePreview($file.bucketId, fileId, 410, 250).toString() +
