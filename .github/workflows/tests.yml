@@ -1,11 +1,6 @@
 name: Tests
 
 on:
-    push:
-        branches: [main]
-        paths-ignore:
-            - '**/*.md'
-            - 'static/**/*'
     pull_request:
         branches: [main]
         paths-ignore:
