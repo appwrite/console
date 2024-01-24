@@ -25,6 +25,9 @@
     let filePermissions = $file?.$permissions;
     let arePermsDisabled = true;
 
+    const imgWidth = 410
+    const imgHeight = 250
+
     const getPreview = (fileId: string) =>
         sdk.forProject.storage.getFilePreview($file.bucketId, fileId, 410, 250).toString() +
         '&mode=admin';
@@ -81,8 +84,8 @@
                     aria-label="open file in new window">
                     <div class="file-preview-image">
                         <img
-                            width="205"
-                            height="125"
+                            width={imgWidth}
+                            height={imgHeight}
                             src={getPreview($file.$id)}
                             alt={$file.name} />
                     </div>
