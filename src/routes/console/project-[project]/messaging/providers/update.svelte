@@ -139,7 +139,10 @@
                             name: $providerParams[$provider].name,
                             enabled: $providerParams[$provider].enabled,
                             isEuRegion: $providerParams[$provider].isEuRegion,
-                            from: $providerParams[$provider].from,
+                            fromEmail: $providerParams[$provider].fromEmail,
+                            fromName: $providerParams[$provider].fromName,
+                            replyToEmail: $providerParams[$provider].replyToEmail,
+                            replyToName: $providerParams[$provider].replyToName,
                             apiKey: $providerParams[$provider].apiKey,
                             domain: $providerParams[$provider].domain
                         }
@@ -160,7 +163,10 @@
                             providerId: providerId,
                             name: $providerParams[$provider].name,
                             enabled: $providerParams[$provider].enabled,
-                            from: $providerParams[$provider].from,
+                            fromEmail: $providerParams[$provider].fromEmail,
+                            fromName: $providerParams[$provider].fromName,
+                            replyToEmail: $providerParams[$provider].replyToEmail,
+                            replyToName: $providerParams[$provider].replyToName,
                             apiKey: $providerParams[$provider].apiKey
                         }
                     );
