@@ -1,0 +1,161 @@
+import { writable } from 'svelte/store';
+import type { Column } from '$lib/components/viewSelector.svelte';
+
+export let showCreate = writable(false);
+
+export const columns = writable<Column[]>([
+    { id: '$id', title: 'Provider ID', show: true },
+    { id: 'name', title: 'Name', show: true },
+    { id: 'provider', title: 'Provider', show: true },
+    { id: 'channel', title: 'Channel', show: true },
+    { id: 'status', title: 'Status', show: true }
+]);
+
+export type Instruction = {
+    text: string;
+    input: {
+        label: string;
+        name: string;
+        type: 'text' | 'domain' | 'email';
+        placeholder: string;
+    };
+};
+
+export const providers = {
+    sms: {
+        name: 'SMS',
+        text: 'SMS',
+        icon: 'annotation',
+        providers: {
+            twilio: {
+                imageIcon: 'twilio',
+                title: 'Twilio',
+                description: ''
+            },
+            msg91: {
+                imageIcon: 'msg91',
+                title: 'MSG91',
+                description: ''
+            },
+            telesign: {
+                imageIcon: 'telesign',
+                title: 'Telesign',
+                description: ''
+            },
+            textmagic: {
+                imageIcon: 'textmagic',
+                title: 'Textmagic',
+                description: ''
+            },
+            vonage: {
+                imageIcon: 'vonage',
+                title: 'Vonage',
+                description: ''
+            }
+        }
+    },
+    email: {
+        name: 'Email',
+        text: 'emails',
+        icon: 'mail',
+        providers: {
+            mailgun: {
+                imageIcon: 'mailgun',
+                title: 'Mailgun',
+                description: '',
+                initialize: [
+                    {
+                        text: 'Before you can create a Mailgun provider, you need to first create a <a href="https://www.mailgun.com/" class="link" target="_blank" rel="noopener noreferrer">Mailgun</a> account.'
+                    },
+                    {
+                        text: 'Head to your <b>Profile > API Security</b>.'
+                    },
+                    {
+                        text: '<b>Generate a key</b> and give it a name. Copy and paste it in the field below.',
+                        input: {
+                            label: 'API key',
+                            name: 'apiKey',
+                            type: 'text',
+                            placeholder: 'Enter API key'
+                        }
+                    },
+                    {
+                        // TODO: Update link to domain verification
+                        text: 'Head to <b>Sending > Domains</b> and click on \'Add New Domain\'. Verify your domain by following the <a href="https://www.mailgun.com/" class="link" target="_blank" rel="noopener noreferrer">instructions</a>.',
+                        input: {
+                            label: 'Base URL',
+                            name: 'baseUrl',
+                            type: 'text',
+                            placeholder: 'Enter base URL'
+                        }
+                    }
+                ],
+                configure: [
+                    {
+                        text: 'Provide a display name your recipient will see when they receive your emails.',
+                        input: {
+                            label: 'From',
+                            name: 'from',
+                            type: 'text',
+                            placeholder: 'Enter name'
+                        }
+                    },
+                    {
+                        text: 'Provide an email address that will be visible to the recipient as the senders email address for this message.',
+                        input: {
+                            label: 'From email address',
+                            name: 'email',
+                            type: 'email',
+                            placeholder: 'Enter email'
+                        }
+                    },
+                    {
+                        text: 'Provide an email address for users to use when replying to your emails.',
+                        input: {
+                            label: 'Reply to',
+                            name: 'replyTo',
+                            type: 'email',
+                            placeholder: 'Enter email'
+                        }
+                    },
+                    {
+                        text: 'Provide the domain as it is registered on Mailgun.',
+                        input: {
+                            label: 'Domain',
+                            name: 'domain',
+                            type: 'domain',
+                            placeholder: 'Enter domain'
+                        }
+                    }
+                ]
+            },
+            sendgrid: {
+                imageIcon: 'sendgrid',
+                title: 'Sendgrid',
+                description: ''
+            }
+        }
+    },
+    push: {
+        name: 'Push notification',
+        text: 'notifications',
+        icon: 'device-mobile',
+        providers: {
+            fcm: {
+                imageIcon: 'firebase',
+                title: 'FCM',
+                description: 'Firebase Cloud Messaging'
+            },
+            apns: {
+                imageIcon: 'apple',
+                title: 'APNS',
+                description: 'Apple Push Notification Service'
+            },
+            mqtt: {
+                imageIcon: 'mqtt',
+                title: 'MQTT',
+                description: 'Message Queuing Telemtry Transport'
+            }
+        }
+    }
+};

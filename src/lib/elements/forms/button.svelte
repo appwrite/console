@@ -61,6 +61,7 @@
 
 {#if href}
     <a
+        on:click
         on:click={track}
         {href}
         {download}

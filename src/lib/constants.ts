@@ -17,6 +17,7 @@ export enum Dependencies {
     ACCOUNT_SESSIONS = 'dependency:account_sessions',
     USER = 'dependency:user',
     USERS = 'dependency:users',
+    USER_TARGETS = 'dependency:user_targets',
     SESSIONS = 'dependency:sessions',
     TEAM = 'dependency:team',
     TEAMS = 'dependency:teams',
@@ -47,7 +48,13 @@ export enum Dependencies {
     MIGRATIONS = 'dependency:migrations',
     COLLECTIONS = 'dependency:collections',
     RUNTIMES = 'dependency:runtimes',
-    CONSOLE_VARIABLES = 'dependency:console_variables'
+    CONSOLE_VARIABLES = 'dependency:console_variables',
+    MESSAGING_PROVIDERS = 'dependency:messaging_providers',
+    MESSAGING_PROVIDER = 'dependency:messaging_provider',
+    MESSAGING_MESSAGE = 'dependency:messaging_message',
+    MESSAGING_TOPICS = 'dependency:messaging_topics',
+    MESSAGING_TOPIC = 'dependency:messaging_topic',
+    MESSAGING_TOPIC_SUBSCRIBERS = 'dependency:messaging_topic_subscribers'
 }
 
 export const scopes: {

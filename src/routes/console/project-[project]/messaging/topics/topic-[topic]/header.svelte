@@ -1,0 +1,48 @@
+<script lang="ts">
+    import { page } from '$app/stores';
+    import { Id, Tab, Tabs } from '$lib/components';
+    import { isTabSelected } from '$lib/helpers/load';
+    import { Cover, CoverTitle } from '$lib/layout';
+    import { topic } from './store';
+
+    const projectId = $page.params.project;
+    const topicId = $page.params.topic;
+    const path = `/console/project-${projectId}/messaging/topics/topic-${topicId}`;
+    const tabs = [
+        {
+            href: path,
+            title: 'Overview',
+            event: 'overview'
+        },
+        {
+            href: `${path}/subscribers`,
+            title: 'Subscribers',
+            event: 'subscribers'
+        },
+        {
+            href: `${path}/activity`,
+            title: 'Activity',
+            event: 'activity'
+        }
+    ];
+</script>
+
+<Cover>
+    <svelte:fragment slot="header">
+        <CoverTitle href={`/console/project-${projectId}/messaging/topics`}>
+            {$topic.name}
+        </CoverTitle>
+        <Id value={$topic.$id} event="topic">{$topic.$id}</Id>
+    </svelte:fragment>
+
+    <Tabs>
+        {#each tabs as tab}
+            <Tab
+                href={tab.href}
+                selected={isTabSelected(tab, $page.url.pathname, path, tabs)}
+                event={tab.event}>
+                {tab.title}
+            </Tab>
+        {/each}
+    </Tabs>
+</Cover>

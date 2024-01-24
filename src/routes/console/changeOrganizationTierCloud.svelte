@@ -176,7 +176,7 @@
         component: ChoosePlan
     });
     $changeTierSteps.set(2, {
-        label: 'Payment details',
+        label: 'Payment',
         component: PaymentDetails
     });
     $changeTierSteps.set(3, {

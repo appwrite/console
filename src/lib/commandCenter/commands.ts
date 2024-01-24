@@ -17,6 +17,7 @@ const groups = [
     'platforms',
     'databases',
     'functions',
+    'messaging',
     'storage',
     'domains',
     'webhooks',

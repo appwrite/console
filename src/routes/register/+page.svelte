@@ -56,6 +56,7 @@
             'github',
             window.location.origin,
             window.location.origin,
+            undefined,
             ['read:user', 'user:email']
         );
     }
