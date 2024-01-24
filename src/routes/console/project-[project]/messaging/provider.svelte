@@ -16,7 +16,7 @@
     import { base } from '$app/paths';
     import { app } from '$lib/stores/app';
 
-    export let provider: Providers;
+    export let provider: Providers | string;
     export let name: string = '';
     export let noIcon = false;
     export let size: 's' | 'm' | 'l' = 'm';

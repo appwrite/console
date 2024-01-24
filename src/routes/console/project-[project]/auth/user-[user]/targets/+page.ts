@@ -1,10 +1,9 @@
-import { Query } from '@appwrite.io/console';
+import { Query, type Models } from '@appwrite.io/console';
 import { sdk } from '$lib/stores/sdk';
 import { getLimit, getPage, getQuery, getSearch, pageToOffset } from '$lib/helpers/load';
 import { Dependencies, PAGE_LIMIT } from '$lib/constants';
 import type { PageLoad } from './$types';
 import { queryParamToMap, queries } from '$lib/components/filters';
-import type { Provider, Target } from '$routes/console/project-[project]/messaging/store';
 
 export const load: PageLoad = async ({ params, url, route, depends }) => {
     depends(Dependencies.USER_TARGETS);
@@ -32,7 +31,7 @@ export const load: PageLoad = async ({ params, url, route, depends }) => {
 
     // TODO: remove when the API is ready with data
     // This allows us to mock w/ data and when search returns 0 results
-    const targets: { targets: Target[]; total: number } = await sdk.forProject.client.call(
+    const targets: { targets: Models.Target[]; total: number } = await sdk.forProject.client.call(
         'GET',
         new URL(`${sdk.forProject.client.config.endpoint}/users/${params.user}/targets`),
         {
@@ -60,7 +59,7 @@ export const load: PageLoad = async ({ params, url, route, depends }) => {
         }
     });
 
-    const providersById: Record<string, Provider> = {};
+    const providersById: Record<string, Models.Provider> = {};
     const resolved = await Promise.allSettled(Object.values(promisesById));
     resolved.forEach((result) => {
         if (result.status === 'fulfilled') {

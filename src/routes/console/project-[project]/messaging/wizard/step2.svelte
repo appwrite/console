@@ -12,7 +12,8 @@
     import { WizardStep } from '$lib/layout';
     import { messageParams, providerType, targetsById } from './store';
     import Actions from '../actions.svelte';
-    import { topicsById, type Target, type Topic } from '../store';
+    import { topicsById } from '../store';
+    import type { Models } from '@appwrite.io/console';
 
     let showDropdown = false;
     let showTopics = false;
@@ -20,7 +21,7 @@
     let targetIdsLength = 0;
     let topicIdsLength = 0;
 
-    function addTopics(event: CustomEvent<Record<string, Topic>>) {
+    function addTopics(event: CustomEvent<Record<string, Models.Topic>>) {
         $topicsById = event.detail;
         showDropdown = false;
     }
@@ -30,7 +31,7 @@
         $topicsById = rest;
     }
 
-    function addTargets(event: CustomEvent<Record<string, Target>>) {
+    function addTargets(event: CustomEvent<Record<string, Models.Target>>) {
         $targetsById = event.detail;
         showDropdown = false;
     }

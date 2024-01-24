@@ -82,7 +82,7 @@
                     name: $provider.name,
                     enabled: $provider.enabled,
                     isEuRegion: false,
-                    from: $provider.options['from'],
+                    fromEmail: $provider.options['from'],
                     apiKey: $provider.credentials['apiKey'],
                     domain: $provider.credentials['domain']
                 };
@@ -93,7 +93,7 @@
                     name: $provider.name,
                     enabled: $provider.enabled,
                     apiKey: $provider.credentials['apiKey'],
-                    from: $provider.options['from']
+                    fromEmail: $provider.options['from']
                 };
                 break;
             case Providers.FCM:

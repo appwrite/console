@@ -1,9 +1,8 @@
-import { Query } from '@appwrite.io/console';
+import { Query, type Models } from '@appwrite.io/console';
 import { sdk } from '$lib/stores/sdk';
 import { getLimit, getPage, getQuery, getSearch, pageToOffset } from '$lib/helpers/load';
 import { Dependencies, PAGE_LIMIT } from '$lib/constants';
 import type { PageLoad } from './$types';
-import type { Target } from '../../../store';
 import { queryParamToMap, queries } from '$lib/components/filters';
 
 export type Subscriber = {
@@ -11,7 +10,7 @@ export type Subscriber = {
     $createdAt: string;
     $updatedAt: string;
     targetId: string;
-    target: Target;
+    target: Models.Target;
     userName: string;
     topicId: string;
 };

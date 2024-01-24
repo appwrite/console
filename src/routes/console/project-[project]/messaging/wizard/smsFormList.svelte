@@ -91,8 +91,7 @@
                     bind:group={selected}
                     value="other"
                     id="other"
-                    name="selected"
-                    fullWidth>
+                    name="selected">
                     <svelte:fragment slot="description">
                         Enter the phone number to which the test message will be
                         <div

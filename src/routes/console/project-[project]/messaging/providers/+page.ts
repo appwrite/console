@@ -1,4 +1,4 @@
-import { Query } from '@appwrite.io/console';
+import { Query, type Models } from '@appwrite.io/console';
 import { sdk } from '$lib/stores/sdk';
 import {
     View,
@@ -10,15 +10,7 @@ import {
     pageToOffset
 } from '$lib/helpers/load';
 import { Dependencies, PAGE_LIMIT } from '$lib/constants';
-import { providersById, type Provider } from '../store';
 import { queries, queryParamToMap } from '$lib/components/filters';
-
-const providers = Object.values(providersById);
-
-let data: { providers: Provider[]; total: number } = {
-    providers: [...providers],
-    total: providers.length
-};
 
 export const load = async ({ depends, url, route }) => {
     depends(Dependencies.MESSAGING_PROVIDERS);
@@ -34,36 +26,32 @@ export const load = async ({ depends, url, route }) => {
     queries.set(parsedQueries);
 
     // TODO: get rid of demo data
-    let providers: { providers: Provider[]; total: number } = { providers: [], total: 0 };
-    if (search == 'demo') {
-        providers = data;
-    } else {
-        const params = {
-            queries: [
-                Query.limit(limit),
-                Query.offset(offset),
-                Query.orderDesc(''),
-                ...parsedQueries.values()
-            ]
-        };
+    let providers: { providers: Models.Provider[]; total: number } = { providers: [], total: 0 };
+    const params = {
+        queries: [
+            Query.limit(limit),
+            Query.offset(offset),
+            Query.orderDesc(''),
+            ...parsedQueries.values()
+        ]
+    };
 
-        if (search) {
-            params['search'] = search;
-        }
-
-        const response = await sdk.forProject.client.call(
-            'GET',
-            new URL(sdk.forProject.client.config.endpoint + '/messaging/providers'),
-            {
-                'X-Appwrite-Project': sdk.forProject.client.config.project,
-                'content-type': 'application/json',
-                'X-Appwrite-Mode': 'admin'
-            },
-            params
-        );
-
-        providers = response;
+    if (search) {
+        params['search'] = search;
     }
+
+    const response = await sdk.forProject.client.call(
+        'GET',
+        new URL(sdk.forProject.client.config.endpoint + '/messaging/providers'),
+        {
+            'X-Appwrite-Project': sdk.forProject.client.config.project,
+            'content-type': 'application/json',
+            'X-Appwrite-Mode': 'admin'
+        },
+        params
+    );
+
+    providers = response;
 
     return {
         offset,

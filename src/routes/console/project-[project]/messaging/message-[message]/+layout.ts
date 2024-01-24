@@ -4,13 +4,13 @@ import Header from './header.svelte';
 import { sdk } from '$lib/stores/sdk';
 import { Dependencies } from '$lib/constants';
 import { error } from '@sveltejs/kit';
-import type { Message } from '../store';
+import type { Models } from '@appwrite.io/console';
 
 export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.MESSAGING_MESSAGE);
 
     try {
-        const response: Message = await sdk.forProject.client.call(
+        const response: Models.Message = await sdk.forProject.client.call(
             'GET',
             new URL(
                 `${sdk.forProject.client.config.endpoint}/messaging/messages/${params.message}`

@@ -11,7 +11,7 @@
         EmptyFilter
     } from '$lib/components';
     import { Container } from '$lib/layout';
-    import { ID } from '@appwrite.io/console';
+    import { ID, type Models } from '@appwrite.io/console';
     import type { PageData } from './$types';
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
@@ -19,7 +19,7 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import Table from './table.svelte';
-    import { type Target, targetsById } from '../../../store';
+    import { targetsById } from '../../../store';
     import UserTargetsModal from '../../../userTargetsModal.svelte';
     import { onMount } from 'svelte';
     import type { Subscriber } from './+page';
@@ -40,7 +40,7 @@
         }
     });
 
-    async function addTargets(event: CustomEvent<Record<string, Target>>) {
+    async function addTargets(event: CustomEvent<Record<string, Models.Target>>) {
         showAdd = false;
         $targetsById = event.detail;
         async function addSubscriber(targetId: string) {

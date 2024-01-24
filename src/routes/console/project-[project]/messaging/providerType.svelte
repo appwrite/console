@@ -7,7 +7,9 @@
 </script>
 
 <script lang="ts">
-    export let type: ProviderTypes;
+    import type { Models } from "@appwrite.io/console";
+
+    export let type: ProviderTypes | Models.Provider['type'];
     export let noIcon = false;
     export let size: 's' | 'm' | 'l' = 'm';
 

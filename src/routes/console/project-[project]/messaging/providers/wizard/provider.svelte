@@ -88,7 +88,7 @@
                     fromEmail: '',
                     fromName: '',
                     replyToEmail: '',
-                    replyToName: '',
+                    replyToName: ''
                 };
                 break;
             case Providers.FCM:

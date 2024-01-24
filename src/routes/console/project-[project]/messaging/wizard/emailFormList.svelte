@@ -97,8 +97,7 @@
                 bind:group={selected}
                 value="other"
                 id="other"
-                name="selected"
-                fullWidth>
+                name="selected">
                 <svelte:fragment slot="description">
                     Enter the email address to which te test message will be
                     <div

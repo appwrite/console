@@ -58,7 +58,7 @@
                 username = undefined;
                 password = undefined;
             }
-            await sdk.forConsole.projects.updateSmtpConfiguration(
+            await sdk.forConsole.projects.updateSmtp(
                 $project.$id,
                 enabled,
                 senderName ? senderName : undefined,

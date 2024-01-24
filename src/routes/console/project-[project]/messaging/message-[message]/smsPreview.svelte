@@ -1,10 +1,10 @@
 <script lang="ts">
     import { CardGrid, Heading } from '$lib/components';
     import { Button, FormList, InputTextarea } from '$lib/elements/forms';
+    import type { Models } from '@appwrite.io/console';
     import SMSPhone from '../smsPhone.svelte';
-    import type { Message } from '../store';
 
-    export let message: Message;
+    export let message: Models.Message & { data: Record<string, string>; };
     export let onEdit: () => void = null;
 </script>
 

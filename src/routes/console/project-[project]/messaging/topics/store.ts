@@ -1,7 +1,7 @@
 import type { Column } from '$lib/helpers/types';
 import { writable } from 'svelte/store';
 
-export let showCreate = writable(false);
+export const showCreate = writable(false);
 
 export const columns = writable<Column[]>([
     { id: '$id', title: 'Topic ID', type: 'string', show: true, width: 140 },

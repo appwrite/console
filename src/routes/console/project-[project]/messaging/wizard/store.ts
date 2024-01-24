@@ -1,6 +1,6 @@
+import type { Models } from '@appwrite.io/console';
 import { ProviderTypes } from '../providerType.svelte';
 import { writable } from 'svelte/store';
-import type { Target } from '../store';
 
 export enum MessageStatuses {
     DRAFT = 'draft',
@@ -44,7 +44,7 @@ export type PushMessageParams = MessageParams & {
 
 export const operation = writable<'create' | 'update'>('create');
 export const providerType = writable<ProviderTypes>(null);
-export const targetsById = writable<Record<string, Target>>({});
+export const targetsById = writable<Record<string, Models.Target>>({});
 export const messageParams = writable<{
     [ProviderTypes.Email]: Partial<EmailMessageParams>;
     [ProviderTypes.Sms]: Partial<SMSMessageParams>;

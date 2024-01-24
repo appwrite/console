@@ -1,9 +1,9 @@
 <script lang="ts">
     import { CardGrid, Heading } from '$lib/components';
     import { Button, FormList, InputText, InputTextarea } from '$lib/elements/forms';
-    import type { Message } from '../store';
+    import type { Models } from '@appwrite.io/console';
 
-    export let message: Message;
+    export let message: Models.Message & { data: Record<string, string>; };
     export let onEdit: () => void = null;
 </script>
 

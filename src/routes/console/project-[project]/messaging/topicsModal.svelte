@@ -2,12 +2,11 @@
     import { EmptySearch, Modal, PaginationInline } from '$lib/components';
     import { Button, FormList, InputCheckbox, InputSearch } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
-    import { Query } from '@appwrite.io/console';
+    import { Query, type Models } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
-    import type { Topic } from './store';
 
     export let show: boolean;
-    export let topicsById: Record<string, Topic>;
+    export let topicsById: Record<string, Models.Topic>;
     export let title = 'Select topics';
 
     const dispatch = createEventDispatcher();
@@ -15,8 +14,8 @@
     let search = '';
     let offset = 0;
     let totalResults = 0;
-    let topicResultsById: Record<string, Topic> = {}; // use a hash map so we can quickly look up a user by id
-    let selected: Record<string, Topic> = {};
+    let topicResultsById: Record<string, Models.Topic> = {}; // use a hash map so we can quickly look up a user by id
+    let selected: Record<string, Models.Topic> = {};
     let hasSelection = false;
 
     function reset() {
@@ -63,7 +62,7 @@
         });
     }
 
-    function onTopicSelection(event: Event, topic: Topic) {
+    function onTopicSelection(event: Event, topic: Models.Topic) {
         const { checked } = event.currentTarget as HTMLInputElement;
 
         if (checked) {

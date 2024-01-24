@@ -11,10 +11,9 @@
     import { Query, type Models } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
     import ProviderType, { ProviderTypes } from './providerType.svelte';
-    import type { Target } from './store';
 
     export let show: boolean;
-    export let targetsById: Record<string, Target>;
+    export let targetsById: Record<string, Models.Target>;
     export let providerType: ProviderTypes = null;
     export let title = 'Select users';
 
@@ -25,9 +24,9 @@
     let totalResults = 0;
     let userResultsById: Record<
         string,
-        Models.User<Record<string, unknown>> & { targets: Target[] }
+        Models.User<Record<string, unknown>>
     > = {}; // use a hash map so we can quickly look up a user by id
-    let selected: Record<string, Target> = {};
+    let selected: Record<string, Models.Target> = {};
     let hasSelection = false;
 
     function reset() {
@@ -105,7 +104,7 @@
         }
     }
 
-    function onTargetSelection(event: Event, target: Target) {
+    function onTargetSelection(event: Event, target: Models.Target) {
         const { checked } = event.currentTarget as HTMLInputElement;
 
         if (checked) {

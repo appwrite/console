@@ -27,7 +27,7 @@
         try {
             disabled = true;
             await sdk.forConsole.account.create(ID.unique(), mail, pass, name ?? '');
-            await sdk.forConsole.account.createEmailSession(mail, pass);
+            await sdk.forConsole.account.createEmailPasswordSession(mail, pass);
             await invalidate(Dependencies.ACCOUNT);
             if ($page.url.searchParams) {
                 const redirect = $page.url.searchParams.get('redirect');
@@ -56,6 +56,7 @@
             'github',
             window.location.origin,
             window.location.origin,
+            undefined,
             ['read:user', 'user:email']
         );
     }

@@ -44,6 +44,8 @@
     let showCreateDropdownEmpty = false;
 
     const project = $page.params.project;
+
+    $: console.log(showDelete);
 </script>
 
 <Container>
