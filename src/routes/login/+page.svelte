@@ -22,7 +22,7 @@
     async function login() {
         try {
             disabled = true;
-            await sdk.forConsole.account.createEmailSession(mail, pass);
+            await sdk.forConsole.account.createEmailPasswordSession(mail, pass);
             await invalidate(Dependencies.ACCOUNT);
             addNotification({
                 type: 'success',
@@ -65,6 +65,7 @@
             'github',
             window.location.origin + url,
             window.location.origin,
+            undefined,
             ['read:user', 'user:email']
         );
     }

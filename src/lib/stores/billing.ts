@@ -8,7 +8,6 @@ import { cachedStore } from '$lib/helpers/cache';
 import { Query, type Models } from '@appwrite.io/console';
 import { headerAlert } from './headerAlert';
 import PaymentAuthRequired from '$lib/components/billing/alerts/paymentAuthRequired.svelte';
-import { diffDays } from '$lib/helpers/date';
 import { addNotification, notifications } from './notifications';
 import { goto } from '$app/navigation';
 import { base } from '$app/paths';
@@ -161,7 +160,12 @@ export function calculateTrialDay(org: Organization) {
     if (org?.billingPlan === BillingPlan.STARTER) return false;
     const endDate = new Date(org?.billingStartDate);
     const today = new Date();
-    const days = diffDays(today, endDate);
+
+    let diffTime = endDate.getTime() - today.getTime();
+    diffTime = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+
+    const days = diffTime < 1 ? 0 : diffTime;
+
     daysLeftInTrial.set(days);
     return days;
 }
