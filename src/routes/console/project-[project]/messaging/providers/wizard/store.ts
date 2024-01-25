@@ -1,6 +1,5 @@
 import type { Models } from '@appwrite.io/console';
 import type { Providers } from '../../provider.svelte';
-import type { ProviderTypes } from '../../providerType.svelte';
 import { writable } from 'svelte/store';
 
 type ProviderParams = {
