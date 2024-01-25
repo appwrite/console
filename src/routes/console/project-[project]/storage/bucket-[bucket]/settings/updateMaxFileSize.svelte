@@ -14,7 +14,7 @@
     import { updateBucket } from './+page.svelte';
 
     const service = getServiceLimit('fileSize');
-    const { value, unit, baseValue, units } = createByteUnitPair($bucket.maximumFileSize);
+    const { value, unit, baseValue, units } = createByteUnitPair($bucket.maximumFileSize, 1000);
     const options = units.map((v) => ({ label: v.name, value: v.name }));
 
     function updateMaxSize() {
@@ -36,7 +36,7 @@
         <p class="text">Set the maximum file size allowed in the bucket.</p>
         <svelte:fragment slot="aside">
             {#if isCloud}
-                {@const size = humanFileSize(sizeToBytes(service, 'MB', 1024))}
+                {@const size = humanFileSize(sizeToBytes(service, 'MB', 1000))}
                 {@const plan = tierToPlan($organization?.billingPlan)}
                 <Alert type="info">
                     <p class="text">
