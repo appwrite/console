@@ -20,7 +20,7 @@
         {/each}
     </ul>
     <div class="u-flex u-main-space-between u-margin-block-start-8">
-        <span class:u-color-text-gray={value !== null}>Not at all likely</span>
-        <span class:u-color-text-gray={value !== null}>Extremely likely</span>
+        <span class:u-color-text-gray={value === null}>Not at all likely</span>
+        <span class:u-color-text-gray={value === null}>Extremely likely</span>
     </div>
 </fieldset>
