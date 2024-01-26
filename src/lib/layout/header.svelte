@@ -121,7 +121,13 @@
         {#if isCloud && $organization?.billingPlan === BillingPlan.STARTER && !$page.url.pathname.startsWith('/console/account')}
             <Button
                 disabled={$organization?.markedForDeletion}
-                on:click={() => wizard.start(ChangeOrganizationTierCloud)}>
+                on:click={() => {
+                    wizard.start(ChangeOrganizationTierCloud);
+                    trackEvent('click_organization_upgrade', {
+                        from: 'button',
+                        source: 'top_nav'
+                    });
+                }}>
                 Upgrade
             </Button>
         {/if}

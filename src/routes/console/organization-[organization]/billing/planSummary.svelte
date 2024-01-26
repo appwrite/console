@@ -15,6 +15,7 @@
     import { abbreviateNumber, formatNumberWithCommas } from '$lib/helpers/numbers';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { BillingPlan } from '$lib/constants';
+    import { trackEvent } from '$lib/actions/analytics';
 
     let currentInvoice: Invoice;
     const today = new Date();
@@ -136,7 +137,12 @@
                     </Button>
                     <Button
                         disabled={$organization?.markedForDeletion}
-                        on:click={() => wizard.start(ChangeOrganizationTierCloud)}>
+                        on:click={() => wizard.start(ChangeOrganizationTierCloud)}
+                        on:click={() =>
+                            trackEvent('click_organization_upgrade', {
+                                from: 'button',
+                                source: 'billing_tab'
+                            })}>
                         Upgrade
                     </Button>
                 </div>
@@ -145,7 +151,12 @@
                     <Button
                         text
                         disabled={$organization?.markedForDeletion}
-                        on:click={() => wizard.start(ChangeOrganizationTierCloud)}>
+                        on:click={() => wizard.start(ChangeOrganizationTierCloud)}
+                        on:click={() =>
+                            trackEvent('click_organization_plan_update', {
+                                from: 'button',
+                                source: 'billing_tab'
+                            })}>
                         Change plan
                     </Button>
                     <Button

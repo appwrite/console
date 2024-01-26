@@ -24,13 +24,17 @@ export function bytesToSize(value: number, unit: Size) {
     return value / Math.pow(1024, index);
 }
 
-export function humanFileSize(bytes: number): {
+export function humanFileSize(
+    bytes: number,
+    useBits = false
+): {
     value: string;
     unit: Size;
 } {
     if (typeof bytes !== 'number') return { value: '0', unit: 'Bytes' };
     const value = prettyBytes(bytes, {
-        locale: 'en'
+        locale: 'en',
+        bits: useBits
     }).split(' ');
 
     return {
