@@ -14,6 +14,7 @@
     import { goto } from '$app/navigation';
     import { last } from '$lib/helpers/array';
     import { BillingPlan } from '$lib/constants';
+    import { trackEvent } from '$lib/actions/analytics';
 
     export let show = false;
     const plan = $plansInfo?.get($organization.billingPlan);
@@ -89,13 +90,20 @@
                     on:click={() => {
                         show = false;
                         goto(`/console/organization-${$organization.$id}/usage`);
-                    }}>View usage</Button>
-
+                    }}>
+                    View usage
+                </Button>
                 <Button
                     on:click={() => {
                         show = false;
                         wizard.start(ChangeOrganizationTierCloud);
-                    }}>Upgrade plan</Button>
+                        trackEvent('click_organization_upgrade', {
+                            from: 'button',
+                            source: 'limit_reached_modal'
+                        });
+                    }}>
+                    Upgrade plan
+                </Button>
             </div>
         </div>
     </svelte:fragment>
