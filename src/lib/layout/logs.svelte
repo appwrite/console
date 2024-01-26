@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { toLocaleDateTime } from '$lib/helpers/date';
+    import { hoursToDays, toLocaleDateTime } from '$lib/helpers/date';
     import { log } from '$lib/stores/logs';
-    import { Card, Code, Heading, Id, SvgIcon, Tab, Tabs } from '../components';
+    import { Alert, Card, Code, Heading, Id, SvgIcon, Tab, Tabs } from '../components';
     import { calculateTime } from '$lib/helpers/timeConversion';
     import {
         TableBody,
@@ -13,9 +13,20 @@
     } from '$lib/elements/table';
     import { beforeNavigate } from '$app/navigation';
     import { Pill } from '$lib/elements';
+    import { isCloud } from '$lib/system';
+    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
+    import { wizard } from '$lib/stores/wizard';
+    import { getServiceLimit, tierToPlan } from '$lib/stores/billing';
+    import { organization } from '$lib/stores/organization';
+    import { app } from '$lib/stores/app';
+    import { Button } from '$lib/elements/forms';
+    import { BillingPlan } from '$lib/constants';
 
     let selectedRequest = 'parameters';
     let selectedResponse = 'logs';
+
+    const limit = getServiceLimit('logs');
+    const tier = tierToPlan($organization?.billingPlan)?.name;
 
     function handleKeydown(event: KeyboardEvent) {
         if (event.key === 'Escape') {
@@ -154,7 +165,9 @@
                         </div>
                     </header>
                     <div class="code-panel-content grid-1-2" style="u-grid">
-                        <div class="grid-1-2-col-1 u-flex u-flex-vertical u-gap-16">
+                        <div
+                            class="grid-1-2-col-1 u-flex u-flex-vertical u-gap-16"
+                            class:theme-dark={$app.themeInUse === 'light'}>
                             <Heading tag="h3" size="6">Request</Heading>
                             <div class="u-sep-block-end">
                                 <Tabs>
@@ -265,7 +278,9 @@
                                 </p>
                             {/if}
                         </div>
-                        <div class="grid-1-2-col-2 u-flex u-flex-vertical u-gap-16 u-min-width-0">
+                        <div
+                            class="grid-1-2-col-2 u-flex u-flex-vertical u-gap-16 u-min-width-0"
+                            class:theme-dark={$app.themeInUse === 'light'}>
                             <Heading tag="h3" size="6">Response</Heading>
                             <div class="u-sep-block-end">
                                 <Tabs>
@@ -293,6 +308,20 @@
                             </div>
                             {#if selectedResponse === 'logs'}
                                 {#if execution?.logs}
+                                    {#if isCloud && limit !== 0 && limit < Infinity}
+                                        <Alert>
+                                            Logs are retained in rolling {hoursToDays(limit)} intervals
+                                            with the {tier} plan.
+                                            {#if $organization.billingPlan === BillingPlan.STARTER}
+                                                <Button
+                                                    link
+                                                    on:click={() =>
+                                                        wizard.start(ChangeOrganizationTierCloud)}
+                                                    >Upgrade</Button> to increase your log retention
+                                                for a longer period.
+                                            {/if}
+                                        </Alert>
+                                    {/if}
                                     <Code withCopy noMargin code={execution.logs} language="sh" />
                                 {:else}
                                     <Card isDashed isTile>

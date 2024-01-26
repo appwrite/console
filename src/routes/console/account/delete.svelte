@@ -11,7 +11,7 @@
 
     async function deleteAccount() {
         try {
-            await sdk.forConsole.account.updateStatus();
+            await sdk.forConsole.account.delete();
             await invalidate(Dependencies.ACCOUNT);
             showDelete = false;
             addNotification({

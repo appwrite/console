@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { FormItem, Helper, Label } from '.';
+    import { FormItem, FormItemPart, Helper, Label } from '.';
     import type { FormItemTag } from './formItem.svelte';
 
     export let id: string;
@@ -16,6 +16,8 @@
         value: string | boolean | number;
         label: string;
     }[];
+    export let isMultiple = false;
+    export let fullWidth = false;
 
     let element: HTMLSelectElement;
     let error: string;
@@ -45,9 +47,10 @@
     }
 
     $: hasNullOption = options.some((option) => option.value === null);
+    $: wrapper = isMultiple ? FormItemPart : FormItem;
 </script>
 
-<FormItem tag={wrapperTag}>
+<svelte:component this={wrapper} {fullWidth} tag={wrapperTag}>
     {#if label}
         <Label {required} {hideRequired} {optionalText} hide={!showLabel} for={id}>
             {label}
@@ -79,4 +82,4 @@
     {:else}
         <slot name="helper" />
     {/if}
-</FormItem>
+</svelte:component>

@@ -24,6 +24,8 @@
     export let isButton = false;
     export let danger = false;
     export let href: string = null;
+    let classes = '';
+    export { classes as class };
 
     function getElement() {
         switch (true) {
@@ -39,7 +41,7 @@
 
 <svelte:element
     this={getElement()}
-    class="card"
+    class="card {classes}"
     class:common-section={!isTile}
     class:is-border-dashed={isDashed}
     class:is-danger={danger}

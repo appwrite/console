@@ -1,52 +1,51 @@
 <script lang="ts" context="module">
-    let showCreate = writable(false);
-
     export const showCreateFile = () => {
-        showCreate.set(true);
+        wizard.start(Create);
     };
 </script>
 
 <script lang="ts">
+    import { invalidate } from '$app/navigation';
+    import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { sdk } from '$lib/stores/sdk';
-    import { Pill } from '$lib/elements';
-    import { Button } from '$lib/elements/forms';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import {
-        Empty,
-        EmptySearch,
         Avatar,
         DropList,
         DropListItem,
         DropListLink,
-        SearchQuery,
-        PaginationWithLimit
+        Empty,
+        EmptySearch,
+        PaginationWithLimit,
+        SearchQuery
     } from '$lib/components';
-    import Create from './create.svelte';
-    import Delete from './deleteFile.svelte';
+    import { Dependencies } from '$lib/constants';
+    import { Pill } from '$lib/elements';
+    import { Button } from '$lib/elements/forms';
     import {
         Table,
-        TableHeader,
         TableBody,
-        TableRowLink,
-        TableRow,
+        TableCell,
         TableCellHead,
         TableCellText,
-        TableCell
+        TableHeader,
+        TableRow,
+        TableRowLink
     } from '$lib/elements/table';
     import { toLocaleDate } from '$lib/helpers/date';
-    import { calculateSize } from '$lib/helpers/sizeConvertion';
-    import { Container } from '$lib/layout';
-    import { base } from '$app/paths';
+    import { bytesToSize, calculateSize } from '$lib/helpers/sizeConvertion';
+    import { Container, ContainerHeader } from '$lib/layout';
     import type { Models } from '@appwrite.io/console';
-    import { uploader } from '$lib/stores/uploader';
     import { addNotification } from '$lib/stores/notifications';
-    import type { PageData } from './$types';
-    import { invalidate } from '$app/navigation';
-    import { Dependencies } from '$lib/constants';
-    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { writable } from 'svelte/store';
+    import { uploader } from '$lib/stores/uploader';
+    import { wizard } from '$lib/stores/wizard';
+    import { tooltip } from '$lib/actions/tooltip';
+    import { showUsageRatesModal } from '$lib/stores/billing';
+    import { sdk } from '$lib/stores/sdk.js';
+    import Create from './create-file/create.svelte';
+    import DeleteFile from './deleteFile.svelte';
 
-    export let data: PageData;
+    export let data;
 
     let showDelete = false;
     let showDropdown = [];
@@ -54,13 +53,9 @@
 
     const projectId = $page.params.project;
     const bucketId = $page.params.bucket;
+    const usedStorage = bytesToSize(data.organizationUsage.storageTotal, 'GB');
     const getPreview = (fileId: string) =>
         sdk.forProject.storage.getFilePreview(bucketId, fileId, 32, 32).toString() + '&mode=admin';
-
-    async function fileCreated() {
-        $showCreate = false;
-        await invalidate(Dependencies.FILES);
-    }
 
     async function fileDeleted(event: CustomEvent<Models.File>) {
         showDelete = false;
@@ -85,11 +80,45 @@
 </script>
 
 <Container>
-    <SearchQuery search={data.search} placeholder="Search by filename">
-        <Button on:click={() => ($showCreate = true)} event="create_file">
-            <span class="icon-plus" aria-hidden="true" /> <span class="text">Create file</span>
-        </Button>
-    </SearchQuery>
+    <ContainerHeader title="Files" serviceId="storage" isFlex={false} total={usedStorage}>
+        <svelte:fragment let:isButtonDisabled>
+            <SearchQuery search={data.search} placeholder="Search by filename">
+                <div
+                    use:tooltip={{
+                        content: `Upgrade to add more files`,
+                        disabled: !isButtonDisabled
+                    }}>
+                    <Button
+                        on:click={() => wizard.start(Create)}
+                        event="create_file"
+                        disabled={isButtonDisabled}>
+                        <span class="icon-plus" aria-hidden="true" />
+                        <span class="text">Create file</span>
+                    </Button>
+                </div>
+            </SearchQuery>
+        </svelte:fragment>
+        <svelte:fragment slot="tooltip" let:limit let:tier let:upgradeMethod>
+            {#if tier === 'Starter'}
+                <p class="text">
+                    You are limited to {limit} GB of storage on the {tier} plan.
+                    <button class="link" type="button" on:click|preventDefault={upgradeMethod}
+                        >Upgrade</button>
+                    for addtional storage.
+                </p>
+            {:else}
+                <p class="text">
+                    You are limited to {limit} GB storage on the {tier} plan. After this amount
+                    <button
+                        class="link"
+                        type="button"
+                        on:click|preventDefault={() => ($showUsageRatesModal = true)}
+                        >usage fees will apply</button>
+                    .
+                </p>
+            {/if}
+        </svelte:fragment>
+    </ContainerHeader>
 
     {#if data.files.total}
         <Table>
@@ -200,7 +229,7 @@
     {:else if data.search}
         <EmptySearch>
             <div class="u-text-center">
-                <b>Sorry, we couldn't find ‘{data.search}'</b>
+                <b>Sorry, we couldn't find '{data.search}'</b>
                 <p>There are no files that match your search.</p>
             </div>
             <div class="u-flex u-gap-16">
@@ -222,11 +251,10 @@
             single
             href="https://appwrite.io/docs/products/storage/upload-download"
             target="file"
-            on:click={() => ($showCreate = true)} />
+            on:click={() => wizard.start(Create)} />
     {/if}
 </Container>
 
-<Create bind:showCreate={$showCreate} on:created={fileCreated} />
 {#if selectedFile}
-    <Delete file={selectedFile} bind:showDelete on:deleted={fileDeleted} />
+    <DeleteFile file={selectedFile} bind:showDelete on:deleted={fileDeleted} />
 {/if}

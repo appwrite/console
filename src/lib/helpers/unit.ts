@@ -44,11 +44,18 @@ export function createValueUnitPair<T = string>(initialValue = 0, units: Unit<T>
 
     unit.subscribe((newValue, prev) => {
         value.update((v) => {
-            const unitInBase = v * units.find((u) => u.name === prev).value;
-            return unitInBase / units.find((u) => u.name === newValue).value;
+            const prevUnit = units.find((u) => u.name === prev);
+            const newUnit = units.find((u) => u.name === newValue);
+
+            // If either unit is not found, just return the current value
+            if (!prevUnit || !newUnit) {
+                return v;
+            }
+
+            const unitInBase = v * prevUnit.value;
+            return unitInBase / newUnit.value;
         });
     });
-
     return {
         value,
         unit,

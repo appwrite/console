@@ -18,6 +18,7 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { ID } from '@appwrite.io/console';
     import { isCloud } from '$lib/system';
+    import { page } from '$app/stores';
 
     let name: string, mail: string, pass: string, disabled: boolean;
     let terms = false;
@@ -28,7 +29,17 @@
             await sdk.forConsole.account.create(ID.unique(), mail, pass, name ?? '');
             await sdk.forConsole.account.createEmailSession(mail, pass);
             await invalidate(Dependencies.ACCOUNT);
-            await goto(`${base}/console`);
+            if ($page.url.searchParams) {
+                const redirect = $page.url.searchParams.get('redirect');
+                $page.url.searchParams.delete('redirect');
+                if (redirect) {
+                    await goto(`${base}${redirect}${$page.url.search}`);
+                } else {
+                    await goto(`${base}/console${$page.url.search ?? ''}`);
+                }
+            } else {
+                await goto(`${base}/console`);
+            }
             trackEvent(Submit.AccountCreate);
         } catch (error) {
             disabled = false;

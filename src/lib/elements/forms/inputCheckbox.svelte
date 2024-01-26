@@ -1,5 +1,6 @@
 <script lang="ts">
     import { FormItem, Helper, Label } from '.';
+    import type { FormItemTag } from './formItem.svelte';
 
     interface $$Props extends Partial<HTMLLabelElement> {
         id: string;
@@ -12,6 +13,7 @@
         disabled?: boolean;
         element?: HTMLInputElement | undefined;
         indeterminate?: boolean;
+        wrapperTag?: FormItemTag;
     }
 
     export let id: string;
@@ -23,6 +25,7 @@
     export let required = false;
     export let disabled = false;
     export let element: HTMLInputElement | undefined = undefined;
+    export let wrapperTag: FormItemTag = 'li';
 
     let error: string;
 
@@ -40,7 +43,7 @@
     }
 </script>
 
-<FormItem>
+<FormItem tag={wrapperTag}>
     {#if label}
         <Label {required} {tooltip} {optionalText} hide={!showLabel} for={id}>
             {label}

@@ -37,7 +37,7 @@ export const marketplace: MarketplaceTemplate[] = [
         id: 'starter',
         name: 'Starter function',
         tagline:
-            'A simple function to get started. Edit this function to explore endless possibilities with Appwrite Functions. 🚀',
+            'A simple function to get started. Edit this function to explore endless possibilities with Appwrite Functions.',
         permissions: ['any'],
         events: [],
         cron: '',

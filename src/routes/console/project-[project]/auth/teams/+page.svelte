@@ -24,11 +24,14 @@
     import Create from '../createTeam.svelte';
     import { goto } from '$app/navigation';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import { Container } from '$lib/layout';
+    import { Container, ContainerHeader } from '$lib/layout';
     import { base } from '$app/paths';
     import type { Models } from '@appwrite.io/console';
     import type { PageData } from './$types';
+    import { tooltip } from '$lib/actions/tooltip';
     import { writable } from 'svelte/store';
+    import { readOnly } from '$lib/stores/billing';
+    import { isCloud } from '$lib/system';
 
     export let data: PageData;
 
@@ -39,11 +42,29 @@
 </script>
 
 <Container>
-    <SearchQuery search={data.search} placeholder="Search by name">
-        <Button on:click={() => ($showCreateTeam = true)} event="create_team">
-            <span class="icon-plus" aria-hidden="true" /> <span class="text">Create team</span>
-        </Button>
-    </SearchQuery>
+    <ContainerHeader
+        title="Teams"
+        isFlex={false}
+        total={data.teams.total}
+        buttonDisabled={isCloud && $readOnly}
+        let:isButtonDisabled>
+        <SearchQuery search={data.search} placeholder="Search by name">
+            <div
+                use:tooltip={{
+                    content: `Upgrade to add more teams`,
+                    disabled: !isButtonDisabled
+                }}>
+                <Button
+                    on:click={() => ($showCreateTeam = true)}
+                    event="create_team"
+                    disabled={isButtonDisabled}>
+                    <span class="icon-plus" aria-hidden="true" />
+                    <span class="text">Create team</span>
+                </Button>
+            </div>
+        </SearchQuery>
+    </ContainerHeader>
+
     {#if data.teams.total}
         <Table>
             <TableHeader>
@@ -51,7 +72,7 @@
                 <TableCellHead onlyDesktop>Members</TableCellHead>
                 <TableCellHead onlyDesktop>Created</TableCellHead>
             </TableHeader>
-            <TableBody>
+            <TableBody service="teams" total={data.teams.total}>
                 {#each data.teams.teams as team}
                     <TableRowLink
                         href={`${base}/console/project-${project}/auth/teams/team-${team.$id}`}>

@@ -31,6 +31,12 @@
             href: `${path}/smtp`,
             title: 'SMTP',
             event: 'smtp'
+        },
+        {
+            href: `${path}/usage`,
+            title: 'Usage',
+            event: 'usage',
+            hasChildren: true
         }
     ];
 </script>

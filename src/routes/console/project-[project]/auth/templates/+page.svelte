@@ -40,6 +40,10 @@
     // import { baseEmailTemplate, baseSmsTemplate, emailTemplate, smsTemplate } from './store';
     import { baseEmailTemplate, emailTemplate } from './store';
     import { Button } from '$lib/elements/forms';
+    import { organization } from '$lib/stores/organization';
+    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
+    import { wizard } from '$lib/stores/wizard';
+    import { BillingPlan } from '$lib/constants';
 
     const projectId = $page.params.project;
 
@@ -114,6 +118,18 @@
         </p>
 
         <svelte:fragment slot="aside">
+            {#if $organization.billingPlan === BillingPlan.STARTER}
+                <Alert
+                    buttons={[
+                        {
+                            name: 'Upgrade plan',
+                            method: () => wizard.start(ChangeOrganizationTierCloud)
+                        }
+                    ]}>
+                    All emails sent using the Starter plan will include attribution to Appwrite in
+                    the signature. To send attribution-free emails, upgrade your plan.
+                </Alert>
+            {/if}
             <Collapsible>
                 <CollapsibleItem
                     bind:open={emailVerificationOpen}

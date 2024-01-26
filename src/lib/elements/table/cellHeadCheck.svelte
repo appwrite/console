@@ -1,6 +1,7 @@
 <script lang="ts">
     import { isHTMLInputElement } from '$lib/helpers/types';
     import { TableCellHead } from '.';
+    import { InputCheckbox } from '../forms';
 
     export let selected: string[] = [];
     export let pageItemsIds: string[] = [];
@@ -23,10 +24,10 @@
 </script>
 
 <TableCellHead width={10}>
-    <input
+    <InputCheckbox
         id="select-all"
+        wrapperTag="div"
         indeterminate={someSelected && !allSelected}
-        type="checkbox"
         checked={allSelected}
         on:click={handleClick} />
 </TableCellHead>

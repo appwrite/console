@@ -8,7 +8,11 @@
     const project = $page.params.project;
 </script>
 
-<CardContainer total={data.databases.total} on:click={() => (showCreate = true)} event="database">
+<CardContainer
+    total={data.databases.total}
+    on:click={() => (showCreate = true)}
+    event="database"
+    service="databases">
     {#each data.databases.databases as database}
         <GridItem1 href={`${base}/console/project-${project}/databases/database-${database.$id}`}>
             <svelte:fragment slot="title">{database.name}</svelte:fragment>

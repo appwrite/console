@@ -9,6 +9,7 @@ export type Notification = {
     title?: string;
     icon?: string;
     buttons?: Buttons[];
+    isHtml?: boolean;
 };
 
 export type Buttons = {

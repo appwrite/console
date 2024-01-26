@@ -7,6 +7,8 @@
     export let icon: Notification['icon'] = null;
     export let title: Notification['title'];
     export let buttons: Notification['buttons'];
+    export let message: Notification['message'];
+    export let html: Notification['isHtml'] = false;
 
     const dispatch = createEventDispatcher();
 </script>
@@ -38,7 +40,11 @@
         {#if title}
             <h4 class="alert-sticky-title">{title}</h4>
         {/if}
-        <p><slot /></p>
+        {#if html}
+            {@html message}
+        {:else}
+            <p>{message}</p>
+        {/if}
     </div>
     {#if buttons}
         <div class="alert-sticky-buttons u-flex">

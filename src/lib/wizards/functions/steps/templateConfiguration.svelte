@@ -39,6 +39,7 @@
             label="Name"
             id="name"
             placeholder="Function name"
+            autofocus
             bind:value={$templateConfig.name}
             required />
         {#await loadRuntimes()}
@@ -62,7 +63,7 @@
         {/await}
     </FormList>
 
-    <div class="u-margin-block-start-24">
+    <FormList class="u-margin-block-start-24">
         {#if !showCustomId}
             <div>
                 <Pill button on:click={() => (showCustomId = !showCustomId)}>
@@ -77,5 +78,5 @@
                 bind:id={$templateConfig.$id}
                 fullWidth />
         {/if}
-    </div>
+    </FormList>
 </WizardStep>

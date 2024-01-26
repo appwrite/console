@@ -4,6 +4,7 @@
     import { BarChart } from '$lib/charts';
     import { page } from '$app/stores';
     import type { PageData } from './$types';
+    import { formatNumberWithCommas } from '$lib/helpers/numbers';
 
     export let data: PageData;
     $: total = data.executionsTotal;
@@ -33,7 +34,7 @@
     </div>
     {#if count}
         <Card>
-            <Heading tag="h6" size="6">{total}</Heading>
+            <Heading tag="h6" size="6">{formatNumberWithCommas(total)}</Heading>
             <p>Executions</p>
             <div class="u-margin-block-start-16" />
             <BarChart

@@ -3,10 +3,15 @@
     import { page } from '$app/stores';
     import { trackEvent } from '$lib/actions/analytics';
     import { tooltip } from '$lib/actions/tooltip';
+    import { BillingPlan } from '$lib/constants';
     import { isMac } from '$lib/helpers/platform';
     import { slide } from '$lib/helpers/transition';
+    import { organization } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
+    import { isCloud } from '$lib/system';
+    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
     import Create from '$routes/console/feedbackWizard.svelte';
+    import { showSupportModal } from '$routes/console/wizard/support/store';
 
     export let isOpen = false;
 
@@ -32,9 +37,14 @@
         }
     }
 
-    function openWizard() {
+    function openFeedback() {
         isOpen = false;
         wizard.start(Create);
+    }
+
+    function openSupport() {
+        isOpen = false;
+        $showSupportModal = true;
     }
 </script>
 
@@ -169,9 +179,24 @@
                         <span class="icon-cog" aria-hidden="true" />
                         <span class="text">Settings</span>
                     </a>
+
                     <ul class="drop-list is-only-mobile">
+                        {#if isCloud && $organization?.billingPlan !== BillingPlan.SCALE}
+                            <li class="drop-list-item">
+                                <button
+                                    class="drop-button"
+                                    on:click={() => wizard.start(ChangeOrganizationTierCloud)}>
+                                    <span class="text">Upgrade</span>
+                                </button>
+                            </li>
+                        {/if}
                         <li class="drop-list-item">
-                            <button class="drop-button" on:click={openWizard}>
+                            <button class="drop-button" on:click={openSupport}>
+                                <span class="text">Support</span>
+                            </button>
+                        </li>
+                        <li class="drop-list-item">
+                            <button class="drop-button" on:click={openFeedback}>
                                 <span class="text">Feedback</span>
                             </button>
                         </li>

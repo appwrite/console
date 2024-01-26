@@ -27,3 +27,5 @@ export { default as InputSecret } from './inputSecret.svelte';
 export { default as Helper } from './helper.svelte';
 export { default as Label } from './label.svelte';
 export { default as InputProjectId } from './inputProjectId.svelte';
+export { default as InputDate } from './inputDate.svelte';
+export { default as InputDateRange } from './inputDateRange.svelte';

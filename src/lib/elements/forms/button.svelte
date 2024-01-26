@@ -11,17 +11,20 @@
     export let supabase = false;
     export let text = false;
     export let danger = false;
-    export let disabled = false;
     export let round = false;
+    export let link = false;
+    export let disabled = false;
     export let external = false;
     export let href: string = null;
     export let fullWidth = false;
+    export let fullWidthMobile = false;
     export let ariaLabel: string = null;
     export let noMargin = false;
     export let event: string = null;
     let classes: string = undefined;
     export { classes as class };
     export let actions: MultiActionArray = [];
+    export let submissionLoader = false;
 
     const isSubmitting = hasContext('form')
         ? getContext<FormContext>('form').isSubmitting
@@ -40,7 +43,7 @@
     }
 
     $: resolvedClasses = [
-        'button',
+        link ? 'link' : 'button',
         disabled && 'is-disabled',
         round && 'is-only-icon',
         secondary && 'is-secondary',
@@ -49,6 +52,7 @@
         text && 'is-text',
         danger && 'is-danger',
         fullWidth && 'is-full-width',
+        fullWidthMobile && 'is-full-width-mobile',
         noMargin && 'u-padding-inline-0',
         classes
     ]
@@ -58,6 +62,7 @@
 
 {#if href}
     <a
+        on:click
         on:click={track}
         {href}
         target={external ? '_blank' : ''}
@@ -76,6 +81,12 @@
         aria-label={ariaLabel}
         type={submit ? 'submit' : 'button'}
         use:multiAction={actions}>
-        <slot />
+        {#if $isSubmitting && submissionLoader}
+            <span
+                class="loader is-small"
+                style:--p-loader-base-full-color="transparent"
+                aria-hidden="true" />
+        {/if}
+        <slot isSubmitting={$isSubmitting} />
     </button>
 {/if}

@@ -1,18 +1,10 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/stores';
+    import { Container, ContainerHeader } from '$lib/layout';
     import { tooltip } from '$lib/actions/tooltip';
-    import {
-        CardContainer,
-        Empty,
-        GridItem1,
-        Heading,
-        Id,
-        PaginationWithLimit
-    } from '$lib/components';
-    import { Button } from '$lib/elements/forms';
+    import { CardContainer, Empty, GridItem1, Id, PaginationWithLimit } from '$lib/components';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import { Container } from '$lib/layout';
     import { app } from '$lib/stores/app';
     import { wizard } from '$lib/stores/wizard';
     import { onMount } from 'svelte';
@@ -24,6 +16,9 @@
         template as templateStore
     } from '$lib/wizards/functions/store.js';
     import { marketplace } from '$lib/stores/marketplace.js';
+    import { functionsList } from './store';
+    import { organization } from '$lib/stores/organization';
+    import { isServiceLimited } from '$lib/stores/billing';
 
     export let data;
 
@@ -62,7 +57,9 @@
             label: 'Create function',
             callback: openWizard,
             keys: ['c'],
-            disabled: $wizard.show,
+            disabled:
+                $wizard.show ||
+                isServiceLimited('functions', $organization?.billingPlan, $functionsList?.total),
             icon: 'plus',
             group: 'functions'
         }
@@ -72,20 +69,20 @@
 </script>
 
 <Container>
-    <div class="u-flex u-gap-12 common-section u-main-space-between">
-        <Heading tag="h2" size="5">Functions</Heading>
-        <Button on:click={openWizard} event="create_function">
-            <span class="icon-plus" aria-hidden="true" />
-            <span class="text">Create function</span>
-        </Button>
-    </div>
+    <ContainerHeader
+        title="Functions"
+        buttonText="Create function"
+        buttonEvent="create_function"
+        buttonMethod={openWizard}
+        total={data.functions.total} />
 
     {#if data.functions.total}
         <CardContainer
             {offset}
             event="functions"
             total={data.functions.total}
-            on:click={openWizard}>
+            on:click={openWizard}
+            service="functions">
             {#each data.functions.functions as func}
                 <GridItem1
                     href={`${base}/console/project-${project}/functions/function-${func.$id}`}>
@@ -130,7 +127,7 @@
     {:else}
         <Empty
             single
-            href="https://appwrite.io/docs/products/functions/deployment"
+            href="https://appwrite.io/docs/products/functions"
             target="function"
             on:click={openWizard} />
     {/if}

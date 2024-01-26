@@ -26,11 +26,12 @@
         TableRowLink
     } from '$lib/elements/table';
     import { toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
-    import { Container } from '$lib/layout';
+    import { Container, ContainerHeader } from '$lib/layout';
     import type { Models } from '@appwrite.io/console';
     import { writable } from 'svelte/store';
     import type { PageData } from './$types';
     import Create from './createUser.svelte';
+    import { tooltip } from '$lib/actions/tooltip';
 
     export let data: PageData;
 
@@ -41,11 +42,22 @@
 </script>
 
 <Container>
-    <SearchQuery search={data.search} placeholder="Search by name, email, phone, or ID">
-        <Button on:click={() => ($showCreateUser = true)} event="create_user">
-            <span class="icon-plus" aria-hidden="true" /> <span class="text">Create user</span>
-        </Button>
-    </SearchQuery>
+    <ContainerHeader title="Users" isFlex={false} total={data.users.total} let:isButtonDisabled>
+        <SearchQuery search={data.search} placeholder="Search by name, email, phone, or ID">
+            <div
+                use:tooltip={{
+                    content: `Upgrade to add more users`,
+                    disabled: !isButtonDisabled
+                }}>
+                <Button
+                    on:click={() => ($showCreateUser = true)}
+                    event="create_user"
+                    disabled={isButtonDisabled}>
+                    <span class="icon-plus" aria-hidden="true" />
+                    <span class="text">Create user</span>
+                </Button>
+            </div></SearchQuery>
+    </ContainerHeader>
     {#if data.users.total}
         <Table>
             <TableHeader>
