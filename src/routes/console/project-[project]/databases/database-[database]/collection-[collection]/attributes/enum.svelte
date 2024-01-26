@@ -36,8 +36,7 @@
 </script>
 
 <script lang="ts">
-    import { tooltip } from '$lib/actions/tooltip';
-import { InputChoice, InputSelect, InputTags } from '$lib/elements/forms';
+    import { InputChoice, InputSelect, InputTags } from '$lib/elements/forms';
 
     export let editing = false;
     export let data: Partial<Models.AttributeEnum>;
