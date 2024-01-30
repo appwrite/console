@@ -57,7 +57,7 @@
                   id={input.name}
                   label={input.label}
                   placeholder={input.placeholder}
-                  
+                  isPopoverDefined={input.popover !== undefined}
                   bind:value={$providerParams[$provider][input.name]}>
                   <svelte:fragment slot="popover">
                       {@html input.popover?.join('<br/><br/>')}
