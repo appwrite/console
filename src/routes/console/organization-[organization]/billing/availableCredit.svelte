@@ -18,6 +18,7 @@
     import AddCreditWizard from './addCreditWizard.svelte';
     import { Button } from '$lib/elements/forms';
     import AddCreditModal from './addCreditModal.svelte';
+    import { formatCurrency } from '$lib/helpers/numbers';
 
     let offset = 0;
     let creditList: CreditList = {
@@ -73,7 +74,7 @@
         <div class="u-flex u-cross-center u-main-space-between">
             <div class="u-flex u-gap-8 u-cross-center">
                 <h4 class="body-text-1 u-bold">Credit balance</h4>
-                <span class="inline-tag">${balance}</span>
+                <span class="inline-tag">{formatCurrency(balance)}</span>
             </div>
             {#if creditList?.total}
                 <Button secondary on:click={handleCredits}>
@@ -99,7 +100,7 @@
                                 {toLocaleDate(credit.expiration)}
                             </TableCellText>
                             <TableCellText title="amount">
-                                ${credit.credits}
+                                {formatCurrency(credit.credits)}
                             </TableCellText>
                         </TableRow>
                     {/each}
