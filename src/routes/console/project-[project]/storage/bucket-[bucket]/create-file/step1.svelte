@@ -1,47 +1,43 @@
 <script lang="ts">
     import { Alert, CustomId } from '$lib/components';
-    import { BillingPlan } from '$lib/constants';
     import { Pill } from '$lib/elements';
-    import { Button, FormList, InputFile } from '$lib/elements/forms';
+    import { FormList, InputFile } from '$lib/elements/forms';
     import { humanFileSize, sizeToBytes } from '$lib/helpers/sizeConvertion';
     import WizardStep from '$lib/layout/wizardStep.svelte';
-    import { getServiceLimit, tierToPlan } from '$lib/stores/billing';
-    import { organization } from '$lib/stores/organization';
+    import { getServiceLimit } from '$lib/stores/billing';
     import { wizard } from '$lib/stores/wizard';
     import { isCloud } from '$lib/system';
-    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
     import { bucket } from '../store';
     import { createFile } from './store';
 
     let showCustomId = false;
+    let showFileSizeWarning = false;
     const service = getServiceLimit('fileSize');
+
+    async function checkFileSize() {
+        if (!$createFile?.files?.length) return;
+        const file = $createFile.files?.length ? Array.from($createFile.files)[0] : null;
+
+        if (file.size > $bucket.maximumFileSize) {
+            showFileSizeWarning = true;
+            $wizard.interceptorNotificationEnabled = false;
+            throw new Error('File size exceeds the maximum file size limit');
+        }
+    }
 </script>
 
-<WizardStep>
+<WizardStep beforeSubmit={checkFileSize}>
     <svelte:fragment slot="title">Create file</svelte:fragment>
     <svelte:fragment slot="subtitle">Upload a file to add it to your bucket.</svelte:fragment>
 
-    {#if isCloud}
+    {#if isCloud && showFileSizeWarning}
         {@const size = humanFileSize(sizeToBytes(service, 'MB', 1000))}
-        {@const plan = tierToPlan($organization?.billingPlan)}
         <Alert type="info">
             <p class="text">
-                The {plan.name} plan has a maximum upload file size limit of {Math.floor(
+                The maximum file upload size for this bucket is {Math.floor(
                     parseInt(size.value)
-                )}{size.unit}.
-                {#if $organization?.billingPlan === BillingPlan.STARTER}
-                    Upgrade to allow files of a larger size.
-                {/if}
+                )}{size.unit}. Edit this number in your bucket settings.
             </p>
-            <svelte:fragment slot="action">
-                {#if $organization?.billingPlan === BillingPlan.STARTER}
-                    <div class="alert-buttons u-flex">
-                        <Button text on:click={() => wizard.start(ChangeOrganizationTierCloud)}>
-                            Upgrade plan
-                        </Button>
-                    </div>
-                {/if}
-            </svelte:fragment>
         </Alert>
     {/if}
 
