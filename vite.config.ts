@@ -19,9 +19,6 @@ const config = defineConfig({
     define: {
         'import.meta.env.VERCEL_ANALYTICS_ID': JSON.stringify(process.env.VERCEL_ANALYTICS_ID)
     },
-    legacy: {
-        buildSsrCjsExternalHeuristics: true
-    },
     server: {
         port: 3000
     }
@@ -36,7 +33,7 @@ const testConfig = defineConfig({
         include: ['tests/unit/**/*.test.ts'],
         environment: 'jsdom',
         globals: true,
-        threads: true,
+        pool: 'threads',
         setupFiles: ['./tests/unit/setup.ts'],
         deps: {
             inline: ['@analytics/type-utils']
