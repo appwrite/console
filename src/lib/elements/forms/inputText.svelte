@@ -23,6 +23,7 @@
     export let maxlength: number = null;
     export let tooltip: string = null;
     export let isMultiple = false;
+    export let isPopoverDefined = true;
 
     let element: HTMLInputElement;
     let error: string;
@@ -73,10 +74,10 @@
     $: wrapper = isMultiple ? FormItemPart : FormItem;
 </script>
 
-<svelte:component this={wrapper} {fullWidth}>
+<svelte:component this={wrapper} {fullWidth} >
     {#if label}
         <Label {required} {hideRequired} {tooltip} {optionalText} hide={!showLabel} for={id}>
-            {label}{#if $$slots.popover}
+            {label}{#if $$slots.popover && isPopoverDefined}
                 <Drop bind:show display="inline-block">
                     <!-- TODO: make unclicked icon greyed out and hover and clicked filled -->
                     &nbsp;<button
