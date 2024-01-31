@@ -77,7 +77,7 @@
             {label}
         </Label>
     {/if}
-
+    
     <div
         class:input-text-wrapper={!$$slots.default}
         class:u-flex={$$slots.default}
