@@ -174,7 +174,7 @@
                             href={`${base}/console/project-${projectId}/storage/bucket-${bucketId}/file-${file.$id}`}>
                             <TableCell title="Name">
                                 <div class="u-flex u-gap-12 u-cross-center">
-                                    <Avatar size={32} src={getPreview(file.$id)} name={file.name} />
+                                    <Avatar size={64} src={getPreview(file.$id)} name={file.name} />
                                     <span class="text u-trim">{file.name}</span>
                                 </div>
                             </TableCell>
