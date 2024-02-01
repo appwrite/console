@@ -39,7 +39,7 @@
     import DeploymentSource from './deploymentSource.svelte';
     import DeploymentCreatedBy from './deploymentCreatedBy.svelte';
     import DeploymentDomains from './deploymentDomains.svelte';
-    import { isCloud } from '$lib/system';
+    import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
     import { readOnly } from '$lib/stores/billing';
 
     export let data;
@@ -152,7 +152,7 @@
                         <Button
                             secondary
                             on:click={() => ($execute = $func)}
-                            disabled={isCloud && $readOnly}>
+                            disabled={isCloud && $readOnly && !GRACE_PERIOD_OVERRIDE}>
                             Execute now
                         </Button>
                     </div>
