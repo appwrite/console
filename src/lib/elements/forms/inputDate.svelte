@@ -71,6 +71,7 @@
             {max}
             autocomplete={autocomplete ? 'on' : 'off'}
             type="date"
+            style="cursor: pointer;"
             class="input-text"
             bind:value
             bind:this={element}
