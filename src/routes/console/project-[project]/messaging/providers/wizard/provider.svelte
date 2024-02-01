@@ -96,7 +96,7 @@
                     providerId: id,
                     name: name,
                     enabled: true,
-                    serverKey: ''
+                    serviceAccountJSON: ''
                 };
                 break;
             case Providers.APNS:
