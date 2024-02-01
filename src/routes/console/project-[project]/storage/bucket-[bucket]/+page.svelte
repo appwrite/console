@@ -44,6 +44,7 @@
     import { sdk } from '$lib/stores/sdk.js';
     import Create from './create-file/create.svelte';
     import DeleteFile from './deleteFile.svelte';
+    import { isCloud } from '$lib/system';
 
     export let data;
 
@@ -53,7 +54,10 @@
 
     const projectId = $page.params.project;
     const bucketId = $page.params.bucket;
-    const usedStorage = bytesToSize(data.organizationUsage.storageTotal, 'GB');
+    const usedStorage =
+        isCloud && data?.organizationUsage?.storageTotal
+            ? bytesToSize(data.organizationUsage.storageTotal, 'GB')
+            : null;
     const getPreview = (fileId: string) =>
         sdk.forProject.storage.getFilePreview(bucketId, fileId, 32, 32).toString() + '&mode=admin';
 
