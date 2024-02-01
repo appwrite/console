@@ -163,7 +163,11 @@
             </Modal>
         </div>
         <form class="form">
-            <Label>Custom data <span class="u-color-text-gray">(Optional)</span></Label>
+            <FormItem>
+                <Label
+                    tooltip="Deliver supplementary data alongside the notification, which remains hidden from the user's view but can be accessed by your application."
+                    >Custom data <span class="u-color-text-gray">(Optional)</span></Label>
+            </FormItem>
             <div class=" u-grid u-gap-8">
                 <ul class="form-list" style="--p-form-list-gap: 1rem">
                     {#each customData || [] as _, rowIndex}
