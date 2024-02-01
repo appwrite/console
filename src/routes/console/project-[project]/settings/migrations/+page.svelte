@@ -15,7 +15,7 @@
     import { isSameDay, toLocaleDate } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
-    import { GRACE_PERIOD_OVERRIDE, isSelfHosted } from '$lib/system';
+    import { isSelfHosted } from '$lib/system';
     import { onMount } from 'svelte';
     import { project } from '../../store';
     import { openImportWizard } from './(import)';
@@ -227,7 +227,7 @@
                         class="u-margin-block-start-20"
                         secondary
                         on:click={openImportWizard}
-                        disabled={$readOnly && !GRACE_PERIOD_OVERRIDE}>
+                        disabled={$readOnly}>
                         Import data
                     </Button>
                 </div>

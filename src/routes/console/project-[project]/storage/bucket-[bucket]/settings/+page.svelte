@@ -81,7 +81,6 @@
     import { bucket } from '../store';
     import UpdateMaxFileSize from './updateMaxFileSize.svelte';
     import { readOnly } from '$lib/stores/billing';
-    import { GRACE_PERIOD_OVERRIDE } from '$lib/system';
 
     let showDelete = false;
 
@@ -233,10 +232,7 @@
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">
-                    <Button
-                        disabled={enabled === $bucket.enabled ||
-                            ($readOnly && !GRACE_PERIOD_OVERRIDE)}
-                        submit>
+                    <Button disabled={enabled === $bucket.enabled || $readOnly} submit>
                         Update
                     </Button>
                 </svelte:fragment>
@@ -252,16 +248,14 @@
                             id="name"
                             label="Name"
                             placeholder="Enter name"
-                            readonly={$readOnly && !GRACE_PERIOD_OVERRIDE}
+                            readonly={$readOnly}
                             bind:value={bucketName} />
                     </FormList>
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">
                     <Button
-                        disabled={bucketName === $bucket.name ||
-                            !bucketName ||
-                            ($readOnly && !GRACE_PERIOD_OVERRIDE)}
+                        disabled={bucketName === $bucket.name || !bucketName || $readOnly}
                         submit>
                         Update
                     </Button>
@@ -314,8 +308,7 @@
                 </svelte:fragment>
                 <svelte:fragment slot="actions">
                     <Button
-                        disabled={bucketFileSecurity === $bucket.fileSecurity ||
-                            ($readOnly && !GRACE_PERIOD_OVERRIDE)}
+                        disabled={bucketFileSecurity === $bucket.fileSecurity || $readOnly}
                         submit>
                         Update
                     </Button>
@@ -429,9 +422,7 @@
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">
-                    <Button
-                        disabled={isExtensionsDisabled || ($readOnly && !GRACE_PERIOD_OVERRIDE)}
-                        submit>Update</Button>
+                    <Button disabled={isExtensionsDisabled || $readOnly} submit>Update</Button>
                 </svelte:fragment>
             </CardGrid>
         </Form>

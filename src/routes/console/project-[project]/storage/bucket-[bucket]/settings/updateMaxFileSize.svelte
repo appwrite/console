@@ -8,7 +8,7 @@
     import { getServiceLimit, readOnly, tierToPlan } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
-    import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
+    import { isCloud } from '$lib/system';
     import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
     import { bucket } from '../store';
     import { updateBucket } from './+page.svelte';
@@ -66,7 +66,7 @@
                     fullWidth
                     id="size"
                     label="Size"
-                    disabled={$readOnly && !GRACE_PERIOD_OVERRIDE}
+                    disabled={$readOnly}
                     placeholder={$bucket.maximumFileSize.toString()}
                     min={0}
                     max={isCloud ? service : Infinity}
@@ -82,10 +82,7 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button
-                disabled={$baseValue === $bucket.maximumFileSize ||
-                    ($readOnly && !GRACE_PERIOD_OVERRIDE)}
-                submit>
+            <Button disabled={$baseValue === $bucket.maximumFileSize || $readOnly} submit>
                 Update
             </Button>
         </svelte:fragment>
