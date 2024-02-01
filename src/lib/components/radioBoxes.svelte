@@ -13,7 +13,7 @@
     {#if total}
         {#each elements as element}
             {@const value = element[variableName]?.toString()}
-            <div class="box">
+            <div class="box" data-private>
                 <InputRadio
                     id={`${name}-${value}`}
                     {value}

@@ -88,6 +88,7 @@
                         org.$id,
                         $changeOrganizationTier.couponCode
                     );
+                    trackEvent(Submit.CreditRedeem);
                 }
 
                 //Add budget

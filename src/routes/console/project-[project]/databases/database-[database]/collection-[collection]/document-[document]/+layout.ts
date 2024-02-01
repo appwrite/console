@@ -46,6 +46,6 @@ export const load: LayoutLoad = async ({ params, parent, depends }) => {
             document
         };
     } catch (e) {
-        throw error(e.code, e.message);
+        error(e.code, e.message);
     }
 };

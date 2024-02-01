@@ -56,6 +56,12 @@
                 );
             }
 
+            //Add coupon
+            if ($createOrganization?.couponCode) {
+                await sdk.forConsole.billing.addCredit(org.$id, $createOrganization.couponCode);
+                trackEvent(Submit.CreditRedeem);
+            }
+
             //Add collaborators
             if ($createOrganization?.collaborators?.length) {
                 $createOrganization.collaborators.forEach(async (collaborator) => {
@@ -110,7 +116,8 @@
             paymentMethodId: null,
             collaborators: [],
             billingAddressId: null,
-            taxId: null
+            taxId: null,
+            couponCode: null
         };
     });
 
