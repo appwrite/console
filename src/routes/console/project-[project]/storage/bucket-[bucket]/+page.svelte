@@ -59,7 +59,7 @@
             ? bytesToSize(data.organizationUsage.storageTotal, 'GB')
             : null;
     const getPreview = (fileId: string) =>
-        sdk.forProject.storage.getFilePreview(bucketId, fileId, 32, 32).toString() + '&mode=admin';
+        sdk.forProject.storage.getFilePreview(bucketId, fileId, 64, 64).toString() + '&mode=admin';
 
     async function fileDeleted(event: CustomEvent<Models.File>) {
         showDelete = false;
