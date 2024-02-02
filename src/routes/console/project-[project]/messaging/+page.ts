@@ -1,3 +1,5 @@
+import { queries, queryParamToMap } from '$lib/components/filters';
+import { CARD_LIMIT } from '$lib/constants';
 import {
     View,
     getLimit,
@@ -7,11 +9,9 @@ import {
     getView,
     pageToOffset
 } from '$lib/helpers/load';
-import { CARD_LIMIT } from '$lib/constants';
-import type { PageLoad } from './$types';
-import { Query, type Models } from '@appwrite.io/console';
 import { sdk } from '$lib/stores/sdk';
-import { queries, queryParamToMap } from '$lib/components/filters';
+import { Query, type Models } from '@appwrite.io/console';
+import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ url, route }) => {
     const page = getPage(url);
@@ -26,7 +26,10 @@ export const load: PageLoad = async ({ url, route }) => {
 
     // TODO: remove when the API is ready with data
     // This allows us to mock w/ data and when search returns 0 results
-    let messages: { messages: Models.Message[]; total: number } = { messages: [], total: 0 };
+    let messages: {
+        messages: ({ data: Record<string, string> } & Models.Message)[];
+        total: number;
+    } = { messages: [], total: 0 };
     const params = {
         queries: [
             Query.limit(limit),
