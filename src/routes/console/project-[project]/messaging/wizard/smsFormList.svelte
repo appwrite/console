@@ -23,14 +23,7 @@
         MessageStatuses,
         operation
     } from './store';
-    import {
-        Button,
-        FormList,
-        InputEmail,
-        InputRadio,
-        InputText,
-        InputTextarea
-    } from '$lib/elements/forms';
+    import { Button, FormList, InputEmail, InputRadio, InputTextarea } from '$lib/elements/forms';
     import { Pill } from '$lib/elements';
     import { CustomId, Modal } from '$lib/components';
     import { user } from '$lib/stores/user';
@@ -51,7 +44,6 @@
         createSMSMessage({
             topics: $messageParams[ProviderTypes.Email]?.topics || [],
             targets: $messageParams[ProviderTypes.Email]?.targets || [],
-            description: $messageParams[ProviderTypes.Email]?.description || 'Test message',
             status: MessageStatuses.PROCESSING,
             messageId: ID.unique(),
             // TODO: properly handle the test email address
@@ -115,13 +107,6 @@
                 </svelte:fragment>
             </Modal>
         </div>
-        <InputText
-            id="description"
-            label="Description"
-            placeholder="Enter description"
-            tooltip="Provide a summary of the message. Users won't see this description."
-            bind:value={$messageParams[$providerType]['description']}>
-        </InputText>
         {#if $operation === 'create'}
             {#if !showCustomId}
                 <div>

@@ -39,7 +39,6 @@
             topics: $message.topics,
             users: $message.users,
             targets: $message.targets,
-            description: $message.description,
             status: MessageStatuses.DRAFT,
             scheduledAt: $message.scheduledAt
         };
