@@ -52,7 +52,6 @@
         createEmailMessage({
             topics: $messageParams[ProviderTypes.Email]?.topics || [],
             targets: $messageParams[ProviderTypes.Email]?.targets || [],
-            description: $messageParams[ProviderTypes.Email]?.description || 'Test message',
             status: MessageStatuses.PROCESSING,
             messageId: ID.unique(),
             // TODO: properly handle the test email address
@@ -126,13 +125,6 @@
             Enable the HTML mode if your message contains HTML tags.
         </svelte:fragment>
     </InputSwitch>
-    <InputText
-        id="description"
-        label="Description"
-        placeholder="Enter description"
-        tooltip="Provide a summary of the message. Users won't see this description."
-        bind:value={$messageParams[$providerType]['description']}>
-    </InputText>
     {#if $operation === 'create'}
         {#if !showCustomId}
             <div>

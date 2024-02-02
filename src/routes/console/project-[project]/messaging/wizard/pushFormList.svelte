@@ -86,7 +86,6 @@
         createPushMessage({
             topics: $messageParams[ProviderTypes.Push]?.topics || [],
             targets: $messageParams[ProviderTypes.Push]?.targets || [],
-            description: $messageParams[ProviderTypes.Push]?.description || 'Test push',
             status: MessageStatuses.PROCESSING,
             messageId: ID.unique(),
             // TODO: properly handle the test email address
@@ -224,13 +223,6 @@
                 </Button>
             </div>
         </form>
-        <InputText
-            id="description"
-            label="Description"
-            placeholder="Enter description"
-            tooltip="Provide a summary of the message. Users won't see this description."
-            bind:value={$messageParams[$providerType]['description']}>
-        </InputText>
         {#if $operation === 'create'}
             {#if !showCustomId}
                 <div>
