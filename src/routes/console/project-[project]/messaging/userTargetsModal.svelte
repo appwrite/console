@@ -22,10 +22,7 @@
     let search = '';
     let offset = 0;
     let totalResults = 0;
-    let userResultsById: Record<
-        string,
-        Models.User<Record<string, unknown>>
-    > = {}; // use a hash map so we can quickly look up a user by id
+    let userResultsById: Record<string, Models.User<Record<string, unknown>>> = {}; // use a hash map so we can quickly look up a user by id
     let selected: Record<string, Models.Target> = {};
     let hasSelection = false;
 
@@ -147,7 +144,7 @@
         bind:value={search} />
     {#if Object.keys(userResultsById).length > 0}
         <Collapsible>
-            {#each Object.entries(userResultsById) as [userId, user]}
+            {#each Object.entries(userResultsById) as [userId, user] (userId)}
                 {@const selectedCount = user.targets.filter(
                     (target) => selected[target.$id]
                 ).length}

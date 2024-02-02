@@ -57,9 +57,13 @@
             autocomplete={autocomplete ? 'on' : 'off'}
             type="time"
             class="input-text"
+            style="cursor: pointer;"
             bind:value
             bind:this={element}
-            on:invalid={handleInvalid} />
+            on:invalid={handleInvalid}
+            on:click={function () {
+                this.showPicker();
+            }} />
     </div>
     {#if error}
         <Helper type="warning">{error}</Helper>

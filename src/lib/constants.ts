@@ -79,12 +79,12 @@ export const scopes: {
     },
     {
         scope: 'accounts.read',
-        description: 'Access to read your active acount',
+        description: 'Access to read your active account',
         category: 'Auth'
     },
     {
         scope: 'accounts.write',
-        description: 'Access to create, update and delete your active acount',
+        description: 'Access to create, update and delete your active account',
         category: 'Auth'
     },
     {
@@ -189,6 +189,57 @@ export const scopes: {
         scope: 'execution.write',
         description: "Access to execute your project's functions",
         category: 'Functions'
+    },
+    {
+        scope: 'targets.read',
+        description: "Access to read your project's messaging targets",
+        category: 'Messaging'
+    },
+    {
+        scope: 'targets.write',
+        description: "Access to create, update, and delete your project's messaging targets",
+        category: 'Messaging'
+    },
+    {
+        scope: 'providers.read',
+        description: "Access to read your project's messaging providers",
+        category: 'Messaging'
+    },
+    {
+        scope: 'providers.write',
+        description: "Access to create, update, and delete your project's messaging providers",
+        category: 'Messaging'
+    },
+    {
+        scope: 'messages.read',
+        description: "Access to read your project's messages",
+        category: 'Messaging'
+    },
+    {
+        scope: 'messages.write',
+        description: "Access to create, update, and delete your project's messages",
+        category: 'Messaging'
+    },
+    {
+        scope: 'topics.read',
+        description: "Access to read your project's messaging topics",
+        category: 'Messaging'
+    },
+    {
+        scope: 'topics.write',
+        description: "Access to create, update, and delete your project's messaging topics",
+        category: 'Messaging'
+    },
+    {
+        scope: 'subscribers.read',
+        description: "Access to read your project's messaging topic subscribers",
+        category: 'Messaging'
+    },
+    {
+        scope: 'subscribers.write',
+        description:
+            "Access to create, update, and delete your project's messaging topic subscribers",
+        category: 'Messaging'
     },
     {
         scope: 'locale.read',

@@ -1,9 +1,9 @@
-import { Query, type Models } from '@appwrite.io/console';
-import { sdk } from '$lib/stores/sdk';
-import { getLimit, getPage, getQuery, getSearch, pageToOffset } from '$lib/helpers/load';
+import { queries, queryParamToMap } from '$lib/components/filters';
 import { Dependencies, PAGE_LIMIT } from '$lib/constants';
+import { getLimit, getPage, getQuery, getSearch, pageToOffset } from '$lib/helpers/load';
+import { sdk } from '$lib/stores/sdk';
+import { Query, type Models } from '@appwrite.io/console';
 import type { PageLoad } from './$types';
-import { queryParamToMap, queries } from '$lib/components/filters';
 
 export const load: PageLoad = async ({ params, url, route, depends }) => {
     depends(Dependencies.USER_TARGETS);
@@ -42,7 +42,7 @@ export const load: PageLoad = async ({ params, url, route, depends }) => {
         payload
     );
 
-    const promisesById: Record<string, Promise<any>> = {};
+    const promisesById: Record<string, Promise<Models.Provider>> = {};
     targets.targets.forEach((target) => {
         if (target.providerId && !promisesById[target.providerId]) {
             promisesById[target.providerId] = sdk.forProject.client.call(

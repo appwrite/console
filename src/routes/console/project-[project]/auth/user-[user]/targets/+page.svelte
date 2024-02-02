@@ -23,7 +23,7 @@
 
 <Container>
     <div class="u-flex u-flex-vertical">
-        <div class="u-flex u-main-space-between">
+        <div class="u-flex u-main-space-between u-cross-center">
             <Heading tag="h2" size="5">Targets</Heading>
             <!-- TODO: Remove u-hide to add creating a target -->
             <div class="is-only-mobile u-hide">

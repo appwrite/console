@@ -1,9 +1,7 @@
-import { writable } from 'svelte/store';
 import type { Column } from '$lib/helpers/types';
+import { writable } from 'svelte/store';
 import { Providers } from '../provider.svelte';
 import { ProviderTypes } from '../providerType.svelte';
-
-export let showCreate = writable(false);
 
 export const columns = writable<Column[]>([
     { id: '$id', title: 'Provider ID', type: 'string', show: true },
@@ -49,13 +47,13 @@ export const providers: ProvidersMap = {
                 description: 'Firebase Cloud Messaging',
                 configure: [
                     {
-                        label: 'Server key (.json file)',
-                        name: 'serverKey',
+                        label: 'Service account JSON (.json file)',
+                        name: 'serviceAccountJSON',
                         type: 'file',
                         allowedFileExtensions: ['json'],
-                        placeholder: 'Enter server key',
+                        placeholder: 'Enter service account JSON',
                         popover: [
-                            '<b>How to get the FCM server key?</b>',
+                            '<b>How to get the FCM service account JSON?</b>',
                             'Head to <b>Project settings -> Service accounts -> Generate new private key.</b>',
                             'Generating the new key will result in the download of a JSON file.'
                         ]

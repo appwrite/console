@@ -86,7 +86,6 @@
         createPushMessage({
             topics: $messageParams[ProviderTypes.Push]?.topics || [],
             targets: $messageParams[ProviderTypes.Push]?.targets || [],
-            description: $messageParams[ProviderTypes.Push]?.description || 'Test push',
             status: MessageStatuses.PROCESSING,
             messageId: ID.unique(),
             // TODO: properly handle the test email address
@@ -163,7 +162,11 @@
             </Modal>
         </div>
         <form class="form">
-            <Label>Custom data <span class="u-color-text-gray">(Optional)</span></Label>
+            <FormItem>
+                <Label
+                    tooltip="Deliver supplementary data alongside the notification, which remains hidden from the user's view but can be accessed by your application."
+                    >Custom data <span class="u-color-text-gray">(Optional)</span></Label>
+            </FormItem>
             <div class=" u-grid u-gap-8">
                 <ul class="form-list" style="--p-form-list-gap: 1rem">
                     {#each customData || [] as _, rowIndex}
@@ -220,13 +223,6 @@
                 </Button>
             </div>
         </form>
-        <InputText
-            id="description"
-            label="Description"
-            placeholder="Enter description"
-            tooltip="Provide a summary of the message. Users won't see this description."
-            bind:value={$messageParams[$providerType]['description']}>
-        </InputText>
         {#if $operation === 'create'}
             {#if !showCustomId}
                 <div>

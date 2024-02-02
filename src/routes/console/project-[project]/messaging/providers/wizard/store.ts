@@ -1,6 +1,6 @@
-import type { Models } from '@appwrite.io/console';
-import type { Providers } from '../../provider.svelte';
 import { writable } from 'svelte/store';
+import type { Providers } from '../../provider.svelte';
+import type { ProviderTypes } from '../../providerType.svelte';
 
 type ProviderParams = {
     providerId: string;
@@ -69,7 +69,7 @@ export type SendgridProviderParams = ProviderParams & {
  */
 
 export type FCMProviderParams = ProviderParams & {
-    serverKey: string;
+    serviceAccountJSON: string;
 };
 
 export type APNSProviderParams = ProviderParams & {
@@ -83,8 +83,8 @@ export type MQTTProviderParams = ProviderParams & {
     serverKey: string;
 };
 
-export const providerType = writable<Models.Provider['type']>(null);
-export const provider = writable<Models.Provider['provider']>(null);
+export const providerType = writable<ProviderTypes>(null);
+export const provider = writable<Providers>(null);
 export const providerParams = writable<{
     twilio: Partial<TwilioProviderParams>;
     msg91: Partial<Msg91ProviderParams>;

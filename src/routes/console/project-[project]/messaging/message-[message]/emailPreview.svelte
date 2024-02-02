@@ -3,7 +3,7 @@
     import { Button, FormList, InputText, InputTextarea } from '$lib/elements/forms';
     import type { Models } from '@appwrite.io/console';
 
-    export let message: Models.Message & { data: Record<string, string>; };
+    export let message: Models.Message & { data: Record<string, string> };
     export let onEdit: () => void = null;
 </script>
 

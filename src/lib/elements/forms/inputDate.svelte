@@ -71,10 +71,14 @@
             {max}
             autocomplete={autocomplete ? 'on' : 'off'}
             type="date"
+            style="cursor: pointer;"
             class="input-text"
             bind:value
             bind:this={element}
             on:invalid={handleInvalid}
+            on:click={function () {
+                this.showPicker();
+            }}
             style:--amount-of-buttons={isNullable ? 2.75 : 1}
             style:--button-size={isNullable ? '2rem' : '1rem'} />
         {#if isNullable}

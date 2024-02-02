@@ -1,6 +1,6 @@
 import type { Models } from '@appwrite.io/console';
-import { ProviderTypes } from '../providerType.svelte';
 import { writable } from 'svelte/store';
+import { ProviderTypes } from '../providerType.svelte';
 
 export enum MessageStatuses {
     DRAFT = 'draft',
@@ -15,7 +15,6 @@ export type MessageParams = {
     topics: string[];
     users: string[];
     targets: string[];
-    description: string;
     status: MessageStatuses;
     scheduledAt?: string;
 };

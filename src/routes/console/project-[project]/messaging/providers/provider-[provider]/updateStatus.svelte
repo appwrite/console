@@ -1,19 +1,20 @@
 <script lang="ts">
+    import { invalidate } from '$app/navigation';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid, Heading } from '$lib/components';
+    import { Dependencies } from '$lib/constants';
     import { Button, InputSwitch } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import { onMount } from 'svelte';
-    import { provider } from './store';
-    import { sdk } from '$lib/stores/sdk';
+    import { isValueOfStringEnum } from '$lib/helpers/types';
     import { addNotification } from '$lib/stores/notifications';
-    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { Dependencies } from '$lib/constants';
-    import { invalidate } from '$app/navigation';
-    import Provider, { Providers } from '../../provider.svelte';
-    import ProviderType from '../../providerType.svelte';
-    import { provider as wizardProvider, providerType, providerParams } from '../wizard/store';
+    import { sdk } from '$lib/stores/sdk';
     import { wizard } from '$lib/stores/wizard';
+    import { onMount } from 'svelte';
+    import Provider, { Providers } from '../../provider.svelte';
+    import ProviderType, { ProviderTypes } from '../../providerType.svelte';
     import Update from '../update.svelte';
+    import { providerParams, providerType, provider as wizardProvider } from '../wizard/store';
+    import { provider } from './store';
 
     let enabled: boolean = null;
 
@@ -22,6 +23,13 @@
     });
 
     function configure() {
+        if (!isValueOfStringEnum(ProviderTypes, $provider.type)) {
+            throw new Error(`Invalid provider type: ${$provider.type}`);
+        }
+
+        if (!isValueOfStringEnum(Providers, $provider.provider)) {
+            throw new Error(`Invalid provider: ${$provider.provider}`);
+        }
         $providerType = $provider.type;
         $wizardProvider = $provider.provider;
 
@@ -101,7 +109,7 @@
                     providerId: $provider.$id,
                     name: $provider.name,
                     enabled: $provider.enabled,
-                    serverKey: $provider.credentials['serverKey']
+                    serviceAccountJSON: $provider.credentials['serviceAccountJSON']
                 };
                 break;
             case Providers.APNS:

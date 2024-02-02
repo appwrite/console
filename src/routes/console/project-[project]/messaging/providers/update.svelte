@@ -186,7 +186,7 @@
                             providerId: providerId,
                             name: $providerParams[$provider].name,
                             enabled: $providerParams[$provider].enabled,
-                            serverKey: $providerParams[$provider].serverKey
+                            serviceAccountJSON: $providerParams[$provider].serviceAccountJSON
                         }
                     );
                     break;

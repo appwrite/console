@@ -4,7 +4,7 @@
     import type { Models } from '@appwrite.io/console';
     import SMSPhone from '../smsPhone.svelte';
 
-    export let message: Models.Message & { data: Record<string, string>; };
+    export let message: Models.Message & { data: Record<string, string> };
     export let onEdit: () => void = null;
 </script>
 

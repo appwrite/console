@@ -7,13 +7,9 @@
     import { providerType, provider } from './wizard/store';
     import { ProviderTypes } from '../providerType.svelte';
     import { Providers } from '../provider.svelte';
+    import { isValueOfStringEnum } from '$lib/helpers/types';
 
     export let showCreateDropdown = false;
-
-    const isValueOfStringEnum = <T extends Record<string, string>>(
-        enumType: T,
-        value: string
-    ): value is T[keyof T] => Object.values<string>(enumType).includes(value);
 </script>
 
 <DropList bind:show={showCreateDropdown} scrollable placement="bottom-end">
