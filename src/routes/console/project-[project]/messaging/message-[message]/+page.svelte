@@ -18,10 +18,14 @@
     import { wizard } from '$lib/stores/wizard';
     import Wizard from '../wizard.svelte';
     import type { PageData } from './$types';
+    import { isValueOfStringEnum } from '$lib/helpers/types';
 
     export let data: PageData;
 
     async function onEdit() {
+        if (!isValueOfStringEnum(ProviderTypes, $message.providerType)) {
+            throw new Error(`Invalid provider type: ${$message.providerType}`);
+        }
         $operation = 'update';
         $providerType = $message.providerType;
         $topicsById = {};
