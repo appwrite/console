@@ -192,12 +192,12 @@ export const scopes: {
     },
     {
         scope: 'targets.read',
-        description: "Access to read your project's targets",
+        description: "Access to read your project's messaging targets",
         category: 'Messaging'
     },
     {
         scope: 'targets.write',
-        description: "Access to create, update, and delete your project's targets",
+        description: "Access to create, update, and delete your project's messaging targets",
         category: 'Messaging'
     },
     {
