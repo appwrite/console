@@ -6,7 +6,7 @@
         InputFile,
         InputSwitch,
         InputText,
-        InputPassword,
+        InputPassword
     } from '$lib/elements/forms';
 
     import InputPhone from '$lib/elements/forms/inputPhone.svelte';
@@ -58,7 +58,7 @@
                     id={input.name}
                     label={input.label}
                     placeholder={input.placeholder}
-                    isPopoverDefined={input.popover !== undefined} 
+                    isPopoverDefined={input.popover !== undefined}
                     bind:value={$providerParams[$provider][input.name]}>
                     <svelte:fragment slot="popover">
                         {@html input.popover?.join('<br/><br/>')}
