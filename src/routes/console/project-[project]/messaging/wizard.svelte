@@ -81,29 +81,33 @@
                     );
                     break;
                 case ProviderTypes.Push:
-                    const customData: Record<string, string> = {};
-                    const { data } = $messageParams[ProviderTypes.Push];
-                    if (data && data.length > 0) {
-                        data.forEach((item) => {
-                            if (item[0] === '') return;
-                            customData[item[0]] = item[1];
-                        });
-                    }
-
-                    response = await sdk.forProject.client.call(
-                        'POST',
-                        new URL(sdk.forProject.client.config.endpoint + '/messaging/messages/push'),
-                        {
-                            'X-Appwrite-Project': sdk.forProject.client.config.project,
-                            'content-type': 'application/json',
-                            'X-Appwrite-Mode': 'admin'
-                        },
-                        {
-                            ...payload,
-                            data: customData,
-                            messageId
+                    {
+                        const customData: Record<string, string> = {};
+                        const { data } = $messageParams[ProviderTypes.Push];
+                        if (data && data.length > 0) {
+                            data.forEach((item) => {
+                                if (item[0] === '') return;
+                                customData[item[0]] = item[1];
+                            });
                         }
-                    );
+
+                        response = await sdk.forProject.client.call(
+                            'POST',
+                            new URL(
+                                sdk.forProject.client.config.endpoint + '/messaging/messages/push'
+                            ),
+                            {
+                                'X-Appwrite-Project': sdk.forProject.client.config.project,
+                                'content-type': 'application/json',
+                                'X-Appwrite-Mode': 'admin'
+                            },
+                            {
+                                ...payload,
+                                data: customData,
+                                messageId
+                            }
+                        );
+                    }
                     break;
             }
             wizard.hide();
@@ -198,31 +202,33 @@
                     );
                     break;
                 case ProviderTypes.Push:
-                    const customData: Record<string, string> = {};
-                    const { data } = $messageParams[ProviderTypes.Push];
-                    if (data && data.length > 0) {
-                        data.forEach((item) => {
-                            if (item[0] === '') return;
-                            customData[item[0]] = item[1];
-                        });
-                    }
-
-                    response = await sdk.forProject.client.call(
-                        'PATCH',
-                        new URL(
-                            `${sdk.forProject.client.config.endpoint}/messaging/messages/push/${messageId}`
-                        ),
-                        {
-                            'X-Appwrite-Project': sdk.forProject.client.config.project,
-                            'content-type': 'application/json',
-                            'X-Appwrite-Mode': 'admin'
-                        },
-                        {
-                            ...payload,
-                            data: customData,
-                            messageId
+                    {
+                        const customData: Record<string, string> = {};
+                        const { data } = $messageParams[ProviderTypes.Push];
+                        if (data && data.length > 0) {
+                            data.forEach((item) => {
+                                if (item[0] === '') return;
+                                customData[item[0]] = item[1];
+                            });
                         }
-                    );
+
+                        response = await sdk.forProject.client.call(
+                            'PATCH',
+                            new URL(
+                                `${sdk.forProject.client.config.endpoint}/messaging/messages/push/${messageId}`
+                            ),
+                            {
+                                'X-Appwrite-Project': sdk.forProject.client.config.project,
+                                'content-type': 'application/json',
+                                'X-Appwrite-Mode': 'admin'
+                            },
+                            {
+                                ...payload,
+                                data: customData,
+                                messageId
+                            }
+                        );
+                    }
                     break;
             }
             wizard.hide();

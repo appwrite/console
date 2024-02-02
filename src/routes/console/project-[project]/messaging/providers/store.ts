@@ -1,9 +1,7 @@
-import { writable } from 'svelte/store';
 import type { Column } from '$lib/helpers/types';
+import { writable } from 'svelte/store';
 import { Providers } from '../provider.svelte';
 import { ProviderTypes } from '../providerType.svelte';
-
-export let showCreate = writable(false);
 
 export const columns = writable<Column[]>([
     { id: '$id', title: 'Provider ID', type: 'string', show: true },
