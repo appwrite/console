@@ -24,7 +24,7 @@ type ProvidersMap = {
                 configure: {
                     label: string;
                     name: string;
-                    type: 'text' | 'phone' | 'email' | 'domain' | 'file' | 'switch';
+                    type: 'text' | 'password' | 'phone' | 'email' | 'domain' | 'file' | 'switch';
                     placeholder?: string;
                     description?: string;
                     popover?: string[];
@@ -336,7 +336,7 @@ export const providers: ProvidersMap = {
                     {
                         label: 'Password',
                         name: 'password',
-                        type: 'text',
+                        type: 'password',
                         placeholder: 'Enter password'
                     },
                     {
