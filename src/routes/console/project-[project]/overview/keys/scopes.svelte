@@ -12,6 +12,7 @@
         Auth = 'Auth',
         Database = 'Database',
         Functions = 'Functions',
+        Messaging = 'Messaging',
         Storage = 'Storage',
         Other = 'Other'
     }
