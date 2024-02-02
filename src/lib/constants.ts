@@ -237,7 +237,8 @@ export const scopes: {
     },
     {
         scope: 'subscribers.write',
-        description: "Access to create, update, and delete your project's messaging topic subscribers",
+        description:
+            "Access to create, update, and delete your project's messaging topic subscribers",
         category: 'Messaging'
     },
     {
