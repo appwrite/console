@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
 import type { Providers } from '../../provider.svelte';
-import type { ProviderTypes } from '../../providerType.svelte';
+import type { MessagingProviderType } from '@appwrite.io/console';
 
 type ProviderParams = {
     providerId: string;
@@ -83,7 +83,7 @@ export type MQTTProviderParams = ProviderParams & {
     serverKey: string;
 };
 
-export const providerType = writable<ProviderTypes>(null);
+export const providerType = writable<MessagingProviderType>(null);
 export const provider = writable<Providers>(null);
 export const providerParams = writable<{
     twilio: Partial<TwilioProviderParams>;

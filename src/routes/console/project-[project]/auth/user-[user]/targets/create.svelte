@@ -9,12 +9,11 @@
     import InputEmail from '$lib/elements/forms/inputEmail.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { ProviderTypes } from '$routes/console/project-[project]/messaging/providerType.svelte';
-    import { ID } from '@appwrite.io/console';
+    import { ID, MessagingProviderType } from '@appwrite.io/console';
 
     export let show = false;
 
-    let providerType = ProviderTypes.Push;
+    let providerType = MessagingProviderType.Push;
     let identifier = '';
     let name = '';
     let providerId = '';
@@ -22,9 +21,9 @@
     let showCustomId = false;
 
     const providerTypeOptions = [
-        { label: 'Push', value: ProviderTypes.Push },
-        { label: 'Email', value: ProviderTypes.Email },
-        { label: 'SMS', value: ProviderTypes.Sms }
+        { label: 'Push', value: MessagingProviderType.Push },
+        { label: 'Email', value: MessagingProviderType.Email },
+        { label: 'SMS', value: MessagingProviderType.Sms }
     ];
 
     const create = async () => {
@@ -78,7 +77,7 @@
     // Ensure values are reset when modal is opened
     $: if (show) {
         showCustomId = false;
-        providerType = ProviderTypes.Push;
+        providerType = MessagingProviderType.Push;
         identifier = '';
         name = '';
         providerId = '';
@@ -97,7 +96,7 @@
             label="Provider Type"
             bind:value={providerType}
             options={providerTypeOptions} />
-        {#if providerType === ProviderTypes.Push}
+        {#if providerType === MessagingProviderType.Push}
             <InputText
                 id="provider-id"
                 label="Provider ID"
@@ -116,14 +115,14 @@
                 placeholder="Enter target name"
                 bind:value={name}
                 required />
-        {:else if providerType === ProviderTypes.Email}
+        {:else if providerType === MessagingProviderType.Email}
             <InputEmail
                 id="identifier"
                 label="Identifier"
                 placeholder="Enter email"
                 bind:value={identifier}
                 required />
-        {:else if providerType === ProviderTypes.Sms}
+        {:else if providerType === MessagingProviderType.Sms}
             <InputPhone
                 id="identifier"
                 label="Identifier"

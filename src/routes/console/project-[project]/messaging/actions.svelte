@@ -3,14 +3,14 @@
     import { createEventDispatcher } from 'svelte';
     import { targetsById } from './wizard/store';
     import UserTargetsModal from './userTargetsModal.svelte';
-    import type { ProviderTypes } from './providerType.svelte';
     import TopicsModal from './topicsModal.svelte';
     import { topicsById } from './store';
+    import type { MessagingProviderType } from '@appwrite.io/console';
 
     export let showDropdown: boolean;
     export let showUserTargets: boolean;
     export let showTopics: boolean;
-    export let providerType: ProviderTypes = null;
+    export let providerType: MessagingProviderType = null;
 
     const dispatch = createEventDispatcher();
 

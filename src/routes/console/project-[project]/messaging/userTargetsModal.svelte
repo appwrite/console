@@ -8,13 +8,13 @@
     } from '$lib/components';
     import { Button, FormList, InputCheckbox, InputSearch } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
-    import { Query, type Models } from '@appwrite.io/console';
+    import { Query, type Models, MessagingProviderType } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
-    import ProviderType, { ProviderTypes } from './providerType.svelte';
+    import ProviderType from './providerType.svelte';
 
     export let show: boolean;
     export let targetsById: Record<string, Models.Target>;
-    export let providerType: ProviderTypes = null;
+    export let providerType: MessagingProviderType = null;
     export let title = 'Select users';
 
     const dispatch = createEventDispatcher();
@@ -40,9 +40,9 @@
         if (!show) return;
         const queries = [Query.limit(5), Query.offset(offset)];
 
-        if (providerType === ProviderTypes.Email) {
+        if (providerType === MessagingProviderType.Email) {
             queries.push(Query.notEqual('email', ''));
-        } else if (providerType === ProviderTypes.Sms) {
+        } else if (providerType === MessagingProviderType.Sms) {
             queries.push(Query.notEqual('phone', ''));
         }
 
@@ -189,7 +189,7 @@
                                                 ><ProviderType
                                                     type={target.providerType}
                                                     noIcon /></span>
-                                            {#if target.providerType !== ProviderTypes.Push}
+                                            {#if target.providerType !== MessagingProviderType.Push}
                                                 {target.identifier}
                                             {:else}
                                                 <!-- TODO: Show device info -->

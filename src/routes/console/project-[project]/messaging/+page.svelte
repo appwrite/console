@@ -27,11 +27,12 @@
     } from '$lib/elements/table';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
+    import { MessagingProviderType } from '@appwrite.io/console';
     import type { PageData } from './$types';
     import CreateMessageDropdown from './createMessageDropdown.svelte';
     import FailedModal from './failedModal.svelte';
     import MessageStatusPill from './messageStatusPill.svelte';
-    import ProviderType, { ProviderTypes } from './providerType.svelte';
+    import ProviderType from './providerType.svelte';
     import { columns, showCreate } from './store';
 
     export let data: PageData;
@@ -117,11 +118,11 @@
                                     {/key}
                                 {:else if column.id === 'message'}
                                     <TableCellText title={column.title} width={column.width}>
-                                        {#if message.providerType === ProviderTypes.Push}
+                                        {#if message.providerType === MessagingProviderType.Push}
                                             {message.data.title}
-                                        {:else if message.providerType === ProviderTypes.Sms}
+                                        {:else if message.providerType === MessagingProviderType.Sms}
                                             {message.data.content}
-                                        {:else if message.providerType === ProviderTypes.Email}
+                                        {:else if message.providerType === MessagingProviderType.Email}
                                             {message.data.subject}
                                         {:else}
                                             Invalid provider

@@ -10,8 +10,9 @@
     import { sdk } from '$lib/stores/sdk';
     import { wizard } from '$lib/stores/wizard';
     import { onMount } from 'svelte';
+    import { MessagingProviderType } from '@appwrite.io/console';
     import Provider, { Providers } from '../../provider.svelte';
-    import ProviderType, { ProviderTypes } from '../../providerType.svelte';
+    import ProviderType from '../../providerType.svelte';
     import Update from '../update.svelte';
     import { providerParams, providerType, provider as wizardProvider } from '../wizard/store';
     import { provider } from './store';
@@ -23,7 +24,7 @@
     });
 
     function configure() {
-        if (!isValueOfStringEnum(ProviderTypes, $provider.type)) {
+        if (!isValueOfStringEnum(MessagingProviderType, $provider.type)) {
             throw new Error(`Invalid provider type: ${$provider.type}`);
         }
 

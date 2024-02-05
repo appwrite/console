@@ -1,7 +1,7 @@
 import type { Column } from '$lib/helpers/types';
 import { writable } from 'svelte/store';
 import { Providers } from '../provider.svelte';
-import { ProviderTypes } from '../providerType.svelte';
+import { MessagingProviderType } from '@appwrite.io/console';
 
 export const columns = writable<Column[]>([
     { id: '$id', title: 'Provider ID', type: 'string', show: true },
@@ -12,7 +12,7 @@ export const columns = writable<Column[]>([
 ]);
 
 type ProvidersMap = {
-    [key in ProviderTypes]: {
+    [key in MessagingProviderType]: {
         name: string;
         text: string;
         icon: string;
@@ -36,7 +36,7 @@ type ProvidersMap = {
 };
 
 export const providers: ProvidersMap = {
-    [ProviderTypes.Push]: {
+    [MessagingProviderType.Push]: {
         name: 'Push notification',
         text: 'notifications',
         icon: 'device-mobile',
@@ -135,7 +135,7 @@ export const providers: ProvidersMap = {
             // }
         }
     },
-    [ProviderTypes.Email]: {
+    [MessagingProviderType.Email]: {
         name: 'Email',
         text: 'emails',
         icon: 'mail',
@@ -245,7 +245,7 @@ export const providers: ProvidersMap = {
         }
     },
 
-    [ProviderTypes.Sms]: {
+    [MessagingProviderType.Sms]: {
         name: 'SMS',
         text: 'SMS',
         icon: 'annotation',

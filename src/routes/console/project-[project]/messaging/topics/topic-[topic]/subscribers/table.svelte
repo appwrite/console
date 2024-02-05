@@ -19,13 +19,14 @@
     import { addNotification } from '$lib/stores/notifications';
     import type { PageData } from './$types';
     import { columns } from './store';
-    import ProviderType, { ProviderTypes } from '../../../providerType.svelte';
+    import ProviderType from '../../../providerType.svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { project } from '$routes/console/project-[project]/store';
     import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/stores';
     import { targetsById } from '../../../store';
     import type { Subscriber } from './+page';
+    import { MessagingProviderType } from '@appwrite.io/console';
 
     export let data: PageData;
 
@@ -125,7 +126,7 @@
                             </TableCell>
                         {:else if column.id === 'target'}
                             <TableCell title={column.title}>
-                                {#if target.providerType === ProviderTypes.Push}
+                                {#if target.providerType === MessagingProviderType.Push}
                                     {target.name}
                                 {:else}
                                     {target.identifier}

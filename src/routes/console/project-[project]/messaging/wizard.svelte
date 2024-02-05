@@ -14,14 +14,12 @@
     import {
         providerType,
         messageParams,
-        MessageStatuses,
         type PushMessageParams,
         type SMSMessageParams,
         type EmailMessageParams,
         operation
     } from './wizard/store';
-    import { ProviderTypes } from './providerType.svelte';
-    import { ID } from '@appwrite.io/console';
+    import { ID, MessageType, MessagingProviderType } from '@appwrite.io/console';
     import { Dependencies } from '$lib/constants';
 
     async function create() {
@@ -48,7 +46,7 @@
             });
 
             switch ($providerType) {
-                case ProviderTypes.Email:
+                case MessagingProviderType.Email:
                     response = await sdk.forProject.client.call(
                         'POST',
                         new URL(
@@ -65,7 +63,7 @@
                         }
                     );
                     break;
-                case ProviderTypes.Sms:
+                case MessagingProviderType.Sms:
                     response = await sdk.forProject.client.call(
                         'POST',
                         new URL(sdk.forProject.client.config.endpoint + '/messaging/messages/sms'),
@@ -80,10 +78,10 @@
                         }
                     );
                     break;
-                case ProviderTypes.Push:
+                case MessagingProviderType.Push:
                     {
                         const customData: Record<string, string> = {};
-                        const { data } = $messageParams[ProviderTypes.Push];
+                        const { data } = $messageParams[MessagingProviderType.Push];
                         if (data && data.length > 0) {
                             data.forEach((item) => {
                                 if (item[0] === '') return;
@@ -113,13 +111,13 @@
             wizard.hide();
             let message = '';
             switch (params.status) {
-                case MessageStatuses.DRAFT:
+                case MessageType.Draft:
                     message = 'The message has been saved as draft.';
                     break;
-                case MessageStatuses.PROCESSING:
+                case MessageType.Processing:
                     message = 'The message is queued for processing.';
                     break;
-                case MessageStatuses.SCHEDULED:
+                case MessageType.Scheduled:
                     message = 'The message has been scheduled.';
                     break;
             }
@@ -167,7 +165,7 @@
             console.log(payload);
 
             switch ($providerType) {
-                case ProviderTypes.Email:
+                case MessagingProviderType.Email:
                     response = await sdk.forProject.client.call(
                         'PATCH',
                         new URL(
@@ -184,7 +182,7 @@
                         }
                     );
                     break;
-                case ProviderTypes.Sms:
+                case MessagingProviderType.Sms:
                     response = await sdk.forProject.client.call(
                         'PATCH',
                         new URL(
@@ -201,10 +199,10 @@
                         }
                     );
                     break;
-                case ProviderTypes.Push:
+                case MessagingProviderType.Push:
                     {
                         const customData: Record<string, string> = {};
-                        const { data } = $messageParams[ProviderTypes.Push];
+                        const { data } = $messageParams[MessagingProviderType.Push];
                         if (data && data.length > 0) {
                             data.forEach((item) => {
                                 if (item[0] === '') return;
@@ -234,13 +232,13 @@
             wizard.hide();
             let message = '';
             switch (params.status) {
-                case MessageStatuses.DRAFT:
+                case MessageType.Draft:
                     message = 'The message has been saved as draft.';
                     break;
-                case MessageStatuses.PROCESSING:
+                case MessageType.Processing:
                     message = 'The message is queued for processing.';
                     break;
-                case MessageStatuses.SCHEDULED:
+                case MessageType.Scheduled:
                     message = 'The message has been scheduled.';
                     break;
             }
@@ -264,7 +262,7 @@
     }
 
     async function saveDraft() {
-        $messageParams[$providerType].status = MessageStatuses.DRAFT;
+        $messageParams[$providerType].status = MessageType.Draft;
         if ($operation === 'create') {
             create();
         } else {

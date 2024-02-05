@@ -20,7 +20,6 @@
         messageParams,
         providerType,
         type EmailMessageParams,
-        MessageStatuses,
         operation
     } from './store';
     import { Button, FormList, InputEmail, InputRadio, InputTextarea } from '$lib/elements/forms';
@@ -28,9 +27,8 @@
     import { CustomId, Modal } from '$lib/components';
     import { user } from '$lib/stores/user';
     import { clickOnEnter } from '$lib/helpers/a11y';
-    import { ID } from '@appwrite.io/console';
+    import { ID, MessageType, MessagingProviderType } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
-    import { ProviderTypes } from '../providerType.svelte';
     import SMSPhone from '../smsPhone.svelte';
 
     let showCustomId = false;
@@ -42,15 +40,15 @@
         // const email = selected === 'self' ? $user.email : otherEmail;
 
         createSMSMessage({
-            topics: $messageParams[ProviderTypes.Email]?.topics || [],
-            targets: $messageParams[ProviderTypes.Email]?.targets || [],
-            status: MessageStatuses.PROCESSING,
+            topics: $messageParams[MessagingProviderType.Email]?.topics || [],
+            targets: $messageParams[MessagingProviderType.Email]?.targets || [],
+            status: MessageType.Processing,
             messageId: ID.unique(),
             // TODO: properly handle the test email address
             users: ['steven'],
-            subject: $messageParams[ProviderTypes.Email]?.subject || '',
-            content: $messageParams[ProviderTypes.Email]?.content || '',
-            html: $messageParams[ProviderTypes.Email]?.html || false
+            subject: $messageParams[MessagingProviderType.Email]?.subject || '',
+            content: $messageParams[MessagingProviderType.Email]?.content || '',
+            html: $messageParams[MessagingProviderType.Email]?.html || false
         });
     }
 

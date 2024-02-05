@@ -16,6 +16,7 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { isCloud } from '$lib/system';
     import { page } from '$app/stores';
+    import { OAuthProvider } from '@appwrite.io/console';
 
     let mail: string, pass: string, disabled: boolean;
 
@@ -62,7 +63,7 @@
             }
         }
         sdk.forConsole.account.createOAuth2Session(
-            'github',
+            OAuthProvider.Github,
             window.location.origin + url,
             window.location.origin,
             undefined,
