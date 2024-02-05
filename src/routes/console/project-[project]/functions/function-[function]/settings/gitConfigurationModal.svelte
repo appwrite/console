@@ -14,6 +14,7 @@
     import InputSelectSearch from '$lib/elements/forms/inputSelectSearch.svelte';
     import { sortBranches } from './updateConfiguration.svelte';
     import { installations } from '$lib/wizards/functions/store';
+    import { onMount } from 'svelte';
 
     export let show: boolean;
 
@@ -31,11 +32,20 @@
     let silentMode = false;
     let error = '';
 
-    let installationsOptions = $installations.installations.map((installation) => {
+    let installationsOptions = $installations?.installations?.map((installation) => {
         return {
             value: installation.$id,
             label: installation.organization
         };
+    });
+
+    onMount(() => {
+        installationsOptions = $installations?.installations?.map((installation) => {
+            return {
+                value: installation.$id,
+                label: installation.organization
+            };
+        });
     });
 
     function getProviderIcon(provider: string) {
