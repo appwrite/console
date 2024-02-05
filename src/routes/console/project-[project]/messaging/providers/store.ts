@@ -349,7 +349,7 @@ export const providers: ProvidersMap = {
             },
             [Providers.Textmagic]: {
                 imageIcon: 'textmagic',
-                title: 'Textmagic',
+                title: 'TextMagic', 
                 description: '',
                 configure: [
                     {
@@ -359,8 +359,8 @@ export const providers: ProvidersMap = {
                         placeholder: 'Enter API key',
                         popover: [
                             '<b>How to get the API key?</b>',
-                            'Create an account in Textmagic.',
-                            'Head to <b>TextMagic dashboard -> API Settings -> Add new API key.</b>'
+                            'Create an account in TextMagic.',
+                            'Head to <b>TextMagic dashboard -> API -> Add new API key.</b>'
                         ]
                     },
                     {
