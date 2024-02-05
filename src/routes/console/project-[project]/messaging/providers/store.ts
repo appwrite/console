@@ -213,7 +213,7 @@ export const providers: ProvidersMap = {
                         popover: [
                             '<b>How to get the API key?</b>',
                             'Create an account in Mailgun.',
-                            'Head to <b>Profile -> API Security -> Add new key.</b>'
+                            'Head to <b>Settings -> API Keys -> Create API key.</b>'
                         ]
                     },
                     {
