@@ -70,7 +70,7 @@
                         <Pill>Default</Pill>
                     {/if}
                 </span>
-                {#if !!defaultMethod && element.$id !== defaultMethod && group === element.$id && showSetAsDefault}
+                {#if !!defaultMethod && element.$id !== defaultMethod && group === element.$id && showSetAsDefault && element.$id !== backupMethod}
                     <ul>
                         <InputChoice
                             bind:value={setAsDefault}
@@ -102,6 +102,14 @@
                 <!-- Stripe will create form elements here -->
             </div>
         </div>
+        {#if showSetAsDefault}
+            <ul>
+                <InputChoice
+                    bind:value={setAsDefault}
+                    id="default"
+                    label="Set as default payment method for this organization" />
+            </ul>
+        {/if}
     </FormList>
 </RadioBoxes>
 

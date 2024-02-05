@@ -8,12 +8,18 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { page } from '$app/stores';
     import { VARS } from '$lib/system';
-    import { confirmPayment } from '$lib/stores/stripe';
+    import {
+        confirmPayment,
+        initializeStripe,
+        isStripeInitialized,
+        submitStripeCard
+    } from '$lib/stores/stripe';
     import { organization } from '$lib/stores/organization';
     import { toLocaleDate } from '$lib/helpers/date';
     import { PaymentBoxes } from '$lib/components/billing';
     import { paymentMethods } from '$lib/stores/billing';
     import { onMount } from 'svelte';
+    import { sdk } from '$lib/stores/sdk';
 
     const endpoint = VARS.APPWRITE_ENDPOINT ?? `${$page.url.origin}/v1`;
     export let show = false;
@@ -31,10 +37,36 @@
     async function handleSubmit() {
         isButtonDisabled = true;
         try {
+            if (paymentMethodId === null) {
+                try {
+                    const method = await submitStripeCard(name);
+                    const card = await sdk.forConsole.billing.getPaymentMethod(method.$id);
+                    if (card?.last4) {
+                        paymentMethodId = card.$id;
+                    } else {
+                        throw new Error(
+                            'The payment method you selected is not valid. Please select a different one.'
+                        );
+                    }
+                    invalidate(Dependencies.PAYMENT_METHODS);
+                } catch (e) {
+                    paymentMethodId = $organization.paymentMethodId;
+                    error = e.message;
+                }
+            }
+            if (setAsDefault) {
+                await sdk.forConsole.billing.setDefaultPaymentMethod(paymentMethodId);
+            }
+            const clientSecret = await sdk.forConsole.billing.retryPayment(
+                $organization.$id,
+                invoice.$id,
+                paymentMethodId
+            );
+
             await confirmPayment(
                 $organization.$id,
-                invoice.clientSecret,
-                $organization.paymentMethodId
+                clientSecret,
+                paymentMethodId ? paymentMethodId : $organization.paymentMethodId
             );
             invalidate(Dependencies.ORGANIZATION);
             invalidate(Dependencies.INVOICES);
@@ -51,6 +83,14 @@
         } finally {
             isButtonDisabled = false;
         }
+    }
+
+    $: if (paymentMethodId === null && !$isStripeInitialized) {
+        initializeStripe();
+    }
+
+    $: if (paymentMethodId) {
+        isStripeInitialized.set(false);
     }
     $: filteredMethods = $paymentMethods?.paymentMethods.filter((method) => !!method?.last4);
 
