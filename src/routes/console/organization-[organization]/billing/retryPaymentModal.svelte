@@ -11,12 +11,22 @@
     import { confirmPayment } from '$lib/stores/stripe';
     import { organization } from '$lib/stores/organization';
     import { toLocaleDate } from '$lib/helpers/date';
+    import { PaymentBoxes } from '$lib/components/billing';
+    import { paymentMethods } from '$lib/stores/billing';
+    import { onMount } from 'svelte';
 
     const endpoint = VARS.APPWRITE_ENDPOINT ?? `${$page.url.origin}/v1`;
     export let show = false;
     export let invoice: Invoice;
     let error: string = null;
     let isButtonDisabled = false;
+    let name: string;
+    let paymentMethodId: string;
+    let setAsDefault = false;
+
+    onMount(() => {
+        paymentMethodId = $organization.paymentMethodId;
+    });
 
     async function handleSubmit() {
         isButtonDisabled = true;
@@ -42,6 +52,7 @@
             isButtonDisabled = false;
         }
     }
+    $: filteredMethods = $paymentMethods?.paymentMethods.filter((method) => !!method?.last4);
 
     $: if (!show) {
         invoice = null;
@@ -69,6 +80,15 @@
         href={`${endpoint}/organizations/${$page.params.organization}/invoices/${invoice.$id}/view`}>
         View invoice
     </Button>
+
+    <PaymentBoxes
+        methods={filteredMethods}
+        defaultMethod={$organization?.paymentMethodId}
+        backupMethod={$organization?.backupPaymentMethodId}
+        showSetAsDefault
+        bind:setAsDefault
+        bind:name
+        bind:group={paymentMethodId} />
     <svelte:fragment slot="footer">
         <Button text on:click={() => (show = false)}>Cancel</Button>
         <Button secondary submit disabled={isButtonDisabled}>Retry</Button>
