@@ -25,6 +25,11 @@ const setAuthMethod = (project: Models.Project): AuthMethod[] => {
             value: project?.authUsersAuthMagicURL
         },
         {
+            label: 'Email OTP',
+            method: 'email-otp',
+            value: project?.authEmailOtp
+        },
+        {
             label: 'Anonymous',
             method: 'anonymous',
             value: project?.authAnonymous
