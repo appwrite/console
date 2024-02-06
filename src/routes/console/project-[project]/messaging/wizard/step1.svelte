@@ -8,6 +8,16 @@
     import PushFormList, { validateData } from './pushFormList.svelte';
 
     async function beforeSubmit() {}
+
+    const createMessage = (providerText:string) => {
+        const vowels = ['a', 'e', 'i', 'o', 'u'];
+        const firstLetter = providerText.toLowerCase().charAt(0);
+        const lastLetter = providerText.charAt(providerText.length - 1);
+        let article = vowels.includes(firstLetter) ? 'an' : 'a';
+        article = lastLetter === 's' ? '' : article;
+
+        return `Create ${article} ${providerText} that will be displayed to your subscribers. Learn more in our documentation.`;
+    };
 </script>
 
 <WizardStep
@@ -17,8 +27,7 @@
     <svelte:fragment slot="title">Message</svelte:fragment>
     <svelte:fragment slot="subtitle">
         <!-- TODO: update documentation link -->
-        Create an {providers[$providerType].text} that will be displayed to your subscribers. Learn more
-        in our documentation.
+        {createMessage(providers[$providerType].text)}
     </svelte:fragment>
     {#if $providerType === ProviderTypes.Email}
         <EmailFormList />
