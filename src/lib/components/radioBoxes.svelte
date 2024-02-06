@@ -13,7 +13,7 @@
     {#if total}
         {#each elements as element}
             {@const value = element[variableName]?.toString()}
-            <div class="box" data-private>
+            <ul class="box" data-private>
                 <InputRadio
                     id={`${name}-${value}`}
                     {value}
@@ -22,11 +22,11 @@
                     disabled={disabledCondition ? value === disabledCondition : false}>
                     <slot name="element" {element} />
                 </InputRadio>
-            </div>
+            </ul>
         {/each}
     {/if}
 
-    <div class="box">
+    <ul class="box">
         {#if total}
             <InputRadio id="payment-method" value={null} {name} bind:group>
                 <slot name="new">
@@ -37,5 +37,5 @@
         {#if group === null}
             <slot />
         {/if}
-    </div>
+    </ul>
 </div>
