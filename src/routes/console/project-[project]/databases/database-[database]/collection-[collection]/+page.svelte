@@ -54,7 +54,7 @@
             </Button>
         </div>
 
-        <Filters query={data.query} {columns} />
+        <Filters query={data.query} {columns} disabled={!(hasAttributes && hasValidAttributes)} />
 
         <div class="u-flex u-main-end u-gap-16">
             <ViewSelector
