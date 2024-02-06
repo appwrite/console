@@ -12,10 +12,11 @@
     const createMessage = (providerText:string) => {
         const vowels = ['a', 'e', 'i', 'o', 'u'];
         const firstLetter = providerText.toLowerCase().charAt(0);
-        const lastLetter = providerText.charAt(providerText.length - 1);
+        const lastLetter = providerText.toLowerCase().charAt(providerText.length - 1);
         let article = vowels.includes(firstLetter) ? 'an' : 'a';
         article = lastLetter === 's' ? '' : article;
 
+        providerText = providerText.toLowerCase() === 'sms' ? 'SMS messages' : providerText;
         return `Create ${article} ${providerText} that will be displayed to your subscribers. Learn more in our documentation.`;
     };
 </script>
