@@ -527,8 +527,8 @@ export class Billing {
         organizationId: string,
         invoiceId: string,
         paymentMethodId: string
-    ): Promise<string> {
-        const path = `/organizations/${organizationId}/invoices/${invoiceId}/retry`;
+    ): Promise<Invoice> {
+        const path = `/organizations/${organizationId}/invoices/${invoiceId}/payments`;
         const params = {
             organizationId,
             invoiceId,
@@ -536,7 +536,7 @@ export class Billing {
         };
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
-            'get',
+            'post',
             uri,
             {
                 'content-type': 'application/json'

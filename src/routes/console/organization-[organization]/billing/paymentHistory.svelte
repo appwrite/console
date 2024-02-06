@@ -127,7 +127,7 @@
                                                 event="download_invoice">
                                                 Download PDF
                                             </DropListLink>
-                                            {#if status === 'overdue' || status === 'failed' || true}
+                                            {#if status === 'overdue' || status === 'failed'}
                                                 <DropListItem
                                                     icon="refresh"
                                                     on:click={() => {

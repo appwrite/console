@@ -109,7 +109,7 @@ export async function confirmPayment(
 ) {
     try {
         const url =
-            window.location.origin + route ? route : `/console/organization-${orgId}/billing`;
+            window.location.origin + (route ? route : `/console/organization-${orgId}/billing`);
 
         const paymentMethod = await sdk.forConsole.billing.getPaymentMethod(paymentMethodId);
 
