@@ -1,7 +1,12 @@
 <script lang="ts">
-    import { Button, InputNumber } from '$lib/elements/forms';
-    import InputSelect from '$lib/elements/forms/inputSelect.svelte';
-    import InputText from '$lib/elements/forms/inputText.svelte';
+    import {
+        Button,
+        InputNumber,
+        InputSelect,
+        InputText,
+        InputTags,
+        FormList
+    } from '$lib/elements/forms';
     import { Query } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
     import { tags, type Operator, queries } from './store';
@@ -17,6 +22,7 @@
 
     let columnId: string | null = null;
     $: column = $columns.find((c) => c.id === columnId) as Column;
+    let arrayValues = [];
 
     dispatch('apply', { applied: $tags.length });
 
@@ -72,6 +78,12 @@
             toTag: (attribute) => `**${attribute}** is null`,
             types: ['string', 'integer', 'double', 'boolean', 'datetime', 'relationship'],
             hideInput: true
+        },
+        contains: {
+            toQuery: Query.contains,
+            toTag: (attribute, input) =>
+                `**${attribute}** contains **${Array.isArray(input) ? input.join(' or') : input}**`,
+            types: ['string', 'integer', 'double', 'boolean', 'datetime', 'enum']
         }
     };
 
@@ -95,7 +107,7 @@
 
     $: {
         columnId;
-        value = null;
+        value = column?.array ? [] : null;
     }
 
     // This Map is keyed by tags, and has a query as the value
@@ -134,23 +146,44 @@
                 bind:value={operatorKey} />
         </ul>
         {#if column && operator && !operator?.hideInput}
-            <div class="u-margin-block-start-8">
-                {#if column.type === 'integer' || column.type === 'double'}
-                    <InputNumber id="value" bind:value placeholder="Enter value" />
-                {:else if column.type === 'boolean'}
-                    <InputSelect
+            {#if column?.array}
+                <FormList class="u-margin-block-start-8">
+                    {#if column.type === 'enum'}
+                        test
+                        <!-- <InputSelect
                         id="value"
                         placeholder="Select a value"
                         required={true}
-                        options={[
-                            { label: 'True', value: true },
-                            { label: 'False', value: false }
-                        ].filter(Boolean)}
-                        bind:value />
-                {:else}
-                    <InputText id="value" bind:value placeholder="Enter value" />
-                {/if}
-            </div>
+                        options={column.enum.map((v) => ({ label: v, value: v }))}
+                        bind:value /> -->
+                    {:else}
+                        <InputTags
+                            label="values"
+                            showLabel={false}
+                            id="value"
+                            bind:tags={arrayValues}
+                            placeholder="Enter values" />
+                    {/if}
+                </FormList>
+            {:else}
+                <ul class="u-margin-block-start-8">
+                    {#if column.type === 'integer' || column.type === 'double'}
+                        <InputNumber id="value" bind:value placeholder="Enter value" />
+                    {:else if column.type === 'boolean'}
+                        <InputSelect
+                            id="value"
+                            placeholder="Select a value"
+                            required={true}
+                            options={[
+                                { label: 'True', value: true },
+                                { label: 'False', value: false }
+                            ].filter(Boolean)}
+                            bind:value />
+                    {:else}
+                        <InputText id="value" bind:value placeholder="Enter value" />
+                    {/if}
+                </ul>
+            {/if}
         {/if}
         <Button text disabled={isDisabled} class="u-margin-block-start-4" submit>
             <i class="icon-plus" />
