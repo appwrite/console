@@ -24,38 +24,6 @@ export const load: PageLoad = async ({ url, route }) => {
     const parsedQueries = queryParamToMap(query || '[]');
     queries.set(parsedQueries);
 
-    // TODO: remove when the API is ready with data
-    // This allows us to mock w/ data and when search returns 0 results
-    let messages: {
-        messages: ({ data: Record<string, string> } & Models.Message)[];
-        total: number;
-    } = { messages: [], total: 0 };
-    const params = {
-        queries: [
-            Query.limit(limit),
-            Query.offset(offset),
-            Query.orderDesc(''),
-            ...parsedQueries.values()
-        ]
-    };
-
-    if (search) {
-        params['search'] = search;
-    }
-
-    const response = await sdk.forProject.client.call(
-        'GET',
-        new URL(sdk.forProject.client.config.endpoint + '/messaging/messages'),
-        {
-            'X-Appwrite-Project': sdk.forProject.client.config.project,
-            'content-type': 'application/json',
-            'X-Appwrite-Mode': 'admin'
-        },
-        params
-    );
-
-    messages = response;
-
     return {
         offset,
         limit,
@@ -63,6 +31,17 @@ export const load: PageLoad = async ({ url, route }) => {
         query,
         page,
         view,
-        messages
+        messages: sdk.forProject.messaging.listMessages(
+            [
+                Query.limit(limit),
+                Query.offset(offset),
+                Query.orderDesc(''),
+                ...parsedQueries.values()
+            ],
+            search || undefined
+        ) as Promise<{
+            total: number;
+            messages: (Models.Message & { data: Record<string, string> })[]; // Add typing for message.data
+        }>
     };
 };

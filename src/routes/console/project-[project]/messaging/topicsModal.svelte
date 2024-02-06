@@ -32,25 +32,7 @@
         if (!show) return;
         const queries = [Query.limit(5), Query.offset(offset)];
 
-        const params = {
-            queries
-        };
-
-        if (search) {
-            params['search'] = search;
-        }
-
-        // TODO: replace with sdk.forProject.users.list once User type has targets
-        const response = await sdk.forProject.client.call(
-            'GET',
-            new URL(sdk.forProject.client.config.endpoint + '/messaging/topics'),
-            {
-                'X-Appwrite-Project': sdk.forProject.client.config.project,
-                'content-type': 'application/json',
-                'X-Appwrite-Mode': 'admin'
-            },
-            params
-        );
+        const response = await sdk.forProject.messaging.listTopics(queries, search || undefined);
 
         totalResults = response.total;
         topicResultsById = {};

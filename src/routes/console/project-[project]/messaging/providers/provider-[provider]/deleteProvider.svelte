@@ -14,17 +14,7 @@
 
     const deleteProvider = async () => {
         try {
-            await sdk.forProject.client.call(
-                'DELETE',
-                new URL(
-                    sdk.forProject.client.config.endpoint + '/messaging/providers/' + $provider.$id
-                ),
-                {
-                    'X-Appwrite-Project': sdk.forProject.client.config.project,
-                    'content-type': 'application/json',
-                    'X-Appwrite-Mode': 'admin'
-                }
-            );
+            await sdk.forProject.messaging.deleteProvider($provider.$id);
             showDelete = false;
             addNotification({
                 type: 'success',

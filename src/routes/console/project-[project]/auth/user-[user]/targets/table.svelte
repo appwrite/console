@@ -34,21 +34,9 @@
     async function handleDelete() {
         showDelete = false;
 
-        async function deleteTarget(id: string) {
-            await sdk.forProject.client.call(
-                'DELETE',
-                new URL(
-                    `${sdk.forProject.client.config.endpoint}/users/${$page.params.user}/targets/${id}`
-                ),
-                {
-                    'X-Appwrite-Project': sdk.forProject.client.config.project,
-                    'content-type': 'application/json',
-                    'X-Appwrite-Mode': 'admin'
-                }
-            );
-        }
-
-        const promises = selectedIds.map((id) => deleteTarget(id));
+        const promises = selectedIds.map((id) =>
+            sdk.forProject.users.deleteTarget($page.params.user, id)
+        );
 
         try {
             await Promise.all(promises);

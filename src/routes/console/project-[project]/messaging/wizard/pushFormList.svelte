@@ -1,19 +1,4 @@
 <script context="module" lang="ts">
-    export async function createPushMessage(params: PushMessageParams) {
-        const response = await sdk.forProject.client.call(
-            'POST',
-            new URL(sdk.forProject.client.config.endpoint + '/messaging/messages/push'),
-            {
-                'X-Appwrite-Project': sdk.forProject.client.config.project,
-                'content-type': 'application/json',
-                'X-Appwrite-Mode': 'admin'
-            },
-            params
-        );
-
-        return response.json();
-    }
-
     export function validateData(data: string[][]) {
         if (!data || data.length === 0) return;
 
@@ -39,12 +24,7 @@
 </script>
 
 <script lang="ts">
-    import {
-        messageParams,
-        providerType,
-        type PushMessageParams,
-        operation
-    } from './store';
+    import { messageParams, providerType, operation } from './store';
     import {
         Button,
         FormItem,
@@ -81,17 +61,24 @@
         const email = selected === 'self' ? $user.email : otherEmail;
         console.log(email);
 
-        createPushMessage({
-            topics: $messageParams[MessagingProviderType.Push]?.topics || [],
-            targets: $messageParams[MessagingProviderType.Push]?.targets || [],
-            status: MessageType.Processing,
-            messageId: ID.unique(),
-            // TODO: properly handle the test email address
-            users: ['steven'],
-            body: $messageParams[MessagingProviderType.Push]?.body || '',
-            title: $messageParams[MessagingProviderType.Push]?.title || '',
-            data: $messageParams[MessagingProviderType.Push]?.data || []
-        });
+        // TODO: replace with test method
+        sdk.forProject.messaging.createPush(
+            ID.unique(),
+            $messageParams[MessagingProviderType.Push]?.title || undefined,
+            $messageParams[MessagingProviderType.Push]?.body || undefined,
+            $messageParams[MessagingProviderType.Push]?.topics || [],
+            $messageParams[MessagingProviderType.Push]?.users || [],
+            $messageParams[MessagingProviderType.Push]?.targets || [],
+            $messageParams[MessagingProviderType.Push]?.data || undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            MessageType.Processing,
+            undefined
+        );
     }
 
     $: otherEmail = selected === 'self' ? '' : otherEmail;

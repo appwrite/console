@@ -135,165 +135,69 @@
             const providerId = $provider.$id;
             switch ($provider.provider) {
                 case Providers.Twilio:
-                    response = await sdk.forProject.client.call(
-                        'PATCH',
-                        new URL(
-                            sdk.forProject.client.config.endpoint +
-                                '/messaging/providers/twilio/' +
-                                providerId
-                        ),
-                        {
-                            'X-Appwrite-Project': sdk.forProject.client.config.project,
-                            'content-type': 'application/json',
-                            'X-Appwrite-Mode': 'admin'
-                        },
-                        {
-                            enabled: enabled
-                        }
+                    response = await sdk.forProject.messaging.updateTwilioProvider(
+                        providerId,
+                        undefined,
+                        enabled
                     );
                     break;
                 case Providers.Msg91:
-                    response = await sdk.forProject.client.call(
-                        'PATCH',
-                        new URL(
-                            sdk.forProject.client.config.endpoint +
-                                '/messaging/providers/msg91/' +
-                                providerId
-                        ),
-                        {
-                            'X-Appwrite-Project': sdk.forProject.client.config.project,
-                            'content-type': 'application/json',
-                            'X-Appwrite-Mode': 'admin'
-                        },
-                        {
-                            enabled: enabled
-                        }
+                    response = await sdk.forProject.messaging.updateMsg91Provider(
+                        providerId,
+                        undefined,
+                        enabled
                     );
                     break;
                 case Providers.Telesign:
-                    response = await sdk.forProject.client.call(
-                        'PATCH',
-                        new URL(
-                            sdk.forProject.client.config.endpoint +
-                                '/messaging/providers/telesign/' +
-                                providerId
-                        ),
-                        {
-                            'X-Appwrite-Project': sdk.forProject.client.config.project,
-                            'content-type': 'application/json',
-                            'X-Appwrite-Mode': 'admin'
-                        },
-                        {
-                            enabled: enabled
-                        }
+                    response = await sdk.forProject.messaging.updateTelesignProvider(
+                        providerId,
+                        undefined,
+                        enabled
                     );
                     break;
                 case Providers.Textmagic:
-                    response = await sdk.forProject.client.call(
-                        'PATCH',
-                        new URL(
-                            sdk.forProject.client.config.endpoint +
-                                '/messaging/providers/textmagic/' +
-                                providerId
-                        ),
-                        {
-                            'X-Appwrite-Project': sdk.forProject.client.config.project,
-                            'content-type': 'application/json',
-                            'X-Appwrite-Mode': 'admin'
-                        },
-                        {
-                            enabled: enabled
-                        }
+                    response = await sdk.forProject.messaging.updateTextmagicProvider(
+                        providerId,
+                        undefined,
+                        enabled
                     );
                     break;
                 case Providers.Vonage:
-                    response = await sdk.forProject.client.call(
-                        'PATCH',
-                        new URL(
-                            sdk.forProject.client.config.endpoint +
-                                '/messaging/providers/vonage/' +
-                                providerId
-                        ),
-                        {
-                            'X-Appwrite-Project': sdk.forProject.client.config.project,
-                            'content-type': 'application/json',
-                            'X-Appwrite-Mode': 'admin'
-                        },
-                        {
-                            enabled: enabled
-                        }
+                    response = await sdk.forProject.messaging.updateVonageProvider(
+                        providerId,
+                        undefined,
+                        enabled
                     );
                     break;
                 case Providers.Mailgun:
-                    response = await sdk.forProject.client.call(
-                        'PATCH',
-                        new URL(
-                            sdk.forProject.client.config.endpoint +
-                                '/messaging/providers/mailgun/' +
-                                providerId
-                        ),
-                        {
-                            'X-Appwrite-Project': sdk.forProject.client.config.project,
-                            'content-type': 'application/json',
-                            'X-Appwrite-Mode': 'admin'
-                        },
-                        {
-                            enabled: enabled
-                        }
+                    response = await sdk.forProject.messaging.updateMailgunProvider(
+                        providerId,
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        enabled
                     );
                     break;
                 case Providers.Sendgrid:
-                    response = await sdk.forProject.client.call(
-                        'PATCH',
-                        new URL(
-                            sdk.forProject.client.config.endpoint +
-                                '/messaging/providers/sendgrid/' +
-                                providerId
-                        ),
-                        {
-                            'X-Appwrite-Project': sdk.forProject.client.config.project,
-                            'content-type': 'application/json',
-                            'X-Appwrite-Mode': 'admin'
-                        },
-                        {
-                            enabled: enabled
-                        }
+                    response = await sdk.forProject.messaging.updateSendgridProvider(
+                        providerId,
+                        undefined,
+                        enabled
                     );
                     break;
                 case Providers.FCM:
-                    response = await sdk.forProject.client.call(
-                        'PATCH',
-                        new URL(
-                            sdk.forProject.client.config.endpoint +
-                                '/messaging/providers/fcm/' +
-                                providerId
-                        ),
-                        {
-                            'X-Appwrite-Project': sdk.forProject.client.config.project,
-                            'content-type': 'application/json',
-                            'X-Appwrite-Mode': 'admin'
-                        },
-                        {
-                            enabled: enabled
-                        }
+                    response = await sdk.forProject.messaging.updateFCMProvider(
+                        providerId,
+                        undefined,
+                        enabled
                     );
                     break;
                 case Providers.APNS:
-                    response = await sdk.forProject.client.call(
-                        'PATCH',
-                        new URL(
-                            sdk.forProject.client.config.endpoint +
-                                '/messaging/providers/apns/' +
-                                providerId
-                        ),
-                        {
-                            'X-Appwrite-Project': sdk.forProject.client.config.project,
-                            'content-type': 'application/json',
-                            'X-Appwrite-Mode': 'admin'
-                        },
-                        {
-                            enabled: enabled
-                        }
+                    response = await sdk.forProject.messaging.updateAPNSProvider(
+                        providerId,
+                        undefined,
+                        enabled
                     );
                     break;
             }

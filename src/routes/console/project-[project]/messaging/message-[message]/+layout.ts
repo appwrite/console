@@ -4,37 +4,16 @@ import Header from './header.svelte';
 import { sdk } from '$lib/stores/sdk';
 import { Dependencies } from '$lib/constants';
 import { error } from '@sveltejs/kit';
-import type { Models } from '@appwrite.io/console';
 
 export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.MESSAGING_MESSAGE);
 
     try {
-        const response: Models.Message = await sdk.forProject.client.call(
-            'GET',
-            new URL(
-                `${sdk.forProject.client.config.endpoint}/messaging/messages/${params.message}`
-            ),
-            {
-                'X-Appwrite-Project': sdk.forProject.client.config.project,
-                'content-type': 'application/json',
-                'X-Appwrite-Mode': 'admin'
-            }
-        );
+        const message = await sdk.forProject.messaging.getMessage(params.message);
 
         const topicsById = {};
         const topicsPromise = Promise.allSettled(
-            response.topics.map((topicId) => {
-                return sdk.forProject.client.call(
-                    'GET',
-                    new URL(`${sdk.forProject.client.config.endpoint}/messaging/topics/${topicId}`),
-                    {
-                        'X-Appwrite-Project': sdk.forProject.client.config.project,
-                        'content-type': 'application/json',
-                        'X-Appwrite-Mode': 'admin'
-                    }
-                );
-            })
+            message.topics.map((topicId) => sdk.forProject.messaging.getTopic(topicId))
         ).then((results) => {
             results.forEach((result) => {
                 if (result.status === 'fulfilled') {
@@ -44,18 +23,8 @@ export const load: LayoutLoad = async ({ params, depends }) => {
         });
 
         const targetsById = {};
-        const targetsPromise = sdk.forProject.client
-            .call(
-                'GET',
-                new URL(
-                    `${sdk.forProject.client.config.endpoint}/messaging/messages/${params.message}/targets`
-                ),
-                {
-                    'X-Appwrite-Project': sdk.forProject.client.config.project,
-                    'content-type': 'application/json',
-                    'X-Appwrite-Mode': 'admin'
-                }
-            )
+        const targetsPromise = sdk.forProject.messaging
+            .listTargets(params.message)
             .then((response) => {
                 response.targets.forEach((target) => {
                     targetsById[target.$id] = target;
@@ -65,11 +34,11 @@ export const load: LayoutLoad = async ({ params, depends }) => {
         await Promise.allSettled([topicsPromise, targetsPromise]);
 
         return {
+            message,
             topicsById,
             targetsById,
             header: Header,
-            breadcrumbs: Breadcrumbs,
-            message: response
+            breadcrumbs: Breadcrumbs
         };
     } catch (e) {
         throw error(e.code, e.message);

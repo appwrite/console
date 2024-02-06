@@ -28,31 +28,13 @@
 
     const create = async () => {
         try {
-            const payload = {
-                targetId: id ? id : ID.unique(),
+            await sdk.forProject.users.createTarget(
+                $page.params.user,
+                id ? id : ID.unique(),
                 providerType,
-                identifier
-            };
-
-            if (providerId) {
-                payload['providerId'] = providerId;
-            }
-
-            if (name) {
-                payload['name'] = name;
-            }
-
-            await sdk.forProject.client.call(
-                'POST',
-                new URL(
-                    `${sdk.forProject.client.config.endpoint}/users/${$page.params.user}/targets`
-                ),
-                {
-                    'X-Appwrite-Project': sdk.forProject.client.config.project,
-                    'content-type': 'application/json',
-                    'X-Appwrite-Mode': 'admin'
-                },
-                payload
+                identifier,
+                providerId ?? undefined,
+                name ?? undefined
             );
             show = false;
             addNotification({

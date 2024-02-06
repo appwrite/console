@@ -6,12 +6,7 @@
     import { message } from './store';
     import SMSPreview from './smsPreview.svelte';
     import PushPreview from './pushPreview.svelte';
-    import {
-        messageParams,
-        operation,
-        providerType,
-        targetsById
-    } from '../wizard/store';
+    import { messageParams, operation, providerType, targetsById } from '../wizard/store';
     import { topicsById } from '../store';
     import { wizard } from '$lib/stores/wizard';
     import Wizard from '../wizard.svelte';

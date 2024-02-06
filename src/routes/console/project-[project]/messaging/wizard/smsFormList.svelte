@@ -1,27 +1,5 @@
-<script context="module" lang="ts">
-    export async function createSMSMessage(params: EmailMessageParams) {
-        const response = await sdk.forProject.client.call(
-            'POST',
-            new URL(sdk.forProject.client.config.endpoint + '/messaging/messages/sms'),
-            {
-                'X-Appwrite-Project': sdk.forProject.client.config.project,
-                'content-type': 'application/json',
-                'X-Appwrite-Mode': 'admin'
-            },
-            params
-        );
-
-        return response.json();
-    }
-</script>
-
 <script lang="ts">
-    import {
-        messageParams,
-        providerType,
-        type EmailMessageParams,
-        operation
-    } from './store';
+    import { messageParams, providerType, operation } from './store';
     import { Button, FormList, InputEmail, InputRadio, InputTextarea } from '$lib/elements/forms';
     import { Pill } from '$lib/elements';
     import { CustomId, Modal } from '$lib/components';
@@ -39,17 +17,16 @@
     async function sendTestSMS() {
         // const email = selected === 'self' ? $user.email : otherEmail;
 
-        createSMSMessage({
-            topics: $messageParams[MessagingProviderType.Email]?.topics || [],
-            targets: $messageParams[MessagingProviderType.Email]?.targets || [],
-            status: MessageType.Processing,
-            messageId: ID.unique(),
-            // TODO: properly handle the test email address
-            users: ['steven'],
-            subject: $messageParams[MessagingProviderType.Email]?.subject || '',
-            content: $messageParams[MessagingProviderType.Email]?.content || '',
-            html: $messageParams[MessagingProviderType.Email]?.html || false
-        });
+        // TODO: replace with test method
+        sdk.forProject.messaging.createSMS(
+            ID.unique(),
+            $messageParams[MessagingProviderType.Sms]?.content || undefined,
+            $messageParams[MessagingProviderType.Sms]?.topics || [],
+            $messageParams[MessagingProviderType.Sms]?.users || [],
+            $messageParams[MessagingProviderType.Sms]?.targets || [],
+            MessageType.Processing,
+            undefined
+        );
     }
 
     $: otherEmail = selected === 'self' ? '' : otherEmail;

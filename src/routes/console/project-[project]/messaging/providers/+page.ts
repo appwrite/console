@@ -1,4 +1,4 @@
-import { Query, type Models } from '@appwrite.io/console';
+import { Query } from '@appwrite.io/console';
 import { sdk } from '$lib/stores/sdk';
 import {
     View,
@@ -25,34 +25,6 @@ export const load = async ({ depends, url, route }) => {
     const parsedQueries = queryParamToMap(query || '[]');
     queries.set(parsedQueries);
 
-    // TODO: get rid of demo data
-    let providers: { providers: Models.Provider[]; total: number } = { providers: [], total: 0 };
-    const params = {
-        queries: [
-            Query.limit(limit),
-            Query.offset(offset),
-            Query.orderDesc(''),
-            ...parsedQueries.values()
-        ]
-    };
-
-    if (search) {
-        params['search'] = search;
-    }
-
-    const response = await sdk.forProject.client.call(
-        'GET',
-        new URL(sdk.forProject.client.config.endpoint + '/messaging/providers'),
-        {
-            'X-Appwrite-Project': sdk.forProject.client.config.project,
-            'content-type': 'application/json',
-            'X-Appwrite-Mode': 'admin'
-        },
-        params
-    );
-
-    providers = response;
-
     return {
         offset,
         limit,
@@ -60,6 +32,14 @@ export const load = async ({ depends, url, route }) => {
         query,
         page,
         view,
-        providers
+        providers: sdk.forProject.messaging.listProviders(
+            [
+                Query.limit(limit),
+                Query.offset(offset),
+                Query.orderDesc(''),
+                ...parsedQueries.values()
+            ],
+            search || undefined
+        )
     };
 };

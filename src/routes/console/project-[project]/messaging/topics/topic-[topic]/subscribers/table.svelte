@@ -25,14 +25,13 @@
     import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/stores';
     import { targetsById } from '../../../store';
-    import type { Subscriber } from './+page';
-    import { MessagingProviderType } from '@appwrite.io/console';
+    import { MessagingProviderType, type Models } from '@appwrite.io/console';
 
     export let data: PageData;
 
-    let subscribers: Record<string, Subscriber> = {};
+    let subscribers: Record<string, Models.Subscriber> = {};
     let selectedIds: string[] = [];
-    let selected: Record<string, Subscriber> = {};
+    let selected: Record<string, Models.Subscriber> = {};
     let showDelete = false;
     let deleting = false;
 
@@ -40,17 +39,7 @@
         showDelete = false;
 
         async function deleteSubscriber(subscriberId: string) {
-            await sdk.forProject.client.call(
-                'DELETE',
-                new URL(
-                    `${sdk.forProject.client.config.endpoint}/messaging/topics/${$page.params.topic}/subscribers/${subscriberId}`
-                ),
-                {
-                    'X-Appwrite-Project': sdk.forProject.client.config.project,
-                    'content-type': 'application/json',
-                    'X-Appwrite-Mode': 'admin'
-                }
-            );
+            await sdk.forProject.messaging.deleteSubscriber($page.params.topic, subscriberId);
             const { target } = subscribers[subscriberId];
             const { [target.$id]: _, ...rest } = $targetsById;
             $targetsById = rest;
