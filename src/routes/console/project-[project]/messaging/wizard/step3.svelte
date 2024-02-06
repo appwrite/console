@@ -16,6 +16,7 @@
         { label: 'Now', value: 'now' },
         { label: 'Schedule', value: 'later' }
     ];
+
     const formatOptions: Intl.DateTimeFormatOptions = {
         month: 'long',
         day: 'numeric',
@@ -47,6 +48,7 @@
             ? new Date(now.getTime() - timeZoneOffset).toISOString().split('T')[1].substring(0, 5)
             : '00:00';
     $: dateTime = new Date(`${date}T${time}`);
+
 </script>
 
 <WizardStep {beforeSubmit}>
@@ -80,7 +82,7 @@
         {#if when === 'now'}
             The message will be sent immediately
         {:else if !dateTime || isNaN(dateTime.getTime())}
-            The message will be sent later
+            The message will be sent later ({`${date} ${time}`})
         {:else}
             The message will be sent at {dateTime.toLocaleString('en', formatOptions)}
         {/if}
