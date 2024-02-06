@@ -448,7 +448,7 @@ export class Billing {
         );
     }
 
-    async listInvoices(organizationId: string, queries: Query[] = []): Promise<InvoiceList> {
+    async listInvoices(organizationId: string, queries: string[] = []): Promise<InvoiceList> {
         const path = `/organizations/${organizationId}/invoices`;
         const params = {
             organizationId,
