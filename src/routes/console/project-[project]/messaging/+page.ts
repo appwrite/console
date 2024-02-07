@@ -1,5 +1,5 @@
 import { queries, queryParamToMap } from '$lib/components/filters';
-import { CARD_LIMIT } from '$lib/constants';
+import { CARD_LIMIT, Dependencies } from '$lib/constants';
 import {
     View,
     getLimit,
@@ -13,7 +13,9 @@ import { sdk } from '$lib/stores/sdk';
 import { Query, type Models } from '@appwrite.io/console';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ url, route }) => {
+export const load: PageLoad = async ({ depends, url, route }) => {
+    depends(Dependencies.MESSAGING_MESSAGES);
+
     const page = getPage(url);
     const search = getSearch(url);
     const view = getView(url, route, View.Grid);
