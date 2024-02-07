@@ -1,7 +1,7 @@
 import type { Column } from '$lib/helpers/types';
 import { writable } from 'svelte/store';
 import { Providers } from '../provider.svelte';
-import { MessagingProviderType } from '@appwrite.io/console';
+import { MessagingProviderType, SMTPEncryption } from '@appwrite.io/console';
 
 export const columns = writable<Column[]>([
     { id: '$id', title: 'Provider ID', type: 'string', show: true },
@@ -18,17 +18,20 @@ type ProvidersMap = {
         icon: string;
         providers: {
             [key in Providers]?: {
-                imageIcon: string;
+                imageIcon?: string;
+                classIcon?: string;
                 title: string;
                 description: string;
                 configure: {
                     label: string;
                     name: string;
-                    type: 'text' | 'phone' | 'email' | 'domain' | 'file' | 'switch';
+                    type: 'text' | 'phone' | 'email' | 'domain' | 'file' | 'switch' | 'select';
                     placeholder?: string;
                     description?: string;
                     popover?: string[];
                     allowedFileExtensions?: string[];
+                    optional?: boolean;
+                    options?: { label: string; value: string | number | boolean }[];
                 }[];
             };
         };
@@ -238,6 +241,91 @@ export const providers: ProvidersMap = {
                         label: 'Reply-to name',
                         name: 'replyToName',
                         type: 'text',
+                        placeholder: 'Enter name'
+                    }
+                ]
+            },
+            [Providers.SMTP]: {
+                classIcon: 'mail',
+                title: 'SMTP',
+                description: '',
+                configure: [
+                    {
+                        label: 'Host',
+                        name: 'host',
+                        type: 'text',
+                        placeholder: 'Enter host'
+                    },
+                    {
+                        label: 'Port',
+                        name: 'port',
+                        type: 'text',
+                        optional: true,
+                        placeholder: 'Enter port'
+                    },
+                    {
+                        label: 'Username',
+                        name: 'username',
+                        type: 'text',
+                        optional: true,
+                        placeholder: 'Enter username'
+                    },
+                    {
+                        label: 'Password',
+                        name: 'password',
+                        type: 'text',
+                        optional: true,
+                        placeholder: 'Enter password'
+                    },
+                    {
+                        label: 'Encryption',
+                        name: 'encryption',
+                        type: 'select',
+                        options: [
+                            { label: 'None', value: SMTPEncryption.None },
+                            { label: 'SSL', value: SMTPEncryption.Ssl },
+                            { label: 'TLS', value: SMTPEncryption.Tls }
+                        ]
+                    },
+                    {
+                        label: 'Auto TLS',
+                        name: 'autoTLS',
+                        description: 'Automatically uses TLS encryption',
+                        type: 'switch',
+                        optional: true
+                    },
+                    {
+                        label: 'Mailer',
+                        name: 'mailer',
+                        type: 'text',
+                        optional: true,
+                        placeholder: 'Enter mailer'
+                    },
+                    {
+                        label: 'Sender email',
+                        name: 'fromEmail',
+                        type: 'email',
+                        placeholder: 'Enter email'
+                    },
+                    {
+                        label: 'Sender name',
+                        name: 'fromName',
+                        type: 'text',
+                        optional: true,
+                        placeholder: 'Enter name'
+                    },
+                    {
+                        label: 'Reply-to email',
+                        name: 'replyToEmail',
+                        type: 'email',
+                        optional: true,
+                        placeholder: 'Enter email'
+                    },
+                    {
+                        label: 'Reply-to name',
+                        name: 'replyToName',
+                        type: 'text',
+                        optional: true,
                         placeholder: 'Enter name'
                     }
                 ]

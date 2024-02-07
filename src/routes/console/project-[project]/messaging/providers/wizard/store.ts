@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
 import type { Providers } from '../../provider.svelte';
-import type { MessagingProviderType } from '@appwrite.io/console';
+import type { MessagingProviderType, SMTPEncryption } from '@appwrite.io/console';
 
 type ProviderParams = {
     providerId: string;
@@ -64,6 +64,20 @@ export type SendgridProviderParams = ProviderParams & {
     apiKey: string;
 };
 
+export type SMTPProviderParams = ProviderParams & {
+    fromEmail: string;
+    fromName: string;
+    replyToEmail: string;
+    replyToName: string;
+    host: string;
+    port: number;
+    username: string;
+    password: string;
+    encryption: SMTPEncryption;
+    autoTLS: boolean;
+    mailer: string;
+};
+
 /**
  * Push providers
  */
@@ -93,6 +107,7 @@ export const providerParams = writable<{
     vonage: Partial<VonageProviderParams>;
     mailgun: Partial<MailgunProviderParams>;
     sendgrid: Partial<SendgridProviderParams>;
+    smtp: Partial<SMTPProviderParams>;
     fcm: Partial<FCMProviderParams>;
     apns: Partial<APNSProviderParams>;
 }>({
@@ -103,6 +118,7 @@ export const providerParams = writable<{
     vonage: null,
     mailgun: null,
     sendgrid: null,
+    smtp: null,
     fcm: null,
     apns: null
 });

@@ -96,6 +96,24 @@
                         $providerParams[$provider].enabled
                     );
                     break;
+                case Providers.SMTP:
+                    response = await sdk.forProject.messaging.createSMTPProvider(
+                        providerId,
+                        $providerParams[$provider].name,
+                        $providerParams[$provider].host,
+                        $providerParams[$provider].port || undefined,
+                        $providerParams[$provider].username || undefined,
+                        $providerParams[$provider].password || undefined,
+                        $providerParams[$provider].encryption,
+                        $providerParams[$provider].autoTLS,
+                        $providerParams[$provider].mailer || undefined,
+                        $providerParams[$provider].fromName || undefined,
+                        $providerParams[$provider].fromEmail,
+                        $providerParams[$provider].replyToName || undefined,
+                        $providerParams[$provider].replyToEmail || undefined,
+                        $providerParams[$provider].enabled
+                    );
+                    break;
                 case Providers.FCM:
                     response = await sdk.forProject.messaging.createFCMProvider(
                         providerId,

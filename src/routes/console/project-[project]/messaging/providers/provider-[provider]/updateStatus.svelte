@@ -105,6 +105,24 @@
                     fromEmail: $provider.options['from']
                 };
                 break;
+            case Providers.SMTP:
+                $providerParams[$wizardProvider] = {
+                    providerId: $provider.$id,
+                    name: $provider.name,
+                    enabled: $provider.enabled,
+                    host: $provider.credentials['host'],
+                    port: $provider.credentials['port'],
+                    username: $provider.credentials['username'],
+                    password: $provider.credentials['password'],
+                    fromName: $provider.options['fromName'],
+                    fromEmail: $provider.options['fromEmail'],
+                    replyToName: $provider.options['replyToName'],
+                    replyToEmail: $provider.options['replyToEmail'],
+                    encryption: $provider.options['encryption'],
+                    autoTLS: $provider.options['autoTLS'],
+                    mailer: $provider.options['mailer']
+                };
+                break;
             case Providers.FCM:
                 $providerParams[$wizardProvider] = {
                     providerId: $provider.$id,
@@ -182,6 +200,23 @@
                 case Providers.Sendgrid:
                     response = await sdk.forProject.messaging.updateSendgridProvider(
                         providerId,
+                        undefined,
+                        enabled
+                    );
+                    break;
+                case Providers.SMTP:
+                    response = await sdk.forProject.messaging.updateSMTPProvider(
+                        providerId,
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
+                        undefined,
                         undefined,
                         enabled
                     );
