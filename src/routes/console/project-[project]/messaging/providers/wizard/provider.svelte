@@ -135,7 +135,7 @@
 
 <WizardStep {beforeSubmit}>
     <svelte:fragment slot="title">Provider</svelte:fragment>
-    <FormList>
+    <FormList gap={16}>
         <InputText
             id="name"
             label="Name"
