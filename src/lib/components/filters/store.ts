@@ -6,8 +6,11 @@ import deepEqual from 'deep-equal';
 import type { Column, ColumnType } from '$lib/helpers/types';
 
 export type Operator = {
-    toTag: (attribute: string, input?: string | number) => string;
-    toQuery: (attribute: string, input?: string | number) => string;
+    toTag: (
+        attribute: string,
+        input?: string | number | string[]
+    ) => string | { tag: string; value: string };
+    toQuery: (attribute: string, input?: string | number | string[]) => string;
     types: ColumnType[];
     hideInput?: boolean;
 };
@@ -22,13 +25,13 @@ export function queryParamToMap(queryParam: string) {
     return new Map(queries);
 }
 
-function initQueries(initialValue = new Map<string, string>()) {
+function initQueries(initialValue = new Map<string, string | { tag: string; value: string }>()) {
     const queries = writable(initialValue);
 
     type AddFilterArgs = {
         operator: Operator;
         column: Column;
-        value: string | number;
+        value: string | number | string[];
     };
 
     function addFilter({ column, operator, value }: AddFilterArgs) {

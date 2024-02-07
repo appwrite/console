@@ -12,6 +12,7 @@
     import { tags, type Operator, queries } from './store';
     import type { Column } from '$lib/helpers/types';
     import type { Writable } from 'svelte/store';
+    import { tooltip } from '$lib/actions/tooltip';
 
     export let columns: Writable<Column[]>;
 
@@ -81,8 +82,12 @@
         },
         contains: {
             toQuery: Query.contains,
-            toTag: (attribute, input) =>
-                `**${attribute}** contains **${Array.isArray(input) ? input.join(' or') : input}**`,
+            toTag: (attribute, input) => {
+                return {
+                    value: input,
+                    tag: `**${attribute}** contains **${Array.isArray(input) ? formatArray(input) : input}**`
+                };
+            },
             types: ['string', 'integer', 'double', 'boolean', 'datetime', 'enum']
         }
     };
@@ -113,16 +118,31 @@
     // This Map is keyed by tags, and has a query as the value
     function addFilter() {
         if (!column || !operator) return;
-
-        queries.addFilter({ column, operator, value: value ?? '' });
-        value = null;
+        if (column.array) {
+            queries.addFilter({ column, operator, value: arrayValues });
+            arrayValues = [];
+        } else {
+            queries.addFilter({ column, operator, value: value ?? '' });
+            value = null;
+        }
     }
 
     function tagFormat(node: HTMLElement) {
         node.innerHTML = node.innerHTML.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
     }
 
+    function formatArray(array: string[]) {
+        if (!array?.length) return;
+        if (array.length > 2) {
+            return `${array[0]} or ${array.length - 1} others`;
+        } else {
+            return array.join(' or ');
+        }
+    }
+
     $: isDisabled = !operator;
+
+    $: console.log($tags);
 </script>
 
 <div>
@@ -194,12 +214,16 @@
     <ul class="u-flex u-flex-wrap u-cross-center u-gap-8 u-margin-block-start-16 tags">
         {#each $tags as tag (tag)}
             <button
+                use:tooltip={{
+                    content: tag?.value,
+                    disabled: !tag?.value?.length
+                }}
                 class="tag"
                 on:click={() => {
                     queries.removeFilter(tag);
                 }}>
                 <span class="text" use:tagFormat>
-                    {tag}
+                    {tag?.tag ?? tag}
                 </span>
                 <i class="icon-x" />
             </button>
