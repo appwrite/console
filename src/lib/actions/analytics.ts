@@ -173,6 +173,7 @@ export enum Submit {
     ProjectUpdateTeam = 'submit_project_update_team',
     ProjectService = 'submit_project_service',
     ProjectUpdateSMTP = 'submit_project_update_smtp',
+    ProjectTestSMTP = 'submit_project_test_smtp',
     MemberCreate = 'submit_member_create',
     MemberDelete = 'submit_member_delete',
     MembershipUpdateStatus = 'submit_membership_update_status',

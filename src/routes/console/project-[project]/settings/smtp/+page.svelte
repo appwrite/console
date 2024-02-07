@@ -23,6 +23,7 @@
     import { organization } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
     import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
+    import SmtpTestModal from './smtpTestModal.svelte';
 
     let enabled = false;
     let senderName: string;
@@ -33,6 +34,8 @@
     let username: string;
     let password: string;
     let secure = false;
+
+    let showTestSMTPModal = false;
 
     onMount(() => {
         enabled = $project.smtpEnabled ?? false;
@@ -198,13 +201,32 @@
                 {/if}
             </svelte:fragment>
             <svelte:fragment slot="actions">
-                <Button
-                    submit
-                    disabled={isButtonDisabled ||
-                        $organization.billingPlan === BillingPlan.STARTER}>
-                    Update
-                </Button>
+                <div class="u-flex u-main-end u-gap-16">
+                    <Button text on:click={() => (showTestSMTPModal = true)}>
+                        Send test email
+                    </Button>
+
+                    <Button
+                        submit
+                        disabled={isButtonDisabled ||
+                            $organization.billingPlan === BillingPlan.STARTER}>
+                        Update
+                    </Button>
+                </div>
             </svelte:fragment>
         </CardGrid>
     </Form>
 </Container>
+
+{#if showTestSMTPModal}
+    <SmtpTestModal
+        {senderName}
+        {senderEmail}
+        {replyTo}
+        {host}
+        {port}
+        {username}
+        {password}
+        {secure}
+        bind:showModal={showTestSMTPModal} />
+{/if}

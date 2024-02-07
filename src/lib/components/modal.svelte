@@ -64,11 +64,13 @@
                     </button>
                 {/if}
             </div>
-            <p class="u-margin-block-start-4">
-                <slot name="description">
-                    {description}
-                </slot>
-            </p>
+            {#if description}
+                <p class="u-margin-block-start-4">
+                    <slot name="description">
+                        {description}
+                    </slot>
+                </p>
+            {/if}
         </header>
         <div class="modal-content">
             {#if error}

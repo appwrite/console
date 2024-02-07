@@ -118,3 +118,15 @@
         <Helper type="warning">{error}</Helper>
     {/if}
 </FormItem>
+
+<style lang="scss">
+    .input-tag {
+        --p-bg-color: var(--color-neutral-10);
+        --p-text-color: var(--color-neutral-60);
+    }
+
+    :global(.theme-dark) .input-tag {
+        --p-bg-color: var(--color-neutral-80);
+        --p-text-color: var(--color-neutral-20);
+    }
+</style>
