@@ -14,5 +14,5 @@ export const addCreditWizardStore = writable<{ coupon: string; paymentMethodId: 
     paymentMethodId: null
 });
 
-export let selectedInvoice = writable<Invoice>(null);
-export let showRetryModal = writable(false);
+export const selectedInvoice = writable<Invoice>(null);
+export const showRetryModal = writable(false);
