@@ -55,7 +55,7 @@ export const providers: ProvidersMap = {
                         allowedFileExtensions: ['json'],
                         placeholder: 'Enter service account JSON',
                         popover: [
-                            '<b>How to get the FCM service account JSON?</b>',
+                            '<b>How to get the <a style="text-decoration:underline" href="https://firebase.google.com" target="_blank">FCM</a> service account JSON?</b>',
                             'Head to <b>Project settings -> Service accounts -> Generate new private key.</b>',
                             'Generating the new key will result in the download of a JSON file.'
                         ]
@@ -75,7 +75,7 @@ export const providers: ProvidersMap = {
                         placeholder: 'Enter team ID',
                         popover: [
                             '<b>How to get the team ID?</b>',
-                            'Head to <b>Apple Developer Member Center -> Membership details -> Team ID.</b>'
+                            'Head to <b><a style="text-decoration:underline" href="https://idmsa.apple.com/IDMSWebAuth/signin?appIdKey=891bd3417a7776362562d2197f89480a8547b108fd934911bcbea0110d07f757&path=%2Faccount%2F&rv=1" target="_blank">Apple Developer Member Center</a> -> Membership details -> Team ID.</b>'
                         ]
                     },
                     {
@@ -85,7 +85,7 @@ export const providers: ProvidersMap = {
                         placeholder: 'Enter bundle ID',
                         popover: [
                             '<b>How to get the bundle ID?</b>',
-                            'Head to <b>Apple Developer Member Center -> Certificates, Identifiers & Profiles -> Identifiers.</b>',
+                            'Head to <b><a style="text-decoration:underline" href="https://idmsa.apple.com/IDMSWebAuth/signin?appIdKey=891bd3417a7776362562d2197f89480a8547b108fd934911bcbea0110d07f757&path=%2Faccount%2F&rv=1" target="_blank">Apple Developer Member Center</a> -> Certificates, Identifiers & Profiles -> Identifiers.</b>',
                             `<a
                                 href="/images/apns-bundle-id.png"
                                 class="file-preview is-with-image"
@@ -114,7 +114,7 @@ export const providers: ProvidersMap = {
                         placeholder: 'Enter key ID',
                         popover: [
                             '<b>How to get the auth key ID?</b>',
-                            'Head to <b>Apple Developer Member Center -> Certificates, Identifiers & Profiles -> Keys.</b>',
+                            'Head to <b><a style="text-decoration:underline" href="https://idmsa.apple.com/IDMSWebAuth/signin?appIdKey=891bd3417a7776362562d2197f89480a8547b108fd934911bcbea0110d07f757&path=%2Faccount%2F&rv=1" target="_blank">Apple Developer Member Center</a> -> Certificates, Identifiers & Profiles -> Keys.</b>',
                             'Click on your key to view details.'
                         ]
                     },
@@ -125,7 +125,7 @@ export const providers: ProvidersMap = {
                         allowedFileExtensions: ['p8'],
                         popover: [
                             '<b>How to get the authentication key?</b>',
-                            'Head to <b>Apple Developer Member Center</b> (under Program resources) <b>-> Certificates, Identifiers & Profiles -> Keys.</b>',
+                            'Head to <b><a style="text-decoration:underline" href="https://idmsa.apple.com/IDMSWebAuth/signin?appIdKey=891bd3417a7776362562d2197f89480a8547b108fd934911bcbea0110d07f757&path=%2Faccount%2F&rv=1" target="_blank">Apple Developer Member Center</a></b> (under Program resources) <b>-> Certificates, Identifiers & Profiles -> Keys.</b>',
                             'Create a key and give it a name. Enable the Apple Push Notifications service (APNS), and register your key.'
                         ]
                     }
@@ -156,7 +156,7 @@ export const providers: ProvidersMap = {
                         placeholder: 'Enter API key',
                         popover: [
                             '<b>How to get the API key?</b>',
-                            'Create an account in Mailgun.',
+                            'Create an account in <a style="text-decoration:underline" href="https://signup.mailgun.com/new/signup" target="_blank">Mailgun</a>.',
                             'Head to <b>Profile -> API Security -> Add new key.</b>'
                         ]
                     },
@@ -168,7 +168,7 @@ export const providers: ProvidersMap = {
                         popover: [
                             '<b>How to create a domain?</b>',
                             'Head to <b>Sending -> Domains -> Add new domain.</b>',
-                            'Follow <b>Mailgun instructions</b> to verify the domain name.'
+                            'Follow <b><a style="text-decoration:underline" href="https://signup.mailgun.com/new/signup" target="_blank">Mailgun</a> instructions</b> to verify the domain name.'
                         ]
                     },
                     {
@@ -217,7 +217,7 @@ export const providers: ProvidersMap = {
                         placeholder: 'Enter API key',
                         popover: [
                             '<b>How to get the API key?</b>',
-                            'Create an account in Mailgun.',
+                            'Create an account in <a style="text-decoration:underline" href="https://login.sendgrid.com/login/identifier?_gl=1*3vtcwz*_ga*MTMzODgwNDQ5OC4xNzA2MjAxMDUz*_ga_8W5LR442LD*MTcwNjIwMTA1My4xLjAuMTcwNjIwMTA1My4wLjAuMA.." target="_blank">Sendgrid</a>.',
                             'Head to <b>Profile -> API Security -> Add new key.</b>'
                         ]
                     },
@@ -268,7 +268,7 @@ export const providers: ProvidersMap = {
                         placeholder: 'Enter Account SID',
                         popover: [
                             '<b>How to get the Account SID?</b>',
-                            'Head to <b>Twilio console -> Account info -> Account SID.</b>'
+                            'Head to <b><a style="text-decoration:underline" href="https://login.twilio.com/u/signup?state=hKFo2SBaQktjdzI0ZHdKdm44QUc5YzBRXzlNMmlyTExkRWVTTaFur3VuaXZlcnNhbC1sb2dpbqN0aWTZIHpwNUVrWDJzeFRJdUczVU5LTk16X0FHWEQ3dHU0S3hko2NpZNkgTW05M1lTTDVSclpmNzdobUlKZFI3QktZYjZPOXV1cks" target="_blank">Twilio</a> console -> Account info -> Account SID.</b>'
                         ]
                     },
                     {
@@ -278,7 +278,7 @@ export const providers: ProvidersMap = {
                         placeholder: 'Enter Auth token',
                         popover: [
                             '<b>How to get the Auth token?</b>',
-                            'Head to <b>Twilio console -> Account info -> Auth Token.</b>'
+                            'Head to <b><a style="text-decoration:underline" href="https://login.twilio.com/u/signup?state=hKFo2SBaQktjdzI0ZHdKdm44QUc5YzBRXzlNMmlyTExkRWVTTaFur3VuaXZlcnNhbC1sb2dpbqN0aWTZIHpwNUVrWDJzeFRJdUczVU5LTk16X0FHWEQ3dHU0S3hko2NpZNkgTW05M1lTTDVSclpmNzdobUlKZFI3QktZYjZPOXV1cks" target="_blank">Twilio</a> console -> Account info -> Auth Token.</b>'
                         ]
                     },
                     {
@@ -288,8 +288,8 @@ export const providers: ProvidersMap = {
                         placeholder: 'Enter phone',
                         popover: [
                             '<b>How to get sender number?</b>',
-                            'Head to <b>Twilio console -> Account info -> My Twilio phone number.</b>',
-                            'If you have multiple Twilio phone numbers, you can select one as the default number.'
+                            'Head to <b><a style="text-decoration:underline" href="https://login.twilio.com/u/signup?state=hKFo2SBaQktjdzI0ZHdKdm44QUc5YzBRXzlNMmlyTExkRWVTTaFur3VuaXZlcnNhbC1sb2dpbqN0aWTZIHpwNUVrWDJzeFRJdUczVU5LTk16X0FHWEQ3dHU0S3hko2NpZNkgTW05M1lTTDVSclpmNzdobUlKZFI3QktZYjZPOXV1cks" target="_blank">Twilio</a> console -> Account info -> My Twilio phone number.</b>',
+                            'If you have multiple <a style="text-decoration:underline" href="https://login.twilio.com/u/signup?state=hKFo2SBaQktjdzI0ZHdKdm44QUc5YzBRXzlNMmlyTExkRWVTTaFur3VuaXZlcnNhbC1sb2dpbqN0aWTZIHpwNUVrWDJzeFRJdUczVU5LTk16X0FHWEQ3dHU0S3hko2NpZNkgTW05M1lTTDVSclpmNzdobUlKZFI3QktZYjZPOXV1cks" target="_blank">Twilio</a> phone numbers, you can select one as the default number.'
                         ]
                     }
                 ]
@@ -307,7 +307,7 @@ export const providers: ProvidersMap = {
                         placeholder: 'Enter auth key',
                         popover: [
                             '<b>How to get the Auth key?</b>',
-                            'Create an account in MSG91.',
+                            'Create an account in <a style="text-decoration:underline" href="https://control.msg91.com/signin/" target="_blank">MSG91</a>.',
                             'Click to open the <b>Username dropdown -> Authkey -> Verify your mobile number -> Create Authkey.</b>'
                         ]
                     },
@@ -318,7 +318,7 @@ export const providers: ProvidersMap = {
                         placeholder: 'Enter sender ID',
                         popover: [
                             '<b>How to create a Sender ID?</b>',
-                            'Head to <b>MSG91 dashboard -> SMS -> Sender ID -> Create sender ID.</b>'
+                            'Head to <b><a style="text-decoration:underline" href="https://control.msg91.com/signin/" target="_blank">MSG91</a> dashboard -> SMS -> Sender ID -> Create sender ID.</b>'
                         ]
                     },
                     {
@@ -368,8 +368,8 @@ export const providers: ProvidersMap = {
                         placeholder: 'Enter API key',
                         popover: [
                             '<b>How to get the API key?</b>',
-                            'Create an account in Textmagic.',
-                            'Head to <b>TextMagic dashboard -> API Settings -> Add new API key.</b>'
+                            'Create an account in <a style="text-decoration:underline" href="https://app.textmagic.com/login" target="_blank">Textmagic</a>.',
+                            'Head to <b><a style="text-decoration:underline" href="https://app.textmagic.com/login" target="_blank">TextMagic</a> dashboard -> API Settings -> Add new API key.</b>'
                         ]
                     },
                     {
@@ -400,7 +400,7 @@ export const providers: ProvidersMap = {
                         popover: [
                             '<b>How to get the API key?</b>',
                             'Create an account in Vonage.',
-                            'Head to <b>Vonage dashboard and copy the API key.</b>'
+                            'Head to <b><a style="text-decoration:underline" href="https://www.vonage.com/?bypassgeoloc=true" blank="_target">Vonage</a> dashboard and copy the API key.</b>'
                         ]
                     },
                     {
@@ -410,7 +410,7 @@ export const providers: ProvidersMap = {
                         placeholder: 'Enter API secret',
                         popover: [
                             '<b>How to get the API secret?</b>',
-                            'Head to <b>Vonage dashboard and copy the API secret.</b>'
+                            'Head to <b><a style="text-decoration:underline" href="https://www.vonage.com/?bypassgeoloc=true" target="_blank">Vonage</a> dashboard and copy the API secret.</b>'
                         ]
                     },
                     {
