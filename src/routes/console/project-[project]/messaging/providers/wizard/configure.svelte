@@ -77,6 +77,7 @@
             {:else if input.type === 'email'}
                 <InputEmail
                     id={input.name}
+                    isPopoverDefined={input.popover !== undefined}
                     label={input.label}
                     placeholder={input.placeholder}
                     bind:value={$providerParams[$provider][input.name]}>
