@@ -187,18 +187,21 @@ export const providers: ProvidersMap = {
                         label: 'Sender name',
                         name: 'fromName',
                         type: 'text',
+                        optional: true,
                         placeholder: 'Enter name'
                     },
                     {
                         label: 'Reply-to email',
                         name: 'replyToEmail',
                         type: 'email',
+                        optional: true,
                         placeholder: 'Enter email'
                     },
                     {
                         label: 'Reply-to name',
                         name: 'replyToName',
                         type: 'text',
+                        optional: true,
                         placeholder: 'Enter name'
                     }
                 ]
@@ -229,18 +232,21 @@ export const providers: ProvidersMap = {
                         label: 'Sender name',
                         name: 'fromName',
                         type: 'text',
+                        optional: true,
                         placeholder: 'Enter name'
                     },
                     {
                         label: 'Reply-to email',
                         name: 'replyToEmail',
                         type: 'email',
+                        optional: true,
                         placeholder: 'Enter email'
                     },
                     {
                         label: 'Reply-to name',
                         name: 'replyToName',
                         type: 'text',
+                        optional: true,
                         placeholder: 'Enter name'
                     }
                 ]
