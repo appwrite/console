@@ -16,7 +16,7 @@
     export let maxlength: number = null;
 
     // https://www.geeksforgeeks.org/how-to-validate-a-domain-name-using-regular-expression/
-    const pattern = String.raw`^(?!-)[A-Za-z0-9-]+([\-\.]{1}[a-z0-9]+)*\.[A-Za-z]{2,18}$`;
+    const pattern = String.raw`(?!-)[A-Za-z0-9\-]+([\-\.]{1}[a-z0-9]+)*\.[A-Za-z]{2,18}`;
 
     let element: HTMLInputElement;
     let error: string;
