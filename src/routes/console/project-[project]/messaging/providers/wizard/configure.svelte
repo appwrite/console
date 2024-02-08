@@ -6,8 +6,10 @@
         InputFile,
         InputSelect,
         InputSwitch,
-        InputText
+        InputText,
+        InputPassword
     } from '$lib/elements/forms';
+
     import InputPhone from '$lib/elements/forms/inputPhone.svelte';
     import { WizardStep } from '$lib/layout';
     import { onMount } from 'svelte';
@@ -58,11 +60,22 @@
                     label={input.label}
                     placeholder={input.placeholder}
                     required={!input.optional}
+                    isPopoverDefined={input.popover !== undefined}
                     bind:value={$providerParams[$provider][input.name]}>
                     <svelte:fragment slot="popover">
                         {@html input.popover?.join('<br/><br/>')}
                     </svelte:fragment>
                 </InputText>
+            {:else if input.type === 'password'}
+                <InputPassword
+                    id={input.name}
+                    label={input.label}
+                    placeholder={input.placeholder}
+                    bind:value={$providerParams[$provider][input.name]}>
+                    <svelte:fragment slot="popover">
+                        {@html input.popover?.join('<br/><br/>')}
+                    </svelte:fragment>
+                </InputPassword>
             {:else if input.type === 'email'}
                 <InputEmail
                     id={input.name}
