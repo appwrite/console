@@ -131,7 +131,6 @@
                 <InputSwitch
                     label={input.label}
                     id={input.name}
-                    required={!input.optional}
                     bind:value={$providerParams[$provider][input.name]}>
                     <svelte:fragment slot="description">
                         {input.description}
