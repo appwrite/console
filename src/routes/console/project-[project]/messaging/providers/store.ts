@@ -159,7 +159,7 @@ export const providers: ProvidersMap = {
                     {
                         label: 'API key',
                         name: 'apiKey',
-                        type: 'text',
+                        type: 'password',
                         placeholder: 'Enter API key',
                         popover: [
                             '<b>How to get the API key?</b>',
@@ -222,7 +222,7 @@ export const providers: ProvidersMap = {
                     {
                         label: 'API key',
                         name: 'apiKey',
-                        type: 'text',
+                        type: 'password',
                         placeholder: 'Enter API key',
                         popover: [
                             '<b>How to get the API key?</b>',
@@ -287,7 +287,7 @@ export const providers: ProvidersMap = {
                     {
                         label: 'Password',
                         name: 'password',
-                        type: 'text',
+                        type: 'password',
                         optional: true,
                         placeholder: 'Enter password'
                     },
@@ -370,7 +370,7 @@ export const providers: ProvidersMap = {
                     {
                         label: 'Auth token',
                         name: 'authToken',
-                        type: 'text',
+                        type: 'password',
                         placeholder: 'Enter Auth token',
                         popover: [
                             '<b>How to get the Auth token?</b>',
@@ -398,7 +398,7 @@ export const providers: ProvidersMap = {
                     {
                         label: 'Auth key',
                         name: 'authKey',
-                        type: 'text',
+                        type: 'password',
                         placeholder: 'Enter auth key',
                         popover: [
                             '<b>How to get the Auth key?</b>',
@@ -457,7 +457,7 @@ export const providers: ProvidersMap = {
                     {
                         label: 'API key',
                         name: 'apiKey',
-                        type: 'text',
+                        type: 'password',
                         placeholder: 'Enter API key',
                         popover: [
                             '<b>How to get the API key?</b>',
@@ -487,7 +487,7 @@ export const providers: ProvidersMap = {
                     {
                         label: 'API key',
                         name: 'apiKey',
-                        type: 'text',
+                        type: 'password',
                         placeholder: 'Enter API key',
                         popover: [
                             '<b>How to get the API key?</b>',
@@ -498,7 +498,7 @@ export const providers: ProvidersMap = {
                     {
                         label: 'API secret',
                         name: 'apiSecret',
-                        type: 'text',
+                        type: 'password',
                         placeholder: 'Enter API secret',
                         popover: [
                             '<b>How to get the API secret?</b>',
