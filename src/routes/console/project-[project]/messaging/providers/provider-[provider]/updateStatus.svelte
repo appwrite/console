@@ -91,7 +91,10 @@
                     name: $provider.name,
                     enabled: $provider.enabled,
                     isEuRegion: false,
-                    fromEmail: $provider.options['from'],
+                    fromEmail: $provider.options['fromEmail'],
+                    fromName: $provider.options['fromName'],
+                    replyToEmail: $provider.options['replyToEmail'],
+                    replyToName: $provider.options['replyToName'],
                     apiKey: $provider.credentials['apiKey'],
                     domain: $provider.credentials['domain']
                 };
@@ -102,7 +105,10 @@
                     name: $provider.name,
                     enabled: $provider.enabled,
                     apiKey: $provider.credentials['apiKey'],
-                    fromEmail: $provider.options['from']
+                    fromEmail: $provider.options['fromEmail'],
+                    fromName: $provider.options['fromName'],
+                    replyToEmail: $provider.options['replyToEmail'],
+                    replyToName: $provider.options['replyToName']
                 };
                 break;
             case Providers.SMTP:
@@ -128,8 +134,15 @@
                     providerId: $provider.$id,
                     name: $provider.name,
                     enabled: $provider.enabled,
-                    serviceAccountJSON: $provider.credentials['serviceAccountJSON']
                 };
+                if ('serviceAccountJSON' in $provider.credentials) {
+                    const serviceAccountJSON = $provider.credentials['serviceAccountJSON'];
+                    if (typeof serviceAccountJSON === 'string') {
+                        $providerParams[$wizardProvider].serviceAccountJSON = serviceAccountJSON;
+                    } else if (serviceAccountJSON instanceof Object) {
+                        $providerParams[$wizardProvider].serviceAccountJSON = JSON.stringify(serviceAccountJSON);
+                    }
+                }
                 break;
             case Providers.APNS:
                 $providerParams[$wizardProvider] = {
