@@ -1,18 +1,12 @@
 <script lang="ts">
-    import { FormList, InputChoice, InputText } from '$lib/elements/forms';
+    import { FormList, InputText } from '$lib/elements/forms';
     import { onDestroy, onMount } from 'svelte';
     import { CreditCardBrandImage, RadioBoxes } from '..';
     import { unmountPaymentElement } from '$lib/stores/stripe';
-    import { Pill } from '$lib/elements';
 
     export let methods: Record<string, unknown>[];
     export let group: string;
     export let name: string;
-    export let defaultMethod: string = null;
-    export let backupMethod: string = null;
-    export let disabledCondition: string = null;
-    export let setAsDefault = false;
-    export let showSetAsDefault = false;
 
     let element: HTMLDivElement;
     let loader: HTMLDivElement;
@@ -48,36 +42,13 @@
     }
 </script>
 
-<RadioBoxes
-    elements={methods}
-    total={methods?.length}
-    variableName="$id"
-    name="payment"
-    bind:group
-    {disabledCondition}>
+<RadioBoxes elements={methods} total={methods?.length} variableName="$id" name="payment" bind:group>
     <svelte:fragment slot="element" let:element>
         <slot {element}>
-            <span class="u-flex u-gap-16 u-flex-vertical">
-                <span class="u-flex u-gap-16">
-                    <span class="u-flex u-cross-center u-gap-8" style="padding-inline:0.25rem">
-                        <span>
-                            <span class="u-capitalize">{element.brand}</span> ending in {element.last4}</span>
-                        <CreditCardBrandImage brand={element.brand?.toString()} />
-                    </span>
-                    {#if element.$id === backupMethod}
-                        <Pill>Backup</Pill>
-                    {:else if element.$id === defaultMethod}
-                        <Pill>Default</Pill>
-                    {/if}
-                </span>
-                {#if !!defaultMethod && element.$id !== defaultMethod && group === element.$id && showSetAsDefault && element.$id !== backupMethod}
-                    <ul>
-                        <InputChoice
-                            bind:value={setAsDefault}
-                            id="default"
-                            label="Set as default payment method for this organization" />
-                    </ul>
-                {/if}
+            <span class="u-flex u-cross-center u-gap-8" style="padding-inline:0.25rem">
+                <span>
+                    <span class="u-capitalize">{element.brand}</span> ending in {element.last4}</span>
+                <CreditCardBrandImage brand={element.brand?.toString()} />
             </span>
         </slot>
     </svelte:fragment>
@@ -102,14 +73,6 @@
                 <!-- Stripe will create form elements here -->
             </div>
         </div>
-        {#if showSetAsDefault}
-            <ul>
-                <InputChoice
-                    bind:value={setAsDefault}
-                    id="default"
-                    label="Set as default payment method for this organization" />
-            </ul>
-        {/if}
     </FormList>
 </RadioBoxes>
 
