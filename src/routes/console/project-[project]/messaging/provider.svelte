@@ -7,6 +7,7 @@
         Vonage = 'vonage',
         Mailgun = 'mailgun',
         Sendgrid = 'sendgrid',
+        SMTP = 'smtp',
         FCM = 'fcm',
         APNS = 'apns'
     }
@@ -49,6 +50,10 @@
         case Providers.Mailgun:
             icon = 'mailgun';
             break;
+        case Providers.SMTP:
+            icon = 'smtp';
+            displayName = name || 'SMTP';
+            break;
         case Providers.Twilio:
             icon = 'twilio';
             break;
@@ -78,10 +83,14 @@
                 class="avatar"
                 class:is-size-large={size === 'l'}
                 class:is-size-small={size === 's'}>
-                <img
-                    style:--p-text-size={textSize}
-                    src={`${base}/icons/${$app.themeInUse}/color/${icon}.svg`}
-                    alt={displayName} />
+                {#if provider === Providers.SMTP}
+                    <span style:--p-text-size={textSize} class="icon-mail" />
+                {:else}
+                    <img
+                        style:--p-text-size={textSize}
+                        src={`${base}/icons/${$app.themeInUse}/color/${icon}.svg`}
+                        alt={displayName} />
+                {/if}
             </div>
         {/if}
         <slot>
