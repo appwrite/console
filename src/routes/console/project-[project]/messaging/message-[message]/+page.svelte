@@ -13,6 +13,8 @@
     import type { PageData } from './$types';
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { MessageType, MessagingProviderType } from '@appwrite.io/console';
+    import Topics from './topics.svelte';
+    import Targets from './targets.svelte';
 
     export let data: PageData;
 
@@ -106,5 +108,7 @@
             message={$message}
             onEdit={$message.status === MessageType.Draft ? onEdit : null} />
     {/if}
+    <Topics topics={Object.values(data.topicsById)} />
+    <Targets targets={Object.values(data.targetsById)} usersById={data.usersById} />
     <Delete />
 </Container>
