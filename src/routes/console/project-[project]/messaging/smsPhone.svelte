@@ -53,7 +53,7 @@
     .phone {
         position: relative;
         width: 320px;
-        height: 539px;
+        height: 430px;
         background-image: url('./sms-preview-light.svg');
         background-repeat: no-repeat;
 
