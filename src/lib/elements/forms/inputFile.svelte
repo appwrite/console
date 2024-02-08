@@ -110,7 +110,9 @@
                             style="font-size: var(--icon-size-small)" />
                     </button>
                     <svelte:fragment slot="list">
-                        <div class="dropped card u-max-width-250" style="--p-card-padding: .75rem">
+                        <div
+                            class="dropped card u-max-width-250"
+                            style="--p-card-padding: .75rem; box-shadow:var(--shadow-large);">
                             <slot name="popover" />
                         </div>
                     </svelte:fragment>
