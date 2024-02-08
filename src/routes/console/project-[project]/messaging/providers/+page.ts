@@ -32,14 +32,5 @@ export const load = async ({ depends, url, route }) => {
         query,
         page,
         view,
-        providers: sdk.forProject.messaging.listProviders(
-            [
-                Query.limit(limit),
-                Query.offset(offset),
-                Query.orderDesc(''),
-                ...parsedQueries.values()
-            ],
-            search || undefined
-        )
     };
 };

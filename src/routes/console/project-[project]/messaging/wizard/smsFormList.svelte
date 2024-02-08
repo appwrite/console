@@ -7,6 +7,9 @@
     import { clickOnEnter } from '$lib/helpers/a11y';
     import { ID, MessageType, MessagingProviderType } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
+    import {page} from '$app/stores'
+    import Alert from '$lib/components/alert.svelte';
+
     import SMSPhone from '../smsPhone.svelte';
 
     let showCustomId = false;
@@ -30,7 +33,23 @@
     }
 
     $: otherEmail = selected === 'self' ? '' : otherEmail;
+
+    const providers = () => {
+      return $page.data.providers.providers.filter((provider) => provider.type === 'sms');
+    }
+
 </script>
+
+{#if providers().length === 0}
+  <div style="margin-bottom:1.4rem">
+    <Alert type="warning">
+      <span slot="title">Enable a third-party provider</span>
+      <p>
+        All providers are currently disabled. Enable a third-party provider for sending SMS.
+      </p>
+    </Alert>
+  </div>
+{/if}
 
 <div class="u-flex u-gap-24">
     <FormList class="u-stretch u-cross-child-start">
