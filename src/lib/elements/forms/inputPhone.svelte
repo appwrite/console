@@ -14,12 +14,13 @@
     export let autofocus = false;
     export let autocomplete = false;
     export let maxlength: number = null;
-    let show = false;
+    export let isPopoverDefined = true;
 
     const pattern = String.raw`^\+?[1-9]\d{1,14}$`;
 
     let element: HTMLInputElement;
     let error: string;
+    let show = false;
 
     onMount(() => {
         if (element && autofocus) {
@@ -49,7 +50,7 @@
 
 <FormItem>
     <Label {required} hide={!showLabel} for={id}>
-        {label}{#if $$slots.popover}
+        {label}{#if $$slots.popover && isPopoverDefined}
             <Drop bind:show display="inline-block">
                 <!-- TODO: make unclicked icon greyed out and hover and clicked filled -->
                 &nbsp;<button
