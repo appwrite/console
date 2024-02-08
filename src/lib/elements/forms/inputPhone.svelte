@@ -1,6 +1,7 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import { FormItem, Helper, Label } from '.';
+    import { Drop } from '$lib/components';
 
     export let label: string;
     export let showLabel = true;
@@ -13,6 +14,7 @@
     export let autofocus = false;
     export let autocomplete = false;
     export let maxlength: number = null;
+    let show = false;
 
     const pattern = String.raw`^\+?[1-9]\d{1,14}$`;
 
@@ -47,7 +49,26 @@
 
 <FormItem>
     <Label {required} hide={!showLabel} for={id}>
-        {label}
+        {label}{#if $$slots.popover}
+            <Drop bind:show display="inline-block">
+                <!-- TODO: make unclicked icon greyed out and hover and clicked filled -->
+                &nbsp;<button
+                    type="button"
+                    on:click={() => (show = !show)}
+                    class="tooltip"
+                    aria-label="input tooltip">
+                    <span
+                        class="icon-info"
+                        aria-hidden="true"
+                        style="font-size: var(--icon-size-small)" />
+                </button>
+                <svelte:fragment slot="list">
+                    <div class="dropped card u-max-width-250" style="--p-card-padding: .75rem">
+                        <slot name="popover" />
+                    </div>
+                </svelte:fragment>
+            </Drop>
+        {/if}
     </Label>
     <div class="input-text-wrapper">
         <input
