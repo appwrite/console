@@ -77,10 +77,10 @@
                         $providerParams[$provider].domain,
                         $providerParams[$provider].isEuRegion,
                         $providerParams[$provider].enabled,
-                        $providerParams[$provider].fromName,
+                        $providerParams[$provider].fromName || undefined,
                         $providerParams[$provider].fromEmail,
-                        $providerParams[$provider].replyToName,
-                        $providerParams[$provider].replyToEmail
+                        $providerParams[$provider].replyToName || undefined,
+                        $providerParams[$provider].replyToEmail || undefined
                     );
                     break;
                 case Providers.Sendgrid:
@@ -89,10 +89,10 @@
                         $providerParams[$provider].name,
                         $providerParams[$provider].enabled,
                         $providerParams[$provider].apiKey,
-                        $providerParams[$provider].fromName,
+                        $providerParams[$provider].fromName || undefined,
                         $providerParams[$provider].fromEmail,
-                        $providerParams[$provider].replyToName,
-                        $providerParams[$provider].replyToEmail
+                        $providerParams[$provider].replyToName || undefined,
+                        $providerParams[$provider].replyToEmail || undefined
                     );
                     break;
                 case Providers.SMTP:
