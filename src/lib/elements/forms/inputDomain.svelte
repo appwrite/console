@@ -14,6 +14,7 @@
     export let autofocus = false;
     export let autocomplete = false;
     export let maxlength: number = null;
+    export let isPopoverDefined = true;
 
     // https://www.geeksforgeeks.org/how-to-validate-a-domain-name-using-regular-expression/
     const pattern = String.raw`(?!-)[A-Za-z0-9\-]+([\-\.]{1}[a-z0-9]+)*\.[A-Za-z]{2,18}`;
@@ -50,7 +51,7 @@
 
 <FormItem>
     <Label {required} hide={!showLabel} for={id}>
-        {label}{#if $$slots.popover}
+        {label}{#if $$slots.popover && isPopoverDefined}
             <Drop bind:show display="inline-block">
                 <!-- TODO: make unclicked icon greyed out and hover and clicked filled -->
                 &nbsp;<button

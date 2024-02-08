@@ -13,6 +13,7 @@
     export let optionalText: string = null;
     export let tooltip: string = null;
     export let error: string = null;
+    export let isPopoverDefined = true;
 
     let input: HTMLInputElement;
     let hovering = false;
@@ -95,7 +96,7 @@
 <div>
     {#if label}
         <Label {required} {optionalText} {tooltip} hide={!label}>
-            {label}{#if $$slots.popover}
+            {label}{#if $$slots.popover && isPopoverDefined}
                 <Drop bind:show display="inline-block">
                     <!-- TODO: make unclicked icon greyed out and hover and clicked filled -->
                     &nbsp;<button
