@@ -51,7 +51,7 @@
     <svelte:fragment slot="title">Targets</svelte:fragment>
     <!-- TODO: add support for topics -->
     <svelte:fragment slot="subtitle"
-        >Select users to whom this message should be directed.</svelte:fragment>
+        >Select targets to whom this message should be directed.</svelte:fragment>
     {#if targetIdsLength === 0 && topicIdsLength === 0}
         <Card>
             <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
@@ -67,7 +67,7 @@
                     </Button>
                 </Actions>
                 <div class="common-section">
-                    <span class="text"> Select recipients to get started</span>
+                    <span class="text"> Select targets to get started</span>
                 </div>
             </div>
         </Card>

@@ -4,26 +4,22 @@
     import EmailPreview from './emailPreview.svelte';
     import Overview from './overview.svelte';
     import { message } from './store';
-    import { ProviderTypes } from '../providerType.svelte';
     import SMSPreview from './smsPreview.svelte';
     import PushPreview from './pushPreview.svelte';
-    import {
-        MessageStatuses,
-        messageParams,
-        operation,
-        providerType,
-        targetsById
-    } from '../wizard/store';
+    import { messageParams, operation, providerType, targetsById } from '../wizard/store';
     import { topicsById } from '../store';
     import { wizard } from '$lib/stores/wizard';
     import Wizard from '../wizard.svelte';
     import type { PageData } from './$types';
     import { isValueOfStringEnum } from '$lib/helpers/types';
+    import { MessageType, MessagingProviderType } from '@appwrite.io/console';
+    import Topics from './topics.svelte';
+    import Targets from './targets.svelte';
 
     export let data: PageData;
 
     async function onEdit() {
-        if (!isValueOfStringEnum(ProviderTypes, $message.providerType)) {
+        if (!isValueOfStringEnum(MessagingProviderType, $message.providerType)) {
             throw new Error(`Invalid provider type: ${$message.providerType}`);
         }
         $operation = 'update';
@@ -39,12 +35,12 @@
             topics: $message.topics,
             users: $message.users,
             targets: $message.targets,
-            status: MessageStatuses.DRAFT,
+            status: MessageType.Draft,
             scheduledAt: $message.scheduledAt
         };
 
         switch ($providerType) {
-            case ProviderTypes.Email:
+            case MessagingProviderType.Email:
                 {
                     const { data } = $message;
                     const params = ['subject', 'content', 'html'];
@@ -55,7 +51,7 @@
                     });
                 }
                 break;
-            case ProviderTypes.Sms:
+            case MessagingProviderType.Sms:
                 {
                     const { data } = $message;
                     const params = ['content'];
@@ -66,7 +62,7 @@
                     });
                 }
                 break;
-            case ProviderTypes.Push:
+            case MessagingProviderType.Push:
                 {
                     const { data } = $message;
                     const params = [
@@ -99,18 +95,20 @@
 
 <Container>
     <Overview />
-    {#if $message.providerType === ProviderTypes.Email}
+    {#if $message.providerType === MessagingProviderType.Email}
         <EmailPreview
             message={$message}
-            onEdit={$message.status === MessageStatuses.DRAFT ? onEdit : null} />
-    {:else if $message.providerType === ProviderTypes.Sms}
+            onEdit={$message.status === MessageType.Draft ? onEdit : null} />
+    {:else if $message.providerType === MessagingProviderType.Sms}
         <SMSPreview
             message={$message}
-            onEdit={$message.status === MessageStatuses.DRAFT ? onEdit : null} />
-    {:else if $message.providerType === ProviderTypes.Push}
+            onEdit={$message.status === MessageType.Draft ? onEdit : null} />
+    {:else if $message.providerType === MessagingProviderType.Push}
         <PushPreview
             message={$message}
-            onEdit={$message.status === MessageStatuses.DRAFT ? onEdit : null} />
+            onEdit={$message.status === MessageType.Draft ? onEdit : null} />
     {/if}
+    <Topics topics={Object.values(data.topicsById)} />
+    <Targets targets={Object.values(data.targetsById)} usersById={data.usersById} />
     <Delete />
 </Container>

@@ -2,10 +2,10 @@
     import { WizardStep } from '$lib/layout';
     import { messageParams, providerType } from './store';
     import { providers } from '../providers/store';
-    import { ProviderTypes } from '../providerType.svelte';
     import EmailFormList from './emailFormList.svelte';
     import SmsFormList from './smsFormList.svelte';
     import PushFormList, { validateData } from './pushFormList.svelte';
+    import { MessagingProviderType } from '@appwrite.io/console';
 
     async function beforeSubmit() {}
 
@@ -23,18 +23,18 @@
 
 <WizardStep
     {beforeSubmit}
-    nextDisabled={$providerType === ProviderTypes.Push &&
-        !!validateData($messageParams[ProviderTypes.Push].data)}>
+    nextDisabled={$providerType === MessagingProviderType.Push &&
+        !!validateData($messageParams[MessagingProviderType.Push].data)}>
     <svelte:fragment slot="title">Message</svelte:fragment>
     <svelte:fragment slot="subtitle">
         <!-- TODO: update documentation link -->
         {createMessage(providers[$providerType].text)}
     </svelte:fragment>
-    {#if $providerType === ProviderTypes.Email}
+    {#if $providerType === MessagingProviderType.Email}
         <EmailFormList />
-    {:else if $providerType === ProviderTypes.Sms}
+    {:else if $providerType === MessagingProviderType.Sms}
         <SmsFormList />
-    {:else if $providerType === ProviderTypes.Push}
+    {:else if $providerType === MessagingProviderType.Push}
         <PushFormList />
     {/if}
 </WizardStep>

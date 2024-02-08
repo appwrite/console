@@ -2,6 +2,7 @@
     import { BoxAvatar, CardGrid, Heading } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
+    import { MessageType } from '@appwrite.io/console';
     import DeleteModal from './deleteModal.svelte';
     import { message } from './store';
 
@@ -31,7 +32,11 @@
     </svelte:fragment>
 
     <svelte:fragment slot="actions">
-        <Button secondary on:click={() => (showDelete = true)} event="delete_file">Delete</Button>
+        <Button
+            disabled={$message.status === MessageType.Processing}
+            secondary
+            on:click={() => (showDelete = true)}
+            event="delete_file">Delete</Button>
     </svelte:fragment>
 </CardGrid>
 

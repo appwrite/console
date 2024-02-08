@@ -15,19 +15,7 @@
     });
     async function updateName() {
         try {
-            // await sdk.forProject.users.updateName($provider.$id, providerName);
-            await sdk.forProject.client.call(
-                'PATCH',
-                new URL(`${sdk.forProject.client.config.endpoint}/messaging/topics/${$topic.$id}`),
-                {
-                    'X-Appwrite-Project': sdk.forProject.client.config.project,
-                    'content-type': 'application/json',
-                    'X-Appwrite-Mode': 'admin'
-                },
-                {
-                    name: name
-                }
-            );
+            await sdk.forProject.messaging.updateTopic($topic.$id, name);
             await invalidate(Dependencies.MESSAGING_TOPIC);
             addNotification({
                 message: 'Name has been updated',

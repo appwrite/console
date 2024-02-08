@@ -15,6 +15,8 @@
     import deepEqual from 'deep-equal';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Box } from '$lib/components';
+    import { TemplateLocale, TemplateType } from '@appwrite.io/console';
+    import { isValueOfStringEnum } from '$lib/helpers/types';
 
     export let loading = false;
     let openResetModal = false;
@@ -28,6 +30,13 @@
                 message: 'Locale is required'
             });
             return;
+        }
+
+        if (!isValueOfStringEnum(TemplateType, $emailTemplate.type)) {
+            throw new Error(`Invalid template type: ${$emailTemplate.type}`);
+        }
+        if (!isValueOfStringEnum(TemplateLocale, $emailTemplate.locale)) {
+            throw new Error(`Invalid template locale: ${$emailTemplate.locale}`);
         }
         try {
             switch ($emailTemplate.type) {

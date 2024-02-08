@@ -51,6 +51,7 @@ export enum Dependencies {
     CONSOLE_VARIABLES = 'dependency:console_variables',
     MESSAGING_PROVIDERS = 'dependency:messaging_providers',
     MESSAGING_PROVIDER = 'dependency:messaging_provider',
+    MESSAGING_MESSAGES = 'dependency:messaging_messages',
     MESSAGING_MESSAGE = 'dependency:messaging_message',
     MESSAGING_TOPICS = 'dependency:messaging_topics',
     MESSAGING_TOPIC = 'dependency:messaging_topic',

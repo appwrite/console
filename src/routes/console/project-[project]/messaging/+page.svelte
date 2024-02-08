@@ -8,6 +8,7 @@
         FloatingActionBar,
         Heading,
         Id,
+        Modal,
         PaginationWithLimit,
         SearchQuery,
         ViewSelector
@@ -27,16 +28,23 @@
     } from '$lib/elements/table';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
+    import { MessageType, MessagingProviderType } from '@appwrite.io/console';
     import type { PageData } from './$types';
     import CreateMessageDropdown from './createMessageDropdown.svelte';
     import FailedModal from './failedModal.svelte';
     import MessageStatusPill from './messageStatusPill.svelte';
-    import ProviderType, { ProviderTypes } from './providerType.svelte';
+    import ProviderType from './providerType.svelte';
     import { columns, showCreate } from './store';
+    import { sdk } from '$lib/stores/sdk';
+    import { invalidate } from '$app/navigation';
+    import { trackEvent, Submit, trackError } from '$lib/actions/analytics';
+    import { Dependencies } from '$lib/constants';
+    import { addNotification } from '$lib/stores/notifications';
 
     export let data: PageData;
     let selected: string[] = [];
     let showDelete = false;
+    let deleting = false;
     let showFailed = false;
     let errors: string[] = [];
     let showCreateDropdownMobile = false;
@@ -45,7 +53,32 @@
 
     const project = $page.params.project;
 
-    $: console.log(showDelete);
+    async function handleDelete() {
+        showDelete = false;
+
+        const promises = selected.map((id) => sdk.forProject.messaging.delete(id));
+
+        try {
+            await Promise.all(promises);
+            trackEvent(Submit.MessagingMessageDelete, {
+                total: selected.length
+            });
+            addNotification({
+                type: 'success',
+                message: `${selected.length} message${selected.length > 1 ? 's' : ''} deleted`
+            });
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+            trackError(error, Submit.MessagingMessageDelete);
+        } finally {
+            invalidate(Dependencies.MESSAGING_MESSAGES);
+            selected = [];
+            showDelete = false;
+        }
+    }
 </script>
 
 <Container>
@@ -105,7 +138,10 @@
                 {#each data.messages.messages as message (message.$id)}
                     <TableRowLink
                         href={`${base}/console/project-${project}/messaging/message-${message.$id}`}>
-                        <TableCellCheck bind:selectedIds={selected} id={message.$id} />
+                        <TableCellCheck
+                            bind:selectedIds={selected}
+                            id={message.$id}
+                            disabled={message.status === MessageType.Processing} />
 
                         {#each $columns as column (column.id)}
                             {#if column.show}
@@ -117,11 +153,11 @@
                                     {/key}
                                 {:else if column.id === 'message'}
                                     <TableCellText title={column.title} width={column.width}>
-                                        {#if message.providerType === ProviderTypes.Push}
+                                        {#if message.providerType === MessagingProviderType.Push}
                                             {message.data.title}
-                                        {:else if message.providerType === ProviderTypes.Sms}
+                                        {:else if message.providerType === MessagingProviderType.Sms}
                                             {message.data.content}
-                                        {:else if message.providerType === ProviderTypes.Email}
+                                        {:else if message.providerType === MessagingProviderType.Email}
                                             {message.data.subject}
                                         {:else}
                                             Invalid provider
@@ -175,7 +211,6 @@
 
                 <div class="u-flex u-cross-center u-gap-8">
                     <Button text on:click={() => (selected = [])}>Cancel</Button>
-                    <!-- TODO: handle delete -->
                     <Button secondary on:click={() => (showDelete = true)}>
                         <p>Delete</p>
                     </Button>
@@ -248,3 +283,21 @@
 </Container>
 
 <FailedModal bind:show={showFailed} {errors} />
+
+<Modal
+    title="Delete messages"
+    icon="exclamation"
+    state="warning"
+    bind:show={showDelete}
+    onSubmit={handleDelete}
+    headerDivider={false}
+    closable={!deleting}>
+    <p class="text" data-private>
+        Are you sure you want to delete <b>{selected.length}</b>
+        {selected.length > 1 ? 'messages' : 'message'}?
+    </p>
+    <svelte:fragment slot="footer">
+        <Button text on:click={() => (showDelete = false)} disabled={deleting}>Cancel</Button>
+        <Button secondary submit disabled={deleting}>Delete</Button>
+    </svelte:fragment>
+</Modal>

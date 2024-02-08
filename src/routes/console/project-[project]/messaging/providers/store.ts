@@ -1,7 +1,7 @@
 import type { Column } from '$lib/helpers/types';
 import { writable } from 'svelte/store';
 import { Providers } from '../provider.svelte';
-import { ProviderTypes } from '../providerType.svelte';
+import { MessagingProviderType, SMTPEncryption } from '@appwrite.io/console';
 
 export const columns = writable<Column[]>([
     { id: '$id', title: 'Provider ID', type: 'string', show: true },
@@ -12,24 +12,27 @@ export const columns = writable<Column[]>([
 ]);
 
 type ProvidersMap = {
-    [key in ProviderTypes]: {
+    [key in MessagingProviderType]: {
         name: string;
         text: string;
         icon: string;
         providers: {
             [key in Providers]?: {
-                imageIcon: string;
+                imageIcon?: string;
+                classIcon?: string;
                 title: string;
                 link: string;
                 description: string;
                 configure: {
                     label: string;
                     name: string;
-                    type: 'text' | 'password' | 'phone' | 'email' | 'domain' | 'file' | 'switch';
+                    type: 'text' | 'password' | 'phone' | 'email' | 'domain' | 'file' | 'switch' | 'select';
                     placeholder?: string;
                     description?: string;
                     popover?: string[];
                     allowedFileExtensions?: string[];
+                    optional?: boolean;
+                    options?: { label: string; value: string | number | boolean }[];
                 }[];
             };
         };
@@ -37,7 +40,7 @@ type ProvidersMap = {
 };
 
 export const providers: ProvidersMap = {
-    [ProviderTypes.Push]: {
+    [MessagingProviderType.Push]: {
         name: 'Push notification',
         text: 'notifications',
         icon: 'device-mobile',
@@ -138,7 +141,7 @@ export const providers: ProvidersMap = {
             // }
         }
     },
-    [ProviderTypes.Email]: {
+    [MessagingProviderType.Email]: {
         name: 'Email',
         text: 'emails',
         icon: 'mail',
@@ -188,18 +191,21 @@ export const providers: ProvidersMap = {
                         label: 'Sender name',
                         name: 'fromName',
                         type: 'text',
+                        optional: true,
                         placeholder: 'Enter name'
                     },
                     {
                         label: 'Reply-to email',
                         name: 'replyToEmail',
                         type: 'email',
+                        optional: true,
                         placeholder: 'Enter email'
                     },
                     {
                         label: 'Reply-to name',
                         name: 'replyToName',
                         type: 'text',
+                        optional: true,
                         placeholder: 'Enter name'
                     }
                 ]
@@ -231,18 +237,107 @@ export const providers: ProvidersMap = {
                         label: 'Sender name',
                         name: 'fromName',
                         type: 'text',
+                        optional: true,
                         placeholder: 'Enter name'
                     },
                     {
                         label: 'Reply-to email',
                         name: 'replyToEmail',
                         type: 'email',
+                        optional: true,
                         placeholder: 'Enter email'
                     },
                     {
                         label: 'Reply-to name',
                         name: 'replyToName',
                         type: 'text',
+                        optional: true,
+                        placeholder: 'Enter name'
+                    }
+                ]
+            },
+            [Providers.SMTP]: {
+                classIcon: 'mail',
+                title: 'SMTP',
+                link: '',
+                description: '',
+                configure: [
+                    {
+                        label: 'Host',
+                        name: 'host',
+                        type: 'text',
+                        placeholder: 'Enter host'
+                    },
+                    {
+                        label: 'Port',
+                        name: 'port',
+                        type: 'text',
+                        optional: true,
+                        placeholder: 'Enter port'
+                    },
+                    {
+                        label: 'Username',
+                        name: 'username',
+                        type: 'text',
+                        optional: true,
+                        placeholder: 'Enter username'
+                    },
+                    {
+                        label: 'Password',
+                        name: 'password',
+                        type: 'text',
+                        optional: true,
+                        placeholder: 'Enter password'
+                    },
+                    {
+                        label: 'Encryption',
+                        name: 'encryption',
+                        type: 'select',
+                        options: [
+                            { label: 'None', value: SMTPEncryption.None },
+                            { label: 'SSL', value: SMTPEncryption.Ssl },
+                            { label: 'TLS', value: SMTPEncryption.Tls }
+                        ]
+                    },
+                    {
+                        label: 'Auto TLS',
+                        name: 'autoTLS',
+                        description: 'Automatically uses TLS encryption',
+                        type: 'switch',
+                        optional: true
+                    },
+                    {
+                        label: 'Mailer',
+                        name: 'mailer',
+                        type: 'text',
+                        optional: true,
+                        placeholder: 'Enter mailer'
+                    },
+                    {
+                        label: 'Sender email',
+                        name: 'fromEmail',
+                        type: 'email',
+                        placeholder: 'Enter email'
+                    },
+                    {
+                        label: 'Sender name',
+                        name: 'fromName',
+                        type: 'text',
+                        optional: true,
+                        placeholder: 'Enter name'
+                    },
+                    {
+                        label: 'Reply-to email',
+                        name: 'replyToEmail',
+                        type: 'email',
+                        optional: true,
+                        placeholder: 'Enter email'
+                    },
+                    {
+                        label: 'Reply-to name',
+                        name: 'replyToName',
+                        type: 'text',
+                        optional: true,
                         placeholder: 'Enter name'
                     }
                 ]
@@ -250,7 +345,7 @@ export const providers: ProvidersMap = {
         }
     },
 
-    [ProviderTypes.Sms]: {
+    [MessagingProviderType.Sms]: {
         name: 'SMS',
         text: 'SMS',
         icon: 'annotation',
@@ -357,7 +452,7 @@ export const providers: ProvidersMap = {
             },
             [Providers.Textmagic]: {
                 imageIcon: 'textmagic',
-                title: 'TextMagic', 
+                title: 'TextMagic',
                 link: 'https://app.textmagic.com/login',
                 description: '',
                 configure: [

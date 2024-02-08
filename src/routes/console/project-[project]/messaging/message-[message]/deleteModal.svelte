@@ -13,17 +13,7 @@
 
     const deleteMessage = async () => {
         try {
-            await sdk.forProject.client.call(
-                'DELETE',
-                new URL(
-                    `${sdk.forProject.client.config.endpoint}/messaging/messages/${$message.$id}`
-                ),
-                {
-                    'X-Appwrite-Project': sdk.forProject.client.config.project,
-                    'content-type': 'application/json',
-                    'X-Appwrite-Mode': 'admin'
-                }
-            );
+            await sdk.forProject.messaging.delete($message.$id);
             show = false;
             addNotification({
                 type: 'success',

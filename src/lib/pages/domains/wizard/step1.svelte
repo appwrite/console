@@ -6,9 +6,9 @@
     import { sdk } from '$lib/stores/sdk';
     import { isSelfHosted } from '$lib/system';
     import { func } from '$routes/console/project-[project]/functions/function-[function]/store';
-    import { ProxyTypes } from '../index.svelte';
     import { domain, typeStore } from './store';
     import { consoleVariables } from '$routes/console/store';
+    import { ResourceType } from '@appwrite.io/console';
 
     let error = null;
     const isDomainsEnabled = $consoleVariables?._APP_DOMAIN_ENABLED === true;
@@ -22,7 +22,7 @@
             $domain = await sdk.forProject.proxy.createRule(
                 $domain.domain,
                 $typeStore,
-                $typeStore === ProxyTypes.FUNCTION ? $func.$id : undefined
+                $typeStore === ResourceType.Function ? $func.$id : undefined
             );
 
             trackEvent(Submit.DomainCreate);
