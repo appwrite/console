@@ -54,8 +54,7 @@
     <svelte:fragment slot="title">Schedule</svelte:fragment>
     <!-- TODO: Add link to docs -->
     <svelte:fragment slot="subtitle"
-        >Schedule the time you want your users to receive this message. Learn more in our
-        documentation.</svelte:fragment>
+        >Schedule the time you want to deliver this message. Learn more in our documentation.</svelte:fragment>
     <FormList>
         <div
             class="u-grid u-gap-24"
