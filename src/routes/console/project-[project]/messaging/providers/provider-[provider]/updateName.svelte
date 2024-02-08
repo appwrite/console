@@ -3,6 +3,12 @@
     import { Button, Form, InputText } from '$lib/elements/forms';
     import { onMount } from 'svelte';
     import { provider } from './store';
+    import { Providers } from '../../provider.svelte';
+    import { sdk } from '$lib/stores/sdk';
+    import { invalidate } from '$app/navigation';
+    import { trackEvent, Submit, trackError } from '$lib/actions/analytics';
+    import { Dependencies } from '$lib/constants';
+    import { addNotification } from '$lib/stores/notifications';
 
     let providerName: string = null;
     onMount(async () => {
@@ -10,22 +16,86 @@
     });
 
     async function updateName() {
-        // TODO: switch on provider and update name
-        // try {
-        //     await sdk.forProject.users.updateName($provider.$id, providerName);
-        //     await invalidate(Dependencies.USER);
-        //     addNotification({
-        //         message: 'Name has been updated',
-        //         type: 'success'
-        //     });
-        //     trackEvent(Submit.UserUpdateName);
-        // } catch (error) {
-        //     addNotification({
-        //         message: error.message,
-        //         type: 'error'
-        //     });
-        //     trackError(error, Submit.UserUpdateName);
-        // }
+        try {
+            let response = { $id: '', name: '' };
+            const providerId = $provider.$id;
+            switch ($provider.provider) {
+                case Providers.Twilio:
+                    response = await sdk.forProject.messaging.updateTwilioProvider(
+                        providerId,
+                        providerName
+                    );
+                    break;
+                case Providers.Msg91:
+                    response = await sdk.forProject.messaging.updateMsg91Provider(
+                        providerId,
+                        providerName
+                    );
+                    break;
+                case Providers.Telesign:
+                    response = await sdk.forProject.messaging.updateTelesignProvider(
+                        providerId,
+                        providerName
+                    );
+                    break;
+                case Providers.Textmagic:
+                    response = await sdk.forProject.messaging.updateTextmagicProvider(
+                        providerId,
+                        providerName
+                    );
+                    break;
+                case Providers.Vonage:
+                    response = await sdk.forProject.messaging.updateVonageProvider(
+                        providerId,
+                        providerName
+                    );
+                    break;
+                case Providers.Mailgun:
+                    response = await sdk.forProject.messaging.updateMailgunProvider(
+                        providerId,
+                        providerName
+                    );
+                    break;
+                case Providers.Sendgrid:
+                    response = await sdk.forProject.messaging.updateSendgridProvider(
+                        providerId,
+                        providerName
+                    );
+                    break;
+                case Providers.SMTP:
+                    response = await sdk.forProject.messaging.updateSMTPProvider(
+                        providerId,
+                        providerName
+                    );
+                    break;
+                case Providers.FCM:
+                    response = await sdk.forProject.messaging.updateFCMProvider(
+                        providerId,
+                        providerName
+                    );
+                    break;
+                case Providers.APNS:
+                    response = await sdk.forProject.messaging.updateAPNSProvider(
+                        providerId,
+                        providerName
+                    );
+                    break;
+            }
+            await invalidate(Dependencies.MESSAGING_PROVIDER);
+            addNotification({
+                type: 'success',
+                message: `${response.name} has been updated`
+            });
+            trackEvent(Submit.MessagingProviderUpdate, {
+                provider: $provider
+            });
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+            trackError(error, Submit.MessagingProviderUpdate);
+        }
     }
 </script>
 
