@@ -218,7 +218,7 @@ export const providers: ProvidersMap = {
                         popover: [
                             '<b>How to get the API key?</b>',
                             'Create an account in <a style="text-decoration:underline" href="https://login.sendgrid.com/login/identifier?_gl=1*3vtcwz*_ga*MTMzODgwNDQ5OC4xNzA2MjAxMDUz*_ga_8W5LR442LD*MTcwNjIwMTA1My4xLjAuMTcwNjIwMTA1My4wLjAuMA.." target="_blank">Sendgrid</a>.',
-                            'Head to <b>Profile -> API Security -> Add new key.</b>'
+                            'Head to <b>Settings -> API Keys -> Create API key.</b>'
                         ]
                     },
                     {
