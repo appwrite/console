@@ -71,6 +71,7 @@
                     id={input.name}
                     label={input.label}
                     placeholder={input.placeholder}
+                    required={!input.optional}
                     showPasswordButton
                     isPopoverDefined={input.popover !== undefined}
                     bind:value={$providerParams[$provider][input.name]}>
