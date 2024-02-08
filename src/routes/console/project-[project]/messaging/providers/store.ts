@@ -259,6 +259,7 @@ export const providers: ProvidersMap = {
             [Providers.SMTP]: {
                 classIcon: 'mail',
                 title: 'SMTP',
+                link: '',
                 description: '',
                 configure: [
                     {
@@ -451,7 +452,7 @@ export const providers: ProvidersMap = {
             },
             [Providers.Textmagic]: {
                 imageIcon: 'textmagic',
-                title: 'TextMagic', 
+                title: 'TextMagic',
                 link: 'https://app.textmagic.com/login',
                 description: '',
                 configure: [

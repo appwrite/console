@@ -10,7 +10,7 @@
     import { Dependencies } from '$lib/constants';
     import { page } from '$app/stores';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { ID } from '@appwrite.io/console';
+    import { ID, Region } from '@appwrite.io/console';
     import { createProject } from './wizard/store';
     import { wizard } from '$lib/stores/wizard';
 
