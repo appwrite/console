@@ -38,7 +38,7 @@
     </div>
     <div class="project-name u-text-center u-x-small u-width-full-line">{$project.name}</div>
     <div class="chat u-text-center u-width-full-line">
-        <div class="time u-text-center u-x-small u-width-full-line u-line-height-0-7">
+        <div class="time u-text-center u-width-full-line u-line-height-0-7">
             Today {getTime()}
         </div>
         <div class="chat-bubble-container">
@@ -53,7 +53,7 @@
     .phone {
         position: relative;
         width: 320px;
-        height: 430px;
+        height: 410px;
         background-image: url('./sms-preview-light.svg');
         background-repeat: no-repeat;
 
