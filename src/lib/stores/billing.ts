@@ -265,3 +265,14 @@ export function checkForMarkedForDeletion(org: Organization) {
         });
     }
 }
+
+export function checkForProMissingPayment(org: Organization) {
+    if (org?.billingPlan === BillingPlan.PRO && !org?.paymentMethodId) {
+        headerAlert.add({
+            id: 'proWithoutPaymentMethod',
+            component: PaymentAuthRequired,
+            show: true,
+            importance: 8
+        });
+    }
+}
