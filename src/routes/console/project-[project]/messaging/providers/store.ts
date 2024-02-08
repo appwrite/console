@@ -21,7 +21,6 @@ type ProvidersMap = {
                 imageIcon?: string;
                 classIcon?: string;
                 title: string;
-                link: string;
                 description: string;
                 configure: {
                     label: string;
@@ -56,7 +55,6 @@ export const providers: ProvidersMap = {
             [Providers.FCM]: {
                 imageIcon: 'firebase',
                 title: 'FCM',
-                link: 'https://firebase.google.com/',
                 description: 'Firebase Cloud Messaging',
                 configure: [
                     {
@@ -76,7 +74,6 @@ export const providers: ProvidersMap = {
             [Providers.APNS]: {
                 imageIcon: 'apple',
                 title: 'APNS',
-                link: 'https://idmsa.apple.com/IDMSWebAuth/signin?appIdKey=891bd3417a7776362562d2197f89480a8547b108fd934911bcbea0110d07f757&path=%2Faccount%2F&rv=1',
                 description: 'Apple Push Notification Service',
                 configure: [
                     {
@@ -157,7 +154,6 @@ export const providers: ProvidersMap = {
             [Providers.Mailgun]: {
                 imageIcon: 'mailgun',
                 title: 'Mailgun',
-                link: 'https://signup.mailgun.com/new/signup',
                 description: '',
                 configure: [
                     {
@@ -221,7 +217,6 @@ export const providers: ProvidersMap = {
             [Providers.Sendgrid]: {
                 imageIcon: 'sendgrid',
                 title: 'Sendgrid',
-                link: 'https://login.sendgrid.com/login/identifier?_gl=1*3vtcwz*_ga*MTMzODgwNDQ5OC4xNzA2MjAxMDUz*_ga_8W5LR442LD*MTcwNjIwMTA1My4xLjAuMTcwNjIwMTA1My4wLjAuMA..',
                 description: '',
                 configure: [
                     {
@@ -267,7 +262,6 @@ export const providers: ProvidersMap = {
             [Providers.SMTP]: {
                 classIcon: 'mail',
                 title: 'SMTP',
-                link: '',
                 description: '',
                 configure: [
                     {
@@ -361,7 +355,6 @@ export const providers: ProvidersMap = {
             [Providers.Twilio]: {
                 imageIcon: 'twilio',
                 title: 'Twilio',
-                link: 'https://login.twilio.com/u/signup?state=hKFo2SBaQktjdzI0ZHdKdm44QUc5YzBRXzlNMmlyTExkRWVTTaFur3VuaXZlcnNhbC1sb2dpbqN0aWTZIHpwNUVrWDJzeFRJdUczVU5LTk16X0FHWEQ3dHU0S3hko2NpZNkgTW05M1lTTDVSclpmNzdobUlKZFI3QktZYjZPOXV1cks',
                 description: '',
                 configure: [
                     {
@@ -400,7 +393,6 @@ export const providers: ProvidersMap = {
             [Providers.Msg91]: {
                 imageIcon: 'msg91',
                 title: 'MSG91',
-                link: 'https://control.msg91.com/signin/',
                 description: '',
                 configure: [
                     {
@@ -435,7 +427,6 @@ export const providers: ProvidersMap = {
             [Providers.Telesign]: {
                 imageIcon: 'telesign',
                 title: 'Telesign',
-                link: 'https://www.telesign.com/',
                 description: '',
                 configure: [
                     {
@@ -461,7 +452,6 @@ export const providers: ProvidersMap = {
             [Providers.Textmagic]: {
                 imageIcon: 'textmagic',
                 title: 'TextMagic',
-                link: 'https://app.textmagic.com/login',
                 description: '',
                 configure: [
                     {
@@ -492,7 +482,6 @@ export const providers: ProvidersMap = {
             [Providers.Vonage]: {
                 imageIcon: 'vonage',
                 title: 'Vonage',
-                link: 'https://www.vonage.com/?bypassgeoloc=true',
                 description: '',
                 configure: [
                     {
