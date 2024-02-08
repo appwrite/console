@@ -102,6 +102,6 @@
     </FormList>
     <SMSPhone content={$messageParams[$providerType]['content']} classes="is-only-desktop" />
 </div>
-<div class="u-flex u-main-center u-margin-block-start-24">
-    <SMSPhone content={$messageParams[$providerType]['content']} classes="is-not-desktop" />
+<div class="u-flex u-main-center u-margin-block-start-24 is-not-desktop">
+    <SMSPhone content={$messageParams[$providerType]['content']} />
 </div>
