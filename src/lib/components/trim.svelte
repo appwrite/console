@@ -16,16 +16,13 @@
 
 <svelte:window on:resize={throttle(onResize, 250)} />
 
-<span class={`text ${alternativeTrim ? 'u-trim-1' : 'u-trim'}`} bind:this={container}>
-    {#if showTooltip}
-        <span
-            use:tooltip={{
-                content: container.innerText,
-                maxWidth: '30rem'
-            }}>
-            <slot />
-        </span>
-    {:else}
-        <span><slot /></span>
-    {/if}
+<span
+    class={`text ${alternativeTrim ? 'u-trim-1' : 'u-trim'}`}
+    bind:this={container}
+    use:tooltip={{
+    disabled: !showTooltip,
+    content: container?.innerText ?? undefined,
+    maxWidth: '30rem'
+    }}>
+       <span><slot /></span>
 </span>

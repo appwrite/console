@@ -4,6 +4,8 @@
     export let showOverflow = false;
     export let onlyDesktop = false;
     export let width: number = null;
+
+    let container: HTMLDivElement | null;
 </script>
 
 <div
@@ -13,6 +15,8 @@
     class:u-overflow-visible={showOverflow}
     data-title={title}
     role="cell"
-    data-private>
-    <Trim><slot /></Trim>
+    data-private
+    bind:this={container}
+    >
+    <Trim ancestor={container}><slot /></Trim>
 </div>
