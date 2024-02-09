@@ -56,7 +56,8 @@
                             $messageParams[$providerType] = {
                                 ...common,
                                 title: '',
-                                body: ''
+                                body: '',
+                                data: [['', '']]
                             };
                             break;
                     }
