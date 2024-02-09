@@ -60,13 +60,14 @@
             {#if icon}
                 <span class={`icon-${icon} u-margin-inline-start-auto`} aria-hidden="true" />
             {/if}
-        {/if}
-        {#if imageIcon}
-            <img
-                class="u-margin-inline-start-auto"
-                style:--p-text-size="1.25rem"
-                src={`${base}/icons/${$app.themeInUse}/color/${imageIcon}.svg`}
-                alt={imageIcon} />
+            {#if imageIcon}
+                <img
+                    class="u-margin-inline-start-auto"
+                    style:max-inline-size="1.25rem"
+                    style:max-block-size="1.25rem"
+                    src={`${base}/icons/${$app.themeInUse}/color/${imageIcon}.svg`}
+                    alt={imageIcon} />
+            {/if}
         {/if}
     </div>
 </label>

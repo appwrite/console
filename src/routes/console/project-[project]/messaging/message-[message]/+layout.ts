@@ -10,31 +10,11 @@ export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.MESSAGING_MESSAGE);
 
     try {
-        const response: Models.Message = await sdk.forProject.client.call(
-            'GET',
-            new URL(
-                `${sdk.forProject.client.config.endpoint}/messaging/messages/${params.message}`
-            ),
-            {
-                'X-Appwrite-Project': sdk.forProject.client.config.project,
-                'content-type': 'application/json',
-                'X-Appwrite-Mode': 'admin'
-            }
-        );
+        const message = await sdk.forProject.messaging.getMessage(params.message);
 
-        const topicsById = {};
+        const topicsById: Record<string, Models.Topic> = {};
         const topicsPromise = Promise.allSettled(
-            response.topics.map((topicId) => {
-                return sdk.forProject.client.call(
-                    'GET',
-                    new URL(`${sdk.forProject.client.config.endpoint}/messaging/topics/${topicId}`),
-                    {
-                        'X-Appwrite-Project': sdk.forProject.client.config.project,
-                        'content-type': 'application/json',
-                        'X-Appwrite-Mode': 'admin'
-                    }
-                );
-            })
+            message.topics.map((topicId) => sdk.forProject.messaging.getTopic(topicId))
         ).then((results) => {
             results.forEach((result) => {
                 if (result.status === 'fulfilled') {
@@ -43,19 +23,9 @@ export const load: LayoutLoad = async ({ params, depends }) => {
             });
         });
 
-        const targetsById = {};
-        const targetsPromise = sdk.forProject.client
-            .call(
-                'GET',
-                new URL(
-                    `${sdk.forProject.client.config.endpoint}/messaging/messages/${params.message}/targets`
-                ),
-                {
-                    'X-Appwrite-Project': sdk.forProject.client.config.project,
-                    'content-type': 'application/json',
-                    'X-Appwrite-Mode': 'admin'
-                }
-            )
+        const targetsById: Record<string, Models.Target> = {};
+        const targetsPromise = sdk.forProject.messaging
+            .listTargets(params.message)
             .then((response) => {
                 response.targets.forEach((target) => {
                     targetsById[target.$id] = target;
@@ -64,12 +34,22 @@ export const load: LayoutLoad = async ({ params, depends }) => {
 
         await Promise.allSettled([topicsPromise, targetsPromise]);
 
+        const usersById: Record<string, Models.User<Models.Preferences>> = {};
+        const usersPromise = Object.values(targetsById).map((target) =>
+            sdk.forProject.users.get(target.userId).then((user) => {
+                usersById[user.$id] = user;
+            })
+        );
+
+        await Promise.allSettled(usersPromise);
+
         return {
+            message,
             topicsById,
             targetsById,
+            usersById,
             header: Header,
-            breadcrumbs: Breadcrumbs,
-            message: response
+            breadcrumbs: Breadcrumbs
         };
     } catch (e) {
         throw error(e.code, e.message);

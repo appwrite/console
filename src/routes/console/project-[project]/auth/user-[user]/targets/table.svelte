@@ -15,9 +15,7 @@
     import type { PageData } from './$types';
     import { columns } from './store';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import ProviderType, {
-        ProviderTypes
-    } from '$routes/console/project-[project]/messaging/providerType.svelte';
+    import ProviderType from '$routes/console/project-[project]/messaging/providerType.svelte';
     import Provider from '$routes/console/project-[project]/messaging/provider.svelte';
     import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/stores';
@@ -25,6 +23,7 @@
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
     import { invalidate } from '$app/navigation';
+    import { MessagingProviderType } from '@appwrite.io/console';
 
     export let data: PageData;
 
@@ -35,21 +34,9 @@
     async function handleDelete() {
         showDelete = false;
 
-        async function deleteTarget(id: string) {
-            await sdk.forProject.client.call(
-                'DELETE',
-                new URL(
-                    `${sdk.forProject.client.config.endpoint}/users/${$page.params.user}/targets/${id}`
-                ),
-                {
-                    'X-Appwrite-Project': sdk.forProject.client.config.project,
-                    'content-type': 'application/json',
-                    'X-Appwrite-Mode': 'admin'
-                }
-            );
-        }
-
-        const promises = selectedIds.map((id) => deleteTarget(id));
+        const promises = selectedIds.map((id) =>
+            sdk.forProject.users.deleteTarget($page.params.user, id)
+        );
 
         try {
             await Promise.all(promises);
@@ -103,7 +90,7 @@
                             {/key}
                         {:else if column.id === 'target'}
                             <TableCell title={column.title}>
-                                {#if target.providerType === ProviderTypes.Push}
+                                {#if target.providerType === MessagingProviderType.Push}
                                     {target.name}
                                 {:else}
                                     {target.identifier}

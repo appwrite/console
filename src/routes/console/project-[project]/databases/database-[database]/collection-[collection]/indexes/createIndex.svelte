@@ -9,6 +9,7 @@
     import { remove } from '$lib/helpers/array';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
+    import { IndexType } from '@appwrite.io/console';
     import { isRelationship } from '../document-[document]/attributes/store';
     import { indexes, type Attributes } from '../store';
     import { collection } from '../store';
@@ -22,11 +23,11 @@
     let error: string;
     let key = `index_${$indexes.length + 1}`;
     let types = [
-        { value: 'key', label: 'Key' },
-        { value: 'unique', label: 'Unique' },
-        { value: 'fulltext', label: 'FullText' }
+        { value: IndexType.Key, label: 'Key' },
+        { value: IndexType.Unique, label: 'Unique' },
+        { value: IndexType.Fulltext, label: 'FullText' }
     ];
-    let selectedType = 'key';
+    let selectedType = IndexType.Key;
 
     let attributeOptions = $collection.attributes
         .filter((attribute) => !isRelationship(attribute))
@@ -41,7 +42,7 @@
         attributeList = externalAttribute
             ? [{ value: externalAttribute.key, order: 'ASC' }]
             : [{ value: '', order: 'ASC' }];
-        selectedType = 'key';
+        selectedType = IndexType.Key;
         key = `index_${$indexes.length + 1}`;
     }
 

@@ -13,15 +13,8 @@
     export let showDelete = false;
     const deleteTopic = async () => {
         try {
-            await sdk.forProject.client.call(
-                'DELETE',
-                new URL(sdk.forProject.client.config.endpoint + '/messaging/topics/' + $topic.$id),
-                {
-                    'X-Appwrite-Project': sdk.forProject.client.config.project,
-                    'content-type': 'application/json',
-                    'X-Appwrite-Mode': 'admin'
-                }
-            );
+            await sdk.forProject.messaging.deleteTopic($topic.$id);
+
             showDelete = false;
             addNotification({
                 type: 'success',

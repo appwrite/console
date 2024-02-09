@@ -17,19 +17,7 @@
 
     const create = async () => {
         try {
-            const topic = await sdk.forProject.client.call(
-                'POST',
-                new URL(sdk.forProject.client.config.endpoint + '/messaging/topics'),
-                {
-                    'X-Appwrite-Project': sdk.forProject.client.config.project,
-                    'content-type': 'application/json',
-                    'X-Appwrite-Mode': 'admin'
-                },
-                {
-                    name,
-                    topicId: id ?? ID.unique()
-                }
-            );
+            const topic = await sdk.forProject.messaging.createTopic(id ?? ID.unique(), name);
             name = '';
             showCreate = false;
             showCustomId = false;

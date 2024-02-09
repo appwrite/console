@@ -2,8 +2,9 @@
     import { CardGrid, Heading } from '$lib/components';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { message } from './store';
-    import ProviderType, { ProviderTypes } from '../providerType.svelte';
+    import ProviderType from '../providerType.svelte';
     import MessageStatusPill from '../messageStatusPill.svelte';
+    import { MessagingProviderType } from '@appwrite.io/console';
 
     let scheduledAt: string = '';
     if ($message.status === 'sent') {
@@ -14,13 +15,13 @@
 
     let providerType = 'Invalid provider type';
     switch ($message.providerType) {
-        case ProviderTypes.Email:
+        case MessagingProviderType.Email:
             providerType = 'Email';
             break;
-        case ProviderTypes.Sms:
+        case MessagingProviderType.Sms:
             providerType = 'SMS';
             break;
-        case ProviderTypes.Push:
+        case MessagingProviderType.Push:
             providerType = 'Push';
             break;
     }

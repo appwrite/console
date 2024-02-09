@@ -1,9 +1,7 @@
 <script lang="ts">
-    import { page } from '$app/stores';
     import { Button } from '$lib/elements/forms';
     import {
         Empty,
-        EmptySearch,
         PaginationWithLimit,
         Heading,
         ViewSelector,
@@ -93,7 +91,7 @@
             total={data.targets.total} />
     {:else if $hasPageQueries}
         <EmptyFilter resource="targets" />
-    {:else if data.search}
+        <!-- {:else if data.search}
         <EmptySearch>
             <div class="u-text-center">
                 <b>Sorry, we couldn't find '{data.search}'</b>
@@ -104,7 +102,7 @@
                 href={`/console/project-${$page.params.project}/auth/user-${$page.params.user}/targets`}>
                 Clear Search
             </Button>
-        </EmptySearch>
+        </EmptySearch> -->
     {:else}
         <!-- TODO: update docs link -->
         <Empty

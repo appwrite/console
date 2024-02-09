@@ -16,7 +16,7 @@
     import FormList from '$lib/elements/forms/formList.svelte';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { ID } from '@appwrite.io/console';
+    import { ID, OAuthProvider } from '@appwrite.io/console';
     import { isCloud } from '$lib/system';
     import { page } from '$app/stores';
 
@@ -53,7 +53,7 @@
 
     function onGithubLogin() {
         sdk.forConsole.account.createOAuth2Session(
-            'github',
+            OAuthProvider.Github,
             window.location.origin,
             window.location.origin,
             undefined,

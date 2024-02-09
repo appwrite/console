@@ -1,19 +1,4 @@
 <script context="module" lang="ts">
-    export async function createPushMessage(params: PushMessageParams) {
-        const response = await sdk.forProject.client.call(
-            'POST',
-            new URL(sdk.forProject.client.config.endpoint + '/messaging/messages/push'),
-            {
-                'X-Appwrite-Project': sdk.forProject.client.config.project,
-                'content-type': 'application/json',
-                'X-Appwrite-Mode': 'admin'
-            },
-            params
-        );
-
-        return response.json();
-    }
-
     export function validateData(data: string[][]) {
         if (!data || data.length === 0) return;
 
@@ -39,13 +24,7 @@
 </script>
 
 <script lang="ts">
-    import {
-        messageParams,
-        providerType,
-        MessageStatuses,
-        type PushMessageParams,
-        operation
-    } from './store';
+    import { messageParams, providerType, operation } from './store';
     import {
         Button,
         FormItem,
@@ -62,9 +41,8 @@
     import { CustomId, Modal } from '$lib/components';
     import { user } from '$lib/stores/user';
     import { clickOnEnter } from '$lib/helpers/a11y';
-    import { ID } from '@appwrite.io/console';
+    import { ID, MessageType, MessagingProviderType } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
-    import { ProviderTypes } from '../providerType.svelte';
     import PushPhone from '../pushPhone.svelte';
     import { onMount } from 'svelte';
 
@@ -76,28 +54,35 @@
     let customData: [string, string][] = [];
 
     onMount(() => {
-        $messageParams[ProviderTypes.Push].data = customData || [['', '']];
+        $messageParams[MessagingProviderType.Push].data = customData || [['', '']];
     });
 
     async function sendTestMessage() {
         const email = selected === 'self' ? $user.email : otherEmail;
         console.log(email);
 
-        createPushMessage({
-            topics: $messageParams[ProviderTypes.Push]?.topics || [],
-            targets: $messageParams[ProviderTypes.Push]?.targets || [],
-            status: MessageStatuses.PROCESSING,
-            messageId: ID.unique(),
-            // TODO: properly handle the test email address
-            users: ['steven'],
-            body: $messageParams[ProviderTypes.Push]?.body || '',
-            title: $messageParams[ProviderTypes.Push]?.title || '',
-            data: $messageParams[ProviderTypes.Push]?.data || []
-        });
+        // TODO: replace with test method
+        sdk.forProject.messaging.createPush(
+            ID.unique(),
+            $messageParams[MessagingProviderType.Push]?.title || undefined,
+            $messageParams[MessagingProviderType.Push]?.body || undefined,
+            $messageParams[MessagingProviderType.Push]?.topics || [],
+            $messageParams[MessagingProviderType.Push]?.users || [],
+            $messageParams[MessagingProviderType.Push]?.targets || [],
+            $messageParams[MessagingProviderType.Push]?.data || undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            MessageType.Processing,
+            undefined
+        );
     }
 
     $: otherEmail = selected === 'self' ? '' : otherEmail;
-    $: customData = $messageParams[ProviderTypes.Push].data;
+    $: customData = $messageParams[MessagingProviderType.Push].data;
     $: dataError = validateData(customData || []);
 </script>
 
@@ -107,14 +92,14 @@
             id="title"
             label="Title"
             placeholder="Enter title"
-            bind:value={$messageParams[ProviderTypes.Push]['title']}>
+            bind:value={$messageParams[MessagingProviderType.Push]['title']}>
         </InputText>
         <div class="u-colum-gap-2">
             <InputTextarea
                 id="message"
                 label="Message"
                 placeholder="Type here..."
-                bind:value={$messageParams[ProviderTypes.Push]['body']}>
+                bind:value={$messageParams[MessagingProviderType.Push]['body']}>
             </InputTextarea>
             <!-- TODO: Add support for draft messages -->
             <!-- <div class="u-flex u-main-end">
@@ -175,7 +160,9 @@
                                 id={`${rowIndex}-key`}
                                 isMultiple
                                 fullWidth
-                                bind:value={$messageParams[ProviderTypes.Push].data[rowIndex][0]}
+                                bind:value={$messageParams[MessagingProviderType.Push].data[
+                                    rowIndex
+                                ][0]}
                                 placeholder="Enter key"
                                 label="Key"
                                 showLabel={false} />
@@ -184,7 +171,9 @@
                                 id={`${rowIndex}-value`}
                                 isMultiple
                                 fullWidth
-                                bind:value={$messageParams[ProviderTypes.Push].data[rowIndex][1]}
+                                bind:value={$messageParams[MessagingProviderType.Push].data[
+                                    rowIndex
+                                ][1]}
                                 placeholder="Enter value"
                                 label="Value"
                                 showLabel={false}
@@ -194,13 +183,14 @@
                                     text
                                     on:click={() => {
                                         if (customData.length === 1) {
-                                            $messageParams[ProviderTypes.Push].data = [['', '']];
+                                            $messageParams[MessagingProviderType.Push].data = [
+                                                ['', '']
+                                            ];
                                             return;
                                         }
 
-                                        $messageParams[ProviderTypes.Push].data = customData.filter(
-                                            (_, i) => i !== rowIndex
-                                        );
+                                        $messageParams[MessagingProviderType.Push].data =
+                                            customData.filter((_, i) => i !== rowIndex);
                                     }}>
                                     <span class="icon-x" aria-hidden="true" />
                                 </Button>
@@ -216,7 +206,7 @@
                     text
                     disabled={customData && customData[customData.length - 1][0] === ''}
                     on:click={() => {
-                        $messageParams[ProviderTypes.Push].data = [...customData, ['', '']];
+                        $messageParams[MessagingProviderType.Push].data = [...customData, ['', '']];
                     }}>
                     <span class="icon-plus" aria-hidden="true" />
                     <span class="text">Add data</span>
