@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { MessagingProviderType, type Models } from '@appwrite.io/console';
+    import { MessageType, MessagingProviderType, type Models } from '@appwrite.io/console';
     import {
         Table,
         TableBody,
@@ -9,10 +9,19 @@
         TableHeader,
         TableRow
     } from '$lib/elements/table';
-    import { CardGrid, Heading, Empty, PaginationInline, Id } from '$lib/components';
+    import { CardGrid, Heading, PaginationInline, Id, EmptySearch } from '$lib/components';
+    import { Button } from '$lib/elements/forms';
+    import { wizard } from '$lib/stores/wizard';
 
+    export let status: string;
     export let targets: Models.Target[];
     export let usersById: Record<string, Models.User<Models.Preferences>>;
+    export let onEdit: () => void;
+
+    function openToTargets() {
+        onEdit();
+        wizard.setStep(2);
+    }
 
     let offset = 0;
     const limit = 10;
@@ -56,7 +65,35 @@
                 </div>
             </div>
         {:else}
-            <Empty>Edit the message to add a Target</Empty>
+            <EmptySearch hidePagination>
+                <div class="u-text-center">
+                    No targets have been selected.
+                    {#if status === MessageType.Draft}
+                        <p>Edit the message and select targets to see them here.</p>
+                    {:else}
+                        <p>
+                            Need a hand? Check out our <Button
+                                link
+                                external
+                                href="http://appwrite.io/docs/products/messaging/targets"
+                                text>
+                                documentation</Button
+                            >.
+                        </p>
+                    {/if}
+                </div>
+                {#if status === MessageType.Draft}
+                    <div class="u-flex u-gap-16">
+                        <Button
+                            external
+                            href="http://appwrite.io/docs/products/messaging/targets"
+                            text>
+                            Documentation
+                        </Button>
+                        <Button secondary on:click={openToTargets}>Edit message</Button>
+                    </div>
+                {/if}
+            </EmptySearch>
         {/if}
     </svelte:fragment>
 </CardGrid>

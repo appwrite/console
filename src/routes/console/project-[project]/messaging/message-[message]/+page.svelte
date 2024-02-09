@@ -110,7 +110,11 @@
             message={$message}
             onEdit={$message.status === MessageType.Draft ? onEdit : null} />
     {/if}
-    <Topics topics={Object.values(data.topicsById)} />
-    <Targets targets={Object.values(data.targetsById)} usersById={data.usersById} />
+    <Topics topics={Object.values(data.topicsById)} status={$message.status} {onEdit} />
+    <Targets
+        targets={Object.values(data.targetsById)}
+        usersById={data.usersById}
+        status={$message.status}
+        {onEdit} />
     <Delete />
 </Container>
