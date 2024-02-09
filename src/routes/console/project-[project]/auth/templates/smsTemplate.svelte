@@ -8,6 +8,7 @@
     import deepEqual from 'deep-equal';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Box } from '$lib/components';
+    import type { TemplateLocale, TemplateType } from '@appwrite.io/console';
 
     export let loading = false;
     const projectId = $page.params.project;
@@ -35,10 +36,11 @@
                     eventType = Submit.SmsUpdateVerificationTemplate;
                     break;
             }
+            // TODO: fix TemplateType and TemplateLocale typing once SDK is updated
             await sdk.forConsole.projects.updateSmsTemplate(
                 projectId,
-                $smsTemplate.type,
-                $smsTemplate.locale,
+                $smsTemplate.type as TemplateType,
+                $smsTemplate.locale as TemplateLocale,
                 $smsTemplate.message
             );
 
