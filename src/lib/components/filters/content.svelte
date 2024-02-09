@@ -9,7 +9,7 @@
     } from '$lib/elements/forms';
     import { Query } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
-    import { tags, type Operator, queries } from './store';
+    import { tags, type Operator, queries, isTypeTagValue } from './store';
     import type { Column } from '$lib/helpers/types';
     import type { Writable } from 'svelte/store';
     import { tooltip } from '$lib/actions/tooltip';
@@ -23,7 +23,7 @@
 
     let columnId: string | null = null;
     $: column = $columns.find((c) => c.id === columnId) as Column;
-    let arrayValues = [];
+    let arrayValues: string[] = [];
 
     dispatch('apply', { applied: $tags.length });
 
@@ -213,20 +213,32 @@
 
     <ul class="u-flex u-flex-wrap u-cross-center u-gap-8 u-margin-block-start-16 tags">
         {#each $tags as tag (tag)}
-            <button
-                use:tooltip={{
-                    content: tag?.value,
-                    disabled: !tag?.value?.length
-                }}
-                class="tag"
-                on:click={() => {
-                    queries.removeFilter(tag);
-                }}>
-                <span class="text" use:tagFormat>
-                    {tag?.tag ?? tag}
-                </span>
-                <i class="icon-x" />
-            </button>
+            {#if isTypeTagValue(tag)}
+                <button
+                    use:tooltip={{
+                        content: tag?.value?.toString()
+                    }}
+                    class="tag"
+                    on:click={() => {
+                        queries.removeFilter(tag);
+                    }}>
+                    <span class="text" use:tagFormat>
+                        {tag.tag}
+                    </span>
+                    <i class="icon-x" />
+                </button>
+            {:else}
+                <button
+                    class="tag"
+                    on:click={() => {
+                        queries.removeFilter(tag);
+                    }}>
+                    <span class="text" use:tagFormat>
+                        {tag}
+                    </span>
+                    <i class="icon-x" />
+                </button>
+            {/if}
         {/each}
     </ul>
 </div>

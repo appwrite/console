@@ -5,17 +5,27 @@ import { page } from '$app/stores';
 import deepEqual from 'deep-equal';
 import type { Column, ColumnType } from '$lib/helpers/types';
 
+type TagValue = {
+    tag: string;
+    value: string | number | string[];
+};
+
+export function isTypeTagValue(obj: any): obj is TagValue {
+    return (
+        obj &&
+        typeof obj.tag === 'string' &&
+        (typeof obj.value === 'string' || typeof obj.value === 'number')
+    );
+}
+
 export type Operator = {
-    toTag: (
-        attribute: string,
-        input?: string | number | string[]
-    ) => string | { tag: string; value: string };
+    toTag: (attribute: string, input?: string | number | string[]) => string | TagValue;
     toQuery: (attribute: string, input?: string | number | string[]) => string;
     types: ColumnType[];
     hideInput?: boolean;
 };
 
-export function mapToQueryParams(map: Map<string, string>) {
+export function mapToQueryParams(map: Map<string | TagValue, string>) {
     return encodeURIComponent(JSON.stringify(Array.from(map.entries())));
 }
 
@@ -25,7 +35,7 @@ export function queryParamToMap(queryParam: string) {
     return new Map(queries);
 }
 
-function initQueries(initialValue = new Map<string, string | { tag: string; value: string }>()) {
+function initQueries(initialValue = new Map<string | TagValue, string>()) {
     const queries = writable(initialValue);
 
     type AddFilterArgs = {
@@ -41,7 +51,7 @@ function initQueries(initialValue = new Map<string, string | { tag: string; valu
         });
     }
 
-    function removeFilter(tag: string) {
+    function removeFilter(tag: string | TagValue) {
         queries.update((map) => {
             map.delete(tag);
             return map;
