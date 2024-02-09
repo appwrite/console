@@ -8,13 +8,14 @@
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { page } from '$app/stores';
+    import { AuthenticatorProvider } from '@appwrite.io/console';
 
     let code: string, disabled: boolean;
 
     async function verify() {
         try {
             disabled = true;
-            const challenge = await sdk.forConsole.account.createChallenge('totp');
+            const challenge = await sdk.forConsole.account.createChallenge(AuthenticatorProvider.Totp);
             await sdk.forConsole.account.updateChallenge(challenge.$id, code);
             await invalidate(Dependencies.ACCOUNT);
             trackEvent(Submit.AccountCreate);

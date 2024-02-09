@@ -9,7 +9,7 @@
 
     async function beforeSubmit() {}
 
-    const createMessage = (providerText:string) => {
+    const createMessage = (providerText: string) => {
         const vowels = ['a', 'e', 'i', 'o', 'u'];
         const firstLetter = providerText.toLowerCase().charAt(0);
         const lastLetter = providerText.toLowerCase().charAt(providerText.length - 1);

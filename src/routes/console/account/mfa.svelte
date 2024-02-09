@@ -8,7 +8,7 @@
     import { Table, TableBody, TableCell, TableRow } from '$lib/elements/table';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import type { Models } from '@appwrite.io/console';
+    import { AuthenticatorFactor, type Models } from '@appwrite.io/console';
 
     export let showSetup = false;
     export let showRecoveryCodes = false;
@@ -16,14 +16,14 @@
     let code: string;
     let provider: Models.MfaProvider = null;
     async function addAuthenticator(): Promise<URL> {
-        provider = await sdk.forConsole.account.addAuthenticator('totp');
+        provider = await sdk.forConsole.account.addAuthenticator(AuthenticatorFactor.Totp);
 
         return sdk.forConsole.avatars.getQR(provider.uri, 192 * 2);
     }
 
     async function verifyAuthenticator() {
         try {
-            await sdk.forConsole.account.verifyAuthenticator('totp', code);
+            await sdk.forConsole.account.verifyAuthenticator(AuthenticatorFactor.Totp, code);
             await invalidate(Dependencies.ACCOUNT);
             showSetup = false;
             showRecoveryCodes = true;

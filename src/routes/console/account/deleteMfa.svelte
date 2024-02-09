@@ -6,6 +6,7 @@
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
+    import { AuthenticatorProvider } from '@appwrite.io/console';
 
     export let showDelete = false;
 
@@ -13,7 +14,7 @@
 
     async function deleteProvider() {
         try {
-            await sdk.forConsole.account.deleteAuthenticator('totp', code);
+            await sdk.forConsole.account.deleteAuthenticator(AuthenticatorProvider.Totp, code);
             await invalidate(Dependencies.ACCOUNT);
             showDelete = false;
             addNotification({

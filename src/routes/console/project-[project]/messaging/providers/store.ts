@@ -26,7 +26,15 @@ type ProvidersMap = {
                 configure: {
                     label: string;
                     name: string;
-                    type: 'text' | 'password' | 'phone' | 'email' | 'domain' | 'file' | 'switch' | 'select';
+                    type:
+                        | 'text'
+                        | 'password'
+                        | 'phone'
+                        | 'email'
+                        | 'domain'
+                        | 'file'
+                        | 'switch'
+                        | 'select';
                     placeholder?: string;
                     description?: string;
                     popover?: string[];
