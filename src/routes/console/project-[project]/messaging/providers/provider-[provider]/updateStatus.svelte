@@ -133,14 +133,15 @@
                 $providerParams[$wizardProvider] = {
                     providerId: $provider.$id,
                     name: $provider.name,
-                    enabled: $provider.enabled,
+                    enabled: $provider.enabled
                 };
                 if ('serviceAccountJSON' in $provider.credentials) {
                     const serviceAccountJSON = $provider.credentials['serviceAccountJSON'];
                     if (typeof serviceAccountJSON === 'string') {
                         $providerParams[$wizardProvider].serviceAccountJSON = serviceAccountJSON;
                     } else if (serviceAccountJSON instanceof Object) {
-                        $providerParams[$wizardProvider].serviceAccountJSON = JSON.stringify(serviceAccountJSON);
+                        $providerParams[$wizardProvider].serviceAccountJSON =
+                            JSON.stringify(serviceAccountJSON);
                     }
                 }
                 break;
