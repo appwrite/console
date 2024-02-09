@@ -84,7 +84,9 @@
                     Object.entries(data['data'] ?? {}).forEach(([key, value]) => {
                         dataEntries.push([key, value.toString()]);
                     });
-                    $messageParams[$providerType]['data'] = dataEntries || [['', '']];
+                    $messageParams[$providerType]['data'] = dataEntries.length
+                        ? dataEntries
+                        : [['', '']];
                 }
                 break;
         }

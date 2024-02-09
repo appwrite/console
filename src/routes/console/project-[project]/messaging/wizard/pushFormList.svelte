@@ -54,7 +54,7 @@
     let customData: [string, string][] = [];
 
     onMount(() => {
-        $messageParams[MessagingProviderType.Push].data = customData || [['', '']];
+        customData = $messageParams[MessagingProviderType.Push].data;
     });
 
     async function sendTestMessage() {
