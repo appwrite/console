@@ -18,6 +18,7 @@
     import CreateOrganizationCloud from '../createOrganizationCloud.svelte';
     import { tierToPlan, type Tier } from '$lib/stores/billing';
     import { createOrganization } from '../wizard/cloudOrganization/store';
+    import { formatCurrency } from '$lib/helpers/numbers';
 
     let name: string;
     let id: string;
@@ -25,8 +26,8 @@
     let plan: Tier;
 
     const options = [
-        { value: BillingPlan.STARTER, label: 'Starter - $0/month' },
-        { value: BillingPlan.PRO, label: 'Pro - $15/month + add-ons' }
+        { value: BillingPlan.STARTER, label: `Starter - ${formatCurrency(0)}/month` },
+        { value: BillingPlan.PRO, label: `Pro - ${formatCurrency(0)}/month + add-ons` }
     ];
 
     onMount(() => {

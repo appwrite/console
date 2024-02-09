@@ -4,6 +4,7 @@
     import { BillingPlan } from '$lib/constants';
     import { FormList, InputTextarea } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
+    import { formatCurrency } from '$lib/helpers/numbers';
     import { WizardStep } from '$lib/layout';
     import type { Coupon } from '$lib/sdk/billing';
     import { plansInfo } from '$lib/stores/billing';
@@ -104,28 +105,30 @@
                     on:validation={(e) => ($changeOrganizationTier.couponCode = e.detail.code)} />
                 <span class="u-flex u-main-space-between">
                     <p class="text">{plan.name} plan</p>
-                    <p class="text">${plan.price}</p>
+                    <p class="text">{formatCurrency(plan.price)}</p>
                 </span>
                 <span class="u-flex u-main-space-between">
                     <p class="text">Additional members ({collaboratorsNumber})</p>
-                    <p class="text">${collaboratorPrice * collaboratorsNumber}</p>
+                    <p class="text">{formatCurrency(collaboratorPrice * collaboratorsNumber)}</p>
                 </span>
                 {#if couponData?.status === 'active'}
                     <span class="u-flex u-main-space-between">
                         <p class="text">Credits applied ({couponData.credits})</p>
-                        <p class="text">-${couponData.credits}</p>
+                        <p class="text">-{formatCurrency(couponData.credits)}</p>
                     </span>
                 {/if}
             {/if}
+            {@const estimatedTotal =
+                couponData?.status === 'active'
+                    ? totalExpences - couponData.credits >= 0
+                        ? totalExpences - couponData.credits
+                        : 0
+                    : totalExpences}
             <div class="u-sep-block-start" />
             <span class="u-flex u-main-space-between">
                 <p class="text">Estimated total</p>
                 <p class="text">
-                    ${couponData?.status === 'active'
-                        ? totalExpences - couponData.credits >= 0
-                            ? totalExpences - couponData.credits
-                            : 0
-                        : totalExpences}
+                    {formatCurrency(estimatedTotal)}
                 </p>
             </span>
 
