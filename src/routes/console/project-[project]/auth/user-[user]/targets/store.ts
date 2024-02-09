@@ -6,5 +6,5 @@ export const columns = writable<Column[]>([
     { id: 'target', title: 'Target', type: 'string', show: true, filter: false, width: 140 },
     { id: 'providerType', title: 'Type', type: 'string', show: true, filter: true, width: 80 },
     { id: 'provider', title: 'Provider', type: 'string', show: true, filter: false, width: 80 },
-    { id: '$createdAt', title: 'Created', type: 'string', show: true, width: 100 }
+    { id: '$createdAt', title: 'Created', type: 'datetime', show: true, width: 100 }
 ]);
