@@ -149,7 +149,7 @@
         <form class="form">
             <FormItem>
                 <Label
-                    tooltip="Deliver supplementary data alongside the notification, which remains hidden from the user's view but can be accessed by your application."
+                    tooltip="A key/value payload of additional metadata that's hidden from users. Use this to include information to support logic such as redirection and routing."
                     >Custom data <span class="u-color-text-gray">(Optional)</span></Label>
             </FormItem>
             <div class=" u-grid u-gap-8">
