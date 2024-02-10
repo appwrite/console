@@ -24,7 +24,7 @@
         hour: 'numeric',
         minute: 'numeric',
         hourCycle: 'h23',
-        timeZoneName: 'longOffset'
+        timeZoneName: 'longGeneric'
     };
 
     async function beforeSubmit() {
