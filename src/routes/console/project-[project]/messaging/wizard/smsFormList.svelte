@@ -39,6 +39,7 @@
                 id="message"
                 label="Message"
                 placeholder="Type here..."
+                maxlength={900}
                 bind:value={$messageParams[$providerType]['content']}>
             </InputTextarea>
             <!-- TODO: Add support for draft messages -->

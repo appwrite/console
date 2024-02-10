@@ -99,6 +99,7 @@
                 id="message"
                 label="Message"
                 placeholder="Type here..."
+                maxlength={1000}
                 bind:value={$messageParams[MessagingProviderType.Push]['body']}>
             </InputTextarea>
             <!-- TODO: Add support for draft messages -->
