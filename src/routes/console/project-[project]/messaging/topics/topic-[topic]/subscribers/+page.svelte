@@ -125,8 +125,7 @@
             total={data.subscribers.total} />
     {:else if $hasPageQueries}
         <EmptyFilter resource="subscribers" />
-        <!-- TODO: remove data.search != 'empty' when the API is ready with data -->
-    {:else if data.search && data.search != 'empty'}
+    {:else if data.search}
         <EmptySearch>
             <div class="u-text-center">
                 <b>Sorry, we couldn't find '{data.search}'</b>
@@ -139,11 +138,10 @@
             </Button>
         </EmptySearch>
     {:else}
-        <!-- TODO: update docs link -->
         <Empty
             single
             on:click={() => (showAdd = true)}
-            href="https://appwrite.io/docs/references/cloud/client-web/teams"
+            href="https://appwrite.io/docs/products/messaging/topics/#subscribe-targets-to-topics"
             target="subscriber" />
     {/if}
 </Container>

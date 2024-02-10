@@ -230,19 +230,14 @@
             total={data.messages.total} />
     {:else if $hasPageQueries}
         <EmptyFilter resource="messages" />
-        <!-- TODO: remove data.search != 'empty' when the API is ready with data -->
-    {:else if data.search && data.search != 'empty'}
+    {:else if data.search}
         <EmptySearch>
             <div class="u-text-center">
                 <b>Sorry, we couldn't find '{data.search}'</b>
                 <p>There are no messages that match your search.</p>
             </div>
             <div class="u-flex u-gap-16">
-                <!-- TODO: update docs link -->
-                <Button
-                    external
-                    href="https://appwrite.io/docs/products/storage/upload-download"
-                    text>
+                <Button external href="https://appwrite.io/docs/products/messaging/messages" text>
                     Documentation
                 </Button>
                 <Button secondary href={`/console/project-${$page.params.project}/messaging`}>
@@ -251,12 +246,7 @@
             </div>
         </EmptySearch>
     {:else}
-        <!-- TODO: update docs link -->
-        <Empty
-            single
-            href="https://appwrite.io/docs"
-            target="message"
-            on:click={() => ($showCreate = true)}>
+        <Empty single target="message" on:click={() => ($showCreate = true)}>
             <div class="u-text-center">
                 <Heading size="7" tag="h2" trimmed={false}>
                     Create your first message to get started.
@@ -268,7 +258,7 @@
             <div class="u-flex u-flex-wrap u-gap-16 u-main-center">
                 <Button
                     external
-                    href="https://appwrite.io/docs/references/cloud/client-web/messages"
+                    href="https://appwrite.io/docs/products/messaging/messages"
                     text
                     event="empty_documentation"
                     ariaLabel={`create message`}>

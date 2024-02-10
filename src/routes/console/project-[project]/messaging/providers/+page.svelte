@@ -82,7 +82,6 @@
             </Button>
         </EmptySearch>
     {:else}
-        <!-- TODO: Update docs links -->
         <Empty single target="provider">
             <div class="u-text-center">
                 <Heading size="7" tag="h2" trimmed={false}>
@@ -95,7 +94,7 @@
             <div class="u-flex u-flex-wrap u-gap-16 u-main-center">
                 <Button
                     external
-                    href="https://appwrite.io/docs/references/cloud/client-web/providers"
+                    href="https://appwrite.io/docs/products/messaging/providers"
                     text
                     event="empty_documentation"
                     ariaLabel={`create provider`}>
