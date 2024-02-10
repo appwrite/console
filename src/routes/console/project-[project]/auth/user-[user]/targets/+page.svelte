@@ -1,11 +1,11 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
     import {
-        Empty,
         PaginationWithLimit,
         Heading,
         ViewSelector,
-        EmptyFilter
+        EmptyFilter,
+        EmptySearch
     } from '$lib/components';
     import { Container } from '$lib/layout';
     import type { PageData } from './$types';
@@ -104,12 +104,20 @@
             </Button>
         </EmptySearch> -->
     {:else}
-        <!-- TODO: update docs link -->
-        <Empty
-            single
-            on:click={() => (showAdd = true)}
-            href="https://appwrite.io/docs/references/cloud/client-web/teams"
-            target="subscriber" />
+        <EmptySearch hidePagination>
+            <div class="u-text-center">
+                <p>No targets are assigned to this user. Messages can not be sent to them.</p>
+                <p>
+                    Need a hand? Check out our <Button
+                        link
+                        external
+                        href="http://appwrite.io/docs/products/messaging/targets"
+                        text>
+                        documentation</Button
+                    >.
+                </p>
+            </div>
+        </EmptySearch>
     {/if}
 </Container>
 
