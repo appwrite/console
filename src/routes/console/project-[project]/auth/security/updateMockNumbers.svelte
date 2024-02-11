@@ -30,7 +30,7 @@
     let otp: string = null;
 
     onMount(async () => {
-        console.log($numbers)
+        console.log($numbers);
     });
 
     async function updateMockNumbers() {
@@ -92,8 +92,8 @@
 <CardGrid>
     <Heading tag="h6" size="7" id="variables">Mock Phone Numbers</Heading>
     <p>
-        Create upto 10 mock phone numbers and verification codes for testing. These numbers
-        can be used to simulate the phone number verification without sending an SMS.
+        Create upto 10 mock phone numbers and verification codes for testing. These numbers can be
+        used to simulate the phone number verification without sending an SMS.
     </p>
 
     <svelte:fragment slot="aside">
