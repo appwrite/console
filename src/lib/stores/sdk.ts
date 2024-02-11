@@ -21,6 +21,7 @@ import {
     Vcs
 } from '@appwrite.io/console';
 import { Billing } from '../sdk/billing';
+import { Auth } from '$lib/sdk/auth';
 
 const endpoint = VARS.APPWRITE_ENDPOINT ?? `${globalThis?.location?.origin}/v1`;
 
@@ -65,6 +66,7 @@ export const sdk = {
         health: new Health(clientConsole),
         locale: new Locale(clientConsole),
         projects: new Projects(clientConsole),
+        auth: new Auth(clientConsole),
         teams: new Teams(clientConsole),
         users: new Users(clientConsole),
         migrations: new Migrations(clientConsole),
