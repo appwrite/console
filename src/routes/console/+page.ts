@@ -8,9 +8,9 @@ export const load: PageLoad = async ({ parent, url }) => {
     if (organizations.total) {
         const teamId = account.prefs.organization ?? organizations.teams[0].$id;
         if (!teamId) {
-            throw redirect(303, `${base}/console/account/organizations${url.search ?? ''}`);
-        } else throw redirect(303, `${base}/console/organization-${teamId}${url.search ?? ''}`);
+            redirect(303, `${base}/console/account/organizations${url.search ?? ''}`);
+        } else redirect(303, `${base}/console/organization-${teamId}${url.search ?? ''}`);
     } else {
-        throw redirect(303, `${base}/console/onboarding${url.search ?? ''}`);
+        redirect(303, `${base}/console/onboarding${url.search ?? ''}`);
     }
 };

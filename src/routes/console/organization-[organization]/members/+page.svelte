@@ -1,9 +1,7 @@
 <script lang="ts">
-    import { invalidate } from '$app/navigation';
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { AvatarInitials, PaginationWithLimit } from '$lib/components';
-    import { Dependencies } from '$lib/constants';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import {
@@ -29,7 +27,6 @@
     let selectedMember: Models.Membership;
     let showDelete = false;
     const url = `${$page.url.origin}/console/`;
-    const deleted = () => invalidate(Dependencies.ACCOUNT);
     const resend = async (member: Models.Membership) => {
         try {
             await sdk.forConsole.teams.createMembership(
@@ -73,7 +70,10 @@
                 <TableCellHead width={90} />
                 <TableCellHead width={30} />
             </TableHeader>
-            <TableBody service="members" total={data.organizationMembers.total}>
+            <TableBody
+                service="members"
+                total={data.organizationMembers.total}
+                event="members_list">
                 {#each data.organizationMembers.memberships as member}
                     <TableRow>
                         <TableCell title="Name">
@@ -124,4 +124,4 @@
     {/if}
 </Container>
 
-<Delete {selectedMember} bind:showDelete on:deleted={() => deleted()} />
+<Delete {selectedMember} bind:showDelete />

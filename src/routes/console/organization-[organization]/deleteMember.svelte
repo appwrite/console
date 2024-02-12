@@ -1,6 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { goto } from '$app/navigation';
+    import { goto, invalidate } from '$app/navigation';
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
@@ -9,6 +9,10 @@
     import { createEventDispatcher } from 'svelte';
     import { user } from '$lib/stores/user';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { Dependencies } from '$lib/constants';
+    import { checkForUsageLimit } from '$lib/stores/billing';
+    import { isCloud } from '$lib/system';
+    import { organization } from '$lib/stores/organization';
 
     const dispatch = createEventDispatcher();
 
@@ -24,6 +28,11 @@
                 await goto(`${base}/login`);
             } else {
                 dispatch('deleted');
+            }
+            invalidate(Dependencies.ACCOUNT);
+            invalidate(Dependencies.MEMBERS);
+            if (isCloud && $organization) {
+                await checkForUsageLimit($organization);
             }
             showDelete = false;
             addNotification({

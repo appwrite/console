@@ -62,7 +62,7 @@
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">Select region</svelte:fragment>
+    <svelte:fragment slot="title">Regions</svelte:fragment>
     <svelte:fragment slot="subtitle">
         Choose a deployment region for your project. This region cannot be changed.
     </svelte:fragment>

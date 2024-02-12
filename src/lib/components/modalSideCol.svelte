@@ -41,8 +41,10 @@
                     </slot>
                 </p>
             </header>
-            <div class="modal-content mk-content">
-                <slot />
+            <div class="modal-content">
+                <div class="modal-content-spacer u-flex-vertical u-gap-24 u-width-full-line">
+                    <slot />
+                </div>
             </div>
         </div>
     </div>

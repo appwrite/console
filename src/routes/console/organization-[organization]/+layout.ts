@@ -13,6 +13,7 @@ import { preferences } from '$lib/stores/preferences';
 
 export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.ORGANIZATION);
+    depends(Dependencies.MEMBERS);
     depends(Dependencies.PAYMENT_METHODS);
 
     if (isCloud) {
@@ -44,6 +45,6 @@ export const load: LayoutLoad = async ({ params, depends }) => {
         const newPrefs = { ...prefs, organization: null };
         sdk.forConsole.account.updatePrefs(newPrefs);
         localStorage.removeItem('organization');
-        throw error(e.code, e.message);
+        error(e.code, e.message);
     }
 };

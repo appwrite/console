@@ -11,6 +11,7 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { isCloud } from '$lib/system';
     import { plansInfo } from '$lib/stores/billing';
+    import { formatCurrency } from '$lib/helpers/numbers';
 
     export let showCreate = false;
 
@@ -34,6 +35,8 @@
             );
             await invalidate(Dependencies.ACCOUNT);
             await invalidate(Dependencies.ORGANIZATION);
+            await invalidate(Dependencies.MEMBERS);
+
             showCreate = false;
             addNotification({
                 type: 'success',
@@ -61,7 +64,7 @@
                 You can add unlimited organization members on the {plan.name} plan at no cost.
             {:else if $organization?.billingPlan === BillingPlan.PRO}
                 You can add unlimited organization members on the {plan.name} plan for
-                <b>${plan.addons.member.price} each per billing period</b>.
+                <b>{formatCurrency(plan.addons.member.price)} each per billing period</b>.
             {/if}
         </Alert>
     {/if}

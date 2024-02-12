@@ -16,6 +16,7 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { isCloud } from '$lib/system';
     import { page } from '$app/stores';
+    import { redirectTo } from '$routes/store';
 
     let mail: string, pass: string, disabled: boolean;
 
@@ -23,12 +24,18 @@
         try {
             disabled = true;
             await sdk.forConsole.account.createEmailSession(mail, pass);
-            await invalidate(Dependencies.ACCOUNT);
             addNotification({
                 type: 'success',
                 message: 'Successfully logged in.'
             });
+            if ($redirectTo) {
+                window.location.href = $redirectTo;
+                return;
+            }
+
+            await invalidate(Dependencies.ACCOUNT);
             trackEvent(Submit.AccountCreate);
+
             if ($page.url.searchParams) {
                 const redirect = $page.url.searchParams.get('redirect');
                 $page.url.searchParams.delete('redirect');
@@ -52,6 +59,7 @@
 
     function onGithubLogin() {
         let url = window.location.origin;
+
         if ($page.url.searchParams) {
             const redirect = $page.url.searchParams.get('redirect');
             $page.url.searchParams.delete('redirect');

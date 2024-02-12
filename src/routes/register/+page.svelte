@@ -19,6 +19,7 @@
     import { ID } from '@appwrite.io/console';
     import { isCloud } from '$lib/system';
     import { page } from '$app/stores';
+    import { redirectTo } from '$routes/store';
 
     let name: string, mail: string, pass: string, disabled: boolean;
     let terms = false;
@@ -28,7 +29,14 @@
             disabled = true;
             await sdk.forConsole.account.create(ID.unique(), mail, pass, name ?? '');
             await sdk.forConsole.account.createEmailSession(mail, pass);
+
+            if ($redirectTo) {
+                window.location.href = $redirectTo;
+                return;
+            }
+
             await invalidate(Dependencies.ACCOUNT);
+
             if ($page.url.searchParams) {
                 const redirect = $page.url.searchParams.get('redirect');
                 $page.url.searchParams.delete('redirect');

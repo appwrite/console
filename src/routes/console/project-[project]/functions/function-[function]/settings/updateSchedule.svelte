@@ -58,7 +58,7 @@
         <Heading tag="h6" size="7" id="schedule">Schedule</Heading>
         <p>
             Set a Cron schedule to trigger your function. Leave blank for no schedule. <a
-                href="https://appwrite.io/docs/products/functions/execution"
+                href="https://appwrite.io/docs/products/functions/execution#schedule"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="link">
