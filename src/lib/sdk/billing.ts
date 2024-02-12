@@ -750,7 +750,7 @@ export class Billing {
         organizationId: string,
         billingAddressId: string
     ): Promise<PaymentMethodData> {
-        const path = `/organizations/${organizationId}/payment-methods/${billingAddressId}`;
+        const path = `/organizations/${organizationId}/billing-addresses/${billingAddressId}`;
         const params = {
             organizationId,
             billingAddressId
