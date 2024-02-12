@@ -4,8 +4,6 @@
     export let showOverflow = false;
     export let onlyDesktop = false;
     export let width: number = null;
-
-    let container: HTMLDivElement | null;
 </script>
 
 <div
@@ -16,7 +14,6 @@
     data-title={title}
     role="cell"
     data-private
-    bind:this={container}
     >
-    <Trim ancestor={container}><slot /></Trim>
+    <Trim><slot /></Trim>
 </div>
