@@ -21,6 +21,7 @@
         TableScroll
     } from '$lib/elements/table';
     import { toLocaleDate } from '$lib/helpers/date';
+    import { formatCurrency } from '$lib/helpers/numbers';
     import type { InvoiceList } from '$lib/sdk/billing';
     import { sdk } from '$lib/stores/sdk';
     import { VARS } from '$lib/system';
@@ -90,7 +91,9 @@
                                         {status === 'requires_authentication' ? 'failed' : status}
                                     </Pill>
                                 </TableCell>
-                                <TableCellText title="due">${invoice.amount}</TableCellText>
+                                <TableCellText title="due">
+                                    {formatCurrency(invoice.amount)}
+                                </TableCellText>
                                 <TableCell showOverflow>
                                     <DropList
                                         bind:show={showDropdown[i]}
