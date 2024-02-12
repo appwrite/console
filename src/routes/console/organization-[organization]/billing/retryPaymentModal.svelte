@@ -125,7 +125,6 @@
         methods={filteredMethods}
         defaultMethod={$organization?.paymentMethodId}
         backupMethod={$organization?.backupPaymentMethodId}
-        showSetAsDefault
         bind:setAsDefault
         bind:name
         bind:group={paymentMethodId} />
