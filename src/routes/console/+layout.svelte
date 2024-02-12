@@ -40,6 +40,7 @@
     import UsageRates from './wizard/cloudOrganization/usageRates.svelte';
     import { activeHeaderAlert, consoleVariables } from './store';
     import { headerAlert } from '$lib/stores/headerAlert';
+    import { sdk } from '$lib/stores/sdk';
 
     function kebabToSentenceCase(str: string) {
         return str
@@ -247,6 +248,13 @@
             $stripe = await loadStripe(VARS.STRIPE_PUBLIC_KEY);
         }
     });
+
+    async function checkForMandate() {
+        const paymentMethods = await sdk.forConsole.billing.listPaymentMethods();
+        const missingMandate = paymentMethods.paymentMethods.filter(
+            (method) => method.mandateId === null && method.country === 'in'
+        );
+    }
 
     function checkForFeedback(interval: number) {
         const minutes = interval / 60000;
