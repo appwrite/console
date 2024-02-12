@@ -16,6 +16,7 @@
     import Loading from './loading.svelte';
     import { loading, requestedMigration } from './store';
     import { parseIfString } from '$lib/helpers/object';
+    import posthog from 'posthog-js'
     import Consent, { consent } from '$lib/components/consent.svelte';
 
     if (browser) {
@@ -23,6 +24,7 @@
     }
 
     onMount(async () => {
+        posthog.init('phc_UEfGrRdPIaFWVGcFHc7vgXRCFUiV2KN614AO4dunHF0', { api_host: 'https://app.posthog.com' })
         if ($page.url.searchParams.has('migrate')) {
             const migrateData = $page.url.searchParams.get('migrate');
             requestedMigration.set(parseIfString(migrateData) as Record<string, string>);
