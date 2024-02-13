@@ -5,6 +5,7 @@
     import { Query, type Models } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
     import { providerType } from './wizard/store';
+    import ProviderType from './providerType.svelte';
 
     export let show: boolean;
     export let topicsById: Record<string, Models.Topic>;
@@ -82,7 +83,7 @@
 <Modal {title} bind:show onSubmit={submit} on:close={reset} size="big">
     <p class="text">
         Select existing topics you want to send this message to its subscribers. The message will be
-        sent only to {$providerType} targets.
+        sent only to <ProviderType type={$providerType} noIcon /> targets.
     </p>
     <InputSearch
         autofocus
