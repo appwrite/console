@@ -169,13 +169,18 @@
                                     </TableCellText>
                                 {:else if column.id === 'status'}
                                     <TableCellText onlyDesktop title="Status">
-                                        <MessageStatusPill
-                                            status={message.status}
-                                            on:click={(e) => {
-                                                e.preventDefault();
-                                                errors = message.deliveryErrors;
-                                                showFailed = true;
-                                            }} />
+                                        <span class="u-inline-flex u-gap-12 u-cross-center">
+                                            <MessageStatusPill status={message.status} />
+                                            {#if message.status === 'failed'}
+                                                <Button
+                                                    link
+                                                    on:click={(e) => {
+                                                        e.preventDefault();
+                                                        errors = message.deliveryErrors;
+                                                        showFailed = true;
+                                                    }}>Details</Button>
+                                            {/if}
+                                        </span>
                                     </TableCellText>
                                 {:else if column.type === 'datetime'}
                                     <TableCellText title={column.title} width={column.width}>
