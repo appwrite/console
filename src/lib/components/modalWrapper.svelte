@@ -70,12 +70,13 @@
 
 <dialog
     class="modal"
+    class:u-hide={!show}
     class:is-small={size === 'small'}
     class:is-big={size === 'big'}
     class:is-separate-header={headerDivider}
-    {style}
     bind:this={dialog}
-    on:cancel|preventDefault>
+    on:cancel|preventDefault
+    {style}>
     {#if show}
         <slot close={closeModal} />
     {/if}
