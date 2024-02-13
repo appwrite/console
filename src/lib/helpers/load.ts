@@ -44,17 +44,18 @@ export function isTabSelected(
     basePath: string,
     tabs: TabElement[]
 ) {
+    const currentPath = pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
     if (!tab?.hasChildren) {
-        return tab.href === pathname;
+        return tab.href === currentPath;
     } else {
-        if (tab.href === pathname) return true;
+        if (tab.href === currentPath) return true;
 
         if (tab.href === basePath) {
-            if (!tabs.some((t) => pathname.includes(t.href) && t.href !== tab.href)) {
-                return pathname.includes(tab.href);
+            if (!tabs.some((t) => currentPath.includes(t.href) && t.href !== tab.href)) {
+                return currentPath.includes(tab.href);
             }
         } else {
-            return pathname.includes(tab.href);
+            return currentPath.includes(tab.href);
         }
     }
 }
