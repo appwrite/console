@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Button, FormList, InputText } from '$lib/elements/forms';
+    import { formatCurrency } from '$lib/helpers/numbers';
     import type { Coupon } from '$lib/sdk/billing';
     import { sdk } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
@@ -55,7 +56,7 @@
         <div>
             <span class="icon-exclamation-circle u-color-text-danger" />
             <span>
-                {couponData.code} is not a valid promo code
+                {couponData.code.toUpperCase()} is not a valid promo code
             </span>
         </div>
     {:else if couponData?.status === 'active'}
@@ -64,11 +65,13 @@
                 <span class="icon-tag u-color-text-success" />
                 <slot data={couponData}>
                     <span>
-                        {couponData.code} applied (-${couponData.credits})
+                        {couponData.code.toUpperCase()} applied (-{formatCurrency(
+                            couponData.credits
+                        )})
                     </span>
                 </slot>
             </div>
-            <Button text on:click={removeCoupon}>Remove</Button>
+            <Button round text on:click={removeCoupon}><span class="icon-x"></span></Button>
         </div>
     {/if}
 </FormList>
