@@ -102,18 +102,13 @@
             {#if tier === 'Starter'}
                 <p class="text">
                     You are limited to {limit} GB of storage on the {tier} plan.
-                    <button class="link" type="button" on:click|preventDefault={upgradeMethod}
-                        >Upgrade</button>
-                    for addtional storage.
+                    <Button link on:click={upgradeMethod}>Upgrade</Button>
                 </p>
             {:else}
                 <p class="text">
                     You are limited to {limit} GB storage on the {tier} plan. After this amount
-                    <button
-                        class="link"
-                        type="button"
-                        on:click|preventDefault={() => ($showUsageRatesModal = true)}
-                        >usage fees will apply</button>
+                    <Button link on:click={() => ($showUsageRatesModal = true)}
+                        >usage fees will apply</Button>
                     .
                 </p>
             {/if}
