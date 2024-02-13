@@ -2,7 +2,14 @@ import { page } from '$app/stores';
 import { derived, get, writable } from 'svelte/store';
 import { sdk } from './sdk';
 import { organization, type Organization } from './organization';
-import type { InvoiceList, AddressesList, Invoice, PaymentList, PlansMap } from '$lib/sdk/billing';
+import type {
+    InvoiceList,
+    AddressesList,
+    Invoice,
+    PaymentList,
+    PlansMap,
+    PaymentMethodData
+} from '$lib/sdk/billing';
 import { isCloud } from '$lib/system';
 import { cachedStore } from '$lib/helpers/cache';
 import { Query } from '@appwrite.io/console';
@@ -14,6 +21,7 @@ import { base } from '$app/paths';
 import { activeHeaderAlert } from '$routes/console/store';
 import MarkedForDeletion from '$lib/components/billing/alerts/markedForDeletion.svelte';
 import { BillingPlan } from '$lib/constants';
+import PaymentMandate from '$lib/components/billing/alerts/paymentMandate.svelte';
 
 export type Tier = 'tier-0' | 'tier-1' | 'tier-2';
 
@@ -266,10 +274,19 @@ export function checkForMarkedForDeletion(org: Organization) {
     }
 }
 
+export const paymentMissingMandate = writable<PaymentMethodData>(null);
+
 export async function checkForMandate(org: Organization) {
     const paymentId = org.paymentMethodId ?? org.backupPaymentMethodId;
     const paymentMethod = await sdk.forConsole.billing.getPaymentMethod(paymentId);
     if (paymentMethod.mandateId === null && paymentMethod.country === 'in') {
-        const method = sdk.forConsole.billing.setupPaymentMandate(org.$id, paymentId);
+        headerAlert.add({
+            id: 'paymentMandate',
+            component: PaymentMandate,
+            show: true,
+            importance: 8
+        });
+        activeHeaderAlert.set(headerAlert.get());
+        paymentMissingMandate.set(paymentMethod);
     }
 }
