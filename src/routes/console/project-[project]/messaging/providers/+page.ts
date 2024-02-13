@@ -32,7 +32,7 @@ export const load = async ({ depends, url, route }) => {
         query,
         page,
         view,
-        providers: sdk.forProject.messaging.listProviders(
+        providers: await sdk.forProject.messaging.listProviders(
             [
                 Query.limit(limit),
                 Query.offset(offset),

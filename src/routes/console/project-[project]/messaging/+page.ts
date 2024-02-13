@@ -33,7 +33,7 @@ export const load: PageLoad = async ({ depends, url, route }) => {
         query,
         page,
         view,
-        messages: sdk.forProject.messaging.listMessages(
+        messages: await sdk.forProject.messaging.listMessages(
             [
                 Query.limit(limit),
                 Query.offset(offset),
@@ -41,9 +41,9 @@ export const load: PageLoad = async ({ depends, url, route }) => {
                 ...parsedQueries.values()
             ],
             search || undefined
-        ) as Promise<{
+        ) as {
             total: number;
             messages: (Models.Message & { data: Record<string, string> })[]; // Add typing for message.data
-        }>
+        }
     };
 };
