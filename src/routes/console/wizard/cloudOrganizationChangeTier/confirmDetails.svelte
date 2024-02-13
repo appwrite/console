@@ -2,7 +2,7 @@
     import { Box, CreditCardBrandImage } from '$lib/components';
     import { CouponInput } from '$lib/components/billing';
     import { BillingPlan } from '$lib/constants';
-    import { FormList, InputTextarea } from '$lib/elements/forms';
+    import { FormList, InputSelect, InputTextarea } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
     import { formatCurrency } from '$lib/helpers/numbers';
     import { WizardStep } from '$lib/layout';
@@ -45,21 +45,58 @@
     $: if (!$isUpgrade) {
         $changeOrganizationFinalAction = 'Confirm plan change';
     }
+
+    const options = [
+        {
+            value: 'availableFeatures',
+            label: "The available features don't meet my needs"
+        },
+        {
+            value: 'bugs',
+            label: 'I experienced bugs or unexpected outages while using the console'
+        },
+        {
+            value: 'starter',
+            label: 'The Starter plan is enough for my projects'
+        },
+        {
+            value: 'budget',
+            label: "I don't have the budget"
+        },
+        {
+            value: 'tryOut',
+            label: 'I just wanted to try it out'
+        },
+        {
+            value: 'alternative',
+            label: 'I found an alternative/competitor to meet my needs'
+        },
+        {
+            value: 'other',
+            label: 'Other'
+        }
+    ];
 </script>
 
 {#if downgradeToStarter}
     <WizardStep>
         <svelte:fragment slot="title">Confirm plan change</svelte:fragment>
         <svelte:fragment slot="subtitle">
-            Your feedback is important to us and helps us improve the services Appwrite offer. If
-            there is a specific reason you chose to change your plan at this time, please let us
-            know.
+            Your feedback is important to us and helps us improve the services Appwrite offers.
+            Please let us know if there is a specific reason for changing your plan.
         </svelte:fragment>
         <FormList>
+            <InputSelect
+                id="reason"
+                label="What made you decide to change your plan?*"
+                placeholder="Select one"
+                required
+                {options}
+                bind:value={comment} />
             <InputTextarea
                 id="comment"
                 label="Your feedback here"
-                placeholder="This is my reason for downgrading..."
+                placeholder="Enter feedback"
                 bind:value={comment} />
         </FormList>
     </WizardStep>
