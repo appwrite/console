@@ -19,8 +19,8 @@
     },
     "dependencies": {
         "@appwrite.io/console": "^0.6.0-rc.9",
-        "@appwrite.io/pink": "0.2.0",
-        "@appwrite.io/pink-icons": "0.2.0",
+        "@appwrite.io/pink": "0.4.0",
+        "@appwrite.io/pink-icons": "0.4.0",
         "@popperjs/core": "^2.11.8",
         "@sentry/svelte": "^7.66.0",
         "@sentry/tracing": "^7.66.0",
@@ -44,9 +44,9 @@
         "@melt-ui/pp": "^0.1.4",
         "@melt-ui/svelte": "^0.61.2",
         "@playwright/test": "^1.37.1",
-        "@sveltejs/adapter-static": "^2.0.3",
-        "@sveltejs/kit": "^1.24.0",
-        "@sveltejs/vite-plugin-svelte": "^2.4.5",
+        "@sveltejs/adapter-static": "^3.0.1",
+        "@sveltejs/kit": "^2.5.0",
+        "@sveltejs/vite-plugin-svelte": "^3.0.2",
         "@testing-library/dom": "^9.0.1",
         "@testing-library/jest-dom": "^5.16.5",
         "@testing-library/svelte": "^4.0.3",
@@ -71,7 +71,7 @@
         "svelte-sequential-preprocessor": "^2.0.1",
         "tslib": "^2.6.2",
         "typescript": "^5.2.2",
-        "vite": "^4.4.9",
+        "vite": "^5.1.1",
         "vitest": "^0.29.7"
     },
     "type": "module"
