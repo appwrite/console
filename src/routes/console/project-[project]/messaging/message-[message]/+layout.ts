@@ -52,6 +52,6 @@ export const load: LayoutLoad = async ({ params, depends }) => {
             breadcrumbs: Breadcrumbs
         };
     } catch (e) {
-        throw error(e.code, e.message);
+        error(e.code, e.message);
     }
 };

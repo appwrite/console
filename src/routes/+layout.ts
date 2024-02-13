@@ -43,11 +43,11 @@ export const load: LayoutLoad = async ({ depends, url }) => {
 
         if (error.type === 'user_more_factors_required') {
             if (url.pathname === '/mfa') return;
-            throw redirect(303, `/mfa${path}`);
+            redirect(303, `/mfa${path}`);
         }
 
         if (!acceptedRoutes.some((n) => url.pathname.startsWith(n))) {
-            throw redirect(303, `/login${path}`);
+            redirect(303, `/login${path}`);
         }
     }
 };
