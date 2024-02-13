@@ -5,8 +5,13 @@
     import ProviderType from '../providerType.svelte';
     import MessageStatusPill from '../messageStatusPill.svelte';
     import { MessagingProviderType } from '@appwrite.io/console';
+    import { Button } from '$lib/elements/forms';
+    import FailedModal from '../failedModal.svelte';
 
     let scheduledAt: string = '';
+    let showFailed = false;
+    let errors: string[] = [];
+
     if ($message.status === 'sent') {
         scheduledAt = $message.deliveredAt;
     } else if ($message.status === 'scheduled') {
@@ -46,8 +51,16 @@
     </svelte:fragment>
 
     <svelte:fragment slot="actions">
-        <!-- TODO: Add support for editing draft messages -->
-        <!-- <Button disabled={$message.status !== 'draft'} on:click={() => console.log('click')}
-            >Edit message</Button> -->
+        {#if $message.status === 'failed'}
+            <Button
+                text
+                on:click={(e) => {
+                    e.preventDefault();
+                    errors = $message.deliveryErrors;
+                    showFailed = true;
+                }}>View logs</Button>
+        {/if}
     </svelte:fragment>
 </CardGrid>
+
+<FailedModal bind:show={showFailed} {errors} />
