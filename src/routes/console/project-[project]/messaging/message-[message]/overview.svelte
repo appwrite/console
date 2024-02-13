@@ -53,7 +53,7 @@
     <svelte:fragment slot="actions">
         {#if $message.status === 'failed'}
             <Button
-                text
+                secondary
                 on:click={(e) => {
                     e.preventDefault();
                     errors = $message.deliveryErrors;
