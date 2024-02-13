@@ -261,7 +261,15 @@ export function checkForMarkedForDeletion(org: Organization) {
             id: 'markedForDeletion',
             component: MarkedForDeletion,
             show: true,
-            importance: 5
+            importance: 10
         });
+    }
+}
+
+export async function checkForMandate(org: Organization) {
+    const paymentId = org.paymentMethodId ?? org.backupPaymentMethodId;
+    const paymentMethod = await sdk.forConsole.billing.getPaymentMethod(paymentId);
+    if (paymentMethod.mandateId === null && paymentMethod.country === 'in') {
+        const method = sdk.forConsole.billing.setupPaymentMandate(org.$id, paymentId);
     }
 }

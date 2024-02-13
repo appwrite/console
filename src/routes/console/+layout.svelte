@@ -19,7 +19,8 @@
         checkPaymentAuthorizationRequired,
         calculateTrialDay,
         paymentExpired,
-        checkForMarkedForDeletion
+        checkForMarkedForDeletion,
+        checkForMandate
     } from '$lib/stores/billing';
     import { goto } from '$app/navigation';
     import { CommandCenter, registerCommands, registerSearchers } from '$lib/commandCenter';
@@ -40,7 +41,6 @@
     import UsageRates from './wizard/cloudOrganization/usageRates.svelte';
     import { activeHeaderAlert, consoleVariables } from './store';
     import { headerAlert } from '$lib/stores/headerAlert';
-    import { sdk } from '$lib/stores/sdk';
 
     function kebabToSentenceCase(str: string) {
         return str
@@ -249,13 +249,6 @@
         }
     });
 
-    async function checkForMandate() {
-        const paymentMethods = await sdk.forConsole.billing.listPaymentMethods();
-        const missingMandate = paymentMethods.paymentMethods.filter(
-            (method) => method.mandateId === null && method.country === 'in'
-        );
-    }
-
     function checkForFeedback(interval: number) {
         const minutes = interval / 60000;
         feedback.increaseElapsed(minutes);
@@ -277,6 +270,7 @@
             await checkForUsageLimit(org);
             checkForMarkedForDeletion(org);
             await checkPaymentAuthorizationRequired(org);
+            await checkForMandate(org);
         }
     });
 
