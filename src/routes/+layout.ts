@@ -6,11 +6,16 @@ import { sdk } from '$lib/stores/sdk';
 import { redirect } from '@sveltejs/kit';
 import { Dependencies } from '$lib/constants';
 import type { LayoutLoad } from './$types';
+import { redirectTo } from './store';
 
 export const ssr = false;
 
 export const load: LayoutLoad = async ({ depends, url }) => {
     depends(Dependencies.ACCOUNT);
+
+    redirectTo.set(url.searchParams.get('forceRedirect') || null);
+
+    url.searchParams.delete('forceRedirect');
 
     try {
         const account = await sdk.forConsole.account.get<{ organization?: string }>();
@@ -22,7 +27,7 @@ export const load: LayoutLoad = async ({ depends, url }) => {
 
         return {
             account,
-            organizations: sdk.forConsole.teams.list()
+            organizations: await sdk.forConsole.teams.list()
         };
     } catch (error) {
         const acceptedRoutes = [
@@ -43,11 +48,11 @@ export const load: LayoutLoad = async ({ depends, url }) => {
 
         if (error.type === 'user_more_factors_required') {
             if (url.pathname === '/mfa') return;
-            throw redirect(303, `/mfa${path}`);
+            redirect(303, `/mfa${path}`);
         }
 
         if (!acceptedRoutes.some((n) => url.pathname.startsWith(n))) {
-            throw redirect(303, `/login${path}`);
+            redirect(303, `/login${path}`);
         }
     }
 };

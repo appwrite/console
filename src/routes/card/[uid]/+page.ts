@@ -36,7 +36,7 @@ export async function load({ params, url, parent }) {
         const res = await fetch(frontImg);
 
         if (!res.ok) {
-            throw redirect(303, '/');
+            redirect(303, '/');
         }
 
         return {
@@ -53,6 +53,6 @@ export async function load({ params, url, parent }) {
         };
     } catch (e) {
         console.error(e);
-        throw redirect(303, '/');
+        redirect(303, '/');
     }
 }

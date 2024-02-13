@@ -21,7 +21,7 @@ export const load = async ({ depends, url, route }) => {
         search,
         query,
         page,
-        topics: sdk.forProject.messaging.listTopics(
+        topics: await sdk.forProject.messaging.listTopics(
             [
                 Query.limit(limit),
                 Query.offset(offset),
