@@ -14,7 +14,8 @@
                 value: code.code
             }))
             ?.filter((option) => option.label?.toLowerCase().startsWith(search?.toLowerCase())) ??
-        [];
+        []; 
+
 </script>
 
 <Box radius="small" class="u-flex u-gap-16 u-cross-center">
@@ -22,6 +23,7 @@
         <span class="icon-translate" />
         <span class="text">Template language</span>
     </div>
+
     <InputSelectSearch
         on:select
         label="Language"
@@ -31,7 +33,7 @@
         bind:value
         bind:search
         required
-        fullWidth
+        fullWidth={false}
         stretch={false}
         showLabel={false}
         interactiveOutput
