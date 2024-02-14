@@ -491,8 +491,8 @@ export const providers: ProvidersMap = {
                         placeholder: 'Enter API key',
                         popover: [
                             '<b>How to get the API key?</b>',
-                            'Create an account in Vonage.',
-                            'Head to <b><a class="link" href="https://www.vonage.com/?bypassgeoloc=true" blank="_target">Vonage</a> dashboard and copy the API key.</b>'
+                            'Create an account in <a class="link" href="https://dashboard.nexmo.com/sign-in" target="_blank" rel="noopener noreferrer">Vonage</a>.',
+                            'Head to <b><a class="link" href="https://dashboard.nexmo.com/sign-in" target="_blank" rel="noopener noreferrer">Vonage</a> dashboard and copy the API key.</b>'
                         ]
                     },
                     {
@@ -502,7 +502,7 @@ export const providers: ProvidersMap = {
                         placeholder: 'Enter API secret',
                         popover: [
                             '<b>How to get the API secret?</b>',
-                            'Head to <b><a class="link" href="https://www.vonage.com/?bypassgeoloc=true" target="_blank" rel="noopener noreferrer">Vonage</a> dashboard and copy the API secret.</b>'
+                            'Head to <b><a class="link" href="https://dashboard.nexmo.com/sign-in" target="_blank" rel="noopener noreferrer">Vonage</a> dashboard and copy the API secret.</b>'
                         ]
                     },
                     {
