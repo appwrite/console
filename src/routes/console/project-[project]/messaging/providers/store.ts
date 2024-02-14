@@ -364,7 +364,7 @@ export const providers: ProvidersMap = {
                         placeholder: 'Enter Account SID',
                         popover: [
                             '<b>How to get the Account SID?</b>',
-                            'Head to <b><a class="link" href="https://login.twilio.com/u/signup?state=hKFo2SBaQktjdzI0ZHdKdm44QUc5YzBRXzlNMmlyTExkRWVTTaFur3VuaXZlcnNhbC1sb2dpbqN0aWTZIHpwNUVrWDJzeFRJdUczVU5LTk16X0FHWEQ3dHU0S3hko2NpZNkgTW05M1lTTDVSclpmNzdobUlKZFI3QktZYjZPOXV1cks" target="_blank" rel="noopener noreferrer">Twilio</a> console -> Account info -> Account SID.</b>'
+                            'Head to <b><a class="link" href="https://console.twilio.com/" target="_blank" rel="noopener noreferrer">Twilio</a> console -> Account info -> Account SID.</b>'
                         ]
                     },
                     {
@@ -374,7 +374,7 @@ export const providers: ProvidersMap = {
                         placeholder: 'Enter Auth token',
                         popover: [
                             '<b>How to get the Auth token?</b>',
-                            'Head to <b><a class="link" href="https://login.twilio.com/u/signup?state=hKFo2SBaQktjdzI0ZHdKdm44QUc5YzBRXzlNMmlyTExkRWVTTaFur3VuaXZlcnNhbC1sb2dpbqN0aWTZIHpwNUVrWDJzeFRJdUczVU5LTk16X0FHWEQ3dHU0S3hko2NpZNkgTW05M1lTTDVSclpmNzdobUlKZFI3QktZYjZPOXV1cks" target="_blank" rel="noopener noreferrer">Twilio</a> console -> Account info -> Auth Token.</b>'
+                            'Head to <b><a class="link" href="https://console.twilio.com/" target="_blank" rel="noopener noreferrer">Twilio</a> console -> Account info -> Auth Token.</b>'
                         ]
                     },
                     {
@@ -384,8 +384,8 @@ export const providers: ProvidersMap = {
                         placeholder: 'Enter phone',
                         popover: [
                             '<b>How to get sender number?</b>',
-                            'Head to <b><a class="link" href="https://login.twilio.com/u/signup?state=hKFo2SBaQktjdzI0ZHdKdm44QUc5YzBRXzlNMmlyTExkRWVTTaFur3VuaXZlcnNhbC1sb2dpbqN0aWTZIHpwNUVrWDJzeFRJdUczVU5LTk16X0FHWEQ3dHU0S3hko2NpZNkgTW05M1lTTDVSclpmNzdobUlKZFI3QktZYjZPOXV1cks" target="_blank" rel="noopener noreferrer">Twilio</a> console -> Account info -> My Twilio phone number.</b>',
-                            'If you have multiple <a class="link" href="https://login.twilio.com/u/signup?state=hKFo2SBaQktjdzI0ZHdKdm44QUc5YzBRXzlNMmlyTExkRWVTTaFur3VuaXZlcnNhbC1sb2dpbqN0aWTZIHpwNUVrWDJzeFRJdUczVU5LTk16X0FHWEQ3dHU0S3hko2NpZNkgTW05M1lTTDVSclpmNzdobUlKZFI3QktZYjZPOXV1cks" target="_blank" rel="noopener noreferrer">Twilio</a> phone numbers, you can select one as the default number.'
+                            'Head to <b><a class="link" href="https://console.twilio.com/" target="_blank" rel="noopener noreferrer">Twilio</a> console -> Develop -> Phone Numbers -> Manage -> Active Numbers.</b>',
+                            'If you have multiple <a class="link" href="https://console.twilio.com/" target="_blank" rel="noopener noreferrer">Twilio</a> phone numbers, you can select one as the default number.'
                         ]
                     }
                 ]
