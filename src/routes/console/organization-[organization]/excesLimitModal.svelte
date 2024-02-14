@@ -62,10 +62,6 @@
         Your usage exceeds the {tierToPlan($organization.billingPlan).name} plan limits
     </svelte:fragment>
 
-    Appwrite Pro is now available. To facilitate a smooth transition for your projects, Starter plan
-    will maintain its current state of unlimited resource usage. This extension will be in effect
-    until January 31st, 2024.
-
     {#if $organization.billingPlan === BillingPlan.STARTER}
         <p class="text">
             Usage for <b>{$organization.name}</b> organization has reached the limits of the {tierToPlan(

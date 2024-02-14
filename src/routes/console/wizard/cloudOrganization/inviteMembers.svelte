@@ -11,6 +11,7 @@
         TableHeader,
         TableRow
     } from '$lib/elements/table';
+    import { formatCurrency } from '$lib/helpers/numbers';
     import { WizardStep } from '$lib/layout';
     import { plansInfo } from '$lib/stores/billing';
     import { createOrganization } from './store';
@@ -47,8 +48,8 @@
             added will receive an email invite to your organization on completion.
         {:else if $createOrganization.billingPlan === BillingPlan.PRO}
             You can add unlimited organization members on the {plan.name} plan for
-            <b>${plan.addons.member.price} each per month</b>. Each member added will receive an
-            email invite to your organization on completion.
+            <b>{formatCurrency(plan.addons.member.price)} each per month</b>. Each member added will
+            receive an email invite to your organization on completion.
         {/if}
     </Alert>
 
@@ -81,7 +82,7 @@
                         <TableRow>
                             <TableCellText title="collaborator">{collaborator}</TableCellText>
                             {#if $createOrganization.billingPlan === BillingPlan.PRO}
-                                <TableCellText title="cost">15$</TableCellText>
+                                <TableCellText title="cost">{formatCurrency(15)}</TableCellText>
                             {/if}
                             <TableCell>
                                 <button

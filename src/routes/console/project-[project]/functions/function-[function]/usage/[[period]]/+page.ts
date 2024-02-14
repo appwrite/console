@@ -15,6 +15,6 @@ export const load: PageLoad = async ({ params }) => {
             executions: response.executions as Metric[]
         };
     } catch (e) {
-        throw error(e.code, e.message);
+        error(e.code, e.message);
     }
 };

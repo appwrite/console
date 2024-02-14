@@ -1,20 +1,15 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
     import { page } from '$app/stores';
     import { Heading } from '$lib/components';
 
     const project = $page.url.searchParams.get('project');
     const link = `appwrite-callback-${project}://${$page.url.search}`;
 
-    const redirect = new Promise((resolve, reject) => {
+    const redirect = new Promise((_resolve, reject) => {
         if (!project) {
             reject('no-project');
         }
-        // this timeout is needed because goto does not
-        // throw an exception if the redirect does not work
-        setTimeout(() => reject('timeout'), 500);
-        // goto will resolve on successful redirect
-        goto(link).then(resolve);
+        window.location.href = link;
     });
 </script>
 
