@@ -74,21 +74,6 @@ export const scopes: {
         category: 'Auth'
     },
     {
-        scope: 'sessions.write',
-        description: "Access to create, update and delete your project's sessions",
-        category: 'Auth'
-    },
-    {
-        scope: 'accounts.read',
-        description: 'Access to read your active account',
-        category: 'Auth'
-    },
-    {
-        scope: 'accounts.write',
-        description: 'Access to create, update and delete your active account',
-        category: 'Auth'
-    },
-    {
         scope: 'teams.read',
         description: "Access to read your project's teams",
         category: 'Auth'
