@@ -25,16 +25,18 @@
     let showCustomId = false;
     let plan: Tier;
 
-    const options = isCloud ? [
-        {
-            value: BillingPlan.STARTER,
-            label: `Starter - ${formatCurrency($plansInfo.get(BillingPlan.STARTER).price)}/month`
-        },
-        {
-            value: BillingPlan.PRO,
-            label: `Pro - ${formatCurrency($plansInfo.get(BillingPlan.PRO).price)}/month + add-ons`
-        }
-    ] : [];
+    const options = isCloud
+        ? [
+              {
+                  value: BillingPlan.STARTER,
+                  label: `Starter - ${formatCurrency($plansInfo.get(BillingPlan.STARTER).price)}/month`
+              },
+              {
+                  value: BillingPlan.PRO,
+                  label: `Pro - ${formatCurrency($plansInfo.get(BillingPlan.PRO).price)}/month + add-ons`
+              }
+          ]
+        : [];
 
     onMount(() => {
         if (isCloud) {
