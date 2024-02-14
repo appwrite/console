@@ -216,7 +216,7 @@ export const providers: ProvidersMap = {
             },
             [Providers.Sendgrid]: {
                 imageIcon: 'sendgrid',
-                title: 'Sendgrid',
+                title: 'SendGrid',
                 description: '',
                 configure: [
                     {
@@ -226,7 +226,7 @@ export const providers: ProvidersMap = {
                         placeholder: 'Enter API key',
                         popover: [
                             '<b>How to get the API key?</b>',
-                            'Create an account in <a class="link" href="https://login.sendgrid.com/login/identifier?_gl=1*3vtcwz*_ga*MTMzODgwNDQ5OC4xNzA2MjAxMDUz*_ga_8W5LR442LD*MTcwNjIwMTA1My4xLjAuMTcwNjIwMTA1My4wLjAuMA.." target="_blank" rel="noopener noreferrer">Sendgrid</a>.',
+                            'Create an account in <a class="link" href="https://login.sendgrid.com/login/identifier" target="_blank" rel="noopener noreferrer">SendGrid</a>.',
                             'Head to <b>Settings -> API Keys -> Create API key.</b>'
                         ]
                     },
