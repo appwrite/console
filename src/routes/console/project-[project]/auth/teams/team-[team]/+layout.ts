@@ -14,6 +14,6 @@ export const load: LayoutLoad = async ({ params, depends }) => {
             team: await sdk.forProject.teams.get(params.team)
         };
     } catch (e) {
-        throw error(e.code, e.message);
+        error(e.code, e.message);
     }
 };

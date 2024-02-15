@@ -22,7 +22,7 @@ export const load: PageLoad = async ({ params, url, route, depends }) => {
         limit,
         search,
         query,
-        subscribers: sdk.forProject.messaging.listSubscribers(
+        subscribers: await sdk.forProject.messaging.listSubscribers(
             params.topic,
             [
                 Query.limit(limit),

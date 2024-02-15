@@ -523,6 +523,28 @@ export class Billing {
         );
     }
 
+    async retryPayment(
+        organizationId: string,
+        invoiceId: string,
+        paymentMethodId: string
+    ): Promise<Invoice> {
+        const path = `/organizations/${organizationId}/invoices/${invoiceId}/payments`;
+        const params = {
+            organizationId,
+            invoiceId,
+            paymentMethodId
+        };
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'post',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            params
+        );
+    }
+
     async listUsage(
         organizationId: string,
         startDate: string = undefined,

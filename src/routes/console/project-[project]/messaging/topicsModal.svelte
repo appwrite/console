@@ -121,7 +121,7 @@
                     <p>There are no topics that match your search.</p>
                 </div>
                 <div class="u-flex u-gap-16 common-section u-main-center">
-                    <Button external href="https://appwrite.io/docs/products/auth/accounts" text
+                    <Button external href="https://appwrite.io/docs/products/messaging/topics" text
                         >Documentation</Button>
                     <Button secondary on:click={() => (search = '')}>Clear search</Button>
                 </div>
@@ -134,10 +134,9 @@
                     <p class="text u-line-height-1-5">
                         You have no topics. Create a topic to see them here.
                     </p>
-                    <!-- TODO: link to topics docs -->
                     <p class="text u-line-height-1-5">
                         Need a hand? Learn more in our <a
-                            href="https://appwrite.io/docs/products/auth/quick-start"
+                            href="https://appwrite.io/docs/products/messaging/topics"
                             target="_blank"
                             rel="noopener noreferrer">
                             documentation</a

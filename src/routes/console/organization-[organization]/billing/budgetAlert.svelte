@@ -91,7 +91,6 @@
                         label="Percentage (%) of budget cap"
                         placeholder="Select a percentage"
                         id="alerts"
-                        fullWidthDrop={false}
                         {options}
                         bind:search
                         bind:value={selectedAlert}

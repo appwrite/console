@@ -14,7 +14,7 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { Button } from '$lib/elements/forms';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
-    import { abbreviateNumber } from '$lib/helpers/numbers';
+    import { abbreviateNumber, formatCurrency } from '$lib/helpers/numbers';
     import { formatNum } from '$lib/helpers/string';
     import { BillingPlan } from '$lib/constants';
 
@@ -28,7 +28,7 @@
     export let currentTier: Tier;
 
     const plan = $plansInfo?.get(currentTier);
-    const collaboratorPrice = plan?.addons.member?.price ?? 0;
+    const collaboratorPrice = formatCurrency(plan?.addons.member?.price ?? 0);
 </script>
 
 <Alert type="error">
