@@ -14,7 +14,7 @@
         Functions = 'Functions',
         Messaging = 'Messaging',
         Storage = 'Storage',
-        Other = 'Other',
+        Other = 'Other'
     }
 
     let mounted = false;
