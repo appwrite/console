@@ -1,7 +1,12 @@
 <script context="module" lang="ts">
     export async function loadEmailTemplate(projectId: string, type: string, locale: string) {
         try {
-            return await sdk.forConsole.projects.getEmailTemplate(projectId, type, locale);
+            // TODO: fix TemplateType and TemplateLocale typing once SDK is updated
+            return await sdk.forConsole.projects.getEmailTemplate(
+                projectId,
+                type as TemplateType,
+                locale as TemplateLocale
+            );
         } catch (e) {
             addNotification({
                 type: 'error',
@@ -11,7 +16,12 @@
     }
     export async function loadSmsTemplate(projectId: string, type: string, locale: string) {
         try {
-            return await sdk.forConsole.projects.getSmsTemplate(projectId, type, locale);
+            // TODO: fix TemplateType and TemplateLocale typing once SDK is updated
+            return await sdk.forConsole.projects.getSmsTemplate(
+                projectId,
+                type as TemplateType,
+                locale as TemplateLocale
+            );
         } catch (e) {
             addNotification({
                 type: 'error',
@@ -44,6 +54,7 @@
     import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
     import { wizard } from '$lib/stores/wizard';
     import { BillingPlan } from '$lib/constants';
+    import type { TemplateLocale, TemplateType } from '@appwrite.io/console';
 
     const projectId = $page.params.project;
 

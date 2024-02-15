@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
     import { page } from '$app/stores';
     import { Heading } from '$lib/components';
     import { Account, Client } from '@appwrite.io/console';
@@ -18,7 +17,7 @@
         const secret = $page.url.searchParams.get('secret');
 
         await account.updateMagicURLSession(userId, secret);
-        await goto(`appwrite-callback-${projectId}://${$page.url.search}`);
+        window.location.href = `appwrite-callback-${projectId}://${$page.url.search}`;
     });
 </script>
 

@@ -4,6 +4,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { Query, type Models } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
+    import { providerType } from './wizard/store';
 
     export let show: boolean;
     export let topicsById: Record<string, Models.Topic>;
@@ -32,25 +33,7 @@
         if (!show) return;
         const queries = [Query.limit(5), Query.offset(offset)];
 
-        const params = {
-            queries
-        };
-
-        if (search) {
-            params['search'] = search;
-        }
-
-        // TODO: replace with sdk.forProject.users.list once User type has targets
-        const response = await sdk.forProject.client.call(
-            'GET',
-            new URL(sdk.forProject.client.config.endpoint + '/messaging/topics'),
-            {
-                'X-Appwrite-Project': sdk.forProject.client.config.project,
-                'content-type': 'application/json',
-                'X-Appwrite-Mode': 'admin'
-            },
-            params
-        );
+        const response = await sdk.forProject.messaging.listTopics(queries, search || undefined);
 
         totalResults = response.total;
         topicResultsById = {};
@@ -97,7 +80,10 @@
 </script>
 
 <Modal {title} bind:show onSubmit={submit} on:close={reset} size="big">
-    <p class="text">Select existing topics you want to send this message to its recipients.</p>
+    <p class="text">
+        Select existing topics you want to send this message to its subscribers. The message will be
+        sent only to {$providerType} targets.
+    </p>
     <InputSearch
         autofocus
         disabled={totalResults === 0 && !search}
@@ -135,7 +121,7 @@
                     <p>There are no topics that match your search.</p>
                 </div>
                 <div class="u-flex u-gap-16 common-section u-main-center">
-                    <Button external href="https://appwrite.io/docs/products/auth/accounts" text
+                    <Button external href="https://appwrite.io/docs/products/messaging/topics" text
                         >Documentation</Button>
                     <Button secondary on:click={() => (search = '')}>Clear search</Button>
                 </div>
@@ -148,10 +134,9 @@
                     <p class="text u-line-height-1-5">
                         You have no topics. Create a topic to see them here.
                     </p>
-                    <!-- TODO: link to topics docs -->
                     <p class="text u-line-height-1-5">
                         Need a hand? Learn more in our <a
-                            href="https://appwrite.io/docs/products/auth/quick-start"
+                            href="https://appwrite.io/docs/products/messaging/topics"
                             target="_blank"
                             rel="noopener noreferrer">
                             documentation</a

@@ -34,21 +34,7 @@
     async function handleDelete() {
         showDelete = false;
 
-        function deleteProvider(providerId: string) {
-            return sdk.forProject.client.call(
-                'DELETE',
-                new URL(
-                    `${sdk.forProject.client.config.endpoint}/messaging/providers/${providerId}`
-                ),
-                {
-                    'X-Appwrite-Project': sdk.forProject.client.config.project,
-                    'content-type': 'application/json',
-                    'X-Appwrite-Mode': 'admin'
-                }
-            );
-        }
-
-        const promises = selectedIds.map((id) => deleteProvider(id));
+        const promises = selectedIds.map((id) => sdk.forProject.messaging.deleteProvider(id));
 
         try {
             await Promise.all(promises);

@@ -23,6 +23,7 @@
     import { organization } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
     import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
+    import { SMTPSecure } from '@appwrite.io/console';
 
     let enabled = false;
     let senderName: string;
@@ -68,7 +69,7 @@
                 port ? port : undefined,
                 username ? username : undefined,
                 password ? password : undefined,
-                secure ? 'tls' : undefined
+                secure ? SMTPSecure.Tls : undefined
             );
 
             invalidate(Dependencies.PROJECT);

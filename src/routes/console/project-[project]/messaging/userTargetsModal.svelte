@@ -8,14 +8,14 @@
     } from '$lib/components';
     import { Button, FormList, InputCheckbox, InputSearch } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
-    import { Query, type Models } from '@appwrite.io/console';
+    import { Query, type Models, MessagingProviderType } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
-    import ProviderType, { ProviderTypes } from './providerType.svelte';
+    import ProviderType from './providerType.svelte';
 
     export let show: boolean;
     export let targetsById: Record<string, Models.Target>;
-    export let providerType: ProviderTypes = null;
-    export let title = 'Select users';
+    export let providerType: MessagingProviderType = null;
+    export let title = 'Select subscribers';
 
     const dispatch = createEventDispatcher();
 
@@ -40,31 +40,13 @@
         if (!show) return;
         const queries = [Query.limit(5), Query.offset(offset)];
 
-        if (providerType === ProviderTypes.Email) {
+        if (providerType === MessagingProviderType.Email) {
             queries.push(Query.notEqual('email', ''));
-        } else if (providerType === ProviderTypes.Sms) {
+        } else if (providerType === MessagingProviderType.Sms) {
             queries.push(Query.notEqual('phone', ''));
         }
 
-        const params = {
-            queries
-        };
-
-        if (search) {
-            params['search'] = search;
-        }
-
-        // TODO: replace with sdk.forProject.users.list once User type has targets
-        const response = await sdk.forProject.client.call(
-            'GET',
-            new URL(sdk.forProject.client.config.endpoint + '/users'),
-            {
-                'X-Appwrite-Project': sdk.forProject.client.config.project,
-                'content-type': 'application/json',
-                'X-Appwrite-Mode': 'admin'
-            },
-            params
-        );
+        const response = await sdk.forProject.users.list(queries, search || undefined);
 
         totalResults = response.total;
         userResultsById = {};
@@ -135,8 +117,15 @@
     }
 </script>
 
-<Modal {title} bind:show onSubmit={submit} on:close={reset} size="big">
-    <p class="text">Select recipients for this message from your users.</p>
+<Modal {title} bind:show onSubmit={submit} on:close={reset} size="big" headerDivider={false}>
+    <!-- TODO: Update docs link -->
+    <p class="text">
+        Add subscribers to this topic by selecting the targets for directing messages. <a
+            href="https://appwrite.io/docs"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="link">Learn more about subscribers.</a>
+    </p>
     <InputSearch
         autofocus
         disabled={totalResults === 0 && !search}
@@ -189,7 +178,7 @@
                                                 ><ProviderType
                                                     type={target.providerType}
                                                     noIcon /></span>
-                                            {#if target.providerType !== ProviderTypes.Push}
+                                            {#if target.providerType !== MessagingProviderType.Push}
                                                 {target.identifier}
                                             {:else}
                                                 <!-- TODO: Show device info -->
