@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Wizard } from '$lib/layout';
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
-    import Configure from './wizard/configure.svelte';
+    import Settings from './wizard/settings.svelte';
     import { sdk } from '$lib/stores/sdk';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { addNotification } from '$lib/stores/notifications';
@@ -155,8 +155,8 @@
 
     const stepsComponents: WizardStepsType = new Map();
     stepsComponents.set(1, {
-        label: 'Configure',
-        component: Configure
+        label: 'Settings',
+        component: Settings
     });
 </script>
 

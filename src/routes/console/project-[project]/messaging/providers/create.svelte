@@ -3,7 +3,7 @@
     import { Wizard } from '$lib/layout';
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
     import Provider from './wizard/provider.svelte';
-    import Configure from './wizard/configure.svelte';
+    import Settings from './wizard/settings.svelte';
     import { sdk } from '$lib/stores/sdk';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { addNotification } from '$lib/stores/notifications';
@@ -164,8 +164,8 @@
         component: Provider
     });
     stepsComponents.set(2, {
-        label: 'Configure',
-        component: Configure
+        label: 'Settings',
+        component: Settings
     });
 </script>
 

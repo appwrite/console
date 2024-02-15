@@ -47,7 +47,7 @@
 </script>
 
 <WizardStep {beforeSubmit}>
-    <svelte:fragment slot="title">Configure</svelte:fragment>
+    <svelte:fragment slot="title">Settings</svelte:fragment>
     <svelte:fragment slot="subtitle">
         Set up the credentials below to enable {providers[$providerType].providers[$provider].title}
         for sending
