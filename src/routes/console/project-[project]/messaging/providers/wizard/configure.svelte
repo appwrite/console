@@ -15,7 +15,7 @@
     import { onMount } from 'svelte';
     import { providers } from '../store';
     import { providerType, provider, providerParams } from './store';
-    import { ImagePreview } from '$lib/components';
+    import PopoverContent from './popoverContent.svelte';
 
     let files: Record<string, FileList> = {};
     const inputs = providers[$providerType].providers[$provider].configure;
@@ -65,15 +65,7 @@
                     isPopoverDefined={input.popover !== undefined}
                     bind:value={$providerParams[$provider][input.name]}>
                     <svelte:fragment slot="popover">
-                        {@html input.popover?.join('<br/><br/>')}
-                        {#if popoverImage}
-                            <br />
-                            <br />
-                            <ImagePreview
-                                darkSrc={popoverImage.src.dark}
-                                lightSrc={popoverImage.src.light}
-                                alt={popoverImage.alt} />
-                        {/if}
+                        <PopoverContent lines={input.popover} {popoverImage} />
                     </svelte:fragment>
                 </InputText>
             {:else if input.type === 'password'}
@@ -86,7 +78,7 @@
                     isPopoverDefined={input.popover !== undefined}
                     bind:value={$providerParams[$provider][input.name]}>
                     <svelte:fragment slot="popover">
-                        {@html input.popover?.join('<br/><br/>')}
+                        <PopoverContent lines={input.popover} {popoverImage} />
                     </svelte:fragment>
                 </InputPassword>
             {:else if input.type === 'email'}
@@ -98,9 +90,7 @@
                     isPopoverDefined={input.popover !== undefined}
                     bind:value={$providerParams[$provider][input.name]}>
                     <svelte:fragment slot="popover">
-                        <p class="body-text-2 u-margin-block-end-16">
-                            {@html input.popover?.join('<br/><br/>')}
-                        </p>
+                        <PopoverContent lines={input.popover} {popoverImage} />
                     </svelte:fragment>
                 </InputEmail>
             {:else if input.type === 'domain'}
@@ -112,9 +102,7 @@
                     isPopoverDefined={input.popover !== undefined}
                     bind:value={$providerParams[$provider][input.name]}>
                     <svelte:fragment slot="popover">
-                        <p class="body-text-2 u-margin-block-end-16">
-                            {@html input.popover?.join('<br/><br/>')}
-                        </p>
+                        <PopoverContent lines={input.popover} {popoverImage} />
                     </svelte:fragment>
                 </InputDomain>
             {:else if input.type === 'phone'}
@@ -126,9 +114,7 @@
                     isPopoverDefined={input.popover !== undefined}
                     bind:value={$providerParams[$provider][input.name]}>
                     <svelte:fragment slot="popover">
-                        <p class="body-text-2 u-margin-block-end-16">
-                            {@html input.popover?.join('<br/><br/>')}
-                        </p>
+                        <PopoverContent lines={input.popover} {popoverImage} />
                     </svelte:fragment>
                 </InputPhone>
             {:else if input.type === 'file'}
@@ -139,17 +125,7 @@
                     isPopoverDefined={input.popover !== undefined}
                     bind:files={files[input.name]}>
                     <svelte:fragment slot="popover">
-                        <p class="body-text-2 u-margin-block-end-16">
-                            {@html input.popover?.join('<br/><br/>')}
-                            {#if popoverImage}
-                                <br />
-                                <br />
-                                <ImagePreview
-                                    darkSrc={popoverImage.src.dark}
-                                    lightSrc={popoverImage.src.light}
-                                    alt={popoverImage.alt} />
-                            {/if}
-                        </p>
+                        <PopoverContent lines={input.popover} {popoverImage} />
                     </svelte:fragment>
                 </InputFile>
             {:else if input.type === 'switch'}
