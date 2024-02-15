@@ -19,7 +19,7 @@
         <svelte:fragment slot="buttons">
             <Button
                 secondary
-                href={`/console/organization-${$orgMissingPaymentMethod.$id}/billing`}>
+                href={`/console/organization-${$orgMissingPaymentMethod.$id}/billing#payment-methods`}>
                 Add payment method
             </Button>
         </svelte:fragment>

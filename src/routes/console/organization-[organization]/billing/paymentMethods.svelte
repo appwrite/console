@@ -93,7 +93,7 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h2" size="6" id="paymentMethod">Payment methods</Heading>
+    <Heading tag="h2" size="6" id="payment-methods">Payment methods</Heading>
 
     <p class="text">View or update your organization payment methods here.</p>
     <svelte:fragment slot="aside">

@@ -268,13 +268,16 @@ export function checkForMarkedForDeletion(org: Organization) {
 }
 
 export async function checkForMissingPaymentMethod() {
-    const orgs = await sdk.forConsole.teams.list([
-        Query.notEqual('billingPlan', BillingPlan.STARTER),
-        Query.isNull('paymentMethodId'),
-        Query.isNull('backupPaymentMethodId')
-    ]);
-    if (orgs?.total) {
-        orgMissingPaymentMethod.set(orgs.teams[0] as Organization);
+    const orgs = (await sdk.forConsole.teams.list()) as { teams: Organization[]; total: number };
+    const filteredOrgs = orgs.teams.filter(
+        (org) =>
+            org?.paymentMethodId === null &&
+            org?.backupPaymentMethodId === null &&
+            org?.billingPlan !== BillingPlan.STARTER
+    );
+    console.log(filteredOrgs);
+    if (filteredOrgs?.length) {
+        orgMissingPaymentMethod.set(filteredOrgs[0]);
         headerAlert.add({
             id: 'missingPaymentMethod',
             component: MissingPaymentMethod,
