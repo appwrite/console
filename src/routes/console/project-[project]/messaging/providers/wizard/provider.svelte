@@ -1,6 +1,6 @@
 <script lang="ts">
     import { WizardStep } from '$lib/layout';
-    import { providerType, provider, providerParams } from './store';
+    import { providerType, provider, providerParams } from '../store';
     import { CustomId, LabelCard } from '$lib/components';
     import { providers } from '../store';
     import { FormList, InputText } from '$lib/elements/forms';

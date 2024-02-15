@@ -9,7 +9,7 @@
     import { base } from '$app/paths';
     import { project } from '../../store';
     import { wizard } from '$lib/stores/wizard';
-    import { provider, providerParams } from './wizard/store';
+    import { provider, providerParams } from './store';
     import { Providers } from '../provider.svelte';
     import { Dependencies } from '$lib/constants';
     import type { Models } from '@appwrite.io/console';
