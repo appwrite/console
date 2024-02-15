@@ -13,7 +13,6 @@
     class:u-overflow-visible={showOverflow}
     data-title={title}
     role="cell"
-    data-private
-    >
+    data-private>
     <Trim><slot /></Trim>
 </div>
