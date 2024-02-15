@@ -20,9 +20,9 @@
     class={`text ${alternativeTrim ? 'u-trim-1' : 'u-trim'}`}
     bind:this={container}
     use:tooltip={{
-    disabled: !showTooltip,
-    content: container?.innerText ?? undefined,
-    maxWidth: '30rem'
+        disabled: !showTooltip,
+        content: container?.innerText ?? undefined,
+        maxWidth: '30rem'
     }}>
-       <span><slot /></span>
+    <span><slot /></span>
 </span>
