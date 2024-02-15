@@ -11,7 +11,7 @@
     import { base } from '$app/paths';
     import { project } from '../../store';
     import { wizard } from '$lib/stores/wizard';
-    import { provider, providerParams } from './wizard/store';
+    import { provider, providerParams } from './store';
     import { ID, type Models } from '@appwrite.io/console';
     import { Providers } from '../provider.svelte';
 
