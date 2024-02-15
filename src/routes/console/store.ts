@@ -9,6 +9,4 @@ export const consoleVariables = derived(
     ($page) => $page.data.consoleVariables as Models.ConsoleVariables
 );
 
-export const showPostReleaseModal = writable(false);
-
 export const activeHeaderAlert = writable<HeaderAlert>(null);

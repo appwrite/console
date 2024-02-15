@@ -3,6 +3,7 @@
     import {
         CardGrid,
         DropList,
+        DropListItem,
         DropListLink,
         EmptySearch,
         Heading,
@@ -20,11 +21,14 @@
         TableScroll
     } from '$lib/elements/table';
     import { toLocaleDate } from '$lib/helpers/date';
+    import { formatCurrency } from '$lib/helpers/numbers';
     import type { InvoiceList } from '$lib/sdk/billing';
     import { sdk } from '$lib/stores/sdk';
     import { VARS } from '$lib/system';
     import { Query } from '@appwrite.io/console';
     import { onMount } from 'svelte';
+    import { trackEvent } from '$lib/actions/analytics';
+    import { selectedInvoice, showRetryModal } from './store';
 
     let showDropdown = [];
 
@@ -87,7 +91,9 @@
                                         {status === 'requires_authentication' ? 'failed' : status}
                                     </Pill>
                                 </TableCell>
-                                <TableCellText title="due">${invoice.amount}</TableCellText>
+                                <TableCellText title="due">
+                                    {formatCurrency(invoice.amount)}
+                                </TableCellText>
                                 <TableCell showOverflow>
                                     <DropList
                                         bind:show={showDropdown[i]}
@@ -122,6 +128,21 @@
                                                 event="download_invoice">
                                                 Download PDF
                                             </DropListLink>
+                                            {#if status === 'overdue' || status === 'failed'}
+                                                <DropListItem
+                                                    icon="refresh"
+                                                    on:click={() => {
+                                                        $selectedInvoice = invoice;
+                                                        $showRetryModal = true;
+                                                        showDropdown[i] = !showDropdown[i];
+                                                        trackEvent(`click_retry_payment`, {
+                                                            from: 'button',
+                                                            source: 'billing_invoice_menu'
+                                                        });
+                                                    }}>
+                                                    Retry payment
+                                                </DropListItem>
+                                            {/if}
                                         </svelte:fragment>
                                     </DropList>
                                 </TableCell>

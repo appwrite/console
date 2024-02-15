@@ -77,10 +77,10 @@
                         $providerParams[$provider].apiKey,
                         $providerParams[$provider].domain,
                         $providerParams[$provider].isEuRegion,
-                        $providerParams[$provider].fromName,
+                        $providerParams[$provider].fromName || undefined,
                         $providerParams[$provider].fromEmail,
-                        $providerParams[$provider].replyToName,
-                        $providerParams[$provider].replyToEmail,
+                        $providerParams[$provider].replyToName || undefined,
+                        $providerParams[$provider].replyToEmail || undefined,
                         $providerParams[$provider].enabled
                     );
                     break;
@@ -89,10 +89,10 @@
                         providerId,
                         $providerParams[$provider].name,
                         $providerParams[$provider].apiKey,
-                        $providerParams[$provider].fromName,
+                        $providerParams[$provider].fromName || undefined,
                         $providerParams[$provider].fromEmail,
-                        $providerParams[$provider].replyToName,
-                        $providerParams[$provider].replyToEmail,
+                        $providerParams[$provider].replyToName || undefined,
+                        $providerParams[$provider].replyToEmail || undefined,
                         $providerParams[$provider].enabled
                     );
                     break;

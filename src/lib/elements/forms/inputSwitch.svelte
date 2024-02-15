@@ -4,7 +4,6 @@
     export let label: string;
     export let id: string;
     export let value = false;
-    export let required = false;
     export let disabled = false;
 
     let element: HTMLInputElement;
@@ -13,10 +12,6 @@
     const handleInvalid = (event: Event) => {
         event.preventDefault();
 
-        if (element.validity.valueMissing) {
-            error = 'This field is required';
-            return;
-        }
         error = element.validationMessage;
     };
 
@@ -31,7 +26,6 @@
             <input
                 {id}
                 {disabled}
-                {required}
                 type="checkbox"
                 class="switch"
                 role="switch"

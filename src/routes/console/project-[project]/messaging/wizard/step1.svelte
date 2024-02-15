@@ -6,6 +6,9 @@
     import SmsFormList from './smsFormList.svelte';
     import PushFormList, { validateData } from './pushFormList.svelte';
     import { MessagingProviderType } from '@appwrite.io/console';
+    import { Button } from '$lib/elements/forms';
+
+    let docsUrl = `https://appwrite.io/docs/products/messaging`;
 
     async function beforeSubmit() {}
 
@@ -17,8 +20,20 @@
         article = lastLetter === 's' ? '' : article;
 
         providerText = providerText.toLowerCase() === 'sms' ? 'SMS messages' : providerText;
-        return `Create ${article} ${providerText} that will be displayed to your subscribers. Learn more in our documentation.`;
+        return `Create ${article} ${providerText} that will be displayed to your subscribers.`;
     };
+
+    switch ($providerType) {
+        case MessagingProviderType.Email:
+            docsUrl += '/send-email-messages';
+            break;
+        case MessagingProviderType.Sms:
+            docsUrl += '/send-sms-messages';
+            break;
+        case MessagingProviderType.Push:
+            docsUrl += '/send-push-notifications';
+            break;
+    }
 </script>
 
 <WizardStep
@@ -27,8 +42,12 @@
         !!validateData($messageParams[MessagingProviderType.Push].data)}>
     <svelte:fragment slot="title">Message</svelte:fragment>
     <svelte:fragment slot="subtitle">
-        <!-- TODO: update documentation link -->
-        {createMessage(providers[$providerType].text)}
+        {createMessage(providers[$providerType].text)} Learn more in our <Button
+            link
+            external
+            text
+            href={docsUrl}>documentation</Button
+        >.
     </svelte:fragment>
     {#if $providerType === MessagingProviderType.Email}
         <EmailFormList />

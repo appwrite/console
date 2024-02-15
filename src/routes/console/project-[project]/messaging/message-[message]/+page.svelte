@@ -112,5 +112,7 @@
     {/if}
     <Topics topics={Object.values(data.topicsById)} />
     <Targets targets={Object.values(data.targetsById)} usersById={data.usersById} />
-    <Delete />
+    {#if $message.status !== MessageType.Processing}
+        <Delete message={$message} />
+    {/if}
 </Container>

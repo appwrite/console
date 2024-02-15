@@ -1,6 +1,7 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import { FormItem, Helper, Label } from '.';
+    import { Drop } from '$lib/components';
 
     export let id: string;
     export let label: string;
@@ -15,10 +16,12 @@
     export let showPasswordButton = false;
     export let minlength = 8;
     export let maxlength: number = null;
+    export let isPopoverDefined = true;
 
     let element: HTMLInputElement;
     let error: string;
     let showInPlainText = false;
+    let showPopover = false;
 
     onMount(() => {
         if (element && autofocus) {
@@ -48,7 +51,28 @@
 
 <FormItem>
     <Label {required} hide={!showLabel} for={id}>
-        {label}
+        {label}{#if $$slots.popover && isPopoverDefined}
+            <Drop bind:show={showPopover} display="inline-block">
+                <!-- TODO: make unclicked icon greyed out and hover and clicked filled -->
+                &nbsp;<button
+                    type="button"
+                    on:click={() => (showPopover = !showPopover)}
+                    class="tooltip"
+                    aria-label="input tooltip">
+                    <span
+                        class="icon-info"
+                        aria-hidden="true"
+                        style="font-size: var(--icon-size-small)" />
+                </button>
+                <svelte:fragment slot="list">
+                    <div
+                        class="dropped card u-max-width-250"
+                        style="--p-card-padding: .75rem; box-shadow:var(--shadow-large);">
+                        <slot name="popover" />
+                    </div>
+                </svelte:fragment>
+            </Drop>
+        {/if}
     </Label>
 
     <div class="input-text-wrapper" style={showPasswordButton ? '--amount-of-buttons: 1' : ''}>

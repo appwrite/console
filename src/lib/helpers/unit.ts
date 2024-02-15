@@ -73,12 +73,12 @@ export function createTimeUnitPair(initialValue = 0) {
     return { ...createValueUnitPair(initialValue, units), units };
 }
 
-export function createByteUnitPair(initialValue = 0) {
+export function createByteUnitPair(initialValue = 0, base = 1024) {
     const units: Unit[] = [
         { name: 'Bytes', value: 1 },
-        { name: 'Kilobytes', value: 1024 },
-        { name: 'Megabytes', value: 1024 ** 2 },
-        { name: 'Gigabytes', value: 1024 ** 3 }
+        { name: 'Kilobytes', value: base },
+        { name: 'Megabytes', value: base ** 2 },
+        { name: 'Gigabytes', value: base ** 3 }
     ];
     return { ...createValueUnitPair(initialValue, units), units };
 }

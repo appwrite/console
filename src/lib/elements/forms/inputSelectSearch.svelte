@@ -24,7 +24,6 @@
     export let hideRequired = false;
     export let disabled = false;
     export let fullWidth = false;
-    export let fullWidthDrop = true;
     export let autofocus = false;
     export let interactiveOutput = false;
     // stretch is used inside of a flex container to give the element flex:1
