@@ -68,13 +68,13 @@
             toTag: (attribute, input) => `**${attribute}** not equal to **${input}**`,
             types: ['string', 'integer', 'double', 'boolean']
         },
-        'not null': {
+        'is not null': {
             toQuery: Query.isNotNull,
             toTag: (attribute) => `**${attribute}** is not null`,
             types: ['string', 'integer', 'double', 'boolean', 'datetime', 'relationship'],
             hideInput: true
         },
-        null: {
+        'is null': {
             toQuery: Query.isNull,
             toTag: (attribute) => `**${attribute}** is null`,
             types: ['string', 'integer', 'double', 'boolean', 'datetime', 'relationship'],
@@ -223,7 +223,7 @@
                         queries.removeFilter(tag);
                     }}>
                     <span class="text" use:tagFormat>
-                        {tag.tag}
+                        {JSON.stringify(tag.tag)}
                     </span>
                     <i class="icon-x" />
                 </button>
