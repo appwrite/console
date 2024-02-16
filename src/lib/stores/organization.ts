@@ -22,6 +22,11 @@ export type Organization = Models.Team<Record<string, unknown>> & {
     billingPlanDowngrade?: string;
 };
 
+export type OrganizationList = {
+    organizations: Organization[];
+    total: number;
+};
+
 export type BillingLimits = {
     bandwidth: number;
     documents: number;
