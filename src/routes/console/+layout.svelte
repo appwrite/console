@@ -21,6 +21,7 @@
         paymentExpired,
         checkForMarkedForDeletion,
         checkForMandate
+        checkForMissingPaymentMethod
     } from '$lib/stores/billing';
     import { goto } from '$app/navigation';
     import { CommandCenter, registerCommands, registerSearchers } from '$lib/commandCenter';
@@ -246,6 +247,7 @@
 
         if (isCloud && hasStripePublicKey) {
             $stripe = await loadStripe(VARS.STRIPE_PUBLIC_KEY);
+            await checkForMissingPaymentMethod();
         }
     });
 
