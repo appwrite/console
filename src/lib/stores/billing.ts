@@ -11,9 +11,10 @@ import PaymentAuthRequired from '$lib/components/billing/alerts/paymentAuthRequi
 import { addNotification, notifications } from './notifications';
 import { goto } from '$app/navigation';
 import { base } from '$app/paths';
-import { activeHeaderAlert } from '$routes/console/store';
+import { activeHeaderAlert, orgMissingPaymentMethod } from '$routes/console/store';
 import MarkedForDeletion from '$lib/components/billing/alerts/markedForDeletion.svelte';
 import { BillingPlan } from '$lib/constants';
+import MissingPaymentMethod from '$lib/components/billing/alerts/missingPaymentMethod.svelte';
 
 export type Tier = 'tier-0' | 'tier-1' | 'tier-2';
 
@@ -265,6 +266,23 @@ export function checkForMarkedForDeletion(org: Organization) {
             component: MarkedForDeletion,
             show: true,
             importance: 5
+        });
+    }
+}
+
+export async function checkForMissingPaymentMethod() {
+    const orgs = await sdk.forConsole.billing.listOrganization([
+        Query.notEqual('billingPlan', BillingPlan.STARTER),
+        Query.isNull('paymentMethodId'),
+        Query.isNull('backupPaymentMethodId')
+    ]);
+    if (orgs?.total) {
+        orgMissingPaymentMethod.set(orgs.teams[0]);
+        headerAlert.add({
+            id: 'missingPaymentMethod',
+            component: MissingPaymentMethod,
+            show: true,
+            importance: 8
         });
     }
 }

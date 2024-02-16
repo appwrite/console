@@ -22,17 +22,15 @@
     } from '$lib/elements/table';
     import { toLocaleDate } from '$lib/helpers/date';
     import { formatCurrency } from '$lib/helpers/numbers';
-    import type { Invoice, InvoiceList } from '$lib/sdk/billing';
+    import type { InvoiceList } from '$lib/sdk/billing';
     import { sdk } from '$lib/stores/sdk';
     import { VARS } from '$lib/system';
     import { Query } from '@appwrite.io/console';
     import { onMount } from 'svelte';
-    import RetryPaymentModal from './retryPaymentModal.svelte';
     import { trackEvent } from '$lib/actions/analytics';
+    import { selectedInvoice, showRetryModal } from './store';
 
     let showDropdown = [];
-    let showRetryModal = false;
-    let selectedInvoice: Invoice | null = null;
 
     let offset = 0;
     let invoiceList: InvoiceList = {
@@ -130,13 +128,12 @@
                                                 event="download_invoice">
                                                 Download PDF
                                             </DropListLink>
-                                            <!-- {#if status === 'overdue' || status === 'failed'} -->
-                                            {#if false}
+                                            {#if status === 'overdue' || status === 'failed'}
                                                 <DropListItem
                                                     icon="refresh"
                                                     on:click={() => {
-                                                        selectedInvoice = invoice;
-                                                        showRetryModal = true;
+                                                        $selectedInvoice = invoice;
+                                                        $showRetryModal = true;
                                                         showDropdown[i] = !showDropdown[i];
                                                         trackEvent(`click_retry_payment`, {
                                                             from: 'button',
@@ -168,7 +165,3 @@
         {/if}
     </svelte:fragment>
 </CardGrid>
-
-{#if selectedInvoice}
-    <RetryPaymentModal bind:show={showRetryModal} bind:invoice={selectedInvoice} />
-{/if}
