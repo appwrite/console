@@ -2,7 +2,6 @@
     import { page } from '$app/stores';
     import { BillingPlan } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
-    import { toLocaleDate } from '$lib/helpers/date';
     import { HeaderAlert } from '$lib/layout';
     import { orgMissingPaymentMethod } from '$routes/console/store';
 </script>
@@ -12,9 +11,8 @@
         type="error"
         title={`Payment method required for ${$orgMissingPaymentMethod.name}`}>
         <svelte:fragment>
-            Add a payment method to {$orgMissingPaymentMethod.name} before {toLocaleDate(
-                $orgMissingPaymentMethod.billingNextInvoiceDate
-            )} to avoid service interruptions to your projects.
+            Add a payment method to {$orgMissingPaymentMethod.name} to avoid service interruptions to
+            your projects.
         </svelte:fragment>
         <svelte:fragment slot="buttons">
             <Button
