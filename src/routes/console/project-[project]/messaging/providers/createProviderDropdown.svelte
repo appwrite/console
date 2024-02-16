@@ -4,7 +4,7 @@
     import { wizard } from '$lib/stores/wizard';
     import { providers } from './store';
     import Create from './create.svelte';
-    import { providerType, provider } from './store';
+    import { providerType, provider } from './wizard/store';
     import { Providers } from '../provider.svelte';
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { MessagingProviderType } from '@appwrite.io/console';

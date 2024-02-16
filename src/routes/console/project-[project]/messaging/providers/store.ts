@@ -11,6 +11,19 @@ export const columns = writable<Column[]>([
     { id: 'enabled', title: 'Status', type: 'boolean', show: true }
 ]);
 
+export type ProviderInput = {
+    label: string;
+    name: string;
+    type: 'text' | 'password' | 'phone' | 'email' | 'domain' | 'file' | 'switch' | 'select';
+    placeholder?: string;
+    description?: string;
+    popover?: string[];
+    popoverImage?: { src: { light: string; dark: string }; alt: string };
+    allowedFileExtensions?: string[];
+    optional?: boolean;
+    options?: { label: string; value: string | number | boolean }[];
+};
+
 type ProvidersMap = {
     [key in MessagingProviderType]: {
         name: string;
@@ -22,26 +35,7 @@ type ProvidersMap = {
                 classIcon?: string;
                 title: string;
                 description: string;
-                configure: {
-                    label: string;
-                    name: string;
-                    type:
-                        | 'text'
-                        | 'password'
-                        | 'phone'
-                        | 'email'
-                        | 'domain'
-                        | 'file'
-                        | 'switch'
-                        | 'select';
-                    placeholder?: string;
-                    description?: string;
-                    popover?: string[];
-                    popoverImage?: { src: { light: string; dark: string }; alt: string };
-                    allowedFileExtensions?: string[];
-                    optional?: boolean;
-                    options?: { label: string; value: string | number | boolean }[];
-                }[];
+                configure: ProviderInput[];
             };
         };
     };
@@ -628,29 +622,3 @@ export type APNSProviderParams = ProviderParams & {
 export type MQTTProviderParams = ProviderParams & {
     serverKey: string;
 };
-
-export const providerType = writable<MessagingProviderType>(null);
-export const provider = writable<Providers>(null);
-export const providerParams = writable<{
-    twilio: Partial<TwilioProviderParams>;
-    msg91: Partial<Msg91ProviderParams>;
-    telesign: Partial<TelesignProviderParams>;
-    textmagic: Partial<TextmagicProviderParams>;
-    vonage: Partial<VonageProviderParams>;
-    mailgun: Partial<MailgunProviderParams>;
-    sendgrid: Partial<SendgridProviderParams>;
-    smtp: Partial<SMTPProviderParams>;
-    fcm: Partial<FCMProviderParams>;
-    apns: Partial<APNSProviderParams>;
-}>({
-    twilio: null,
-    msg91: null,
-    telesign: null,
-    textmagic: null,
-    vonage: null,
-    mailgun: null,
-    sendgrid: null,
-    smtp: null,
-    fcm: null,
-    apns: null
-});
