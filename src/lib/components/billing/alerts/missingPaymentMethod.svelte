@@ -13,7 +13,7 @@
         title={`Payment method required for ${$orgMissingPaymentMethod.name}`}>
         <svelte:fragment>
             Add a payment method to {$orgMissingPaymentMethod.name} before {toLocaleDate(
-                $orgMissingPaymentMethod.billingCurrentInvoiceDate
+                $orgMissingPaymentMethod.billingNextInvoiceDate
             )} to avoid service interruptions to your projects.
         </svelte:fragment>
         <svelte:fragment slot="buttons">
