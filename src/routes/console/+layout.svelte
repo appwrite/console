@@ -20,7 +20,7 @@
         calculateTrialDay,
         paymentExpired,
         checkForMarkedForDeletion,
-        checkForMandate
+        checkForMandate,
         checkForMissingPaymentMethod
     } from '$lib/stores/billing';
     import { goto } from '$app/navigation';
