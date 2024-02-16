@@ -5,16 +5,11 @@
     import { Dependencies } from '$lib/constants';
     import { Button, InputSwitch } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import { isValueOfStringEnum } from '$lib/helpers/types';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { wizard } from '$lib/stores/wizard';
     import { onMount } from 'svelte';
-    import { MessagingProviderType } from '@appwrite.io/console';
     import Provider, { Providers } from '../../provider.svelte';
     import ProviderType from '../../providerType.svelte';
-    import Update from '../update.svelte';
-    import { providerParams, providerType, provider } from '../store';
     import { provider as providerData } from './store';
 
     let enabled: boolean = null;
@@ -22,144 +17,6 @@
     onMount(() => {
         enabled ??= $providerData.enabled;
     });
-
-    function configure() {
-        if (!isValueOfStringEnum(MessagingProviderType, $providerData.type)) {
-            throw new Error(`Invalid provider type: ${$providerData.type}`);
-        }
-
-        if (!isValueOfStringEnum(Providers, $providerData.provider)) {
-            throw new Error(`Invalid provider: ${$providerData.provider}`);
-        }
-        $providerType = $providerData.type;
-        $provider = $providerData.provider;
-
-        switch ($provider) {
-            case Providers.Twilio:
-                $providerParams[$provider] = {
-                    providerId: $providerData.$id,
-                    name: $providerData.name,
-                    enabled: $providerData.enabled,
-                    accountSid: $providerData.credentials['accountSid'],
-                    authToken: $providerData.credentials['authToken'],
-                    from: $providerData.options['from']
-                };
-                break;
-            case Providers.Msg91:
-                $providerParams[$provider] = {
-                    providerId: $providerData.$id,
-                    name: $providerData.name,
-                    enabled: $providerData.enabled,
-                    from: $providerData.options['from'],
-                    senderId: $providerData.credentials['senderId'],
-                    authKey: $providerData.credentials['authKey']
-                };
-                break;
-            case Providers.Telesign:
-                $providerParams[$provider] = {
-                    providerId: $providerData.$id,
-                    name: $providerData.name,
-                    enabled: $providerData.enabled,
-                    username: $providerData.credentials['username'],
-                    password: $providerData.credentials['password'],
-                    from: $providerData.options['from']
-                };
-                break;
-            case Providers.Textmagic:
-                $providerParams[$provider] = {
-                    providerId: $providerData.$id,
-                    name: $providerData.name,
-                    enabled: $providerData.enabled,
-                    username: $providerData.credentials['username'],
-                    apiKey: $providerData.credentials['apiKey'],
-                    from: $providerData.options['from']
-                };
-                break;
-            case Providers.Vonage:
-                $providerParams[$provider] = {
-                    providerId: $providerData.$id,
-                    name: $providerData.name,
-                    enabled: $providerData.enabled,
-                    apiKey: $providerData.credentials['apiKey'],
-                    apiSecret: $providerData.credentials['apiSecret'],
-                    from: $providerData.options['from']
-                };
-                break;
-            case Providers.Mailgun:
-                $providerParams[$provider] = {
-                    providerId: $providerData.$id,
-                    name: $providerData.name,
-                    enabled: $providerData.enabled,
-                    isEuRegion: false,
-                    fromEmail: $providerData.options['fromEmail'],
-                    fromName: $providerData.options['fromName'],
-                    replyToEmail: $providerData.options['replyToEmail'],
-                    replyToName: $providerData.options['replyToName'],
-                    apiKey: $providerData.credentials['apiKey'],
-                    domain: $providerData.credentials['domain']
-                };
-                break;
-            case Providers.Sendgrid:
-                $providerParams[$provider] = {
-                    providerId: $providerData.$id,
-                    name: $providerData.name,
-                    enabled: $providerData.enabled,
-                    apiKey: $providerData.credentials['apiKey'],
-                    fromEmail: $providerData.options['fromEmail'],
-                    fromName: $providerData.options['fromName'],
-                    replyToEmail: $providerData.options['replyToEmail'],
-                    replyToName: $providerData.options['replyToName']
-                };
-                break;
-            case Providers.SMTP:
-                $providerParams[$provider] = {
-                    providerId: $providerData.$id,
-                    name: $providerData.name,
-                    enabled: $providerData.enabled,
-                    host: $providerData.credentials['host'],
-                    port: $providerData.credentials['port'],
-                    username: $providerData.credentials['username'],
-                    password: $providerData.credentials['password'],
-                    fromName: $providerData.options['fromName'],
-                    fromEmail: $providerData.options['fromEmail'],
-                    replyToName: $providerData.options['replyToName'],
-                    replyToEmail: $providerData.options['replyToEmail'],
-                    encryption: $providerData.options['encryption'],
-                    autoTLS: $providerData.options['autoTLS'],
-                    mailer: $providerData.options['mailer']
-                };
-                break;
-            case Providers.FCM:
-                $providerParams[$provider] = {
-                    providerId: $providerData.$id,
-                    name: $providerData.name,
-                    enabled: $providerData.enabled
-                };
-                if ('serviceAccountJSON' in $providerData.credentials) {
-                    const serviceAccountJSON = $providerData.credentials['serviceAccountJSON'];
-                    if (typeof serviceAccountJSON === 'string') {
-                        $providerParams[$provider].serviceAccountJSON = serviceAccountJSON;
-                    } else if (serviceAccountJSON instanceof Object) {
-                        $providerParams[$provider].serviceAccountJSON =
-                            JSON.stringify(serviceAccountJSON);
-                    }
-                }
-                break;
-            case Providers.APNS:
-                $providerParams[$provider] = {
-                    providerId: $providerData.$id,
-                    name: $providerData.name,
-                    enabled: $providerData.enabled,
-                    authKey: $providerData.credentials['authKey'],
-                    authKeyId: $providerData.credentials['authKeyId'],
-                    teamId: $providerData.credentials['teamId'],
-                    bundleId: $providerData.credentials['bundleId']
-                };
-                break;
-        }
-
-        wizard.start(Update);
-    }
 
     async function updateStatus() {
         try {
@@ -292,7 +149,6 @@
 
     <svelte:fragment slot="actions">
         <div class="u-flex u-flex-wrap u-gap-12">
-            <Button secondary on:click={() => configure()}>Configure</Button>
             <Button disabled={$providerData.enabled === enabled} on:click={() => updateStatus()}
                 >Update</Button>
         </div>
