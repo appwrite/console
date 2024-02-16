@@ -2,7 +2,7 @@
     import { WizardStep } from '$lib/layout';
     import { onMount } from 'svelte';
     import { providers } from '../store';
-    import { providerType, provider, providerParams } from '../store';
+    import { providerType, provider, providerParams } from './store';
     import SettingsFormList from '../settingsFormList.svelte';
 
     let files: Record<string, FileList> = {};
@@ -42,7 +42,7 @@
         {providers[$providerType].text}.
     </svelte:fragment>
 
-    <SettingsFormList bind:files />
+    <SettingsFormList bind:files {inputs} bind:params={$providerParams[$provider]} />
 
     <p class="body-text-2 u-bold u-margin-block-start-48">Need a hand?</p>
 

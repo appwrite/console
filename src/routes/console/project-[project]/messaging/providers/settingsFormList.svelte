@@ -5,17 +5,40 @@
         InputEmail,
         InputFile,
         InputSelect,
+        InputPhone,
         InputSwitch,
         InputText,
         InputPassword
     } from '$lib/elements/forms';
-    import InputPhone from '$lib/elements/forms/inputPhone.svelte';
-    import { provider, providerType, providerParams } from './store';
     import PopoverContent from './popoverContent.svelte';
-    import { providers } from './store';
+    import type {
+        ProviderInput,
+        TwilioProviderParams,
+        Msg91ProviderParams,
+        TelesignProviderParams,
+        TextmagicProviderParams,
+        VonageProviderParams,
+        MailgunProviderParams,
+        SendgridProviderParams,
+        SMTPProviderParams,
+        FCMProviderParams,
+        APNSProviderParams
+    } from './store';
 
-    export let files: Record<string, FileList> = {};
-    const inputs = providers[$providerType].providers[$provider].configure;
+    export let files: Record<string, FileList>;
+    export let inputs: ProviderInput[];
+    export let params: Partial<
+        | TwilioProviderParams
+        | Msg91ProviderParams
+        | TelesignProviderParams
+        | TextmagicProviderParams
+        | VonageProviderParams
+        | MailgunProviderParams
+        | SendgridProviderParams
+        | SMTPProviderParams
+        | FCMProviderParams
+        | APNSProviderParams
+    >;
 </script>
 
 <FormList>
@@ -28,7 +51,7 @@
                 placeholder={input.placeholder}
                 required={!input.optional}
                 isPopoverDefined={input.popover !== undefined}
-                bind:value={$providerParams[$provider][input.name]}>
+                bind:value={params[input.name]}>
                 <svelte:fragment slot="popover">
                     <PopoverContent lines={input.popover} {popoverImage} />
                 </svelte:fragment>
@@ -41,7 +64,7 @@
                 required={!input.optional}
                 showPasswordButton
                 isPopoverDefined={input.popover !== undefined}
-                bind:value={$providerParams[$provider][input.name]}>
+                bind:value={params[input.name]}>
                 <svelte:fragment slot="popover">
                     <PopoverContent lines={input.popover} {popoverImage} />
                 </svelte:fragment>
@@ -53,7 +76,7 @@
                 placeholder={input.placeholder}
                 required={!input.optional}
                 isPopoverDefined={input.popover !== undefined}
-                bind:value={$providerParams[$provider][input.name]}>
+                bind:value={params[input.name]}>
                 <svelte:fragment slot="popover">
                     <PopoverContent lines={input.popover} {popoverImage} />
                 </svelte:fragment>
@@ -65,7 +88,7 @@
                 placeholder={input.placeholder}
                 required={!input.optional}
                 isPopoverDefined={input.popover !== undefined}
-                bind:value={$providerParams[$provider][input.name]}>
+                bind:value={params[input.name]}>
                 <svelte:fragment slot="popover">
                     <PopoverContent lines={input.popover} {popoverImage} />
                 </svelte:fragment>
@@ -77,7 +100,7 @@
                 placeholder={input.placeholder}
                 required={!input.optional}
                 isPopoverDefined={input.popover !== undefined}
-                bind:value={$providerParams[$provider][input.name]}>
+                bind:value={params[input.name]}>
                 <svelte:fragment slot="popover">
                     <PopoverContent lines={input.popover} {popoverImage} />
                 </svelte:fragment>
@@ -94,10 +117,7 @@
                 </svelte:fragment>
             </InputFile>
         {:else if input.type === 'switch'}
-            <InputSwitch
-                label={input.label}
-                id={input.name}
-                bind:value={$providerParams[$provider][input.name]}>
+            <InputSwitch label={input.label} id={input.name} bind:value={params[input.name]}>
                 <svelte:fragment slot="description">
                     {input.description}
                 </svelte:fragment>
@@ -108,7 +128,7 @@
                 id={input.name}
                 options={input.options}
                 required={!input.optional}
-                bind:value={$providerParams[$provider][input.name]} />
+                bind:value={params[input.name]} />
         {/if}
     {/each}
 </FormList>

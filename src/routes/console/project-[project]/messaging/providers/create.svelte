@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { onDestroy } from 'svelte';
     import { Wizard } from '$lib/layout';
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
     import Provider from './wizard/provider.svelte';
@@ -11,7 +10,7 @@
     import { base } from '$app/paths';
     import { project } from '../../store';
     import { wizard } from '$lib/stores/wizard';
-    import { provider, providerParams } from './store';
+    import { provider, providerParams } from './wizard/store';
     import { ID, type Models } from '@appwrite.io/console';
     import { Providers } from '../provider.svelte';
 
@@ -153,10 +152,6 @@
             trackError(error, Submit.MessagingProviderCreate);
         }
     }
-
-    onDestroy(() => {
-        console.log('destroy');
-    });
 
     const stepsComponents: WizardStepsType = new Map();
     stepsComponents.set(1, {
