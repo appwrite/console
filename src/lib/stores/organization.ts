@@ -23,7 +23,7 @@ export type Organization = Models.Team<Record<string, unknown>> & {
 };
 
 export type OrganizationList = {
-    organizations: Organization[];
+    teams: Organization[];
     total: number;
 };
 

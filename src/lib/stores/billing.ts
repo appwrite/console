@@ -274,7 +274,7 @@ export async function checkForMissingPaymentMethod() {
         Query.isNull('backupPaymentMethodId')
     ]);
     if (orgs?.total) {
-        orgMissingPaymentMethod.set(orgs.organizations[0]);
+        orgMissingPaymentMethod.set(orgs.teams[0]);
         headerAlert.add({
             id: 'missingPaymentMethod',
             component: MissingPaymentMethod,
