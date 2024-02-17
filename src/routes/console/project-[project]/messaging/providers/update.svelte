@@ -105,6 +105,7 @@
                         $providerParams[$provider].password || undefined,
                         $providerParams[$provider].encryption,
                         $providerParams[$provider].autoTLS,
+                        $providerParams[$provider].mailer || undefined,
                         $providerParams[$provider].fromName || undefined,
                         $providerParams[$provider].fromEmail,
                         $providerParams[$provider].replyToName || undefined,

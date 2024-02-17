@@ -8,7 +8,7 @@
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { page } from '$app/stores';
-    import { AuthenticatorProvider } from '@appwrite.io/console';
+    import { Factor } from '@appwrite.io/console';
     import InputDigits from '$lib/elements/forms/inputDigits.svelte';
 
     let code: string, disabled: boolean;
@@ -16,9 +16,7 @@
     async function verify() {
         try {
             disabled = true;
-            const challenge = await sdk.forConsole.account.createChallenge(
-                AuthenticatorProvider.Totp
-            );
+            const challenge = await sdk.forConsole.account.create2FAChallenge(Factor.Totp);
             await sdk.forConsole.account.updateChallenge(challenge.$id, code);
             await invalidate(Dependencies.ACCOUNT);
             trackEvent(Submit.AccountCreate);

@@ -7,3 +7,7 @@ export const topic = derived(
     // TODO: Set actual type
     ($page) => $page.data.topic as Models.Topic
 );
+export const topicTotal = derived(
+    topic,
+    ($topic) => $topic.emailTotal + $topic.smsTotal + $topic.pushTotal
+);

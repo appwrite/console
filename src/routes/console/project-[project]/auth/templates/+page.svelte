@@ -4,8 +4,8 @@
             // TODO: fix TemplateType and TemplateLocale typing once SDK is updated
             return await sdk.forConsole.projects.getEmailTemplate(
                 projectId,
-                type as TemplateType,
-                locale as TemplateLocale
+                type as EmailTemplateType,
+                locale as EmailTemplateLocale
             );
         } catch (e) {
             addNotification({
@@ -19,8 +19,8 @@
             // TODO: fix TemplateType and TemplateLocale typing once SDK is updated
             return await sdk.forConsole.projects.getSmsTemplate(
                 projectId,
-                type as TemplateType,
-                locale as TemplateLocale
+                type as SMSTemplateType,
+                locale as SMSTemplateLocale
             );
         } catch (e) {
             addNotification({
@@ -54,7 +54,12 @@
     import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
     import { wizard } from '$lib/stores/wizard';
     import { BillingPlan } from '$lib/constants';
-    import type { TemplateLocale, TemplateType } from '@appwrite.io/console';
+    import type {
+        SMSTemplateLocale,
+        SMSTemplateType,
+        EmailTemplateType,
+        EmailTemplateLocale
+    } from '@appwrite.io/console';
 
     const projectId = $page.params.project;
 
