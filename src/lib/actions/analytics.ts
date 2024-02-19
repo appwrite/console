@@ -289,5 +289,6 @@ export enum Submit {
     SmsResetTemplate = 'submit_sms_reset_template',
     SmsUpdateInviteTemplate = 'submit_sms_update_invite_template',
     SmsUpdateLoginTemplate = 'submit_sms_update_login_template',
-    SmsUpdateVerificationTemplate = 'submit_sms_update_verification_template'
+    SmsUpdateVerificationTemplate = 'submit_sms_update_verification_template',
+    ContactUs = 'submit_contact_us'
 }

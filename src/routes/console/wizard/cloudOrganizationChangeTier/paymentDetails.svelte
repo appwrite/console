@@ -13,12 +13,17 @@
     import { symmetricDifference } from '$lib/helpers/array';
     import { showUsageRatesModal } from '$lib/stores/billing';
     import { PaymentBoxes } from '$lib/components/billing';
+    import FeedbackModal from '$lib/components/feedback/feedbackModal.svelte';
+    import { Alert } from '$lib/components';
 
     let methods: PaymentList;
     let filteredMethods: PaymentMethodData[];
     let name: string;
     let budgetEnabled = false;
     let initialPaymentMethodId: string;
+    let showIndianMandateAlert = false;
+    let showContactUs = false;
+
     onMount(async () => {
         methods = await sdk.forConsole.billing.listPaymentMethods();
         filteredMethods = methods?.paymentMethods.filter((method) => !!method?.last4);
@@ -31,6 +36,11 @@
         $changeOrganizationTier.paymentMethodId = initialPaymentMethodId;
         $changeOrganizationTier.billingBudget = $organization?.billingBudget;
         budgetEnabled = !!$organization?.billingBudget;
+
+        const locale = await sdk.forProject.locale.get();
+        if (locale.countryCode === 'in') {
+            showIndianMandateAlert = true;
+        }
     });
 
     async function handleSubmit() {
@@ -88,8 +98,19 @@
     <svelte:fragment slot="subtitle">
         Confirm the payment method for your organization.
     </svelte:fragment>
+    {#if !showIndianMandateAlert}
+        <Alert type="warning" class="u-margin-block-start-8">
+            <svelte:fragment slot="title">Indian credit or debit card-holders</svelte:fragment>
+            To comply with RBI regulations in India, Appwrite will ask for verification to charge up
+            to $150 USD on your payment method. We will never charge more than the cost of your plan
+            and the resources you use, or your budget cap limit. For higher usage limits, <Button
+                link
+                on:click={() => (showContactUs = true)}>please contact us.</Button>
+        </Alert>
+    {/if}
 
-    <FormList>
+    <FormList
+        class={!showIndianMandateAlert ? 'u-margin-block-start-16' : 'u-margin-block-start-8'}>
         <PaymentBoxes
             methods={filteredMethods}
             bind:name
@@ -122,3 +143,5 @@
         </InputChoice>
     </FormList>
 </WizardStep>
+
+<FeedbackModal bind:show={showContactUs} />
