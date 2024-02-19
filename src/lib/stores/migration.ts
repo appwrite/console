@@ -42,7 +42,7 @@ const resources = [
     'file',
     'bucket',
     'function',
-    'envVar',
+    'environment variable',
     'deployment',
     'database',
     'collection',
