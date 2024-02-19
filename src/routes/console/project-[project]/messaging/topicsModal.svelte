@@ -4,7 +4,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { Query, type Models } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
-    import { providerType } from './wizard/store';
+    import { providerType, getTotal } from './wizard/store';
 
     export let show: boolean;
     export let topicsById: Record<string, Models.Topic>;
@@ -98,12 +98,14 @@
                     checked={!!selected[topicId]}
                     on:change={(event) => onTopicSelection(event, topic)}>
                     <svelte:fragment slot="description">
-                        <span class="title"
-                            ><span class="u-line-height-1-5">
+                        <span class="title">
+                            <span class="u-line-height-1-5">
                                 <span class="body-text-2 u-bold" data-private>
                                     {topic.name}
-                                </span><span class="collapsible-button-optional"
-                                    >({topic.total} subscribers)</span>
+                                </span>
+                                <span class="collapsible-button-optional">
+                                    ({getTotal(topic)} subscribers)
+                                </span>
                             </span></span>
                     </svelte:fragment>
                 </InputCheckbox>

@@ -1,12 +1,12 @@
-import { MessageType, MessagingProviderType, type Models } from '@appwrite.io/console';
-import { writable } from 'svelte/store';
+import { MessageStatus, MessagingProviderType, type Models } from '@appwrite.io/console';
+import { get, writable } from 'svelte/store';
 
 export type MessageParams = {
     messageId: string;
     topics: string[];
     users: string[];
     targets: string[];
-    status: MessageType;
+    status: MessageStatus;
     scheduledAt?: string;
 };
 
@@ -44,3 +44,16 @@ export const messageParams = writable<{
     [MessagingProviderType.Sms]: null,
     [MessagingProviderType.Push]: null
 });
+
+export function getTotal(topic: Models.Topic): number {
+    switch (get(providerType)) {
+        case 'email':
+            return topic.emailTotal;
+        case 'sms':
+            return topic.smsTotal;
+        case 'push':
+            return topic.pushTotal;
+        default:
+            return 0;
+    }
+}
