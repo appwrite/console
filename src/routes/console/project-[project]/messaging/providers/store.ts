@@ -470,16 +470,21 @@ export const providers: ProvidersMap = {
                 description: '',
                 configure: [
                     {
-                        label: 'Username',
-                        name: 'username',
+                        label: 'Customer ID',
+                        name: 'customerId',
                         type: 'text',
-                        placeholder: 'Enter username'
+                        placeholder: 'Enter customer ID'
                     },
                     {
-                        label: 'Password',
-                        name: 'password',
+                        label: 'API Key',
+                        name: 'apiKey',
                         type: 'password',
-                        placeholder: 'Enter password'
+                        placeholder: 'Enter API key',
+                        popover: [
+                            '<b>How to get the API key?</b>',
+                            'Create an account in <a class="link" href="https://portal.telesign.com/" target="_blank" rel="noopener noreferrer">Telesign</a>.',
+                            'Head to <b>Telesign portal -> Profile -> API Keys.</b>'
+                        ]
                     },
                     {
                         label: 'Sender number',
@@ -580,8 +585,8 @@ export type Msg91ProviderParams = ProviderParams & {
 
 export type TelesignProviderParams = ProviderParams & {
     from: string;
-    username: string;
-    password: string;
+    customerId: string;
+    apiKey: string;
 };
 
 export type TextmagicProviderParams = ProviderParams & {
