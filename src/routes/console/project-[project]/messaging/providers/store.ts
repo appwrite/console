@@ -260,7 +260,6 @@ export const providers: ProvidersMap = {
                 ]
             },
             [Providers.SMTP]: {
-                classIcon: 'mail',
                 title: 'SMTP',
                 description: '',
                 configure: [
