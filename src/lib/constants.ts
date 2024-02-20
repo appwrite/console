@@ -65,7 +65,7 @@ export const scopes: {
 }[] = [
     {
         scope: 'sessions.write',
-        description: 'Access to create user sessions',
+        description: "Access to create, update and delete your project's sessions",
         category: 'Auth'
     },
     {
