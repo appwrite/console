@@ -11,8 +11,7 @@
     export let migrationId: string = null;
 
     $: details = migrations.find((migration) => migration.$id === migrationId);
-
-    $: show = !!details;
+    $: show = !!details && !!migrationId;
 
     type StatusCounters = {
         [resource in 'Database' | 'Collection' | 'Function' | 'Users']?: StatusCounter;
