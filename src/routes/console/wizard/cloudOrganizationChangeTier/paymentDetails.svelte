@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { FormList, InputNumber } from '$lib/elements/forms';
+    import { Button, FormList, InputNumber } from '$lib/elements/forms';
     import InputChoice from '$lib/elements/forms/inputChoice.svelte';
     import { WizardStep } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
