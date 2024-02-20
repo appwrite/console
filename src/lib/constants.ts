@@ -64,6 +64,11 @@ export const scopes: {
     category: string;
 }[] = [
     {
+        scope: 'sessions.write',
+        description: 'Access to create user sessions',
+        category: 'Auth'
+    },
+    {
         scope: 'users.read',
         description: "Access to read your project's users",
         category: 'Auth'
