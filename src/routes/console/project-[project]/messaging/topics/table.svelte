@@ -90,6 +90,10 @@
                                     {toLocaleDateTime(topic[column.id])}
                                 {/if}
                             </TableCellText>
+                        {:else if column.id === 'total'}
+                            <TableCellText title={column.title} width={column.width}>
+                                {topic.emailTotal + topic.smsTotal + topic.pushTotal}
+                            </TableCellText>
                         {:else}
                             <TableCellText title={column.title} width={column.width}>
                                 {topic[column.id]}

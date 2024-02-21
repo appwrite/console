@@ -1,10 +1,11 @@
 <script lang="ts">
     import { EmptySearch, Modal, PaginationInline } from '$lib/components';
     import { Button, FormList, InputCheckbox, InputSearch } from '$lib/elements/forms';
+    import { Table, TableBody, TableCell, TableRow } from '$lib/elements/table';
     import { sdk } from '$lib/stores/sdk';
     import { Query, type Models } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
-    import { providerType } from './wizard/store';
+    import { providerType, getTotal } from './wizard/store';
     import ProviderType from './providerType.svelte';
 
     export let show: boolean;
@@ -80,7 +81,7 @@
     }
 </script>
 
-<Modal {title} bind:show onSubmit={submit} on:close={reset} size="big">
+<Modal {title} bind:show onSubmit={submit} on:close={reset} headerDivider={false} size="big">
     <p class="text">
         Select existing topics you want to send this message to its subscribers. The message will be
         sent only to <ProviderType type={$providerType} noIcon /> targets.
@@ -92,25 +93,35 @@
         bind:value={search} />
     {#if Object.keys(topicResultsById).length > 0}
         <FormList>
-            {#each Object.entries(topicResultsById) as [topicId, topic]}
-                <InputCheckbox
-                    id={topicId}
-                    disabled={!!topicsById[topicId]}
-                    checked={!!selected[topicId]}
-                    on:change={(event) => onTopicSelection(event, topic)}>
-                    <svelte:fragment slot="description">
-                        <span class="title"
-                            ><span class="u-line-height-1-5">
-                                <span class="body-text-2 u-bold" data-private>
-                                    {topic.name}
-                                </span><span class="collapsible-button-optional"
-                                    >({topic.total} subscribers)</span>
-                            </span></span>
-                    </svelte:fragment>
-                </InputCheckbox>
-            {/each}
+            <Table noMargin noStyles>
+                <TableBody>
+                    {#each Object.entries(topicResultsById) as [topicId, topic]}
+                        <TableRow>
+                            <TableCell>
+                                <InputCheckbox
+                                    id={topicId}
+                                    disabled={!!topicsById[topicId]}
+                                    checked={!!selected[topicId]}
+                                    on:change={(event) => onTopicSelection(event, topic)}>
+                                    <svelte:fragment slot="description">
+                                        <span class="title">
+                                            <span class="u-line-height-1-5">
+                                                <span class="body-text-2 u-bold" data-private>
+                                                    {topic.name}
+                                                </span>
+                                                <span class="collapsible-button-optional">
+                                                    ({getTotal(topic)} subscribers)
+                                                </span>
+                                            </span></span>
+                                    </svelte:fragment>
+                                </InputCheckbox>
+                            </TableCell>
+                        </TableRow>
+                    {/each}
+                </TableBody>
+            </Table>
         </FormList>
-        <div class="u-flex u-margin-block-start-32 u-main-space-between">
+        <div class="u-flex u-main-space-between">
             <p class="text">Total results: {totalResults}</p>
             <PaginationInline limit={5} bind:offset sum={totalResults} hidePages />
         </div>

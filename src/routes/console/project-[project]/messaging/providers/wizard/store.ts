@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
 import type { Providers } from '../../provider.svelte';
-import type { MessagingProviderType, SMTPEncryption } from '@appwrite.io/console';
+import type { MessagingProviderType, Encryption } from '@appwrite.io/console';
 
 type ProviderParams = {
     providerId: string;
@@ -73,7 +73,7 @@ export type SMTPProviderParams = ProviderParams & {
     port: number;
     username: string;
     password: string;
-    encryption: SMTPEncryption;
+    encryption: Encryption;
     autoTLS: boolean;
     mailer: string;
 };

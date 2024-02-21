@@ -8,7 +8,7 @@
     import InputDigits from '$lib/elements/forms/inputDigits.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { AuthenticatorProvider } from '@appwrite.io/console';
+    import { AuthenticatorType } from '@appwrite.io/console';
 
     export let showDelete = false;
 
@@ -17,7 +17,7 @@
 
     async function deleteProvider() {
         try {
-            await sdk.forConsole.account.deleteAuthenticator(AuthenticatorProvider.Totp, code);
+            await sdk.forConsole.account.deleteAuthenticator(AuthenticatorType.Totp, code);
             await invalidate(Dependencies.ACCOUNT);
             await invalidate(Dependencies.FACTORS);
             showDelete = false;

@@ -15,7 +15,7 @@
     import deepEqual from 'deep-equal';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Box } from '$lib/components';
-    import type { TemplateLocale, TemplateType } from '@appwrite.io/console';
+    import type { EmailTemplateLocale, EmailTemplateType } from '@appwrite.io/console';
 
     export let loading = false;
     let openResetModal = false;
@@ -56,8 +56,8 @@
             // TODO: fix TemplateType and TemplateLocale typing once SDK is updated
             await sdk.forConsole.projects.updateEmailTemplate(
                 $project.$id,
-                $emailTemplate.type ? ($emailTemplate.type as TemplateType) : undefined,
-                $emailTemplate.locale ? ($emailTemplate.locale as TemplateLocale) : undefined,
+                $emailTemplate.type ? ($emailTemplate.type as EmailTemplateType) : undefined,
+                $emailTemplate.locale ? ($emailTemplate.locale as EmailTemplateLocale) : undefined,
                 $emailTemplate.subject ? $emailTemplate.subject : undefined,
                 $emailTemplate.message ? $emailTemplate.message : undefined,
                 $emailTemplate.senderName ? $emailTemplate.senderName : undefined,

@@ -8,22 +8,22 @@
     import { Table, TableBody, TableCell, TableRow } from '$lib/elements/table';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { AuthenticatorFactor, type Models } from '@appwrite.io/console';
+    import { AuthenticatorType, type Models } from '@appwrite.io/console';
 
     export let showSetup = false;
     export let showRecoveryCodes = false;
 
     let code: string;
-    let provider: Models.MfaProvider = null;
+    let type: Models.MfaType = null;
     async function addAuthenticator(): Promise<URL> {
-        provider = await sdk.forConsole.account.addAuthenticator(AuthenticatorFactor.Totp);
+        type = await sdk.forConsole.account.addAuthenticator(AuthenticatorType.Totp);
 
-        return sdk.forConsole.avatars.getQR(provider.uri, 192 * 2);
+        return sdk.forConsole.avatars.getQR(type.uri, 192 * 2);
     }
 
     async function verifyAuthenticator() {
         try {
-            await sdk.forConsole.account.verifyAuthenticator(AuthenticatorFactor.Totp, code);
+            await sdk.forConsole.account.verifyAuthenticator(AuthenticatorType.Totp, code);
             await invalidate(Dependencies.ACCOUNT);
             await invalidate(Dependencies.FACTORS);
             showSetup = false;
@@ -72,8 +72,8 @@
     description="Learn more about multi-factor authentication in our documentation."
     bind:show={showRecoveryCodes}
     onSubmit={verifyAuthenticator}>
-    {#if provider}
-        {@const formattedBackupCodes = provider.backups.join('\n')}
+    {#if type}
+        {@const formattedBackupCodes = type.backups.join('\n')}
         <Alert type="info">
             <span slot="title">
                 It is highly recommended to securely store your recovery codes
@@ -109,7 +109,7 @@
         </div>
         <Table noMargin noStyles>
             <TableBody>
-                {#each provider.backups as code}
+                {#each type.backups as code}
                     <TableRow>
                         <TableCell title="code">
                             <Output value={code} hideCopyIcon>{code}</Output>

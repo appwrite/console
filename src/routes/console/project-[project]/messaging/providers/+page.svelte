@@ -71,7 +71,7 @@
             total={data.providers.total} />
     {:else if $hasPageQueries}
         <EmptyFilter resource="providers" />
-    {:else if data.search && data.search != 'empty'}
+    {:else if data.search && data.search !== 'empty'}
         <EmptySearch>
             <div class="u-text-center">
                 <b>Sorry, we couldn't find '{data.search}'</b>

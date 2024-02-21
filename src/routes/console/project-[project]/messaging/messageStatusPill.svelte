@@ -8,7 +8,7 @@
     info={status === 'scheduled'}
     warning={status === 'processing'}
     success={status === 'sent'}
-    danger={status == 'failed'}
+    danger={status === 'failed'}
     on:click>
     <span class="text u-trim">
         {status}
