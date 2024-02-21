@@ -12,7 +12,7 @@
 
     $: details = migrations.find((migration) => migration.$id === migrationId);
 
-    $: show = !!details;
+    $: show = !!details && migrationId !== null;
 
     type StatusCounters = {
         [resource in 'Database' | 'Collection' | 'Function' | 'Users']?: StatusCounter;
