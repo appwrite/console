@@ -30,6 +30,10 @@
             providerType = 'Push';
             break;
     }
+
+    const scheduled = toLocaleDateTime(scheduledAt);
+
+    console.log($message);
 </script>
 
 <CardGrid>
@@ -42,7 +46,15 @@
         <div class="u-flex u-main-space-between">
             <div data-private>
                 <p class="title">Created: {toLocaleDateTime($message.$createdAt)}</p>
-                <p class="title">Scheduled at: {toLocaleDateTime(scheduledAt)}</p>
+                <p class="title">
+                    {#if scheduled === 'n/a'}
+                        Sent at: 
+                    {:else}
+                        Scheduled at: 
+                    {/if}
+
+                    {scheduled}
+                </p>
             </div>
             <div class="u-flex u-flex-vertical u-cross-end">
                 <MessageStatusPill status={$message.status} />
