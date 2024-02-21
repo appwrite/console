@@ -111,7 +111,7 @@
                 </InputCheckbox>
             {/each}
         </FormList>
-        <div class="u-flex u-margin-block-start-32 u-main-space-between">
+        <div class="u-flex u-main-space-between">
             <p class="text">Total results: {totalResults}</p>
             <PaginationInline limit={5} bind:offset sum={totalResults} hidePages />
         </div>
