@@ -1,36 +1,12 @@
-<script context="module" lang="ts">
-    export async function createSMSMessage(params: EmailMessageParams) {
-        const response = await sdk.forProject.client.call(
-            'POST',
-            new URL(sdk.forProject.client.config.endpoint + '/messaging/messages/sms'),
-            {
-                'X-Appwrite-Project': sdk.forProject.client.config.project,
-                'content-type': 'application/json',
-                'X-Appwrite-Mode': 'admin'
-            },
-            params
-        );
-
-        return response.json();
-    }
-</script>
-
 <script lang="ts">
-    import {
-        messageParams,
-        providerType,
-        type EmailMessageParams,
-        MessageStatuses,
-        operation
-    } from './store';
+    import { messageParams, providerType, operation } from './store';
     import { Button, FormList, InputEmail, InputRadio, InputTextarea } from '$lib/elements/forms';
     import { Pill } from '$lib/elements';
     import { CustomId, Modal } from '$lib/components';
     import { user } from '$lib/stores/user';
     import { clickOnEnter } from '$lib/helpers/a11y';
-    import { ID } from '@appwrite.io/console';
+    import { ID, MessageStatus, MessagingProviderType } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
-    import { ProviderTypes } from '../providerType.svelte';
     import SMSPhone from '../smsPhone.svelte';
 
     let showCustomId = false;
@@ -41,17 +17,16 @@
     async function sendTestSMS() {
         // const email = selected === 'self' ? $user.email : otherEmail;
 
-        createSMSMessage({
-            topics: $messageParams[ProviderTypes.Email]?.topics || [],
-            targets: $messageParams[ProviderTypes.Email]?.targets || [],
-            status: MessageStatuses.PROCESSING,
-            messageId: ID.unique(),
-            // TODO: properly handle the test email address
-            users: ['steven'],
-            subject: $messageParams[ProviderTypes.Email]?.subject || '',
-            content: $messageParams[ProviderTypes.Email]?.content || '',
-            html: $messageParams[ProviderTypes.Email]?.html || false
-        });
+        // TODO: replace with test method
+        sdk.forProject.messaging.createSms(
+            ID.unique(),
+            $messageParams[MessagingProviderType.Sms]?.content || undefined,
+            $messageParams[MessagingProviderType.Sms]?.topics || [],
+            $messageParams[MessagingProviderType.Sms]?.users || [],
+            $messageParams[MessagingProviderType.Sms]?.targets || [],
+            MessageStatus.Processing,
+            undefined
+        );
     }
 
     $: otherEmail = selected === 'self' ? '' : otherEmail;
@@ -64,6 +39,7 @@
                 id="message"
                 label="Message"
                 placeholder="Type here..."
+                maxlength={900}
                 bind:value={$messageParams[$providerType]['content']}>
             </InputTextarea>
             <!-- TODO: Add support for draft messages -->

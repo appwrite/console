@@ -448,7 +448,7 @@ export class Billing {
         );
     }
 
-    async listInvoices(organizationId: string, queries: Query[] = []): Promise<InvoiceList> {
+    async listInvoices(organizationId: string, queries: string[] = []): Promise<InvoiceList> {
         const path = `/organizations/${organizationId}/invoices`;
         const params = {
             organizationId,
@@ -515,6 +515,28 @@ export class Billing {
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
             'get',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            params
+        );
+    }
+
+    async retryPayment(
+        organizationId: string,
+        invoiceId: string,
+        paymentMethodId: string
+    ): Promise<Invoice> {
+        const path = `/organizations/${organizationId}/invoices/${invoiceId}/payments`;
+        const params = {
+            organizationId,
+            invoiceId,
+            paymentMethodId
+        };
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'post',
             uri,
             {
                 'content-type': 'application/json'

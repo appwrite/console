@@ -3,6 +3,7 @@
 
     export let danger = false;
     export let hideOverflow = false;
+    export let hideFooter = false;
 </script>
 
 <Card {danger}>
@@ -14,7 +15,7 @@
             <slot name="aside" />
         </div>
     </div>
-    {#if $$slots.actions}
+    {#if $$slots.actions && !hideFooter}
         <div class="common-section card-separator u-flex u-main-end">
             <slot name="actions" />
         </div>

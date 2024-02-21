@@ -101,9 +101,15 @@ export async function submitStripeCard(name: string, urlRoute?: string) {
     }
 }
 
-export async function confirmPayment(orgId: string, clientSecret: string, paymentMethodId: string) {
+export async function confirmPayment(
+    orgId: string,
+    clientSecret: string,
+    paymentMethodId: string,
+    route?: string
+) {
     try {
-        const url = `${window.location.origin}/console/organization-${orgId}/billing`;
+        const url =
+            window.location.origin + (route ? route : `/console/organization-${orgId}/billing`);
 
         const paymentMethod = await sdk.forConsole.billing.getPaymentMethod(paymentMethodId);
 

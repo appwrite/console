@@ -1,21 +1,12 @@
-import type { Models } from '@appwrite.io/console';
-import { writable } from 'svelte/store';
-import { ProviderTypes } from '../providerType.svelte';
-
-export enum MessageStatuses {
-    DRAFT = 'draft',
-    SCHEDULED = 'scheduled',
-    PROCESSING = 'processing',
-    SENT = 'sent',
-    FAILED = 'failed'
-}
+import { MessageStatus, MessagingProviderType, type Models } from '@appwrite.io/console';
+import { get, writable } from 'svelte/store';
 
 export type MessageParams = {
     messageId: string;
     topics: string[];
     users: string[];
     targets: string[];
-    status: MessageStatuses;
+    status: MessageStatus;
     scheduledAt?: string;
 };
 
@@ -42,14 +33,27 @@ export type PushMessageParams = MessageParams & {
 };
 
 export const operation = writable<'create' | 'update'>('create');
-export const providerType = writable<ProviderTypes>(null);
+export const providerType = writable<MessagingProviderType>(null);
 export const targetsById = writable<Record<string, Models.Target>>({});
 export const messageParams = writable<{
-    [ProviderTypes.Email]: Partial<EmailMessageParams>;
-    [ProviderTypes.Sms]: Partial<SMSMessageParams>;
-    [ProviderTypes.Push]: Partial<PushMessageParams>;
+    [MessagingProviderType.Email]: Partial<EmailMessageParams>;
+    [MessagingProviderType.Sms]: Partial<SMSMessageParams>;
+    [MessagingProviderType.Push]: Partial<PushMessageParams>;
 }>({
-    [ProviderTypes.Email]: null,
-    [ProviderTypes.Sms]: null,
-    [ProviderTypes.Push]: null
+    [MessagingProviderType.Email]: null,
+    [MessagingProviderType.Sms]: null,
+    [MessagingProviderType.Push]: null
 });
+
+export function getTotal(topic: Models.Topic): number {
+    switch (get(providerType)) {
+        case 'email':
+            return topic.emailTotal;
+        case 'sms':
+            return topic.smsTotal;
+        case 'push':
+            return topic.pushTotal;
+        default:
+            return 0;
+    }
+}

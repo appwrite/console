@@ -11,79 +11,47 @@
     import { base } from '$app/paths';
     import { project } from '../store';
     import { wizard } from '$lib/stores/wizard';
-    import {
-        providerType,
-        messageParams,
-        MessageStatuses,
-        type PushMessageParams,
-        type SMSMessageParams,
-        type EmailMessageParams,
-        operation
-    } from './wizard/store';
-    import { ProviderTypes } from './providerType.svelte';
-    import { ID } from '@appwrite.io/console';
+    import { providerType, messageParams, operation } from './wizard/store';
+    import { ID, MessageStatus, MessagingProviderType, type Models } from '@appwrite.io/console';
     import { Dependencies } from '$lib/constants';
 
     async function create() {
         try {
-            let response = { $id: '' };
+            let response: Models.Message;
             const messageId = $messageParams[$providerType].messageId || ID.unique();
 
-            const params = $messageParams[$providerType];
-
-            console.log(params);
-
-            const payload:
-                | Partial<SMSMessageParams>
-                | Partial<EmailMessageParams>
-                | Partial<PushMessageParams> = {
-                topics: params.topics || [],
-                users: params.users || [],
-                targets: params.targets || []
-            };
-            Object.keys(params).forEach((key) => {
-                if (['messageId', 'topics', 'users', 'targets'].includes(key)) return;
-                if (typeof params[key] === 'undefined') return;
-                payload[key] = params[key];
-            });
-
             switch ($providerType) {
-                case ProviderTypes.Email:
-                    response = await sdk.forProject.client.call(
-                        'POST',
-                        new URL(
-                            sdk.forProject.client.config.endpoint + '/messaging/messages/email'
-                        ),
-                        {
-                            'X-Appwrite-Project': sdk.forProject.client.config.project,
-                            'content-type': 'application/json',
-                            'X-Appwrite-Mode': 'admin'
-                        },
-                        {
-                            ...payload,
-                            messageId
-                        }
+                case MessagingProviderType.Email:
+                    response = await sdk.forProject.messaging.createEmail(
+                        messageId,
+                        $messageParams[$providerType].subject,
+                        $messageParams[$providerType].content,
+                        $messageParams[$providerType].topics,
+                        $messageParams[$providerType].users,
+                        $messageParams[$providerType].targets,
+                        undefined,
+                        undefined,
+                        undefined,
+                        $messageParams[$providerType].status,
+                        $messageParams[$providerType].html,
+                        $messageParams[$providerType].scheduledAt
                     );
                     break;
-                case ProviderTypes.Sms:
-                    response = await sdk.forProject.client.call(
-                        'POST',
-                        new URL(sdk.forProject.client.config.endpoint + '/messaging/messages/sms'),
-                        {
-                            'X-Appwrite-Project': sdk.forProject.client.config.project,
-                            'content-type': 'application/json',
-                            'X-Appwrite-Mode': 'admin'
-                        },
-                        {
-                            ...payload,
-                            messageId
-                        }
+                case MessagingProviderType.Sms:
+                    response = await sdk.forProject.messaging.createSms(
+                        messageId,
+                        $messageParams[$providerType].content,
+                        $messageParams[$providerType].topics,
+                        $messageParams[$providerType].users,
+                        $messageParams[$providerType].targets,
+                        $messageParams[$providerType].status,
+                        $messageParams[$providerType].scheduledAt
                     );
                     break;
-                case ProviderTypes.Push:
+                case MessagingProviderType.Push:
                     {
                         const customData: Record<string, string> = {};
-                        const { data } = $messageParams[ProviderTypes.Push];
+                        const { data } = $messageParams[MessagingProviderType.Push];
                         if (data && data.length > 0) {
                             data.forEach((item) => {
                                 if (item[0] === '') return;
@@ -91,35 +59,38 @@
                             });
                         }
 
-                        response = await sdk.forProject.client.call(
-                            'POST',
-                            new URL(
-                                sdk.forProject.client.config.endpoint + '/messaging/messages/push'
-                            ),
-                            {
-                                'X-Appwrite-Project': sdk.forProject.client.config.project,
-                                'content-type': 'application/json',
-                                'X-Appwrite-Mode': 'admin'
-                            },
-                            {
-                                ...payload,
-                                data: customData,
-                                messageId
-                            }
+                        response = await sdk.forProject.messaging.createPush(
+                            messageId,
+                            $messageParams[$providerType].title,
+                            $messageParams[$providerType].body,
+                            $messageParams[$providerType].topics,
+                            $messageParams[$providerType].users,
+                            $messageParams[$providerType].targets,
+                            customData,
+                            undefined,
+                            undefined,
+                            undefined,
+                            undefined,
+                            undefined,
+                            undefined,
+                            undefined,
+                            $messageParams[$providerType].status,
+                            $messageParams[$providerType].scheduledAt
                         );
                     }
                     break;
             }
             wizard.hide();
             let message = '';
-            switch (params.status) {
-                case MessageStatuses.DRAFT:
+            switch (response.status) {
+                case MessageStatus.Draft:
                     message = 'The message has been saved as draft.';
                     break;
-                case MessageStatuses.PROCESSING:
+                case MessageStatus.Processing:
                     message = 'The message is queued for processing.';
                     break;
-                case MessageStatuses.SCHEDULED:
+                case 'scheduled':
+                    // TODO: fix message status
                     message = 'The message has been scheduled.';
                     break;
             }
@@ -129,7 +100,7 @@
             });
             trackEvent(Submit.MessagingMessageCreate, {
                 providerType: $providerType,
-                status: params.status
+                status: response.status
             });
             await goto(`${base}/console/project-${$project.$id}/messaging/message-${response.$id}`);
         } catch (error) {
@@ -143,68 +114,45 @@
 
     async function update() {
         try {
-            let response = { $id: '' };
+            let response: Models.Message;
+
             const messageId = $messageParams[$providerType].messageId;
 
             const params = $messageParams[$providerType];
 
             console.log(params);
 
-            const payload:
-                | Partial<SMSMessageParams>
-                | Partial<EmailMessageParams>
-                | Partial<PushMessageParams> = {
-                topics: params.topics || [],
-                users: params.users || [],
-                targets: params.targets || []
-            };
-            Object.keys(params).forEach((key) => {
-                if (['messageId', 'topics', 'users', 'targets'].includes(key)) return;
-                if (typeof params[key] === 'undefined') return;
-                payload[key] = params[key];
-            });
-
-            console.log(payload);
-
             switch ($providerType) {
-                case ProviderTypes.Email:
-                    response = await sdk.forProject.client.call(
-                        'PATCH',
-                        new URL(
-                            `${sdk.forProject.client.config.endpoint}/messaging/messages/email/${messageId}`
-                        ),
-                        {
-                            'X-Appwrite-Project': sdk.forProject.client.config.project,
-                            'content-type': 'application/json',
-                            'X-Appwrite-Mode': 'admin'
-                        },
-                        {
-                            ...payload,
-                            messageId
-                        }
+                case MessagingProviderType.Email:
+                    response = await sdk.forProject.messaging.updateEmail(
+                        messageId,
+                        $messageParams[$providerType].topics,
+                        $messageParams[$providerType].users,
+                        $messageParams[$providerType].targets,
+                        $messageParams[$providerType].subject,
+                        $messageParams[$providerType].content,
+                        $messageParams[$providerType].status,
+                        $messageParams[$providerType].html,
+                        undefined,
+                        undefined,
+                        $messageParams[$providerType].scheduledAt
                     );
                     break;
-                case ProviderTypes.Sms:
-                    response = await sdk.forProject.client.call(
-                        'PATCH',
-                        new URL(
-                            `${sdk.forProject.client.config.endpoint}/messaging/messages/sms/${messageId}`
-                        ),
-                        {
-                            'X-Appwrite-Project': sdk.forProject.client.config.project,
-                            'content-type': 'application/json',
-                            'X-Appwrite-Mode': 'admin'
-                        },
-                        {
-                            ...payload,
-                            messageId
-                        }
+                case MessagingProviderType.Sms:
+                    response = await sdk.forProject.messaging.updateSms(
+                        messageId,
+                        $messageParams[$providerType].topics,
+                        $messageParams[$providerType].users,
+                        $messageParams[$providerType].targets,
+                        $messageParams[$providerType].content,
+                        $messageParams[$providerType].status,
+                        $messageParams[$providerType].scheduledAt
                     );
                     break;
-                case ProviderTypes.Push:
+                case MessagingProviderType.Push:
                     {
                         const customData: Record<string, string> = {};
-                        const { data } = $messageParams[ProviderTypes.Push];
+                        const { data } = $messageParams[MessagingProviderType.Push];
                         if (data && data.length > 0) {
                             data.forEach((item) => {
                                 if (item[0] === '') return;
@@ -212,35 +160,38 @@
                             });
                         }
 
-                        response = await sdk.forProject.client.call(
-                            'PATCH',
-                            new URL(
-                                `${sdk.forProject.client.config.endpoint}/messaging/messages/push/${messageId}`
-                            ),
-                            {
-                                'X-Appwrite-Project': sdk.forProject.client.config.project,
-                                'content-type': 'application/json',
-                                'X-Appwrite-Mode': 'admin'
-                            },
-                            {
-                                ...payload,
-                                data: customData,
-                                messageId
-                            }
+                        response = await sdk.forProject.messaging.updatePush(
+                            messageId,
+                            $messageParams[$providerType].topics,
+                            $messageParams[$providerType].users,
+                            $messageParams[$providerType].targets,
+                            $messageParams[$providerType].title,
+                            $messageParams[$providerType].body,
+                            customData,
+                            undefined,
+                            undefined,
+                            undefined,
+                            undefined,
+                            undefined,
+                            undefined,
+                            undefined,
+                            $messageParams[$providerType].status,
+                            $messageParams[$providerType].scheduledAt
                         );
                     }
                     break;
             }
             wizard.hide();
             let message = '';
-            switch (params.status) {
-                case MessageStatuses.DRAFT:
+            switch (response.status) {
+                case MessageStatus.Draft:
                     message = 'The message has been saved as draft.';
                     break;
-                case MessageStatuses.PROCESSING:
+                case MessageStatus.Processing:
                     message = 'The message is queued for processing.';
                     break;
-                case MessageStatuses.SCHEDULED:
+                case 'scheduled':
+                    // TODO: fix message status
                     message = 'The message has been scheduled.';
                     break;
             }
@@ -264,7 +215,7 @@
     }
 
     async function saveDraft() {
-        $messageParams[$providerType].status = MessageStatuses.DRAFT;
+        $messageParams[$providerType].status = MessageStatus.Draft;
         if ($operation === 'create') {
             create();
         } else {

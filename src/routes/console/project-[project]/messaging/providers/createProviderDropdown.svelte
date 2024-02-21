@@ -5,9 +5,9 @@
     import { providers } from './store';
     import Create from './create.svelte';
     import { providerType, provider } from './wizard/store';
-    import { ProviderTypes } from '../providerType.svelte';
     import { Providers } from '../provider.svelte';
     import { isValueOfStringEnum } from '$lib/helpers/types';
+    import { MessagingProviderType } from '@appwrite.io/console';
 
     export let showCreateDropdown = false;
 </script>
@@ -25,9 +25,9 @@
                 icon={option.icon}
                 on:click={() => {
                     if (
-                        type !== ProviderTypes.Email &&
-                        type !== ProviderTypes.Sms &&
-                        type !== ProviderTypes.Push
+                        type !== MessagingProviderType.Email &&
+                        type !== MessagingProviderType.Sms &&
+                        type !== MessagingProviderType.Push
                     )
                         return;
                     $providerType = type;

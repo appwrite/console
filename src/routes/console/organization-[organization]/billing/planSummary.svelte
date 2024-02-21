@@ -12,9 +12,10 @@
     import { sdk } from '$lib/stores/sdk';
     import type { Invoice } from '$lib/sdk/billing';
     import { Query } from '@appwrite.io/console';
-    import { abbreviateNumber, formatNumberWithCommas } from '$lib/helpers/numbers';
+    import { abbreviateNumber, formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { BillingPlan } from '$lib/constants';
+    import { trackEvent } from '$lib/actions/analytics';
 
     let currentInvoice: Invoice;
     const today = new Date();
@@ -62,7 +63,7 @@
                             <span class="text u-color-text-gray">Total to-date:</span>
                         {/if}
                         <span class="body-text-1">
-                            ${isTrial ? 0 : currentPlan?.price}
+                            {isTrial ? formatCurrency(0) : formatCurrency(currentPlan?.price)}
                         </span>
                     </p>
                 </div>
@@ -77,7 +78,7 @@
                                         <span> {extraMembers.value}</span>
                                         {extraMembers.name}
                                     </p>
-                                    <p class="text">${extraMembers.amount}</p>
+                                    <p class="text">{formatCurrency(extraMembers.amount)}</p>
                                 </li>
                             </ul>
                         </div>
@@ -97,7 +98,7 @@
                                             </span>
                                             {excess.name}
                                         </p>
-                                        <p class="text">${excess.amount}</p>
+                                        <p class="text">{formatCurrency(excess.amount)}</p>
                                     </li>
                                 {/if}
                                 {#if ['users', 'executions'].includes(excess.name)}
@@ -107,13 +108,15 @@
                                                 >{abbreviateNumber(excess.value)}</span>
                                             {excess.name}
                                         </p>
-                                        <p class="text">${excess.amount}</p>
+                                        <p class="text">{formatCurrency(excess.amount)}</p>
                                     </li>
                                 {/if}
                             {/each}
                             <li class="u-flex u-main-space-between u-margin-block-start-16">
                                 <p class="body-text-1 u-bold">Total to-date:</p>
-                                <p class="body-text-1 u-bold">${currentInvoice?.amount}</p>
+                                <p class="body-text-1 u-bold">
+                                    {formatCurrency(currentInvoice?.amount ?? 0)}
+                                </p>
                             </li>
                         </ul>
                     </div>
@@ -136,7 +139,12 @@
                     </Button>
                     <Button
                         disabled={$organization?.markedForDeletion}
-                        on:click={() => wizard.start(ChangeOrganizationTierCloud)}>
+                        on:click={() => wizard.start(ChangeOrganizationTierCloud)}
+                        on:click={() =>
+                            trackEvent('click_organization_upgrade', {
+                                from: 'button',
+                                source: 'billing_tab'
+                            })}>
                         Upgrade
                     </Button>
                 </div>
@@ -145,7 +153,12 @@
                     <Button
                         text
                         disabled={$organization?.markedForDeletion}
-                        on:click={() => wizard.start(ChangeOrganizationTierCloud)}>
+                        on:click={() => wizard.start(ChangeOrganizationTierCloud)}
+                        on:click={() =>
+                            trackEvent('click_organization_plan_update', {
+                                from: 'button',
+                                source: 'billing_tab'
+                            })}>
                         Change plan
                     </Button>
                     <Button

@@ -36,7 +36,7 @@
             class={icon ? `icon-${icon}` : ''}
             aria-hidden="true" />
     </div>
-    <div class="alert-sticky-content">
+    <div class="alert-sticky-content" data-private>
         {#if title}
             <h4 class="alert-sticky-title">{title}</h4>
         {/if}

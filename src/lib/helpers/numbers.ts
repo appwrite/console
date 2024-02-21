@@ -20,3 +20,12 @@ export function formatNumberWithCommas(number: number): string {
     const formatter = new Intl.NumberFormat('en');
     return formatter.format(number);
 }
+
+export function formatCurrency(number: number, locale = 'en-US', currency = 'USD'): string {
+    if (isNaN(number)) return String(number);
+    const formatter = new Intl.NumberFormat(locale, {
+        style: 'currency',
+        currency
+    });
+    return formatter.format(number);
+}

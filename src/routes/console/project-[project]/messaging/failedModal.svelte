@@ -9,7 +9,16 @@
 
 <Modal title="Message error" headerDivider={false} bind:show size="big">
     <div class="box u-flex-vertical u-gap-24">
-        <p>Some messages failed to send.</p>
+        <p class="u-inline-flex u-cross-center u-gap-8">
+            <span
+                class="icon-exclamation-circle u-font-size-20"
+                aria-hidden="true"
+                style="color:hsl(var(--color-danger-100));" />Message failed
+        </p>
+        <p>
+            The message has been sent with errors. Please refer to the logs below for more
+            information.
+        </p>
         <div style="max-inline-size: 524px">
             <Code language="html" code={errors.join('\n')} noMargin noBoxPadding allowScroll />
         </div>

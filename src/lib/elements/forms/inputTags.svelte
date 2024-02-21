@@ -12,6 +12,7 @@
     export let disabled = false;
     export let readonly = false;
     export let required = false;
+    export let tooltip: string = null;
 
     let value = '';
     let element: HTMLInputElement;
@@ -77,7 +78,7 @@
         value={tags.join(',')}
         {required}
         on:invalid={handleInvalid} />
-    <Label {required} hide={!showLabel} for={id}>
+    <Label {required} {tooltip} hide={!showLabel} for={id}>
         {label}
     </Label>
 

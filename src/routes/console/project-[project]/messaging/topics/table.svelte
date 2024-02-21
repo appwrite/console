@@ -32,19 +32,7 @@
     async function handleDelete() {
         showDelete = false;
 
-        function deleteTopic(topicId: string) {
-            return sdk.forProject.client.call(
-                'DELETE',
-                new URL(`${sdk.forProject.client.config.endpoint}/messaging/topics/${topicId}`),
-                {
-                    'X-Appwrite-Project': sdk.forProject.client.config.project,
-                    'content-type': 'application/json',
-                    'X-Appwrite-Mode': 'admin'
-                }
-            );
-        }
-
-        const promises = selectedIds.map((id) => deleteTopic(id));
+        const promises = selectedIds.map((id) => sdk.forProject.messaging.deleteTopic(id));
 
         try {
             await Promise.all(promises);
@@ -101,6 +89,10 @@
                                 {:else}
                                     {toLocaleDateTime(topic[column.id])}
                                 {/if}
+                            </TableCellText>
+                        {:else if column.id === 'total'}
+                            <TableCellText title={column.title} width={column.width}>
+                                {topic.emailTotal + topic.smsTotal + topic.pushTotal}
                             </TableCellText>
                         {:else}
                             <TableCellText title={column.title} width={column.width}>

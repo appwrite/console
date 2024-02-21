@@ -7,6 +7,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { createPlatform } from '../store';
     import { Submit, trackEvent } from '$lib/actions/analytics';
+    import { PlatformType } from '@appwrite.io/console';
 
     const projectId = $page.params.project;
     const suggestions = ['*.vercel.app', '*.netlify.app', '*.gitpod.io'];
@@ -27,7 +28,7 @@
 
         const platform = await sdk.forConsole.projects.createPlatform(
             projectId,
-            'web',
+            PlatformType.Web,
             $createPlatform.name,
             undefined,
             undefined,
