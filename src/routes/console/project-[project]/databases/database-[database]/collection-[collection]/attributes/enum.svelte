@@ -86,7 +86,10 @@
     label="Elements"
     bind:tags={data.elements}
     placeholder="Add elements here"
-    required />
+    tooltip="Enum elements have a maxiumum length of 255 characters. This limit can not be exceeded."
+    required>
+</InputTags>
+
 <InputSelect
     id="default"
     label="Default value"

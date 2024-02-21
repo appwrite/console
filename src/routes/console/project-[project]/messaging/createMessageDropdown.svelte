@@ -5,8 +5,8 @@
     import { providers } from './providers/store';
     import Wizard from './wizard.svelte';
     import { messageParams, operation, providerType, targetsById } from './wizard/store';
-    import { ProviderTypes } from './providerType.svelte';
     import { topicsById } from './store';
+    import { MessagingProviderType } from '@appwrite.io/console';
 
     export let showCreateDropdown = false;
 </script>
@@ -24,9 +24,9 @@
                 icon={option.icon}
                 on:click={() => {
                     if (
-                        type !== ProviderTypes.Email &&
-                        type !== ProviderTypes.Sms &&
-                        type !== ProviderTypes.Push
+                        type !== MessagingProviderType.Email &&
+                        type !== MessagingProviderType.Sms &&
+                        type !== MessagingProviderType.Push
                     )
                         return;
                     $providerType = type;
@@ -39,24 +39,25 @@
                         targets: []
                     };
                     switch (type) {
-                        case ProviderTypes.Email:
+                        case MessagingProviderType.Email:
                             $messageParams[$providerType] = {
                                 ...common,
                                 subject: '',
                                 content: ''
                             };
                             break;
-                        case ProviderTypes.Sms:
+                        case MessagingProviderType.Sms:
                             $messageParams[$providerType] = {
                                 ...common,
                                 content: ''
                             };
                             break;
-                        case ProviderTypes.Push:
+                        case MessagingProviderType.Push:
                             $messageParams[$providerType] = {
                                 ...common,
                                 title: '',
-                                body: ''
+                                body: '',
+                                data: [['', '']]
                             };
                             break;
                     }

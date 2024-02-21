@@ -1,7 +1,7 @@
 import type { Column } from '$lib/helpers/types';
 import { writable } from 'svelte/store';
 import { Providers } from '../provider.svelte';
-import { ProviderTypes } from '../providerType.svelte';
+import { MessagingProviderType, Encryption } from '@appwrite.io/console';
 
 export const columns = writable<Column[]>([
     { id: '$id', title: 'Provider ID', type: 'string', show: true },
@@ -12,23 +12,34 @@ export const columns = writable<Column[]>([
 ]);
 
 type ProvidersMap = {
-    [key in ProviderTypes]: {
+    [key in MessagingProviderType]: {
         name: string;
         text: string;
         icon: string;
         providers: {
             [key in Providers]?: {
-                imageIcon: string;
+                imageIcon?: string;
+                classIcon?: string;
                 title: string;
                 description: string;
                 configure: {
                     label: string;
                     name: string;
-                    type: 'text' | 'password' | 'phone' | 'email' | 'domain' | 'file' | 'switch';
+                    type:
+                        | 'text'
+                        | 'password'
+                        | 'phone'
+                        | 'email'
+                        | 'domain'
+                        | 'file'
+                        | 'switch'
+                        | 'select';
                     placeholder?: string;
                     description?: string;
                     popover?: string[];
                     allowedFileExtensions?: string[];
+                    optional?: boolean;
+                    options?: { label: string; value: string | number | boolean }[];
                 }[];
             };
         };
@@ -36,7 +47,7 @@ type ProvidersMap = {
 };
 
 export const providers: ProvidersMap = {
-    [ProviderTypes.Push]: {
+    [MessagingProviderType.Push]: {
         name: 'Push notification',
         text: 'notifications',
         icon: 'device-mobile',
@@ -53,7 +64,7 @@ export const providers: ProvidersMap = {
                         allowedFileExtensions: ['json'],
                         placeholder: 'Enter service account JSON',
                         popover: [
-                            '<b>How to get the FCM service account JSON?</b>',
+                            '<b>How to get the <a class="link" href="https://firebase.google.com" target="_blank" rel="noopener noreferrer">FCM</a> service account JSON?</b>',
                             'Head to <b>Project settings -> Service accounts -> Generate new private key.</b>',
                             'Generating the new key will result in the download of a JSON file.'
                         ]
@@ -72,7 +83,7 @@ export const providers: ProvidersMap = {
                         placeholder: 'Enter team ID',
                         popover: [
                             '<b>How to get the team ID?</b>',
-                            'Head to <b>Apple Developer Member Center -> Membership details -> Team ID.</b>'
+                            'Head to <b><a class="link" href="https://idmsa.apple.com/IDMSWebAuth/signin?appIdKey=891bd3417a7776362562d2197f89480a8547b108fd934911bcbea0110d07f757&path=%2Faccount%2F&rv=1" target="_blank" rel="noopener noreferrer">Apple Developer Member Center</a> -> Membership details -> Team ID.</b>'
                         ]
                     },
                     {
@@ -82,11 +93,11 @@ export const providers: ProvidersMap = {
                         placeholder: 'Enter bundle ID',
                         popover: [
                             '<b>How to get the bundle ID?</b>',
-                            'Head to <b>Apple Developer Member Center -> Certificates, Identifiers & Profiles -> Identifiers.</b>',
+                            'Head to <b><a class="link" href="https://idmsa.apple.com/IDMSWebAuth/signin?appIdKey=891bd3417a7776362562d2197f89480a8547b108fd934911bcbea0110d07f757&path=%2Faccount%2F&rv=1" target="_blank" rel="noopener noreferrer">Apple Developer Member Center</a> -> Certificates, Identifiers & Profiles -> Identifiers.</b>',
                             `<a
                                 href="/images/apns-bundle-id.png"
                                 class="file-preview is-with-image"
-                                target="_blank"
+                                target="_blank" rel="noopener noreferrer"
                                 rel="noopener noreferrer"
                                 aria-label="open file in new window">
                                 <div class="file-preview-image">
@@ -111,7 +122,7 @@ export const providers: ProvidersMap = {
                         placeholder: 'Enter key ID',
                         popover: [
                             '<b>How to get the auth key ID?</b>',
-                            'Head to <b>Apple Developer Member Center -> Certificates, Identifiers & Profiles -> Keys.</b>',
+                            'Head to <b><a class="link" href="https://idmsa.apple.com/IDMSWebAuth/signin?appIdKey=891bd3417a7776362562d2197f89480a8547b108fd934911bcbea0110d07f757&path=%2Faccount%2F&rv=1" target="_blank" rel="noopener noreferrer">Apple Developer Member Center</a> -> Certificates, Identifiers & Profiles -> Keys.</b>',
                             'Click on your key to view details.'
                         ]
                     },
@@ -122,7 +133,7 @@ export const providers: ProvidersMap = {
                         allowedFileExtensions: ['p8'],
                         popover: [
                             '<b>How to get the authentication key?</b>',
-                            'Head to <b>Apple Developer Member Center</b> (under Program resources) <b>-> Certificates, Identifiers & Profiles -> Keys.</b>',
+                            'Head to <b><a class="link" href="https://idmsa.apple.com/IDMSWebAuth/signin?appIdKey=891bd3417a7776362562d2197f89480a8547b108fd934911bcbea0110d07f757&path=%2Faccount%2F&rv=1" target="_blank" rel="noopener noreferrer">Apple Developer Member Center</a></b> (under Program resources) <b>-> Certificates, Identifiers & Profiles -> Keys.</b>',
                             'Create a key and give it a name. Enable the Apple Push Notifications service (APNS), and register your key.'
                         ]
                     }
@@ -135,7 +146,7 @@ export const providers: ProvidersMap = {
             // }
         }
     },
-    [ProviderTypes.Email]: {
+    [MessagingProviderType.Email]: {
         name: 'Email',
         text: 'emails',
         icon: 'mail',
@@ -148,11 +159,11 @@ export const providers: ProvidersMap = {
                     {
                         label: 'API key',
                         name: 'apiKey',
-                        type: 'text',
+                        type: 'password',
                         placeholder: 'Enter API key',
                         popover: [
                             '<b>How to get the API key?</b>',
-                            'Create an account in Mailgun.',
+                            'Create an account in <a class="link" href="https://signup.mailgun.com/new/signup" target="_blank" rel="noopener noreferrer">Mailgun</a>.',
                             'Head to <b>Profile -> API Security -> Add new key.</b>'
                         ]
                     },
@@ -164,7 +175,7 @@ export const providers: ProvidersMap = {
                         popover: [
                             '<b>How to create a domain?</b>',
                             'Head to <b>Sending -> Domains -> Add new domain.</b>',
-                            'Follow <b>Mailgun instructions</b> to verify the domain name.'
+                            'Follow <b><a class="link" href="https://signup.mailgun.com/new/signup" target="_blank" rel="noopener noreferrer">Mailgun</a> instructions</b> to verify the domain name.'
                         ]
                     },
                     {
@@ -184,36 +195,39 @@ export const providers: ProvidersMap = {
                         label: 'Sender name',
                         name: 'fromName',
                         type: 'text',
+                        optional: true,
                         placeholder: 'Enter name'
                     },
                     {
-                        label: 'Reply-to email',
+                        label: 'Reply to email',
                         name: 'replyToEmail',
                         type: 'email',
+                        optional: true,
                         placeholder: 'Enter email'
                     },
                     {
-                        label: 'Reply-to name',
+                        label: 'Reply to name',
                         name: 'replyToName',
                         type: 'text',
+                        optional: true,
                         placeholder: 'Enter name'
                     }
                 ]
             },
             [Providers.Sendgrid]: {
                 imageIcon: 'sendgrid',
-                title: 'Sendgrid',
+                title: 'SendGrid',
                 description: '',
                 configure: [
                     {
                         label: 'API key',
                         name: 'apiKey',
-                        type: 'text',
+                        type: 'password',
                         placeholder: 'Enter API key',
                         popover: [
                             '<b>How to get the API key?</b>',
-                            'Create an account in Mailgun.',
-                            'Head to <b>Profile -> API Security -> Add new key.</b>'
+                            'Create an account in <a class="link" href="https://login.sendgrid.com/login/identifier" target="_blank" rel="noopener noreferrer">SendGrid</a>.',
+                            'Head to <b>Settings -> API Keys -> Create API key.</b>'
                         ]
                     },
                     {
@@ -226,26 +240,113 @@ export const providers: ProvidersMap = {
                         label: 'Sender name',
                         name: 'fromName',
                         type: 'text',
+                        optional: true,
                         placeholder: 'Enter name'
                     },
                     {
-                        label: 'Reply-to email',
+                        label: 'Reply to email',
                         name: 'replyToEmail',
+                        type: 'email',
+                        optional: true,
+                        placeholder: 'Enter email'
+                    },
+                    {
+                        label: 'Reply to name',
+                        name: 'replyToName',
+                        type: 'text',
+                        optional: true,
+                        placeholder: 'Enter name'
+                    }
+                ]
+            },
+            [Providers.SMTP]: {
+                title: 'SMTP',
+                description: '',
+                configure: [
+                    {
+                        label: 'Sender name',
+                        name: 'fromName',
+                        type: 'text',
+                        optional: true,
+                        placeholder: 'Enter name'
+                    },
+                    {
+                        label: 'Sender email',
+                        name: 'fromEmail',
                         type: 'email',
                         placeholder: 'Enter email'
                     },
                     {
-                        label: 'Reply-to name',
+                        label: 'Reply to name',
                         name: 'replyToName',
                         type: 'text',
+                        optional: true,
                         placeholder: 'Enter name'
+                    },
+                    {
+                        label: 'Reply to email',
+                        name: 'replyToEmail',
+                        type: 'email',
+                        optional: true,
+                        placeholder: 'Enter email'
+                    },
+                    {
+                        label: 'Server host',
+                        name: 'host',
+                        type: 'text',
+                        placeholder: 'Enter host'
+                    },
+                    {
+                        label: 'Server port',
+                        name: 'port',
+                        type: 'text',
+                        optional: true,
+                        placeholder: 'Enter port'
+                    },
+                    {
+                        label: 'Username',
+                        name: 'username',
+                        type: 'text',
+                        optional: true,
+                        placeholder: 'Enter username'
+                    },
+                    {
+                        label: 'Password',
+                        name: 'password',
+                        type: 'password',
+                        optional: true,
+                        placeholder: 'Enter password'
+                    },
+                    {
+                        label: 'Encryption',
+                        name: 'encryption',
+                        type: 'select',
+                        options: [
+                            { label: 'None', value: Encryption.None },
+                            { label: 'SSL', value: Encryption.Ssl },
+                            { label: 'TLS', value: Encryption.Tls }
+                        ]
+                    },
+                    {
+                        label: 'Auto TLS',
+                        name: 'autoTLS',
+                        description: 'Automatically uses TLS encryption',
+                        type: 'switch',
+                        optional: true
+                    },
+                    {
+                        label: 'Mailer',
+                        name: 'mailer',
+                        type: 'text',
+                        optional: true,
+                        placeholder: 'Enter mailer'
                     }
                 ]
             }
         }
     },
 
-    [ProviderTypes.Sms]: {
+    [MessagingProviderType.Sms]: {
         name: 'SMS',
         text: 'SMS',
         icon: 'annotation',
@@ -262,17 +363,17 @@ export const providers: ProvidersMap = {
                         placeholder: 'Enter Account SID',
                         popover: [
                             '<b>How to get the Account SID?</b>',
-                            'Head to <b>Twilio console -> Account info -> Account SID.</b>'
+                            'Head to <b><a class="link" href="https://console.twilio.com/" target="_blank" rel="noopener noreferrer">Twilio</a> console -> Account info -> Account SID.</b>'
                         ]
                     },
                     {
                         label: 'Auth token',
                         name: 'authToken',
-                        type: 'text',
+                        type: 'password',
                         placeholder: 'Enter Auth token',
                         popover: [
                             '<b>How to get the Auth token?</b>',
-                            'Head to <b>Twilio console -> Account info -> Auth Token.</b>'
+                            'Head to <b><a class="link" href="https://console.twilio.com/" target="_blank" rel="noopener noreferrer">Twilio</a> console -> Account info -> Auth Token.</b>'
                         ]
                     },
                     {
@@ -282,8 +383,8 @@ export const providers: ProvidersMap = {
                         placeholder: 'Enter phone',
                         popover: [
                             '<b>How to get sender number?</b>',
-                            'Head to <b>Twilio console -> Account info -> My Twilio phone number.</b>',
-                            'If you have multiple Twilio phone numbers, you can select one as the default number.'
+                            'Head to <b><a class="link" href="https://console.twilio.com/" target="_blank" rel="noopener noreferrer">Twilio</a> console -> Develop -> Phone Numbers -> Manage -> Active Numbers.</b>',
+                            'If you have multiple <a class="link" href="https://console.twilio.com/" target="_blank" rel="noopener noreferrer">Twilio</a> phone numbers, you can select one as the default number.'
                         ]
                     }
                 ]
@@ -296,11 +397,11 @@ export const providers: ProvidersMap = {
                     {
                         label: 'Auth key',
                         name: 'authKey',
-                        type: 'text',
+                        type: 'password',
                         placeholder: 'Enter auth key',
                         popover: [
                             '<b>How to get the Auth key?</b>',
-                            'Create an account in MSG91.',
+                            'Create an account in <a class="link" href="https://control.msg91.com/signin/" target="_blank" rel="noopener noreferrer">MSG91</a>.',
                             'Click to open the <b>Username dropdown -> Authkey -> Verify your mobile number -> Create Authkey.</b>'
                         ]
                     },
@@ -311,7 +412,7 @@ export const providers: ProvidersMap = {
                         placeholder: 'Enter sender ID',
                         popover: [
                             '<b>How to create a Sender ID?</b>',
-                            'Head to <b>MSG91 dashboard -> SMS -> Sender ID -> Create sender ID.</b>'
+                            'Head to <b><a class="link" href="https://control.msg91.com/signin/" target="_blank" rel="noopener noreferrer">MSG91</a> dashboard -> SMS -> Sender ID -> Create sender ID.</b>'
                         ]
                     },
                     {
@@ -355,12 +456,12 @@ export const providers: ProvidersMap = {
                     {
                         label: 'API key',
                         name: 'apiKey',
-                        type: 'text',
+                        type: 'password',
                         placeholder: 'Enter API key',
                         popover: [
                             '<b>How to get the API key?</b>',
-                            'Create an account in Textmagic.',
-                            'Head to <b>TextMagic dashboard -> API Settings -> Add new API key.</b>'
+                            'Create an account in <a class="link" href="https://app.textmagic.com/login" target="_blank" rel="noopener noreferrer">Textmagic</a>.',
+                            'Head to <b><a class="link" href="https://app.textmagic.com/login" target="_blank" rel="noopener noreferrer">Textmagic</a>  dashboard -> Services -> API -> Add new API key.</b>'
                         ]
                     },
                     {
@@ -385,22 +486,22 @@ export const providers: ProvidersMap = {
                     {
                         label: 'API key',
                         name: 'apiKey',
-                        type: 'text',
+                        type: 'password',
                         placeholder: 'Enter API key',
                         popover: [
                             '<b>How to get the API key?</b>',
-                            'Create an account in Vonage.',
-                            'Head to <b>Vonage dashboard and copy the API key.</b>'
+                            'Create an account in <a class="link" href="https://dashboard.nexmo.com/sign-in" target="_blank" rel="noopener noreferrer">Vonage</a>.',
+                            'Head to <b><a class="link" href="https://dashboard.nexmo.com/sign-in" target="_blank" rel="noopener noreferrer">Vonage</a> dashboard and copy the API key.</b>'
                         ]
                     },
                     {
                         label: 'API secret',
                         name: 'apiSecret',
-                        type: 'text',
+                        type: 'password',
                         placeholder: 'Enter API secret',
                         popover: [
                             '<b>How to get the API secret?</b>',
-                            'Head to <b>Vonage dashboard and copy the API secret.</b>'
+                            'Head to <b><a class="link" href="https://dashboard.nexmo.com/sign-in" target="_blank" rel="noopener noreferrer">Vonage</a> dashboard and copy the API secret.</b>'
                         ]
                     },
                     {

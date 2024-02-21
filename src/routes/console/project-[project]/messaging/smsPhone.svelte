@@ -12,13 +12,11 @@
         }
 
         // Get 1st 2 initials, skipping words that don't start with a letter
-        const initials = words
+        return words
             .filter((word) => word.match(/^[a-z]/i))
             .map((word) => word[0].toUpperCase())
             .slice(0, 2)
             .join('');
-
-        return initials;
     }
 
     // Current time as H:MM AM/PM

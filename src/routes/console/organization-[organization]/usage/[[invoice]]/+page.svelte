@@ -13,6 +13,7 @@
     import { accumulateFromEndingTotal, total } from '$lib/layout/usage.svelte';
     import type { OrganizationUsage } from '$lib/sdk/billing';
     import { BillingPlan } from '$lib/constants';
+    import { trackEvent } from '$lib/actions/analytics';
 
     export let data;
 
@@ -42,7 +43,14 @@
         <Heading tag="h2" size="5">Usage</Heading>
 
         {#if $organization?.billingPlan === BillingPlan.STARTER}
-            <Button on:click={() => wizard.start(ChangeOrganizationTierCloud)}>
+            <Button
+                on:click={() => {
+                    wizard.start(ChangeOrganizationTierCloud);
+                    trackEvent('click_organization_upgrade', {
+                        from: 'button',
+                        source: 'organization_usage'
+                    });
+                }}>
                 <span class="text">Upgrade</span>
             </Button>
         {/if}

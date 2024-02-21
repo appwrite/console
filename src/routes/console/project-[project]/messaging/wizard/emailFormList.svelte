@@ -1,28 +1,5 @@
-<script context="module" lang="ts">
-    export async function createEmailMessage(params: EmailMessageParams) {
-        const response = await sdk.forProject.client.call(
-            'POST',
-            new URL(sdk.forProject.client.config.endpoint + '/messaging/messages/email'),
-            {
-                'X-Appwrite-Project': sdk.forProject.client.config.project,
-                'content-type': 'application/json',
-                'X-Appwrite-Mode': 'admin'
-            },
-            params
-        );
-
-        return response.json();
-    }
-</script>
-
 <script lang="ts">
-    import {
-        messageParams,
-        providerType,
-        type EmailMessageParams,
-        MessageStatuses,
-        operation
-    } from './store';
+    import { messageParams, providerType, operation } from './store';
     import {
         Button,
         FormList,
@@ -36,9 +13,8 @@
     import { CustomId, Modal } from '$lib/components';
     import { user } from '$lib/stores/user';
     import { clickOnEnter } from '$lib/helpers/a11y';
-    import { ID } from '@appwrite.io/console';
+    import { ID, MessageStatus, MessagingProviderType } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
-    import { ProviderTypes } from '../providerType.svelte';
 
     let showCustomId = false;
     let showTest = false;
@@ -49,17 +25,21 @@
         const email = selected === 'self' ? $user.email : otherEmail;
         console.log(email);
 
-        createEmailMessage({
-            topics: $messageParams[ProviderTypes.Email]?.topics || [],
-            targets: $messageParams[ProviderTypes.Email]?.targets || [],
-            status: MessageStatuses.PROCESSING,
-            messageId: ID.unique(),
-            // TODO: properly handle the test email address
-            users: ['steven'],
-            subject: $messageParams[ProviderTypes.Email]?.subject || '',
-            content: $messageParams[ProviderTypes.Email]?.content || '',
-            html: $messageParams[ProviderTypes.Email]?.html || false
-        });
+        // TODO: replace with test method
+        sdk.forProject.messaging.createEmail(
+            ID.unique(),
+            $messageParams[MessagingProviderType.Email]?.subject || undefined,
+            $messageParams[MessagingProviderType.Email]?.content || undefined,
+            $messageParams[MessagingProviderType.Email]?.topics || [],
+            $messageParams[MessagingProviderType.Email]?.users || [],
+            $messageParams[MessagingProviderType.Email]?.targets || [],
+            undefined,
+            undefined,
+            undefined,
+            MessageStatus.Processing,
+            $messageParams[MessagingProviderType.Email]?.html || false,
+            undefined
+        );
     }
 
     $: otherEmail = selected === 'self' ? '' : otherEmail;

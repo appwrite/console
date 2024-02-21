@@ -1,8 +1,9 @@
 <script lang="ts">
-    import { FormList, InputDate, InputSelect, InputTime } from '$lib/elements/forms';
+    import { Button, FormList, InputDate, InputSelect, InputTime } from '$lib/elements/forms';
     import Helper from '$lib/elements/forms/helper.svelte';
     import { WizardStep } from '$lib/layout';
-    import { MessageStatuses, messageParams, providerType } from './store';
+    import { MessageStatus, MessagingProviderType } from '@appwrite.io/console';
+    import { messageParams, providerType } from './store';
 
     let when: 'now' | 'later' = 'now';
     let now = new Date();
@@ -11,6 +12,19 @@
     let date: string;
     let time: string;
     let dateTime: Date;
+    let docsUrl = `https://appwrite.io/docs/products/messaging`;
+
+    switch ($providerType) {
+        case MessagingProviderType.Email:
+            docsUrl += '/send-email-messages';
+            break;
+        case MessagingProviderType.Sms:
+            docsUrl += '/send-sms-messages';
+            break;
+        case MessagingProviderType.Push:
+            docsUrl += '/send-push-notifications';
+            break;
+    }
 
     const options = [
         { label: 'Now', value: 'now' },
@@ -23,13 +37,13 @@
         hour: 'numeric',
         minute: 'numeric',
         hourCycle: 'h23',
-        timeZoneName: 'longOffset'
+        timeZoneName: 'longGeneric'
     };
 
     async function beforeSubmit() {
-        $messageParams[$providerType].status = MessageStatuses.PROCESSING;
+        $messageParams[$providerType].status = MessageStatus.Processing;
         if (when === 'later') {
-            $messageParams[$providerType].status = MessageStatuses.SCHEDULED;
+            $messageParams[$providerType].status = 'scheduled' as MessageStatus;
             $messageParams[$providerType].scheduledAt = dateTime.toISOString();
         }
     }
@@ -51,10 +65,13 @@
 
 <WizardStep {beforeSubmit}>
     <svelte:fragment slot="title">Schedule</svelte:fragment>
-    <!-- TODO: Add link to docs -->
     <svelte:fragment slot="subtitle"
-        >Schedule the time you want your users to receive this message. Learn more in our
-        documentation.</svelte:fragment>
+        >Schedule the time you want to deliver this message. Learn more in our <Button
+            link
+            external
+            text
+            href={docsUrl}>documentation</Button
+        >.</svelte:fragment>
     <FormList>
         <div
             class="u-grid u-gap-24"

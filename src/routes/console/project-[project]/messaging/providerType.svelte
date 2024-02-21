@@ -1,15 +1,8 @@
-<script context="module" lang="ts">
-    export enum ProviderTypes {
-        Email = 'email',
-        Sms = 'sms',
-        Push = 'push'
-    }
-</script>
-
 <script lang="ts">
     import type { Models } from '@appwrite.io/console';
+    import { MessagingProviderType } from '@appwrite.io/console';
 
-    export let type: ProviderTypes | Models.Provider['type'];
+    export let type: MessagingProviderType | Models.Provider['type'];
     export let noIcon = false;
     export let size: 's' | 'm' | 'l' = 'm';
 
@@ -17,15 +10,15 @@
     let text = '';
 
     switch (type) {
-        case ProviderTypes.Email:
+        case MessagingProviderType.Email:
             icon = 'icon-mail';
             text = 'Email';
             break;
-        case ProviderTypes.Sms:
+        case MessagingProviderType.Sms:
             icon = 'icon-annotation';
             text = 'SMS';
             break;
-        case ProviderTypes.Push:
+        case MessagingProviderType.Push:
             icon = 'icon-device-mobile';
             text = 'Push';
             break;

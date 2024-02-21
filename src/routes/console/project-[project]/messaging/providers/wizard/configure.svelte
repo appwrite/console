@@ -4,6 +4,7 @@
         InputDomain,
         InputEmail,
         InputFile,
+        InputSelect,
         InputSwitch,
         InputText,
         InputPassword
@@ -58,6 +59,7 @@
                     id={input.name}
                     label={input.label}
                     placeholder={input.placeholder}
+                    required={!input.optional}
                     isPopoverDefined={input.popover !== undefined}
                     bind:value={$providerParams[$provider][input.name]}>
                     <svelte:fragment slot="popover">
@@ -69,6 +71,9 @@
                     id={input.name}
                     label={input.label}
                     placeholder={input.placeholder}
+                    required={!input.optional}
+                    showPasswordButton
+                    isPopoverDefined={input.popover !== undefined}
                     bind:value={$providerParams[$provider][input.name]}>
                     <svelte:fragment slot="popover">
                         {@html input.popover?.join('<br/><br/>')}
@@ -79,6 +84,8 @@
                     id={input.name}
                     label={input.label}
                     placeholder={input.placeholder}
+                    required={!input.optional}
+                    isPopoverDefined={input.popover !== undefined}
                     bind:value={$providerParams[$provider][input.name]}>
                     <svelte:fragment slot="popover">
                         <p class="body-text-2 u-margin-block-end-16">
@@ -91,6 +98,8 @@
                     id={input.name}
                     label={input.label}
                     placeholder={input.placeholder}
+                    required={!input.optional}
+                    isPopoverDefined={input.popover !== undefined}
                     bind:value={$providerParams[$provider][input.name]}>
                     <svelte:fragment slot="popover">
                         <p class="body-text-2 u-margin-block-end-16">
@@ -103,6 +112,8 @@
                     id={input.name}
                     label={input.label}
                     placeholder={input.placeholder}
+                    required={!input.optional}
+                    isPopoverDefined={input.popover !== undefined}
                     bind:value={$providerParams[$provider][input.name]}>
                     <svelte:fragment slot="popover">
                         <p class="body-text-2 u-margin-block-end-16">
@@ -114,6 +125,8 @@
                 <InputFile
                     label={input.label}
                     allowedFileExtensions={input.allowedFileExtensions}
+                    required={!input.optional}
+                    isPopoverDefined={input.popover !== undefined}
                     bind:files={files[input.name]}>
                     <svelte:fragment slot="popover">
                         <p class="body-text-2 u-margin-block-end-16">
@@ -130,6 +143,13 @@
                         {input.description}
                     </svelte:fragment>
                 </InputSwitch>
+            {:else if input.type === 'select'}
+                <InputSelect
+                    label={input.label}
+                    id={input.name}
+                    options={input.options}
+                    required={!input.optional}
+                    bind:value={$providerParams[$provider][input.name]} />
             {/if}
         {/each}
     </FormList>

@@ -6,6 +6,7 @@
     import { FormList, InputText } from '$lib/elements/forms';
     import { Pill } from '$lib/elements';
     import { Providers } from '../../provider.svelte';
+    import { Encryption } from '@appwrite.io/console';
 
     let name = '';
     let showCustomId = false;
@@ -91,6 +92,24 @@
                     replyToName: ''
                 };
                 break;
+            case Providers.SMTP:
+                $providerParams[$provider] = {
+                    providerId: id,
+                    name: name,
+                    enabled: true,
+                    host: '',
+                    port: 587,
+                    username: '',
+                    password: '',
+                    autoTLS: true,
+                    encryption: Encryption.Tls,
+                    mailer: '',
+                    fromEmail: '',
+                    fromName: '',
+                    replyToEmail: '',
+                    replyToName: ''
+                };
+                break;
             case Providers.FCM:
                 $providerParams[$provider] = {
                     providerId: id,
@@ -116,7 +135,7 @@
 
 <WizardStep {beforeSubmit}>
     <svelte:fragment slot="title">Provider</svelte:fragment>
-    <FormList>
+    <FormList gap={16}>
         <InputText
             id="name"
             label="Name"
@@ -144,7 +163,8 @@
                     name="provider"
                     {value}
                     bind:group={$provider}
-                    imageIcon={option.imageIcon}>
+                    imageIcon={option.imageIcon}
+                    icon={option.classIcon}>
                     <svelte:fragment slot="title">{option.title}</svelte:fragment>
                     {#if option.description}
                         {option.description}

@@ -22,14 +22,13 @@
     import { targetsById } from '../../../store';
     import UserTargetsModal from '../../../userTargetsModal.svelte';
     import { onMount } from 'svelte';
-    import type { Subscriber } from './+page';
     import { Filters, hasPageQueries } from '$lib/components/filters';
     import { columns } from './store';
     import { View } from '$lib/helpers/load';
 
     export let data: PageData;
     let showAdd = false;
-    let subscribersByTargetId: Record<string, Subscriber> = {};
+    let subscribersByTargetId: Record<string, Models.Subscriber> = {};
 
     onMount(() => {
         $targetsById = {};
@@ -43,29 +42,13 @@
     async function addTargets(event: CustomEvent<Record<string, Models.Target>>) {
         showAdd = false;
         $targetsById = event.detail;
-        async function addSubscriber(targetId: string) {
-            await sdk.forProject.client.call(
-                'POST',
-                new URL(
-                    `${sdk.forProject.client.config.endpoint}/messaging/topics/${$page.params.topic}/subscribers`
-                ),
-                {
-                    'X-Appwrite-Project': sdk.forProject.client.config.project,
-                    'content-type': 'application/json',
-                    'X-Appwrite-Mode': 'admin'
-                },
-                {
-                    subscriberId: ID.unique(),
-                    topicId: $page.params.topic,
-                    targetId: targetId
-                }
-            );
-        }
 
         const targetIds = Object.keys($targetsById).filter(
             (targetId) => !(targetId in subscribersByTargetId)
         );
-        const promises = targetIds.map(addSubscriber);
+        const promises = targetIds.map((targetId) =>
+            sdk.forProject.messaging.createSubscriber($page.params.topic, ID.unique(), targetId)
+        );
 
         try {
             await Promise.all(promises);
@@ -142,8 +125,7 @@
             total={data.subscribers.total} />
     {:else if $hasPageQueries}
         <EmptyFilter resource="subscribers" />
-        <!-- TODO: remove data.search != 'empty' when the API is ready with data -->
-    {:else if data.search && data.search != 'empty'}
+    {:else if data.search}
         <EmptySearch>
             <div class="u-text-center">
                 <b>Sorry, we couldn't find '{data.search}'</b>
@@ -156,11 +138,10 @@
             </Button>
         </EmptySearch>
     {:else}
-        <!-- TODO: update docs link -->
         <Empty
             single
             on:click={() => (showAdd = true)}
-            href="https://appwrite.io/docs/references/cloud/client-web/teams"
+            href="https://appwrite.io/docs/products/messaging/topics/#subscribe-targets-to-topics"
             target="subscriber" />
     {/if}
 </Container>

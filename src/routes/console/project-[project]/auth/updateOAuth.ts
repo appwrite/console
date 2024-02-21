@@ -1,9 +1,11 @@
 import { invalidate } from '$app/navigation';
 import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
 import { Dependencies } from '$lib/constants';
+import { isValueOfStringEnum } from '$lib/helpers/types';
 import { addNotification } from '$lib/stores/notifications';
 import type { Provider } from '$lib/stores/oauth-providers';
 import { sdk } from '$lib/stores/sdk';
+import { OAuthProvider } from '@appwrite.io/console';
 
 type Args = {
     projectId: string;
@@ -26,6 +28,9 @@ export async function updateOAuth({
     enabled
 }: Args): Promise<Return> {
     try {
+        if (!isValueOfStringEnum(OAuthProvider, provider.key)) {
+            throw new Error(`Invalid OAuth2 provider: ${provider.key}`);
+        }
         await sdk.forConsole.projects.updateOAuth2(
             projectId,
             provider.key,

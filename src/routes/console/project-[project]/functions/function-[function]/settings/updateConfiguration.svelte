@@ -36,7 +36,7 @@
     } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import type { Models } from '@appwrite.io/console';
+    import { Runtime, type Models } from '@appwrite.io/console';
     import { func } from '../store';
     import GitInstallationModal from '$routes/console/project-[project]/settings/GitInstallationModal.svelte';
     import GitConfigurationModal from './gitConfigurationModal.svelte';
@@ -50,6 +50,7 @@
     import { installations } from '$lib/wizards/functions/store';
     import { isSelfHosted } from '$lib/system';
     import { consoleVariables } from '$routes/console/store';
+    import { isValueOfStringEnum } from '$lib/helpers/types';
 
     const functionId = $page.params.function;
     const isVcsEnabled = $consoleVariables?._APP_VCS_ENABLED === true;
@@ -114,6 +115,9 @@
 
     async function updateConfiguration() {
         try {
+            if (!isValueOfStringEnum(Runtime, $func.runtime)) {
+                throw new Error(`Invalid runtime: ${$func.runtime}`);
+            }
             await sdk.forProject.functions.update(
                 functionId,
                 $func.name,

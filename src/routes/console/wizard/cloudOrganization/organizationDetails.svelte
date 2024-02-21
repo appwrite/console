@@ -3,6 +3,7 @@
     import { BillingPlan } from '$lib/constants';
     import { Pill } from '$lib/elements';
     import { InputText, FormList } from '$lib/elements/forms';
+    import { formatCurrency } from '$lib/helpers/numbers';
     import { WizardStep } from '$lib/layout';
     import { plansInfo, tierFree, tierPro, tierScale } from '$lib/stores/billing';
     import { organizationList, type Organization } from '$lib/stores/organization';
@@ -87,7 +88,7 @@
                         class="u-flex u-flex-vertical u-gap-4 u-width-full-line"
                         class:u-opacity-50={disabled}>
                         <h4 class="body-text-2 u-bold">
-                            {tierFree.name} - ${freePlan?.price}/month
+                            {tierFree.name} - {formatCurrency(freePlan?.price ?? 0)}/month
                         </h4>
                         <p class="u-color-text-gray u-small">{tierFree.description}</p>
                     </div>
@@ -100,8 +101,8 @@
                 <svelte:fragment slot="custom">
                     <div class="u-flex u-flex-vertical u-gap-4 u-width-full-line">
                         <h4 class="body-text-2 u-bold">
-                            {tierPro.name} - ${proPlan.price}/month per organization member + exta
-                            usage
+                            {tierPro.name} - {formatCurrency(proPlan?.price ?? 0)}/month per
+                            organization member + exta usage
                         </h4>
                         <p class="u-color-text-gray u-small">
                             {tierPro.description}
@@ -122,7 +123,8 @@
                         class="u-flex u-flex-vertical u-gap-4 u-width-full-line"
                         class:u-opacity-50={disabled}>
                         <h4 class="body-text-2 u-bold">
-                            {tierScale.name} - ${scalePlan.price}/month + extra usage
+                            {tierScale.name} - {formatCurrency(scalePlan?.price ?? 0)}/month + extra
+                            usage
                         </h4>
                         <p class="u-color-text-gray u-small">
                             {tierScale.description}
