@@ -35,6 +35,7 @@
             $messageParams[MessagingProviderType.Email]?.targets || [],
             undefined,
             undefined,
+            undefined,
             MessageStatus.Processing,
             $messageParams[MessagingProviderType.Email]?.html || false,
             undefined
