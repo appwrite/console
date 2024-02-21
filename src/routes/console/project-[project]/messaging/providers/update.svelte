@@ -96,7 +96,7 @@
                     );
                     break;
                 case Providers.SMTP:
-                    response = await sdk.forProject.messaging.updateSMTPProvider(
+                    response = await sdk.forProject.messaging.updateSmtpProvider(
                         providerId,
                         $providerParams[$provider].name,
                         $providerParams[$provider].host,
@@ -105,6 +105,7 @@
                         $providerParams[$provider].password || undefined,
                         $providerParams[$provider].encryption,
                         $providerParams[$provider].autoTLS,
+                        $providerParams[$provider].mailer || undefined,
                         $providerParams[$provider].fromName || undefined,
                         $providerParams[$provider].fromEmail,
                         $providerParams[$provider].replyToName || undefined,

@@ -219,8 +219,9 @@
                     );
                     break;
                 case Providers.SMTP:
-                    response = await sdk.forProject.messaging.updateSMTPProvider(
+                    response = await sdk.forProject.messaging.updateSmtpProvider(
                         providerId,
+                        undefined,
                         undefined,
                         undefined,
                         undefined,

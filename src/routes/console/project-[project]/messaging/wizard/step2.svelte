@@ -10,7 +10,7 @@
         TableRow
     } from '$lib/elements/table';
     import { WizardStep } from '$lib/layout';
-    import { messageParams, providerType, targetsById } from './store';
+    import { messageParams, providerType, targetsById, getTotal } from './store';
     import Actions from '../actions.svelte';
     import { topicsById } from '../store';
     import type { Models } from '@appwrite.io/console';
@@ -50,8 +50,9 @@
 <WizardStep>
     <svelte:fragment slot="title">Targets</svelte:fragment>
     <!-- TODO: add support for topics -->
-    <svelte:fragment slot="subtitle"
-        >Select targets to whom this message should be directed.</svelte:fragment>
+    <svelte:fragment slot="subtitle">
+        Select targets to whom this message should be directed.
+    </svelte:fragment>
     {#if targetIdsLength === 0 && topicIdsLength === 0}
         <Card>
             <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
@@ -83,12 +84,14 @@
                         <TableRow>
                             <TableCell title="Target">
                                 <div class="u-flex u-cross-center">
-                                    <span class="title"
-                                        ><span class="u-line-height-1-5">
+                                    <span class="title">
+                                        <span class="u-line-height-1-5">
                                             <span class="body-text-2 u-bold" data-private>
                                                 {topic.name}
-                                            </span><span class="collapsible-button-optional"
-                                                >({topic.total} subscribers)</span>
+                                            </span>
+                                            <span class="collapsible-button-optional">
+                                                ({getTotal(topic)} subscribers)
+                                            </span>
                                         </span></span>
                                 </div>
                             </TableCell>
@@ -109,8 +112,9 @@
                         <TableRow>
                             <TableCell title="Target">
                                 <div class="u-flex u-cross-center">
-                                    <span class="text"
-                                        >{target.name ? target.name : target.identifier}</span>
+                                    <span class="text">
+                                        {target.name ? target.name : target.identifier}
+                                    </span>
                                 </div>
                             </TableCell>
 
