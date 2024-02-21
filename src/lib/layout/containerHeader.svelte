@@ -113,12 +113,11 @@
             <DropList bind:show={showDropdown} width="16">
                 {#if hasProjectLimitation}
                     <Pill button on:click={() => (showDropdown = !showDropdown)}>
-                        <span class="icon-info" />{total}/{limit}
-                        {title} used
+                        <span class="icon-info" />{total}/{limit} created
                     </Pill>
                 {:else}
                     <Pill button on:click={() => (showDropdown = !showDropdown)}>
-                        <span class="icon-info" />{title} limited
+                        <span class="icon-info" />Limits applied
                     </Pill>
                 {/if}
                 <svelte:fragment slot="list">
