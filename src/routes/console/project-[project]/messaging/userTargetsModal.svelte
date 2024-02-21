@@ -143,7 +143,7 @@
                             id={userId}
                             disabled={user.targets.length > 0 &&
                                 user.targets.every((target) => targetsById[target.$id])}
-                            checked={selectedCount > 0 && selectedCount == user.targets.length}
+                            checked={selectedCount > 0 && selectedCount === user.targets.length}
                             on:change={(event) => onUserSelection(event, userId)} />
                     </svelte:fragment>
                     <svelte:fragment slot="title">

@@ -31,13 +31,14 @@
                         $messageParams[$providerType].targets,
                         undefined,
                         undefined,
+                        undefined,
                         $messageParams[$providerType].status,
                         $messageParams[$providerType].html,
                         $messageParams[$providerType].scheduledAt
                     );
                     break;
                 case MessagingProviderType.Sms:
-                    response = await sdk.forProject.messaging.createSMS(
+                    response = await sdk.forProject.messaging.createSms(
                         messageId,
                         $messageParams[$providerType].content,
                         $messageParams[$providerType].topics,
@@ -66,6 +67,7 @@
                             $messageParams[$providerType].users,
                             $messageParams[$providerType].targets,
                             customData,
+                            undefined,
                             undefined,
                             undefined,
                             undefined,
@@ -137,7 +139,7 @@
                     );
                     break;
                 case MessagingProviderType.Sms:
-                    response = await sdk.forProject.messaging.updateSMS(
+                    response = await sdk.forProject.messaging.updateSms(
                         messageId,
                         $messageParams[$providerType].topics,
                         $messageParams[$providerType].users,
@@ -166,6 +168,7 @@
                             $messageParams[$providerType].title,
                             $messageParams[$providerType].body,
                             customData,
+                            undefined,
                             undefined,
                             undefined,
                             undefined,

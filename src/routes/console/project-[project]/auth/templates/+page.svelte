@@ -19,8 +19,8 @@
             // TODO: fix TemplateType and TemplateLocale typing once SDK is updated
             return await sdk.forConsole.projects.getSmsTemplate(
                 projectId,
-                type as SMSTemplateType,
-                locale as SMSTemplateLocale
+                type as SmsTemplateType,
+                locale as SmsTemplateLocale
             );
         } catch (e) {
             addNotification({
@@ -55,8 +55,8 @@
     import { wizard } from '$lib/stores/wizard';
     import { BillingPlan } from '$lib/constants';
     import type {
-        SMSTemplateLocale,
-        SMSTemplateType,
+        SmsTemplateLocale,
+        SmsTemplateType,
         EmailTemplateType,
         EmailTemplateLocale
     } from '@appwrite.io/console';

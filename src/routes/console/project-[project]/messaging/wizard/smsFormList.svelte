@@ -18,7 +18,7 @@
         // const email = selected === 'self' ? $user.email : otherEmail;
 
         // TODO: replace with test method
-        sdk.forProject.messaging.createSMS(
+        sdk.forProject.messaging.createSms(
             ID.unique(),
             $messageParams[MessagingProviderType.Sms]?.content || undefined,
             $messageParams[MessagingProviderType.Sms]?.topics || [],
