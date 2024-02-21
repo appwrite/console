@@ -79,7 +79,7 @@
     }
 </script>
 
-<Modal {title} bind:show onSubmit={submit} on:close={reset} size="big">
+<Modal {title} bind:show onSubmit={submit} on:close={reset} headerDivider={false} size="big">
     <p class="text">
         Select existing topics you want to send this message to its subscribers. The message will be
         sent only to {$providerType} targets.
