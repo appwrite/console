@@ -1,9 +1,9 @@
 import { writable } from 'svelte/store';
-import { APIService, type Models } from '@appwrite.io/console';
+import { ApiService, type Models } from '@appwrite.io/console';
 
 export type Service = {
     label: string;
-    method: APIService;
+    method: ApiService;
     value: boolean | null;
 };
 
@@ -12,52 +12,52 @@ function createServices() {
         list: [
             {
                 label: 'Account',
-                method: APIService.Account,
+                method: ApiService.Account,
                 value: null
             },
             {
                 label: 'Avatars',
-                method: APIService.Avatars,
+                method: ApiService.Avatars,
                 value: null
             },
             {
                 label: 'Databases',
-                method: APIService.Databases,
+                method: ApiService.Databases,
                 value: null
             },
             {
                 label: 'Functions',
-                method: APIService.Functions,
+                method: ApiService.Functions,
                 value: null
             },
             {
                 label: 'Health',
-                method: APIService.Health,
+                method: ApiService.Health,
                 value: null
             },
             {
                 label: 'Locale',
-                method: APIService.Locale,
+                method: ApiService.Locale,
                 value: null
             },
             {
                 label: 'Storage',
-                method: APIService.Storage,
+                method: ApiService.Storage,
                 value: null
             },
             {
                 label: 'Teams',
-                method: APIService.Teams,
+                method: ApiService.Teams,
                 value: null
             },
             {
                 label: 'Users',
-                method: APIService.Users,
+                method: ApiService.Users,
                 value: null
             },
             {
                 label: 'GraphQL',
-                method: APIService.Graphql,
+                method: ApiService.Graphql,
                 value: null
             }
         ]
@@ -70,47 +70,47 @@ function createServices() {
             const list = [
                 {
                     label: 'Account',
-                    method: APIService.Account,
+                    method: ApiService.Account,
                     value: project.serviceStatusForAccount
                 },
                 {
                     label: 'Avatars',
-                    method: APIService.Avatars,
+                    method: ApiService.Avatars,
                     value: project.serviceStatusForAvatars
                 },
                 {
                     label: 'Databases',
-                    method: APIService.Databases,
+                    method: ApiService.Databases,
                     value: project.serviceStatusForDatabases
                 },
                 {
                     label: 'Functions',
-                    method: APIService.Functions,
+                    method: ApiService.Functions,
                     value: project.serviceStatusForFunctions
                 },
                 {
                     label: 'Health',
-                    method: APIService.Health,
+                    method: ApiService.Health,
                     value: project.serviceStatusForHealth
                 },
                 {
                     label: 'Locale',
-                    method: APIService.Locale,
+                    method: ApiService.Locale,
                     value: project.serviceStatusForLocale
                 },
                 {
                     label: 'Storage',
-                    method: APIService.Storage,
+                    method: ApiService.Storage,
                     value: project.serviceStatusForStorage
                 },
                 {
                     label: 'Teams',
-                    method: APIService.Teams,
+                    method: ApiService.Teams,
                     value: project.serviceStatusForTeams
                 },
                 {
                     label: 'Users',
-                    method: APIService.Users,
+                    method: ApiService.Users,
                     value: project.serviceStatusForUsers
                 }
             ];
