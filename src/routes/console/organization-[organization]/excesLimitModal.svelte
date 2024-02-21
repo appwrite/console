@@ -13,7 +13,6 @@
     import ChangeOrganizationTierCloud from '../changeOrganizationTierCloud.svelte';
     import { goto } from '$app/navigation';
     import { last } from '$lib/helpers/array';
-    import { BillingPlan } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
 
     export let show = false;
