@@ -124,7 +124,7 @@
                     <slot name="tooltip" {limit} {tier} {title} {upgradeMethod} {hasUsageFees}>
                         {#if hasProjectLimitation}
                             <p class="text">
-                                Your are limited to {limit}
+                                You are limited to {limit}
                                 {title.toLocaleLowerCase()} per project on the {tier} plan.
                                 {#if $organization?.billingPlan === BillingPlan.STARTER}<Button
                                         link
@@ -134,7 +134,7 @@
                                                 from: 'button',
                                                 source: 'resource_limit_tag'
                                             })}>Upgrade</Button>
-                                    for addtional {title.toLocaleLowerCase()}.
+                                    for additional {title.toLocaleLowerCase()}.
                                 {/if}
                             </p>
                         {:else if hasUsageFees}
