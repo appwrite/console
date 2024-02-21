@@ -11,7 +11,7 @@
     import { CardGrid, BoxAvatar, Heading } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { writable } from 'svelte/store';
-    import { topic } from './store';
+    import { topic, topicTotal } from './store';
     import { goto } from '$app/navigation';
     import { project } from '$routes/console/project-[project]/store';
     import DeleteTopic from './deleteTopic.svelte';
@@ -31,7 +31,7 @@
                 <h6 class="u-bold u-trim-1">{$topic.name}</h6>
             </svelte:fragment>
             <p>
-                {$topic.total} subscriber{$topic.total === 1 ? '' : 's'}
+                {$topicTotal} subscriber{$topicTotal === 1 ? '' : 's'}
             </p>
         </BoxAvatar>
     </svelte:fragment>

@@ -96,7 +96,7 @@
                     );
                     break;
                 case Providers.SMTP:
-                    response = await sdk.forProject.messaging.createSMTPProvider(
+                    response = await sdk.forProject.messaging.createSmtpProvider(
                         providerId,
                         $providerParams[$provider].name,
                         $providerParams[$provider].host,
@@ -114,7 +114,7 @@
                     );
                     break;
                 case Providers.FCM:
-                    response = await sdk.forProject.messaging.createFCMProvider(
+                    response = await sdk.forProject.messaging.createFcmProvider(
                         providerId,
                         $providerParams[$provider].name,
                         JSON.parse($providerParams[$provider].serviceAccountJSON),
@@ -122,7 +122,7 @@
                     );
                     break;
                 case Providers.APNS:
-                    response = await sdk.forProject.messaging.createAPNSProvider(
+                    response = await sdk.forProject.messaging.createApnsProvider(
                         providerId,
                         $providerParams[$provider].name,
                         $providerParams[$provider].authKey,

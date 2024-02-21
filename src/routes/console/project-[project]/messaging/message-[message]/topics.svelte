@@ -41,7 +41,7 @@
                                 </TableCellText>
 
                                 <TableCellText title="subscribers">
-                                    {topic.total}
+                                    {topic.smsTotal + topic.emailTotal + topic.pushTotal}
                                 </TableCellText>
                             </TableRow>
                         {/each}

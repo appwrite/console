@@ -23,6 +23,7 @@
         scopes.forEach((scope) => {
             activeScopes[scope] = true;
         });
+
         mounted = true;
     });
 
@@ -71,6 +72,7 @@
             const newScopes = allScopes
                 .filter((scope) => activeScopes[scope.scope])
                 .map(({ scope }) => scope);
+
             if (symmetricDifference(scopes, newScopes).length) {
                 scopes = newScopes;
             }
@@ -88,7 +90,7 @@
 </ul>
 
 <Collapsible>
-    {#each [Category.Auth, Category.Database, Category.Functions, Category.Storage, Category.Other] as category}
+    {#each [Category.Auth, Category.Database, Category.Functions, Category.Storage, Category.Messaging, Category.Other] as category}
         {@const checked = categoryState(category, scopes)}
         <CollapsibleItem withIndentation>
             <svelte:fragment slot="beforetitle">

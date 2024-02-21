@@ -1,7 +1,7 @@
 import type { Column } from '$lib/helpers/types';
 import { writable } from 'svelte/store';
 import { Providers } from '../provider.svelte';
-import { MessagingProviderType, SMTPEncryption } from '@appwrite.io/console';
+import { MessagingProviderType, Encryption } from '@appwrite.io/console';
 
 export const columns = writable<Column[]>([
     { id: '$id', title: 'Provider ID', type: 'string', show: true },
@@ -210,14 +210,14 @@ export const providers: ProvidersMap = {
                         placeholder: 'Enter name'
                     },
                     {
-                        label: 'Reply-to email',
+                        label: 'Reply to email',
                         name: 'replyToEmail',
                         type: 'email',
                         optional: true,
                         placeholder: 'Enter email'
                     },
                     {
-                        label: 'Reply-to name',
+                        label: 'Reply to name',
                         name: 'replyToName',
                         type: 'text',
                         optional: true,
@@ -255,14 +255,14 @@ export const providers: ProvidersMap = {
                         placeholder: 'Enter name'
                     },
                     {
-                        label: 'Reply-to email',
+                        label: 'Reply to email',
                         name: 'replyToEmail',
                         type: 'email',
                         optional: true,
                         placeholder: 'Enter email'
                     },
                     {
-                        label: 'Reply-to name',
+                        label: 'Reply to name',
                         name: 'replyToName',
                         type: 'text',
                         optional: true,
@@ -271,18 +271,44 @@ export const providers: ProvidersMap = {
                 ]
             },
             [Providers.SMTP]: {
-                classIcon: 'mail',
                 title: 'SMTP',
                 description: '',
                 configure: [
                     {
-                        label: 'Host',
+                        label: 'Sender name',
+                        name: 'fromName',
+                        type: 'text',
+                        optional: true,
+                        placeholder: 'Enter name'
+                    },
+                    {
+                        label: 'Sender email',
+                        name: 'fromEmail',
+                        type: 'email',
+                        placeholder: 'Enter email'
+                    },
+                    {
+                        label: 'Reply to name',
+                        name: 'replyToName',
+                        type: 'text',
+                        optional: true,
+                        placeholder: 'Enter name'
+                    },
+                    {
+                        label: 'Reply to email',
+                        name: 'replyToEmail',
+                        type: 'email',
+                        optional: true,
+                        placeholder: 'Enter email'
+                    },
+                    {
+                        label: 'Server host',
                         name: 'host',
                         type: 'text',
                         placeholder: 'Enter host'
                     },
                     {
-                        label: 'Port',
+                        label: 'Server port',
                         name: 'port',
                         type: 'text',
                         optional: true,
@@ -307,9 +333,9 @@ export const providers: ProvidersMap = {
                         name: 'encryption',
                         type: 'select',
                         options: [
-                            { label: 'None', value: SMTPEncryption.None },
-                            { label: 'SSL', value: SMTPEncryption.Ssl },
-                            { label: 'TLS', value: SMTPEncryption.Tls }
+                            { label: 'None', value: Encryption.None },
+                            { label: 'SSL', value: Encryption.Ssl },
+                            { label: 'TLS', value: Encryption.Tls }
                         ]
                     },
                     {
@@ -325,33 +351,6 @@ export const providers: ProvidersMap = {
                         type: 'text',
                         optional: true,
                         placeholder: 'Enter mailer'
-                    },
-                    {
-                        label: 'Sender email',
-                        name: 'fromEmail',
-                        type: 'email',
-                        placeholder: 'Enter email'
-                    },
-                    {
-                        label: 'Sender name',
-                        name: 'fromName',
-                        type: 'text',
-                        optional: true,
-                        placeholder: 'Enter name'
-                    },
-                    {
-                        label: 'Reply-to email',
-                        name: 'replyToEmail',
-                        type: 'email',
-                        optional: true,
-                        placeholder: 'Enter email'
-                    },
-                    {
-                        label: 'Reply-to name',
-                        name: 'replyToName',
-                        type: 'text',
-                        optional: true,
-                        placeholder: 'Enter name'
                     }
                 ]
             }
@@ -599,7 +598,7 @@ export type SMTPProviderParams = ProviderParams & {
     port: number;
     username: string;
     password: string;
-    encryption: SMTPEncryption;
+    encryption: Encryption;
     autoTLS: boolean;
     mailer: string;
 };
