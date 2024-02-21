@@ -301,11 +301,6 @@
         !$page.url.pathname.includes('/console/account') &&
         !$page.url.pathname.includes('/console/card') &&
         !$page.url.pathname.includes('/console/onboarding')}>
-    <svelte:fragment slot="alert">
-        {#if $activeHeaderAlert?.show}
-            <svelte:component this={$activeHeaderAlert.component} />
-        {/if}
-    </svelte:fragment>
     <Header slot="header" />
     <SideNavigation slot="side" bind:isOpen />
     <slot />
