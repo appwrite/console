@@ -58,10 +58,10 @@
 
 <Modal bind:show title="Limit reached">
     <p class="text">
-        Usage for <b>{$organization.name}</b> organization 
-        has reached the limits of the {tierToPlan($organization.billingPlan).name} plan. Excess usage fees will apply.
+        Usage for <b>{$organization.name}</b> organization has reached the limits of the {tierToPlan(
+            $organization.billingPlan
+        ).name} plan. Excess usage fees will apply.
     </p>
-
 
     <PlanExcess {excess} currentTier={$organization.billingPlan} />
 
