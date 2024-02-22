@@ -83,7 +83,7 @@
 
 <Modal {title} bind:show onSubmit={submit} on:close={reset} headerDivider={false} size="big">
     <p class="text">
-        Select existing topics you want to send this message to its subscribers. The message will be
+        Select existing topics you want to send this message to its targets. The message will be
         sent only to <ProviderType type={$providerType} noIcon /> targets.
     </p>
     <InputSearch
