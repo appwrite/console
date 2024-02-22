@@ -28,6 +28,7 @@
 </DropList>
 
 <TopicsModal
+    {providerType}
     bind:show={showTopics}
     bind:topicsById={$topicsById}
     on:update={(e) => {
