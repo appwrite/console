@@ -4,6 +4,14 @@
     import { providers } from '../store';
     import { providerType, provider, providerParams } from './store';
     import SettingsFormList from '../settingsFormList.svelte';
+    import { Table, TableBody, TableCell, TableRowButton, TableRowLink } from '$lib/elements/table';
+    import { newMemberModal } from '$lib/stores/organization';
+    import CreateMember from '$routes/console/organization-[organization]/createMember.svelte';
+    import Collapsible from '$lib/components/collapsible.svelte';
+    import CollapsibleItem from '$lib/components/collapsibleItem.svelte';
+    import Provider from '../../provider.svelte';
+    import { MessagingProviderType } from '@appwrite.io/console';
+    import ProviderTypeComponent from '$routes/console/project-[project]/messaging/providerType.svelte';
 
     let files: Record<string, FileList> = {};
     const inputs = providers[$providerType].providers[$provider].configure;
@@ -44,27 +52,84 @@
 
     <SettingsFormList bind:files {inputs} bind:params={$providerParams[$provider]} />
 
-    <p class="body-text-2 u-bold u-margin-block-start-48">Need a hand?</p>
+    <div class="need-a-hand u-flex-vertical u-gap-8">
+        <p class="body-text-2 u-bold u-margin-block-start-48">Need a hand?</p>
 
-    <div
-        class="u-flex u-cross-center u-main-space-between u-padding-block-16"
-        style="border-block-end: solid .0625rem hsl(var(--color-border))">
-        <div class="u-flex u-cross-center u-gap-16">
-            <div class="avatar is-size-small">
-                <span class="icon-book-open" style:--p-text-size="1.25rem" aria-hidden="true" />
+        {#if providers[$providerType].providers[$provider].needAHand}
+            {@const needAHand = providers[$providerType].providers[$provider].needAHand}
+            <div class="box u-padding-inline-8 u-padding-0 u-border-width-0">
+                <Collapsible>
+                    <CollapsibleItem withIndentation>
+                        <svelte:fragment slot="beforetitle">
+                            <div class="u-flex u-cross-center u-gap-16">
+                                <div class="avatar is-size-small">
+                                    <span
+                                        class="icon-info"
+                                        style:--p-text-size="1.25rem"
+                                        aria-hidden="true" />
+                                </div>
+                                <span class="body-text-2 u-small u-bold"
+                                    >How to enable <Provider provider={$provider} noIcon />
+                                    {#if $providerType == MessagingProviderType.Push}notifications{:else}<ProviderTypeComponent
+                                            type={$providerType}
+                                            noIcon />{/if} service?</span>
+                            </div>
+                        </svelte:fragment>
+                        <div class="u-flex-vertical u-gap-16">
+                            {#each needAHand as p}
+                                <p>
+                                    {@html p}
+                                </p>
+                            {/each}
+                        </div>
+                    </CollapsibleItem>
+                </Collapsible>
             </div>
-            Read the full guide in the documentation
-        </div>
-        <span class="icon-arrow-right" aria-hidden="true" />
-    </div>
+        {/if}
 
-    <div class="u-flex u-cross-center u-main-space-between u-padding-block-16">
-        <div class="u-flex u-cross-center u-gap-16">
-            <div class="avatar is-size-small">
-                <span class="icon-user-group" style:--p-text-size="1.25rem" aria-hidden="true" />
-            </div>
-            Invite a team member to complete this step
-        </div>
-        <span class="icon-arrow-right" aria-hidden="true" />
+        <Table noMargin noStyles>
+            <TableBody>
+                <TableRowLink href={`https://appwrite.io/docs/messaging/${$provider}`}>
+                    <TableCell>
+                        <div class="u-flex u-cross-center u-main-space-between u-padding-8">
+                            <div class="u-flex u-cross-center u-gap-16">
+                                <div class="avatar is-size-small">
+                                    <span
+                                        class="icon-book-open"
+                                        style:--p-text-size="1.25rem"
+                                        aria-hidden="true" />
+                                </div>
+                                Read the full guide in the documentation
+                            </div>
+                            <span class="icon-arrow-right" aria-hidden="true" />
+                        </div>
+                    </TableCell>
+                </TableRowLink>
+                <TableRowButton on:click={() => ($newMemberModal = true)}>
+                    <TableCell>
+                        <div class="u-flex u-cross-center u-main-space-between u-padding-8">
+                            <div class="u-flex u-cross-center u-gap-16">
+                                <div class="avatar is-size-small">
+                                    <span
+                                        class="icon-user-group"
+                                        style:--p-text-size="1.25rem"
+                                        aria-hidden="true" />
+                                </div>
+                                Invite a team member to complete this step
+                            </div>
+                            <span class="icon-arrow-right" aria-hidden="true" />
+                        </div>
+                    </TableCell>
+                </TableRowButton>
+            </TableBody>
+        </Table>
     </div>
 </WizardStep>
+
+<CreateMember bind:showCreate={$newMemberModal} />
+
+<style lang="scss">
+    .need-a-hand :global(.table-row):last-child:last-child {
+        border-block-end: none;
+    }
+</style>

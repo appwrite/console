@@ -146,4 +146,18 @@
     {/if}
 </Container>
 
-<UserTargetsModal bind:show={showAdd} bind:targetsById={$targetsById} on:update={addTargets} />
+<UserTargetsModal
+    title="Select subscribers"
+    bind:show={showAdd}
+    bind:targetsById={$targetsById}
+    on:update={addTargets}>
+    <svelte:fragment slot="description">
+        <p class="text">
+            Add subscribers to this topic by selecting the targets for directing messages. <a
+                href="https://appwrite.io/docs/products/messaging/topics"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="link">Learn more about subscribers.</a>
+        </p>
+    </svelte:fragment>
+</UserTargetsModal>
