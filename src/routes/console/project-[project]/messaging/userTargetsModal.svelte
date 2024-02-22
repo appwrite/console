@@ -166,7 +166,7 @@
                             </span>
                         </svelte:fragment>
                         <svelte:fragment slot="subtitle">
-                            ({selectedCount} targets)
+                            ({selectedCount}/{user.targets.length} targets)
                         </svelte:fragment>
                         <FormList>
                             {#each user.targets as target}
