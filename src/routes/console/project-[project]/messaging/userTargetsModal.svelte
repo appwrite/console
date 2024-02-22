@@ -118,10 +118,9 @@
 </script>
 
 <Modal {title} bind:show onSubmit={submit} on:close={reset} size="big" headerDivider={false}>
-    <!-- TODO: Update docs link -->
     <p class="text">
         Add subscribers to this topic by selecting the targets for directing messages. <a
-            href="https://appwrite.io/docs"
+            href="https://appwrite.io/docs/products/messaging/topics"
             target="_blank"
             rel="noopener noreferrer"
             class="link">Learn more about subscribers.</a>
@@ -132,68 +131,74 @@
         placeholder="Search by name, email, phone or ID"
         bind:value={search} />
     {#if Object.keys(userResultsById).length > 0}
-        <Collapsible>
-            {#each Object.entries(userResultsById) as [userId, user] (userId)}
-                {@const selectedCount = user.targets.filter(
-                    (target) => selected[target.$id]
-                ).length}
-                <CollapsibleItem withIndentation>
-                    <svelte:fragment slot="beforetitle">
-                        <InputCheckbox
-                            id={userId}
-                            disabled={user.targets.length > 0 &&
-                                user.targets.every((target) => targetsById[target.$id])}
-                            checked={selectedCount > 0 && selectedCount === user.targets.length}
-                            on:change={(event) => onUserSelection(event, userId)} />
-                    </svelte:fragment>
-                    <svelte:fragment slot="title">
-                        <span class="u-line-height-1-5">
-                            <span class="body-text-2 u-bold" data-private>
-                                {#if user.name}
-                                    {user.name}
-                                {:else if user.email}
-                                    {user.email}
-                                {:else if user.phone}
-                                    {user.phone}
-                                {:else}
-                                    {userId}
-                                {/if}
+        <div class="u-sep-block-end">
+            <Collapsible>
+                {#each Object.entries(userResultsById) as [userId, user] (userId)}
+                    {@const selectedCount = user.targets.filter(
+                        (target) => selected[target.$id]
+                    ).length}
+                    <CollapsibleItem withIndentation>
+                        <svelte:fragment slot="beforetitle">
+                            <InputCheckbox
+                                id={userId}
+                                size="small"
+                                disabled={user.targets.length > 0 &&
+                                    user.targets.every((target) => targetsById[target.$id])}
+                                checked={selectedCount > 0 && selectedCount === user.targets.length}
+                                on:change={(event) => onUserSelection(event, userId)} />
+                        </svelte:fragment>
+                        <svelte:fragment slot="title">
+                            <span class="u-line-height-1-5">
+                                <span
+                                    class="body-text-1 u-bold"
+                                    style="color:hsl(var(--color-neutral-80))"
+                                    data-private>
+                                    {#if user.name}
+                                        {user.name}
+                                    {:else if user.email}
+                                        {user.email}
+                                    {:else if user.phone}
+                                        {user.phone}
+                                    {:else}
+                                        {userId}
+                                    {/if}
+                                </span>
                             </span>
-                        </span>
-                    </svelte:fragment>
-                    <svelte:fragment slot="subtitle">
-                        ({selectedCount} targets)
-                    </svelte:fragment>
-                    <FormList>
-                        {#each user.targets as target}
-                            <div class="u-flex">
-                                <InputCheckbox
-                                    id={target.$id}
-                                    disabled={!!targetsById[target.$id]}
-                                    checked={!!selected[target.$id]}
-                                    on:change={(event) => onTargetSelection(event, target)}>
-                                    <svelte:fragment slot="description">
-                                        <div class="u-inline-flex u-gap-8">
-                                            <span class="inline-tag u-normal"
-                                                ><ProviderType
-                                                    type={target.providerType}
-                                                    noIcon /></span>
-                                            {#if target.providerType !== MessagingProviderType.Push}
-                                                {target.identifier}
-                                            {:else}
-                                                <!-- TODO: Show device info -->
-                                                {target.name}
-                                            {/if}
-                                        </div>
-                                    </svelte:fragment>
-                                </InputCheckbox>
-                            </div>
-                        {/each}
-                    </FormList>
-                </CollapsibleItem>
-            {/each}
-        </Collapsible>
-        <div class="u-flex u-margin-block-start-32 u-main-space-between">
+                        </svelte:fragment>
+                        <svelte:fragment slot="subtitle">
+                            ({selectedCount} targets)
+                        </svelte:fragment>
+                        <FormList>
+                            {#each user.targets as target}
+                                <div class="u-flex">
+                                    <InputCheckbox
+                                        id={target.$id}
+                                        size="small"
+                                        disabled={!!targetsById[target.$id]}
+                                        checked={!!selected[target.$id]}
+                                        on:change={(event) => onTargetSelection(event, target)}>
+                                        <svelte:fragment slot="description">
+                                            <div class="u-inline-flex u-gap-8">
+                                                <span class="inline-tag u-normal u-x-small"
+                                                    ><ProviderType
+                                                        type={target.providerType}
+                                                        noIcon /></span>
+                                                {#if target.providerType !== MessagingProviderType.Push}
+                                                    {target.identifier}
+                                                {:else}
+                                                    {target.name}
+                                                {/if}
+                                            </div>
+                                        </svelte:fragment>
+                                    </InputCheckbox>
+                                </div>
+                            {/each}
+                        </FormList>
+                    </CollapsibleItem>
+                {/each}
+            </Collapsible>
+        </div>
+        <div class="u-flex u-main-space-between">
             <p class="text">Total results: {totalResults}</p>
             <PaginationInline limit={5} bind:offset sum={totalResults} hidePages />
         </div>
