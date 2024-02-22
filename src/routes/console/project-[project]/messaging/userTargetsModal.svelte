@@ -12,10 +12,10 @@
     import { createEventDispatcher } from 'svelte';
     import ProviderType from './providerType.svelte';
 
+    export let title: string;
     export let show: boolean;
     export let targetsById: Record<string, Models.Target>;
     export let providerType: MessagingProviderType = null;
-    export let title = 'Select subscribers';
 
     const dispatch = createEventDispatcher();
 
@@ -118,13 +118,8 @@
 </script>
 
 <Modal {title} bind:show onSubmit={submit} on:close={reset} size="big" headerDivider={false}>
-    <p class="text">
-        Add subscribers to this topic by selecting the targets for directing messages. <a
-            href="https://appwrite.io/docs/products/messaging/topics"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="link">Learn more about subscribers.</a>
-    </p>
+    <slot name="description" />
+
     <InputSearch
         autofocus
         disabled={totalResults === 0 && !search}
