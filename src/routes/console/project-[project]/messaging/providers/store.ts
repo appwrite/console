@@ -22,6 +22,7 @@ type ProvidersMap = {
                 classIcon?: string;
                 title: string;
                 description: string;
+                needAHand?: string[];
                 configure: {
                     label: string;
                     name: string;
@@ -57,6 +58,11 @@ export const providers: ProvidersMap = {
                 imageIcon: 'firebase',
                 title: 'FCM',
                 description: 'Firebase Cloud Messaging',
+                needAHand: [
+                    'Create a <b><a class="link" href="https://firebase.google.com" target="_blank" rel="noopener noreferrer">Firebase</a></b> project.',
+                    'Head to <b>Firebase dashboard -> Settings -> Project settings -> Cloud Messaging.</b>',
+                    "If FCM is disabled, click the three-dots menu and open the link. On the following page, click 'Enable' (it might take a few minutes for the action to complete)."
+                ],
                 configure: [
                     {
                         label: 'Service account JSON (.json file)',
@@ -372,6 +378,10 @@ export const providers: ProvidersMap = {
                 imageIcon: 'twilio',
                 title: 'Twilio',
                 description: '',
+                needAHand: [
+                    'Create an account in <b><a class="link" href="https://console.twilio.com/" target="_blank" rel="noopener noreferrer">Twilio</a></b>.',
+                    'Head to <b>Twilio console -> Get a Twilio phone number.</b>'
+                ],
                 configure: [
                     {
                         label: 'Account SID',

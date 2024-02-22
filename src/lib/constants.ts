@@ -65,6 +65,11 @@ export const scopes: {
     category: string;
 }[] = [
     {
+        scope: 'sessions.write',
+        description: "Access to create, update and delete your project's sessions",
+        category: 'Auth'
+    },
+    {
         scope: 'users.read',
         description: "Access to read your project's users",
         category: 'Auth'
@@ -72,21 +77,6 @@ export const scopes: {
     {
         scope: 'users.write',
         description: "Access to create, update, and delete your project's users",
-        category: 'Auth'
-    },
-    {
-        scope: 'sessions.write',
-        description: "Access to create, update and delete your project's sessions",
-        category: 'Auth'
-    },
-    {
-        scope: 'accounts.read',
-        description: 'Access to read your active account',
-        category: 'Auth'
-    },
-    {
-        scope: 'accounts.write',
-        description: 'Access to create, update and delete your active account',
         category: 'Auth'
     },
     {
