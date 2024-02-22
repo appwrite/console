@@ -106,10 +106,12 @@
                                     <svelte:fragment slot="description">
                                         <span class="title">
                                             <span class="u-line-height-1-5">
-                                                <span class="body-text-2 u-bold" data-private>
+                                                <span class="body-text-1 u-bold" data-private>
                                                     {topic.name}
                                                 </span>
-                                                <span class="collapsible-button-optional">
+                                                <span
+                                                    class="collapsible-button-optional"
+                                                    style="--p-toggle-optional-color: var(--color-neutral-50);">
                                                     ({getTotal(topic)} subscribers)
                                                 </span>
                                             </span></span>
