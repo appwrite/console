@@ -47,13 +47,15 @@
             <div data-private>
                 <p class="title">Created: {toLocaleDateTime($message.$createdAt)}</p>
                 <p class="title">
-                    {#if scheduled === 'n/a'}
-                        Sent at: 
-                    {:else}
-                        Scheduled at: 
-                    {/if}
+                    {#if scheduledAt }
+                        {#if scheduled === 'n/a'}
+                            Sent at: 
+                        {:else}
+                            Scheduled at: 
+                        {/if}
 
-                    {scheduled}
+                        {scheduled}
+                    {/if}
                 </p>
             </div>
             <div class="u-flex u-flex-vertical u-cross-end">
