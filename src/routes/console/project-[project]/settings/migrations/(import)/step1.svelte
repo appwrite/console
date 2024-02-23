@@ -68,7 +68,7 @@
                 bind:value={$provider.apiKey} />
         </FormList>
     {:else if $provider.provider === 'firebase'}
-    <FormList class="u-margin-block-start-24">
+        <FormList class="u-margin-block-start-24">
             <div class="u-margin-block-start-16">
                 <InputTextarea
                     id="credentials"
@@ -77,7 +77,7 @@
                     bind:value={$provider.serviceAccount}
                     placeholder="Enter account credentials" />
             </div>
-    </FormList>
+        </FormList>
     {:else if $provider.provider === 'supabase'}
         <FormList class="u-margin-block-start-24">
             <p class="body-text-1 u-bold">Postgres credentials</p>
