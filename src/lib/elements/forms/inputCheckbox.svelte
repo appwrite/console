@@ -11,6 +11,7 @@
         element?: HTMLInputElement | undefined;
         indeterminate?: boolean;
         wrapperTag?: FormItemTag;
+        size?: 'small' | 'medium';
     }
 
     export let id: string;
@@ -20,6 +21,7 @@
     export let disabled = false;
     export let element: HTMLInputElement | undefined = undefined;
     export let wrapperTag: FormItemTag = 'li';
+    export let size: $$Props['size'] = 'medium';
     let error: string;
 
     const handleInvalid = (event: Event) => {
@@ -44,6 +46,7 @@
                 {disabled}
                 {required}
                 {...$$restProps}
+                class:is-small={size === 'small'}
                 type="checkbox"
                 bind:this={element}
                 bind:checked
