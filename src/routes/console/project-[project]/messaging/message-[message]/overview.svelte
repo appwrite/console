@@ -32,7 +32,7 @@
     }
 </script>
 
-<CardGrid>
+<CardGrid hideFooter={$message.status != 'failed'}>
     <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16" data-private>
         <ProviderType type={$message.providerType} size="l">
             <Heading tag="h6" size="7">{providerType}</Heading>
@@ -51,15 +51,13 @@
     </svelte:fragment>
 
     <svelte:fragment slot="actions">
-        {#if $message.status === 'failed'}
-            <Button
-                secondary
-                on:click={(e) => {
-                    e.preventDefault();
-                    errors = $message.deliveryErrors;
-                    showFailed = true;
-                }}>View logs</Button>
-        {/if}
+        <Button
+            secondary
+            on:click={(e) => {
+                e.preventDefault();
+                errors = $message.deliveryErrors;
+                showFailed = true;
+            }}>View logs</Button>
     </svelte:fragment>
 </CardGrid>
 
