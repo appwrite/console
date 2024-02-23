@@ -28,6 +28,7 @@
 </DropList>
 
 <TopicsModal
+    {providerType}
     bind:show={showTopics}
     bind:topicsById={$topicsById}
     on:update={(e) => {
@@ -35,10 +36,14 @@
         dispatch('addTopics', e.detail);
     }} />
 <UserTargetsModal
+    title="Select targets"
     {providerType}
     bind:show={showUserTargets}
     bind:targetsById={$targetsById}
     on:update={(e) => {
         showUserTargets = false;
         dispatch('addTargets', e.detail);
-    }} />
+    }}>
+    <svelte:fragment slot="description"
+        >Select existing targets to which you want to send this message.</svelte:fragment>
+</UserTargetsModal>

@@ -77,10 +77,10 @@
                         $providerParams[$provider].domain,
                         $providerParams[$provider].isEuRegion,
                         $providerParams[$provider].enabled,
-                        $providerParams[$provider].fromName,
+                        $providerParams[$provider].fromName || undefined,
                         $providerParams[$provider].fromEmail,
-                        $providerParams[$provider].replyToName,
-                        $providerParams[$provider].replyToEmail
+                        $providerParams[$provider].replyToName || undefined,
+                        $providerParams[$provider].replyToEmail || undefined
                     );
                     break;
                 case Providers.Sendgrid:
@@ -89,14 +89,14 @@
                         $providerParams[$provider].name,
                         $providerParams[$provider].enabled,
                         $providerParams[$provider].apiKey,
-                        $providerParams[$provider].fromName,
+                        $providerParams[$provider].fromName || undefined,
                         $providerParams[$provider].fromEmail,
-                        $providerParams[$provider].replyToName,
-                        $providerParams[$provider].replyToEmail
+                        $providerParams[$provider].replyToName || undefined,
+                        $providerParams[$provider].replyToEmail || undefined
                     );
                     break;
                 case Providers.SMTP:
-                    response = await sdk.forProject.messaging.updateSMTPProvider(
+                    response = await sdk.forProject.messaging.updateSmtpProvider(
                         providerId,
                         $providerParams[$provider].name,
                         $providerParams[$provider].host,
@@ -105,6 +105,7 @@
                         $providerParams[$provider].password || undefined,
                         $providerParams[$provider].encryption,
                         $providerParams[$provider].autoTLS,
+                        $providerParams[$provider].mailer || undefined,
                         $providerParams[$provider].fromName || undefined,
                         $providerParams[$provider].fromEmail,
                         $providerParams[$provider].replyToName || undefined,

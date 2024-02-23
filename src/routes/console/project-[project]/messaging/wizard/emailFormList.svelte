@@ -13,7 +13,7 @@
     import { CustomId, Modal } from '$lib/components';
     import { user } from '$lib/stores/user';
     import { clickOnEnter } from '$lib/helpers/a11y';
-    import { ID, MessageType, MessagingProviderType } from '@appwrite.io/console';
+    import { ID, MessageStatus, MessagingProviderType } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
 
     let showCustomId = false;
@@ -35,7 +35,8 @@
             $messageParams[MessagingProviderType.Email]?.targets || [],
             undefined,
             undefined,
-            MessageType.Processing,
+            undefined,
+            MessageStatus.Processing,
             $messageParams[MessagingProviderType.Email]?.html || false,
             undefined
         );

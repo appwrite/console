@@ -12,7 +12,7 @@
     import { project } from '../store';
     import { wizard } from '$lib/stores/wizard';
     import { providerType, messageParams, operation } from './wizard/store';
-    import { ID, MessageType, MessagingProviderType, type Models } from '@appwrite.io/console';
+    import { ID, MessageStatus, MessagingProviderType, type Models } from '@appwrite.io/console';
     import { Dependencies } from '$lib/constants';
 
     async function create() {
@@ -31,13 +31,14 @@
                         $messageParams[$providerType].targets,
                         undefined,
                         undefined,
+                        undefined,
                         $messageParams[$providerType].status,
                         $messageParams[$providerType].html,
                         $messageParams[$providerType].scheduledAt
                     );
                     break;
                 case MessagingProviderType.Sms:
-                    response = await sdk.forProject.messaging.createSMS(
+                    response = await sdk.forProject.messaging.createSms(
                         messageId,
                         $messageParams[$providerType].content,
                         $messageParams[$providerType].topics,
@@ -72,6 +73,7 @@
                             undefined,
                             undefined,
                             undefined,
+                            undefined,
                             $messageParams[$providerType].status,
                             $messageParams[$providerType].scheduledAt
                         );
@@ -81,10 +83,10 @@
             wizard.hide();
             let message = '';
             switch (response.status) {
-                case MessageType.Draft:
+                case MessageStatus.Draft:
                     message = 'The message has been saved as draft.';
                     break;
-                case MessageType.Processing:
+                case MessageStatus.Processing:
                     message = 'The message is queued for processing.';
                     break;
                 case 'scheduled':
@@ -137,7 +139,7 @@
                     );
                     break;
                 case MessagingProviderType.Sms:
-                    response = await sdk.forProject.messaging.updateSMS(
+                    response = await sdk.forProject.messaging.updateSms(
                         messageId,
                         $messageParams[$providerType].topics,
                         $messageParams[$providerType].users,
@@ -172,6 +174,7 @@
                             undefined,
                             undefined,
                             undefined,
+                            undefined,
                             $messageParams[$providerType].status,
                             $messageParams[$providerType].scheduledAt
                         );
@@ -181,10 +184,10 @@
             wizard.hide();
             let message = '';
             switch (response.status) {
-                case MessageType.Draft:
+                case MessageStatus.Draft:
                     message = 'The message has been saved as draft.';
                     break;
-                case MessageType.Processing:
+                case MessageStatus.Processing:
                     message = 'The message is queued for processing.';
                     break;
                 case 'scheduled':
@@ -212,7 +215,7 @@
     }
 
     async function saveDraft() {
-        $messageParams[$providerType].status = MessageType.Draft;
+        $messageParams[$providerType].status = MessageStatus.Draft;
         if ($operation === 'create') {
             create();
         } else {
