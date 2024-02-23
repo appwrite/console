@@ -7,8 +7,10 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { Empty } from '$lib/components';
-    import { Pill } from '$lib/elements';
+    import { 
+      Empty,
+      Id, 
+    } from '$lib/components';
     import {
         TableBody,
         TableRowLink,
@@ -16,14 +18,17 @@
         TableCell,
         TableCellText,
         TableHeader,
-        TableScroll
+        TableScroll,
     } from '$lib/elements/table';
-    import { Container, ContainerHeader } from '$lib/layout';
+    import { toLocaleDateTime } from '$lib/helpers/date';
+    import { Container, GridHeader } from '$lib/layout';
+    import { Button } from '$lib/elements/forms';
     import { wizard } from '$lib/stores/wizard';
     import type { PageData } from './$types';
+    import { columns } from './store';
     import Create from './createWebhook.svelte';
     import { updateCommandGroupRanks } from '$lib/commandCenter';
-
+  
     export let data: PageData;
 
     function openWizard() {
@@ -33,6 +38,8 @@
     const projectId = $page.params.project;
 
     $: $updateCommandGroupRanks({ webhooks: 20, domains: 10 });
+
+    console.log(data.webhooks);
 </script>
 
 <svelte:head>
@@ -40,34 +47,60 @@
 </svelte:head>
 
 <Container>
-    <ContainerHeader
-        title="Webhooks"
-        buttonText="Create webhook"
-        buttonMethod={openWizard}
-        buttonEvent="create_webhook"
-        total={data.webhooks.total} />
+  <GridHeader
+  title="Webhooks"
+  {columns}
+  view={data.view}
+  hideColumns={false}
+  hideView={true}>
+  <Button on:click={openWizard} event="create_webhook">
+      <span class="icon-plus" aria-hidden="true" />
+      <span class="text">Create Webhook</span>
+  </Button>
+</GridHeader>
+
 
     {#if data.webhooks.total}
         <TableScroll>
             <TableHeader>
-                <TableCellHead width={200}>Name</TableCellHead>
-                <TableCellHead width={180}>POST URL</TableCellHead>
-                <TableCellHead width={80}>Events</TableCellHead>
+              {#each $columns as column}
+                {#if column.show}
+                  <TableCellHead width={column.width}>{column.title}</TableCellHead>
+                {/if}
+              {/each}
             </TableHeader>
             <TableBody service="webhooks" total={data.webhooks.total}>
                 {#each data.webhooks.webhooks as webhook}
                     <TableRowLink
                         href={`${base}/console/project-${projectId}/settings/webhooks/${webhook.$id}`}>
-                        <TableCell title="Name">
-                            <div class="u-flex u-main-space-between u-cross-center">
-                                {webhook.name}
-                                {#if webhook.security === false}
-                                    <Pill>SLL/TLS disabled</Pill>
-                                {/if}
-                            </div>
-                        </TableCell>
-                        <TableCellText title="URL">{webhook.url}</TableCellText>
-                        <TableCellText title="Scopes">{webhook.events.length} events</TableCellText>
+                        {#each $columns as column (column.id)}
+                          {#if column.show}
+                            {#if column.id === '$id'}
+                              {#key $columns}
+                                  <TableCell title={column.title} width={column.width}>
+                                      <Id value={webhook.$id}>{webhook.$id}</Id>
+                                  </TableCell>
+                              {/key}
+                            {:else if column.id === 'events'}
+                              <TableCellText title={column.title} width={column.width}>
+                                {webhook.events.length}
+                              </TableCellText>
+                              {:else if column.type === 'datetime'}
+                              <TableCellText title={column.title} width={column.width}>
+                                  {#if !webhook[column.id]}
+                                      -
+                                  {:else}
+                                      {toLocaleDateTime(webhook[column.id])}
+                                  {/if}
+                              </TableCellText>
+
+                            {:else}
+                                <TableCellText title={column.title} width={column.width}>
+                                    {webhook[column.id]}
+                                </TableCellText>
+                            {/if}
+                          {/if}
+                        {/each}
                     </TableRowLink>
                 {/each}
             </TableBody>
