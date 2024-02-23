@@ -6,7 +6,7 @@
 </script>
 
 <li class="collapsible-item">
-    <details class="collapsible-wrapper" {open}>
+    <details class="collapsible-wrapper" bind:open>
         <!-- svelte-ignore a11y-no-redundant-roles -->
         <summary
             class="collapsible-button u-position-relative"
