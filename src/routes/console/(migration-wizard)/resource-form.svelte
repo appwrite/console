@@ -107,19 +107,10 @@
                     );
                     break;
                 case 'firebase':
-                    if ($provider.projectId) {
-                        // OAuth
-                        report = await sdk.forProject.migrations.getFirebaseReportOAuth(
-                            providerResources.firebase,
-                            $provider.projectId
-                        );
-                    } else if ($provider.serviceAccount) {
-                        // Manual auth
-                        report = await projectSdk.migrations.getFirebaseReport(
-                            providerResources.firebase,
-                            $provider.serviceAccount
-                        );
-                    }
+                    report = await projectSdk.migrations.getFirebaseReport(
+                        providerResources.firebase,
+                        $provider.serviceAccount
+                    );
 
                     break;
                 case 'nhost':
