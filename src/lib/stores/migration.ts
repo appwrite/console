@@ -101,7 +101,7 @@ export const migrationFormToResources = (
         addResource('function');
     }
     if (formData.functions.env) {
-        addResource('envVar');
+        addResource('environment variable');
     }
     if (formData.functions.inactive) {
         addResource('deployment');
@@ -155,7 +155,7 @@ export const resourcesToMigrationForm = (
     if (resources.includes('function') && isVersionAtLeast(version, '1.4.0')) {
         formData.functions.root = true;
     }
-    if (resources.includes('envVar') && isVersionAtLeast(version, '1.4.0')) {
+    if (resources.includes('environment variable') && isVersionAtLeast(version, '1.4.0')) {
         formData.functions.env = true;
     }
     if (resources.includes('deployment') && isVersionAtLeast(version, '1.4.0')) {
