@@ -22,7 +22,7 @@
                 {/if}
             </div>
             <div class="icon">
-                <span class="icon-cheveron-down" aria-hidden="true" />
+                <span class="icon-cheveron-down u-font-size-20" aria-hidden="true" />
             </div>
         </summary>
         <div
