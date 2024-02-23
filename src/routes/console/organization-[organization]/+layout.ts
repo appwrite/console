@@ -19,7 +19,7 @@ export const load: LayoutLoad = async ({ params, depends }) => {
     if (isCloud) {
         await failedInvoice.load(params.organization);
 
-        if (!get(failedInvoice)) {
+        if (get(failedInvoice)) {
             headerAlert.add({
                 show: true,
                 component: ProjectsAtRisk,
@@ -45,6 +45,6 @@ export const load: LayoutLoad = async ({ params, depends }) => {
         const newPrefs = { ...prefs, organization: null };
         sdk.forConsole.account.updatePrefs(newPrefs);
         localStorage.removeItem('organization');
-        throw error(e.code, e.message);
+        error(e.code, e.message);
     }
 };

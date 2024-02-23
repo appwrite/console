@@ -70,7 +70,10 @@
                 <TableCellHead width={90} />
                 <TableCellHead width={30} />
             </TableHeader>
-            <TableBody service="members" total={data.organizationMembers.total}>
+            <TableBody
+                service="members"
+                total={data.organizationMembers.total}
+                event="members_list">
                 {#each data.organizationMembers.memberships as member}
                     <TableRow>
                         <TableCell title="Name">

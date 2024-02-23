@@ -24,7 +24,7 @@
 {#if single}
     <article class="card u-grid u-cross-center u-width-full-line common-section">
         <div
-            class="u-flex u-flex-vertical u-cross-center u-gap-24 u-width-full-line u-overflow-hidden">
+            class="u-flex u-flex-vertical u-cross-center u-gap-24 u-width-full-line u-overflow-hidden u-padding-block-8">
             {#if !noMedia}
                 <button
                     type="button"

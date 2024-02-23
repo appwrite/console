@@ -71,19 +71,21 @@
             </p>
         </header>
         <div class="modal-content">
-            {#if error}
-                <div bind:this={alert}>
-                    <Alert
-                        dismissible
-                        type="warning"
-                        on:dismiss={() => {
-                            error = null;
-                        }}>
-                        {error}
-                    </Alert>
-                </div>
-            {/if}
-            <slot />
+            <div class="modal-content-spacer u-flex-vertical u-gap-24 u-width-full-line">
+                {#if error}
+                    <div bind:this={alert}>
+                        <Alert
+                            dismissible
+                            type="warning"
+                            on:dismiss={() => {
+                                error = null;
+                            }}>
+                            {error}
+                        </Alert>
+                    </div>
+                {/if}
+                <slot />
+            </div>
         </div>
 
         {#if $$slots.footer}

@@ -25,7 +25,6 @@
     import { tierToPlan } from '$lib/stores/billing';
     import { user } from '$lib/stores/user';
     import { feedback } from '$lib/stores/feedback';
-    import HoodieCover from './(billing-modal)/hoodieCover.svelte';
 
     const dispatch = createEventDispatcher();
 
@@ -88,6 +87,7 @@
                         org.$id,
                         $changeOrganizationTier.couponCode
                     );
+                    trackEvent(Submit.CreditRedeem);
                 }
 
                 //Add budget
@@ -146,7 +146,6 @@
                     plan: tierToPlan($changeOrganizationTier.billingPlan)?.name
                 });
                 wizard.hide();
-                wizard.showCover(HoodieCover);
             } catch (e) {
                 addNotification({
                     type: 'error',
@@ -176,7 +175,7 @@
         component: ChoosePlan
     });
     $changeTierSteps.set(2, {
-        label: 'Payment details',
+        label: 'Payment',
         component: PaymentDetails
     });
     $changeTierSteps.set(3, {

@@ -6,6 +6,7 @@
     import { createOrganization } from './store';
     import type { AddressesList } from '$lib/sdk/billing';
     import { RadioBoxes } from '$lib/components';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
 
     let options = [
         {
@@ -33,7 +34,9 @@
                     addressLine2 ? addressLine2 : undefined
                 );
                 $createOrganization.billingAddressId = response.$id;
+                trackEvent(Submit.BillingAddressCreate);
             } catch (error) {
+                trackError(error, Submit.BillingAddressCreate);
                 throw new Error(error.message);
             }
         }

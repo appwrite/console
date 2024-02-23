@@ -5,17 +5,16 @@ import { organization, type Organization } from './organization';
 import type { InvoiceList, AddressesList, Invoice, PaymentList, PlansMap } from '$lib/sdk/billing';
 import { isCloud } from '$lib/system';
 import { cachedStore } from '$lib/helpers/cache';
-import { Query, type Models } from '@appwrite.io/console';
+import { Query } from '@appwrite.io/console';
 import { headerAlert } from './headerAlert';
 import PaymentAuthRequired from '$lib/components/billing/alerts/paymentAuthRequired.svelte';
-import { diffDays } from '$lib/helpers/date';
 import { addNotification, notifications } from './notifications';
 import { goto } from '$app/navigation';
 import { base } from '$app/paths';
-import TooManyFreOrgs from '$lib/components/billing/alerts/tooManyFreeOrgs.svelte';
-import { activeHeaderAlert, showPostReleaseModal } from '$routes/console/store';
+import { activeHeaderAlert, orgMissingPaymentMethod } from '$routes/console/store';
 import MarkedForDeletion from '$lib/components/billing/alerts/markedForDeletion.svelte';
 import { BillingPlan } from '$lib/constants';
+import MissingPaymentMethod from '$lib/components/billing/alerts/missingPaymentMethod.svelte';
 
 export type Tier = 'tier-0' | 'tier-1' | 'tier-2';
 
@@ -161,7 +160,12 @@ export function calculateTrialDay(org: Organization) {
     if (org?.billingPlan === BillingPlan.STARTER) return false;
     const endDate = new Date(org?.billingStartDate);
     const today = new Date();
-    const days = diffDays(today, endDate);
+
+    let diffTime = endDate.getTime() - today.getTime();
+    diffTime = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+
+    const days = diffTime < 1 ? 0 : diffTime;
+
     daysLeftInTrial.set(days);
     return days;
 }
@@ -263,34 +267,19 @@ export function checkForMarkedForDeletion(org: Organization) {
     }
 }
 
-export async function checkForFreeOrgOverflow(orgs: Models.TeamList<Record<string, unknown>>) {
-    if (orgs?.teams?.length > 1) {
+export async function checkForMissingPaymentMethod() {
+    const orgs = await sdk.forConsole.billing.listOrganization([
+        Query.notEqual('billingPlan', BillingPlan.STARTER),
+        Query.isNull('paymentMethodId'),
+        Query.isNull('backupPaymentMethodId')
+    ]);
+    if (orgs?.total) {
+        orgMissingPaymentMethod.set(orgs.teams[0]);
         headerAlert.add({
-            id: 'freeOrgOverflow',
-            component: TooManyFreOrgs,
+            id: 'missingPaymentMethod',
+            component: MissingPaymentMethod,
             show: true,
-            importance: 10
+            importance: 8
         });
-        activeHeaderAlert.set(headerAlert.get());
-    }
-}
-
-export async function checkForPostReleaseProModal(orgs: Models.TeamList<Record<string, unknown>>) {
-    if (!orgs?.teams?.length) return;
-    if (orgs.total > orgs.teams.length) return; // if the total is greater that the free orgs it means that there are pro orgs
-    const modalTime = localStorage.getItem('postReleaseProModal');
-    const now = Date.now();
-    // show the modal if it was never shown
-    if (!modalTime) {
-        localStorage.setItem('postReleaseProModal', Date.now().toString());
-        showPostReleaseModal.set(true);
-    } else {
-        const interval = 5 * 24 * 60 * 60 * 1000;
-        const sinceLastModal = now - parseInt(modalTime);
-        // show the modal if it was shown more than 5 days ago
-        if (sinceLastModal > interval) {
-            localStorage.setItem('postReleaseProModal', Date.now().toString());
-            showPostReleaseModal.set(true);
-        }
     }
 }

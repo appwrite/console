@@ -19,7 +19,12 @@ export async function initializeStripe() {
     isStripeInitialized.set(true);
 
     const methods = await sdk.forConsole.billing.listPaymentMethods();
-    clientSecret = methods.paymentMethods[0]?.clientSecret;
+
+    // Get the client secret from empty payment method if available
+    clientSecret = methods.paymentMethods?.filter(
+        (method) => !!method?.clientSecret && !method?.providerMethodId
+    )[0]?.clientSecret;
+
     // If there is no payment method, create an empty one and get the client secret
     if (!clientSecret) {
         paymentMethod = await sdk.forConsole.billing.createPaymentMethod();
@@ -101,9 +106,15 @@ export async function submitStripeCard(name: string, urlRoute?: string) {
     }
 }
 
-export async function confirmPayment(orgId: string, clientSecret: string, paymentMethodId: string) {
+export async function confirmPayment(
+    orgId: string,
+    clientSecret: string,
+    paymentMethodId: string,
+    route?: string
+) {
     try {
-        const url = `${window.location.origin}/console/organization-${orgId}/billing`;
+        const url =
+            window.location.origin + (route ? route : `/console/organization-${orgId}/billing`);
 
         const paymentMethod = await sdk.forConsole.billing.getPaymentMethod(paymentMethodId);
 

@@ -20,7 +20,6 @@
     import { wizard } from '$lib/stores/wizard';
     import { tierToPlan } from '$lib/stores/billing';
     import AddressDetails from './wizard/cloudOrganization/addressDetails.svelte';
-    import HoodieCover from './(billing-modal)/hoodieCover.svelte';
 
     async function onFinish() {
         await invalidate(Dependencies.ORGANIZATION);
@@ -54,6 +53,12 @@
                     $createOrganization.billingBudget,
                     [75]
                 );
+            }
+
+            //Add coupon
+            if ($createOrganization?.couponCode) {
+                await sdk.forConsole.billing.addCredit(org.$id, $createOrganization.couponCode);
+                trackEvent(Submit.CreditRedeem);
             }
 
             //Add collaborators
@@ -91,9 +96,6 @@
             });
 
             wizard.hide();
-            if (org.billingPlan === BillingPlan.PRO) {
-                wizard.showCover(HoodieCover);
-            }
         } catch (e) {
             addNotification({
                 type: 'error',
@@ -110,7 +112,8 @@
             paymentMethodId: null,
             collaborators: [],
             billingAddressId: null,
-            taxId: null
+            taxId: null,
+            couponCode: null
         };
     });
 
@@ -119,7 +122,7 @@
         component: OrganizationDetails
     });
     $createOrgSteps.set(2, {
-        label: 'Payment details',
+        label: 'Payment',
         component: PaymentDetails
     });
     $createOrgSteps.set(3, {
