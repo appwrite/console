@@ -1,7 +1,7 @@
 import type { Column } from '$lib/helpers/types';
 import { writable } from 'svelte/store';
 import { Providers } from '../provider.svelte';
-import { MessagingProviderType, Encryption } from '@appwrite.io/console';
+import { MessagingProviderType, SmtpEncryption } from '@appwrite.io/console';
 
 export const columns = writable<Column[]>([
     { id: '$id', title: 'Provider ID', type: 'string', show: true },
@@ -153,6 +153,12 @@ export const providers: ProvidersMap = {
                             },
                             alt: 'Screenshot of where to download the Authentication Key in the Apple Developer Member Center'
                         }
+                    },
+                    {
+                        label: 'Sandbox',
+                        name: 'sandbox',
+                        type: 'switch',
+                        description: 'Use the development APNS server.'
                     }
                 ]
             }
@@ -339,9 +345,9 @@ export const providers: ProvidersMap = {
                         name: 'encryption',
                         type: 'select',
                         options: [
-                            { label: 'None', value: Encryption.None },
-                            { label: 'SSL', value: Encryption.Ssl },
-                            { label: 'TLS', value: Encryption.Tls }
+                            { label: 'None', value: SmtpEncryption.None },
+                            { label: 'SSL', value: SmtpEncryption.Ssl },
+                            { label: 'TLS', value: SmtpEncryption.Tls }
                         ]
                     },
                     {
@@ -546,7 +552,6 @@ type ProviderParams = {
 /**
  * SMS providers
  */
-
 export type TwilioProviderParams = ProviderParams & {
     accountSid: string;
     authToken: string;
@@ -580,7 +585,6 @@ export type VonageProviderParams = ProviderParams & {
 /**
  * Email providers
  */
-
 export type MailgunProviderParams = ProviderParams & {
     fromEmail: string;
     fromName: string;
@@ -608,7 +612,7 @@ export type SMTPProviderParams = ProviderParams & {
     port: number;
     username: string;
     password: string;
-    encryption: Encryption;
+    encryption: SmtpEncryption;
     autoTLS: boolean;
     mailer: string;
 };
@@ -616,7 +620,6 @@ export type SMTPProviderParams = ProviderParams & {
 /**
  * Push providers
  */
-
 export type FCMProviderParams = ProviderParams & {
     serviceAccountJSON: string;
 };
@@ -626,6 +629,7 @@ export type APNSProviderParams = ProviderParams & {
     authKeyId: string;
     teamId: string;
     bundleId: string;
+    sandbox: boolean;
 };
 
 export type MQTTProviderParams = ProviderParams & {

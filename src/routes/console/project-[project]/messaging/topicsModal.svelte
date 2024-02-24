@@ -121,7 +121,7 @@
                                                 <span
                                                     class="collapsible-button-optional"
                                                     style="--p-toggle-optional-color: var(--color-neutral-50);">
-                                                    ({getTotal(topic)} subscribers)
+                                                    ({getTotal(topic)} targets)
                                                 </span>
                                             </span></span>
                                     </svelte:fragment>

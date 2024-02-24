@@ -6,7 +6,7 @@
 </script>
 
 <li class="collapsible-item">
-    <details class="collapsible-wrapper" {open}>
+    <details class="collapsible-wrapper" bind:open>
         <!-- svelte-ignore a11y-no-redundant-roles -->
         <summary
             class="collapsible-button u-position-relative"
@@ -22,7 +22,7 @@
                 {/if}
             </div>
             <div class="icon">
-                <span class="icon-cheveron-down" aria-hidden="true" />
+                <span class="icon-cheveron-down u-font-size-20" aria-hidden="true" />
             </div>
         </summary>
         <div

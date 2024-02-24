@@ -129,6 +129,7 @@
                         $providerParams[$provider].authKeyId,
                         $providerParams[$provider].teamId,
                         $providerParams[$provider].bundleId,
+                        $providerParams[$provider].sandbox,
                         $providerParams[$provider].enabled
                     );
                     break;

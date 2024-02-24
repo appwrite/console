@@ -2,16 +2,16 @@ import type { MessagingProviderType } from '@appwrite.io/console';
 import { writable } from 'svelte/store';
 import type { Providers } from '../../provider.svelte';
 import type {
-    TwilioProviderParams,
+    APNSProviderParams,
+    FCMProviderParams,
+    MailgunProviderParams,
     Msg91ProviderParams,
+    SMTPProviderParams,
+    SendgridProviderParams,
     TelesignProviderParams,
     TextmagicProviderParams,
-    VonageProviderParams,
-    MailgunProviderParams,
-    SendgridProviderParams,
-    SMTPProviderParams,
-    FCMProviderParams,
-    APNSProviderParams
+    TwilioProviderParams,
+    VonageProviderParams
 } from '../store';
 
 export const providerType = writable<MessagingProviderType>(null);
