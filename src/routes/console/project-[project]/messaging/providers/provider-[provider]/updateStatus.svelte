@@ -153,7 +153,8 @@
                     authKey: $provider.credentials['authKey'],
                     authKeyId: $provider.credentials['authKeyId'],
                     teamId: $provider.credentials['teamId'],
-                    bundleId: $provider.credentials['bundleId']
+                    bundleId: $provider.credentials['bundleId'],
+                    sandbox: $provider.options['sandbox']
                 };
                 break;
         }
@@ -237,14 +238,14 @@
                     );
                     break;
                 case Providers.FCM:
-                    response = await sdk.forProject.messaging.updateFCMProvider(
+                    response = await sdk.forProject.messaging.updateFcmProvider(
                         providerId,
                         undefined,
                         enabled
                     );
                     break;
                 case Providers.APNS:
-                    response = await sdk.forProject.messaging.updateAPNSProvider(
+                    response = await sdk.forProject.messaging.updateApnsProvider(
                         providerId,
                         undefined,
                         enabled
