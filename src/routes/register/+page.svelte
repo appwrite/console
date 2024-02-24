@@ -64,10 +64,7 @@
             OAuthProvider.Github,
             window.location.origin,
             window.location.origin,
-            [
-                'read:user',
-                'user:email'
-            ]
+            ['read:user', 'user:email']
         );
     }
 </script>

@@ -144,11 +144,11 @@ export const providers: ProvidersMap = {
                         ]
                     },
                     {
-                        label: "Sandbox",
-                        name: "sandbox",
-                        type: "switch",
-                        description: "Use the development APNS server."
-                    },
+                        label: 'Sandbox',
+                        name: 'sandbox',
+                        type: 'switch',
+                        description: 'Use the development APNS server.'
+                    }
                 ]
             }
             // [Providers.MQTT]: {
