@@ -134,7 +134,7 @@
                 bind:value={operatorKey} />
         </ul>
         {#if column && operator && !operator?.hideInput}
-            <div class="u-margin-block-start-8">
+            <ul class="u-margin-block-start-8">
                 {#if column.type === 'integer' || column.type === 'double'}
                     <InputNumber id="value" bind:value placeholder="Enter value" />
                 {:else if column.type === 'boolean'}
@@ -150,7 +150,7 @@
                 {:else}
                     <InputText id="value" bind:value placeholder="Enter value" />
                 {/if}
-            </div>
+            </ul>
         {/if}
         <Button text disabled={isDisabled} class="u-margin-block-start-4" submit>
             <i class="icon-plus" />
