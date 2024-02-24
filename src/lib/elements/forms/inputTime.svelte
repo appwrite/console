@@ -57,7 +57,7 @@
             autocomplete={autocomplete ? 'on' : 'off'}
             type="time"
             class="input-text"
-            style={disabled ? "" : "cursor: pointer;"}
+            style={disabled ? '' : 'cursor: pointer;'}
             bind:value
             bind:this={element}
             on:invalid={handleInvalid}
