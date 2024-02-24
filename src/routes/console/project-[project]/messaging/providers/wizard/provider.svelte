@@ -6,7 +6,7 @@
     import { FormList, InputText } from '$lib/elements/forms';
     import { Pill } from '$lib/elements';
     import { Providers } from '../../provider.svelte';
-    import { Encryption } from '@appwrite.io/console';
+    import { SmtpEncryption } from '@appwrite.io/console';
 
     let name = '';
     let showCustomId = false;
@@ -102,7 +102,7 @@
                     username: '',
                     password: '',
                     autoTLS: true,
-                    encryption: Encryption.Tls,
+                    encryption: SmtpEncryption.Tls,
                     mailer: '',
                     fromEmail: '',
                     fromName: '',
@@ -126,7 +126,8 @@
                     authKey: '',
                     authKeyId: '',
                     teamId: '',
-                    bundleId: ''
+                    bundleId: '',
+                    sandbox: false
                 };
                 break;
         }

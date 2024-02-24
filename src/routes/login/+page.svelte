@@ -75,7 +75,6 @@
             OAuthProvider.Github,
             window.location.origin + url,
             window.location.origin,
-            undefined,
             ['read:user', 'user:email']
         );
     }

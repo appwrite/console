@@ -16,7 +16,7 @@
     async function verify() {
         try {
             disabled = true;
-            const challenge = await sdk.forConsole.account.create2FAChallenge(
+            const challenge = await sdk.forConsole.account.createChallenge(
                 AuthenticationFactor.Totp
             );
             await sdk.forConsole.account.updateChallenge(challenge.$id, code);
