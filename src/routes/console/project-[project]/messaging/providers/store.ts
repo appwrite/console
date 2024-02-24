@@ -14,7 +14,16 @@ export const columns = writable<Column[]>([
 export type ProviderInput = {
     label: string;
     name: string;
-    type: 'text' | 'password' | 'phone' | 'email' | 'domain' | 'file' | 'switch' | 'select';
+    type:
+        | 'text'
+        | 'password'
+        | 'phone'
+        | 'email'
+        | 'domain'
+        | 'file'
+        | 'switch'
+        | 'select'
+        | 'checkbox';
     placeholder?: string;
     description?: string;
     popover?: string[];
@@ -311,7 +320,7 @@ export const providers: ProvidersMap = {
                         label: 'Server host',
                         name: 'host',
                         type: 'text',
-                        placeholder: 'Enter host'
+                        placeholder: 'smtp.server.com'
                     },
                     {
                         label: 'Server port',
@@ -347,8 +356,8 @@ export const providers: ProvidersMap = {
                     {
                         label: 'Auto TLS',
                         name: 'autoTLS',
-                        description: 'Automatically uses TLS encryption',
-                        type: 'switch',
+                        description: 'Automatically uses TLS encryption if available.',
+                        type: 'checkbox',
                         optional: true
                     },
                     {
@@ -356,7 +365,11 @@ export const providers: ProvidersMap = {
                         name: 'mailer',
                         type: 'text',
                         optional: true,
-                        placeholder: 'Enter mailer'
+                        placeholder: 'Enter mailer',
+                        popover: [
+                            '<b>What is the Mailer?</b>',
+                            'The value to use for the X-Mailer header.'
+                        ]
                     }
                 ]
             }
