@@ -114,7 +114,7 @@
                     );
                     break;
                 case Providers.FCM:
-                    response = await sdk.forProject.messaging.updateFCMProvider(
+                    response = await sdk.forProject.messaging.updateFcmProvider(
                         providerId,
                         $providerParams[$provider].name,
                         $providerParams[$provider].enabled,
@@ -122,14 +122,15 @@
                     );
                     break;
                 case Providers.APNS:
-                    response = await sdk.forProject.messaging.updateAPNSProvider(
+                    response = await sdk.forProject.messaging.updateApnsProvider(
                         providerId,
                         $providerParams[$provider].name,
                         $providerParams[$provider].enabled,
                         $providerParams[$provider].authKey,
                         $providerParams[$provider].authKeyId,
                         $providerParams[$provider].teamId,
-                        $providerParams[$provider].bundleId
+                        $providerParams[$provider].bundleId,
+                        $providerParams[$provider].sandbox
                     );
                     break;
             }

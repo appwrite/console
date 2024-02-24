@@ -6,7 +6,7 @@
 </script>
 
 <Unauthenticated>
-    <Heading size="1" tag="h3">{$page.status}</Heading>
+    <Heading size="1" tag="h3">{$page.error.status || 'Invalid Argument'}</Heading>
     <Heading size="3" tag="h4">{$page.error.message}</Heading>
     <Button href="/">Back to the console</Button>
 </Unauthenticated>
