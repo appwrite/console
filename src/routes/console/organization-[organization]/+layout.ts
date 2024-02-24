@@ -20,7 +20,7 @@ export const load: LayoutLoad = async ({ params, depends }) => {
     if (isCloud) {
         await failedInvoice.load(params.organization);
 
-        if (!get(failedInvoice)) {
+        if (get(failedInvoice)) {
             headerAlert.add({
                 show: true,
                 component: ProjectsAtRisk,
