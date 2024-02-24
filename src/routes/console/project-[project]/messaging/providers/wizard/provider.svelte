@@ -13,8 +13,6 @@
     let id: string = null;
 
     async function beforeSubmit() {
-        console.log($provider);
-
         switch ($provider) {
             case Providers.Twilio:
                 $providerParams[$provider] = {

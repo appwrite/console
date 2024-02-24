@@ -11,6 +11,19 @@ export const columns = writable<Column[]>([
     { id: 'enabled', title: 'Status', type: 'boolean', show: true }
 ]);
 
+export type ProviderInput = {
+    label: string;
+    name: string;
+    type: 'text' | 'password' | 'phone' | 'email' | 'domain' | 'file' | 'switch' | 'select';
+    placeholder?: string;
+    description?: string;
+    popover?: string[];
+    popoverImage?: { src: { light: string; dark: string }; alt: string };
+    allowedFileExtensions?: string[];
+    optional?: boolean;
+    options?: { label: string; value: string | number | boolean }[];
+};
+
 type ProvidersMap = {
     [key in MessagingProviderType]: {
         name: string;
@@ -23,26 +36,7 @@ type ProvidersMap = {
                 title: string;
                 description: string;
                 needAHand?: string[];
-                configure: {
-                    label: string;
-                    name: string;
-                    type:
-                        | 'text'
-                        | 'password'
-                        | 'phone'
-                        | 'email'
-                        | 'domain'
-                        | 'file'
-                        | 'switch'
-                        | 'select';
-                    placeholder?: string;
-                    description?: string;
-                    popover?: string[];
-                    popoverImage?: { src: { light: string; dark: string }; alt: string };
-                    allowedFileExtensions?: string[];
-                    optional?: boolean;
-                    options?: { label: string; value: string | number | boolean }[];
-                }[];
+                configure: ProviderInput[];
             };
         };
     };
@@ -547,4 +541,97 @@ export const providers: ProvidersMap = {
             }
         }
     }
+};
+
+type ProviderParams = {
+    providerId: string;
+    name: string;
+    enabled: boolean;
+};
+
+/**
+ * SMS providers
+ */
+export type TwilioProviderParams = ProviderParams & {
+    accountSid: string;
+    authToken: string;
+    from: string;
+};
+
+export type Msg91ProviderParams = ProviderParams & {
+    from: string;
+    senderId: string;
+    authKey: string;
+};
+
+export type TelesignProviderParams = ProviderParams & {
+    from: string;
+    username: string;
+    password: string;
+};
+
+export type TextmagicProviderParams = ProviderParams & {
+    from: string;
+    username: string;
+    apiKey: string;
+};
+
+export type VonageProviderParams = ProviderParams & {
+    from: string;
+    apiKey: string;
+    apiSecret: string;
+};
+
+/**
+ * Email providers
+ */
+export type MailgunProviderParams = ProviderParams & {
+    fromEmail: string;
+    fromName: string;
+    replyToEmail: string;
+    replyToName: string;
+    isEuRegion: boolean;
+    apiKey: string;
+    domain: string;
+};
+
+export type SendgridProviderParams = ProviderParams & {
+    fromEmail: string;
+    fromName: string;
+    replyToEmail: string;
+    replyToName: string;
+    apiKey: string;
+};
+
+export type SMTPProviderParams = ProviderParams & {
+    fromEmail: string;
+    fromName: string;
+    replyToEmail: string;
+    replyToName: string;
+    host: string;
+    port: number;
+    username: string;
+    password: string;
+    encryption: SmtpEncryption;
+    autoTLS: boolean;
+    mailer: string;
+};
+
+/**
+ * Push providers
+ */
+export type FCMProviderParams = ProviderParams & {
+    serviceAccountJSON: string;
+};
+
+export type APNSProviderParams = ProviderParams & {
+    authKey: string;
+    authKeyId: string;
+    teamId: string;
+    bundleId: string;
+    sandbox: boolean;
+};
+
+export type MQTTProviderParams = ProviderParams & {
+    serverKey: string;
 };
