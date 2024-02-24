@@ -14,6 +14,7 @@
     import { onMount } from 'svelte';
     import { providers } from '../store';
     import { providerType, provider, providerParams } from './store';
+    import { ImagePreview } from '$lib/components';
     import { newMemberModal } from '$lib/stores/organization';
     import CreateMember from '$routes/console/organization-[organization]/createMember.svelte';
     import Provider from '../../provider.svelte';
@@ -65,6 +66,7 @@
     </svelte:fragment>
     <FormList>
         {#each inputs as input}
+            {@const popoverImage = input.popoverImage}
             {#if input.type === 'text'}
                 <InputText
                     id={input.name}
@@ -75,6 +77,14 @@
                     bind:value={$providerParams[$provider][input.name]}>
                     <svelte:fragment slot="popover">
                         {@html input.popover?.join('<br/><br/>')}
+                        {#if popoverImage}
+                            <br />
+                            <br />
+                            <ImagePreview
+                                darkSrc={popoverImage.src.dark}
+                                lightSrc={popoverImage.src.light}
+                                alt={popoverImage.alt} />
+                        {/if}
                     </svelte:fragment>
                 </InputText>
             {:else if input.type === 'password'}
@@ -142,6 +152,14 @@
                     <svelte:fragment slot="popover">
                         <p class="body-text-2 u-margin-block-end-16">
                             {@html input.popover?.join('<br/><br/>')}
+                            {#if popoverImage}
+                                <br />
+                                <br />
+                                <ImagePreview
+                                    darkSrc={popoverImage.src.dark}
+                                    lightSrc={popoverImage.src.light}
+                                    alt={popoverImage.alt} />
+                            {/if}
                         </p>
                     </svelte:fragment>
                 </InputFile>

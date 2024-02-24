@@ -38,6 +38,7 @@ type ProvidersMap = {
                     placeholder?: string;
                     description?: string;
                     popover?: string[];
+                    popoverImage?: { src: { light: string; dark: string }; alt: string };
                     allowedFileExtensions?: string[];
                     optional?: boolean;
                     options?: { label: string; value: string | number | boolean }[];
@@ -73,7 +74,14 @@ export const providers: ProvidersMap = {
                             '<b>How to get the <a class="link" href="https://firebase.google.com" target="_blank" rel="noopener noreferrer">FCM</a> service account JSON?</b>',
                             'Head to <b>Project settings -> Service accounts -> Generate new private key.</b>',
                             'Generating the new key will result in the download of a JSON file.'
-                        ]
+                        ],
+                        popoverImage: {
+                            src: {
+                                light: '/images/messaging/fcm-service-account-json-light.png',
+                                dark: '/images/messaging/fcm-service-account-json-dark.png'
+                            },
+                            alt: 'Screenshot of how to generate the Firebase Service Account JSON file'
+                        }
                     }
                 ]
             },
@@ -89,8 +97,15 @@ export const providers: ProvidersMap = {
                         placeholder: 'Enter team ID',
                         popover: [
                             '<b>How to get the team ID?</b>',
-                            'Head to <b><a class="link" href="https://idmsa.apple.com/IDMSWebAuth/signin?appIdKey=891bd3417a7776362562d2197f89480a8547b108fd934911bcbea0110d07f757&path=%2Faccount%2F&rv=1" target="_blank" rel="noopener noreferrer">Apple Developer Member Center</a> -> Membership details -> Team ID.</b>'
-                        ]
+                            'Head to <b><a style="link" href="https://developer.apple.com/account" target="_blank" rel="noopener noreferrer">Apple Developer Member Center</a> -> Membership details -> Team ID.</b>'
+                        ],
+                        popoverImage: {
+                            src: {
+                                light: '/images/messaging/apns-team-id.png',
+                                dark: '/images/messaging/apns-team-id.png'
+                            },
+                            alt: 'Screenshot of where to find the Team ID in the Apple Developer Member Center'
+                        }
                     },
                     {
                         label: 'Bundle ID',
@@ -99,27 +114,15 @@ export const providers: ProvidersMap = {
                         placeholder: 'Enter bundle ID',
                         popover: [
                             '<b>How to get the bundle ID?</b>',
-                            'Head to <b><a class="link" href="https://idmsa.apple.com/IDMSWebAuth/signin?appIdKey=891bd3417a7776362562d2197f89480a8547b108fd934911bcbea0110d07f757&path=%2Faccount%2F&rv=1" target="_blank" rel="noopener noreferrer">Apple Developer Member Center</a> -> Certificates, Identifiers & Profiles -> Identifiers.</b>',
-                            `<a
-                                href="/images/apns-bundle-id.png"
-                                class="file-preview is-with-image"
-                                target="_blank" rel="noopener noreferrer"
-                                rel="noopener noreferrer"
-                                aria-label="open file in new window">
-                                <div class="file-preview-image">
-                                    <img
-                                        width="205"
-                                        height="125"
-                                        src="/images/apns-bundle-id.png"
-                                        alt="Screenshot of Bundle ID in Apple" />
-                                </div>
-                                <div class="file-preview-content">
-                                    <div class="avatar">
-                                        <span class="icon-external-link" aria-hidden="true" />
-                                    </div>
-                                </div>
-                            </a>`
-                        ]
+                            'Head to <b><a class="link" href="https://developer.apple.com/account" target="_blank" rel="noopener noreferrer">Apple Developer Member Center</a> -> Certificates, Identifiers & Profiles -> Identifiers.</b>'
+                        ],
+                        popoverImage: {
+                            src: {
+                                light: '/images/messaging/apns-bundle-id.png',
+                                dark: '/images/messaging/apns-bundle-id.png'
+                            },
+                            alt: 'Screenshot of where to find the Bundle ID in the Apple Developer Member Center'
+                        }
                     },
                     {
                         label: 'Authentication key ID',
@@ -128,9 +131,16 @@ export const providers: ProvidersMap = {
                         placeholder: 'Enter key ID',
                         popover: [
                             '<b>How to get the auth key ID?</b>',
-                            'Head to <b><a class="link" href="https://idmsa.apple.com/IDMSWebAuth/signin?appIdKey=891bd3417a7776362562d2197f89480a8547b108fd934911bcbea0110d07f757&path=%2Faccount%2F&rv=1" target="_blank" rel="noopener noreferrer">Apple Developer Member Center</a> -> Certificates, Identifiers & Profiles -> Keys.</b>',
+                            'Head to <b><a class="link" href="https://developer.apple.com/account" target="_blank" rel="noopener noreferrer">Apple Developer Member Center</a> -> Certificates, Identifiers & Profiles -> Keys.</b>',
                             'Click on your key to view details.'
-                        ]
+                        ],
+                        popoverImage: {
+                            src: {
+                                light: '/images/messaging/apns-authentication-key-id.png',
+                                dark: '/images/messaging/apns-authentication-key-id.png'
+                            },
+                            alt: 'Screenshot of how to find the Authentication Key ID in the Apple Developer Member Center'
+                        }
                     },
                     {
                         label: 'Auth key (.p8 file)',
@@ -139,9 +149,16 @@ export const providers: ProvidersMap = {
                         allowedFileExtensions: ['p8'],
                         popover: [
                             '<b>How to get the authentication key?</b>',
-                            'Head to <b><a class="link" href="https://idmsa.apple.com/IDMSWebAuth/signin?appIdKey=891bd3417a7776362562d2197f89480a8547b108fd934911bcbea0110d07f757&path=%2Faccount%2F&rv=1" target="_blank" rel="noopener noreferrer">Apple Developer Member Center</a></b> (under Program resources) <b>-> Certificates, Identifiers & Profiles -> Keys.</b>',
+                            'Head to <b><a class="link" href="https://developer.apple.com/account" target="_blank" rel="noopener noreferrer">Apple Developer Member Center</a></b> (under Program resources) <b>-> Certificates, Identifiers & Profiles -> Keys.</b>',
                             'Create a key and give it a name. Enable the Apple Push Notifications service (APNS), and register your key.'
-                        ]
+                        ],
+                        popoverImage: {
+                            src: {
+                                light: '/images/messaging/apns-auth-key.png',
+                                dark: '/images/messaging/apns-auth-key.png'
+                            },
+                            alt: 'Screenshot of where to download the Authentication Key in the Apple Developer Member Center'
+                        }
                     },
                     {
                         label: 'Sandbox',
