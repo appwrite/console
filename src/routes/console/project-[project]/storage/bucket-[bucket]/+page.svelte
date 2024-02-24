@@ -45,12 +45,15 @@
     import Create from './create-file/create.svelte';
     import DeleteFile from './deleteFile.svelte';
     import { isCloud } from '$lib/system';
+    import FilePicker from '$lib/components/filePicker.svelte';
 
     export let data;
 
     let showDelete = false;
     let showDropdown = [];
     let selectedFile: Models.File = null;
+
+    let showCreate = false;
 
     const projectId = $page.params.project;
     const bucketId = $page.params.bucket;
@@ -93,7 +96,7 @@
                         disabled: !isButtonDisabled
                     }}>
                     <Button
-                        on:click={() => wizard.start(Create)}
+                        on:click={() => showCreate = true}
                         event="create_file"
                         disabled={isButtonDisabled}>
                         <span class="icon-plus" aria-hidden="true" />
@@ -258,6 +261,8 @@
             on:click={() => wizard.start(Create)} />
     {/if}
 </Container>
+
+<FilePicker bind:show={showCreate} />
 
 {#if selectedFile}
     <DeleteFile file={selectedFile} bind:showDelete on:deleted={fileDeleted} />
