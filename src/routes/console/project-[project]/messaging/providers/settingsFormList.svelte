@@ -10,6 +10,7 @@
         InputText,
         InputPassword
     } from '$lib/elements/forms';
+    import InputCheckbox from '$lib/elements/forms/inputCheckbox.svelte';
     import PopoverContent from './popoverContent.svelte';
     import type {
         ProviderInput,
@@ -122,6 +123,12 @@
                     {input.description}
                 </svelte:fragment>
             </InputSwitch>
+        {:else if input.type === 'checkbox'}
+            <InputCheckbox label={input.label} id={input.name} bind:checked={params[input.name]}>
+                <svelte:fragment slot="description">
+                    {input.description}
+                </svelte:fragment>
+            </InputCheckbox>
         {:else if input.type === 'select'}
             <InputSelect
                 label={input.label}

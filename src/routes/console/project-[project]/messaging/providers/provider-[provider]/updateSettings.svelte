@@ -152,11 +152,11 @@
                         formValues['password'] || undefined,
                         formValues['encryption'],
                         formValues['autoTLS'],
+                        undefined,
                         formValues['fromName'] || undefined,
                         formValues['fromEmail'],
                         formValues['replyToName'] || undefined,
-                        formValues['replyToEmail'] || undefined,
-                        undefined
+                        formValues['replyToEmail'] || undefined
                     );
                     break;
                 case Providers.FCM:

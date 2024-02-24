@@ -112,7 +112,9 @@
                 fromEmail: $providerData.options['fromEmail'],
                 replyToName: $providerData.options['replyToName'],
                 replyToEmail: $providerData.options['replyToEmail'],
-                encryption: $providerData.options['encryption'],
+                encryption: !$providerData.options['encryption']
+                    ? 'none'
+                    : $providerData.options['encryption'],
                 autoTLS: $providerData.options['autoTLS'],
                 mailer: $providerData.options['mailer']
             };
