@@ -73,7 +73,7 @@ export const providers: ProvidersMap = {
                         popover: [
                             '<b>How to get the <a class="link" href="https://firebase.google.com" target="_blank" rel="noopener noreferrer">FCM</a> service account JSON?</b>',
                             'Head to <b>Project settings -> Service accounts -> Generate new private key.</b>',
-                            'Generating the new key will result in the download of a JSON file.',
+                            'Generating the new key will result in the download of a JSON file.'
                         ],
                         popoverImage: {
                             src: {
