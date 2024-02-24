@@ -46,9 +46,14 @@
         const targetIds = Object.keys($targetsById).filter(
             (targetId) => !(targetId in subscribersByTargetId)
         );
-        const promises = targetIds.map((targetId) =>
-            sdk.forProject.messaging.createSubscriber($page.params.topic, ID.unique(), targetId)
-        );
+        const promises = targetIds.map(async (targetId) => {
+            const subscriber = await sdk.forProject.messaging.createSubscriber(
+                $page.params.topic,
+                ID.unique(),
+                targetId
+            );
+            subscribersByTargetId[targetId] = subscriber;
+        });
 
         try {
             await Promise.all(promises);

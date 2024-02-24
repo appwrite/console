@@ -94,14 +94,14 @@
                     );
                     break;
                 case Providers.FCM:
-                    response = await sdk.forProject.messaging.updateFCMProvider(
+                    response = await sdk.forProject.messaging.updateFcmProvider(
                         providerId,
                         undefined,
                         enabled
                     );
                     break;
                 case Providers.APNS:
-                    response = await sdk.forProject.messaging.updateAPNSProvider(
+                    response = await sdk.forProject.messaging.updateApnsProvider(
                         providerId,
                         undefined,
                         enabled
