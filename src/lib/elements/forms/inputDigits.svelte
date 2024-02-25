@@ -13,6 +13,8 @@
 
     let element: HTMLOListElement;
 
+    let autoSubmitted = false;
+
     const {
         elements: { root, input }
     } = createPinInput({
@@ -21,7 +23,8 @@
         onValueChange: ({ next }) => {
             value = next.join('');
 
-            if (value.length === 6) {
+            if (value.length === 6 && !autoSubmitted) {
+                autoSubmitted = true;
                 const firstInputElement = element.querySelector('input');
                 firstInputElement?.form.requestSubmit();
             }
