@@ -20,6 +20,12 @@
         defaultValue: value.split(''),
         onValueChange: ({ next }) => {
             value = next.join('');
+
+            if (value.length === 6) {
+                const firstInputElement = element.querySelector('input');
+                firstInputElement?.form.requestSubmit();
+            }
+
             return next;
         }
     });
