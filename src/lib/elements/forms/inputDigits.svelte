@@ -2,7 +2,6 @@
     import { onMount, tick } from 'svelte';
     import { FormItem } from '.';
     import { createPinInput, melt } from '@melt-ui/svelte';
-    import Body from '../table/body.svelte';
 
     export let length: number = 6;
     export let value: string = '';
