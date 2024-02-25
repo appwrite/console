@@ -1,5 +1,4 @@
 <script lang="ts">
-    import type { tooltip } from '$lib/actions/tooltip';
     import { Copy } from '.';
 
     export let value: string;
