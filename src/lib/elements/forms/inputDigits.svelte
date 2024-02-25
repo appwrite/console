@@ -24,30 +24,16 @@
         }
     });
 
-    /**
-     * TODO: Find proper solution.
-     * This spams focus for half a second.
-     * Autofocus works properly if +layout.ts is ssr = false. Seems like Svelte Kit bug.
-     * Using document.hasFocus doesnt help here
-     */
-    async function focusInput(i = 0) {
-        if (i >= 10) {
-            return;
-        }
-
-        if (element && autofocus) {
-            element.querySelector('input')?.focus();
-        }
-
-        await tick();
-
-        setTimeout(() => {
-            focusInput(i + 1);
-        }, 50);
-    }
-
     onMount(() => {
-        focusInput();
+        const interval = setInterval(() => {
+            const input = element.querySelector('input');
+            if (element) {
+                if (input && autofocus) {
+                    input.focus();
+                }
+                clearInterval(interval);
+            }
+        }, 10);
     });
 </script>
 
