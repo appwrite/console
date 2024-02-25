@@ -49,7 +49,6 @@
 
 <WizardStep>
     <svelte:fragment slot="title">Targets</svelte:fragment>
-    <!-- TODO: add support for topics -->
     <svelte:fragment slot="subtitle">
         Select targets to whom this message should be directed.
     </svelte:fragment>
@@ -102,7 +101,7 @@
                                         type="button"
                                         aria-label="delete"
                                         on:click={() => removeTopic(topicId)}>
-                                        <span class="icon-x" aria-hidden="true" />
+                                        <span class="icon-x u-font-size-20" aria-hidden="true" />
                                     </button>
                                 </div>
                             </TableCell>
@@ -125,7 +124,7 @@
                                         type="button"
                                         aria-label="delete"
                                         on:click={() => removeTarget(targetId)}>
-                                        <span class="icon-x" aria-hidden="true" />
+                                        <span class="icon-x u-font-size-20" aria-hidden="true" />
                                     </button>
                                 </div>
                             </TableCell>

@@ -46,9 +46,14 @@
         const targetIds = Object.keys($targetsById).filter(
             (targetId) => !(targetId in subscribersByTargetId)
         );
-        const promises = targetIds.map((targetId) =>
-            sdk.forProject.messaging.createSubscriber($page.params.topic, ID.unique(), targetId)
-        );
+        const promises = targetIds.map(async (targetId) => {
+            const subscriber = await sdk.forProject.messaging.createSubscriber(
+                $page.params.topic,
+                ID.unique(),
+                targetId
+            );
+            subscribersByTargetId[targetId] = subscriber;
+        });
 
         try {
             await Promise.all(promises);
@@ -146,4 +151,18 @@
     {/if}
 </Container>
 
-<UserTargetsModal bind:show={showAdd} bind:targetsById={$targetsById} on:update={addTargets} />
+<UserTargetsModal
+    title="Select subscribers"
+    bind:show={showAdd}
+    bind:targetsById={$targetsById}
+    on:update={addTargets}>
+    <svelte:fragment slot="description">
+        <p class="text">
+            Add subscribers to this topic by selecting the targets for directing messages. <a
+                href="https://appwrite.io/docs/products/messaging/topics"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="link">Learn more about subscribers.</a>
+        </p>
+    </svelte:fragment>
+</UserTargetsModal>

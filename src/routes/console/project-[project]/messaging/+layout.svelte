@@ -6,7 +6,6 @@
     import { showCreate } from './store';
 
     // TODO: finalize the commands
-
     $: $registerCommands([
         {
             label: 'Create message',

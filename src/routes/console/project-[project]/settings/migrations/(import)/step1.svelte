@@ -1,19 +1,13 @@
 <script lang="ts">
-    import { invalidate } from '$app/navigation';
-    import { page } from '$app/stores';
-    import { Dependencies } from '$lib/constants';
     import {
         FormList,
         InputNumber,
         InputPassword,
-        InputSelect,
         InputText,
         InputTextarea
     } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
     import type { Provider } from '$lib/stores/migration';
-    import { addNotification } from '$lib/stores/notifications';
-    import { sdk } from '$lib/stores/sdk';
     import { provider } from '.';
 
     const providers: Record<Provider, string> = {
@@ -22,34 +16,6 @@
         supabase: 'Supabase',
         nhost: 'NHost'
     };
-
-    // function connectGoogle() {
-    //     const redirect = new URL($page.url);
-    //     const target = new URL(
-    //         `${sdk.forProject.client.config.endpoint}/migrations/firebase/connect`
-    //     );
-    //     target.searchParams.set('redirect', redirect.toString());
-    //     target.searchParams.set('project', $page.params.project);
-    //     target.searchParams.set('mode', 'admin');
-    //     return target;
-    // }
-
-    function deauthorizeGoogle() {
-        sdk.forProject.migrations.deleteFirebaseAuth().then(() => {
-            firebaseProjects = [];
-        });
-
-        addNotification({
-            type: 'success',
-            message: 'Signed out of Google successfully'
-        });
-
-        invalidate(Dependencies.MIGRATIONS);
-    }
-
-    $: firebaseProjects = $page.data.firebaseProjects;
-
-    // let showAuth = false;
 </script>
 
 <WizardStep>
@@ -102,24 +68,7 @@
                 bind:value={$provider.apiKey} />
         </FormList>
     {:else if $provider.provider === 'firebase'}
-        {#if !firebaseProjects?.length}
-            <!-- <div class="box u-flex u-flex-vertical u-gap-16 u-cross-center u-margin-block-start-24">
-                <p class="u-text-center u-bold">Sign in with Google to get started</p>
-                <Button secondary href={connectGoogle().toString()}>
-                    <SvgIcon name="google" />Sign in
-                </Button>
-            </div> -->
-
-            <!-- <button
-                class="tag u-margin-block-start-16"
-                type="button"
-                on:click={() => (showAuth = !showAuth)}
-                class:is-selected={showAuth}>
-                <span class="icon-lock-closed" aria-hidden="true" />
-                <span class="text">Manual authentication</span>
-            </button> -->
-
-            <!-- {#if showAuth} -->
+        <FormList class="u-margin-block-start-24">
             <div class="u-margin-block-start-16">
                 <InputTextarea
                     id="credentials"
@@ -128,23 +77,7 @@
                     bind:value={$provider.serviceAccount}
                     placeholder="Enter account credentials" />
             </div>
-            <!-- {/if} -->
-        {:else}
-            <FormList class="u-margin-block-start-24">
-                <InputSelect
-                    id="firebase-project"
-                    label="Firebase project"
-                    required
-                    bind:value={$provider.projectId}
-                    options={firebaseProjects.map((project) => ({
-                        label: project.displayName,
-                        value: project.projectId
-                    }))} />
-            </FormList>
-            <p class="u-text-center u-margin-block-start-24">
-                <button class="u-bold" on:click|preventDefault={deauthorizeGoogle}>Sign out</button>
-            </p>
-        {/if}
+        </FormList>
     {:else if $provider.provider === 'supabase'}
         <FormList class="u-margin-block-start-24">
             <p class="body-text-1 u-bold">Postgres credentials</p>

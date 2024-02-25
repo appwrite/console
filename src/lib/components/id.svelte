@@ -1,4 +1,5 @@
 <script lang="ts">
+    import type { tooltip } from '$lib/actions/tooltip';
     import { Copy } from '.';
 
     export let value: string;
@@ -47,7 +48,7 @@
     }
 </script>
 
-<Copy {value} {event}>
+<Copy {value} {event} appendTo="parent">
     <div
         class="interactive-text-output is-buttons-on-top"
         class:u-text-center={centered}

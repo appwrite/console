@@ -82,3 +82,19 @@
         <slot close={closeModal} />
     {/if}
 </dialog>
+
+<style lang="scss">
+    @import '@appwrite.io/pink/src/abstract/variables/_devices.scss';
+
+    .modal.is-huge {
+        block-size: 100%;
+        min-block-size: 80vh;
+
+        @media #{$break2} {
+            min-inline-size: 100%;
+            min-block-size: 100%;
+            border-radius: 0;
+        }
+    }
+
+</style>

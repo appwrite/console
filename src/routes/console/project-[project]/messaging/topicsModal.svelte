@@ -3,11 +3,12 @@
     import { Button, FormList, InputCheckbox, InputSearch } from '$lib/elements/forms';
     import { Table, TableBody, TableCell, TableRow } from '$lib/elements/table';
     import { sdk } from '$lib/stores/sdk';
-    import { Query, type Models } from '@appwrite.io/console';
+    import { Query, type Models, MessagingProviderType } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
-    import { providerType, getTotal } from './wizard/store';
+    import { getTotal } from './wizard/store';
     import ProviderType from './providerType.svelte';
 
+    export let providerType: MessagingProviderType;
     export let show: boolean;
     export let topicsById: Record<string, Models.Topic>;
     export let title = 'Select topics';
@@ -34,6 +35,14 @@
     async function request() {
         if (!show) return;
         const queries = [Query.limit(5), Query.offset(offset)];
+
+        if (providerType === MessagingProviderType.Email) {
+            queries.push(Query.greaterThan('emailTotal', 0));
+        } else if (providerType === MessagingProviderType.Sms) {
+            queries.push(Query.greaterThan('smsTotal', 0));
+        } else if (providerType === MessagingProviderType.Push) {
+            queries.push(Query.greaterThan('pushTotal', 0));
+        }
 
         const response = await sdk.forProject.messaging.listTopics(queries, search || undefined);
 
@@ -83,8 +92,8 @@
 
 <Modal {title} bind:show onSubmit={submit} on:close={reset} headerDivider={false} size="big">
     <p class="text">
-        Select existing topics you want to send this message to its subscribers. The message will be
-        sent only to <ProviderType type={$providerType} noIcon /> targets.
+        Select existing topics you want to send this message to its targets. The message will be
+        sent only to <ProviderType type={providerType} noIcon /> targets.
     </p>
     <InputSearch
         autofocus
@@ -106,11 +115,13 @@
                                     <svelte:fragment slot="description">
                                         <span class="title">
                                             <span class="u-line-height-1-5">
-                                                <span class="body-text-2 u-bold" data-private>
+                                                <span class="body-text-1 u-bold" data-private>
                                                     {topic.name}
                                                 </span>
-                                                <span class="collapsible-button-optional">
-                                                    ({getTotal(topic)} subscribers)
+                                                <span
+                                                    class="collapsible-button-optional"
+                                                    style="--p-toggle-optional-color: var(--color-neutral-50);">
+                                                    ({getTotal(topic)} targets)
                                                 </span>
                                             </span></span>
                                     </svelte:fragment>
