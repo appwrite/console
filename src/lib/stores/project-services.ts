@@ -41,6 +41,11 @@ function createServices() {
                 value: null
             },
             {
+                label: 'Messaging',
+                method: ApiService.Messaging,
+                value: null
+            },
+            {
                 label: 'Storage',
                 method: ApiService.Storage,
                 value: null
@@ -97,6 +102,11 @@ function createServices() {
                     label: 'Locale',
                     method: ApiService.Locale,
                     value: project.serviceStatusForLocale
+                },
+                {
+                    label: 'Messaging',
+                    method: ApiService.Messaging,
+                    value: project.serviceStatusForMessaging
                 },
                 {
                     label: 'Storage',
