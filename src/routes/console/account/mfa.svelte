@@ -61,7 +61,7 @@
             <span class="with-separators eyebrow-heading-3">or</span>
 
             <div>
-                <label class="label">Manual entry code</label>
+                <label class="label" for="manual-code">Manual entry code</label>
                 <button class="tooltip" aria-label="sec retinfo">
                     <span class="icon-info" aria-hidden="true"></span>
                     <span class="tooltip-popup" role="tooltip">
@@ -72,7 +72,7 @@
                 </button>
 
                 <div class="input-text-wrapper" style="--amount-of-buttons:1">
-                    <input type="text" value={type.secret} readonly={true} />
+                    <input id="manual-code" type="text" value={type.secret} readonly={true} />
                     <div class="options-list">
                         <div bind:this={copyParent}>
                             {#key copyParent}
@@ -161,9 +161,6 @@
 </Modal>
 
 <style lang="scss">
-    .secret {
-    }
-
     .qr {
         width: 100%;
         height: 220px;
