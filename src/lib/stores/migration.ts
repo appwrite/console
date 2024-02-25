@@ -48,7 +48,7 @@ export const ResourcesFriendly = {
     collection: { singular: 'Collection', plural: 'Collections' },
     index: { singular: 'Index', plural: 'Indexes' },
     attribute: { singular: 'Attribute', plural: 'Attributes' },
-    document: { singular: 'Document', plural: 'Documents' },
+    document: { singular: 'Document', plural: 'Documents' }
 };
 
 const resources = Object.keys(ResourcesFriendly);
