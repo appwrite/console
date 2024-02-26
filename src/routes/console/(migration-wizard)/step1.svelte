@@ -12,7 +12,6 @@
     let selectedOrg = organizations.length ? organizations[0].$id : null;
 
     let projects = [] as Models.ProjectList['projects'];
-    $: hasProjects = projects.length > 0;
     let loadingProjects = false;
 
     let projectType = 'existing';
@@ -43,10 +42,7 @@
 </script>
 
 <WizardStep {beforeSubmit}>
-    <svelte:fragment slot="title">
-        <!-- @vincentge - What about this? -->
-        {hasProjects ? 'Select project' : 'Create project'}
-    </svelte:fragment>
+    <svelte:fragment slot="title">Project</svelte:fragment>
 
     <div class="u-flex u-flex-vertical u-gap-24">
         {#if organizations.length > 1}
