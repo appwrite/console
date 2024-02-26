@@ -142,7 +142,7 @@
                     </div>
                 </div>
             {:else}
-                <Empty on:click={() => (showTopics = true)}>Add a Topic</Empty>
+                <Empty on:click={() => (showTopics = true)}>Add a topic</Empty>
             {/if}
         </svelte:fragment>
         <svelte:fragment slot="actions">
