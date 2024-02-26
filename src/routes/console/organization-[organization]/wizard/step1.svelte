@@ -9,7 +9,7 @@
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">Project details</svelte:fragment>
+    <svelte:fragment slot="title">Details</svelte:fragment>
     <FormList>
         <InputText
             label="Name"
