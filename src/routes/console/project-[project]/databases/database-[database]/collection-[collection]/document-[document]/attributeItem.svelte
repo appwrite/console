@@ -60,7 +60,7 @@
     {:else}
         <ul class="u-grid u-gap-4">
             {#each [...formValues[attribute.key].keys()] as index}
-                <li class="form-item is-multiple">
+                <li class="form-item is-multiple u-gap-8">
                     <div class="form-item-part u-stretch">
                         <Attribute
                             {attribute}
