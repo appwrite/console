@@ -5,9 +5,10 @@
     import Code from '$lib/components/code.svelte';
     import Modal from '$lib/components/modal.svelte';
     import Button from '$lib/elements/forms/button.svelte';
+    import {type Models} from '@appwrite.io/console';
 
     export let show: boolean;
-    export let webhook: { [key: string]: any };
+    export let webhook: Models.Webhook;
 
     const projectId = $page.params.project;
     const webhookPath = `${base}/console/project-${projectId}/settings/webhooks/${webhook.$id}`;
