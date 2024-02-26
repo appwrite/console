@@ -29,8 +29,7 @@
 </script>
 
 <WizardStep>
-    <!-- @vincentge - What about this? -->
-    <svelte:fragment slot="title">Get the SDK</svelte:fragment>
+    <svelte:fragment slot="title">Install</svelte:fragment>
     <div class="u-flex u-gap-16 u-margin-block-start-8">
         <Pill button on:click={() => (method = Method.Xcode)} selected={method === Method.Xcode}>
             Xcode

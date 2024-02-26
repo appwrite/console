@@ -6,8 +6,7 @@
 </script>
 
 <WizardStep>
-    <!-- @vincentge - What about this? -->
-    <svelte:fragment slot="title">Thanks for the feedback!</svelte:fragment>
+    <svelte:fragment slot="title">Thanks you</svelte:fragment>
 
     <div class="u-flex u-main-center">
         {#if $app.themeInUse === 'dark'}
