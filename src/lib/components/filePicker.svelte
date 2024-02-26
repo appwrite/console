@@ -267,13 +267,18 @@
                                                                 file.$id,
                                                                 360
                                                             )})`}
+                                                            on:click={() => selectFile(file)}
                                                             style:aspect-ratio="1/1"
                                                             class="card u-height-100-percent u-flex u-flex-vertical u-gap-16"
                                                             style="--card-padding:0.5rem; --card-border-radius:var(--border-radius-large);">
                                                             <input
                                                                 class="u-position-absolute is-small u-margin-block-start-2"
                                                                 type="radio"
-                                                                name="country" />
+                                                                name="file"
+                                                                value={file.$id}
+                                                                style:pointer-events="none"
+                                                                checked={selectedFile ===
+                                                                    file.$id} />
                                                         </label>
                                                     </li>
                                                 {/each}
