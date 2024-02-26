@@ -123,7 +123,7 @@
             </Alert>
             <InputTextarea
                 label="Body"
-                placeholder={`{ "myKey": "myValue" }`}
+                placeholder={`Hello, World!`}
                 id="body"
                 bind:value={body} />
         {:else}
@@ -214,7 +214,7 @@
 
                         <InputTextarea
                             label="Body"
-                            placeholder={`{ "myKey": "myValue" }`}
+                            placeholder={`Hello, World!`}
                             id="body"
                             bind:value={body} />
                     </FormList>
