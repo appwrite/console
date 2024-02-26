@@ -11,7 +11,9 @@
     export let webhook: Models.Webhook;
 
     const projectId = $page.params.project;
-    const webhookPath = `${base}/console/project-${projectId}/settings/webhooks/${webhook.$id}`;
+    const webhookPath = webhook
+        ? `${base}/console/project-${projectId}/settings/webhooks/` + (webhook['$id'] ?? '')
+        : '';
 </script>
 
 <Modal title="Webhook error" headerDivider={false} bind:show size="big">

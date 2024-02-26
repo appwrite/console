@@ -41,8 +41,6 @@
     const projectId = $page.params.project;
 
     $: $updateCommandGroupRanks({ webhooks: 20, domains: 10 });
-
-    console.log(data.webhooks);
 </script>
 
 <svelte:head>
@@ -101,7 +99,6 @@
                                                 link
                                                 on:click={(e) => {
                                                     e.preventDefault();
-                                                    console.log(webhook);
                                                     selectedWebhook = webhook;
                                                     showFailed = true;
                                                 }}>Details</Button>
