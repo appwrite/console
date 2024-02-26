@@ -45,6 +45,7 @@
     import { sdk } from '$lib/stores/sdk';
     import PushPhone from '../pushPhone.svelte';
     import { onMount } from 'svelte';
+    import InputFilePicker from '$lib/elements/forms/inputFilePicker.svelte';
 
     let showCustomId = false;
     let showTest = false;
@@ -148,11 +149,17 @@
             </Modal>
         </div>
         <form class="form">
-            <FormItem>
-                <Label
-                    tooltip="A key/value payload of additional metadata that's hidden from users. Use this to include information to support logic such as redirection and routing."
-                    >Custom data <span class="u-color-text-gray">(Optional)</span></Label>
-            </FormItem>
+            <FormList>
+                <FormItem>
+                    <InputFilePicker label="Media" />
+                </FormItem>
+                <FormItem>
+                    <Label
+                        tooltip="A key/value payload of additional metadata that's hidden from users. Use this to include information to support logic such as redirection and routing."
+                        >Custom data <span class="u-color-text-gray">(Optional)</span></Label>
+                </FormItem>
+            </FormList>
+
             <div class=" u-grid u-gap-8">
                 <ul class="form-list" style="--p-form-list-gap: 1rem">
                     {#each customData || [] as _, rowIndex}

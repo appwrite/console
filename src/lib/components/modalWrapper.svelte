@@ -90,11 +90,10 @@
         block-size: 100%;
         min-block-size: 80vh;
 
-        @media #{$break2} {
+        @media #{$break1}, #{$break2} {
             min-inline-size: 100%;
             min-block-size: 100%;
             border-radius: 0;
         }
     }
-
 </style>

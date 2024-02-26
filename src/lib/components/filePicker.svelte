@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Id, ModalWrapper } from '.';
+    import { EmptySearch, Id, ModalWrapper, Trim } from '.';
     import { Button, Form } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
     import { ID, Query } from '@appwrite.io/console';
@@ -20,6 +20,7 @@
     import FormList from '$lib/elements/forms/formList.svelte';
     import { writable } from 'svelte/store';
     import { onMount } from 'svelte';
+    import Heading from './heading.svelte';
 
     export let show: boolean;
     export let selectedBucket: string = null;
@@ -29,19 +30,20 @@
     let search = writable('');
     let fileSelector: HTMLInputElement;
     let uploading = false;
+    let view: 'grid' | 'list' = 'list';
 
     onMount(() => {
         selectedBucket = currentBucket?.$id;
-    })
+    });
 
     function submitForm() {
         onSelect(currentFile);
         closeModal();
     }
 
-    function getPreview(bucketId: string, fileId: string) {
+    function getPreview(bucketId: string, fileId: string, size: number = 64) {
         return (
-            sdk.forProject.storage.getFilePreview(bucketId, fileId, 64, 64).toString() +
+            sdk.forProject.storage.getFilePreview(bucketId, fileId, size, size).toString() +
             '&mode=admin'
         );
     }
@@ -96,10 +98,7 @@
         currentBucket &&
         sdk.forProject.storage.listFiles(
             currentBucket.$id,
-            [
-                Query.startsWith('mimeType', 'image/'),
-                Query.orderDesc('$createdAt')
-            ],
+            [Query.startsWith('mimeType', 'image/'), Query.orderDesc('$createdAt')],
             $search || undefined
         );
 
@@ -107,9 +106,7 @@
         selectedBucket = currentBucket?.$id;
         resetFile();
     }
-    $: if (!show) {
-        closeModal();
-    }
+
     $: if ($search) {
         resetFile();
     }
@@ -121,6 +118,7 @@
             <div class="u-flex u-main-space-between u-cross-center u-gap-16">
                 <h4 class="modal-title heading-level-5">Select file</h4>
                 <button
+                    type="button"
                     on:click={closeModal}
                     class="button is-text is-small is-only-icon"
                     aria-label="Close modal">
@@ -149,6 +147,7 @@
                                 {@const isSelected = bucket.$id === selectedBucket}
                                 <li class="drop-list-item">
                                     <button
+                                        type="button"
                                         class="drop-button"
                                         class:is-selected={isSelected}
                                         on:click={() => (currentBucket = bucket)}>
@@ -191,13 +190,19 @@
                             </div>
                             <div
                                 class="u-flex u-main-space-between u-gap-16 u-flex-vertical-mobile">
-                                <InputSearch bind:value={$search} />
+                                <InputSearch
+                                    placeholder="Search files"
+                                    bind:value={$search}
+                                    style="min-inline-size: 17.5rem" />
                                 <div class="u-flex u-gap-16">
                                     <div class="toggle-button">
                                         <ul class="toggle-button-list">
                                             <li class="toggle-button-item">
                                                 <button
+                                                    on:click={() => (view = 'list')}
+                                                    type="button"
                                                     class="toggle-button-element"
+                                                    class:is-selected={view === 'list'}
                                                     aria-label="List View">
                                                     <span
                                                         class="icon-view-list"
@@ -206,7 +211,10 @@
                                             </li>
                                             <li class="toggle-button-item">
                                                 <button
-                                                    class="toggle-button-element is-selected"
+                                                    on:click={() => (view = 'grid')}
+                                                    type="button"
+                                                    class="toggle-button-element"
+                                                    class:is-selected={view === 'grid'}
                                                     aria-label="Grid View">
                                                     <span
                                                         class="icon-view-grid"
@@ -233,68 +241,139 @@
                             </div>
                         </header>
                         <div class="u-flex-vertical u-stretch">
-                            <TableScroll noMargin transparent dense>
-                                <TableHeader>
-                                    <TableCellHead>Filename</TableCellHead>
-                                    <TableCellHead width={140} onlyDesktop>Type</TableCellHead>
-                                    <TableCellHead width={100} onlyDesktop>Size</TableCellHead>
-                                    <TableCellHead width={120} onlyDesktop>Created</TableCellHead>
-                                </TableHeader>
-                                {#if files}
-                                    {#await files}
-                                        <div
-                                            class="u-position-absolute u-width-full-line u-flex u-flex-vertical u-main-center u-cross-center u-gap-16 u-margin-block-start-32"
-                                            style="inset-inline-start: 0;">
-                                            <div class="loader" />
-                                            <p class="text">Loading files...</p>
-                                        </div>
-                                    {:then response}
-                                        <TableBody>
-                                            {#each response.files as file}
-                                                <TableRowButton on:click={() => selectFile(file)}>
-                                                    <TableCell title="Filename">
-                                                        <div
-                                                            class="u-inline-flex u-cross-center u-gap-12">
+                            {#if files}
+                                {#await files}
+                                    <div
+                                        class="u-position-absolute u-width-full-line u-flex u-flex-vertical u-main-center u-cross-center u-gap-16 u-margin-block-start-32"
+                                        style="inset-inline-start: 0;">
+                                        <div class="loader" />
+                                        <p class="text">Loading files...</p>
+                                    </div>
+                                {:then response}
+                                    {#if response.files?.length}
+                                        {#if view === 'grid'}
+                                            <ul
+                                                class="grid-box"
+                                                style="--grid-gap:2rem; --grid-item-size:10rem; --grid-item-size-small-screens:8rem;">
+                                                {#each response.files as file}
+                                                    <li>
+                                                        <label
+                                                            style:background-image={`url(${getPreview(
+                                                                currentBucket.$id,
+                                                                file.$id,
+                                                                360
+                                                            )})`}
+                                                            style:aspect-ratio="1/1"
+                                                            class="card u-height-100-percent u-flex u-flex-vertical u-gap-16"
+                                                            style="--card-padding:0.5rem; --card-border-radius:var(--border-radius-large);">
                                                             <input
+                                                                class="u-position-absolute is-small u-margin-block-start-2"
                                                                 type="radio"
-                                                                name="file"
-                                                                value={file.$id}
-                                                                style:pointer-events="none"
-                                                                checked={selectedFile ===
-                                                                    file.$id} />
-                                                            <span class="image">
-                                                                <img
-                                                                    class="avatar"
-                                                                    style:border-radius="var(--border-radius-xsmall)"
-                                                                    width="28"
-                                                                    height="28"
-                                                                    src={getPreview(
-                                                                        currentBucket.$id,
-                                                                        file.$id
-                                                                    )}
-                                                                    alt={file.name} />
-                                                            </span>
-                                                            <span class="text u-trim"
-                                                                >{file.name}</span>
-                                                        </div>
-                                                    </TableCell>
-                                                    <TableCellText title="Type" onlyDesktop>
-                                                        {file.mimeType}
-                                                    </TableCellText>
-                                                    <TableCellText title="Size" onlyDesktop>
-                                                        {calculateSize(file.sizeOriginal)}
-                                                    </TableCellText>
-                                                    <TableCellText title="Created" onlyDesktop>
-                                                        {toLocaleDate(file.$createdAt)}
-                                                    </TableCellText>
-                                                </TableRowButton>
-                                            {:else}
-                                                <p>No files found within this bucket</p>
-                                            {/each}
-                                        </TableBody>
-                                    {/await}
-                                {/if}
-                            </TableScroll>
+                                                                name="country" />
+                                                        </label>
+                                                    </li>
+                                                {/each}
+                                            </ul>
+                                        {/if}
+                                        {#if view === 'list'}
+                                            <TableScroll noMargin transparent dense>
+                                                <TableHeader>
+                                                    <TableCellHead>Filename</TableCellHead>
+                                                    <TableCellHead width={140} onlyDesktop
+                                                        >Type</TableCellHead>
+                                                    <TableCellHead width={100} onlyDesktop
+                                                        >Size</TableCellHead>
+                                                    <TableCellHead width={120} onlyDesktop
+                                                        >Created</TableCellHead>
+                                                </TableHeader>
+                                                <TableBody>
+                                                    {#each response.files as file}
+                                                        <TableRowButton
+                                                            on:click={() => selectFile(file)}>
+                                                            <TableCell title="Filename">
+                                                                <div
+                                                                    class="u-inline-flex u-cross-center u-gap-12">
+                                                                    <input
+                                                                        type="radio"
+                                                                        name="file"
+                                                                        value={file.$id}
+                                                                        style:pointer-events="none"
+                                                                        checked={selectedFile ===
+                                                                            file.$id} />
+                                                                    <span class="image">
+                                                                        <img
+                                                                            class="avatar"
+                                                                            style:border-radius="var(--border-radius-xsmall)"
+                                                                            width="28"
+                                                                            height="28"
+                                                                            src={getPreview(
+                                                                                currentBucket.$id,
+                                                                                file.$id
+                                                                            )}
+                                                                            alt={file.name} />
+                                                                    </span>
+                                                                    <Trim>
+                                                                        {file.name}
+                                                                    </Trim>
+                                                                </div>
+                                                            </TableCell>
+                                                            <TableCellText title="Type" onlyDesktop>
+                                                                {file.mimeType}
+                                                            </TableCellText>
+                                                            <TableCellText title="Size" onlyDesktop>
+                                                                {calculateSize(file.sizeOriginal)}
+                                                            </TableCellText>
+                                                            <TableCellText
+                                                                title="Created"
+                                                                onlyDesktop>
+                                                                {toLocaleDate(file.$createdAt)}
+                                                            </TableCellText>
+                                                        </TableRowButton>
+                                                    {/each}
+                                                </TableBody>
+                                            </TableScroll>
+                                        {/if}
+                                    {:else if $search}
+                                        <EmptySearch hidePages hidePagination>
+                                            <div class="common-section">
+                                                <div class="u-text-center common-section">
+                                                    <b class="body-text-2 u-bold"
+                                                        >Sorry we couldn't find "{$search}"</b>
+                                                    <p>
+                                                        There are no files that match your search.
+                                                    </p>
+                                                </div>
+                                                <div
+                                                    class="u-flex u-gap-16 common-section u-main-center">
+                                                    <Button
+                                                        secondary
+                                                        on:click={() => ($search = '')}
+                                                        >Clear search</Button>
+                                                </div>
+                                            </div>
+                                        </EmptySearch>
+                                    {:else}
+                                        <EmptySearch hidePages hidePagination>
+                                            <div class="common-section">
+                                                <div class="u-text-center common-section">
+                                                    <Heading size="7" tag="h2" trimmed={false}>
+                                                        No files found within this bucket.
+                                                    </Heading>
+                                                    <p class="text u-line-height-1-5">
+                                                        Need a hand? Learn more in our <a
+                                                            class="link"
+                                                            href="https://appwrite.io/docs/products/storage"
+                                                            target="_blank"
+                                                            rel="noopener noreferrer">
+                                                            documentation</a
+                                                        >.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </EmptySearch>
+                                    {/if}
+                                {/await}
+                            {/if}
                         </div>
                     {/if}
                 </article>
