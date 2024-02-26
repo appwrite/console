@@ -3,7 +3,7 @@
     import { trackEvent, Submit, trackError } from '$lib/actions/analytics';
     import { CardGrid, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, Form, FormList, InputText, InputTextarea } from '$lib/elements/forms';
+    import { Button, Form, FormList, InputSwitch, InputText, InputTextarea } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { MessageStatus, type Models } from '@appwrite.io/console';
@@ -13,11 +13,13 @@
 
     let subject = '';
     let content = '';
+    let html = false;
     let disabled = true;
 
     onMount(() => {
         subject = message.data.subject;
         content = message.data.content;
+        html = (message.data['html'] ?? false) as boolean;
     });
 
     async function update() {
@@ -28,7 +30,9 @@
                 undefined,
                 undefined,
                 subject,
-                content
+                content,
+                undefined,
+                html
             );
             await invalidate(Dependencies.MESSAGING_MESSAGE);
             addNotification({
@@ -45,7 +49,7 @@
         }
     }
 
-    $: disabled = subject === message.data.subject && content === message.data.content;
+    $: disabled = subject === message.data.subject && content === message.data.content && html === (message.data['html'] ?? false) as boolean;
 </script>
 
 <Form onSubmit={update}>
@@ -65,6 +69,11 @@
                     label="Message"
                     disabled={message.status != MessageStatus.Draft}
                     bind:value={content}></InputTextarea>
+                <InputSwitch label="HTML mode" id="html" bind:value={html}>
+                    <svelte:fragment slot="description">
+                        Enable the HTML mode if your message contains HTML tags.
+                    </svelte:fragment>
+                </InputSwitch>
             </FormList>
         </svelte:fragment>
         <svelte:fragment slot="actions">
