@@ -44,6 +44,7 @@
 
 <WizardStep {beforeSubmit}>
     <svelte:fragment slot="title">
+        <!-- @vincentge - What about this? -->
         {hasProjects ? 'Select project' : 'Create project'}
     </svelte:fragment>
 

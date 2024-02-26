@@ -6,6 +6,7 @@
 </script>
 
 <WizardStep>
+    <!-- @vincentge - What about this? -->
     <svelte:fragment slot="title">Thanks for the feedback!</svelte:fragment>
 
     <div class="u-flex u-main-center">

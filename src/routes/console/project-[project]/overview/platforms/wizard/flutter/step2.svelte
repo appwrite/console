@@ -9,6 +9,7 @@
 </script>
 
 <WizardStep>
+    <!-- @vincentge - What about this? -->
     <svelte:fragment slot="title">Get the SDK</svelte:fragment>
 
     <p>

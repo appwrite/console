@@ -149,16 +149,16 @@
 
     $: registee = {
         [PlatformType.Flutterandroid]: 'package name',
-        [PlatformType.Flutterios]: 'bundle ID',
-        [PlatformType.Flutterlinux]: 'package name',
-        [PlatformType.Fluttermacos]: 'bundle ID',
-        [PlatformType.Flutterwindows]: 'package name',
-        [PlatformType.Flutterweb]: 'hostname'
+        [PlatformType.Flutterios]: 'Bundle ID',
+        [PlatformType.Flutterlinux]: 'Package name',
+        [PlatformType.Fluttermacos]: 'Bundle ID',
+        [PlatformType.Flutterwindows]: 'Package name',
+        [PlatformType.Flutterweb]: 'Hostname'
     }[platform];
 </script>
 
 <WizardStep {beforeSubmit}>
-    <svelte:fragment slot="title">Register your {registee}</svelte:fragment>
+    <svelte:fragment slot="title">{registee} registration</svelte:fragment>
     <svelte:fragment slot="subtitle">
         <div class="u-flex u-gap-16 u-margin-block-start-8 u-flex-wrap">
             <Pill

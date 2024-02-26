@@ -6,6 +6,7 @@
 </script>
 
 <WizardStep>
+    <!-- @vincentge - What about this? -->
     <svelte:fragment slot="title">You're ready to go 🎉</svelte:fragment>
     <p>
         {#if isFirstProject}

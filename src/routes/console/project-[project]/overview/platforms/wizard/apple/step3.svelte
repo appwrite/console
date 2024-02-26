@@ -17,6 +17,7 @@ let client = Client()
 </script>
 
 <WizardStep>
+    <!-- @vincentge - What about this? -->
     <svelte:fragment slot="title">Initialize SDK</svelte:fragment>
 
     <h2 class="heading-level-7">Initialize your SDK</h2>
