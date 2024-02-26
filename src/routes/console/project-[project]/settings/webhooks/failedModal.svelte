@@ -7,7 +7,7 @@
     import Button from '$lib/elements/forms/button.svelte';
 
     export let show: boolean;
-    export let webhook: { [key: string | number]: string | number | boolean };
+    export let webhook: { [key: string ]: any };
 
     const projectId = $page.params.project;
     const webhookPath = `${base}/console/project-${projectId}/settings/webhooks/${webhook.$id}`;
