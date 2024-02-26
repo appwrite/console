@@ -44,7 +44,6 @@
         $messageParams[$providerType].status = MessageStatus.Processing;
         if (when === 'later') {
             $messageParams[$providerType].status = 'scheduled' as MessageStatus;
-            $messageParams[$providerType].scheduledAt = dateTime.toISOString();
         }
     }
 
@@ -61,6 +60,9 @@
             ? new Date(now.getTime() - timeZoneOffset).toISOString().split('T')[1].substring(0, 5)
             : '00:00';
     $: dateTime = new Date(`${date}T${time}`);
+    $: if (!isNaN(dateTime.getTime())) {
+        $messageParams[$providerType].scheduledAt = dateTime.toISOString();
+    }
 </script>
 
 <WizardStep {beforeSubmit}>
