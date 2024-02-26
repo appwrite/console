@@ -9,6 +9,7 @@
         InputText,
         InputTextarea
     } from '$lib/elements/forms';
+
     import { Pill } from '$lib/elements';
     import { CustomId, Modal } from '$lib/components';
     import { user } from '$lib/stores/user';
@@ -16,9 +17,13 @@
     import { ID, MessageStatus, MessagingProviderType } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
 
+    import { page } from '$app/stores';
+    import Alert from '$lib/components/alert.svelte';
+
     let showCustomId = false;
     let showTest = false;
     let selected = 'self';
+
     let otherEmail = '';
 
     async function sendTestEmail() {
@@ -43,7 +48,25 @@
     }
 
     $: otherEmail = selected === 'self' ? '' : otherEmail;
+
+    const providers = () => {
+        return $page.data.providers.providers.filter(
+            (provider) => provider.type === MessagingProviderType.Email
+        );
+    };
 </script>
+
+{#if providers().length === 0}
+    <div style="margin-bottom:1.4rem">
+        <Alert type="warning">
+            <span slot="title">Enable a third-party provider</span>
+            <p>
+                All providers are currently disabled. Enable a third-party provider for sending
+                emails.
+            </p>
+        </Alert>
+    </div>
+{/if}
 
 <FormList>
     <InputText
@@ -61,8 +84,8 @@
         </InputTextarea>
         <!-- TODO: Add support for draft messages -->
         <!-- <div class="u-flex u-main-end">
-            <Button text on:click={() => (showTest = true)}>Send test message</Button>
-        </div> -->
+          <Button text on:click={() => (showTest = true)}>Send test message</Button>
+      </div> -->
         <Modal title="Send test message" bind:show={showTest} onSubmit={sendTestEmail} size="big">
             <slot />
             <InputRadio
