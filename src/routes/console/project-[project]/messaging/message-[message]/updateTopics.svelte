@@ -81,22 +81,22 @@
     <CardGrid>
         <Heading tag="h6" size="7" id="variables">Topics</Heading>
         <svelte:fragment slot="aside">
-            <div class="u-flex u-cross-center u-main-space-between">
-                <div>
-                    <span class="eyebrow-heading-3">Topic</span>
-                </div>
-                <Button
-                    text
-                    noMargin
-                    on:click={() => {
-                        showTopics = true;
-                    }}>
-                    <span class="icon-plus" aria-hidden="true" />
-                    <span class="text">Add</span>
-                </Button>
-            </div>
             {@const sum = topicIds.length}
             {#if sum}
+                <div class="u-flex u-cross-center u-main-space-between">
+                    <div>
+                        <span class="eyebrow-heading-3">Topic</span>
+                    </div>
+                    <Button
+                        text
+                        noMargin
+                        on:click={() => {
+                            showTopics = true;
+                        }}>
+                        <span class="icon-plus" aria-hidden="true" />
+                        <span class="text">Add</span>
+                    </Button>
+                </div>
                 <div class="u-flex u-flex-vertical u-gap-24">
                     <Table noMargin noStyles>
                         <TableHeader>
