@@ -58,7 +58,7 @@
             </Button>
         </div>
     {:else}
-        <ul class="u-grid u-gap-8">
+        <ul class="u-grid u-gap-4">
             {#each [...formValues[attribute.key].keys()] as index}
                 <li class="form-item is-multiple">
                     <div class="form-item-part u-stretch">
