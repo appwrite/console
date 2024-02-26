@@ -49,7 +49,7 @@
     <div
         role="region"
         class="box is-no-shadow u-padding-24"
-        style="--box-border-radius:var(--border-radius-xsmall); z-index: 1">
+        style:--box-border-radius="var(--border-radius-xsmall)">
         <div class="upload-file-box">
             <div class="upload-file-box-image">
                 <span class="icon-upload" aria-hidden="true" />

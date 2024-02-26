@@ -225,6 +225,7 @@
                                     </div>
 
                                     <button
+                                        type="button"
                                         on:click={() => fileSelector.click()}
                                         disabled={uploading}
                                         class="button is-secondary is-full-width-in-stack-mobile">
@@ -240,16 +241,19 @@
                                 </div>
                             </div>
                         </header>
-                        <div class="u-flex-vertical u-stretch">
-                            {#if files}
-                                {#await files}
+                        {#if files}
+                            {#await files}
+                                <div
+                                    class="u-flex-vertical u-stretch u-position-relative u-main-center">
                                     <div
                                         class="u-position-absolute u-width-full-line u-flex u-flex-vertical u-main-center u-cross-center u-gap-16 u-margin-block-start-32"
                                         style="inset-inline-start: 0;">
                                         <div class="loader" />
                                         <p class="text">Loading files...</p>
                                     </div>
-                                {:then response}
+                                </div>
+                            {:then response}
+                                <div class="u-flex-vertical u-stretch">
                                     {#if response.files?.length}
                                         {#if view === 'grid'}
                                             <ul
@@ -372,9 +376,9 @@
                                             </div>
                                         </EmptySearch>
                                     {/if}
-                                {/await}
-                            {/if}
-                        </div>
+                                </div>
+                            {/await}
+                        {/if}
                     {/if}
                 </article>
             </div>
