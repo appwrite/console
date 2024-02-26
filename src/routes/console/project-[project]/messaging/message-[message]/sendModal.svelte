@@ -9,18 +9,17 @@
     import { Dependencies } from '$lib/constants';
 
     export let show = false;
-    export let messageType: MessagingProviderType;
     export let message: Models.Message & { data: Record<string, unknown> };
     export let topics: Models.Topic[];
 
     let totalTargets = message.targets?.length ?? 0;
 
     for (const topic of topics) {
-        if (messageType == MessagingProviderType.Push) {
+        if (message.providerType == MessagingProviderType.Push) {
             totalTargets = totalTargets + topic.pushTotal;
-        } else if (messageType == MessagingProviderType.Email) {
+        } else if (message.providerType == MessagingProviderType.Email) {
             totalTargets = totalTargets + topic.emailTotal;
-        } else if (messageType == MessagingProviderType.Sms) {
+        } else if (message.providerType == MessagingProviderType.Sms) {
             totalTargets = totalTargets + topic.smsTotal;
         }
     }
@@ -28,7 +27,7 @@
     const update = async () => {
         const status = MessageStatus.Processing;
         try {
-            if (messageType == MessagingProviderType.Email) {
+            if (message.providerType == MessagingProviderType.Email) {
                 await sdk.forProject.messaging.updateEmail(
                     message.$id,
                     undefined,
@@ -38,7 +37,7 @@
                     undefined,
                     status
                 );
-            } else if (messageType == MessagingProviderType.Sms) {
+            } else if (message.providerType == MessagingProviderType.Sms) {
                 await sdk.forProject.messaging.updateSms(
                     message.$id,
                     undefined,
@@ -47,7 +46,7 @@
                     undefined,
                     status
                 );
-            } else if (messageType == MessagingProviderType.Push) {
+            } else if (message.providerType == MessagingProviderType.Push) {
                 await sdk.forProject.messaging.updatePush(
                     message.$id,
                     undefined,
@@ -72,7 +71,7 @@
                 type: 'success'
             });
             trackEvent(Submit.MessagingMessageUpdate, {
-                providerType: messageType,
+                providerType: message.providerType,
                 status
             });
             show = false;

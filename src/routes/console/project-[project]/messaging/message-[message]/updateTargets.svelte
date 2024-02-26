@@ -18,12 +18,12 @@
     import { addNotification } from '$lib/stores/notifications';
     import { Button, Form } from '$lib/elements/forms';
     import UserTargetsModal from '../userTargetsModal.svelte';
+    import { isValueOfStringEnum } from '$lib/helpers/types';
 
-    export let messageId: string;
-    export let messageType: MessagingProviderType;
-    export let messageStatus: string;
+    export let message: Models.Message & { data: Record<string, unknown> };
     export let selectedTargetsById: Record<string, Models.Target>;
 
+    let providerType: MessagingProviderType;
     let offset = 0;
     const limit = 10;
     let showTargets = false;
@@ -31,6 +31,10 @@
     let targetIds: string[] = [];
     let targets: Models.Target[] = [];
     let disabled = true;
+
+    if (isValueOfStringEnum(MessagingProviderType, message.providerType)) {
+        providerType = message.providerType;
+    }
 
     onMount(() => {
         targetsById = { ...selectedTargetsById };
@@ -43,23 +47,23 @@
 
     async function update() {
         try {
-            if (messageType == MessagingProviderType.Email) {
+            if (message.providerType == MessagingProviderType.Email) {
                 await sdk.forProject.messaging.updateEmail(
-                    messageId,
+                    message.$id,
                     undefined,
                     undefined,
                     targetIds
                 );
-            } else if (messageType == MessagingProviderType.Sms) {
+            } else if (message.providerType == MessagingProviderType.Sms) {
                 await sdk.forProject.messaging.updateSms(
-                    messageId,
+                    message.$id,
                     undefined,
                     undefined,
                     targetIds
                 );
-            } else if (messageType == MessagingProviderType.Push) {
+            } else if (message.providerType == MessagingProviderType.Push) {
                 await sdk.forProject.messaging.updatePush(
-                    messageId,
+                    message.$id,
                     undefined,
                     undefined,
                     targetIds
@@ -159,7 +163,7 @@
                         <PaginationInline {sum} {limit} bind:offset />
                     </div>
                 </div>
-            {:else if messageStatus == MessageStatus.Draft}
+            {:else if message.status == MessageStatus.Draft}
                 <Empty on:click={() => (showTargets = true)}>Add a target</Empty>
             {:else}
                 <EmptySearch hidePagination>
@@ -186,7 +190,7 @@
 
 <UserTargetsModal
     title="Select targets"
-    providerType={messageType}
+    {providerType}
     bind:show={showTargets}
     {targetsById}
     on:update={(e) => {

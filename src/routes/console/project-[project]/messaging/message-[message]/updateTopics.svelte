@@ -19,12 +19,12 @@
     import { Form, Button } from '$lib/elements/forms';
     import { onMount } from 'svelte';
     import { getTotal } from '../wizard/store';
+    import { isValueOfStringEnum } from '$lib/helpers/types';
 
-    export let messageId: string;
-    export let messageType: MessagingProviderType;
-    export let messageStatus: string;
+    export let message: Models.Message;
     export let selectedTopicsById: Record<string, Models.Topic>;
 
+    let providerType: MessagingProviderType;
     let offset = 0;
     const limit = 10;
     let showTopics = false;
@@ -32,6 +32,10 @@
     let topicIds: string[] = [];
     let topics: Models.Topic[] = [];
     let disabled = true;
+
+    if (isValueOfStringEnum(MessagingProviderType, message.providerType)) {
+        providerType = message.providerType;
+    }
 
     onMount(() => {
         topicsById = { ...selectedTopicsById };
@@ -44,12 +48,12 @@
 
     async function update() {
         try {
-            if (messageType == MessagingProviderType.Email) {
-                await sdk.forProject.messaging.updateEmail(messageId, topicIds);
-            } else if (messageType == MessagingProviderType.Sms) {
-                await sdk.forProject.messaging.updateSms(messageId, topicIds);
-            } else if (messageType == MessagingProviderType.Push) {
-                await sdk.forProject.messaging.updatePush(messageId, topicIds);
+            if (message.providerType == MessagingProviderType.Email) {
+                await sdk.forProject.messaging.updateEmail(message.$id, topicIds);
+            } else if (message.providerType == MessagingProviderType.Sms) {
+                await sdk.forProject.messaging.updateSms(message.$id, topicIds);
+            } else if (message.providerType == MessagingProviderType.Push) {
+                await sdk.forProject.messaging.updatePush(message.$id, topicIds);
             }
             await invalidate(Dependencies.MESSAGING_MESSAGE);
             addNotification({
@@ -142,7 +146,7 @@
                         <PaginationInline {sum} {limit} bind:offset />
                     </div>
                 </div>
-            {:else if messageStatus == MessageStatus.Draft}
+            {:else if message.status == MessageStatus.Draft}
                 <Empty on:click={() => (showTopics = true)}>Add a topic</Empty>
             {:else}
                 <EmptySearch hidePagination>
@@ -168,7 +172,7 @@
 </Form>
 
 <TopicsModal
-    providerType={messageType}
+    {providerType}
     bind:show={showTopics}
     {topicsById}
     on:update={(e) => {

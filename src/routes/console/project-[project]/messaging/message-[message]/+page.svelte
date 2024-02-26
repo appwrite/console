@@ -24,7 +24,7 @@
 </script>
 
 <Container>
-    <Overview messageType={$providerType} topics={Object.values(data.topicsById)} />
+    <Overview message={$message} topics={Object.values(data.topicsById)} />
     {#if $message.providerType === MessagingProviderType.Email}
         <EmailMessage message={$message} />
     {:else if $message.providerType === MessagingProviderType.Sms}
@@ -32,16 +32,8 @@
     {:else if $message.providerType === MessagingProviderType.Push}
         <PushMessage message={$message} />
     {/if}
-    <UpdateTopics
-        messageId={$message.$id}
-        messageType={$providerType}
-        messageStatus={$message.status}
-        selectedTopicsById={data.topicsById} />
-    <UpdateTargets
-        messageId={$message.$id}
-        messageType={$providerType}
-        messageStatus={$message.status}
-        selectedTargetsById={data.targetsById} />
+    <UpdateTopics message={$message} selectedTopicsById={data.topicsById} />
+    <UpdateTargets message={$message} selectedTargetsById={data.targetsById} />
     {#if $message.status !== MessageStatus.Processing}
         <Delete message={$message} />
     {/if}
