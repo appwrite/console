@@ -10,8 +10,7 @@
 </script>
 
 <WizardStep>
-    <!-- @vincentge - What about this? -->
-    <svelte:fragment slot="title">Get the SDK</svelte:fragment>
+    <svelte:fragment slot="title">Install</svelte:fragment>
     <p>First, add this to your root level <code class="inline-code">build.gradle</code> file.</p>
     <Code label="Groovy" labelIcon="android" language="kotlin" code={example1} withCopy />
     <p class="common-section">And add this to your project's build.gradle file.</p>

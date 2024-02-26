@@ -21,7 +21,6 @@
 </script>
 
 <WizardStep>
-    <!-- @vincentge - What about this? -->
     <svelte:fragment slot="title">How can we help you?</svelte:fragment>
     <svelte:fragment slot="subtitle">
         Please describe your request in detail. If applicable, include steps for reproduction of any
