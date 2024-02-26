@@ -167,7 +167,8 @@ export const providers: ProvidersMap = {
                         label: 'Sandbox',
                         name: 'sandbox',
                         type: 'switch',
-                        description: 'Use the development APNS server.'
+                        description:
+                            'Enable sandbox mode for testing on apps signed with development provisioning profiles. <a class="link" href="https://appwrite.io/docs/products/messaging/apns#configure-provider" target="_blank" rel="noopener noreferrer">Learn more</a>.'
                     }
                 ]
             }
