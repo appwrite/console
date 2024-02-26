@@ -229,8 +229,7 @@
                                         secondary
                                         class="is-full-width-in-stack-mobile"
                                         disabled={uploading}
-                                        on:click={() => fileSelector.click()}
-                                        on:keyup={clickOnEnter} />
+                                        on:click={() => fileSelector.click()}>
                                         <input
                                             tabindex="-1"
                                             type="file"
