@@ -89,7 +89,7 @@
                                                 {topic.name}
                                             </span>
                                             <span class="collapsible-button-optional">
-                                                ({getTotal(topic)} subscribers)
+                                                ({getTotal(topic)} targets)
                                             </span>
                                         </span></span>
                                 </div>
