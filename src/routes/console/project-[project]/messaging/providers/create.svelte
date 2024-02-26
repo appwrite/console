@@ -156,7 +156,7 @@
 
     const stepsComponents: WizardStepsType = new Map();
     stepsComponents.set(1, {
-        label: 'Proivder',
+        label: 'Provider',
         component: Provider
     });
     stepsComponents.set(2, {
