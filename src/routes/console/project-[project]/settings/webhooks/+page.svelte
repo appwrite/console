@@ -26,11 +26,16 @@
     import { wizard } from '$lib/stores/wizard';
     import type { PageData } from './$types';
     import { columns } from './store';
-    import Create from './createWebhook.svelte';
     import { updateCommandGroupRanks } from '$lib/commandCenter';
+    import Create from './createWebhook.svelte';
+    import FailedModal from './failedModal.svelte';
+    import MessageStatusPill from './messageStatusPill.svelte';
   
     export let data: PageData;
 
+    let showFailed = false;
+    let selectedWebhook = {};
+    
     function openWizard() {
         wizard.start(Create);
     }
@@ -94,6 +99,23 @@
                                   {/if}
                               </TableCellText>
 
+                            {:else if column.id === 'enabled'}
+                                <TableCellText title={column.title} width={column.width}>
+                                  <MessageStatusPill enabled={webhook.enabled} />
+
+                                  &nbsp; 
+                                  
+                                  {#if webhook.enabled === false && webhook.attempts > 0}
+                                      <Button link
+                                        on:click={(e) => {
+                                          e.preventDefault();
+                                          console.log(webhook);
+                                          selectedWebhook = webhook;
+                                          showFailed = true;
+                                      }}>Details</Button>
+
+                                    {/if}
+                                </TableCellText>
                             {:else}
                                 <TableCellText title={column.title} width={column.width}>
                                     {webhook[column.id]}
@@ -113,3 +135,7 @@
             on:click={openWizard} />
     {/if}
 </Container>
+
+<FailedModal 
+  bind:show={showFailed} 
+  bind:webhook={selectedWebhook}/>
