@@ -1,4 +1,4 @@
-import type { Client, Models, Query } from '@appwrite.io/console';
+import type { Client, Models } from '@appwrite.io/console';
 import type { Organization } from '../stores/organization';
 import type { PaymentMethod } from '@stripe/stripe-js';
 import type { Tier } from '$lib/stores/billing';
