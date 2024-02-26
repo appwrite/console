@@ -121,11 +121,7 @@
                     </Button>
                 </svelte:fragment>
             </Alert>
-            <InputTextarea
-                label="Body"
-                placeholder={`Hello, World!`}
-                id="body"
-                bind:value={body} />
+            <InputTextarea label="Body" placeholder={`Hello, World!`} id="body" bind:value={body} />
         {:else}
             <InputText label="Path" id="path" placeholder="/" bind:value={path} required />
 
