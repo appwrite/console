@@ -97,7 +97,7 @@
 
             <ClickableList>
                 <ClickableListItem
-                    href={`https://appwrite.io/docs/messaging/${$provider}`}
+                    href={`https://appwrite.io/docs/products/messaging/${$provider}`}
                     external>
                     <div class="u-flex u-cross-center u-main-space-between">
                         <div class="u-flex u-cross-center u-gap-16">
