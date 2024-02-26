@@ -5,7 +5,7 @@
     import Code from '$lib/components/code.svelte';
     import Modal from '$lib/components/modal.svelte';
     import Button from '$lib/elements/forms/button.svelte';
-    import {type Models} from '@appwrite.io/console';
+    import { type Models } from '@appwrite.io/console';
 
     export let show: boolean;
     export let webhook: Models.Webhook;
