@@ -14,7 +14,7 @@
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { MessageStatus, MessagingProviderType } from '@appwrite.io/console';
     import UpdateTopics from './updateTopics.svelte';
-    import Targets from './targets.svelte';
+    import UpdateTargets from './updateTargets.svelte';
     import { onMount } from 'svelte';
 
     export let data: PageData;
@@ -121,7 +121,10 @@
         messageId={$message.$id}
         messageType={$providerType}
         selectedTopicsById={data.topicsById} />
-    <Targets targets={Object.values(data.targetsById)} usersById={data.usersById} />
+    <UpdateTargets
+        messageId={$message.$id}
+        messageType={$providerType}
+        selectedTargetsById={data.targetsById} />
     {#if $message.status !== MessageStatus.Processing}
         <Delete message={$message} />
     {/if}
