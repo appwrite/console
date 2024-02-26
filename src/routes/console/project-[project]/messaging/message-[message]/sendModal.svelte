@@ -86,7 +86,7 @@
     };
 </script>
 
-<Modal title="Send message" bind:show onSubmit={update} headerDivider={false}>
+<Modal title="Send message" bind:show onSubmit={update} headerDivider={false} size="small">
     <div class="u-flex-vertical u-gap-16">
         <p data-private>
             You are about to send a message to an estimated <span class="u-bold"
