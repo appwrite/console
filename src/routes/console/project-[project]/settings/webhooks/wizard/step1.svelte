@@ -6,7 +6,7 @@
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">Webhook configuration</svelte:fragment>
+    <svelte:fragment slot="title">Configuration</svelte:fragment>
     <svelte:fragment slot="subtitle">
         Use webhooks to build integrations that subscribe to specific events on Appwrite. Appwrite
         will send an HTTP POST payload to the webhook's configured URL when one of the specified
