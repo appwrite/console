@@ -1,0 +1,66 @@
+<script lang="ts">
+    import { invalidate } from '$app/navigation';
+    import { trackEvent, Submit, trackError } from '$lib/actions/analytics';
+    import { CardGrid, Heading } from '$lib/components';
+    import { Dependencies } from '$lib/constants';
+    import { Button, Form, FormList, InputText, InputTextarea } from '$lib/elements/forms';
+    import { addNotification } from '$lib/stores/notifications';
+    import { sdk } from '$lib/stores/sdk';
+    import type { Models } from '@appwrite.io/console';
+    import { onMount } from 'svelte';
+
+    export let message: Models.Message & { data: Record<string, string> };
+
+    let subject = '';
+    let content = '';
+    let disabled = true;
+
+    onMount(() => {
+        subject = message.data.subject;
+        content = message.data.content;
+    });
+
+    async function update() {
+        try {
+            await sdk.forProject.messaging.updateEmail(
+                message.$id,
+                undefined,
+                undefined,
+                undefined,
+                subject,
+                content
+            );
+            await invalidate(Dependencies.MESSAGING_MESSAGE);
+            addNotification({
+                message: 'Message has been updated',
+                type: 'success'
+            });
+            trackEvent(Submit.MessagingMessageUpdate);
+        } catch (error) {
+            addNotification({
+                message: error.message,
+                type: 'error'
+            });
+            trackError(error, Submit.MessagingMessageUpdate);
+        }
+    }
+
+    $: disabled = subject === message.data.subject && content === message.data.content;
+</script>
+
+<Form onSubmit={update}>
+    <CardGrid>
+        <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16">
+            <Heading tag="h6" size="7">Message</Heading>
+        </div>
+        <svelte:fragment slot="aside">
+            <FormList>
+                <InputText id="subject" label="Subject" bind:value={subject}></InputText>
+                <InputTextarea id="message" label="Message" bind:value={content}></InputTextarea>
+            </FormList>
+        </svelte:fragment>
+        <svelte:fragment slot="actions">
+            <Button {disabled} submit>Update</Button>
+        </svelte:fragment>
+    </CardGrid>
+</Form>
