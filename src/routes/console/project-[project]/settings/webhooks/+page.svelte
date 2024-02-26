@@ -24,6 +24,7 @@
     import type { PageData } from './$types';
     import { columns } from './store';
     import { updateCommandGroupRanks } from '$lib/commandCenter';
+    import {type Models} from '@appwrite.io/console';
     import Create from './createWebhook.svelte';
     import FailedModal from './failedModal.svelte';
     import MessageStatusPill from './messageStatusPill.svelte';
@@ -31,7 +32,7 @@
     export let data: PageData;
 
     let showFailed = false;
-    let selectedWebhook = {};
+    let selectedWebhook:Models.Webhook
 
     function openWizard() {
         wizard.start(Create);
