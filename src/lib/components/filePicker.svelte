@@ -228,7 +228,7 @@
                                     <Button
                                         secondary
                                         class="is-full-width-in-stack-mobile"
-                                        disabled={uploading}>
+                                        disabled={uploading}
                                         on:click={() => fileSelector.click()}
                                         on:keyup={clickOnEnter} />
                                         <input
