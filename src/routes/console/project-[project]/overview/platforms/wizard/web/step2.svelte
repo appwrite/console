@@ -23,6 +23,7 @@
 </script>
 
 <WizardStep>
+    <!-- @vincentge - What about this? -->
     <svelte:fragment slot="title">Get the SDK</svelte:fragment>
     <svelte:fragment slot="subtitle">
         Choose your preferred method of installation

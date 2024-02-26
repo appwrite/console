@@ -34,7 +34,7 @@
 </script>
 
 <WizardStep beforeSubmit={createDomain}>
-    <svelte:fragment slot="title">Add function domain</svelte:fragment>
+    <svelte:fragment slot="title">Domain</svelte:fragment>
     <svelte:fragment slot="subtitle">
         Use your self-owned domain as the endpoint of your Appwrite API. <a
             href="https://appwrite.io/docs/advanced/platform/custom-domains"

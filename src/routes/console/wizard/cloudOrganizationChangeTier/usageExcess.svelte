@@ -7,8 +7,9 @@
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title"
-        >Your usage exceeds the limits of the {tierToPlan($organization.billingPlan).name} plan</svelte:fragment>
+    <svelte:fragment slot="title">
+        <!-- @vincentge - What about this? -->
+        Your usage exceeds the limits of the {tierToPlan($organization.billingPlan).name} plan</svelte:fragment>
     <svelte:fragment slot="subtitle">
         View the current usage for <b>{$organization.name}</b> and where you will exceed the limits of
         your new plan.
