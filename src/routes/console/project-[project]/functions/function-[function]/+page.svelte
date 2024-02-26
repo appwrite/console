@@ -30,6 +30,7 @@
     import { app } from '$lib/stores/app';
     import { calculateSize, humanFileSize } from '$lib/helpers/sizeConvertion';
     import type { Models } from '@appwrite.io/console';
+    import Cancel from './cancel.svelte';
     import Delete from './delete.svelte';
     import Create from './create.svelte';
     import Activate from './activate.svelte';
@@ -48,6 +49,7 @@
     let showDelete = false;
     let showActivate = false;
     let showRedeploy = false;
+    let showCancel = false;
     let showAlert = true;
 
     let selectedDeployment: Models.Deployment = null;
@@ -289,6 +291,17 @@
                                                 href={`/console/project-${$page.params.project}/functions/function-${$page.params.function}/deployment-${deployment.$id}`}>
                                                 Logs
                                             </DropListLink>
+                                            {#if deployment.status === 'processing' || deployment.status === 'building' || deployment.status === 'waiting'}
+                                                <DropListItem
+                                                    icon="x-circle"
+                                                    on:click={() => {
+                                                        selectedDeployment = deployment;
+                                                        showCancel = true;
+                                                        showDropdown = [];
+                                                    }}>
+                                                    Cancel
+                                                </DropListItem>
+                                            {/if}
                                             <DropListItem
                                                 icon="trash"
                                                 on:click={() => {
@@ -356,6 +369,7 @@
 
 {#if selectedDeployment}
     <Delete {selectedDeployment} bind:showDelete />
+    <Cancel {selectedDeployment} bind:showCancel />
     <Activate {selectedDeployment} bind:showActivate on:activated={handleActivate} />
     <RedeployModal {selectedDeployment} bind:show={showRedeploy} />
 {/if}
