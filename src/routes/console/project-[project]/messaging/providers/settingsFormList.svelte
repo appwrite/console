@@ -120,7 +120,7 @@
         {:else if input.type === 'switch'}
             <InputSwitch label={input.label} id={input.name} bind:value={params[input.name]}>
                 <svelte:fragment slot="description">
-                    {input.description}
+                    <p>{@html input.description}</p>
                 </svelte:fragment>
             </InputSwitch>
         {:else if input.type === 'checkbox'}
