@@ -1,6 +1,16 @@
 <script lang="ts">
     import { CardGrid, Heading } from '$lib/components';
-    import { Button, Form, FormList, InputText, InputTextarea } from '$lib/elements/forms';
+    import {
+        Button,
+        Form,
+        FormItem,
+        FormItemPart,
+        FormList,
+        Helper,
+        InputText,
+        InputTextarea,
+        Label
+    } from '$lib/elements/forms';
     import { MessageStatus, type Models } from '@appwrite.io/console';
     import PushPhone from '../pushPhone.svelte';
     import { onMount } from 'svelte';
@@ -9,28 +19,47 @@
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { validateData } from '../wizard/pushFormList.svelte';
 
     export let message: Models.Message & { data: Record<string, string> };
 
     let title = '';
     let body = '';
+    let originalCustomData: [string, string][] = [['', '']];
+    let customData: [string, string][] = [['', '']];
+    let dataError = '';
     let disabled = true;
 
     onMount(() => {
         title = message.data.title;
         body = message.data.body;
+
+        const dataEntries: [string, string][] = [];
+        Object.entries(message.data['data'] ?? {}).forEach(([key, value]) => {
+            dataEntries.push([key, value.toString()]);
+        });
+        customData = dataEntries.length ? dataEntries : [['', '']];
+        originalCustomData = structuredClone(customData);
     });
 
     async function update() {
         try {
+            const data = customData.reduce((acc, [key, value]) => {
+                if (key) {
+                    acc[key] = value;
+                }
+                return acc;
+            }, {});
             await sdk.forProject.messaging.updatePush(
                 message.$id,
                 undefined,
                 undefined,
                 undefined,
                 title,
-                body
+                body,
+                data
             );
+            originalCustomData = structuredClone(customData);
             await invalidate(Dependencies.MESSAGING_MESSAGE);
             addNotification({
                 message: 'Message has been updated',
@@ -46,7 +75,15 @@
         }
     }
 
-    $: disabled = title === message.data.title && body === message.data.body;
+    $: dataError = validateData(customData || []);
+    $: disabled =
+        title === message.data.title &&
+        body === message.data.body &&
+        originalCustomData.length === customData.length &&
+        originalCustomData.every(
+            (ocd, i) =>
+                ocd.length === customData[i].length && ocd.every((v, j) => v === customData[i][j])
+        );
 </script>
 
 <Form onSubmit={update}>
@@ -69,7 +106,71 @@
                     label="Message"
                     disabled={message.status != MessageStatus.Draft}
                     bind:value={body}></InputTextarea>
-                <div class="u-flex u-main-end"></div>
+                <form class="form">
+                    <FormItem>
+                        <Label
+                            tooltip="A key/value payload of additional metadata that's hidden from users. Use this to include information to support logic such as redirection and routing."
+                            >Custom data <span class="u-color-text-gray">(Optional)</span></Label>
+                    </FormItem>
+                    <div class=" u-grid u-gap-8">
+                        <ul class="form-list" style="--p-form-list-gap: 1rem">
+                            {#each customData || [] as _, rowIndex}
+                                <FormItem isMultiple>
+                                    <InputText
+                                        id={`${rowIndex}-key`}
+                                        isMultiple
+                                        fullWidth
+                                        disabled={message.status != MessageStatus.Draft}
+                                        bind:value={customData[rowIndex][0]}
+                                        placeholder="Enter key"
+                                        label="Key"
+                                        showLabel={false} />
+
+                                    <InputText
+                                        id={`${rowIndex}-value`}
+                                        isMultiple
+                                        fullWidth
+                                        disabled={message.status != MessageStatus.Draft}
+                                        bind:value={customData[rowIndex][1]}
+                                        placeholder="Enter value"
+                                        label="Value"
+                                        showLabel={false}
+                                        required />
+                                    <FormItemPart alignEnd>
+                                        <Button
+                                            text
+                                            disabled={message.status != MessageStatus.Draft}
+                                            on:click={() => {
+                                                if (customData.length === 1) {
+                                                    customData = [['', '']];
+                                                    return;
+                                                }
+
+                                                customData = customData.filter(
+                                                    (_, i) => i !== rowIndex
+                                                );
+                                            }}>
+                                            <span class="icon-x" aria-hidden="true" />
+                                        </Button>
+                                    </FormItemPart>
+                                </FormItem>
+                            {/each}
+                        </ul>
+                        {#if dataError}
+                            <Helper type="warning">{dataError}</Helper>
+                        {/if}
+                        <Button
+                            noMargin
+                            text
+                            disabled={customData && customData[customData.length - 1][0] === ''}
+                            on:click={() => {
+                                customData = [...customData, ['', '']];
+                            }}>
+                            <span class="icon-plus" aria-hidden="true" />
+                            <span class="text">Add data</span>
+                        </Button>
+                    </div>
+                </form>
             </FormList>
         </svelte:fragment>
         <svelte:fragment slot="actions">
