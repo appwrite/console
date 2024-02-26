@@ -42,7 +42,12 @@
         <div class="u-flex u-main-space-between">
             <div data-private>
                 <p class="title">Created: {toLocaleDateTime($message.$createdAt)}</p>
-                <p class="title">Scheduled at: {toLocaleDateTime(scheduledAt)}</p>
+                {#if $message.scheduledAt}
+                    <p class="title">Scheduled at: {toLocaleDateTime($message.scheduledAt)}</p>
+                {/if}
+                {#if $message.deliveredAt}
+                    <p class="title">Sent at: {toLocaleDateTime($message.deliveredAt)}</p>
+                {/if}
             </div>
             <div class="u-flex u-flex-vertical u-cross-end">
                 <MessageStatusPill status={$message.status} />
