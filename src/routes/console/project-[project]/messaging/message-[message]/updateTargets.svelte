@@ -71,7 +71,7 @@
             }
             await invalidate(Dependencies.MESSAGING_MESSAGE);
             addNotification({
-                message: 'Message has been updated',
+                message: 'Targets have been updated',
                 type: 'success'
             });
             trackEvent(Submit.MessagingMessageUpdate);
