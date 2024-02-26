@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { type Models, MessagingProviderType } from '@appwrite.io/console';
+    import { type Models, MessagingProviderType, MessageStatus } from '@appwrite.io/console';
     import {
         Table,
         TableBody,
@@ -8,7 +8,7 @@
         TableHeader,
         TableRow
     } from '$lib/elements/table';
-    import { CardGrid, Heading, Empty, PaginationInline } from '$lib/components';
+    import { CardGrid, Heading, Empty, PaginationInline, EmptySearch } from '$lib/components';
     import TopicsModal from '../topicsModal.svelte';
     import { sdk } from '$lib/stores/sdk';
     import { invalidate } from '$app/navigation';
@@ -22,6 +22,7 @@
 
     export let messageId: string;
     export let messageType: MessagingProviderType;
+    export let messageStatus: string;
     export let selectedTopicsById: Record<string, Models.Topic>;
 
     let offset = 0;
@@ -141,8 +142,23 @@
                         <PaginationInline {sum} {limit} bind:offset />
                     </div>
                 </div>
-            {:else}
+            {:else if messageStatus == MessageStatus.Draft}
                 <Empty on:click={() => (showTopics = true)}>Add a topic</Empty>
+            {:else}
+                <EmptySearch hidePagination>
+                    <div class="u-text-center">
+                        No topics have been selected.
+                        <p>
+                            Need a hand? Check out our <Button
+                                link
+                                external
+                                href="https://appwrite.io/docs/products/messaging/topics"
+                                text>
+                                documentation</Button
+                            >.
+                        </p>
+                    </div>
+                </EmptySearch>
             {/if}
         </svelte:fragment>
         <svelte:fragment slot="actions">

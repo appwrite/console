@@ -35,10 +35,12 @@
     <UpdateTopics
         messageId={$message.$id}
         messageType={$providerType}
+        messageStatus={$message.status}
         selectedTopicsById={data.topicsById} />
     <UpdateTargets
         messageId={$message.$id}
         messageType={$providerType}
+        messageStatus={$message.status}
         selectedTargetsById={data.targetsById} />
     {#if $message.status !== MessageStatus.Processing}
         <Delete message={$message} />

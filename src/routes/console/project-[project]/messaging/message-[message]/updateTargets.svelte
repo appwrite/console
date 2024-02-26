@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { MessagingProviderType, type Models } from '@appwrite.io/console';
+    import { MessageStatus, MessagingProviderType, type Models } from '@appwrite.io/console';
     import {
         Table,
         TableBody,
@@ -8,7 +8,7 @@
         TableHeader,
         TableRow
     } from '$lib/elements/table';
-    import { CardGrid, Heading, Empty, PaginationInline } from '$lib/components';
+    import { CardGrid, Heading, Empty, PaginationInline, EmptySearch } from '$lib/components';
     import { onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
     import { invalidate } from '$app/navigation';
@@ -21,6 +21,7 @@
 
     export let messageId: string;
     export let messageType: MessagingProviderType;
+    export let messageStatus: string;
     export let selectedTargetsById: Record<string, Models.Target>;
 
     let offset = 0;
@@ -158,8 +159,23 @@
                         <PaginationInline {sum} {limit} bind:offset />
                     </div>
                 </div>
-            {:else}
+            {:else if messageStatus == MessageStatus.Draft}
                 <Empty on:click={() => (showTargets = true)}>Add a target</Empty>
+            {:else}
+                <EmptySearch hidePagination>
+                    <div class="u-text-center">
+                        No targets have been selected.
+                        <p>
+                            Need a hand? Check out our <Button
+                                link
+                                external
+                                href="https://appwrite.io/docs/products/messaging/targets"
+                                text>
+                                documentation</Button
+                            >.
+                        </p>
+                    </div>
+                </EmptySearch>
             {/if}
         </svelte:fragment>
         <svelte:fragment slot="actions">
