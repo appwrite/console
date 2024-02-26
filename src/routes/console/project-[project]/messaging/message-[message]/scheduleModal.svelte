@@ -119,7 +119,7 @@
     $: dateTime = new Date(`${date}T${time}`);
 </script>
 
-<Modal title="Schedule message" bind:show onSubmit={update} headerDivider={false}>
+<Modal title="Schedule message" bind:show onSubmit={update} headerDivider={false} size="big">
     <div>
         <FormList>
             <div
