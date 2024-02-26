@@ -167,7 +167,7 @@ export const providers: ProvidersMap = {
                         label: 'Sandbox',
                         name: 'sandbox',
                         type: 'switch',
-                        description: 'Enable sandbox mode for app testing with the development APNS server.'
+                        description: 'Enable sandbox mode for testing on apps signed with development provisioning profiles.'
                     }
                 ]
             }
