@@ -8,12 +8,14 @@
     import FailedModal from '../failedModal.svelte';
     import SendModal from './sendModal.svelte';
     import ScheduleModal from './scheduleModal.svelte';
-
+    import CancelModal from './cancelModal.svelte';
+    
     export let message: Models.Message & { data: Record<string, string> };
     export let topics: Models.Topic[];
 
     let showSend = false;
     let showSchedule = false;
+    let showCancel = false;
     let showFailed = false;
     let errors: string[] = [];
 </script>
@@ -51,7 +53,7 @@
             </div>
         {:else if message.status === MessageStatus.Scheduled}
             <div class="u-flex u-gap-16">
-                <Button text on:click={() => console.log('Cancel')}>Cancel scheduling</Button>
+                <Button text on:click={() => (showCancel = true)}>Cancel scheduling</Button>
                 <Button secondary on:click={() => (showSchedule = true)}>Reschedule</Button>
             </div>
         {:else if message.status === 'failed'}
@@ -69,5 +71,7 @@
 <ScheduleModal bind:show={showSchedule} {message} {topics} />
 
 <SendModal bind:show={showSend} {message} {topics} />
+
+<CancelModal bind:show={showCancel} {message} />
 
 <FailedModal bind:show={showFailed} {errors} />
