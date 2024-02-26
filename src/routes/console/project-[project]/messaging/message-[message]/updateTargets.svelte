@@ -97,7 +97,7 @@
 </script>
 
 <Form onSubmit={update}>
-    <CardGrid>
+    <CardGrid hideFooter={message.status != MessageStatus.Draft}>
         <Heading tag="h6" size="7" id="variables">Targets</Heading>
         <svelte:fragment slot="aside">
             {@const sum = targetIds.length}
@@ -106,15 +106,17 @@
                     <div>
                         <span class="eyebrow-heading-3">Target</span>
                     </div>
-                    <Button
-                        text
-                        noMargin
-                        on:click={() => {
-                            showTargets = true;
-                        }}>
-                        <span class="icon-plus" aria-hidden="true" />
-                        <span class="text">Add</span>
-                    </Button>
+                    {#if message.status == MessageStatus.Draft}
+                        <Button
+                            text
+                            noMargin
+                            on:click={() => {
+                                showTargets = true;
+                            }}>
+                            <span class="icon-plus" aria-hidden="true" />
+                            <span class="text">Add</span>
+                        </Button>
+                    {/if}
                 </div>
                 <div class="u-flex u-flex-vertical u-gap-24">
                     <Table noMargin noStyles>
@@ -141,17 +143,19 @@
                                         </div>
                                     </TableCell>
                                     <TableCell title="Remove">
-                                        <div class="u-flex u-main-end">
-                                            <button
-                                                class="button is-text is-only-icon"
-                                                style="--p-button-size: 1.25rem"
-                                                type="button"
-                                                aria-label="delete"
+                                        <div
+                                            class="u-flex u-main-end"
+                                            style="--p-button-size: 1.25rem">
+                                            <Button
+                                                text
+                                                class="is-only-icon"
+                                                ariaLabel="delete"
+                                                disabled={message.status != MessageStatus.Draft}
                                                 on:click={() => removeTarget(target.$id)}>
                                                 <span
                                                     class="icon-x u-font-size-20"
                                                     aria-hidden="true" />
-                                            </button>
+                                            </Button>
                                         </div>
                                     </TableCell>
                                 </TableRow>

@@ -1,7 +1,7 @@
 <script lang="ts">
     import { CardGrid, Heading } from '$lib/components';
     import { Button, Form, FormList, InputText, InputTextarea } from '$lib/elements/forms';
-    import type { Models } from '@appwrite.io/console';
+    import { MessageStatus, type Models } from '@appwrite.io/console';
     import PushPhone from '../pushPhone.svelte';
     import { onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
@@ -50,7 +50,7 @@
 </script>
 
 <Form onSubmit={update}>
-    <CardGrid>
+    <CardGrid hideFooter={message.status != MessageStatus.Draft}>
         <div class="grid-1-2-col-1 u-flex-vertical u-cross-start u-gap-16">
             <Heading tag="h6" size="7">Message</Heading>
             <div class="u-flex u-margin-block-start-24 u-width-full-line">
@@ -59,8 +59,16 @@
         </div>
         <svelte:fragment slot="aside">
             <FormList>
-                <InputText id="title" label="Title" bind:value={title}></InputText>
-                <InputTextarea id="message" label="Message" bind:value={body}></InputTextarea>
+                <InputText
+                    id="title"
+                    label="Title"
+                    disabled={message.status != MessageStatus.Draft}
+                    bind:value={title}></InputText>
+                <InputTextarea
+                    id="message"
+                    label="Message"
+                    disabled={message.status != MessageStatus.Draft}
+                    bind:value={body}></InputTextarea>
                 <div class="u-flex u-main-end"></div>
             </FormList>
         </svelte:fragment>

@@ -6,7 +6,7 @@
     import { Button, Form, FormList, InputText, InputTextarea } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import type { Models } from '@appwrite.io/console';
+    import { MessageStatus, type Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
 
     export let message: Models.Message & { data: Record<string, string> };
@@ -49,14 +49,22 @@
 </script>
 
 <Form onSubmit={update}>
-    <CardGrid>
+    <CardGrid hideFooter={message.status != MessageStatus.Draft}>
         <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16">
             <Heading tag="h6" size="7">Message</Heading>
         </div>
         <svelte:fragment slot="aside">
             <FormList>
-                <InputText id="subject" label="Subject" bind:value={subject}></InputText>
-                <InputTextarea id="message" label="Message" bind:value={content}></InputTextarea>
+                <InputText
+                    id="subject"
+                    label="Subject"
+                    disabled={message.status != MessageStatus.Draft}
+                    bind:value={subject}></InputText>
+                <InputTextarea
+                    id="message"
+                    label="Message"
+                    disabled={message.status != MessageStatus.Draft}
+                    bind:value={content}></InputTextarea>
             </FormList>
         </svelte:fragment>
         <svelte:fragment slot="actions">
