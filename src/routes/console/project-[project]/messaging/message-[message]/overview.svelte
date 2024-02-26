@@ -4,38 +4,27 @@
     import { message } from './store';
     import ProviderType from '../providerType.svelte';
     import MessageStatusPill from '../messageStatusPill.svelte';
-    import { MessagingProviderType } from '@appwrite.io/console';
+    import { MessagingProviderType, type Models } from '@appwrite.io/console';
     import { Button } from '$lib/elements/forms';
     import FailedModal from '../failedModal.svelte';
+    import SendModal from './sendModal.svelte';
+    import ScheduleModal from './scheduleModal.svelte';
 
-    let scheduledAt: string = '';
+    export let messageType: MessagingProviderType;
+    export let topics: Models.Topic[];
+
+    let showSend = false;
+    let showSchedule = false;
     let showFailed = false;
     let errors: string[] = [];
-
-    if ($message.status === 'sent') {
-        scheduledAt = $message.deliveredAt;
-    } else if ($message.status === 'scheduled') {
-        scheduledAt = $message.scheduledAt;
-    }
-
-    let providerType = 'Invalid provider type';
-    switch ($message.providerType) {
-        case MessagingProviderType.Email:
-            providerType = 'Email';
-            break;
-        case MessagingProviderType.Sms:
-            providerType = 'SMS';
-            break;
-        case MessagingProviderType.Push:
-            providerType = 'Push';
-            break;
-    }
 </script>
 
-<CardGrid hideFooter={$message.status != 'failed'}>
+<CardGrid hideFooter={['processing', 'sent'].includes($message.status)}>
     <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16" data-private>
         <ProviderType type={$message.providerType} size="l">
-            <Heading tag="h6" size="7">{providerType}</Heading>
+            <Heading tag="h6" size="7">
+                <ProviderType type={$message.providerType} noIcon />
+            </Heading>
         </ProviderType>
     </div>
     <svelte:fragment slot="aside">
@@ -56,14 +45,25 @@
     </svelte:fragment>
 
     <svelte:fragment slot="actions">
-        <Button
-            secondary
-            on:click={(e) => {
-                e.preventDefault();
-                errors = $message.deliveryErrors;
-                showFailed = true;
-            }}>View logs</Button>
+        {#if $message.status === 'draft' || $message.status === 'scheduled'}
+            <div class="u-flex u-gap-16">
+                <Button text on:click={() => (showSchedule = true)}>Schedule</Button>
+                <Button secondary on:click={() => (showSend = true)}>Send message</Button>
+            </div>
+        {:else if $message.status === 'failed'}
+            <Button
+                secondary
+                on:click={(e) => {
+                    e.preventDefault();
+                    errors = $message.deliveryErrors;
+                    showFailed = true;
+                }}>View logs</Button>
+        {/if}
     </svelte:fragment>
 </CardGrid>
+
+<ScheduleModal bind:show={showSchedule} {messageType} message={$message} {topics} />
+
+<SendModal bind:show={showSend} {messageType} message={$message} {topics} />
 
 <FailedModal bind:show={showFailed} {errors} />

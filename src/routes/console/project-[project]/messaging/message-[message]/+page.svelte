@@ -24,7 +24,7 @@
 </script>
 
 <Container>
-    <Overview />
+    <Overview messageType={$providerType} topics={Object.values(data.topicsById)} />
     {#if $message.providerType === MessagingProviderType.Email}
         <EmailMessage message={$message} />
     {:else if $message.providerType === MessagingProviderType.Sms}
