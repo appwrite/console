@@ -3,7 +3,7 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import ProviderType from '../providerType.svelte';
     import MessageStatusPill from '../messageStatusPill.svelte';
-    import { type Models } from '@appwrite.io/console';
+    import { MessageStatus, type Models } from '@appwrite.io/console';
     import { Button } from '$lib/elements/forms';
     import FailedModal from '../failedModal.svelte';
     import SendModal from './sendModal.svelte';
@@ -44,10 +44,15 @@
     </svelte:fragment>
 
     <svelte:fragment slot="actions">
-        {#if message.status === 'draft' || message.status === 'scheduled'}
+        {#if message.status === MessageStatus.Draft}
             <div class="u-flex u-gap-16">
                 <Button text on:click={() => (showSchedule = true)}>Schedule</Button>
                 <Button secondary on:click={() => (showSend = true)}>Send message</Button>
+            </div>
+        {:else if message.status === MessageStatus.Scheduled}
+            <div class="u-flex u-gap-16">
+                <Button text on:click={() => console.log('Cancel')}>Cancel scheduling</Button>
+                <Button secondary on:click={() => (showSchedule = true)}>Reschedule</Button>
             </div>
         {:else if message.status === 'failed'}
             <Button
