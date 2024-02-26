@@ -1,9 +1,5 @@
 import { Dependencies } from '$lib/constants';
-import {
-    View,
-    getPage,
-    getView,
-} from '$lib/helpers/load';
+import { View, getPage, getView } from '$lib/helpers/load';
 import { sdk } from '$lib/stores/sdk';
 import type { PageLoad } from './$types';
 
@@ -14,8 +10,8 @@ export const load: PageLoad = async ({ params, url, route, depends }) => {
     const view = getView(url, route, View.Grid);
 
     return {
-      page,
-      view,
-      webhooks: await sdk.forConsole.projects.listWebhooks(params.project)
+        page,
+        view,
+        webhooks: await sdk.forConsole.projects.listWebhooks(params.project)
     };
 };

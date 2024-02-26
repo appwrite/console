@@ -168,7 +168,7 @@
             </DropList>
         {/if}
     </div>
-    
+
     <slot {isButtonDisabled}>
         {#if buttonText}
             <ContainerButton
@@ -179,5 +179,4 @@
                 {buttonMethod} />
         {/if}
     </slot>
-
 </header>
