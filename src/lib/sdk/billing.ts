@@ -849,7 +849,7 @@ export class Billing {
         );
     }
 
-    async listAddresses(queries: Query[] = []): Promise<AddressesList> {
+    async listAddresses(queries: string[] = []): Promise<AddressesList> {
         const path = `/account/billing-addresses`;
         const params = {
             queries
