@@ -13,10 +13,17 @@
     import type { PageData } from './$types';
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { MessageStatus, MessagingProviderType } from '@appwrite.io/console';
-    import Topics from './topics.svelte';
+    import UpdateTopics from './updateTopics.svelte';
     import Targets from './targets.svelte';
+    import { onMount } from 'svelte';
 
     export let data: PageData;
+
+    onMount(() => {
+        if (isValueOfStringEnum(MessagingProviderType, $message.providerType)) {
+            $providerType = $message.providerType;
+        }
+    });
 
     async function onEdit() {
         if (!isValueOfStringEnum(MessagingProviderType, $message.providerType)) {
@@ -110,7 +117,10 @@
             message={$message}
             onEdit={$message.status === MessageStatus.Draft ? onEdit : null} />
     {/if}
-    <Topics topics={Object.values(data.topicsById)} />
+    <UpdateTopics
+        messageId={$message.$id}
+        messageType={$providerType}
+        selectedTopicsById={data.topicsById} />
     <Targets targets={Object.values(data.targetsById)} usersById={data.usersById} />
     {#if $message.status !== MessageStatus.Processing}
         <Delete message={$message} />
