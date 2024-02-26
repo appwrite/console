@@ -21,6 +21,7 @@
     import { writable } from 'svelte/store';
     import { onMount } from 'svelte';
     import Heading from './heading.svelte';
+    import { clickOnEnter } from '$lib/helpers/a11y';
 
     export let show: boolean;
     export let selectedBucket: string = null;
@@ -224,12 +225,14 @@
                                         </ul>
                                     </div>
 
-                                    <button
-                                        type="button"
+                                    <Button
+                                        secondary
+                                        class="is-full-width-in-stack-mobile"
+                                        disabled={uploading}>
                                         on:click={() => fileSelector.click()}
-                                        disabled={uploading}
-                                        class="button is-secondary is-full-width-in-stack-mobile">
+                                        on:keyup={clickOnEnter} />
                                         <input
+                                            tabindex="-1"
                                             type="file"
                                             accept="image/*"
                                             class="u-hide"
@@ -237,7 +240,7 @@
                                             bind:this={fileSelector} />
                                         <span class="icon-upload" aria-hidden="true"></span>
                                         <span>Upload</span>
-                                    </button>
+                                    </Button>
                                 </div>
                             </div>
                         </header>
@@ -261,13 +264,16 @@
                                                 style="--grid-gap:2rem; --grid-item-size:10rem; --grid-item-size-small-screens:8rem;">
                                                 {#each response.files as file}
                                                     <li>
-                                                        <label
+                                                        <div
+                                                            role="button"
                                                             style:background-image={`url(${getPreview(
                                                                 currentBucket.$id,
                                                                 file.$id,
                                                                 360
                                                             )})`}
                                                             on:click={() => selectFile(file)}
+                                                            on:keyup={clickOnEnter}
+                                                            tabindex="0"
                                                             style:aspect-ratio="1/1"
                                                             class="card u-height-100-percent u-flex u-flex-vertical u-gap-16"
                                                             style="--card-padding:0.5rem; --card-border-radius:var(--border-radius-large);">
@@ -279,7 +285,7 @@
                                                                 style:pointer-events="none"
                                                                 checked={selectedFile ===
                                                                     file.$id} />
-                                                        </label>
+                                                        </div>
                                                     </li>
                                                 {/each}
                                             </ul>
