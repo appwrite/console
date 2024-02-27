@@ -10,7 +10,7 @@
 </script>
 
 <Container>
-    <Details/>
+    <Details />
     <UpdateSignature />
     <UpdateName />
     <UpdateUrl />

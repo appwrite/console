@@ -3,8 +3,8 @@
 
     export let enabled: boolean;
 
-    $:style = `color: ${enabled ? 'hsl(var(--color-success-100))' : 'hsl(var(--color-danger-100))'}`;
-    $:iconClass = (enabled ? 'icon-check-circle' : 'icon-exclamation-circle') + ' u-font-size-12';
+    $: style = `color: ${enabled ? 'hsl(var(--color-success-100))' : 'hsl(var(--color-danger-100))'}`;
+    $: iconClass = (enabled ? 'icon-check-circle' : 'icon-exclamation-circle') + ' u-font-size-12';
 </script>
 
 <Pill success={enabled} danger={!enabled} on:click>
