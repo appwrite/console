@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { onMount, tick } from 'svelte';
+    import { onMount } from 'svelte';
     import { FormItem } from '.';
     import { createPinInput, melt } from '@melt-ui/svelte';
 
