@@ -7,19 +7,17 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { MessageStatus, MessagingProviderType, type Models } from '@appwrite.io/console';
     import { Dependencies } from '$lib/constants';
+    import { isSameDay, toLocaleDateISO, toLocaleTimeISO } from '$lib/helpers/date';
 
     export let show = false;
     export let message: Models.Message & { data: Record<string, unknown> };
     export let topics: Models.Topic[];
 
     let now = new Date();
-    let timeZoneOffset: number;
     let minDate: string;
     // Use Sweden's locale (sv) since it matches ISO format
-    let date =
-        message.scheduledAt == null ? null : new Date(message.scheduledAt).toLocaleDateString('sv');
-    let time =
-        message.scheduledAt == null ? null : new Date(message.scheduledAt).toLocaleTimeString('sv');
+    let date = message.scheduledAt == null ? null : toLocaleDateISO(message.scheduledAt);
+    let time = message.scheduledAt == null ? null : toLocaleTimeISO(message.scheduledAt);
     let dateTime: Date;
     let totalTargets = message.targets?.length ?? 0;
 
@@ -109,12 +107,10 @@
         }
     };
 
-    $: timeZoneOffset = now ? now.getTimezoneOffset() * 60 * 1000 : 0;
-    $: minDate = new Date(now.getTime() - timeZoneOffset).toISOString().split('T')[0];
-    $: minTime =
-        date === minDate
-            ? new Date(now.getTime() - timeZoneOffset).toISOString().split('T')[1].substring(0, 5)
-            : '00:00';
+    $: minDate = toLocaleDateISO(now.getTime());
+    $: minTime = isSameDay(new Date(date), new Date(minDate))
+        ? toLocaleTimeISO(now.getTime())
+        : '00:00';
     $: dateTime = new Date(`${date}T${time}`);
 </script>
 

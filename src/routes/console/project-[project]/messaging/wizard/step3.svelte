@@ -4,10 +4,10 @@
     import { WizardStep } from '$lib/layout';
     import { MessageStatus, MessagingProviderType } from '@appwrite.io/console';
     import { messageParams, providerType } from './store';
+    import { isSameDay, toLocaleDateISO, toLocaleTimeISO } from '$lib/helpers/date';
 
     let when: 'now' | 'later' = 'now';
     let now = new Date();
-    let timeZoneOffset: number;
     let minDate: string;
     let date: string;
     let time: string;
@@ -53,12 +53,10 @@
     $: if (when === 'later') {
         now = new Date();
     }
-    $: timeZoneOffset = now ? now.getTimezoneOffset() * 60 * 1000 : 0;
-    $: minDate = new Date(now.getTime() - timeZoneOffset).toISOString().split('T')[0];
-    $: minTime =
-        date === minDate
-            ? new Date(now.getTime() - timeZoneOffset).toISOString().split('T')[1].substring(0, 5)
-            : '00:00';
+    $: minDate = toLocaleDateISO(now.getTime());
+    $: minTime = isSameDay(new Date(date), new Date(minDate))
+        ? toLocaleTimeISO(now.getTime())
+        : '00:00';
     $: dateTime = new Date(`${date}T${time}`);
     $: if (!isNaN(dateTime.getTime())) {
         $messageParams[$providerType].scheduledAt = dateTime.toISOString();
