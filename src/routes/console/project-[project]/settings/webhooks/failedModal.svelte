@@ -9,14 +9,17 @@
 
     export let show: boolean;
     export let webhook: Models.Webhook;
+    export let showUpdateButton: boolean = true;
 
     const projectId = $page.params.project;
     const webhookPath = webhook
         ? `${base}/console/project-${projectId}/settings/webhooks/` + (webhook['$id'] ?? '')
         : '';
 
-    $: style = `color: ${webhook.enabled ? 'hsl(var(--color-success-100))' : 'hsl(var(--color-danger-100))'}`;
-    $: iconClass = webhook.enabled ? 'icon-check-circle' : 'icon-exclamation-circle';
+    let enabled = webhook ? webhook.enabled : false;
+
+    $: style = `color: ${enabled ? 'hsl(var(--color-success-100))' : 'hsl(var(--color-danger-100))'}`;
+    $: iconClass = enabled ? 'icon-check-circle' : 'icon-exclamation-circle';
 </script>
 
 <Modal title="Webhook error" headerDivider={false} bind:show size="big">
@@ -27,7 +30,9 @@
                 <span>Webhook {webhook.enabled ? 'enabled' : 'disabled'}</span>
             </p>
 
-            <Button secondary href={webhookPath} event="update_webhook">Update Webhook</Button>
+            {#if showUpdateButton}
+                <Button secondary href={webhookPath} event="update_webhook">Update Webhook</Button>
+            {/if}
         </div>
 
         <p>

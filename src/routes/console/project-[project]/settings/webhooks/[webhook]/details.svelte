@@ -85,4 +85,4 @@
     </svelte:fragment>
 </CardGrid>
 
-<FailedModal bind:show={showFailed} webhook={$webhook} />
+<FailedModal bind:show={showFailed} webhook={$webhook} showUpdateButton={false} />
