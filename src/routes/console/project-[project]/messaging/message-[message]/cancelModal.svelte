@@ -83,7 +83,11 @@
     <div class="u-flex-vertical u-gap-16">
         <p data-private>
             Are you sure you want to cancel the scheduling of <span class="u-bold"
-                >{message.data.title ?? message.data.subject ?? message.data.content ?? 'Message'}</span>?
+                >{message.data.title ??
+                    message.data.subject ??
+                    message.data.content ??
+                    'Message'}</span
+            >?
         </p>
     </div>
     <svelte:fragment slot="footer">

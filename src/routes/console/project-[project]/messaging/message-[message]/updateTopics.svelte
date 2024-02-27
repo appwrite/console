@@ -123,24 +123,27 @@
                                                     <span class="collapsible-button-optional">
                                                         ({getTotal(topic)} targets)
                                                     </span>
-                                                </span></span>
+                                                </span>
+                                            </span>
                                         </div>
                                     </TableCell>
                                     <TableCell title="Remove" width={40}>
-                                        <div
-                                            class="u-flex u-main-end"
-                                            style="--p-button-size: 1.25rem">
-                                            <Button
-                                                text
-                                                class="is-only-icon"
-                                                ariaLabel="delete"
-                                                disabled={message.status != MessageStatus.Draft}
-                                                on:click={() => removeTopic(topic.$id)}>
-                                                <span
-                                                    class="icon-x u-font-size-20"
-                                                    aria-hidden="true" />
-                                            </Button>
-                                        </div>
+                                        {#if message.status === MessageStatus.Draft}
+                                            <div
+                                                class="u-flex u-main-end"
+                                                style="--p-button-size: 1.25rem">
+                                                <Button
+                                                    text
+                                                    class="is-only-icon"
+                                                    ariaLabel="delete"
+                                                    disabled={message.status != MessageStatus.Draft}
+                                                    on:click={() => removeTopic(topic.$id)}>
+                                                    <span
+                                                        class="icon-x u-font-size-20"
+                                                        aria-hidden="true" />
+                                                </Button>
+                                            </div>
+                                        {/if}
                                     </TableCell>
                                 </TableRow>
                             {/each}

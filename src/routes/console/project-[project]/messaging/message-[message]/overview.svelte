@@ -9,7 +9,7 @@
     import SendModal from './sendModal.svelte';
     import ScheduleModal from './scheduleModal.svelte';
     import CancelModal from './cancelModal.svelte';
-    
+
     export let message: Models.Message & { data: Record<string, string> };
     export let topics: Models.Topic[];
 

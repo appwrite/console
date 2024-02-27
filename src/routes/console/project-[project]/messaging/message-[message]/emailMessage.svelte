@@ -3,7 +3,14 @@
     import { trackEvent, Submit, trackError } from '$lib/actions/analytics';
     import { CardGrid, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, Form, FormList, InputSwitch, InputText, InputTextarea } from '$lib/elements/forms';
+    import {
+        Button,
+        Form,
+        FormList,
+        InputSwitch,
+        InputText,
+        InputTextarea
+    } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { MessageStatus, type Models } from '@appwrite.io/console';
@@ -49,7 +56,10 @@
         }
     }
 
-    $: disabled = subject === message.data.subject && content === message.data.content && html === (message.data['html'] ?? false) as boolean;
+    $: disabled =
+        subject === message.data.subject &&
+        content === message.data.content &&
+        html === ((message.data['html'] ?? false) as boolean);
 </script>
 
 <Form onSubmit={update}>
