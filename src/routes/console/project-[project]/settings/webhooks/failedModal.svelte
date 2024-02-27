@@ -14,16 +14,16 @@
     const webhookPath = webhook
         ? `${base}/console/project-${projectId}/settings/webhooks/` + (webhook['$id'] ?? '')
         : '';
+
+    $: style = `color: ${webhook.enabled ? 'hsl(var(--color-success-100))' : 'hsl(var(--color-danger-100))'}`;
+    $: iconClass = webhook.enabled ? 'icon-check-circle' : 'icon-exclamation-circle';
 </script>
 
 <Modal title="Webhook error" headerDivider={false} bind:show size="big">
     <div class="box u-flex-vertical u-gap-24">
         <div class="u-inline-flex u-cross-center u-gap-8">
             <p class="u-stretch">
-                <span
-                    class="icon-exclamation-circle u-font-size-20"
-                    aria-hidden="true"
-                    style="color:hsl(var(--color-danger-100));" />
+                <span class={`${iconClass} u-font-size-20`} aria-hidden="true" {style} />
                 <span>Webhook {webhook.enabled ? 'enabled' : 'disabled'}</span>
             </p>
 

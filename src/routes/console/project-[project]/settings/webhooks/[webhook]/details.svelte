@@ -20,9 +20,7 @@
     let enabled: boolean;
 
     onMount(async () => {
-        enabled ??= $webhook.enabled;
-
-        console.log('webhook', $webhook.$id);
+        enabled = $webhook.enabled;
     });
 
     let showFailed = false;
@@ -71,13 +69,16 @@
                 <li>Created: {toLocaleDateTime($webhook.$createdAt)}</li>
                 <li>Last updated: {toLocaleDateTime($webhook.$updatedAt)}</li>
             </ul>
-            <MessageStatusPill {enabled} />
+            <MessageStatusPill enabled={$webhook.enabled} />
         </div>
     </svelte:fragment>
 
     <svelte:fragment slot="actions">
         <div class="u-flex u-gap-16">
-            <Button on:click={() => (showFailed = true)} secondary>View logs</Button>
+            {#if $webhook.logs.length > 0}
+                <Button on:click={() => (showFailed = true)} secondary>View logs</Button>
+            {/if}
+
             <Button on:click={setEnabled} disabled={enabled === $webhook.enabled} submit
                 >Update</Button>
         </div>
