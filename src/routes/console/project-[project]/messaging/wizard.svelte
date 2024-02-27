@@ -12,7 +12,7 @@
     import { project } from '../store';
     import { wizard } from '$lib/stores/wizard';
     import { providerType, messageParams, operation } from './wizard/store';
-    import { ID, MessageStatus, MessagingProviderType, type Models } from '@appwrite.io/console';
+    import { ID, MessagingProviderType, type Models } from '@appwrite.io/console';
     import { Dependencies } from '$lib/constants';
 
     async function create() {
@@ -32,7 +32,7 @@
                         undefined,
                         undefined,
                         undefined,
-                        $messageParams[$providerType].status,
+                        $messageParams[$providerType].draft,
                         $messageParams[$providerType].html,
                         $messageParams[$providerType].scheduledAt
                     );
@@ -44,7 +44,7 @@
                         $messageParams[$providerType].topics,
                         $messageParams[$providerType].users,
                         $messageParams[$providerType].targets,
-                        $messageParams[$providerType].status,
+                        $messageParams[$providerType].draft,
                         $messageParams[$providerType].scheduledAt
                     );
                     break;
@@ -74,7 +74,7 @@
                             undefined,
                             undefined,
                             undefined,
-                            $messageParams[$providerType].status,
+                            $messageParams[$providerType].draft,
                             $messageParams[$providerType].scheduledAt
                         );
                     }
@@ -83,14 +83,13 @@
             wizard.hide();
             let message = '';
             switch (response.status) {
-                case MessageStatus.Draft:
+                case 'draft':
                     message = 'The message has been saved as draft.';
                     break;
-                case MessageStatus.Processing:
+                case 'processing':
                     message = 'The message is queued for processing.';
                     break;
                 case 'scheduled':
-                    // TODO: fix message status
                     message = 'The message has been scheduled.';
                     break;
             }
@@ -131,7 +130,7 @@
                         $messageParams[$providerType].targets,
                         $messageParams[$providerType].subject,
                         $messageParams[$providerType].content,
-                        $messageParams[$providerType].status,
+                        $messageParams[$providerType].draft,
                         $messageParams[$providerType].html,
                         undefined,
                         undefined,
@@ -145,7 +144,7 @@
                         $messageParams[$providerType].users,
                         $messageParams[$providerType].targets,
                         $messageParams[$providerType].content,
-                        $messageParams[$providerType].status,
+                        $messageParams[$providerType].draft,
                         $messageParams[$providerType].scheduledAt
                     );
                     break;
@@ -175,7 +174,7 @@
                             undefined,
                             undefined,
                             undefined,
-                            $messageParams[$providerType].status,
+                            $messageParams[$providerType].draft,
                             $messageParams[$providerType].scheduledAt
                         );
                     }
@@ -184,14 +183,13 @@
             wizard.hide();
             let message = '';
             switch (response.status) {
-                case MessageStatus.Draft:
+                case 'draft':
                     message = 'The message has been saved as draft.';
                     break;
-                case MessageStatus.Processing:
+                case 'processing':
                     message = 'The message is queued for processing.';
                     break;
                 case 'scheduled':
-                    // TODO: fix message status
                     message = 'The message has been scheduled.';
                     break;
             }
@@ -202,7 +200,7 @@
             await invalidate(Dependencies.MESSAGING_MESSAGE);
             trackEvent(Submit.MessagingMessageUpdate, {
                 providerType: $providerType,
-                status: params.status
+                status: response.status
             });
             await goto(`${base}/console/project-${$project.$id}/messaging/message-${response.$id}`);
         } catch (error) {
@@ -215,7 +213,7 @@
     }
 
     async function saveDraft() {
-        $messageParams[$providerType].status = MessageStatus.Draft;
+        $messageParams[$providerType].draft = true;
         if ($operation === 'create') {
             create();
         } else {
