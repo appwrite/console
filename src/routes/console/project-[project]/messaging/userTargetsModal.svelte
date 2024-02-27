@@ -132,22 +132,20 @@
                     {@const selectedCount = user.targets.filter(
                         (target) => selected[target.$id]
                     ).length}
-                    <CollapsibleItem withIndentation>
+                    <CollapsibleItem withIndentation disabled={!user.targets.length}>
                         <svelte:fragment slot="beforetitle">
                             <InputCheckbox
                                 id={userId}
                                 size="small"
-                                disabled={user.targets.length > 0 &&
-                                    user.targets.every((target) => targetsById[target.$id])}
+                                disabled={!user.targets.length ||
+                                    (user.targets.length > 0 &&
+                                        user.targets.every((target) => targetsById[target.$id]))}
                                 checked={selectedCount > 0 && selectedCount === user.targets.length}
                                 on:change={(event) => onUserSelection(event, userId)} />
                         </svelte:fragment>
                         <svelte:fragment slot="title">
                             <span class="u-line-height-1-5">
-                                <span
-                                    class="body-text-1 u-bold"
-                                    style="color:hsl(var(--color-neutral-80))"
-                                    data-private>
+                                <span class="user-name body-text-1 u-bold" data-private>
                                     {#if user.name}
                                         {user.name}
                                     {:else if user.email}
@@ -161,7 +159,11 @@
                             </span>
                         </svelte:fragment>
                         <svelte:fragment slot="subtitle">
-                            ({selectedCount}/{user.targets.length} targets)
+                            {#if user.targets.length === 0}
+                                (0 targets)
+                            {:else}
+                                ({selectedCount}/{user.targets.length} targets)
+                            {/if}
                         </svelte:fragment>
                         <FormList>
                             {#each user.targets as target}
@@ -235,3 +237,15 @@
         <Button submit disabled={!hasSelection}>Add</Button>
     </svelte:fragment>
 </Modal>
+
+<style lang="scss">
+    :global(.collapsible-wrapper:not(.is-disabled)) {
+        .user-name {
+            color: hsl(var(--color-neutral-80));
+
+            :global(.theme-dark) & {
+                color: hsl(var(--color-neutral-20));
+            }
+        }
+    }
+</style>
