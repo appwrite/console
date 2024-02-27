@@ -3,13 +3,13 @@
 
     export let enabled: boolean;
 
-    const style = `color: ${enabled ? 'hsl(var(--color-success-100))' : 'hsl(var(--color-danger-100))'}`;
-    const iconClass = enabled ? 'icon-check-circle' : 'icon-exclamation-circle';
+    $:style = `color: ${enabled ? 'hsl(var(--color-success-100))' : 'hsl(var(--color-danger-100))'}`;
+    $:iconClass = (enabled ? 'icon-check-circle' : 'icon-exclamation-circle') + ' u-font-size-12';
 </script>
 
 <Pill success={enabled} danger={!enabled} on:click>
     <span class="text u-font-size-12 u-trim">
-        <span class={`${iconClass} u-font-size-12`} aria-hidden="true" {style} />
+        <span class={iconClass} aria-hidden="true" {style} />
 
         <span>{enabled ? 'enabled' : 'stopped'}</span>
     </span>
