@@ -12,7 +12,7 @@
     import Wizard from '../wizard.svelte';
     import type { PageData } from './$types';
     import { isValueOfStringEnum } from '$lib/helpers/types';
-    import { MessageStatus, MessagingProviderType } from '@appwrite.io/console';
+    import { MessagingProviderType } from '@appwrite.io/console';
     import Topics from './topics.svelte';
     import Targets from './targets.svelte';
 
@@ -35,7 +35,7 @@
             topics: $message.topics,
             users: $message.users,
             targets: $message.targets,
-            status: MessageStatus.Draft,
+            draft: $message.status === 'draft',
             scheduledAt: $message.scheduledAt
         };
 
@@ -98,21 +98,15 @@
 <Container>
     <Overview />
     {#if $message.providerType === MessagingProviderType.Email}
-        <EmailPreview
-            message={$message}
-            onEdit={$message.status === MessageStatus.Draft ? onEdit : null} />
+        <EmailPreview message={$message} onEdit={$message.status === 'draft' ? onEdit : null} />
     {:else if $message.providerType === MessagingProviderType.Sms}
-        <SMSPreview
-            message={$message}
-            onEdit={$message.status === MessageStatus.Draft ? onEdit : null} />
+        <SMSPreview message={$message} onEdit={$message.status === 'draft' ? onEdit : null} />
     {:else if $message.providerType === MessagingProviderType.Push}
-        <PushPreview
-            message={$message}
-            onEdit={$message.status === MessageStatus.Draft ? onEdit : null} />
+        <PushPreview message={$message} onEdit={$message.status === 'draft' ? onEdit : null} />
     {/if}
     <Topics topics={Object.values(data.topicsById)} />
     <Targets targets={Object.values(data.targetsById)} usersById={data.usersById} />
-    {#if $message.status !== MessageStatus.Processing}
+    {#if $message.status !== 'processing'}
         <Delete message={$message} />
     {/if}
 </Container>

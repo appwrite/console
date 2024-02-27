@@ -1,4 +1,4 @@
-import { MessageStatus, MessagingProviderType, type Models } from '@appwrite.io/console';
+import { MessagingProviderType, type Models } from '@appwrite.io/console';
 import { get, writable } from 'svelte/store';
 
 export type MessageParams = {
@@ -6,7 +6,7 @@ export type MessageParams = {
     topics: string[];
     users: string[];
     targets: string[];
-    status: MessageStatus;
+    draft: boolean;
     scheduledAt?: string;
 };
 
