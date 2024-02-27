@@ -23,6 +23,7 @@
     import { organization } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
     import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
+    import InputSelect from '$lib/elements/forms/inputSelect.svelte';
 
     let enabled = false;
     let senderName: string;
@@ -32,7 +33,13 @@
     let port: number;
     let username: string;
     let password: string;
-    let secure = false;
+    let secure: string;
+
+    const options = [
+        { value: 'tls', label: 'TLS' },
+        { value: 'ssl', label: 'SSL' },
+        { value: '', label: 'None' }
+    ];
 
     onMount(() => {
         enabled = $project.smtpEnabled ?? false;
@@ -43,7 +50,7 @@
         port = $project.smtpPort;
         username = $project.smtpUsername;
         password = $project.smtpPassword;
-        secure = $project.smtpSecure === 'tls';
+        secure = $project.smtpSecure === 'tls' ? 'tls' : $project.smtpSecure === 'ssl' ? 'ssl' : '';
     });
 
     async function updateSmtp() {
@@ -68,7 +75,7 @@
                 port ? port : undefined,
                 username ? username : undefined,
                 password ? password : undefined,
-                secure ? 'tls' : undefined
+                secure ? secure : undefined
             );
 
             invalidate(Dependencies.PROJECT);
@@ -97,7 +104,7 @@
             port: $project.smtpPort,
             username: $project.smtpUsername,
             password: $project.smtpPassword,
-            secure: $project.smtpSecure === 'tls'
+            secure: $project.smtpSecure
         }
     );
 
@@ -109,7 +116,7 @@
         port = undefined;
         username = undefined;
         password = undefined;
-        secure = false;
+        secure = undefined;
     }
 </script>
 
@@ -189,10 +196,12 @@
                                 label="Password"
                                 bind:value={password}
                                 placeholder="Enter password" />
-
-                            <InputChoice bind:value={secure} id="tls" label="TLS secure protocol">
-                                Enable if TLS is supported on your SMTP server.
-                            </InputChoice>
+                            <InputSelect
+                                id="tls"
+                                label="Secure protocol"
+                                placeholder="Select protocol"
+                                bind:value={secure}
+                                {options} />
                         {/if}
                     </FormList>
                 {/if}
