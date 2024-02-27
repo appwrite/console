@@ -19,7 +19,7 @@
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">Select source</svelte:fragment>
+    <svelte:fragment slot="title">Source</svelte:fragment>
     <svelte:fragment slot="subtitle">
         Select a source platform with the project you want to migrate. <a
             class="link"

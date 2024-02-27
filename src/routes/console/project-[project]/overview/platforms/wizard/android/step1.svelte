@@ -41,7 +41,7 @@
 </script>
 
 <WizardStep {beforeSubmit}>
-    <svelte:fragment slot="title">Register your Android app</svelte:fragment>
+    <svelte:fragment slot="title">Android registration</svelte:fragment>
     <FormList>
         <InputText
             id="name"

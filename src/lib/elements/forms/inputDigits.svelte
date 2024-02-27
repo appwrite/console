@@ -13,6 +13,8 @@
 
     let element: HTMLOListElement;
 
+    let autoSubmitted = false;
+
     const {
         elements: { root, input }
     } = createPinInput({
@@ -20,6 +22,13 @@
         defaultValue: value.split(''),
         onValueChange: ({ next }) => {
             value = next.join('');
+
+            if (value.length === 6 && !autoSubmitted) {
+                autoSubmitted = true;
+                const firstInputElement = element.querySelector('input');
+                firstInputElement?.form.requestSubmit();
+            }
+
             return next;
         }
     });
