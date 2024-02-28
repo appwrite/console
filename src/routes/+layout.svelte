@@ -54,7 +54,8 @@
                 '/recover',
                 '/invite',
                 '/card',
-                '/hackathon'
+                '/hackathon',
+                '/mfa'
             ];
             if ($user) {
                 if (

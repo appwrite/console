@@ -5,6 +5,6 @@
 </script>
 
 <Container>
-    <Heading size="1" tag="h3">{$page.status}</Heading>
+    <Heading size="1" tag="h3">{$page.error.status || 'Invalid Argument'}</Heading>
     <p class="body-text-2 u-bold u-margin-block-start-4">{$page.error.message}</p>
 </Container>

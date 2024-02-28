@@ -1,7 +1,7 @@
 import type { Column } from '$lib/helpers/types';
 import { writable } from 'svelte/store';
 import { Providers } from '../provider.svelte';
-import { MessagingProviderType, Encryption } from '@appwrite.io/console';
+import { MessagingProviderType, SmtpEncryption } from '@appwrite.io/console';
 
 export const columns = writable<Column[]>([
     { id: '$id', title: 'Provider ID', type: 'string', show: true },
@@ -10,6 +10,28 @@ export const columns = writable<Column[]>([
     { id: 'type', title: 'Type', type: 'string', show: true },
     { id: 'enabled', title: 'Status', type: 'boolean', show: true }
 ]);
+
+export type ProviderInput = {
+    label: string;
+    name: string;
+    type:
+        | 'text'
+        | 'password'
+        | 'phone'
+        | 'email'
+        | 'domain'
+        | 'file'
+        | 'switch'
+        | 'select'
+        | 'checkbox';
+    placeholder?: string;
+    description?: string;
+    popover?: string[];
+    popoverImage?: { src: { light: string; dark: string }; alt: string };
+    allowedFileExtensions?: string[];
+    optional?: boolean;
+    options?: { label: string; value: string | number | boolean }[];
+};
 
 type ProvidersMap = {
     [key in MessagingProviderType]: {
@@ -23,25 +45,7 @@ type ProvidersMap = {
                 title: string;
                 description: string;
                 needAHand?: string[];
-                configure: {
-                    label: string;
-                    name: string;
-                    type:
-                        | 'text'
-                        | 'password'
-                        | 'phone'
-                        | 'email'
-                        | 'domain'
-                        | 'file'
-                        | 'switch'
-                        | 'select';
-                    placeholder?: string;
-                    description?: string;
-                    popover?: string[];
-                    allowedFileExtensions?: string[];
-                    optional?: boolean;
-                    options?: { label: string; value: string | number | boolean }[];
-                }[];
+                configure: ProviderInput[];
             };
         };
     };
@@ -73,7 +77,14 @@ export const providers: ProvidersMap = {
                             '<b>How to get the <a class="link" href="https://firebase.google.com" target="_blank" rel="noopener noreferrer">FCM</a> service account JSON?</b>',
                             'Head to <b>Project settings -> Service accounts -> Generate new private key.</b>',
                             'Generating the new key will result in the download of a JSON file.'
-                        ]
+                        ],
+                        popoverImage: {
+                            src: {
+                                light: '/images/messaging/fcm-service-account-json-light.png',
+                                dark: '/images/messaging/fcm-service-account-json-dark.png'
+                            },
+                            alt: 'Screenshot of how to generate the Firebase Service Account JSON file'
+                        }
                     }
                 ]
             },
@@ -89,8 +100,15 @@ export const providers: ProvidersMap = {
                         placeholder: 'Enter team ID',
                         popover: [
                             '<b>How to get the team ID?</b>',
-                            'Head to <b><a class="link" href="https://idmsa.apple.com/IDMSWebAuth/signin?appIdKey=891bd3417a7776362562d2197f89480a8547b108fd934911bcbea0110d07f757&path=%2Faccount%2F&rv=1" target="_blank" rel="noopener noreferrer">Apple Developer Member Center</a> -> Membership details -> Team ID.</b>'
-                        ]
+                            'Head to <b><a style="link" href="https://developer.apple.com/account" target="_blank" rel="noopener noreferrer">Apple Developer Member Center</a> -> Membership details -> Team ID.</b>'
+                        ],
+                        popoverImage: {
+                            src: {
+                                light: '/images/messaging/apns-team-id.png',
+                                dark: '/images/messaging/apns-team-id.png'
+                            },
+                            alt: 'Screenshot of where to find the Team ID in the Apple Developer Member Center'
+                        }
                     },
                     {
                         label: 'Bundle ID',
@@ -99,27 +117,15 @@ export const providers: ProvidersMap = {
                         placeholder: 'Enter bundle ID',
                         popover: [
                             '<b>How to get the bundle ID?</b>',
-                            'Head to <b><a class="link" href="https://idmsa.apple.com/IDMSWebAuth/signin?appIdKey=891bd3417a7776362562d2197f89480a8547b108fd934911bcbea0110d07f757&path=%2Faccount%2F&rv=1" target="_blank" rel="noopener noreferrer">Apple Developer Member Center</a> -> Certificates, Identifiers & Profiles -> Identifiers.</b>',
-                            `<a
-                                href="/images/apns-bundle-id.png"
-                                class="file-preview is-with-image"
-                                target="_blank" rel="noopener noreferrer"
-                                rel="noopener noreferrer"
-                                aria-label="open file in new window">
-                                <div class="file-preview-image">
-                                    <img
-                                        width="205"
-                                        height="125"
-                                        src="/images/apns-bundle-id.png"
-                                        alt="Screenshot of Bundle ID in Apple" />
-                                </div>
-                                <div class="file-preview-content">
-                                    <div class="avatar">
-                                        <span class="icon-external-link" aria-hidden="true" />
-                                    </div>
-                                </div>
-                            </a>`
-                        ]
+                            'Head to <b><a class="link" href="https://developer.apple.com/account" target="_blank" rel="noopener noreferrer">Apple Developer Member Center</a> -> Certificates, Identifiers & Profiles -> Identifiers.</b>'
+                        ],
+                        popoverImage: {
+                            src: {
+                                light: '/images/messaging/apns-bundle-id.png',
+                                dark: '/images/messaging/apns-bundle-id.png'
+                            },
+                            alt: 'Screenshot of where to find the Bundle ID in the Apple Developer Member Center'
+                        }
                     },
                     {
                         label: 'Authentication key ID',
@@ -128,9 +134,16 @@ export const providers: ProvidersMap = {
                         placeholder: 'Enter key ID',
                         popover: [
                             '<b>How to get the auth key ID?</b>',
-                            'Head to <b><a class="link" href="https://idmsa.apple.com/IDMSWebAuth/signin?appIdKey=891bd3417a7776362562d2197f89480a8547b108fd934911bcbea0110d07f757&path=%2Faccount%2F&rv=1" target="_blank" rel="noopener noreferrer">Apple Developer Member Center</a> -> Certificates, Identifiers & Profiles -> Keys.</b>',
+                            'Head to <b><a class="link" href="https://developer.apple.com/account" target="_blank" rel="noopener noreferrer">Apple Developer Member Center</a> -> Certificates, Identifiers & Profiles -> Keys.</b>',
                             'Click on your key to view details.'
-                        ]
+                        ],
+                        popoverImage: {
+                            src: {
+                                light: '/images/messaging/apns-authentication-key-id.png',
+                                dark: '/images/messaging/apns-authentication-key-id.png'
+                            },
+                            alt: 'Screenshot of how to find the Authentication Key ID in the Apple Developer Member Center'
+                        }
                     },
                     {
                         label: 'Auth key (.p8 file)',
@@ -139,9 +152,23 @@ export const providers: ProvidersMap = {
                         allowedFileExtensions: ['p8'],
                         popover: [
                             '<b>How to get the authentication key?</b>',
-                            'Head to <b><a class="link" href="https://idmsa.apple.com/IDMSWebAuth/signin?appIdKey=891bd3417a7776362562d2197f89480a8547b108fd934911bcbea0110d07f757&path=%2Faccount%2F&rv=1" target="_blank" rel="noopener noreferrer">Apple Developer Member Center</a></b> (under Program resources) <b>-> Certificates, Identifiers & Profiles -> Keys.</b>',
+                            'Head to <b><a class="link" href="https://developer.apple.com/account" target="_blank" rel="noopener noreferrer">Apple Developer Member Center</a></b> (under Program resources) <b>-> Certificates, Identifiers & Profiles -> Keys.</b>',
                             'Create a key and give it a name. Enable the Apple Push Notifications service (APNS), and register your key.'
-                        ]
+                        ],
+                        popoverImage: {
+                            src: {
+                                light: '/images/messaging/apns-auth-key.png',
+                                dark: '/images/messaging/apns-auth-key.png'
+                            },
+                            alt: 'Screenshot of where to download the Authentication Key in the Apple Developer Member Center'
+                        }
+                    },
+                    {
+                        label: 'Sandbox',
+                        name: 'sandbox',
+                        type: 'switch',
+                        description:
+                            'Enable sandbox mode for testing on apps signed with development provisioning profiles. <a class="link" href="https://appwrite.io/docs/products/messaging/apns#configure-provider" target="_blank" rel="noopener noreferrer">Learn more</a>.'
                     }
                 ]
             }
@@ -300,7 +327,7 @@ export const providers: ProvidersMap = {
                         label: 'Server host',
                         name: 'host',
                         type: 'text',
-                        placeholder: 'Enter host'
+                        placeholder: 'smtp.server.com'
                     },
                     {
                         label: 'Server port',
@@ -328,16 +355,16 @@ export const providers: ProvidersMap = {
                         name: 'encryption',
                         type: 'select',
                         options: [
-                            { label: 'None', value: Encryption.None },
-                            { label: 'SSL', value: Encryption.Ssl },
-                            { label: 'TLS', value: Encryption.Tls }
+                            { label: 'None', value: SmtpEncryption.None },
+                            { label: 'SSL', value: SmtpEncryption.Ssl },
+                            { label: 'TLS', value: SmtpEncryption.Tls }
                         ]
                     },
                     {
                         label: 'Auto TLS',
                         name: 'autoTLS',
-                        description: 'Automatically uses TLS encryption',
-                        type: 'switch',
+                        description: 'Automatically uses TLS encryption if available.',
+                        type: 'checkbox',
                         optional: true
                     },
                     {
@@ -345,7 +372,11 @@ export const providers: ProvidersMap = {
                         name: 'mailer',
                         type: 'text',
                         optional: true,
-                        placeholder: 'Enter mailer'
+                        placeholder: 'Enter mailer',
+                        popover: [
+                            '<b>What is the Mailer?</b>',
+                            'The value to use for the X-Mailer header.'
+                        ]
                     }
                 ]
             }
@@ -439,16 +470,21 @@ export const providers: ProvidersMap = {
                 description: '',
                 configure: [
                     {
-                        label: 'Username',
-                        name: 'username',
+                        label: 'Customer ID',
+                        name: 'customerId',
                         type: 'text',
-                        placeholder: 'Enter username'
+                        placeholder: 'Enter customer ID'
                     },
                     {
-                        label: 'Password',
-                        name: 'password',
+                        label: 'API Key',
+                        name: 'apiKey',
                         type: 'password',
-                        placeholder: 'Enter password'
+                        placeholder: 'Enter API key',
+                        popover: [
+                            '<b>How to get the API key?</b>',
+                            'Create an account in <a class="link" href="https://portal.telesign.com/" target="_blank" rel="noopener noreferrer">Telesign</a>.',
+                            'Head to <b>Telesign portal -> Profile -> API Keys.</b>'
+                        ]
                     },
                     {
                         label: 'Sender number',
@@ -524,4 +560,97 @@ export const providers: ProvidersMap = {
             }
         }
     }
+};
+
+type ProviderParams = {
+    providerId: string;
+    name: string;
+    enabled: boolean;
+};
+
+/**
+ * SMS providers
+ */
+export type TwilioProviderParams = ProviderParams & {
+    accountSid: string;
+    authToken: string;
+    from: string;
+};
+
+export type Msg91ProviderParams = ProviderParams & {
+    from: string;
+    senderId: string;
+    authKey: string;
+};
+
+export type TelesignProviderParams = ProviderParams & {
+    from: string;
+    customerId: string;
+    apiKey: string;
+};
+
+export type TextmagicProviderParams = ProviderParams & {
+    from: string;
+    username: string;
+    apiKey: string;
+};
+
+export type VonageProviderParams = ProviderParams & {
+    from: string;
+    apiKey: string;
+    apiSecret: string;
+};
+
+/**
+ * Email providers
+ */
+export type MailgunProviderParams = ProviderParams & {
+    fromEmail: string;
+    fromName: string;
+    replyToEmail: string;
+    replyToName: string;
+    isEuRegion: boolean;
+    apiKey: string;
+    domain: string;
+};
+
+export type SendgridProviderParams = ProviderParams & {
+    fromEmail: string;
+    fromName: string;
+    replyToEmail: string;
+    replyToName: string;
+    apiKey: string;
+};
+
+export type SMTPProviderParams = ProviderParams & {
+    fromEmail: string;
+    fromName: string;
+    replyToEmail: string;
+    replyToName: string;
+    host: string;
+    port: number;
+    username: string;
+    password: string;
+    encryption: SmtpEncryption;
+    autoTLS: boolean;
+    mailer: string;
+};
+
+/**
+ * Push providers
+ */
+export type FCMProviderParams = ProviderParams & {
+    serviceAccountJSON: string;
+};
+
+export type APNSProviderParams = ProviderParams & {
+    authKey: string;
+    authKeyId: string;
+    teamId: string;
+    bundleId: string;
+    sandbox: boolean;
+};
+
+export type MQTTProviderParams = ProviderParams & {
+    serverKey: string;
 };

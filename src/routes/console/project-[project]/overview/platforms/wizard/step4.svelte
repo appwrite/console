@@ -6,7 +6,7 @@
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">You're ready to go 🎉</svelte:fragment>
+    <svelte:fragment slot="title">All set</svelte:fragment>
     <p>
         {#if isFirstProject}
             Congratulations on adding the first platform to your project! Start exploring by

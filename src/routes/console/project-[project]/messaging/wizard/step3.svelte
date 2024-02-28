@@ -2,7 +2,7 @@
     import { Button, FormList, InputDate, InputSelect, InputTime } from '$lib/elements/forms';
     import Helper from '$lib/elements/forms/helper.svelte';
     import { WizardStep } from '$lib/layout';
-    import { MessageStatus, MessagingProviderType } from '@appwrite.io/console';
+    import { MessagingProviderType } from '@appwrite.io/console';
     import { messageParams, providerType } from './store';
 
     let when: 'now' | 'later' = 'now';
@@ -41,9 +41,7 @@
     };
 
     async function beforeSubmit() {
-        $messageParams[$providerType].status = MessageStatus.Processing;
         if (when === 'later') {
-            $messageParams[$providerType].status = 'scheduled' as MessageStatus;
             $messageParams[$providerType].scheduledAt = dateTime.toISOString();
         }
     }
