@@ -32,8 +32,6 @@
     }
 
     const scheduled = toLocaleDateTime(scheduledAt);
-
-    console.log($message);
 </script>
 
 <CardGrid>
