@@ -14,7 +14,7 @@ export function isTypeTagValue(obj: any): obj is TagValue {
     return (
         obj &&
         typeof obj.tag === 'string' &&
-        (typeof obj.value === 'string' || typeof obj.value === 'number')
+        (typeof obj.value === 'string' || typeof obj.value === 'number' || Array.isArray(obj.value))
     );
 }
 
