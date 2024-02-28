@@ -1,7 +1,7 @@
 <script lang="ts">
     import { CardGrid, Heading } from '$lib/components';
     import { Button, Form, FormList, InputTextarea } from '$lib/elements/forms';
-    import { MessageStatus, type Models } from '@appwrite.io/console';
+    import type { Models } from '@appwrite.io/console';
     import SMSPhone from '../smsPhone.svelte';
     import { onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
@@ -47,7 +47,7 @@
 </script>
 
 <Form onSubmit={update}>
-    <CardGrid hideFooter={message.status != MessageStatus.Draft}>
+    <CardGrid hideFooter={message.status != 'draft'}>
         <div class="grid-1-2-col-1 u-flex-vertical u-cross-start u-gap-16">
             <Heading tag="h6" size="7">Message</Heading>
             <SMSPhone {content} />
@@ -57,7 +57,7 @@
                 <InputTextarea
                     id="message"
                     label="Message"
-                    disabled={message.status != MessageStatus.Draft}
+                    disabled={message.status != 'draft'}
                     bind:value={content}></InputTextarea>
             </FormList>
         </svelte:fragment>

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { MessageStatus, MessagingProviderType, type Models } from '@appwrite.io/console';
+    import { MessagingProviderType, type Models } from '@appwrite.io/console';
     import {
         Table,
         TableBody,
@@ -97,7 +97,7 @@
 </script>
 
 <Form onSubmit={update}>
-    <CardGrid hideFooter={message.status != MessageStatus.Draft}>
+    <CardGrid hideFooter={message.status != 'draft'}>
         <Heading tag="h6" size="7" id="variables">Targets</Heading>
         <svelte:fragment slot="aside">
             {@const sum = targetIds.length}
@@ -106,7 +106,7 @@
                     <div>
                         <span class="eyebrow-heading-3">Target</span>
                     </div>
-                    {#if message.status == MessageStatus.Draft}
+                    {#if message.status == 'draft'}
                         <Button
                             text
                             noMargin
@@ -143,7 +143,7 @@
                                         </div>
                                     </TableCell>
                                     <TableCell title="Remove">
-                                        {#if message.status === MessageStatus.Draft}
+                                        {#if message.status === 'draft'}
                                             <div
                                                 class="u-flex u-main-end"
                                                 style="--p-button-size: 1.25rem">
@@ -151,7 +151,7 @@
                                                     text
                                                     class="is-only-icon"
                                                     ariaLabel="delete"
-                                                    disabled={message.status != MessageStatus.Draft}
+                                                    disabled={message.status != 'draft'}
                                                     on:click={() => removeTarget(target.$id)}>
                                                     <span
                                                         class="icon-x u-font-size-20"
@@ -169,7 +169,7 @@
                         <PaginationInline {sum} {limit} bind:offset />
                     </div>
                 </div>
-            {:else if message.status == MessageStatus.Draft}
+            {:else if message.status == 'draft'}
                 <Empty on:click={() => (showTargets = true)}>Add a target</Empty>
             {:else}
                 <EmptySearch hidePagination>

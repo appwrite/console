@@ -11,7 +11,7 @@
         InputTextarea,
         Label
     } from '$lib/elements/forms';
-    import { MessageStatus, type Models } from '@appwrite.io/console';
+    import type { Models } from '@appwrite.io/console';
     import PushPhone from '../pushPhone.svelte';
     import { onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
@@ -87,7 +87,7 @@
 </script>
 
 <Form onSubmit={update}>
-    <CardGrid hideFooter={message.status != MessageStatus.Draft}>
+    <CardGrid hideFooter={message.status != 'draft'}>
         <div class="grid-1-2-col-1 u-flex-vertical u-cross-start u-gap-16">
             <Heading tag="h6" size="7">Message</Heading>
             <div class="u-flex u-margin-block-start-24 u-width-full-line">
@@ -99,12 +99,12 @@
                 <InputText
                     id="title"
                     label="Title"
-                    disabled={message.status != MessageStatus.Draft}
+                    disabled={message.status != 'draft'}
                     bind:value={title}></InputText>
                 <InputTextarea
                     id="message"
                     label="Message"
-                    disabled={message.status != MessageStatus.Draft}
+                    disabled={message.status != 'draft'}
                     bind:value={body}></InputTextarea>
                 <form class="form">
                     <FormItem>
@@ -120,7 +120,7 @@
                                         id={`${rowIndex}-key`}
                                         isMultiple
                                         fullWidth
-                                        disabled={message.status != MessageStatus.Draft}
+                                        disabled={message.status != 'draft'}
                                         bind:value={customData[rowIndex][0]}
                                         placeholder="Enter key"
                                         label="Key"
@@ -130,7 +130,7 @@
                                         id={`${rowIndex}-value`}
                                         isMultiple
                                         fullWidth
-                                        disabled={message.status != MessageStatus.Draft}
+                                        disabled={message.status != 'draft'}
                                         bind:value={customData[rowIndex][1]}
                                         placeholder="Enter value"
                                         label="Value"
@@ -139,7 +139,7 @@
                                     <FormItemPart alignEnd>
                                         <Button
                                             text
-                                            disabled={message.status != MessageStatus.Draft}
+                                            disabled={message.status != 'draft'}
                                             on:click={() => {
                                                 if (customData.length === 1) {
                                                     customData = [['', '']];

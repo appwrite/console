@@ -2,7 +2,7 @@
     import { Button, FormList, InputDate, InputSelect, InputTime } from '$lib/elements/forms';
     import Helper from '$lib/elements/forms/helper.svelte';
     import { WizardStep } from '$lib/layout';
-    import { MessageStatus, MessagingProviderType } from '@appwrite.io/console';
+    import { MessagingProviderType } from '@appwrite.io/console';
     import { messageParams, providerType } from './store';
     import { isSameDay, toLocaleDateISO, toLocaleTimeISO } from '$lib/helpers/date';
 
@@ -40,13 +40,6 @@
         timeZoneName: 'longGeneric'
     };
 
-    async function beforeSubmit() {
-        $messageParams[$providerType].status = MessageStatus.Processing;
-        if (when === 'later') {
-            $messageParams[$providerType].status = 'scheduled' as MessageStatus;
-        }
-    }
-
     $: if (when === 'now') {
         date = time = '';
     }
@@ -63,7 +56,7 @@
     }
 </script>
 
-<WizardStep {beforeSubmit}>
+<WizardStep>
     <svelte:fragment slot="title">Schedule</svelte:fragment>
     <svelte:fragment slot="subtitle"
         >Schedule the time you want to deliver this message. Learn more in our <Button

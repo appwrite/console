@@ -99,4 +99,6 @@
     {/if}
 </Container>
 
-<Delete bind:showDelete invoices={data.invoices} />
+{#if isCloud && data.invoices}
+    <Delete bind:showDelete invoices={data.invoices} />
+{/if}

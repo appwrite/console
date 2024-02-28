@@ -39,8 +39,8 @@
                     providerId: id,
                     name: name,
                     enabled: true,
-                    username: '',
-                    password: '',
+                    customerId: '',
+                    apiKey: '',
                     from: ''
                 };
                 break;

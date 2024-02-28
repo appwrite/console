@@ -5,7 +5,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { MessageStatus, MessagingProviderType, type Models } from '@appwrite.io/console';
+    import { MessagingProviderType, type Models } from '@appwrite.io/console';
     import { Dependencies } from '$lib/constants';
     import { isSameDay, toLocaleDateISO, toLocaleTimeISO } from '$lib/helpers/date';
 
@@ -42,7 +42,6 @@
     }
 
     const update = async () => {
-        const status = MessageStatus.Scheduled;
         try {
             if (message.providerType == MessagingProviderType.Email) {
                 await sdk.forProject.messaging.updateEmail(
@@ -52,7 +51,7 @@
                     undefined,
                     undefined,
                     undefined,
-                    status,
+                    false,
                     undefined,
                     undefined,
                     undefined,
@@ -65,7 +64,7 @@
                     undefined,
                     undefined,
                     undefined,
-                    status,
+                    false,
                     dateTime.toISOString()
                 );
             } else if (message.providerType == MessagingProviderType.Push) {
@@ -84,7 +83,7 @@
                     undefined,
                     undefined,
                     undefined,
-                    status,
+                    false,
                     dateTime.toISOString()
                 );
             }

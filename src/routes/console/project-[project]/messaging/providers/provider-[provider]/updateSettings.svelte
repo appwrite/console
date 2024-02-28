@@ -91,8 +91,8 @@
                         providerId,
                         undefined,
                         undefined,
-                        formValues['username'],
-                        formValues['password'],
+                        formValues['customerId'],
+                        formValues['apiKey'],
                         formValues['from']
                     );
                     break;

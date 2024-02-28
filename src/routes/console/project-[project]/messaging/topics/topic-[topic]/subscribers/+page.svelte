@@ -146,7 +146,7 @@
         <Empty
             single
             on:click={() => (showAdd = true)}
-            href="https://appwrite.io/docs/products/messaging/topics/#subscribe-targets-to-topics"
+            href="https://appwrite.io/docs/products/messaging/topics#subscribe-targets-to-topics"
             target="subscriber" />
     {/if}
 </Container>
@@ -159,10 +159,11 @@
     <svelte:fragment slot="description">
         <p class="text">
             Add subscribers to this topic by selecting the targets for directing messages. <a
-                href="https://appwrite.io/docs/products/messaging/topics"
+                href="https://appwrite.io/docs/products/messaging/topics#subscribe-targets-to-topics"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="link">Learn more about subscribers.</a>
+                class="link">Learn more about subscribers</a
+            >.
         </p>
     </svelte:fragment>
 </UserTargetsModal>

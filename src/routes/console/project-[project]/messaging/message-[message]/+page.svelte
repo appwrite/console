@@ -9,7 +9,7 @@
     import { providerType } from '../wizard/store';
     import type { PageData } from './$types';
     import { isValueOfStringEnum } from '$lib/helpers/types';
-    import { MessageStatus, MessagingProviderType } from '@appwrite.io/console';
+    import { MessagingProviderType } from '@appwrite.io/console';
     import UpdateTopics from './updateTopics.svelte';
     import UpdateTargets from './updateTargets.svelte';
     import { onMount } from 'svelte';
@@ -34,7 +34,7 @@
     {/if}
     <UpdateTopics message={$message} selectedTopicsById={data.topicsById} />
     <UpdateTargets message={$message} selectedTargetsById={data.targetsById} />
-    {#if $message.status !== MessageStatus.Processing}
+    {#if $message.status !== 'processing'}
         <Delete message={$message} />
     {/if}
 </Container>
