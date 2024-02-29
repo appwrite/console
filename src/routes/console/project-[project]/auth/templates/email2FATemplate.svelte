@@ -1,15 +1,14 @@
 <script lang="ts">
-    import { loadEmailTemplate } from './+page.svelte';
     import EmailTemplate from './emailTemplate.svelte';
     import LocaleOptions from './localeOptions.svelte';
-    import { baseEmailTemplate, emailTemplate } from './store';
+    import { loadEmailTemplate } from './+page.svelte';
     import { page } from '$app/stores';
+    import { baseEmailTemplate, emailTemplate } from './store';
     import { addNotification } from '$lib/stores/notifications';
     import { Id } from '$lib/components';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
 
     const projectId = $page.params.project;
-
     let locale = 'en';
     let loading = false;
 
@@ -18,10 +17,10 @@
             loading = true;
         }, 1000);
         try {
-            const template = await loadEmailTemplate(projectId, 'magicSession', locale);
+            const template = await loadEmailTemplate(projectId, 'mfaChallenge', locale);
             emailTemplate.set(template);
             $baseEmailTemplate = { ...$emailTemplate };
-            trackEvent(Submit.EmailChangeLocale, { locale, type: 'magicSession' });
+            trackEvent(Submit.EmailChangeLocale, { locale, type: 'mfaChallenge' });
         } catch (error) {
             trackError(error, Submit.EmailChangeLocale);
             addNotification({
@@ -30,7 +29,6 @@
             });
         } finally {
             clearTimeout(timeout);
-
             loading = false;
         }
     }
@@ -41,6 +39,6 @@
     <EmailTemplate bind:loading>
         <Id value={'{{user}}'}>{'{{user}}'}</Id>
         <Id value={'{{project}}'}>{'{{project}}'}</Id>
-        <Id value={'{{redirect}}'}>{'{{redirect}}'}</Id>
+        <Id value={'{{otp}}'}>{'{{otp}}'}</Id>
     </EmailTemplate>
 </div>
