@@ -35,13 +35,13 @@
                     name: 'arrow',
                     options: {
                         element: arrow,
-                        padding: arrowSize * 2
+                        padding: arrowSize * 1.75
                     }
                 },
                 {
                     name: 'offset',
                     options: {
-                        offset: [-arrowSize, noArrow ? 0 : arrowSize - 2]
+                        offset: [-arrowSize, noArrow ? 0 : arrowSize / 1.5 ]
                     }
                 },
                 {
