@@ -41,7 +41,7 @@
     import { Modal } from '$lib/components';
     import { user } from '$lib/stores/user';
     import { clickOnEnter } from '$lib/helpers/a11y';
-    import { ID, MessagingProviderType, type Models } from '@appwrite.io/console';
+    import { ID, MessagingProviderType } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
     import PushPhone from '../pushPhone.svelte';
     import { onMount } from 'svelte';
