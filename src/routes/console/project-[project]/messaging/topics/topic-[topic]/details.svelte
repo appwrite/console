@@ -1,7 +1,7 @@
 <script lang="ts">
     import { CardGrid, Heading } from '$lib/components';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import { topic } from './store';
+    import { topic, topicTotal } from './store';
 </script>
 
 <CardGrid>
@@ -11,7 +11,7 @@
     <svelte:fragment slot="aside">
         <div class="u-flex u-main-space-between">
             <div data-private>
-                <p class="title">{$topic.total} subscriber{$topic.total === 1 ? '' : 's'}</p>
+                <p class="title">{$topicTotal} subscriber{$topicTotal === 1 ? '' : 's'}</p>
                 <p>Created: {toLocaleDateTime($topic.$createdAt)}</p>
             </div>
         </div>

@@ -1,24 +1,22 @@
+import type { Aggregation, Invoice } from '$lib/sdk/billing';
+import { accumulateUsage } from '$lib/sdk/usage';
 import { getSdkForProject, sdk } from '$lib/stores/sdk';
 import { Query } from '@appwrite.io/console';
 import type { PageLoad } from './$types';
-import type { Organization } from '$lib/stores/organization';
-import type { Aggregation, Invoice } from '$lib/sdk/billing';
-import { accumulateUsage } from '$lib/sdk/usage';
 
 export const load: PageLoad = async ({ params, parent }) => {
     const { invoice, project } = params;
-    const parentData = await parent();
-    const org = parentData.organization as Organization;
+    const { organization } = await parent();
 
-    let startDate: string = org.billingCurrentInvoiceDate;
-    let endDate: string = org.billingNextInvoiceDate;
+    let startDate: string = organization.billingCurrentInvoiceDate;
+    let endDate: string = organization.billingNextInvoiceDate;
     let currentInvoice: Invoice = undefined;
     let currentAggregation: Aggregation = undefined;
 
     if (invoice) {
-        currentInvoice = await sdk.forConsole.billing.getInvoice(org.$id, invoice);
+        currentInvoice = await sdk.forConsole.billing.getInvoice(organization.$id, invoice);
         currentAggregation = await sdk.forConsole.billing.getAggregation(
-            org.$id,
+            organization.$id,
             currentInvoice.aggregationId
         );
 
@@ -27,7 +25,7 @@ export const load: PageLoad = async ({ params, parent }) => {
     }
 
     const [invoices, usage] = await Promise.all([
-        sdk.forConsole.billing.listInvoices(org.$id, [Query.orderDesc('from')]),
+        sdk.forConsole.billing.listInvoices(organization.$id, [Query.orderDesc('from')]),
         /**
          * Workaround because project id might not be populated yet.
          */

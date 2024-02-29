@@ -11,6 +11,6 @@ export const load: PageLoad = async ({ params }) => {
             : StorageUsageRange.ThirtyDays;
         return sdk.forProject.storage.getUsage(period);
     } catch (e) {
-        throw error(e.code, e.message);
+        error(e.code, e.message);
     }
 };

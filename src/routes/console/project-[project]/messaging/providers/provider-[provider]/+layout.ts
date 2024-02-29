@@ -10,6 +10,6 @@ export const load: LayoutLoad = async ({ params, depends }) => {
     return {
         header: Header,
         breadcrumbs: Breadcrumbs,
-        provider: sdk.forProject.messaging.getProvider(params.provider)
+        provider: await sdk.forProject.messaging.getProvider(params.provider)
     };
 };

@@ -15,8 +15,7 @@
     import deepEqual from 'deep-equal';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Box } from '$lib/components';
-    import { TemplateLocale, TemplateType } from '@appwrite.io/console';
-    import { isValueOfStringEnum } from '$lib/helpers/types';
+    import type { EmailTemplateLocale, EmailTemplateType } from '@appwrite.io/console';
 
     export let loading = false;
     let openResetModal = false;
@@ -32,12 +31,13 @@
             return;
         }
 
-        if (!isValueOfStringEnum(TemplateType, $emailTemplate.type)) {
-            throw new Error(`Invalid template type: ${$emailTemplate.type}`);
-        }
-        if (!isValueOfStringEnum(TemplateLocale, $emailTemplate.locale)) {
-            throw new Error(`Invalid template locale: ${$emailTemplate.locale}`);
-        }
+        // TODO: uncomment after SDK is updated
+        // if (!isValueOfStringEnum(TemplateType, $emailTemplate.type)) {
+        //     throw new Error(`Invalid template type: ${$emailTemplate.type}`);
+        // }
+        // if (!isValueOfStringEnum(TemplateLocale, $emailTemplate.locale)) {
+        //     throw new Error(`Invalid template locale: ${$emailTemplate.locale}`);
+        // }
         try {
             switch ($emailTemplate.type) {
                 case 'invitation':
@@ -53,10 +53,11 @@
                     eventType = Submit.EmailUpdateVerificationTemplate;
                     break;
             }
+            // TODO: fix TemplateType and TemplateLocale typing once SDK is updated
             await sdk.forConsole.projects.updateEmailTemplate(
                 $project.$id,
-                $emailTemplate.type ? $emailTemplate.type : undefined,
-                $emailTemplate.locale ? $emailTemplate.locale : undefined,
+                $emailTemplate.type ? ($emailTemplate.type as EmailTemplateType) : undefined,
+                $emailTemplate.locale ? ($emailTemplate.locale as EmailTemplateLocale) : undefined,
                 $emailTemplate.subject ? $emailTemplate.subject : undefined,
                 $emailTemplate.message ? $emailTemplate.message : undefined,
                 $emailTemplate.senderName ? $emailTemplate.senderName : undefined,

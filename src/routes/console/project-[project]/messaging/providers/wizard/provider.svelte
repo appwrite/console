@@ -6,15 +6,13 @@
     import { FormList, InputText } from '$lib/elements/forms';
     import { Pill } from '$lib/elements';
     import { Providers } from '../../provider.svelte';
-    import { SMTPEncryption } from '@appwrite.io/console';
+    import { SmtpEncryption } from '@appwrite.io/console';
 
     let name = '';
     let showCustomId = false;
     let id: string = null;
 
     async function beforeSubmit() {
-        console.log($provider);
-
         switch ($provider) {
             case Providers.Twilio:
                 $providerParams[$provider] = {
@@ -41,8 +39,8 @@
                     providerId: id,
                     name: name,
                     enabled: true,
-                    username: '',
-                    password: '',
+                    customerId: '',
+                    apiKey: '',
                     from: ''
                 };
                 break;
@@ -102,7 +100,7 @@
                     username: '',
                     password: '',
                     autoTLS: true,
-                    encryption: SMTPEncryption.Tls,
+                    encryption: SmtpEncryption.Tls,
                     mailer: '',
                     fromEmail: '',
                     fromName: '',
@@ -126,7 +124,8 @@
                     authKey: '',
                     authKeyId: '',
                     teamId: '',
-                    bundleId: ''
+                    bundleId: '',
+                    sandbox: false
                 };
                 break;
         }

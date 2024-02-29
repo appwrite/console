@@ -22,7 +22,8 @@
         type EmailMessageParams,
         operation
     } from './store';
-    import {
+
+  import {
         Button,
         FormList,
         InputEmail,
@@ -33,10 +34,10 @@
     } from '$lib/elements/forms';
 
     import { Pill } from '$lib/elements';
-    import { CustomId, Modal } from '$lib/components';
+    import { Modal } from '$lib/components';
     import { user } from '$lib/stores/user';
     import { clickOnEnter } from '$lib/helpers/a11y';
-    import { ID } from '@appwrite.io/console';
+    import { ID, MessagingProviderType } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
     
     import { MessageType, MessagingProviderType } from '@appwrite.io/console';
@@ -53,17 +54,21 @@
         const email = selected === 'self' ? $user.email : otherEmail;
         console.log(email);
 
-        createEmailMessage({
-            topics: $messageParams[MessagingProviderType.Email]?.topics || [],
-            targets: $messageParams[MessagingProviderType.Email]?.targets || [],
-            status: MessageType.Processing,
-            messageId: ID.unique(),
-            // TODO: properly handle the test email address
-            users: ['steven'],
-            subject: $messageParams[MessagingProviderType.Email]?.subject || '',
-            content: $messageParams[MessagingProviderType.Email]?.content || '',
-            html: $messageParams[MessagingProviderType.Email]?.html || false
-        });
+        // TODO: replace with test method
+        sdk.forProject.messaging.createEmail(
+            ID.unique(),
+            $messageParams[MessagingProviderType.Email]?.subject || undefined,
+            $messageParams[MessagingProviderType.Email]?.content || undefined,
+            $messageParams[MessagingProviderType.Email]?.topics || [],
+            $messageParams[MessagingProviderType.Email]?.users || [],
+            $messageParams[MessagingProviderType.Email]?.targets || [],
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            $messageParams[MessagingProviderType.Email]?.html || false,
+            undefined
+        );
     }
 
     $: otherEmail = selected === 'self' ? '' : otherEmail;
@@ -145,20 +150,12 @@
             Enable the HTML mode if your message contains HTML tags.
         </svelte:fragment>
     </InputSwitch>
-    {#if $operation === 'create'}
-        {#if !showCustomId}
-            <div>
-                <Pill button on:click={() => (showCustomId = !showCustomId)}
-                    ><span class="icon-pencil" aria-hidden="true" /><span class="text">
-                        Message ID
-                    </span></Pill>
-            </div>
-        {:else}
-            <CustomId
-                bind:show={showCustomId}
-                name="Message"
-                bind:id={$messageParams[$providerType].messageId}
-                autofocus={false} />
-        {/if}
+    {#if !showCustomId}
+        <div>
+            <Pill button on:click={() => (showCustomId = !showCustomId)}
+                ><span class="icon-pencil" aria-hidden="true" /><span class="text">
+                    Message ID
+                </span></Pill>
+        </div>
     {/if}
 </FormList>

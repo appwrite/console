@@ -12,7 +12,7 @@ export const load: PageLoad = async ({ params, url, route }) => {
     return {
         offset,
         limit,
-        logs: sdk.forProject.messaging.listTopicLogs(params.topic, [
+        logs: await sdk.forProject.messaging.listTopicLogs(params.topic, [
             Query.limit(limit),
             Query.offset(offset)
         ])

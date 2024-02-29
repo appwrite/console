@@ -28,7 +28,7 @@
     } from '$lib/elements/table';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
-    import { MessageType, MessagingProviderType } from '@appwrite.io/console';
+    import { MessagingProviderType } from '@appwrite.io/console';
     import type { PageData } from './$types';
     import CreateMessageDropdown from './createMessageDropdown.svelte';
     import FailedModal from './failedModal.svelte';
@@ -141,7 +141,7 @@
                         <TableCellCheck
                             bind:selectedIds={selected}
                             id={message.$id}
-                            disabled={message.status === MessageType.Processing} />
+                            disabled={message.status === 'processing'} />
 
                         {#each $columns as column (column.id)}
                             {#if column.show}
@@ -169,13 +169,18 @@
                                     </TableCellText>
                                 {:else if column.id === 'status'}
                                     <TableCellText onlyDesktop title="Status">
-                                        <MessageStatusPill
-                                            status={message.status}
-                                            on:click={(e) => {
-                                                e.preventDefault();
-                                                errors = message.deliveryErrors;
-                                                showFailed = true;
-                                            }} />
+                                        <span class="u-inline-flex u-gap-12 u-cross-center">
+                                            <MessageStatusPill status={message.status} />
+                                            {#if message.status === 'failed'}
+                                                <Button
+                                                    link
+                                                    on:click={(e) => {
+                                                        e.preventDefault();
+                                                        errors = message.deliveryErrors;
+                                                        showFailed = true;
+                                                    }}>Details</Button>
+                                            {/if}
+                                        </span>
                                     </TableCellText>
                                 {:else if column.type === 'datetime'}
                                     <TableCellText title={column.title} width={column.width}>
@@ -225,19 +230,14 @@
             total={data.messages.total} />
     {:else if $hasPageQueries}
         <EmptyFilter resource="messages" />
-        <!-- TODO: remove data.search != 'empty' when the API is ready with data -->
-    {:else if data.search && data.search != 'empty'}
+    {:else if data.search}
         <EmptySearch>
             <div class="u-text-center">
                 <b>Sorry, we couldn't find '{data.search}'</b>
                 <p>There are no messages that match your search.</p>
             </div>
             <div class="u-flex u-gap-16">
-                <!-- TODO: update docs link -->
-                <Button
-                    external
-                    href="https://appwrite.io/docs/products/storage/upload-download"
-                    text>
+                <Button external href="https://appwrite.io/docs/products/messaging/messages" text>
                     Documentation
                 </Button>
                 <Button secondary href={`/console/project-${$page.params.project}/messaging`}>
@@ -246,12 +246,7 @@
             </div>
         </EmptySearch>
     {:else}
-        <!-- TODO: update docs link -->
-        <Empty
-            single
-            href="https://appwrite.io/docs"
-            target="message"
-            on:click={() => ($showCreate = true)}>
+        <Empty single target="message" on:click={() => ($showCreate = true)}>
             <div class="u-text-center">
                 <Heading size="7" tag="h2" trimmed={false}>
                     Create your first message to get started.
@@ -263,7 +258,7 @@
             <div class="u-flex u-flex-wrap u-gap-16 u-main-center">
                 <Button
                     external
-                    href="https://appwrite.io/docs/references/cloud/client-web/messages"
+                    href="https://appwrite.io/docs/products/messaging/messages"
                     text
                     event="empty_documentation"
                     ariaLabel={`create message`}>

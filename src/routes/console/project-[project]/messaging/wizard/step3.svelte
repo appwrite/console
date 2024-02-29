@@ -1,17 +1,30 @@
 <script lang="ts">
-    import { FormList, InputDate, InputSelect, InputTime } from '$lib/elements/forms';
+    import { Button, FormList, InputDate, InputSelect, InputTime } from '$lib/elements/forms';
     import Helper from '$lib/elements/forms/helper.svelte';
     import { WizardStep } from '$lib/layout';
-    import { MessageType } from '@appwrite.io/console';
+    import { MessagingProviderType } from '@appwrite.io/console';
     import { messageParams, providerType } from './store';
+    import { isSameDay, toLocaleDateISO, toLocaleTimeISO } from '$lib/helpers/date';
 
     let when: 'now' | 'later' = 'now';
     let now = new Date();
-    let timeZoneOffset: number;
     let minDate: string;
     let date: string;
     let time: string;
     let dateTime: Date;
+    let docsUrl = `https://appwrite.io/docs/products/messaging`;
+
+    switch ($providerType) {
+        case MessagingProviderType.Email:
+            docsUrl += '/send-email-messages';
+            break;
+        case MessagingProviderType.Sms:
+            docsUrl += '/send-sms-messages';
+            break;
+        case MessagingProviderType.Push:
+            docsUrl += '/send-push-notifications';
+            break;
+    }
 
     const options = [
         { label: 'Now', value: 'now' },
@@ -24,16 +37,8 @@
         hour: 'numeric',
         minute: 'numeric',
         hourCycle: 'h23',
-        timeZoneName: 'longOffset'
+        timeZoneName: 'longGeneric'
     };
-
-    async function beforeSubmit() {
-        $messageParams[$providerType].status = MessageType.Processing;
-        if (when === 'later') {
-            $messageParams[$providerType].status = 'scheduled' as MessageType;
-            $messageParams[$providerType].scheduledAt = dateTime.toISOString();
-        }
-    }
 
     $: if (when === 'now') {
         date = time = '';
@@ -41,20 +46,25 @@
     $: if (when === 'later') {
         now = new Date();
     }
-    $: timeZoneOffset = now ? now.getTimezoneOffset() * 60 * 1000 : 0;
-    $: minDate = new Date(now.getTime() - timeZoneOffset).toISOString().split('T')[0];
-    $: minTime =
-        date === minDate
-            ? new Date(now.getTime() - timeZoneOffset).toISOString().split('T')[1].substring(0, 5)
-            : '00:00';
+    $: minDate = toLocaleDateISO(now.getTime());
+    $: minTime = isSameDay(new Date(date), new Date(minDate))
+        ? toLocaleTimeISO(now.getTime())
+        : '00:00';
     $: dateTime = new Date(`${date}T${time}`);
+    $: if (!isNaN(dateTime.getTime())) {
+        $messageParams[$providerType].scheduledAt = dateTime.toISOString();
+    }
 </script>
 
-<WizardStep {beforeSubmit}>
+<WizardStep>
     <svelte:fragment slot="title">Schedule</svelte:fragment>
-    <!-- TODO: Add link to docs -->
     <svelte:fragment slot="subtitle"
-        >Schedule the time you want to deliver this message. Learn more in our documentation.</svelte:fragment>
+        >Schedule the time you want to deliver this message. Learn more in our <Button
+            link
+            external
+            text
+            href={docsUrl}>documentation</Button
+        >.</svelte:fragment>
     <FormList>
         <div
             class="u-grid u-gap-24"

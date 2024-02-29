@@ -12,6 +12,7 @@
     import { sizeToBytes } from '$lib/helpers/sizeConvertion';
     import { Pill } from '$lib/elements';
     import { BillingPlan } from '$lib/constants';
+    import { formatCurrency } from '$lib/helpers/numbers';
 
     let usage: OrganizationUsage = null;
     let members: Models.MembershipList = null;
@@ -102,7 +103,7 @@
 </script>
 
 <WizardStep beforeSubmit={handleBefore}>
-    <svelte:fragment slot="title">Choose a plan</svelte:fragment>
+    <svelte:fragment slot="title">Plan selection</svelte:fragment>
 
     <p class="body-text-1 u-bold common-section">Plan</p>
     <p class="text u-margin-block-start-4">
@@ -127,7 +128,7 @@
                         class="u-flex u-flex-vertical u-gap-4 u-width-full-line"
                         class:u-opacity-50={disabled}>
                         <h4 class="body-text-2 u-bold">
-                            {tierFree.name} - ${freePlan.price}/month
+                            {tierFree.name} - {formatCurrency(freePlan.price)}/month
                         </h4>
                         <p class="u-color-text-gray u-small">{tierFree.description}</p>
                     </div>
@@ -150,8 +151,8 @@
                         class="u-flex u-flex-vertical u-gap-4 u-width-full-line"
                         class:u-opacity-50={disabled}>
                         <h4 class="body-text-2 u-bold">
-                            {tierPro.name} - ${proPlan.price}/month per organization member + extra
-                            usage
+                            {tierPro.name} - {formatCurrency(proPlan.price)}/month per organization
+                            member + extra usage
                         </h4>
                         <p class="u-color-text-gray u-small">
                             {tierPro.description}
@@ -178,7 +179,7 @@
                         class="u-flex u-flex-vertical u-gap-4 u-width-full-line"
                         class:u-opacity-50={disabled}>
                         <h4 class="body-text-2 u-bold">
-                            {tierScale.name} - ${scalePlan.price}/month + extra usage
+                            {tierScale.name} - {formatCurrency(scalePlan.price)}/month + extra usage
                         </h4>
                         <p class="u-color-text-gray u-small">
                             {tierScale.description}

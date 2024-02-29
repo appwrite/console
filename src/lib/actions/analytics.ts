@@ -265,6 +265,7 @@ export enum Submit {
     PaymentMethodCreate = 'submit_payment_method_create',
     PaymentMethodUpdate = 'submit_payment_method_update',
     PaymentMethodDelete = 'submit_payment_method_delete',
+    RetryPayment = 'submit_retry_payment',
     BillingAddressCreate = 'submit_billing_address_create',
     BillingAddressUpdate = 'submit_billing_address_update',
     BillingAddressDelete = 'submit_billing_address_delete',
@@ -300,7 +301,7 @@ export enum Submit {
     MessagingTopicCreate = 'submit_messaging_topic_create',
     MessagingTopicDelete = 'submit_messaging_topic_delete',
     MessagingTopicUpdateName = 'submit_messaging_topic_update_name',
-    MessagingTopicUpdateDescription = 'submit_messaging_topic_update_description',
+    MessagingTopicUpdatePermissions = 'submit_messaging_topic_update_permissions',
     MessagingTopicSubscriberAdd = 'submit_messaging_topic_subscriber_add',
     MessagingTopicSubscriberDelete = 'submit_messaging_topic_subscriber_delete'
 }

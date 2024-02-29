@@ -5,6 +5,7 @@ import type { LayoutLoad } from './$types';
 import { preferences } from '$lib/stores/preferences';
 import { failedInvoice } from '$lib/stores/billing';
 import { isCloud } from '$lib/system';
+import type { Organization } from '$lib/stores/organization';
 
 export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.PROJECT);
@@ -22,9 +23,9 @@ export const load: LayoutLoad = async ({ params, depends }) => {
 
         return {
             project,
-            organization: await sdk.forConsole.teams.get(project.teamId)
+            organization: await (sdk.forConsole.teams.get(project.teamId) as Promise<Organization>)
         };
     } catch (e) {
-        throw error(e.code, e.message);
+        error(e.code, e.message);
     }
 };

@@ -3,8 +3,8 @@
     import { Button } from '$lib/elements/forms';
     import { wizard } from '$lib/stores/wizard';
     import { providers } from './providers/store';
-    import Wizard from './wizard.svelte';
-    import { messageParams, operation, providerType, targetsById } from './wizard/store';
+    import Create from './create.svelte';
+    import { messageParams, providerType, targetsById } from './wizard/store';
     import { topicsById } from './store';
     import { MessagingProviderType } from '@appwrite.io/console';
 
@@ -30,7 +30,6 @@
                     )
                         return;
                     $providerType = type;
-                    $operation = 'create';
                     $topicsById = {};
                     $targetsById = {};
                     const common = {
@@ -56,12 +55,13 @@
                             $messageParams[$providerType] = {
                                 ...common,
                                 title: '',
-                                body: ''
+                                body: '',
+                                data: [['', '']]
                             };
                             break;
                     }
                     showCreateDropdown = false;
-                    wizard.start(Wizard);
+                    wizard.start(Create);
                 }}>
                 {option.name}
             </DropListItem>

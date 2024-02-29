@@ -12,13 +12,11 @@
         }
 
         // Get 1st 2 initials, skipping words that don't start with a letter
-        const initials = words
+        return words
             .filter((word) => word.match(/^[a-z]/i))
             .map((word) => word[0].toUpperCase())
             .slice(0, 2)
             .join('');
-
-        return initials;
     }
 
     // Current time as H:MM AM/PM
@@ -38,7 +36,7 @@
     </div>
     <div class="project-name u-text-center u-x-small u-width-full-line">{$project.name}</div>
     <div class="chat u-text-center u-width-full-line">
-        <div class="time u-text-center u-x-small u-width-full-line u-line-height-0-7">
+        <div class="time u-text-center u-width-full-line u-line-height-0-7">
             Today {getTime()}
         </div>
         <div class="chat-bubble-container">
@@ -53,7 +51,7 @@
     .phone {
         position: relative;
         width: 320px;
-        height: 539px;
+        height: 410px;
         background-image: url('./sms-preview-light.svg');
         background-repeat: no-repeat;
 

@@ -2,11 +2,13 @@
     import { page } from '$app/stores';
     import { Tab, Tabs } from '$lib/components';
     import { isTabSelected } from '$lib/helpers/load';
+    import type { TabElement } from '$lib/helpers/load';
     import { Cover, CoverTitle } from '$lib/layout';
+    import { isCloud } from '$lib/system';
 
     const projectId = $page.params.project;
     const path = `/console/project-${projectId}/settings`;
-    const tabs = [
+    const tabs: TabElement[] = [
         {
             href: path,
             title: 'Overview',
@@ -31,14 +33,17 @@
             href: `${path}/smtp`,
             title: 'SMTP',
             event: 'smtp'
-        },
-        {
+        }
+    ];
+
+    if (isCloud) {
+        tabs.push({
             href: `${path}/usage`,
             title: 'Usage',
             event: 'usage',
             hasChildren: true
-        }
-    ];
+        });
+    }
 </script>
 
 <Cover>

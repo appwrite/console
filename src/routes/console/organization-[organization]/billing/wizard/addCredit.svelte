@@ -4,6 +4,7 @@
     import type { Coupon } from '$lib/sdk/billing';
     import { sdk } from '$lib/stores/sdk';
     import { wizard } from '$lib/stores/wizard';
+    import { onMount } from 'svelte';
     import { addCreditWizardStore } from '../store';
 
     let coupon: string;
@@ -18,6 +19,7 @@
         try {
             const response = await sdk.forConsole.billing.getCoupon(coupon);
             couponData = response;
+            $addCreditWizardStore.coupon = coupon;
             coupon = null;
         } catch (error) {
             couponData.code = coupon;
@@ -26,10 +28,17 @@
             throw new Error(error);
         }
     }
+
+    onMount(() => {
+        if ($addCreditWizardStore.coupon) {
+            coupon = $addCreditWizardStore.coupon;
+            validateCoupon();
+        }
+    });
 </script>
 
 <WizardStep beforeSubmit={validateCoupon}>
-    <svelte:fragment slot="title">Add credits</svelte:fragment>
+    <svelte:fragment slot="title">Credits</svelte:fragment>
     <svelte:fragment slot="subtitle">
         Add Appwrite credits to your organization. A payment method is required before credits can
         be applied.
@@ -41,6 +50,6 @@
             $addCreditWizardStore.coupon = e.detail.code;
         }}
         let:data>
-        <span>{data.code} has been successfully added</span>
+        <span>{data.code.toUpperCase()} has been successfully added</span>
     </CouponInput>
 </WizardStep>

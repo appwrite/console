@@ -24,7 +24,7 @@
 </script>
 
 <script lang="ts">
-    import { messageParams, providerType, operation } from './store';
+    import { messageParams, providerType } from './store';
     import {
         Button,
         FormItem,
@@ -38,10 +38,10 @@
         Label
     } from '$lib/elements/forms';
     import { Pill } from '$lib/elements';
-    import { CustomId, Modal } from '$lib/components';
+    import { Modal } from '$lib/components';
     import { user } from '$lib/stores/user';
     import { clickOnEnter } from '$lib/helpers/a11y';
-    import { ID, MessageType, MessagingProviderType } from '@appwrite.io/console';
+    import { ID, MessagingProviderType } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
     import PushPhone from '../pushPhone.svelte';
     import { onMount } from 'svelte';
@@ -56,7 +56,7 @@
     let customData: [string, string][] = [];
 
     onMount(() => {
-        $messageParams[MessagingProviderType.Push].data = customData || [['', '']];
+        customData = $messageParams[MessagingProviderType.Push].data;
     });
 
     async function sendTestMessage() {
@@ -78,7 +78,7 @@
             undefined,
             undefined,
             undefined,
-            MessageType.Processing,
+            undefined,
             undefined
         );
     }
@@ -116,6 +116,7 @@
                 id="message"
                 label="Message"
                 placeholder="Type here..."
+                maxlength={1000}
                 bind:value={$messageParams[MessagingProviderType.Push]['body']}>
             </InputTextarea>
             <!-- TODO: Add support for draft messages -->
@@ -166,7 +167,7 @@
         <form class="form">
             <FormItem>
                 <Label
-                    tooltip="Deliver supplementary data alongside the notification, which remains hidden from the user's view but can be accessed by your application."
+                    tooltip="A key/value payload of additional metadata that's hidden from users. Use this to include information to support logic such as redirection and routing."
                     >Custom data <span class="u-color-text-gray">(Optional)</span></Label>
             </FormItem>
             <div class=" u-grid u-gap-8">
@@ -230,21 +231,13 @@
                 </Button>
             </div>
         </form>
-        {#if $operation === 'create'}
-            {#if !showCustomId}
-                <div>
-                    <Pill button on:click={() => (showCustomId = !showCustomId)}
-                        ><span class="icon-pencil" aria-hidden="true" /><span class="text">
-                            Message ID
-                        </span></Pill>
-                </div>
-            {:else}
-                <CustomId
-                    bind:show={showCustomId}
-                    name="Message"
-                    bind:id={$messageParams[$providerType].messageId}
-                    autofocus={false} />
-            {/if}
+        {#if !showCustomId}
+            <div>
+                <Pill button on:click={() => (showCustomId = !showCustomId)}
+                    ><span class="icon-pencil" aria-hidden="true" /><span class="text">
+                        Message ID
+                    </span></Pill>
+            </div>
         {/if}
     </FormList>
     <PushPhone

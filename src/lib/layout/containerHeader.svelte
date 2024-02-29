@@ -18,6 +18,7 @@
     import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
     import { createEventDispatcher, onMount } from 'svelte';
     import { ContainerButton } from '.';
+    import { trackEvent } from '$lib/actions/analytics';
 
     export let isFlex = true;
     export let title: string;
@@ -99,8 +100,12 @@
                     <span class="text">
                         You've reached the {services} limit for the {tier} plan. <Button
                             link
-                            on:click={upgradeMethod}>Upgrade</Button> your organization for additional
-                        resources.
+                            on:click={upgradeMethod}
+                            on:click={() =>
+                                trackEvent('click_organization_upgrade', {
+                                    from: 'button',
+                                    source: 'inline_alert'
+                                })}>Upgrade</Button> your organization for additional resources.
                     </span>
                 </Alert>
             {/if}
@@ -131,7 +136,12 @@
                                 {title.toLocaleLowerCase()} per project on the {tier} plan.
                                 {#if $organization?.billingPlan === BillingPlan.STARTER}<Button
                                         link
-                                        on:click={upgradeMethod}>Upgrade</Button>
+                                        on:click={upgradeMethod}
+                                        on:click={() =>
+                                            trackEvent('click_organization_upgrade', {
+                                                from: 'button',
+                                                source: 'resource_limit_tag'
+                                            })}>Upgrade</Button>
                                     for addtional {title.toLocaleLowerCase()}.
                                 {/if}
                             </p>

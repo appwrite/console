@@ -1,9 +1,8 @@
 <script lang="ts">
-    import { onDestroy } from 'svelte';
     import { Wizard } from '$lib/layout';
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
     import Provider from './wizard/provider.svelte';
-    import Configure from './wizard/configure.svelte';
+    import Settings from './wizard/settings.svelte';
     import { sdk } from '$lib/stores/sdk';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { addNotification } from '$lib/stores/notifications';
@@ -45,8 +44,8 @@
                         providerId,
                         $providerParams[$provider].name,
                         $providerParams[$provider].from,
-                        $providerParams[$provider].username,
-                        $providerParams[$provider].password,
+                        $providerParams[$provider].customerId,
+                        $providerParams[$provider].apiKey,
                         $providerParams[$provider].enabled
                     );
                     break;
@@ -77,10 +76,10 @@
                         $providerParams[$provider].apiKey,
                         $providerParams[$provider].domain,
                         $providerParams[$provider].isEuRegion,
-                        $providerParams[$provider].fromName,
+                        $providerParams[$provider].fromName || undefined,
                         $providerParams[$provider].fromEmail,
-                        $providerParams[$provider].replyToName,
-                        $providerParams[$provider].replyToEmail,
+                        $providerParams[$provider].replyToName || undefined,
+                        $providerParams[$provider].replyToEmail || undefined,
                         $providerParams[$provider].enabled
                     );
                     break;
@@ -89,15 +88,15 @@
                         providerId,
                         $providerParams[$provider].name,
                         $providerParams[$provider].apiKey,
-                        $providerParams[$provider].fromName,
+                        $providerParams[$provider].fromName || undefined,
                         $providerParams[$provider].fromEmail,
-                        $providerParams[$provider].replyToName,
-                        $providerParams[$provider].replyToEmail,
+                        $providerParams[$provider].replyToName || undefined,
+                        $providerParams[$provider].replyToEmail || undefined,
                         $providerParams[$provider].enabled
                     );
                     break;
                 case Providers.SMTP:
-                    response = await sdk.forProject.messaging.createSMTPProvider(
+                    response = await sdk.forProject.messaging.createSmtpProvider(
                         providerId,
                         $providerParams[$provider].name,
                         $providerParams[$provider].host,
@@ -115,7 +114,7 @@
                     );
                     break;
                 case Providers.FCM:
-                    response = await sdk.forProject.messaging.createFCMProvider(
+                    response = await sdk.forProject.messaging.createFcmProvider(
                         providerId,
                         $providerParams[$provider].name,
                         JSON.parse($providerParams[$provider].serviceAccountJSON),
@@ -123,13 +122,14 @@
                     );
                     break;
                 case Providers.APNS:
-                    response = await sdk.forProject.messaging.createAPNSProvider(
+                    response = await sdk.forProject.messaging.createApnsProvider(
                         providerId,
                         $providerParams[$provider].name,
                         $providerParams[$provider].authKey,
                         $providerParams[$provider].authKeyId,
                         $providerParams[$provider].teamId,
                         $providerParams[$provider].bundleId,
+                        $providerParams[$provider].sandbox,
                         $providerParams[$provider].enabled
                     );
                     break;
@@ -154,18 +154,14 @@
         }
     }
 
-    onDestroy(() => {
-        console.log('destroy');
-    });
-
     const stepsComponents: WizardStepsType = new Map();
     stepsComponents.set(1, {
-        label: 'Proivder',
+        label: 'Provider',
         component: Provider
     });
     stepsComponents.set(2, {
-        label: 'Configure',
-        component: Configure
+        label: 'Settings',
+        component: Settings
     });
 </script>
 

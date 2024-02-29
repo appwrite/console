@@ -4,6 +4,7 @@
     import { BillingPlan } from '$lib/constants';
     import { FormList, InputTextarea } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
+    import { formatCurrency } from '$lib/helpers/numbers';
     import { WizardStep } from '$lib/layout';
     import type { Coupon } from '$lib/sdk/billing';
     import { plansInfo } from '$lib/stores/billing';
@@ -48,7 +49,7 @@
 
 {#if downgradeToStarter}
     <WizardStep>
-        <svelte:fragment slot="title">Confirm plan change</svelte:fragment>
+        <svelte:fragment slot="title">Change confirmation</svelte:fragment>
         <svelte:fragment slot="subtitle">
             Your feedback is important to us and helps us improve the services Appwrite offer. If
             there is a specific reason you chose to change your plan at this time, please let us
@@ -64,7 +65,7 @@
     </WizardStep>
 {:else}
     <WizardStep>
-        <svelte:fragment slot="title">Confirm your details</svelte:fragment>
+        <svelte:fragment slot="title">Details</svelte:fragment>
         <svelte:fragment slot="subtitle">
             Confirm the details of your new organization and start your free trial.
         </svelte:fragment>
@@ -97,35 +98,37 @@
         {/if}
 
         <Box class="u-margin-block-start-32 u-flex u-flex-vertical u-gap-16" radius="small">
-            <CouponInput
-                bind:coupon
-                bind:couponData
-                on:validation={(e) => ($changeOrganizationTier.couponCode = e.detail.code)} />
             {#if $changeOrganizationTier.billingPlan !== BillingPlan.STARTER}
+                <CouponInput
+                    bind:coupon
+                    bind:couponData
+                    on:validation={(e) => ($changeOrganizationTier.couponCode = e.detail.code)} />
                 <span class="u-flex u-main-space-between">
                     <p class="text">{plan.name} plan</p>
-                    <p class="text">${plan.price}</p>
+                    <p class="text">{formatCurrency(plan.price)}</p>
                 </span>
                 <span class="u-flex u-main-space-between">
                     <p class="text">Additional members ({collaboratorsNumber})</p>
-                    <p class="text">${collaboratorPrice * collaboratorsNumber}</p>
+                    <p class="text">{formatCurrency(collaboratorPrice * collaboratorsNumber)}</p>
                 </span>
                 {#if couponData?.status === 'active'}
                     <span class="u-flex u-main-space-between">
                         <p class="text">Credits applied ({couponData.credits})</p>
-                        <p class="text">-${couponData.credits}</p>
+                        <p class="text">-{formatCurrency(couponData.credits)}</p>
                     </span>
                 {/if}
             {/if}
+            {@const estimatedTotal =
+                couponData?.status === 'active'
+                    ? totalExpences - couponData.credits >= 0
+                        ? totalExpences - couponData.credits
+                        : 0
+                    : totalExpences}
             <div class="u-sep-block-start" />
             <span class="u-flex u-main-space-between">
                 <p class="text">Estimated total</p>
                 <p class="text">
-                    ${couponData?.status === 'active'
-                        ? totalExpences - couponData.credits >= 0
-                            ? totalExpences - couponData.credits
-                            : 0
-                        : totalExpences}
+                    {formatCurrency(estimatedTotal)}
                 </p>
             </span>
 

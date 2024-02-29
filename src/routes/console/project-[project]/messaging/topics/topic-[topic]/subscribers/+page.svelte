@@ -46,9 +46,14 @@
         const targetIds = Object.keys($targetsById).filter(
             (targetId) => !(targetId in subscribersByTargetId)
         );
-        const promises = targetIds.map((targetId) =>
-            sdk.forProject.messaging.createSubscriber($page.params.topic, ID.unique(), targetId)
-        );
+        const promises = targetIds.map(async (targetId) => {
+            const subscriber = await sdk.forProject.messaging.createSubscriber(
+                $page.params.topic,
+                ID.unique(),
+                targetId
+            );
+            subscribersByTargetId[targetId] = subscriber;
+        });
 
         try {
             await Promise.all(promises);
@@ -125,8 +130,7 @@
             total={data.subscribers.total} />
     {:else if $hasPageQueries}
         <EmptyFilter resource="subscribers" />
-        <!-- TODO: remove data.search != 'empty' when the API is ready with data -->
-    {:else if data.search && data.search != 'empty'}
+    {:else if data.search}
         <EmptySearch>
             <div class="u-text-center">
                 <b>Sorry, we couldn't find '{data.search}'</b>
@@ -139,13 +143,27 @@
             </Button>
         </EmptySearch>
     {:else}
-        <!-- TODO: update docs link -->
         <Empty
             single
             on:click={() => (showAdd = true)}
-            href="https://appwrite.io/docs/references/cloud/client-web/teams"
+            href="https://appwrite.io/docs/products/messaging/topics#subscribe-targets-to-topics"
             target="subscriber" />
     {/if}
 </Container>
 
-<UserTargetsModal bind:show={showAdd} bind:targetsById={$targetsById} on:update={addTargets} />
+<UserTargetsModal
+    title="Select subscribers"
+    bind:show={showAdd}
+    bind:targetsById={$targetsById}
+    on:update={addTargets}>
+    <svelte:fragment slot="description">
+        <p class="text">
+            Add subscribers to this topic by selecting the targets for directing messages. <a
+                href="https://appwrite.io/docs/products/messaging/topics#subscribe-targets-to-topics"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="link">Learn more about subscribers</a
+            >.
+        </p>
+    </svelte:fragment>
+</UserTargetsModal>

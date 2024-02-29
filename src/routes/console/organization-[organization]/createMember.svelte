@@ -11,6 +11,7 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { isCloud } from '$lib/system';
     import { plansInfo } from '$lib/stores/billing';
+    import { formatCurrency } from '$lib/helpers/numbers';
 
     export let showCreate = false;
 
@@ -56,14 +57,14 @@
     }
 </script>
 
-<Modal title="Invite Member" {error} size="big" bind:show={showCreate} onSubmit={create}>
+<Modal title="Invite member" {error} size="big" bind:show={showCreate} onSubmit={create}>
     {#if isCloud}
         <Alert type="info">
             {#if $organization?.billingPlan === BillingPlan.SCALE}
                 You can add unlimited organization members on the {plan.name} plan at no cost.
             {:else if $organization?.billingPlan === BillingPlan.PRO}
                 You can add unlimited organization members on the {plan.name} plan for
-                <b>${plan.addons.member.price} each per billing period</b>.
+                <b>{formatCurrency(plan.addons.member.price)} each per billing period</b>.
             {/if}
         </Alert>
     {/if}
