@@ -49,6 +49,7 @@ type BaseCommand = {
     forceEnable?: boolean;
     group?: CommandGroup;
     icon?: string;
+    image?: string;
     rank?: number;
     nested?: boolean;
     keepOpen?: boolean;

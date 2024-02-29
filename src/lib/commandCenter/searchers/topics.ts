@@ -19,7 +19,7 @@ export const topicsSearcher = (async (query: string) => {
                     callback: () => {
                         goto(`/console/project-${projectId}/messaging/topics/topic-${topic.$id}`);
                     },
-                    icon: 'archive',
+                    icon: 'send',
                 }) as const
         );
 }) satisfies Searcher;

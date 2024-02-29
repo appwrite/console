@@ -57,7 +57,8 @@
             callback: () => {
                 goto(`/console/project-${$project.$id}/messaging`);
             },
-            keys: $page.url.pathname.includes('messaging') ? ['m'] : ['g', 'm'],
+            keys:['g', 'm'],
+            disabled: $page.url.pathname.endsWith('messaging'),
             group: 'navigation'
         },
         {

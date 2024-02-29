@@ -1,7 +1,7 @@
 import { goto } from '$app/navigation';
 import { project } from '$routes/console/project-[project]/store';
 import { get } from 'svelte/store';
-import type { Searcher } from '../commands';
+import { type Searcher } from '../commands';
 import { sdk } from '$lib/stores/sdk';
 import { MessagingProviderType } from '@appwrite.io/console';
 
@@ -34,7 +34,6 @@ const getIcon = (message) => {
 export const messagesSearcher = (async (query: string) => {
     const { messages } = await sdk.forProject.messaging.listMessages([], query || undefined);
 
-    console.log(messages);
     const projectId = get(project).$id;
 
     return messages
