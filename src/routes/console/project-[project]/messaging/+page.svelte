@@ -28,7 +28,7 @@
     } from '$lib/elements/table';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Container } from '$lib/layout';
-    import { MessageStatus, MessagingProviderType } from '@appwrite.io/console';
+    import { MessagingProviderType } from '@appwrite.io/console';
     import type { PageData } from './$types';
     import CreateMessageDropdown from './createMessageDropdown.svelte';
     import FailedModal from './failedModal.svelte';
@@ -141,7 +141,7 @@
                         <TableCellCheck
                             bind:selectedIds={selected}
                             id={message.$id}
-                            disabled={message.status === MessageStatus.Processing} />
+                            disabled={message.status === 'processing'} />
 
                         {#each $columns as column (column.id)}
                             {#if column.show}

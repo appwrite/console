@@ -48,8 +48,8 @@
                 providerId: $providerData.$id,
                 name: $providerData.name,
                 enabled: $providerData.enabled,
-                username: $providerData.credentials['username'],
-                password: $providerData.credentials['password'],
+                customerId: $providerData.credentials['customerId'],
+                apiKey: $providerData.credentials['apiKey'],
                 from: $providerData.options['from']
             };
             break;

@@ -97,7 +97,7 @@
 
             <ClickableList>
                 <ClickableListItem
-                    href={`https://appwrite.io/docs/messaging/${$provider}`}
+                    href={`https://appwrite.io/docs/products/messaging/${$provider}`}
                     external>
                     <div class="u-flex u-cross-center u-main-space-between">
                         <div class="u-flex u-cross-center u-gap-16">
@@ -135,7 +135,7 @@
 
 <style lang="scss">
     .need-a-hand {
-        --p-bg-color-hover: var(--color-neutral-10);
+        --p-bg-color-hover: var(--color-neutral-5);
         .how-to-enable {
             border-radius: var(--border-radius-small);
 
@@ -150,7 +150,8 @@
         }
 
         :global(.clickable-list) {
-            --color-border: var(--color-neutral-10);
+            --color-border: var(--color-neutral-5);
+            --p-clickable-button-bg-color-hover: var(--color-border);
 
             :global(.theme-dark) & {
                 --color-border: var(--color-neutral-85);

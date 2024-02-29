@@ -24,7 +24,7 @@
 </script>
 
 <script lang="ts">
-    import { messageParams, providerType, operation } from './store';
+    import { messageParams, providerType } from './store';
     import {
         Button,
         FormItem,
@@ -38,10 +38,10 @@
         Label
     } from '$lib/elements/forms';
     import { Pill } from '$lib/elements';
-    import { CustomId, Modal } from '$lib/components';
+    import { Modal } from '$lib/components';
     import { user } from '$lib/stores/user';
     import { clickOnEnter } from '$lib/helpers/a11y';
-    import { ID, MessageStatus, MessagingProviderType } from '@appwrite.io/console';
+    import { ID, MessagingProviderType, type Models } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
     import PushPhone from '../pushPhone.svelte';
     import { onMount } from 'svelte';
@@ -52,6 +52,7 @@
     let selected = 'self';
     let otherEmail = '';
     let dataError = '';
+    let file: Models.File = null;
     let customData: [string, string][] = [];
 
     onMount(() => {
@@ -77,7 +78,7 @@
             undefined,
             undefined,
             undefined,
-            MessageStatus.Processing,
+            undefined,
             undefined
         );
     }
@@ -151,7 +152,9 @@
         <form class="form">
             <FormList>
                 <FormItem>
-                    <InputFilePicker label="Media" />
+                    <InputFilePicker
+                        bind:value={$messageParams[MessagingProviderType.Push].file}
+                        label="Media" />
                 </FormItem>
                 <FormItem>
                     <Label
@@ -221,21 +224,13 @@
                 </Button>
             </div>
         </form>
-        {#if $operation === 'create'}
-            {#if !showCustomId}
-                <div>
-                    <Pill button on:click={() => (showCustomId = !showCustomId)}
-                        ><span class="icon-pencil" aria-hidden="true" /><span class="text">
-                            Message ID
-                        </span></Pill>
-                </div>
-            {:else}
-                <CustomId
-                    bind:show={showCustomId}
-                    name="Message"
-                    bind:id={$messageParams[$providerType].messageId}
-                    autofocus={false} />
-            {/if}
+        {#if !showCustomId}
+            <div>
+                <Pill button on:click={() => (showCustomId = !showCustomId)}
+                    ><span class="icon-pencil" aria-hidden="true" /><span class="text">
+                        Message ID
+                    </span></Pill>
+            </div>
         {/if}
     </FormList>
     <PushPhone

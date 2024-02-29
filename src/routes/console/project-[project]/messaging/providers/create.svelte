@@ -44,8 +44,8 @@
                         providerId,
                         $providerParams[$provider].name,
                         $providerParams[$provider].from,
-                        $providerParams[$provider].username,
-                        $providerParams[$provider].password,
+                        $providerParams[$provider].customerId,
+                        $providerParams[$provider].apiKey,
                         $providerParams[$provider].enabled
                     );
                     break;
@@ -156,7 +156,7 @@
 
     const stepsComponents: WizardStepsType = new Map();
     stepsComponents.set(1, {
-        label: 'Proivder',
+        label: 'Provider',
         component: Provider
     });
     stepsComponents.set(2, {

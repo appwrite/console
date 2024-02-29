@@ -103,7 +103,7 @@
 </script>
 
 <WizardStep beforeSubmit={handleBefore}>
-    <svelte:fragment slot="title">Choose a plan</svelte:fragment>
+    <svelte:fragment slot="title">Plan selection</svelte:fragment>
 
     <p class="body-text-1 u-bold common-section">Plan</p>
     <p class="text u-margin-block-start-4">

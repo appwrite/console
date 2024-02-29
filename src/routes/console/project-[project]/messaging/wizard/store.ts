@@ -1,4 +1,4 @@
-import { MessageStatus, MessagingProviderType, type Models } from '@appwrite.io/console';
+import { MessagingProviderType, type Models } from '@appwrite.io/console';
 import { get, writable } from 'svelte/store';
 
 export type MessageParams = {
@@ -6,7 +6,7 @@ export type MessageParams = {
     topics: string[];
     users: string[];
     targets: string[];
-    status: MessageStatus;
+    draft: boolean;
     scheduledAt?: string;
 };
 
@@ -23,6 +23,7 @@ export type SMSMessageParams = MessageParams & {
 export type PushMessageParams = MessageParams & {
     title: string;
     body: string;
+    file: Models.File;
     data: [string, string][];
     action?: string;
     icon?: string;
@@ -32,7 +33,6 @@ export type PushMessageParams = MessageParams & {
     badge?: string;
 };
 
-export const operation = writable<'create' | 'update'>('create');
 export const providerType = writable<MessagingProviderType>(null);
 export const targetsById = writable<Record<string, Models.Target>>({});
 export const messageParams = writable<{

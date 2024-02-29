@@ -301,7 +301,7 @@ export enum Submit {
     MessagingTopicCreate = 'submit_messaging_topic_create',
     MessagingTopicDelete = 'submit_messaging_topic_delete',
     MessagingTopicUpdateName = 'submit_messaging_topic_update_name',
-    MessagingTopicUpdateDescription = 'submit_messaging_topic_update_description',
+    MessagingTopicUpdatePermissions = 'submit_messaging_topic_update_permissions',
     MessagingTopicSubscriberAdd = 'submit_messaging_topic_subscriber_add',
     MessagingTopicSubscriberDelete = 'submit_messaging_topic_subscriber_delete'
 }

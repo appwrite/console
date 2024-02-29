@@ -274,7 +274,7 @@
                                                         <div class="u-flex-vertical u-gap-8">
                                                             <div
                                                                 role="button"
-                                                                style:background-position="center"
+                                                                style:background-size="cover"
                                                                 style:background-image={`url(${getPreview(
                                                                     currentBucket.$id,
                                                                     file.$id,
@@ -287,7 +287,7 @@
                                                                 style:display="flex"
                                                                 style:align-items="flex-end"
                                                                 style:flex-direction="row-reverse"
-                                                                style:border-shadow="none"
+                                                                style:box-shadow="none"
                                                                 class="card u-height-100-percent u-gap-16"
                                                                 style="--card-padding:0.5rem; --card-border-radius:var(--border-radius-large);">
                                                                 <input
