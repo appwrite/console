@@ -22,6 +22,8 @@
     import { onMount } from 'svelte';
     import Heading from './heading.svelte';
     import { clickOnEnter } from '$lib/helpers/a11y';
+    import Empty from './empty.svelte';
+    import { Pill } from '$lib/elements';
 
     export let show: boolean;
     export let selectedBucket: string = null;
@@ -160,7 +162,8 @@
                     </ul>
                 </aside>
                 <article
-                    class="modal-content-main u-flex-vertical u-gap-32 u-sep-inline-start u-flex-basis-1000 u-padding-inline-32 u-padding-block-24 u-overflow-y-auto">
+                    style:padding-inline="calc(var(--p-modal-padding))"
+                    class="modal-content-main u-flex-vertical u-gap-24 u-sep-inline-start u-flex-basis-1000 u-padding-block-24 u-overflow-y-auto">
                     <div class="is-only-mobile">
                         {#await buckets}
                             loading
@@ -237,8 +240,13 @@
                                             class="u-hide"
                                             on:change={uploadFile}
                                             bind:this={fileSelector} />
-                                        <span class="icon-upload" aria-hidden="true"></span>
-                                        <span>Upload</span>
+                                        {#if uploading}
+                                            <div class="loader is-small"></div>
+                                            <span>Uploading</span>
+                                        {:else}
+                                            <span class="icon-upload" aria-hidden="true"></span>
+                                            <span>Upload</span>
+                                        {/if}
                                     </Button>
                                 </div>
                             </div>
@@ -260,30 +268,38 @@
                                         {#if view === 'grid'}
                                             <ul
                                                 class="grid-box"
-                                                style="--grid-gap:2rem; --grid-item-size:10rem; --grid-item-size-small-screens:8rem;">
+                                                style="--grid-gap:40px; --grid-item-size:120px;">
                                                 {#each response.files as file}
                                                     <li>
-                                                        <div
-                                                            role="button"
-                                                            style:background-image={`url(${getPreview(
-                                                                currentBucket.$id,
-                                                                file.$id,
-                                                                360
-                                                            )})`}
-                                                            on:click={() => selectFile(file)}
-                                                            on:keyup={clickOnEnter}
-                                                            tabindex="0"
-                                                            style:aspect-ratio="1/1"
-                                                            class="card u-height-100-percent u-flex u-flex-vertical u-gap-16"
-                                                            style="--card-padding:0.5rem; --card-border-radius:var(--border-radius-large);">
-                                                            <input
-                                                                class="u-position-absolute is-small u-margin-block-start-2"
-                                                                type="radio"
-                                                                name="file"
-                                                                value={file.$id}
-                                                                style:pointer-events="none"
-                                                                checked={selectedFile ===
-                                                                    file.$id} />
+                                                        <div class="u-flex-vertical u-gap-8">
+                                                            <div
+                                                                role="button"
+                                                                style:background-position="center"
+                                                                style:background-image={`url(${getPreview(
+                                                                    currentBucket.$id,
+                                                                    file.$id,
+                                                                    360
+                                                                )})`}
+                                                                on:click={() => selectFile(file)}
+                                                                on:keyup={clickOnEnter}
+                                                                tabindex="0"
+                                                                style:aspect-ratio="1/1"
+                                                                style:display="flex"
+                                                                style:align-items="flex-end"
+                                                                style:flex-direction="row-reverse"
+                                                                style:border-shadow="none"
+                                                                class="card u-height-100-percent u-gap-16"
+                                                                style="--card-padding:0.5rem; --card-border-radius:var(--border-radius-large);">
+                                                                <input
+                                                                    class="u-position-absolute is-small u-margin-block-start-2"
+                                                                    type="radio"
+                                                                    name="file"
+                                                                    value={file.$id}
+                                                                    style:pointer-events="none"
+                                                                    checked={selectedFile ===
+                                                                        file.$id} />
+                                                            </div>
+                                                            <Trim alternativeTrim>{file.name}</Trim>
                                                         </div>
                                                     </li>
                                                 {/each}
@@ -293,7 +309,8 @@
                                             <TableScroll noMargin transparent dense>
                                                 <TableHeader>
                                                     <TableCellHead>Filename</TableCellHead>
-                                                    <TableCellHead width={140} onlyDesktop
+                                                    <TableCellHead width={140}>ID</TableCellHead>
+                                                    <TableCellHead width={100} onlyDesktop
                                                         >Type</TableCellHead>
                                                     <TableCellHead width={100} onlyDesktop
                                                         >Size</TableCellHead>
@@ -309,6 +326,7 @@
                                                                     class="u-inline-flex u-cross-center u-gap-12">
                                                                     <input
                                                                         type="radio"
+                                                                        class="is-small"
                                                                         name="file"
                                                                         value={file.$id}
                                                                         style:pointer-events="none"
@@ -326,11 +344,14 @@
                                                                             )}
                                                                             alt={file.name} />
                                                                     </span>
-                                                                    <Trim>
+                                                                    <Trim alternativeTrim>
                                                                         {file.name}
                                                                     </Trim>
                                                                 </div>
                                                             </TableCell>
+                                                            <TableCellText title="ID" onlyDesktop>
+                                                                <Id value={file.$id}>{file.$id}</Id>
+                                                            </TableCellText>
                                                             <TableCellText title="Type" onlyDesktop>
                                                                 {file.mimeType}
                                                             </TableCellText>
@@ -367,7 +388,7 @@
                                             </div>
                                         </EmptySearch>
                                     {:else}
-                                        <EmptySearch hidePages hidePagination>
+                                        <Empty single>
                                             <div class="common-section">
                                                 <div class="u-text-center common-section">
                                                     <Heading size="7" tag="h2" trimmed={false}>
@@ -384,7 +405,7 @@
                                                     </p>
                                                 </div>
                                             </div>
-                                        </EmptySearch>
+                                        </Empty>
                                     {/if}
                                 </div>
                             {/await}
