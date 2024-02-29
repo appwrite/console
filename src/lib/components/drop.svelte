@@ -41,7 +41,7 @@
                 {
                     name: 'offset',
                     options: {
-                        offset: [-arrowSize, noArrow ? 0 : arrowSize / 1.5 ]
+                        offset: [-arrowSize, noArrow ? 0 : arrowSize / 1.5]
                     }
                 },
                 {
