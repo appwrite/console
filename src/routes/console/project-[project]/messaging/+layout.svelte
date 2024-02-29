@@ -1,7 +1,12 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
-    import { addSubPanel, registerCommands, registerSearchers, updateCommandGroupRanks } from '$lib/commandCenter';
+    import {
+        addSubPanel,
+        registerCommands,
+        registerSearchers,
+        updateCommandGroupRanks
+    } from '$lib/commandCenter';
     import { CreateMessagePanel } from '$lib/commandCenter/panels';
     import { messagesSearcher } from '$lib/commandCenter/searchers/messages';
     import { providersSearcher } from '$lib/commandCenter/searchers/providers';
@@ -27,7 +32,7 @@
             disabled:
                 $page.url.pathname.endsWith('topics') || $page.url.pathname.includes('message-'),
             group: 'messaging',
-            rank: 1,
+            rank: 1
         },
         {
             label: 'Go to Providers',
@@ -38,8 +43,7 @@
             disabled:
                 $page.url.pathname.endsWith('providers') || $page.url.pathname.includes('message-'),
             group: 'messaging',
-            rank: 2,
-            forceEnable: true
+            rank: 2
         }
     ]);
 
