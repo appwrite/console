@@ -18,6 +18,7 @@ const groups = [
     'databases',
     'functions',
     'messaging',
+    'messages',
     'providers',
     'topics',
     'storage',

@@ -8,7 +8,7 @@
 
     $: $registerCommands([
         {
-            label: 'Go to subscribers',
+            label: 'Go to Subscribers',
             callback() {
                 goto(
                     `/console/project-${$project.$id}/messaging/topics/topic-${topicId}/subscribers`
@@ -16,17 +16,27 @@
             },
             keys: ['g', 's'],
             disabled: $page.url.pathname.endsWith('subscribers'),
-            group: 'navigation',
+            group: 'topics',
             rank: 1
         },
         {
-            label: 'Go to activity',
+            label: 'Go to Activity',
             callback() {
                 goto(`/console/project-${$project.$id}/messaging/topics/topic-${topicId}/activity`);
             },
             keys: ['g', 'a'],
             disabled: $page.url.pathname.endsWith('activity'),
-            group: 'navigation',
+            group: 'topics',
+            rank: 1
+        },
+        {
+            label: 'Go to Overview',
+            callback() {
+                goto(`/console/project-${$project.$id}/messaging/topics/topic-${topicId}`);
+            },
+            keys: ['g', 'o'],
+            disabled: $page.url.pathname.endsWith(`topic-${topicId}`),
+            group: 'topics',
             rank: 1
         }
     ]);

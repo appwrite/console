@@ -26,19 +26,20 @@
             },
             disabled:
                 $page.url.pathname.endsWith('topics') || $page.url.pathname.includes('message-'),
-            group: 'navigation',
+            group: 'messaging',
             rank: 1,
         },
         {
             label: 'Go to Providers',
-            keys: ['g', 'k'],
+            keys: ['g', 'p'],
             callback() {
                 goto(`/console/project-${$project.$id}/messaging/providers`);
             },
             disabled:
                 $page.url.pathname.endsWith('providers') || $page.url.pathname.includes('message-'),
-            group: 'navigation',
+            group: 'messaging',
             rank: 2,
+            forceEnable: true
         }
     ]);
 

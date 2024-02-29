@@ -4,6 +4,19 @@ import { get } from 'svelte/store';
 import type { Searcher } from '../commands';
 import { sdk } from '$lib/stores/sdk';
 
+const getIcon = (provider) => {
+    switch (provider.type) {
+        case MessagingProviderType.Push:
+            return 'device-mobile';
+        case MessagingProviderType.Sms:
+            return 'annotation';
+        case MessagingProviderType.Email:
+            return 'mail';
+        default:
+            return 'send';
+    }
+}
+
 export const providersSearcher = (async (query: string) => {
     const { providers } = await sdk.forProject.messaging.listProviders([], query || undefined);
 
@@ -20,7 +33,7 @@ export const providersSearcher = (async (query: string) => {
                     callback: () => {
                         goto(`/console/project-${projectId}/messaging/providers/provider-${provider.$id}`);
                     },
-                    icon: 'cloud',
+                    icon: getIcon(provider),
                 }) as const
         );
 }) satisfies Searcher;

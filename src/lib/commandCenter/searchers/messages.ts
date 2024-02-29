@@ -18,6 +18,19 @@ const getLabel = (message) => {
     }
 };
 
+const getIcon = (message) => {
+    switch (message.providerType) {
+        case MessagingProviderType.Push:
+            return 'device-mobile';
+        case MessagingProviderType.Sms:
+            return 'annotation';
+        case MessagingProviderType.Email:
+            return 'mail';
+        default:
+            return 'send';
+    }
+}
+
 export const messagesSearcher = (async (query: string) => {
     const { messages } = await sdk.forProject.messaging.listMessages([], query || undefined);
 
@@ -29,12 +42,12 @@ export const messagesSearcher = (async (query: string) => {
         .map(
             (message) =>
                 ({
-                    group: 'messaging',
+                    group: 'messages',
                     label: getLabel(message),
                     callback: () => {
                         goto(`/console/project-${projectId}/messaging/message-${message.$id}`);
                     },
-                    icon: 'send',
+                    icon: getIcon(message),
                 }) as const
         );
 }) satisfies Searcher;

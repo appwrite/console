@@ -15,6 +15,7 @@
         userSearcher
     } from '$lib/commandCenter/searchers';
     import { MigrationBox } from '$lib/components';
+    import { page } from '$app/stores';
 
     onMount(() => {
         return sdk.forConsole.client.subscribe(['project', 'console'], (response) => {
@@ -32,7 +33,7 @@
             callback: () => {
                 goto(`/console/project-${$project.$id}/auth`);
             },
-            keys: ['a'],
+            keys: ['g', 'a'],
             group: 'navigation'
         },
         {
@@ -40,7 +41,7 @@
             callback: () => {
                 goto(`/console/project-${$project.$id}/databases`);
             },
-            keys: ['d'],
+            keys: ['g', 'd'],
             group: 'navigation'
         },
         {
@@ -48,7 +49,7 @@
             callback: () => {
                 goto(`/console/project-${$project.$id}/functions`);
             },
-            keys: ['f'],
+            keys: ['g', 'f'],
             group: 'navigation'
         },
         {
@@ -56,7 +57,7 @@
             callback: () => {
                 goto(`/console/project-${$project.$id}/messaging`);
             },
-            keys: ['m'],
+            keys: $page.url.pathname.includes('messaging') ? ['m'] : ['g', 'm'],
             group: 'navigation'
         },
         {
@@ -64,23 +65,23 @@
             callback: () => {
                 goto(`/console/project-${$project.$id}/storage`);
             },
-            keys: ['s'],
+            keys: ['g', 's'],
             group: 'navigation'
         },
         {
-            label: 'Go to settings',
+            label: 'Go to Settings',
             callback: () => {
                 goto(`/console/project-${$project.$id}/settings`);
             },
-            keys: ['p'],
+            keys: ['g', 'e'],
             group: 'navigation'
         },
         {
-            label: 'Go to overview',
+            label: 'Go to Overview',
             callback: () => {
                 goto(`/console/project-${$project.$id}`);
             },
-            keys: ['o'],
+            keys: ['g', 'o'],
             group: 'navigation'
         }
     ]);
