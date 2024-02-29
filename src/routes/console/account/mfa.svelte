@@ -2,7 +2,6 @@
     import { invalidate } from '$app/navigation';
     import { Submit, trackError } from '$lib/actions/analytics';
     import { Modal, Output, Copy, Alert } from '$lib/components';
-    import LoadingDots from '$lib/components/loadingDots.svelte';
     import { Dependencies } from '$lib/constants';
     import { Button, FormList, InputDigits } from '$lib/elements/forms';
     import { Table, TableBody, TableCell, TableRow } from '$lib/elements/table';
