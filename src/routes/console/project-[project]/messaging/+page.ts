@@ -1,5 +1,5 @@
 import { queries, queryParamToMap } from '$lib/components/filters';
-import { CARD_LIMIT, PAGE_LIMIT } from '$lib/constants';
+import { CARD_LIMIT } from '$lib/constants';
 import {
     View,
     getLimit,
@@ -11,8 +11,6 @@ import {
 } from '$lib/helpers/load';
 import { sdk } from '$lib/stores/sdk';
 import { Query, type Models } from '@appwrite.io/console';
-
-import type { Load } from '@sveltejs/kit';
 
 // checkout messaging/+layout.ts
 

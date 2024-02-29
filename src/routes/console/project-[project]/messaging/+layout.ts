@@ -3,18 +3,10 @@ import Header from './header.svelte';
 import type { LayoutLoad } from './$types';
 
 import { queries, queryParamToMap } from '$lib/components/filters';
-import { CARD_LIMIT, PAGE_LIMIT } from '$lib/constants';
-import {
-    View,
-    getLimit,
-    getPage,
-    getQuery,
-    getSearch,
-    getView,
-    pageToOffset
-} from '$lib/helpers/load';
+import { PAGE_LIMIT } from '$lib/constants';
+import { getLimit, getPage, getQuery, getSearch, pageToOffset } from '$lib/helpers/load';
 import { sdk } from '$lib/stores/sdk';
-import { Query, type Models } from '@appwrite.io/console';
+import { Query } from '@appwrite.io/console';
 
 import type { Load } from '@sveltejs/kit';
 
