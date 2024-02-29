@@ -1,29 +1,7 @@
-<script context="module" lang="ts">
-    export async function createEmailMessage(params: EmailMessageParams) {
-        const response = await sdk.forProject.client.call(
-            'POST',
-            new URL(sdk.forProject.client.config.endpoint + '/messaging/messages/email'),
-            {
-                'X-Appwrite-Project': sdk.forProject.client.config.project,
-                'content-type': 'application/json',
-                'X-Appwrite-Mode': 'admin'
-            },
-            params
-        );
-
-        return response.json();
-    }
-</script>
-
 <script lang="ts">
-    import {
-        messageParams,
-        providerType,
-        type EmailMessageParams,
-        operation
-    } from './store';
+    import { messageParams, providerType } from './store';
 
-  import {
+    import {
         Button,
         FormList,
         InputEmail,
@@ -37,11 +15,10 @@
     import { Modal } from '$lib/components';
     import { user } from '$lib/stores/user';
     import { clickOnEnter } from '$lib/helpers/a11y';
-    import { ID, MessagingProviderType } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
-    
-    import { MessageType, MessagingProviderType } from '@appwrite.io/console';
-    import {page} from '$app/stores'
+
+    import { ID, MessagingProviderType } from '@appwrite.io/console';
+    import { page } from '$app/stores';
     import Alert from '$lib/components/alert.svelte';
 
     let showCustomId = false;
@@ -72,22 +49,18 @@
     }
 
     $: otherEmail = selected === 'self' ? '' : otherEmail;
-
-    const providers = () => {
-      return $page.data.providers.providers.filter((provider) => provider.type === 'email');
-    }
-
 </script>
 
-{#if providers().length === 0}
-  <div style="margin-bottom:1.4rem">
-    <Alert type="warning">
-      <span slot="title">Enable a third-party provider</span>
-      <p>
-        All providers are currently disabled. Enable a third-party provider for sending emails.
-      </p>
-    </Alert>
-  </div>
+{#if $page.data.providers.providers.filter((provider) => provider.type === MessagingProviderType.Email).length === 0}
+    <div style="margin-bottom:1.4rem">
+        <Alert type="warning">
+            <span slot="title">Enable a third-party provider</span>
+            <p>
+                All providers are currently disabled. Enable a third-party provider for sending
+                emails.
+            </p>
+        </Alert>
+    </div>
 {/if}
 
 <FormList>

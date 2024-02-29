@@ -45,7 +45,7 @@
     import { sdk } from '$lib/stores/sdk';
     import PushPhone from '../pushPhone.svelte';
     import { onMount } from 'svelte';
-    import {page} from '$app/stores'
+    import { page } from '$app/stores';
     import Alert from '$lib/components/alert.svelte';
 
     let showCustomId = false;
@@ -88,19 +88,20 @@
     $: dataError = validateData(customData || []);
 
     const providers = () => {
-      return $page.data.providers.providers.filter((provider) => provider.type === 'push');
-    }
+        return $page.data.providers.providers.filter((provider) => provider.type === 'push');
+    };
 </script>
 
 {#if providers().length === 0}
-  <div style="margin-bottom:1.4rem">
-    <Alert type="warning">
-      <span slot="title">Enable a third-party provider</span>
-      <p>
-        All providers are currently disabled. Enable a third-party provider for sending notifications.
-      </p>
-    </Alert>
-  </div>
+    <div style="margin-bottom:1.4rem">
+        <Alert type="warning">
+            <span slot="title">Enable a third-party provider</span>
+            <p>
+                All providers are currently disabled. Enable a third-party provider for sending
+                notifications.
+            </p>
+        </Alert>
+    </div>
 {/if}
 
 <div class="u-flex u-gap-24">

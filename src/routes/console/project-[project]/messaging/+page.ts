@@ -16,7 +16,6 @@ import type { Load } from '@sveltejs/kit';
 
 // checkout messaging/+layout.ts
 
-
 export const load = async ({ url, route }) => {
     const page = getPage(url);
     const search = getSearch(url);
@@ -67,6 +66,6 @@ export const load = async ({ url, route }) => {
         query,
         page,
         view,
-        messages,
+        messages
     };
 };

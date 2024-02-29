@@ -19,7 +19,7 @@ import { Query, type Models } from '@appwrite.io/console';
 import type { Load } from '@sveltejs/kit';
 
 // I **think** this should be enough, tbh
-const loadProviders = async ({url, route}: Parameters<Load>[0]) => {
+const loadProviders = async ({ url, route }: Parameters<Load>[0]) => {
     const page = getPage(url);
     const limit = getLimit(url, route, PAGE_LIMIT);
     const offset = pageToOffset(page, limit);
@@ -27,17 +27,12 @@ const loadProviders = async ({url, route}: Parameters<Load>[0]) => {
     const parsedQueries = queryParamToMap(query || '[]');
     queries.set(parsedQueries);
     const search = getSearch(url);
-    
+
     return sdk.forProject.messaging.listProviders(
-      [
-          Query.limit(10),
-          Query.offset(offset),
-          Query.orderDesc(''),
-          ...parsedQueries.values()
-      ],
-      search || undefined
-    )
-}
+        [Query.limit(10), Query.offset(offset), Query.orderDesc(''), ...parsedQueries.values()],
+        search || undefined
+    );
+};
 
 export const load: LayoutLoad = async (params) => {
     return {
