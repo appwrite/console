@@ -66,7 +66,8 @@
                         id="enable-switch"
                         bind:value={enabled} />
                 </FormList>
-                <li>Created: {toLocaleDateTime($webhook.$createdAt)}</li>
+
+                <li style="margin-top:16px">Created: {toLocaleDateTime($webhook.$createdAt)}</li>
                 <li>Last updated: {toLocaleDateTime($webhook.$updatedAt)}</li>
             </ul>
             <MessageStatusPill enabled={$webhook.enabled} />

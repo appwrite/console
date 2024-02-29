@@ -51,7 +51,7 @@
     <GridHeader title="Webhooks" {columns} view={data.view} hideColumns={false} hideView={true}>
         <Button on:click={openWizard} event="create_webhook">
             <span class="icon-plus" aria-hidden="true" />
-            <span class="text">Create Webhook</span>
+            <span class="text">Create webhook</span>
         </Button>
     </GridHeader>
 

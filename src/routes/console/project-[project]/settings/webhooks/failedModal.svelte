@@ -12,7 +12,8 @@
     export let showUpdateButton: boolean = true;
 
     const projectId = $page.params.project;
-    const webhookPath = webhook
+
+    $: webhookPath = webhook
         ? `${base}/console/project-${projectId}/settings/webhooks/` + (webhook['$id'] ?? '')
         : '';
 
@@ -31,7 +32,7 @@
             </p>
 
             {#if showUpdateButton}
-                <Button secondary href={webhookPath} event="update_webhook">Update Webhook</Button>
+                <Button secondary href={webhookPath} event="update_webhook">Update webhook</Button>
             {/if}
         </div>
 
