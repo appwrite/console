@@ -56,7 +56,6 @@
     </section>
 </main>
 
-
 <style lang="scss">
     @import '@appwrite.io/pink/src/abstract/variables/_devices.scss';
 
@@ -128,5 +127,4 @@
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
     }
-
 </style>
