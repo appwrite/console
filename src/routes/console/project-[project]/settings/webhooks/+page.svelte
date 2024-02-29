@@ -94,7 +94,7 @@
 
                                         &nbsp;
 
-                                        {#if webhook.enabled === false && webhook.attempts > 0}
+                                        {#if webhook.enabled === false}
                                             <Button
                                                 link
                                                 on:click={(e) => {
