@@ -18,6 +18,8 @@ const groups = [
     'databases',
     'functions',
     'messaging',
+    'providers',
+    'topics',
     'storage',
     'domains',
     'webhooks',

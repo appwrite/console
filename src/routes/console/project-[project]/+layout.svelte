@@ -28,14 +28,6 @@
 
     $: $registerCommands([
         {
-            label: 'Go to Databases',
-            callback: () => {
-                goto(`/console/project-${$project.$id}/databases`);
-            },
-            keys: ['d'],
-            group: 'navigation'
-        },
-        {
             label: 'Go to Auth',
             callback: () => {
                 goto(`/console/project-${$project.$id}/auth`);
@@ -44,11 +36,27 @@
             group: 'navigation'
         },
         {
+            label: 'Go to Databases',
+            callback: () => {
+                goto(`/console/project-${$project.$id}/databases`);
+            },
+            keys: ['d'],
+            group: 'navigation'
+        },
+        {
             label: 'Go to Functions',
             callback: () => {
                 goto(`/console/project-${$project.$id}/functions`);
             },
             keys: ['f'],
+            group: 'navigation'
+        },
+        {
+            label: 'Go to Messaging',
+            callback: () => {
+                goto(`/console/project-${$project.$id}/messaging`);
+            },
+            keys: ['m'],
             group: 'navigation'
         },
         {

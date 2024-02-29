@@ -66,7 +66,7 @@
                 $page.url.pathname.includes('/console/organization-') &&
                 !$page.url.pathname.endsWith('/members') &&
                 !$page.url.pathname.endsWith('/settings'),
-            rank: -1
+                rank: -1
         },
         {
             label: 'Ask the AI',

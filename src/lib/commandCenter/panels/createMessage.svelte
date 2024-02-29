@@ -1,0 +1,76 @@
+<script lang="ts">
+    import { providers } from '$routes/console/project-[project]/messaging/providers/store';
+    import {
+        messageParams,
+        operation,
+        providerType,
+        targetsById
+    } from '$routes/console/project-[project]/messaging/wizard/store';
+    import { MessagingProviderType } from '@appwrite.io/console';
+    import Template from './template.svelte';
+    import { wizard } from '$lib/stores/wizard';
+    import Wizard from '$routes/console/project-[project]/messaging/wizard.svelte';
+    import { topicsById } from '$routes/console/project-[project]/messaging/store';
+
+    let search = '';
+
+    let options = Object.entries(providers).map(([type, option]) => {
+        return {
+            label: option.name,
+            icon: option.icon,
+            callback() {
+                console.log('startWizard', option.name);
+                if (
+                    type !== MessagingProviderType.Email &&
+                    type !== MessagingProviderType.Sms &&
+                    type !== MessagingProviderType.Push
+                )
+                    return;
+                $providerType = type;
+                $operation = 'create';
+                $topicsById = {};
+                $targetsById = {};
+                const common = {
+                    topics: [],
+                    users: [],
+                    targets: []
+                };
+                switch (type) {
+                    case MessagingProviderType.Email:
+                        $messageParams[$providerType] = {
+                            ...common,
+                            subject: '',
+                            content: ''
+                        };
+                        break;
+                    case MessagingProviderType.Sms:
+                        $messageParams[$providerType] = {
+                            ...common,
+                            content: ''
+                        };
+                        break;
+                    case MessagingProviderType.Push:
+                        $messageParams[$providerType] = {
+                            ...common,
+                            title: '',
+                            body: '',
+                            data: [['', '']]
+                        };
+                        break;
+                }
+                wizard.start(Wizard);
+            }
+        };
+    });
+
+    $: filteredOptions = options.filter((option) => {
+        return option.label.toLowerCase().includes(search.toLowerCase());
+    });
+</script>
+
+<Template options={filteredOptions} bind:search>
+    <div class="u-flex u-cross-center u-gap-8" slot="option" let:option>
+        <i class="icon-{option.icon}" />
+        <span>{option.label}</span>
+    </div>
+</Template>
