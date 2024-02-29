@@ -14,6 +14,8 @@
     export let fullWidth = false;
     export let fixed = false;
     export let display = 'block';
+    export let arrowSize = 10;
+    export let isPopover = false;
 
     const dispatch = createEventDispatcher<{
         blur: undefined;
@@ -32,13 +34,14 @@
                 {
                     name: 'arrow',
                     options: {
-                        element: arrow
+                        element: arrow,
+                        padding: arrowSize * 2
                     }
                 },
                 {
                     name: 'offset',
                     options: {
-                        offset: [0, noArrow ? 0 : 6]
+                        offset: [-arrowSize, noArrow ? 0 : arrowSize - 2]
                     }
                 },
                 {
@@ -111,10 +114,15 @@
 
 <div
     class="drop-tooltip"
-    class:u-width-full-line={fullWidth}
     bind:this={tooltip}
+    class:u-width-full-line={fullWidth}
+    style:--arrow-size={`${arrowSize}px`}
     style:z-index="10">
-    <div class="drop-arrow" class:u-hide={!show || (show && noArrow)} bind:this={arrow} />
+    <div
+        class="drop-arrow"
+        class:is-popover={isPopover}
+        class:u-hide={!show || (show && noArrow)}
+        bind:this={arrow} />
     {#if show}
         <slot name="list" />
     {/if}
@@ -122,36 +130,50 @@
 
 <!-- svelte-ignore css-unused-selector -->
 <style global lang="scss">
-    .drop-tooltip[data-popper-placement^='top'] > .drop-arrow {
-        bottom: -4px;
-    }
-
-    .drop-tooltip[data-popper-placement^='bottom'] > .drop-arrow {
-        top: -4px;
-    }
-
-    .drop-tooltip[data-popper-placement^='left'] > .drop-arrow {
-        right: -4px;
-    }
-
-    .drop-tooltip[data-popper-placement^='right'] > .drop-arrow {
-        left: -4px;
+    .drop-arrow.is-popover {
+        --drop-arrow-pop-over-bg-color: var(--color-neutral-90);
+        body.theme-light & {
+            --drop-arrow-pop-over-bg-color: var(--color-neutral-0);
+        }
     }
     .drop-arrow,
     .drop-arrow::before {
         position: absolute;
-        width: 8px;
-        height: 8px;
-        z-index: -1;
+        width: var(--arrow-size);
+        height: var(--arrow-size);
+        z-index: 1;
+
+        --drop-arrow-border: 1px solid hsl(var(--color-neutral-85));
+        --drop-arrow-bg-color: hsl(var(--drop-arrow-pop-over-bg-color, var(--color-neutral-105)));
+        body.theme-light & {
+            --drop-arrow-border: 1px solid hsl(var(--color-neutral-10));
+            --drop-arrow-bg-color: hsl(var(--drop-arrow-pop-over-bg-color, var(--color-neutral-0)));
+        }
     }
 
     .drop-arrow::before {
         content: '';
         transform: rotate(45deg);
-        background: hsl(var(--color-neutral-85));
+        background: var(--drop-arrow-bg-color);
+    }
 
-        body.theme-light & {
-            background: hsl(var(--color-neutral-10));
+    .drop-tooltip[data-popper-placement^='top'] > .drop-arrow {
+        bottom: calc(var(--arrow-size) / -2);
+
+        &::before {
+            border-bottom: var(--drop-arrow-border);
+            border-right: var(--drop-arrow-border);
+            border-bottom-right-radius: 25%;
+        }
+    }
+
+    .drop-tooltip[data-popper-placement^='bottom'] > .drop-arrow {
+        top: calc(var(--arrow-size) / -2);
+
+        &::before {
+            border-top: var(--drop-arrow-border);
+            border-left: var(--drop-arrow-border);
+            border-top-left-radius: 25%;
         }
     }
 </style>

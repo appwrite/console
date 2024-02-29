@@ -23,7 +23,6 @@
     export let maxlength: number = null;
     export let tooltip: string = null;
     export let isMultiple = false;
-    export let isPopoverDefined = true;
 
     let element: HTMLInputElement;
     let error: string;
@@ -77,8 +76,8 @@
 <svelte:component this={wrapper} {fullWidth}>
     {#if label}
         <Label {required} {hideRequired} {tooltip} {optionalText} hide={!showLabel} for={id}>
-            {label}{#if $$slots.popover && isPopoverDefined}
-                <Drop bind:show display="inline-block">
+            {label}{#if $$slots?.popover}
+                <Drop isPopover bind:show display="inline-block">
                     <!-- TODO: make unclicked icon greyed out and hover and clicked filled -->
                     &nbsp;<button
                         type="button"
@@ -88,12 +87,13 @@
                         <span
                             class="icon-info"
                             aria-hidden="true"
-                            style="font-size: var(--icon-size-small)" />
+                            style:font-size="var(--icon-size-small)" />
                     </button>
                     <svelte:fragment slot="list">
                         <div
                             class="dropped card u-max-width-250"
-                            style="--p-card-padding: .75rem; box-shadow:var(--shadow-large);">
+                            style:--p-card-padding=".75rem"
+                            style:box-shadow="var(--shadow-large)">
                             <slot name="popover" />
                         </div>
                     </svelte:fragment>

@@ -51,7 +51,6 @@
                 label={input.label}
                 placeholder={input.placeholder}
                 required={!input.optional}
-                isPopoverDefined={input.popover !== undefined}
                 bind:value={params[input.name]}>
                 <svelte:fragment slot="popover">
                     <PopoverContent lines={input.popover} {popoverImage} />
@@ -64,7 +63,6 @@
                 placeholder={input.placeholder}
                 required={!input.optional}
                 showPasswordButton
-                isPopoverDefined={input.popover !== undefined}
                 bind:value={params[input.name]}>
                 <svelte:fragment slot="popover">
                     <PopoverContent lines={input.popover} {popoverImage} />
@@ -76,7 +74,6 @@
                 label={input.label}
                 placeholder={input.placeholder}
                 required={!input.optional}
-                isPopoverDefined={input.popover !== undefined}
                 bind:value={params[input.name]}>
                 <svelte:fragment slot="popover">
                     <PopoverContent lines={input.popover} {popoverImage} />
@@ -88,7 +85,6 @@
                 label={input.label}
                 placeholder={input.placeholder}
                 required={!input.optional}
-                isPopoverDefined={input.popover !== undefined}
                 bind:value={params[input.name]}>
                 <svelte:fragment slot="popover">
                     <PopoverContent lines={input.popover} {popoverImage} />
@@ -100,7 +96,6 @@
                 label={input.label}
                 placeholder={input.placeholder}
                 required={!input.optional}
-                isPopoverDefined={input.popover !== undefined}
                 bind:value={params[input.name]}>
                 <svelte:fragment slot="popover">
                     <PopoverContent lines={input.popover} {popoverImage} />
@@ -111,7 +106,6 @@
                 label={input.label}
                 allowedFileExtensions={input.allowedFileExtensions}
                 required={!input.optional}
-                isPopoverDefined={input.popover !== undefined}
                 bind:files={files[input.name]}>
                 <svelte:fragment slot="popover">
                     <PopoverContent lines={input.popover} {popoverImage} />

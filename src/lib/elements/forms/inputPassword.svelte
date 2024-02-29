@@ -16,7 +16,6 @@
     export let showPasswordButton = false;
     export let minlength = 8;
     export let maxlength: number = null;
-    export let isPopoverDefined = true;
 
     let element: HTMLInputElement;
     let error: string;
@@ -51,8 +50,8 @@
 
 <FormItem>
     <Label {required} hide={!showLabel} for={id}>
-        {label}{#if $$slots.popover && isPopoverDefined}
-            <Drop bind:show={showPopover} display="inline-block">
+        {label}{#if $$slots?.popover}
+            <Drop isPopover bind:show={showPopover} display="inline-block">
                 <!-- TODO: make unclicked icon greyed out and hover and clicked filled -->
                 &nbsp;<button
                     type="button"
