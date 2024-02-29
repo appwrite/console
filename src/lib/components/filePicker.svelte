@@ -23,7 +23,6 @@
     import Heading from './heading.svelte';
     import { clickOnEnter } from '$lib/helpers/a11y';
     import Empty from './empty.svelte';
-    import { Pill } from '$lib/elements';
 
     export let show: boolean;
     export let selectedBucket: string = null;

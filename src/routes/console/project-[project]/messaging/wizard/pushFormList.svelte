@@ -52,7 +52,6 @@
     let selected = 'self';
     let otherEmail = '';
     let dataError = '';
-    let file: Models.File = null;
     let customData: [string, string][] = [];
 
     onMount(() => {
