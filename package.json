@@ -12,9 +12,9 @@
         "check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",
         "lint": "prettier --check . && eslint .",
         "format": "prettier --write .",
-        "test": "vitest run",
-        "test:ui": "vitest --ui",
-        "test:watch": "vitest watch",
+        "test": "TZ=EST vitest run",
+        "test:ui": "TZ=EST vitest --ui",
+        "test:watch": "TZ=EST vitest watch",
         "e2e": "playwright test tests/e2e"
     },
     "dependencies": {
