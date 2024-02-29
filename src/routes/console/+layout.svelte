@@ -19,7 +19,8 @@
         checkPaymentAuthorizationRequired,
         calculateTrialDay,
         paymentExpired,
-        checkForMarkedForDeletion
+        checkForMarkedForDeletion,
+        checkForMissingPaymentMethod
     } from '$lib/stores/billing';
     import { goto } from '$app/navigation';
     import { CommandCenter, registerCommands, registerSearchers } from '$lib/commandCenter';
@@ -245,6 +246,7 @@
 
         if (isCloud && hasStripePublicKey) {
             $stripe = await loadStripe(VARS.STRIPE_PUBLIC_KEY);
+            await checkForMissingPaymentMethod();
         }
     });
 
@@ -297,11 +299,6 @@
         !$page.url.pathname.includes('/console/account') &&
         !$page.url.pathname.includes('/console/card') &&
         !$page.url.pathname.includes('/console/onboarding')}>
-    <svelte:fragment slot="alert">
-        {#if $activeHeaderAlert?.show}
-            <svelte:component this={$activeHeaderAlert.component} />
-        {/if}
-    </svelte:fragment>
     <Header slot="header" />
     <SideNavigation slot="side" bind:isOpen />
     <slot />

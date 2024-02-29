@@ -1,5 +1,6 @@
-import type { Client, Models } from '@appwrite.io/console';
-import type { Organization } from '../stores/organization';
+import type { Client, Models, Query } from '@appwrite.io/console';
+import type { Organization, OrganizationList } from '../stores/organization';
+
 import type { PaymentMethod } from '@stripe/stripe-js';
 import type { Tier } from '$lib/stores/billing';
 
@@ -272,6 +273,22 @@ export class Billing {
 
     constructor(client: Client) {
         this.client = client;
+    }
+
+    async listOrganization(queries: Query[] = []): Promise<OrganizationList> {
+        const path = `/organizations`;
+        const params = {
+            queries
+        };
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'GET',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            params
+        );
     }
 
     async createOrganization(
