@@ -219,33 +219,37 @@ export const providers: ProvidersMap = {
                         description:
                             'Enable the EU region setting if your domain is within the European Union.'
                     },
-                    {
-                        label: 'Sender email',
-                        name: 'fromEmail',
-                        type: 'email',
-                        placeholder: 'Enter email'
-                    },
-                    {
-                        label: 'Sender name',
-                        name: 'fromName',
-                        type: 'text',
-                        optional: true,
-                        placeholder: 'Enter name'
-                    },
-                    {
-                        label: 'Reply to email',
-                        name: 'replyToEmail',
-                        type: 'email',
-                        optional: true,
-                        placeholder: 'Enter email'
-                    },
-                    {
-                        label: 'Reply to name',
-                        name: 'replyToName',
-                        type: 'text',
-                        optional: true,
-                        placeholder: 'Enter name'
-                    }
+                    [
+                        {
+                            label: 'Sender email',
+                            name: 'fromEmail',
+                            type: 'email',
+                            placeholder: 'Enter email'
+                        },
+                        {
+                            label: 'Sender name',
+                            name: 'fromName',
+                            type: 'text',
+                            optional: true,
+                            placeholder: 'Enter name'
+                        }
+                    ],
+                    [
+                        {
+                            label: 'Reply-to email',
+                            name: 'replyToEmail',
+                            type: 'email',
+                            optional: true,
+                            placeholder: 'Enter email'
+                        },
+                        {
+                            label: 'Reply-to name',
+                            name: 'replyToName',
+                            type: 'text',
+                            optional: true,
+                            placeholder: 'Enter name'
+                        }
+                    ]
                 ]
             },
             [Providers.Sendgrid]: {
@@ -264,66 +268,43 @@ export const providers: ProvidersMap = {
                             'Head to <b>Settings -> API Keys -> Create API key.</b>'
                         ]
                     },
-                    {
-                        label: 'Sender email',
-                        name: 'fromEmail',
-                        type: 'email',
-                        placeholder: 'Enter email'
-                    },
-                    {
-                        label: 'Sender name',
-                        name: 'fromName',
-                        type: 'text',
-                        optional: true,
-                        placeholder: 'Enter name'
-                    },
-                    {
-                        label: 'Reply to email',
-                        name: 'replyToEmail',
-                        type: 'email',
-                        optional: true,
-                        placeholder: 'Enter email'
-                    },
-                    {
-                        label: 'Reply to name',
-                        name: 'replyToName',
-                        type: 'text',
-                        optional: true,
-                        placeholder: 'Enter name'
-                    }
+                    [
+                        {
+                            label: 'Sender email',
+                            name: 'fromEmail',
+                            type: 'email',
+                            placeholder: 'Enter email'
+                        },
+                        {
+                            label: 'Sender name',
+                            name: 'fromName',
+                            type: 'text',
+                            optional: true,
+                            placeholder: 'Enter name'
+                        }
+                    ],
+                    [
+                        {
+                            label: 'Reply-to email',
+                            name: 'replyToEmail',
+                            type: 'email',
+                            optional: true,
+                            placeholder: 'Enter email'
+                        },
+                        {
+                            label: 'Reply-to name',
+                            name: 'replyToName',
+                            type: 'text',
+                            optional: true,
+                            placeholder: 'Enter name'
+                        }
+                    ]
                 ]
             },
             [Providers.SMTP]: {
                 title: 'SMTP',
                 description: '',
                 configure: [
-                    {
-                        label: 'Sender name',
-                        name: 'fromName',
-                        type: 'text',
-                        optional: true,
-                        placeholder: 'Enter name'
-                    },
-                    {
-                        label: 'Sender email',
-                        name: 'fromEmail',
-                        type: 'email',
-                        placeholder: 'Enter email'
-                    },
-                    {
-                        label: 'Reply to name',
-                        name: 'replyToName',
-                        type: 'text',
-                        optional: true,
-                        placeholder: 'Enter name'
-                    },
-                    {
-                        label: 'Reply to email',
-                        name: 'replyToEmail',
-                        type: 'email',
-                        optional: true,
-                        placeholder: 'Enter email'
-                    },
                     {
                         label: 'Server host',
                         name: 'host',
@@ -368,6 +349,37 @@ export const providers: ProvidersMap = {
                         type: 'checkbox',
                         optional: true
                     },
+                    [
+                        {
+                            label: 'Sender email',
+                            name: 'fromEmail',
+                            type: 'email',
+                            placeholder: 'Enter email'
+                        },
+                        {
+                            label: 'Sender name',
+                            name: 'fromName',
+                            type: 'text',
+                            optional: true,
+                            placeholder: 'Enter name'
+                        }
+                    ],
+                    [
+                        {
+                            label: 'Reply-to email',
+                            name: 'replyToEmail',
+                            type: 'email',
+                            optional: true,
+                            placeholder: 'Enter email'
+                        },
+                        {
+                            label: 'Reply-to name',
+                            name: 'replyToName',
+                            type: 'text',
+                            optional: true,
+                            placeholder: 'Enter name'
+                        }
+                    ],
                     {
                         label: 'Mailer',
                         name: 'mailer',
