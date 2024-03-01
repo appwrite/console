@@ -31,12 +31,15 @@
         } else {
             const prefs = preferences.get($page.route);
 
-            columns.set(
-                $columns.map((column) => {
-                    column.show = prefs.columns?.includes(column.id) ?? true;
-                    return column;
-                })
-            );
+            // Override the shown columns only if a preference was set
+            if (prefs?.columns) {
+                columns.set(
+                    $columns.map((column) => {
+                        column.show = prefs.columns?.includes(column.id) ?? true;
+                        return column;
+                    })
+                );
+            }
         }
 
         columns.subscribe((ctx) => {
