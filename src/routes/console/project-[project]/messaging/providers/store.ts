@@ -302,8 +302,9 @@ export const providers: ProvidersMap = {
                 ]
             },
             [Providers.SMTP]: {
+                classIcon: 'mail',
                 title: 'SMTP',
-                description: '',
+                description: 'Generic SMTP server.',
                 configure: [
                     {
                         label: 'Server host',
