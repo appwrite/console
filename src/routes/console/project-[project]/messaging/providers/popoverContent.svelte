@@ -11,10 +11,7 @@
     {/each}
 
     {#if image}
-        <ImagePreview
-            darkSrc={image.src.dark}
-            lightSrc={image.src.light}
-            alt={image.alt} />
+        <ImagePreview darkSrc={image.src.dark} lightSrc={image.src.light} alt={image.alt} />
     {/if}
 </div>
 

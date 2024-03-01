@@ -84,7 +84,7 @@
                 placeholder={input.placeholder}
                 required={!input.optional}
                 {popover}
-                popoverProps={getPopoverProps(input)}
+                {popoverProps}
                 bind:value={params[input.name]}>
             </InputEmail>
         {:else if input.type === 'domain'}
