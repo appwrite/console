@@ -21,11 +21,13 @@ export const providersSearcher = (async (query: string) => {
             (provider) =>
                 ({
                     group: 'providers',
-                    label:  provider.name,
+                    label: provider.name,
                     callback: () => {
-                        goto(`/console/project-${projectId}/messaging/providers/provider-${provider.$id}`);
+                        goto(
+                            `/console/project-${projectId}/messaging/providers/provider-${provider.$id}`
+                        );
                     },
-                    image: getIcon(provider.provider), 
+                    image: getIcon(provider.provider)
                 }) as const
         );
 }) satisfies Searcher;

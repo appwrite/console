@@ -15,11 +15,11 @@ export const topicsSearcher = (async (query: string) => {
             (topic) =>
                 ({
                     group: 'topics',
-                    label:  topic.name,
+                    label: topic.name,
                     callback: () => {
                         goto(`/console/project-${projectId}/messaging/topics/topic-${topic.$id}`);
                     },
-                    icon: 'send',
+                    icon: 'send'
                 }) as const
         );
 }) satisfies Searcher;

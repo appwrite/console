@@ -144,7 +144,9 @@
                 );
             },
             group: 'collections',
-            disabled: $page.url.pathname.endsWith('display-name') || $page.url.pathname.endsWith('settings'),
+            disabled:
+                $page.url.pathname.endsWith('display-name') ||
+                $page.url.pathname.endsWith('settings'),
             icon: 'eye'
         },
         {
@@ -155,8 +157,10 @@
                 );
             },
             group: 'collections',
-            disabled: $page.url.pathname.endsWith('permissions') || $page.url.pathname.endsWith('settings'),
-            icon: 'puzzle',
+            disabled:
+                $page.url.pathname.endsWith('permissions') ||
+                $page.url.pathname.endsWith('settings'),
+            icon: 'puzzle'
         },
         {
             label: 'Document security',
@@ -166,7 +170,9 @@
                 );
             },
             group: 'collections',
-            disabled: $page.url.pathname.endsWith('document-security') || $page.url.pathname.endsWith('settings'),
+            disabled:
+                $page.url.pathname.endsWith('document-security') ||
+                $page.url.pathname.endsWith('settings'),
             icon: 'lock-closed'
         },
         {

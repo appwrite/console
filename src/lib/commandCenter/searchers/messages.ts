@@ -29,7 +29,7 @@ const getIcon = (message) => {
         default:
             return 'send';
     }
-}
+};
 
 export const messagesSearcher = (async (query: string) => {
     const { messages } = await sdk.forProject.messaging.listMessages([], query || undefined);
@@ -46,7 +46,7 @@ export const messagesSearcher = (async (query: string) => {
                     callback: () => {
                         goto(`/console/project-${projectId}/messaging/message-${message.$id}`);
                     },
-                    icon: getIcon(message),
+                    icon: getIcon(message)
                 }) as const
         );
 }) satisfies Searcher;
