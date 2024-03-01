@@ -381,15 +381,13 @@ export const providers: ProvidersMap = {
                         }
                     ],
                     {
-                        label: 'Mailer',
+                        label: 'X-Mailer header',
                         name: 'mailer',
                         type: 'text',
                         optional: true,
                         placeholder: 'Enter mailer',
-                        popover: [
-                            '<b>What is the Mailer?</b>',
-                            'The value to use for the X-Mailer header.'
-                        ]
+                        tooltip:
+                            'The X-Mailer header is used to identify the software or client used for composing or sending the email. It typically includes information such as the name and version of the email program, aiding in troubleshooting and debugging.'
                     }
                 ]
             }
