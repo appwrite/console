@@ -18,7 +18,6 @@
     } from '$lib/elements/table';
     import { addNotification } from '$lib/stores/notifications';
     import type { PageData } from './$types';
-    import { columns } from './store';
     import ProviderType from '../../providerType.svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { project } from '$routes/console/project-[project]/store';
@@ -26,7 +25,9 @@
     import { page } from '$app/stores';
     import { targetsById } from '../../store';
     import { MessagingProviderType, type Models } from '@appwrite.io/console';
+    import type { Column } from '$lib/helpers/types';
 
+    export let columns: Column[];
     export let data: PageData;
 
     let subscribers: Record<string, Models.Subscriber> = {};
@@ -84,7 +85,7 @@
         <TableCellHeadCheck
             bind:selected={selectedIds}
             pageItemsIds={data.subscribers.subscribers.map((d) => d.$id)} />
-        {#each $columns as column}
+        {#each columns as column}
             {#if column.show}
                 <TableCellHead width={column.width}>{column.title}</TableCellHead>
             {/if}
@@ -97,10 +98,10 @@
                 href={`${base}/console/project-${$project.$id}/auth/user-${subscriber.target.userId}`}>
                 <TableCellCheck bind:selectedIds id={subscriber.$id} />
 
-                {#each $columns as column}
+                {#each columns as column}
                     {#if column.show}
                         {#if column.id === '$id'}
-                            {#key $columns}
+                            {#key column.id}
                                 <TableCell title="Subscriber ID">
                                     <Id value={subscriber.$id}>
                                         {subscriber.$id}

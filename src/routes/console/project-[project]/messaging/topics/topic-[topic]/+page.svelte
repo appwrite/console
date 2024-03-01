@@ -23,12 +23,21 @@
     import UserTargetsModal from '../../userTargetsModal.svelte';
     import { onMount } from 'svelte';
     import { Filters, hasPageQueries } from '$lib/components/filters';
-    import { columns } from './store';
     import { View } from '$lib/helpers/load';
+    import { writable } from 'svelte/store';
+    import type { Column } from '$lib/helpers/types';
 
     export let data: PageData;
     let showAdd = false;
     let subscribersByTargetId: Record<string, Models.Subscriber> = {};
+    const columns = writable<Column[]>([
+        { id: '$id', title: 'Subscriber ID', type: 'string', show: true, width: 140 },
+        { id: 'userName', title: 'Name', type: 'string', show: true, filter: false, width: 100 },
+        { id: 'targetId', title: 'Target ID', type: 'string', show: true, width: 140 },
+        { id: 'target', title: 'Target', type: 'string', show: true, filter: false, width: 140 },
+        { id: 'type', title: 'Type', type: 'string', show: true, width: 80 },
+        { id: '$createdAt', title: 'Created', type: 'datetime', show: true, width: 100 }
+    ]);
 
     onMount(() => {
         $targetsById = {};
@@ -121,7 +130,7 @@
         </div>
     </div>
     {#if data.subscribers.total}
-        <Table {data} />
+        <Table columns={$columns} {data} />
 
         <PaginationWithLimit
             name="Subscribers"
