@@ -2,14 +2,13 @@
     import { providers } from '$routes/console/project-[project]/messaging/providers/store';
     import {
         messageParams,
-        operation,
         providerType,
         targetsById
     } from '$routes/console/project-[project]/messaging/wizard/store';
     import { MessagingProviderType } from '@appwrite.io/console';
     import Template from './template.svelte';
     import { wizard } from '$lib/stores/wizard';
-    import Wizard from '$routes/console/project-[project]/messaging/wizard.svelte';
+    import Create from '$routes/console/project-[project]/messaging/create.svelte';
     import { topicsById } from '$routes/console/project-[project]/messaging/store';
 
     let search = '';
@@ -19,7 +18,6 @@
             label: option.name,
             icon: option.icon,
             callback() {
-                console.log('startWizard', option.name);
                 if (
                     type !== MessagingProviderType.Email &&
                     type !== MessagingProviderType.Sms &&
@@ -27,7 +25,6 @@
                 )
                     return;
                 $providerType = type;
-                $operation = 'create';
                 $topicsById = {};
                 $targetsById = {};
                 const common = {
@@ -58,7 +55,7 @@
                         };
                         break;
                 }
-                wizard.start(Wizard);
+                wizard.start(Create);
             }
         };
     });
