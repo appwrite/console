@@ -7,7 +7,7 @@
     import { calculateSize } from '$lib/helpers/sizeConvertion';
     import { toLocaleDate } from '$lib/helpers/date';
     import {
-        TableScroll,
+        Table,
         TableBody,
         TableRowButton,
         TableHeader,
@@ -30,6 +30,7 @@
     export let onSelect: (e: Models.File) => void;
 
     let search = writable('');
+    let searchEnabled = false;
     let fileSelector: HTMLInputElement;
     let uploading = false;
     let view: 'grid' | 'list' = 'list';
@@ -59,8 +60,7 @@
                 fileSelector.files[0]
             );
             search.set($search === null ? '' : null);
-            selectedBucket = file.bucketId;
-            selectedFile = file.$id;
+            selectFile(file);
         } catch (e) {
             console.error(e);
         } finally {
@@ -98,11 +98,19 @@
 
     $: files =
         currentBucket &&
-        sdk.forProject.storage.listFiles(
-            currentBucket.$id,
-            [Query.startsWith('mimeType', 'image/'), Query.orderDesc('$createdAt')],
-            $search || undefined
-        );
+        sdk.forProject.storage
+            .listFiles(
+                currentBucket.$id,
+                [Query.startsWith('mimeType', 'image/'), Query.orderDesc('$createdAt')],
+                $search || undefined
+            )
+            .then((response) => {
+                if ($search === '') {
+                    searchEnabled = response.total > 0;
+                }
+
+                return response;
+            });
 
     $: {
         selectedBucket = currentBucket?.$id;
@@ -196,13 +204,15 @@
                                 <InputSearch
                                     placeholder="Search files"
                                     bind:value={$search}
-                                    style="min-inline-size: 17.5rem" />
+                                    disabled={!searchEnabled}
+                                    style="min-inline-size: 17.5rem; block-size: 100%" />
                                 <div class="u-flex u-gap-16">
                                     <div class="toggle-button">
                                         <ul class="toggle-button-list">
                                             <li class="toggle-button-item">
                                                 <button
                                                     on:click={() => (view = 'list')}
+                                                    disabled={!searchEnabled}
                                                     type="button"
                                                     class="toggle-button-element"
                                                     class:is-selected={view === 'list'}
@@ -215,6 +225,7 @@
                                             <li class="toggle-button-item">
                                                 <button
                                                     on:click={() => (view = 'grid')}
+                                                    disabled={!searchEnabled}
                                                     type="button"
                                                     class="toggle-button-element"
                                                     class:is-selected={view === 'grid'}
@@ -229,7 +240,7 @@
 
                                     <Button
                                         secondary
-                                        class="is-full-width-in-stack-mobile"
+                                        class="is-full-width-in-stack-mobile u-height-100-percent"
                                         disabled={uploading}
                                         on:click={() => fileSelector.click()}>
                                         <input
@@ -263,12 +274,12 @@
                                 </div>
                             {:then response}
                                 <div class="u-flex-vertical u-stretch">
-                                    {#if response.files?.length}
+                                    {#if response?.files?.length}
                                         {#if view === 'grid'}
                                             <ul
                                                 class="grid-box"
-                                                style="--grid-gap:40px; --grid-item-size:120px;">
-                                                {#each response.files as file}
+                                                style="--grid-gap:40px; --grid-item-size:120px; --grid-item-size-small-screens:100px;">
+                                                {#each response?.files as file}
                                                     <li>
                                                         <div class="u-flex-vertical u-gap-8">
                                                             <div
@@ -288,7 +299,7 @@
                                                                 style:flex-direction="row-reverse"
                                                                 style:box-shadow="none"
                                                                 class="card u-height-100-percent u-gap-16"
-                                                                style="--card-padding:0.5rem; --card-border-radius:var(--border-radius-large);">
+                                                                style="--card-padding:0.5rem;--card-padding-mobile:0.5rem; --card-border-radius:var(--border-radius-medium);">
                                                                 <input
                                                                     class="u-position-absolute is-small u-margin-block-start-2"
                                                                     type="radio"
@@ -298,26 +309,34 @@
                                                                     checked={selectedFile ===
                                                                         file.$id} />
                                                             </div>
-                                                            <Trim alternativeTrim>{file.name}</Trim>
+                                                            <span class="u-text-center"
+                                                                ><Trim alternativeTrim
+                                                                    >{file.name}</Trim
+                                                                ></span>
                                                         </div>
                                                     </li>
                                                 {/each}
                                             </ul>
                                         {/if}
                                         {#if view === 'list'}
-                                            <TableScroll noMargin transparent dense>
+                                            <Table noMargin noStyles transparent dense>
                                                 <TableHeader>
                                                     <TableCellHead>Filename</TableCellHead>
-                                                    <TableCellHead width={140}>ID</TableCellHead>
-                                                    <TableCellHead width={100} onlyDesktop
-                                                        >Type</TableCellHead>
-                                                    <TableCellHead width={100} onlyDesktop
-                                                        >Size</TableCellHead>
-                                                    <TableCellHead width={120} onlyDesktop
-                                                        >Created</TableCellHead>
+                                                    <TableCellHead width={140} onlyDesktop>
+                                                        ID
+                                                    </TableCellHead>
+                                                    <TableCellHead width={100} onlyDesktop>
+                                                        Type
+                                                    </TableCellHead>
+                                                    <TableCellHead width={100} onlyDesktop>
+                                                        Size
+                                                    </TableCellHead>
+                                                    <TableCellHead width={120} onlyDesktop>
+                                                        Created
+                                                    </TableCellHead>
                                                 </TableHeader>
                                                 <TableBody>
-                                                    {#each response.files as file}
+                                                    {#each response?.files as file}
                                                         <TableRowButton
                                                             on:click={() => selectFile(file)}>
                                                             <TableCell title="Filename">
@@ -325,7 +344,7 @@
                                                                     class="u-inline-flex u-cross-center u-gap-12">
                                                                     <input
                                                                         type="radio"
-                                                                        class="is-small"
+                                                                        class="is-small u-margin-inline-start-12"
                                                                         name="file"
                                                                         value={file.$id}
                                                                         style:pointer-events="none"
@@ -365,7 +384,7 @@
                                                         </TableRowButton>
                                                     {/each}
                                                 </TableBody>
-                                            </TableScroll>
+                                            </Table>
                                         {/if}
                                     {:else if $search}
                                         <EmptySearch hidePages hidePagination>
