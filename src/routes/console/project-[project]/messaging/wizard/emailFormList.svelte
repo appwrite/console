@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { messageParams, providerType, operation } from './store';
+    import { messageParams, providerType } from './store';
     import {
         Button,
         FormList,
@@ -10,10 +10,10 @@
         InputTextarea
     } from '$lib/elements/forms';
     import { Pill } from '$lib/elements';
-    import { CustomId, Modal } from '$lib/components';
+    import { Modal } from '$lib/components';
     import { user } from '$lib/stores/user';
     import { clickOnEnter } from '$lib/helpers/a11y';
-    import { ID, MessageStatus, MessagingProviderType } from '@appwrite.io/console';
+    import { ID, MessagingProviderType } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
 
     let showCustomId = false;
@@ -36,7 +36,7 @@
             undefined,
             undefined,
             undefined,
-            MessageStatus.Processing,
+            undefined,
             $messageParams[MessagingProviderType.Email]?.html || false,
             undefined
         );
@@ -49,6 +49,7 @@
     <InputText
         id="subject"
         label="Subject"
+        required
         placeholder="Enter subject"
         bind:value={$messageParams[$providerType]['subject']}>
     </InputText>
@@ -56,10 +57,10 @@
         <InputTextarea
             id="message"
             label="Message"
+            required
             placeholder="Type here..."
             bind:value={$messageParams[$providerType]['content']}>
         </InputTextarea>
-        <!-- TODO: Add support for draft messages -->
         <!-- <div class="u-flex u-main-end">
             <Button text on:click={() => (showTest = true)}>Send test message</Button>
         </div> -->
@@ -105,20 +106,12 @@
             Enable the HTML mode if your message contains HTML tags.
         </svelte:fragment>
     </InputSwitch>
-    {#if $operation === 'create'}
-        {#if !showCustomId}
-            <div>
-                <Pill button on:click={() => (showCustomId = !showCustomId)}
-                    ><span class="icon-pencil" aria-hidden="true" /><span class="text">
-                        Message ID
-                    </span></Pill>
-            </div>
-        {:else}
-            <CustomId
-                bind:show={showCustomId}
-                name="Message"
-                bind:id={$messageParams[$providerType].messageId}
-                autofocus={false} />
-        {/if}
+    {#if !showCustomId}
+        <div>
+            <Pill button on:click={() => (showCustomId = !showCustomId)}
+                ><span class="icon-pencil" aria-hidden="true" /><span class="text">
+                    Message ID
+                </span></Pill>
+        </div>
     {/if}
 </FormList>

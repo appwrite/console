@@ -48,8 +48,8 @@
                 providerId: $providerData.$id,
                 name: $providerData.name,
                 enabled: $providerData.enabled,
-                username: $providerData.credentials['username'],
-                password: $providerData.credentials['password'],
+                customerId: $providerData.credentials['customerId'],
+                apiKey: $providerData.credentials['apiKey'],
                 from: $providerData.options['from']
             };
             break;
@@ -78,7 +78,7 @@
                 providerId: $providerData.$id,
                 name: $providerData.name,
                 enabled: $providerData.enabled,
-                isEuRegion: false,
+                isEuRegion: $providerData.credentials['isEuRegion'],
                 fromEmail: $providerData.options['fromEmail'],
                 fromName: $providerData.options['fromName'],
                 replyToEmail: $providerData.options['replyToEmail'],

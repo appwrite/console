@@ -245,6 +245,7 @@ export enum Submit {
     WebhookUpdateUrl = 'submit_webhook_update_url',
     WebhookUpdateEvents = 'submit_webhook_update_events',
     WebhookUpdateName = 'submit_webhook_update_name',
+    WebhookUpdateEnabled = 'submit_webhook_update_enabled',
     WebhookUpdateSecurity = 'submit_webhook_update_security',
     BucketCreate = 'submit_bucket_create',
     BucketDelete = 'submit_bucket_delete',
@@ -301,7 +302,7 @@ export enum Submit {
     MessagingTopicCreate = 'submit_messaging_topic_create',
     MessagingTopicDelete = 'submit_messaging_topic_delete',
     MessagingTopicUpdateName = 'submit_messaging_topic_update_name',
-    MessagingTopicUpdateDescription = 'submit_messaging_topic_update_description',
+    MessagingTopicUpdatePermissions = 'submit_messaging_topic_update_permissions',
     MessagingTopicSubscriberAdd = 'submit_messaging_topic_subscriber_add',
     MessagingTopicSubscriberDelete = 'submit_messaging_topic_subscriber_delete'
 }

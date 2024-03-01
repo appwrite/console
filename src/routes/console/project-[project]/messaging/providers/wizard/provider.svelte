@@ -39,8 +39,8 @@
                     providerId: id,
                     name: name,
                     enabled: true,
-                    username: '',
-                    password: '',
+                    customerId: '',
+                    apiKey: '',
                     from: ''
                 };
                 break;
@@ -134,6 +134,7 @@
 
 <WizardStep {beforeSubmit}>
     <svelte:fragment slot="title">Provider</svelte:fragment>
+    <div class="u-sep-block-start u-padding-block-end-32" />
     <FormList gap={16}>
         <InputText
             id="name"
@@ -173,3 +174,15 @@
         </div>
     </FormList>
 </WizardStep>
+
+<style lang="scss">
+    .grid-box {
+        --grid-gap: 1rem;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    :global(body:not(.theme-dark)) .grid-box :global(.card) {
+        --p-card-bg-color-default: var(--color-neutral-5);
+        --p-card-bg-color-hover: var(--color-neutral-10);
+    }
+</style>

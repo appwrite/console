@@ -36,7 +36,7 @@
 </script>
 
 <WizardStep {beforeSubmit}>
-    <svelte:fragment slot="title">Register your bundle ID</svelte:fragment>
+    <svelte:fragment slot="title">Apple registration</svelte:fragment>
 
     <FormList isCommonSection>
         <FormItem>

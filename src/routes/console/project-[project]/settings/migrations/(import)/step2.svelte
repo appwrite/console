@@ -7,7 +7,7 @@
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">Select source</svelte:fragment>
+    <svelte:fragment slot="title">Resources</svelte:fragment>
     <svelte:fragment slot="subtitle">
         Select the resources you need to migrate to Appwrite. Some resources can be migrated, but
         with limitations. <a

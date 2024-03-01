@@ -26,6 +26,7 @@ export type ProviderInput = {
         | 'checkbox';
     placeholder?: string;
     description?: string;
+    tooltip?: string;
     popover?: string[];
     popoverImage?: { src: { light: string; dark: string }; alt: string };
     allowedFileExtensions?: string[];
@@ -45,7 +46,7 @@ type ProvidersMap = {
                 title: string;
                 description: string;
                 needAHand?: string[];
-                configure: ProviderInput[];
+                configure: (ProviderInput | ProviderInput[])[];
             };
         };
     };
@@ -167,7 +168,8 @@ export const providers: ProvidersMap = {
                         label: 'Sandbox',
                         name: 'sandbox',
                         type: 'switch',
-                        description: 'Use the development APNS server.'
+                        description:
+                            'Enable sandbox mode for testing on apps signed with development provisioning profiles. <a class="link" href="https://appwrite.io/docs/products/messaging/apns#configure-provider" target="_blank" rel="noopener noreferrer">Learn more</a>.'
                     }
                 ]
             }
@@ -217,33 +219,37 @@ export const providers: ProvidersMap = {
                         description:
                             'Enable the EU region setting if your domain is within the European Union.'
                     },
-                    {
-                        label: 'Sender email',
-                        name: 'fromEmail',
-                        type: 'email',
-                        placeholder: 'Enter email'
-                    },
-                    {
-                        label: 'Sender name',
-                        name: 'fromName',
-                        type: 'text',
-                        optional: true,
-                        placeholder: 'Enter name'
-                    },
-                    {
-                        label: 'Reply to email',
-                        name: 'replyToEmail',
-                        type: 'email',
-                        optional: true,
-                        placeholder: 'Enter email'
-                    },
-                    {
-                        label: 'Reply to name',
-                        name: 'replyToName',
-                        type: 'text',
-                        optional: true,
-                        placeholder: 'Enter name'
-                    }
+                    [
+                        {
+                            label: 'Sender email',
+                            name: 'fromEmail',
+                            type: 'email',
+                            placeholder: 'Enter email'
+                        },
+                        {
+                            label: 'Sender name',
+                            name: 'fromName',
+                            type: 'text',
+                            optional: true,
+                            placeholder: 'Enter name'
+                        }
+                    ],
+                    [
+                        {
+                            label: 'Reply-to email',
+                            name: 'replyToEmail',
+                            type: 'email',
+                            optional: true,
+                            placeholder: 'Enter email'
+                        },
+                        {
+                            label: 'Reply-to name',
+                            name: 'replyToName',
+                            type: 'text',
+                            optional: true,
+                            placeholder: 'Enter name'
+                        }
+                    ]
                 ]
             },
             [Providers.Sendgrid]: {
@@ -262,66 +268,44 @@ export const providers: ProvidersMap = {
                             'Head to <b>Settings -> API Keys -> Create API key.</b>'
                         ]
                     },
-                    {
-                        label: 'Sender email',
-                        name: 'fromEmail',
-                        type: 'email',
-                        placeholder: 'Enter email'
-                    },
-                    {
-                        label: 'Sender name',
-                        name: 'fromName',
-                        type: 'text',
-                        optional: true,
-                        placeholder: 'Enter name'
-                    },
-                    {
-                        label: 'Reply to email',
-                        name: 'replyToEmail',
-                        type: 'email',
-                        optional: true,
-                        placeholder: 'Enter email'
-                    },
-                    {
-                        label: 'Reply to name',
-                        name: 'replyToName',
-                        type: 'text',
-                        optional: true,
-                        placeholder: 'Enter name'
-                    }
+                    [
+                        {
+                            label: 'Sender email',
+                            name: 'fromEmail',
+                            type: 'email',
+                            placeholder: 'Enter email'
+                        },
+                        {
+                            label: 'Sender name',
+                            name: 'fromName',
+                            type: 'text',
+                            optional: true,
+                            placeholder: 'Enter name'
+                        }
+                    ],
+                    [
+                        {
+                            label: 'Reply-to email',
+                            name: 'replyToEmail',
+                            type: 'email',
+                            optional: true,
+                            placeholder: 'Enter email'
+                        },
+                        {
+                            label: 'Reply-to name',
+                            name: 'replyToName',
+                            type: 'text',
+                            optional: true,
+                            placeholder: 'Enter name'
+                        }
+                    ]
                 ]
             },
             [Providers.SMTP]: {
+                classIcon: 'mail',
                 title: 'SMTP',
-                description: '',
+                description: 'Generic SMTP server.',
                 configure: [
-                    {
-                        label: 'Sender name',
-                        name: 'fromName',
-                        type: 'text',
-                        optional: true,
-                        placeholder: 'Enter name'
-                    },
-                    {
-                        label: 'Sender email',
-                        name: 'fromEmail',
-                        type: 'email',
-                        placeholder: 'Enter email'
-                    },
-                    {
-                        label: 'Reply to name',
-                        name: 'replyToName',
-                        type: 'text',
-                        optional: true,
-                        placeholder: 'Enter name'
-                    },
-                    {
-                        label: 'Reply to email',
-                        name: 'replyToEmail',
-                        type: 'email',
-                        optional: true,
-                        placeholder: 'Enter email'
-                    },
                     {
                         label: 'Server host',
                         name: 'host',
@@ -366,16 +350,45 @@ export const providers: ProvidersMap = {
                         type: 'checkbox',
                         optional: true
                     },
+                    [
+                        {
+                            label: 'Sender email',
+                            name: 'fromEmail',
+                            type: 'email',
+                            placeholder: 'Enter email'
+                        },
+                        {
+                            label: 'Sender name',
+                            name: 'fromName',
+                            type: 'text',
+                            optional: true,
+                            placeholder: 'Enter name'
+                        }
+                    ],
+                    [
+                        {
+                            label: 'Reply-to email',
+                            name: 'replyToEmail',
+                            type: 'email',
+                            optional: true,
+                            placeholder: 'Enter email'
+                        },
+                        {
+                            label: 'Reply-to name',
+                            name: 'replyToName',
+                            type: 'text',
+                            optional: true,
+                            placeholder: 'Enter name'
+                        }
+                    ],
                     {
-                        label: 'Mailer',
+                        label: 'X-Mailer header',
                         name: 'mailer',
                         type: 'text',
                         optional: true,
                         placeholder: 'Enter mailer',
-                        popover: [
-                            '<b>What is the Mailer?</b>',
-                            'The value to use for the X-Mailer header.'
-                        ]
+                        tooltip:
+                            'The X-Mailer header is used to identify the software or client used for composing or sending the email. It typically includes information such as the name and version of the email program, aiding in troubleshooting and debugging.'
                     }
                 ]
             }
@@ -469,16 +482,21 @@ export const providers: ProvidersMap = {
                 description: '',
                 configure: [
                     {
-                        label: 'Username',
-                        name: 'username',
+                        label: 'Customer ID',
+                        name: 'customerId',
                         type: 'text',
-                        placeholder: 'Enter username'
+                        placeholder: 'Enter customer ID'
                     },
                     {
-                        label: 'Password',
-                        name: 'password',
+                        label: 'API Key',
+                        name: 'apiKey',
                         type: 'password',
-                        placeholder: 'Enter password'
+                        placeholder: 'Enter API key',
+                        popover: [
+                            '<b>How to get the API key?</b>',
+                            'Create an account in <a class="link" href="https://portal.telesign.com/" target="_blank" rel="noopener noreferrer">Telesign</a>.',
+                            'Head to <b>Telesign portal -> Profile -> API Keys.</b>'
+                        ]
                     },
                     {
                         label: 'Sender number',
@@ -579,8 +597,8 @@ export type Msg91ProviderParams = ProviderParams & {
 
 export type TelesignProviderParams = ProviderParams & {
     from: string;
-    username: string;
-    password: string;
+    customerId: string;
+    apiKey: string;
 };
 
 export type TextmagicProviderParams = ProviderParams & {

@@ -16,14 +16,33 @@
     import { base } from '$app/paths';
     import type { Models } from '@appwrite.io/console';
     import type { PageData } from './$types';
-    import { columns, showCreate } from './store';
+    import { showCreate } from './store';
     import { View } from '$lib/helpers/load';
     import { Filters, hasPageQueries } from '$lib/components/filters';
     import Table from './table.svelte';
+    import type { Column } from '$lib/helpers/types';
+    import { writable } from 'svelte/store';
 
     export let data: PageData;
 
     const project = $page.params.project;
+    const columns = writable<Column[]>([
+        { id: '$id', title: 'Topic ID', type: 'string', show: true, width: 140 },
+        { id: 'name', title: 'Name', type: 'string', show: true, width: 140 },
+        { id: 'emailTotal', title: 'Email Subscribers', type: 'integer', show: false, width: 140 },
+        { id: 'smsTotal', title: 'SMS Subscribers', type: 'integer', show: false, width: 140 },
+        { id: 'pushTotal', title: 'Push Subscribers', type: 'integer', show: false, width: 140 },
+        {
+            id: 'total',
+            title: 'Subscribers',
+            type: 'integer',
+            show: true,
+            filter: false,
+            width: 140
+        },
+        { id: '$createdAt', title: 'Created', type: 'datetime', show: true, width: 140 }
+    ]);
+
     const topicCreated = async (event: CustomEvent<Models.Team<Record<string, unknown>>>) => {
         await goto(`${base}/console/project-${project}/messaging/topics/topic-${event.detail.$id}`);
     };
@@ -73,7 +92,7 @@
         </div>
     </div>
     {#if data.topics.total}
-        <Table {data} />
+        <Table columns={$columns} {data} />
 
         <PaginationWithLimit
             name="Topics"
