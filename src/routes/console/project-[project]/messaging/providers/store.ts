@@ -26,6 +26,7 @@ export type ProviderInput = {
         | 'checkbox';
     placeholder?: string;
     description?: string;
+    tooltip?: string;
     popover?: string[];
     popoverImage?: { src: { light: string; dark: string }; alt: string };
     allowedFileExtensions?: string[];
@@ -45,7 +46,7 @@ type ProvidersMap = {
                 title: string;
                 description: string;
                 needAHand?: string[];
-                configure: ProviderInput[];
+                configure: (ProviderInput | ProviderInput[])[];
             };
         };
     };

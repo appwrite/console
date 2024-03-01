@@ -21,7 +21,15 @@
     let open = false;
 
     onMount(() => {
-        for (const input of inputs) {
+        const flattened = [];
+        for (const i of inputs) {
+            if (Array.isArray(i)) {
+                flattened.push(...i);
+            } else {
+                flattened.push(i);
+            }
+        }
+        for (const input of flattened) {
             if (input.type === 'file' && $providerParams[$provider][input.name].length > 0) {
                 const dataTransfer = new DataTransfer();
                 const f = new File(
