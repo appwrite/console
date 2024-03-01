@@ -18,6 +18,7 @@
     export let autocomplete = false;
     export let tooltip: string = null;
     export let isPopoverDefined = true;
+    export let fullWidth = false;
 
     let element: HTMLInputElement;
     let error: string;
@@ -58,7 +59,7 @@
     }
 </script>
 
-<FormItem>
+<FormItem {fullWidth}>
     <Label {required} {optionalText} {tooltip} hide={!showLabel} for={id}>
         {label}{#if $$slots.popover && isPopoverDefined}
             <Drop bind:show display="inline-block">

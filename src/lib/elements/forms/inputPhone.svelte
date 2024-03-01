@@ -15,6 +15,7 @@
     export let autocomplete = false;
     export let maxlength: number = null;
     export let isPopoverDefined = true;
+    export let fullWidth = false;
 
     const pattern = String.raw`^\+?[1-9]\d{1,14}$`;
 
@@ -48,7 +49,7 @@
     }
 </script>
 
-<FormItem>
+<FormItem {fullWidth}>
     <Label {required} hide={!showLabel} for={id}>
         {label}{#if $$slots.popover && isPopoverDefined}
             <Drop bind:show display="inline-block">
