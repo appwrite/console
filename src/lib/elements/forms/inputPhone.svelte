@@ -67,7 +67,9 @@
                 <svelte:fragment slot="list">
                     <div
                         class="dropped card u-max-width-250"
-                        style="--p-card-padding: .75rem; box-shadow:var(--shadow-large);">
+                        style:--card-border-radius="var(--border-radius-small)"
+                        style:--p-card-padding=".75rem"
+                        style:box-shadow="var(--shadow-large)">
                         <svelte:component this={popover} {...popoverProps} />
                     </div>
                 </svelte:fragment>

@@ -95,6 +95,7 @@
                         <div
                             class="dropped card u-max-width-250"
                             style:--p-card-padding=".75rem"
+                            style:--card-border-radius="var(--border-radius-small)"
                             style:box-shadow="var(--shadow-large)">
                             <svelte:component this={popover} {...popoverProps} />
                         </div>
