@@ -16,13 +16,14 @@
     } from '$lib/elements/table';
     import { addNotification } from '$lib/stores/notifications';
     import type { PageData } from './$types';
-    import { columns } from './store';
     import { project } from '$routes/console/project-[project]/store';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { sdk } from '$lib/stores/sdk';
     import { toLocaleDateTime } from '$lib/helpers/date';
+    import type { Column } from '$lib/helpers/types';
 
+    export let columns: Column[];
     export let data: PageData;
 
     let selectedIds: string[] = [];
@@ -62,7 +63,7 @@
         <TableCellHeadCheck
             bind:selected={selectedIds}
             pageItemsIds={data.topics.topics.map((d) => d.$id)} />
-        {#each $columns as column}
+        {#each columns as column}
             {#if column.show}
                 <TableCellHead width={column.width}>{column.title}</TableCellHead>
             {/if}
@@ -74,10 +75,10 @@
                 href={`${base}/console/project-${$project.$id}/messaging/topics/topic-${topic.$id}`}>
                 <TableCellCheck bind:selectedIds id={topic.$id} />
 
-                {#each $columns as column (column.id)}
+                {#each columns as column (column.id)}
                     {#if column.show}
                         {#if column.id === '$id'}
-                            {#key $columns}
+                            {#key column.id}
                                 <TableCell title={column.title} width={column.width}>
                                     <Id value={topic.$id}>{topic.$id}</Id>
                                 </TableCell>
