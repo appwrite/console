@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
+    import { SvelteComponent, onMount } from 'svelte';
     import { FormItem, Helper, Label } from '.';
     import { Drop } from '$lib/components';
 
@@ -16,6 +16,8 @@
     export let showPasswordButton = false;
     export let minlength = 8;
     export let maxlength: number = null;
+    export let popover: typeof SvelteComponent<unknown> = null;
+    export let popoverProps: Record<string, unknown> = {};
 
     let element: HTMLInputElement;
     let error: string;
@@ -50,7 +52,7 @@
 
 <FormItem>
     <Label {required} hide={!showLabel} for={id}>
-        {label}{#if $$slots?.popover}
+        {label}{#if popover}
             <Drop isPopover bind:show={showPopover} display="inline-block">
                 <!-- TODO: make unclicked icon greyed out and hover and clicked filled -->
                 &nbsp;<button
@@ -67,7 +69,7 @@
                     <div
                         class="dropped card u-max-width-250"
                         style="--p-card-padding: .75rem; box-shadow:var(--shadow-large);">
-                        <slot name="popover" />
+                        <svelte:component this={popover} {...popoverProps} />
                     </div>
                 </svelte:fragment>
             </Drop>

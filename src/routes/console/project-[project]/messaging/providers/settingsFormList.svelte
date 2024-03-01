@@ -40,21 +40,31 @@
         | FCMProviderParams
         | APNSProviderParams
     >;
+
+    function getPopoverProps(input: ProviderInput) {
+        if (!input.popover) {
+            return {};
+        }
+        return {
+            lines: input.popover,
+            image: input.popoverImage
+        };
+    }
 </script>
 
 <FormList>
     {#each inputs as input}
-        {@const popoverImage = input.popoverImage}
+        {@const popover = input.popover ? PopoverContent : null}
+        {@const popoverProps = getPopoverProps(input)}
         {#if input.type === 'text'}
             <InputText
                 id={input.name}
                 label={input.label}
                 placeholder={input.placeholder}
                 required={!input.optional}
+                {popover}
+                {popoverProps}
                 bind:value={params[input.name]}>
-                <svelte:fragment slot="popover">
-                    <PopoverContent lines={input.popover} {popoverImage} />
-                </svelte:fragment>
             </InputText>
         {:else if input.type === 'password'}
             <InputPassword
@@ -62,11 +72,10 @@
                 label={input.label}
                 placeholder={input.placeholder}
                 required={!input.optional}
+                {popover}
+                {popoverProps}
                 showPasswordButton
                 bind:value={params[input.name]}>
-                <svelte:fragment slot="popover">
-                    <PopoverContent lines={input.popover} {popoverImage} />
-                </svelte:fragment>
             </InputPassword>
         {:else if input.type === 'email'}
             <InputEmail
@@ -74,10 +83,9 @@
                 label={input.label}
                 placeholder={input.placeholder}
                 required={!input.optional}
+                {popover}
+                popoverProps={getPopoverProps(input)}
                 bind:value={params[input.name]}>
-                <svelte:fragment slot="popover">
-                    <PopoverContent lines={input.popover} {popoverImage} />
-                </svelte:fragment>
             </InputEmail>
         {:else if input.type === 'domain'}
             <InputDomain
@@ -85,10 +93,9 @@
                 label={input.label}
                 placeholder={input.placeholder}
                 required={!input.optional}
+                {popover}
+                {popoverProps}
                 bind:value={params[input.name]}>
-                <svelte:fragment slot="popover">
-                    <PopoverContent lines={input.popover} {popoverImage} />
-                </svelte:fragment>
             </InputDomain>
         {:else if input.type === 'phone'}
             <InputPhone
@@ -96,20 +103,18 @@
                 label={input.label}
                 placeholder={input.placeholder}
                 required={!input.optional}
+                {popover}
+                {popoverProps}
                 bind:value={params[input.name]}>
-                <svelte:fragment slot="popover">
-                    <PopoverContent lines={input.popover} {popoverImage} />
-                </svelte:fragment>
             </InputPhone>
         {:else if input.type === 'file'}
             <InputFile
                 label={input.label}
                 allowedFileExtensions={input.allowedFileExtensions}
                 required={!input.optional}
+                {popover}
+                {popoverProps}
                 bind:files={files[input.name]}>
-                <svelte:fragment slot="popover">
-                    <PopoverContent lines={input.popover} {popoverImage} />
-                </svelte:fragment>
             </InputFile>
         {:else if input.type === 'switch'}
             <InputSwitch label={input.label} id={input.name} bind:value={params[input.name]}>
