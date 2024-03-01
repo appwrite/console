@@ -1,7 +1,7 @@
 <script lang="ts">
     import { CardGrid, Heading } from '$lib/components';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import { topic, topicTotal } from './store';
+    import { topic, topicTotal } from '../store';
 </script>
 
 <CardGrid>

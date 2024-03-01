@@ -19,12 +19,12 @@
     import { addNotification } from '$lib/stores/notifications';
     import type { PageData } from './$types';
     import { columns } from './store';
-    import ProviderType from '../../../providerType.svelte';
+    import ProviderType from '../../providerType.svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { project } from '$routes/console/project-[project]/store';
     import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/stores';
-    import { targetsById } from '../../../store';
+    import { targetsById } from '../../store';
     import { MessagingProviderType, type Models } from '@appwrite.io/console';
 
     export let data: PageData;
