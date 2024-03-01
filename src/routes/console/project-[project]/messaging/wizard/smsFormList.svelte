@@ -38,8 +38,9 @@
             <InputTextarea
                 id="message"
                 label="Message"
-                placeholder="Type here..."
+                required
                 maxlength={900}
+                placeholder="Type here..."
                 bind:value={$messageParams[$providerType]['content']}>
             </InputTextarea>
             <!-- TODO: Add support for draft messages -->
