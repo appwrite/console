@@ -78,15 +78,6 @@
             disabled: !isAssistantEnabled
         },
         {
-            label: 'Go to Account',
-            callback: () => {
-                goto('/console/account');
-            },
-            keys: ['g', 'i'],
-            group: 'navigation',
-            rank: -2
-        },
-        {
             label: 'Create new organization',
             callback: () => {
                 newOrgModal.set(true);
