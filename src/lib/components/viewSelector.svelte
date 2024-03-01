@@ -16,6 +16,7 @@
     export let hideColumns = false;
     export let allowNoColumns = false;
     export let showColsTextMobile = false;
+    export let fullWidthMobile = false;
 
     let showSelectColumns = false;
 
@@ -71,8 +72,11 @@
 <div class="grid-header-col-4">
     {#if !hideColumns && view === View.Table}
         {#if $columns?.length}
-            <DropList bind:show={showSelectColumns} scrollable>
-                <Button secondary on:click={() => (showSelectColumns = !showSelectColumns)}>
+            <DropList bind:show={showSelectColumns} scrollable wrapperFullWidth={fullWidthMobile}>
+                <Button
+                    secondary
+                    on:click={() => (showSelectColumns = !showSelectColumns)}
+                    {fullWidthMobile}>
                     <span
                         class="icon-view-boards u-opacity-50"
                         aria-hidden="true"

@@ -27,7 +27,7 @@
         TableScroll
     } from '$lib/elements/table';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import { Container } from '$lib/layout';
+    import { Container, ContainerHeader } from '$lib/layout';
     import { MessagingProviderType } from '@appwrite.io/console';
     import type { PageData } from './$types';
     import CreateMessageDropdown from './createMessageDropdown.svelte';
@@ -47,7 +47,6 @@
     let deleting = false;
     let showFailed = false;
     let errors: string[] = [];
-    let showCreateDropdownMobile = false;
     let showCreateDropdownDesktop = false;
     let showCreateDropdownEmpty = false;
 
@@ -82,46 +81,42 @@
 </script>
 
 <Container>
-    <div class="u-flex u-flex-vertical">
-        <div class="u-flex u-main-space-between">
-            <Heading tag="h2" size="5">Messages</Heading>
-            <div class="is-only-mobile">
-                <CreateMessageDropdown bind:showCreateDropdown={showCreateDropdownMobile} />
-            </div>
-        </div>
-        <!-- TODO: fix width of search input in mobile -->
+    <ContainerHeader title="Messages">
+        <CreateMessageDropdown bind:showCreateDropdown={showCreateDropdownDesktop} />
+    </ContainerHeader>
+    <div class="u-flex u-flex-vertical u-gap-16 u-margin-block-start-16">
         <SearchQuery
+            fullWidth
             search={data.search}
             placeholder="Search by message ID, description, type, or status">
-            <div class="u-flex u-gap-16 is-not-mobile">
-                <!-- TODO: make this not database-specific -->
-                <Filters query={data.query} {columns} />
-                <ViewSelector
-                    view={data.view}
-                    {columns}
-                    hideView
-                    allowNoColumns
-                    showColsTextMobile />
-                <CreateMessageDropdown bind:showCreateDropdown={showCreateDropdownDesktop} />
+            <div class="is-not-mobile u-width-full-line">
+                <div class="u-flex u-gap-16 u-main-end">
+                    <!-- TODO: make this not database-specific -->
+                    <Filters query={data.query} {columns} />
+                    <ViewSelector
+                        view={data.view}
+                        {columns}
+                        hideView
+                        allowNoColumns
+                        showColsTextMobile />
+                </div>
             </div>
         </SearchQuery>
-        <div class="u-flex u-gap-16 is-only-mobile u-margin-block-start-16">
+        <div class="is-only-mobile u-flex u-gap-16">
             <div class="u-flex-basis-50-percent">
-                <!-- TODO: fix width -->
                 <ViewSelector
                     view={data.view}
                     {columns}
                     hideView
                     allowNoColumns
-                    showColsTextMobile />
+                    showColsTextMobile
+                    fullWidthMobile />
             </div>
             <div class="u-flex-basis-50-percent">
-                <!-- TODO: fix width -->
-                <Filters query={data.query} {columns} />
+                <Filters query={data.query} {columns} fullWidthMobile />
             </div>
         </div>
     </div>
-
     {#if data.messages.total}
         <TableScroll>
             <TableHeader>
