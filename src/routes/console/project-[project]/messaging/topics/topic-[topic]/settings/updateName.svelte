@@ -2,7 +2,7 @@
     import { CardGrid, Heading } from '$lib/components';
     import { Button, Form, InputText } from '$lib/elements/forms';
     import { onMount } from 'svelte';
-    import { topic } from './store';
+    import { topic } from '../store';
     import { invalidate } from '$app/navigation';
     import { trackEvent, Submit, trackError } from '$lib/actions/analytics';
     import { Dependencies } from '$lib/constants';
