@@ -172,15 +172,17 @@
                                             Create Index
                                         </DropListItem>
                                     {/if}
-                                    <DropListItem
-                                        icon="trash"
-                                        on:click={() => {
-                                            selectedAttribute = attribute;
-                                            showDelete = true;
-                                            showDropdown[index] = false;
-                                        }}>
-                                        Delete
-                                    </DropListItem>
+                                    {#if attribute.status !== 'processing'}
+                                        <DropListItem
+                                            icon="trash"
+                                            on:click={() => {
+                                                selectedAttribute = attribute;
+                                                showDelete = true;
+                                                showDropdown[index] = false;
+                                            }}>
+                                            Delete
+                                        </DropListItem>
+                                    {/if}
                                 </svelte:fragment>
                             </DropList>
                         </TableCell>
