@@ -179,6 +179,7 @@
     .grid-box {
         --grid-gap: 1rem;
         grid-template-columns: 1fr 1fr;
+        grid-auto-rows: auto;
     }
 
     :global(body:not(.theme-dark)) .grid-box :global(.card) {
