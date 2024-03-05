@@ -32,7 +32,6 @@ export type PushMessageParams = MessageParams & {
     badge?: string;
 };
 
-export const operation = writable<'create' | 'update'>('create');
 export const providerType = writable<MessagingProviderType>(null);
 export const targetsById = writable<Record<string, Models.Target>>({});
 export const messageParams = writable<{

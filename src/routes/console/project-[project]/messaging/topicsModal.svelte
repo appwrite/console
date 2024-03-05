@@ -145,29 +145,22 @@
                         </div>
                     </div>
                 {:else if search}
-                    <div class="u-flex-vertical u-gap-8">
-                        <EmptySearch hidePagination>
-                            <div class="common-section">
-                                <div class="u-text-center common-section">
-                                    <b class="body-text-2 u-bold"
-                                        >Sorry we couldn't find "{search}"</b>
-                                    <p>There are no topics that match your search.</p>
-                                </div>
-                                <div class="u-flex u-gap-16 common-section u-main-center">
-                                    <Button
-                                        external
-                                        href="https://appwrite.io/docs/products/messaging/topics"
-                                        text>Documentation</Button>
-                                    <Button secondary on:click={() => (search = '')}
-                                        >Clear search</Button>
-                                </div>
+                    <EmptySearch hidePagination>
+                        <div class="common-section">
+                            <div class="u-text-center common-section">
+                                <b class="body-text-2 u-bold">Sorry we couldn't find "{search}"</b>
+                                <p>There are no topics that match your search.</p>
                             </div>
-                        </EmptySearch>
-                        <div class="u-flex u-main-space-between u-cross-center">
-                            <p class="text">Total results: {totalResults}</p>
-                            <PaginationInline limit={5} bind:offset sum={totalResults} hidePages />
+                            <div class="u-flex u-gap-16 common-section u-main-center">
+                                <Button
+                                    external
+                                    href="https://appwrite.io/docs/products/messaging/topics"
+                                    text>Documentation</Button>
+                                <Button secondary on:click={() => (search = '')}
+                                    >Clear search</Button>
+                            </div>
                         </div>
-                    </div>
+                    </EmptySearch>
                 {:else}
                     <EmptySearch hidePagination>
                         <div class="common-section">

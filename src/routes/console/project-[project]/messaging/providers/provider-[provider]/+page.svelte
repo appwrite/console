@@ -78,7 +78,7 @@
                 providerId: $providerData.$id,
                 name: $providerData.name,
                 enabled: $providerData.enabled,
-                isEuRegion: false,
+                isEuRegion: $providerData.credentials['isEuRegion'],
                 fromEmail: $providerData.options['fromEmail'],
                 fromName: $providerData.options['fromName'],
                 replyToEmail: $providerData.options['replyToEmail'],

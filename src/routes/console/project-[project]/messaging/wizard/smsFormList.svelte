@@ -1,8 +1,8 @@
 <script lang="ts">
-    import { messageParams, providerType, operation } from './store';
+    import { messageParams, providerType } from './store';
     import { Button, FormList, InputEmail, InputRadio, InputTextarea } from '$lib/elements/forms';
     import { Pill } from '$lib/elements';
-    import { CustomId, Modal } from '$lib/components';
+    import { Modal } from '$lib/components';
     import { user } from '$lib/stores/user';
     import { clickOnEnter } from '$lib/helpers/a11y';
     import { ID, MessagingProviderType } from '@appwrite.io/console';
@@ -38,8 +38,9 @@
             <InputTextarea
                 id="message"
                 label="Message"
-                placeholder="Type here..."
+                required
                 maxlength={900}
+                placeholder="Type here..."
                 bind:value={$messageParams[$providerType]['content']}>
             </InputTextarea>
             <!-- TODO: Add support for draft messages -->
@@ -83,21 +84,13 @@
                 </svelte:fragment>
             </Modal>
         </div>
-        {#if $operation === 'create'}
-            {#if !showCustomId}
-                <div>
-                    <Pill button on:click={() => (showCustomId = !showCustomId)}
-                        ><span class="icon-pencil" aria-hidden="true" /><span class="text">
-                            Message ID
-                        </span></Pill>
-                </div>
-            {:else}
-                <CustomId
-                    bind:show={showCustomId}
-                    name="Message"
-                    bind:id={$messageParams[$providerType].messageId}
-                    autofocus={false} />
-            {/if}
+        {#if !showCustomId}
+            <div>
+                <Pill button on:click={() => (showCustomId = !showCustomId)}
+                    ><span class="icon-pencil" aria-hidden="true" /><span class="text">
+                        Message ID
+                    </span></Pill>
+            </div>
         {/if}
     </FormList>
     <SMSPhone content={$messageParams[$providerType]['content']} classes="is-only-desktop" />

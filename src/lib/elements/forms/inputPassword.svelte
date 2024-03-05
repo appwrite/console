@@ -17,6 +17,7 @@
     export let minlength = 8;
     export let maxlength: number = null;
     export let isPopoverDefined = true;
+    export let fullWidth = false;
 
     let element: HTMLInputElement;
     let error: string;
@@ -49,7 +50,7 @@
     }
 </script>
 
-<FormItem>
+<FormItem {fullWidth}>
     <Label {required} hide={!showLabel} for={id}>
         {label}{#if $$slots.popover && isPopoverDefined}
             <Drop bind:show={showPopover} display="inline-block">
