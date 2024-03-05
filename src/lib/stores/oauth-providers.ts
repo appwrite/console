@@ -1,6 +1,4 @@
-import type { Models } from '@appwrite.io/console';
 import type { SvelteComponent } from 'svelte';
-import { writable } from 'svelte/store';
 import Apple from '../../routes/console/project-[project]/auth/appleOAuth.svelte';
 import Auth0 from '../../routes/console/project-[project]/auth/auth0OAuth.svelte';
 import Authentik from '../../routes/console/project-[project]/auth/authentikOAuth.svelte';
@@ -11,173 +9,240 @@ import Microsoft from '../../routes/console/project-[project]/auth/microsoftOAut
 import Oidc from '../../routes/console/project-[project]/auth/oidcOAuth.svelte';
 import Okta from '../../routes/console/project-[project]/auth/oktaOAuth.svelte';
 
-export type Provider = Models.AuthProvider & {
+export type Provider = {
+    name: string;
     icon: string;
     docs?: string;
-    component?: typeof SvelteComponent<unknown>;
+    component: typeof SvelteComponent<unknown>;
 };
 
-export type Providers = {
-    providers: Provider[];
+export const oAuthProviders: Record<string, Provider> = {
+    amazon: {
+        name: 'Amazon',
+        icon: 'amazon',
+        docs: 'https://developer.amazon.com/apps-and-games/services-and-apis',
+        component: Main
+    },
+    apple: {
+        name: 'Apple',
+        icon: 'apple',
+        docs: 'https://developer.apple.com/',
+        component: Apple
+    },
+    auth0: {
+        name: 'Auth0',
+        icon: 'auth0',
+        docs: 'https://auth0.com/developers',
+        component: Auth0
+    },
+    authentik: {
+        name: 'Authentik',
+        icon: 'authentik',
+        docs: 'https://goauthentik.io/integrations/sources/oauth/',
+        component: Authentik
+    },
+    autodesk: {
+        name: 'Autodesk',
+        icon: 'autodesk',
+        docs: 'https://forge.autodesk.com/en/docs/oauth/v2/developers_guide/overview/',
+        component: Main
+    },
+    bitbucket: {
+        name: 'Bitbucket',
+        icon: 'bitbucket',
+        docs: 'https://developer.atlassian.com/bitbucket',
+        component: Main
+    },
+    bitly: {
+        name: 'Bitly',
+        icon: 'bitly',
+        docs: 'https://dev.bitly.com/v4_documentation.html',
+        component: Main
+    },
+    box: {
+        name: 'Box',
+        icon: 'box',
+        docs: 'https://developer.box.com/reference/',
+        component: Main
+    },
+    dailymotion: {
+        name: 'Dailymotion',
+        icon: 'dailymotion',
+        docs: 'https://developers.dailymotion.com/api/',
+        component: Main
+    },
+    discord: {
+        name: 'Discord',
+        icon: 'discord',
+        docs: 'https://discordapp.com/developers/docs/topics/oauth2',
+        component: Main
+    },
+    disqus: {
+        name: 'Disqus',
+        icon: 'disqus',
+        docs: 'https://disqus.com/api/docs/auth/',
+        component: Main
+    },
+    dropbox: {
+        name: 'Dropbox',
+        icon: 'dropbox',
+        docs: 'https://www.dropbox.com/developers/documentation',
+        component: Main
+    },
+    etsy: {
+        name: 'Etsy',
+        icon: 'etsy',
+        docs: 'https://developers.etsy.com/',
+        component: Main
+    },
+    facebook: {
+        name: 'Facebook',
+        icon: 'facebook',
+        docs: 'https://developers.facebook.com/',
+        component: Main
+    },
+    github: {
+        name: 'GitHub',
+        icon: 'github',
+        docs: 'https://developer.github.com',
+        component: Main
+    },
+    gitlab: {
+        name: 'GitLab',
+        icon: 'gitlab',
+        docs: 'https://docs.gitlab.com/ee/api/',
+        component: GitLab
+    },
+    google: {
+        name: 'Google',
+        icon: 'google',
+        docs: 'https://support.google.com/googleapi/answer/6158849',
+        component: Google
+    },
+    linkedin: {
+        name: 'LinkedIn',
+        icon: 'linkedin',
+        docs: 'https://developer.linkedin.com/',
+        component: Main
+    },
+    microsoft: {
+        name: 'Microsoft',
+        icon: 'microsoft',
+        docs: 'https://developer.microsoft.com/en-us/',
+        component: Microsoft
+    },
+    notion: {
+        name: 'Notion',
+        icon: 'notion',
+        docs: 'https://developers.notion.com/docs',
+        component: Main
+    },
+    oidc: {
+        name: 'OIDC',
+        icon: 'oidc',
+        docs: 'https://openid.net/connect/faq/',
+        component: Oidc
+    },
+    okta: {
+        name: 'Okta',
+        icon: 'okta',
+        docs: 'https://developer.okta.com',
+        component: Okta
+    },
+    paypal: {
+        name: 'Paypal',
+        icon: 'paypal',
+        docs: 'https://developer.paypal.com/docs/api/overview/',
+        component: Main
+    },
+    paypalsandbox: {
+        name: 'Paypal Sandbox',
+        icon: 'paypal',
+        docs: 'https://developer.paypal.com/docs/api/overview/',
+        component: Main
+    },
+    podio: {
+        name: 'Podio',
+        icon: 'podio',
+        docs: 'https://developers.podio.com/doc/oauth-authorization',
+        component: Main
+    },
+    salesforce: {
+        name: 'Salesforce',
+        icon: 'salesforce',
+        docs: 'https://developer.salesforce.com/docs/',
+        component: Main
+    },
+    slack: {
+        name: 'Slack',
+        icon: 'slack',
+        docs: 'https://api.slack.com/',
+        component: Main
+    },
+    spotify: {
+        name: 'Spotify',
+        icon: 'spotify',
+        docs: 'https://developer.spotify.com/documentation/general/guides/authorization-guide/',
+        component: Main
+    },
+    stripe: {
+        name: 'Stripe',
+        icon: 'stripe',
+        docs: 'https://stripe.com/docs/api',
+        component: Main
+    },
+    tradeshift: {
+        name: 'Tradeshift',
+        icon: 'tradeshift',
+        docs: 'https://developers.tradeshift.com/docs/api',
+        component: Main
+    },
+    tradeshiftBox: {
+        name: 'Tradeshift Sandbox',
+        icon: 'tradeshift',
+        docs: 'https://developers.tradeshift.com/docs/api',
+        component: Main
+    },
+    twitch: {
+        name: 'Twitch',
+        icon: 'twitch',
+        docs: 'https://dev.twitch.tv/docs/auth',
+        component: Main
+    },
+    wordpress: {
+        name: 'Wordpress',
+        icon: 'wordpress',
+        docs: 'https://developer.wordpress.com/docs/oauth2/',
+        component: Main
+    },
+    yahoo: {
+        name: 'Yahoo',
+        icon: 'yahoo',
+        docs: 'https://developer.yahoo.com/oauth2/guide/flows_authcode/',
+        component: Main
+    },
+    yammer: {
+        name: 'Yammer',
+        icon: 'yammer',
+        docs: 'https://developer.yammer.com/docs/oauth-2',
+        component: Main
+    },
+    yandex: {
+        name: 'Yandex',
+        icon: 'yandex',
+        docs: 'https://tech.yandex.com/oauth/',
+        component: Main
+    },
+    zoho: {
+        name: 'Zoho',
+        icon: 'zoho',
+        docs: 'https://www.zoho.com/crm/developer/docs/api/oauth-overview.html',
+        component: Main
+    },
+    zoom: {
+        name: 'Zoom',
+        icon: 'zoom',
+        docs: 'https://marketplace.zoom.us/docs/guides/auth/oauth/',
+        component: Main
+    }
 };
-
-const setProviders = (project: Models.Project): Provider[] => {
-    return (
-        project?.oAuthProviders.map((n) => {
-            let docs: Provider['docs'];
-            let icon: Provider['icon'] = n.key.toLowerCase();
-            let component: Provider['component'] = Main;
-
-            switch (n.key.toLowerCase()) {
-                case 'amazon':
-                    docs = 'https://developer.amazon.com/apps-and-games/services-and-apis';
-                    break;
-                case 'apple':
-                    docs = 'https://developer.apple.com/';
-                    component = Apple;
-                    break;
-                case 'auth0':
-                    docs = 'https://auth0.com/developers';
-                    component = Auth0;
-                    break;
-                case 'authentik':
-                    docs = 'https://goauthentik.io/integrations/sources/oauth/';
-                    component = Authentik;
-                    break;
-                case 'autodesk':
-                    docs = 'https://forge.autodesk.com/en/docs/oauth/v2/developers_guide/overview/';
-                    break;
-                case 'bitbucket':
-                    docs = 'https://developer.atlassian.com/bitbucket';
-                    break;
-                case 'bitly':
-                    docs = 'https://dev.bitly.com/v4_documentation.html';
-                    break;
-                case 'box':
-                    docs = 'https://developer.box.com/reference/';
-                    break;
-                case 'dailymotion':
-                    docs = 'https://developers.dailymotion.com/api/';
-                    break;
-                case 'discord':
-                    docs = 'https://discordapp.com/developers/docs/topics/oauth2';
-                    break;
-                case 'disqus':
-                    docs = 'https://disqus.com/api/docs/auth/';
-                    break;
-                case 'dropbox':
-                    docs = 'https://www.dropbox.com/developers/documentation';
-                    break;
-                case 'etsy':
-                    docs = 'https://developers.etsy.com/';
-                    break;
-                case 'facebook':
-                    docs = 'https://developers.facebook.com/';
-                    break;
-                case 'github':
-                    docs = 'https://developer.github.com';
-                    break;
-                case 'gitlab':
-                    docs = 'https://docs.gitlab.com/ee/api/';
-                    component = GitLab;
-                    break;
-                case 'google':
-                    docs = 'https://support.google.com/googleapi/answer/6158849';
-                    component = Google;
-                    break;
-                case 'linkedin':
-                    docs = 'https://developer.linkedin.com/';
-                    break;
-                case 'microsoft':
-                    docs = 'https://developer.microsoft.com/en-us/';
-                    component = Microsoft;
-                    break;
-                case 'notion':
-                    docs = 'https://developers.notion.com/docs';
-                    break;
-                case 'oidc':
-                    docs = 'https://openid.net/connect/faq/';
-                    component = Oidc;
-                    break;
-                case 'okta':
-                    docs = 'https://developer.okta.com';
-                    component = Okta;
-                    break;
-                case 'paypal':
-                    docs = 'https://developer.paypal.com/docs/api/overview/';
-                    break;
-                case 'paypalsandbox':
-                    icon = 'paypal';
-                    docs = 'https://developer.paypal.com/docs/api/overview/';
-                    break;
-                case 'podio':
-                    docs = 'https://developers.podio.com/doc/oauth-authorization';
-                    break;
-                case 'salesforce':
-                    docs = 'https://developer.salesforce.com/docs/';
-                    break;
-                case 'slack':
-                    docs = 'https://api.slack.com/';
-                    break;
-                case 'spotify':
-                    docs =
-                        'https://developer.spotify.com/documentation/general/guides/authorization-guide/';
-                    break;
-                case 'stripe':
-                    docs = 'https://stripe.com/docs/api';
-                    break;
-                case 'tradeshift':
-                    docs = 'https://developers.tradeshift.com/docs/api';
-                    break;
-                case 'tradeshiftbox':
-                    icon = 'tradeshift';
-                    docs = 'https://developers.tradeshift.com/docs/api';
-                    break;
-                case 'twitch':
-                    docs = 'https://dev.twitch.tv/docs/auth';
-                    break;
-                case 'wordpress':
-                    docs = 'https://developer.wordpress.com/docs/oauth2/';
-                    break;
-                case 'yahoo':
-                    docs = 'https://developer.yahoo.com/oauth2/guide/flows_authcode/';
-                    break;
-                case 'yammer':
-                    docs = 'https://developer.yammer.com/docs/oauth-2';
-                    break;
-                case 'yandex':
-                    docs = 'https://tech.yandex.com/oauth/';
-                    break;
-                case 'zoom':
-                    docs = 'https://marketplace.zoom.us/docs/guides/auth/oauth/';
-                    break;
-                default:
-                    break;
-            }
-
-            return {
-                ...n,
-                icon,
-                docs,
-                component
-            };
-        }) ?? []
-    );
-};
-
-function createOAuthProviders() {
-    const { subscribe, set } = writable<Providers>({
-        providers: setProviders(null)
-    });
-    return {
-        subscribe,
-        set,
-        load: (project: Models.Project) => {
-            const providers = setProviders(project);
-
-            set({ providers });
-        }
-    };
-}
-
-export const OAuthProviders = createOAuthProviders();

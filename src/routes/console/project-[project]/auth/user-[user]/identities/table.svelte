@@ -20,8 +20,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { invalidate } from '$app/navigation';
     import type { Column } from '$lib/helpers/types';
-    import { OAuthProviders, type Provider } from '$lib/stores/oauth-providers';
-    import { project } from '$routes/console/project-[project]/store';
+    import { oAuthProviders } from '$lib/stores/oauth-providers';
     import { app } from '$lib/stores/app';
 
     export let columns: Column[];
@@ -30,7 +29,6 @@
     let selectedIds: string[] = [];
     let showDelete = false;
     let deleting = false;
-    let providerLookup: Record<string, Provider> = {};
 
     async function handleDelete() {
         showDelete = false;
@@ -58,12 +56,6 @@
             showDelete = false;
         }
     }
-
-    $: OAuthProviders.load($project);
-    $: providerLookup = $OAuthProviders.providers.reduce((acc, provider) => {
-        acc[provider.key] = provider;
-        return acc;
-    }, {});
 </script>
 
 <TableScroll>
@@ -93,7 +85,7 @@
                                 </TableCell>
                             {/key}
                         {:else if column.id === 'provider'}
-                            {@const provider = providerLookup[identity[column.id]]}
+                            {@const provider = oAuthProviders[identity[column.id]]}
                             <TableCellText title={column.title} width={column.width}>
                                 <div class="u-inline-flex u-cross-center u-gap-8">
                                     <div class="avatar is-size-small">
