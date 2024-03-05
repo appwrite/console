@@ -29,6 +29,7 @@
                 teamId,
                 'default'
             );
+            show = false;
             dispatch('created', project);
             trackEvent(Submit.ProjectCreate, {
                 customId: !!id,
@@ -38,7 +39,6 @@
                 type: 'success',
                 message: `${name} has been created`
             });
-            show = false;
             await goto(`/console/project-${project.$id}`);
         } catch (e) {
             error = e.message;
