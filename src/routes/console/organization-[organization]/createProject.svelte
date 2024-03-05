@@ -18,9 +18,11 @@
     let name: string;
     let showCustomId = false;
     let error: string;
+    let disabled: boolean = false;
 
     async function create() {
         try {
+            disabled = true;
             const project = await sdk.forConsole.projects.create(
                 id ?? ID.unique(),
                 name,
@@ -36,10 +38,12 @@
                 type: 'success',
                 message: `${name} has been created`
             });
+            show = false;
             await goto(`/console/project-${project.$id}`);
         } catch (e) {
             error = e.message;
             trackError(e, Submit.ProjectCreate);
+            disabled = false;
         }
     }
 </script>
@@ -61,6 +65,6 @@
     </FormList>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (show = false)}>Cancel</Button>
-        <Button submit>Create</Button>
+        <Button submit disabled={disabled}>Create</Button>
     </svelte:fragment>
 </Modal>
