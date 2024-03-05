@@ -13,6 +13,7 @@
     import type { Column } from '$lib/helpers/types';
     import type { Writable } from 'svelte/store';
     import { tooltip } from '$lib/actions/tooltip';
+    import InputSelectSearch from '$lib/elements/forms/inputSelectSearch.svelte';
 
     export let columns: Writable<Column[]>;
 
@@ -83,6 +84,7 @@
         contains: {
             toQuery: Query.contains,
             toTag: (attribute, input) => {
+                console.log(attribute, input);
                 return {
                     value: input,
                     tag: `**${attribute}** contains **${Array.isArray(input) ? formatArray(input) : input}**`
@@ -110,6 +112,7 @@
     /* eslint  @typescript-eslint/no-explicit-any: 'off' */
     let value: any = null;
 
+    let search: string;
     $: {
         columnId;
         value = column?.array ? [] : null;
@@ -141,8 +144,6 @@
     }
 
     $: isDisabled = !operator;
-
-    $: console.log($tags);
 </script>
 
 <div>
@@ -168,26 +169,26 @@
         {#if column && operator && !operator?.hideInput}
             {#if column?.array}
                 <FormList class="u-margin-block-start-8">
-                    {#if column.type === 'enum'}
-                        test
-                        <!-- <InputSelect
+                    <InputTags
+                        label="values"
+                        showLabel={false}
                         id="value"
-                        placeholder="Select a value"
-                        required={true}
-                        options={column.enum.map((v) => ({ label: v, value: v }))}
-                        bind:value /> -->
-                    {:else}
-                        <InputTags
-                            label="values"
-                            showLabel={false}
-                            id="value"
-                            bind:tags={arrayValues}
-                            placeholder="Enter values" />
-                    {/if}
+                        bind:tags={arrayValues}
+                        placeholder="Enter values" />
                 </FormList>
             {:else}
                 <ul class="u-margin-block-start-8">
-                    {#if column.type === 'integer' || column.type === 'double'}
+                    {#if column.format === 'enum'}
+                        <InputSelectSearch
+                            id="value"
+                            bind:value
+                            bind:search
+                            placeholder="Select value"
+                            options={column?.elements?.map((value) => ({ label: value, value }))}
+                            label="Value"
+                            showLabel={false}
+                            interactiveOutput />
+                    {:else if column.type === 'integer' || column.type === 'double'}
                         <InputNumber id="value" bind:value placeholder="Enter value" />
                     {:else if column.type === 'boolean'}
                         <InputSelect

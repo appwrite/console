@@ -37,6 +37,8 @@ export type Column = {
      */
     filter?: boolean;
     array?: boolean;
+    format?: string;
+    elements?: string[];
 };
 
 export function isValueOfStringEnum<T extends Record<string, string>>(
