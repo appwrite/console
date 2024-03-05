@@ -51,7 +51,9 @@
         }
     }
 
-    $: upcomingInvoice = invoices.invoices.find((i) => i.status === 'upcoming' && i.amount > 0);
+    $: upcomingInvoice = isCloud
+        ? invoices.invoices.find((i) => i.status === 'upcoming' && i.amount > 0)
+        : null;
 </script>
 
 <Modal

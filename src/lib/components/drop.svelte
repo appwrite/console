@@ -100,7 +100,11 @@
 
 <svelte:window on:click={onBlur} on:keydown={onKeyDown} />
 
-<div class:drop-wrapper={!noStyle} class:u-cross-child-start={childStart} bind:this={element}>
+<div
+    class="u-min-width-0"
+    class:drop-wrapper={!noStyle}
+    class:u-cross-child-start={childStart}
+    bind:this={element}>
     <slot />
 </div>
 
