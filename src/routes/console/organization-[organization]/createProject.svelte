@@ -65,6 +65,6 @@
     </FormList>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (show = false)}>Cancel</Button>
-        <Button submit disabled={disabled}>Create</Button>
+        <Button submit {disabled}>Create</Button>
     </svelte:fragment>
 </Modal>
