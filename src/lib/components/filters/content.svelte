@@ -8,7 +8,7 @@
         FormList
     } from '$lib/elements/forms';
     import { Query } from '@appwrite.io/console';
-    import { createEventDispatcher } from 'svelte';
+    import { createEventDispatcher, onMount } from 'svelte';
     import { tags, type Operator, queries, isTypeTagValue } from './store';
     import type { Column } from '$lib/helpers/types';
     import type { Writable } from 'svelte/store';
@@ -84,7 +84,7 @@
         contains: {
             toQuery: Query.contains,
             toTag: (attribute, input) => {
-                console.log(attribute, input);
+                console.table({ attribute, input, tp: typeof input });
                 return {
                     value: input,
                     tag: `**${attribute}** contains **${Array.isArray(input) ? formatArray(input) : input}**`
@@ -108,15 +108,14 @@
         operatorKey = null;
     }
 
+    let search: string;
     // We cast to any to not cause type errors in the input components
     /* eslint  @typescript-eslint/no-explicit-any: 'off' */
     let value: any = null;
 
-    let search: string;
-    $: {
-        columnId;
+    onMount(() => {
         value = column?.array ? [] : null;
-    }
+    });
 
     // This Map is keyed by tags, and has a query as the value
     function addFilter() {
@@ -144,6 +143,9 @@
     }
 
     $: isDisabled = !operator;
+
+    $: console.log(value, typeof value);
+    // $: console.table({ value, tp: typeof value, arrayValues });
 </script>
 
 <div>
@@ -224,7 +226,7 @@
                         queries.removeFilter(tag);
                     }}>
                     <span class="text" use:tagFormat>
-                        {JSON.stringify(tag.tag)}
+                        asd {JSON.stringify(tag.tag)}
                     </span>
                     <i class="icon-x" />
                 </button>
@@ -235,7 +237,7 @@
                         queries.removeFilter(tag);
                     }}>
                     <span class="text" use:tagFormat>
-                        {tag}
+                        test{tag}
                     </span>
                     <i class="icon-x" />
                 </button>

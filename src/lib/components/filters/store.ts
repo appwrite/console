@@ -11,6 +11,7 @@ type TagValue = {
 };
 
 export function isTypeTagValue(obj: any): obj is TagValue {
+    if (typeof obj === 'string') return false;
     return (
         obj &&
         typeof obj.tag === 'string' &&
