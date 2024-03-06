@@ -14,6 +14,7 @@
     import type { Writable } from 'svelte/store';
     import { tooltip } from '$lib/actions/tooltip';
     import InputSelectSearch from '$lib/elements/forms/inputSelectSearch.svelte';
+    import { SelectSearchCheckbox, SelectSearchItem } from '$lib/elements';
 
     export let columns: Writable<Column[]>;
 
@@ -182,25 +183,51 @@
         {#if column && operator && !operator?.hideInput}
             {#if column?.array}
                 <FormList class="u-margin-block-start-8">
-                    <InputTags
-                        label="values"
-                        showLabel={false}
-                        id="value"
-                        bind:tags={arrayValues}
-                        placeholder="Enter values" />
-                </FormList>
-            {:else}
-                <ul class="u-margin-block-start-8">
                     {#if column.format === 'enum'}
                         <InputSelectSearch
                             id="value"
                             bind:value
                             bind:search
                             placeholder="Select value"
-                            options={column?.elements?.map((value) => ({ label: value, value }))}
+                            options={column?.elements?.map((value) => ({
+                                label: value,
+                                value,
+                                data: arrayValues
+                            }))}
                             label="Value"
                             showLabel={false}
-                            interactiveOutput />
+                            interactiveOutput
+                            let:option={o}>
+                            <SelectSearchCheckbox {value} data={o.data}>
+                                {o.label}
+                            </SelectSearchCheckbox>
+                            <svelte:fragment slot="output" let:option={o}>
+                                <output class="input-text is-read-only">
+                                    <SelectSearchItem data={o.data}>
+                                        {o.label}
+                                    </SelectSearchItem>
+                                </output>
+                            </svelte:fragment>
+                        </InputSelectSearch>
+                    {:else}
+                        <InputTags
+                            label="values"
+                            showLabel={false}
+                            id="value"
+                            bind:tags={arrayValues}
+                            placeholder="Enter values" />
+                    {/if}
+                </FormList>
+            {:else}
+                <ul class="u-margin-block-start-8">
+                    {#if column.format === 'enum'}
+                        <InputSelect
+                            id="value"
+                            bind:value
+                            placeholder="Select value"
+                            options={column?.elements?.map((value) => ({ label: value, value }))}
+                            label="Value"
+                            showLabel={false} />
                     {:else if column.type === 'integer' || column.type === 'double'}
                         <InputNumber id="value" bind:value placeholder="Enter value" />
                     {:else if column.type === 'boolean'}
