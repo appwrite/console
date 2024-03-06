@@ -41,7 +41,8 @@
     >;
     export let fullWidth = false;
 
-    let popoverImage = input.popoverImage;
+    const popover = input.popover ? PopoverContent : null;
+    const popoverProps = getPopoverProps(input);
 
     function getPopoverProps(input: ProviderInput) {
         if (!input.popover) {
@@ -54,8 +55,6 @@
     }
 </script>
 
-{@const popover = input.popover ? PopoverContent : null}
-{@const popoverProps = getPopoverProps(input)}
 {#if input.type === 'text'}
     <InputText
         id={input.name}
