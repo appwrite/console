@@ -50,6 +50,7 @@
     let showFailed = false;
     let errors: string[] = [];
     let showCreateDropdownDesktop = false;
+    let showCreateDropdownMobile = false;
     let showCreateDropdownEmpty = false;
     const columns = writable<Column[]>([
         { id: '$id', title: 'Message ID', type: 'string', show: true, width: 140 },
@@ -92,7 +93,9 @@
 
 <Container>
     <ContainerHeader title="Messages">
-        <CreateMessageDropdown bind:showCreateDropdown={showCreateDropdownDesktop} />
+        <div class="is-only-mobile">
+            <CreateMessageDropdown bind:showCreateDropdown={showCreateDropdownMobile} />
+        </div>
     </ContainerHeader>
     <div class="u-flex u-flex-vertical u-gap-16 u-margin-block-start-16">
         <SearchQuery
@@ -101,7 +104,6 @@
             placeholder="Search by message ID, description, type, or status">
             <div class="is-not-mobile u-width-full-line">
                 <div class="u-flex u-gap-16 u-main-end">
-                    <!-- TODO: make this not database-specific -->
                     <Filters query={data.query} {columns} />
                     <ViewSelector
                         view={data.view}
@@ -109,6 +111,7 @@
                         hideView
                         allowNoColumns
                         showColsTextMobile />
+                    <CreateMessageDropdown bind:showCreateDropdown={showCreateDropdownDesktop} />
                 </div>
             </div>
         </SearchQuery>
