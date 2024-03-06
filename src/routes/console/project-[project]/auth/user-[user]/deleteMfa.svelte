@@ -15,7 +15,7 @@
 
     async function deleteProvider() {
         try {
-            await sdk.forConsole.users.deleteAuthenticator($user.$id, AuthenticatorType.Totp);
+            await sdk.forConsole.users.deleteMfaAuthenticator($user.$id, AuthenticatorType.Totp);
             await invalidate(Dependencies.ACCOUNT);
             await invalidate(Dependencies.FACTORS);
             showDelete = false;
