@@ -28,7 +28,6 @@
         status: null,
         credits: null
     };
-    let comment: string = null;
 
     async function fetchCard() {
         try {
@@ -92,12 +91,12 @@
                 placeholder="Select one"
                 required
                 {options}
-                bind:value={comment} />
+                bind:value={$changeOrganizationTier.feedbackDowngradeReason} />
             <InputTextarea
                 id="comment"
                 label="Your feedback here"
                 placeholder="Enter feedback"
-                bind:value={comment} />
+                bind:value={$changeOrganizationTier.feedbackMessage} />
         </FormList>
     </WizardStep>
 {:else}

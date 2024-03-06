@@ -23,6 +23,7 @@ export const changeOrganizationTier = writable<{
     };
     taxId?: string;
     feedbackMessage?: string;
+    feedbackDowngradeReason?: string;
     couponCode?: string;
 }>({
     billingPlan: BillingPlan.PRO,

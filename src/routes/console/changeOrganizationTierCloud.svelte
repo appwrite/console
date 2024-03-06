@@ -25,6 +25,7 @@
     import { tierToPlan } from '$lib/stores/billing';
     import { user } from '$lib/stores/user';
     import { feedback } from '$lib/stores/feedback';
+    import { VARS } from '$lib/system';
 
     const dispatch = createEventDispatcher();
 
@@ -48,6 +49,20 @@
                     $user?.name ?? '',
                     $user.email
                 );
+
+                await fetch(`${VARS.GROWTH_ENDPOINT}/billing`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        from: $organization.billingPlan,
+                        to: $changeOrganizationTier.billingPlan,
+                        email: $user.email,
+                        message: $changeOrganizationTier.feedbackMessage,
+                        reason: $changeOrganizationTier.feedbackDowngradeReason
+                    })
+                });
 
                 addNotification({
                     type: 'success',
