@@ -9,7 +9,7 @@
     } from '$lib/elements/forms';
     import { Query } from '@appwrite.io/console';
     import { createEventDispatcher, onMount } from 'svelte';
-    import { tags, type Operator, queries, isTypeTagValue } from './store';
+    import { tags, type Operator, queries, type TagValue } from './store';
     import type { Column } from '$lib/helpers/types';
     import type { Writable } from 'svelte/store';
     import { tooltip } from '$lib/actions/tooltip';
@@ -84,11 +84,14 @@
         contains: {
             toQuery: Query.contains,
             toTag: (attribute, input) => {
-                console.table({ attribute, input, tp: typeof input });
-                return {
-                    value: input,
-                    tag: `**${attribute}** contains **${Array.isArray(input) ? formatArray(input) : input}**`
-                };
+                if (Array.isArray(input) && input.length > 2) {
+                    return {
+                        value: input,
+                        tag: `**${attribute}** contains **${formatArray(input)}** `
+                    };
+                } else {
+                    return `**${attribute}** contains **${input}**`;
+                }
             },
             types: ['string', 'integer', 'double', 'boolean', 'datetime', 'enum']
         }
@@ -142,10 +145,18 @@
         }
     }
 
-    $: isDisabled = !operator;
+    function isTypeTagValue(obj: any): obj is TagValue {
+        if (typeof obj === 'string') return false;
+        return (
+            obj &&
+            typeof obj.tag === 'string' &&
+            (typeof obj.value === 'string' ||
+                typeof obj.value === 'number' ||
+                Array.isArray(obj.value))
+        );
+    }
 
-    $: console.log(value, typeof value);
-    // $: console.table({ value, tp: typeof value, arrayValues });
+    $: isDisabled = !operator;
 </script>
 
 <div>
@@ -226,7 +237,7 @@
                         queries.removeFilter(tag);
                     }}>
                     <span class="text" use:tagFormat>
-                        asd {JSON.stringify(tag.tag)}
+                        {tag.tag}
                     </span>
                     <i class="icon-x" />
                 </button>
@@ -237,7 +248,7 @@
                         queries.removeFilter(tag);
                     }}>
                     <span class="text" use:tagFormat>
-                        test{tag}
+                        {tag}
                     </span>
                     <i class="icon-x" />
                 </button>

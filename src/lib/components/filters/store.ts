@@ -5,19 +5,10 @@ import { page } from '$app/stores';
 import deepEqual from 'deep-equal';
 import type { Column, ColumnType } from '$lib/helpers/types';
 
-type TagValue = {
+export type TagValue = {
     tag: string;
     value: string | number | string[];
 };
-
-export function isTypeTagValue(obj: any): obj is TagValue {
-    if (typeof obj === 'string') return false;
-    return (
-        obj &&
-        typeof obj.tag === 'string' &&
-        (typeof obj.value === 'string' || typeof obj.value === 'number' || Array.isArray(obj.value))
-    );
-}
 
 export type Operator = {
     toTag: (attribute: string, input?: string | number | string[]) => string | TagValue;
