@@ -53,11 +53,13 @@
                         from: tierToPlan($organization.billingPlan).name,
                         to: tierToPlan($changeOrganizationTier.billingPlan).name,
                         email: $user.email,
-                        message: $changeOrganizationTier.feedbackMessage,
                         reason: feedbackDowngradeOptions.find(
                             (option) =>
                                 option.value === $changeOrganizationTier.feedbackDowngradeReason
-                        )?.label
+                        )?.label,
+                        orgId: $organization.$id,
+                        userId: $user.$id,
+                        message: $changeOrganizationTier?.feedbackMessage ?? ''
                     })
                 });
 
