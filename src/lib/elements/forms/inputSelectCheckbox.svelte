@@ -9,7 +9,7 @@
 </script>
 
 <DropList bind:show noStyle noArrow scrollable placement="bottom-end" position="static" fixed>
-    <div class="tags-input u-position-relative u-padding-inline-end-40">
+    <div class="tags-input u-position-relative u-padding-inline-end-40 u-cursor-pointer">
         <div class="tags">
             <ul class="tags-list">
                 {#each tags as tag}
@@ -22,7 +22,7 @@
             </ul>
         </div>
 
-        <div class="tags-input-text" {placeholder} />
+        <input class="tags-input-text u-cursor-text" {placeholder} />
         <span
             class="icon-cheveron-down u-position-absolute u-inset-block-start-4 u-inset-inline-end-12"
             aria-hidden="true"></span>
