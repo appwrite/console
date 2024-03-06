@@ -12,6 +12,7 @@
     export let childStart = false;
     export let noStyle = false;
     export let fullWidth = false;
+    export let wrapperFullWidth = false;
     export let fixed = false;
     export let display = 'block';
 
@@ -104,6 +105,7 @@
 <div
     class:drop-wrapper={!noStyle}
     class:u-cross-child-start={childStart}
+    class:u-width-full-line={wrapperFullWidth}
     bind:this={element}
     style:display>
     <slot />

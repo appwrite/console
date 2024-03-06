@@ -16,16 +16,18 @@
     let code: string;
     let type: Models.MfaType = null;
     let step = 1;
+    let codes: Models.MfaRecoveryCodes = null;
 
     async function addAuthenticator(): Promise<URL> {
-        type = await sdk.forConsole.account.addAuthenticator(AuthenticatorType.Totp);
+        type = await sdk.forConsole.account.createMfaAuthenticator(AuthenticatorType.Totp);
 
         return sdk.forConsole.avatars.getQR(type.uri, 192 * 2);
     }
 
     async function verifyAuthenticator() {
         try {
-            await sdk.forConsole.account.verifyAuthenticator(AuthenticatorType.Totp, code);
+            await sdk.forConsole.account.updateMfaAuthenticator(AuthenticatorType.Totp, code);
+            codes = await sdk.forConsole.account.createMfaRecoveryCodes();
             await invalidate(Dependencies.ACCOUNT);
             await invalidate(Dependencies.FACTORS);
             showSetup = false;
@@ -111,8 +113,8 @@
     description="Learn more about multi-factor authentication in our documentation."
     bind:show={showRecoveryCodes}
     onSubmit={verifyAuthenticator}>
-    {#if type}
-        {@const formattedBackupCodes = type.backups.join('\n')}
+    {#if type && codes}
+        {@const formattedBackupCodes = codes.recoveryCodes.join('\n')}
         <Alert type="info">
             <span slot="title">
                 It is highly recommended to securely store your recovery codes
@@ -148,7 +150,7 @@
         </div>
         <Table noMargin noStyles>
             <TableBody>
-                {#each type.backups as code}
+                {#each codes.recoveryCodes as code}
                     <TableRow>
                         <TableCell title="code">
                             <Output value={code} hideCopyIcon>{code}</Output>

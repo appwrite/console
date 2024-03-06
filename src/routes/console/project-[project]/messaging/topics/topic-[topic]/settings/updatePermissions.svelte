@@ -10,7 +10,7 @@
     import { onMount } from 'svelte';
     import { Roles } from '$lib/components/permissions';
     import { symmetricDifference } from '$lib/helpers/array';
-    import { topic } from './store';
+    import { topic } from '../store';
 
     const topicId = $page.params.topic;
 

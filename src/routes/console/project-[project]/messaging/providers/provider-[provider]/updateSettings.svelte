@@ -13,12 +13,13 @@
     import { onMount } from 'svelte';
     import CreateMember from '$routes/console/organization-[organization]/createMember.svelte';
 
-    export let inputs: ProviderInput[];
+    export let inputs: (ProviderInput | ProviderInput[])[];
     export let providerType: MessagingProviderType;
     export let provider: Providers;
     export let providerId: string;
     export let params: object;
 
+    let flattened: ProviderInput[] = [];
     let formValues: object = {};
     let originalfiles: Record<string, FileList> = {};
     let files: Record<string, FileList> = {};
@@ -41,7 +42,15 @@
     }
 
     onMount(() => {
-        for (const input of inputs) {
+        flattened = [];
+        for (const i of inputs) {
+            if (Array.isArray(i)) {
+                flattened.push(...i);
+            } else {
+                flattened.push(i);
+            }
+        }
+        for (const input of flattened) {
             const value = params[input.name];
             formValues[input.name] = value;
             if (input.type === 'file' && typeof value == 'string' && value.length > 0) {
@@ -198,7 +207,7 @@
     }
 
     $: updated =
-        inputs
+        flattened
             .filter((input) => input.type !== 'file')
             .some((input) => formValues[input.name] !== params[input.name]) ||
         Object.keys(files).some((key) => files[key] !== originalfiles[key]);
