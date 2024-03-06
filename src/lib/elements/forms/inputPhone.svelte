@@ -16,6 +16,7 @@
     export let maxlength: number = null;
     export let popover: typeof SvelteComponent<unknown> = null;
     export let popoverProps: Record<string, unknown> = {};
+    export let fullWidth = false;
 
     const pattern = String.raw`^\+?[1-9]\d{1,14}$`;
 
@@ -49,7 +50,7 @@
     }
 </script>
 
-<FormItem>
+<FormItem {fullWidth}>
     <Label {required} hide={!showLabel} for={id}>
         {label}{#if popover}
             <Drop isPopover bind:show display="inline-block">

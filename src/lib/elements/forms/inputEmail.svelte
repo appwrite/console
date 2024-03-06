@@ -19,6 +19,7 @@
     export let tooltip: string = null;
     export let popover: typeof SvelteComponent<unknown> = null;
     export let popoverProps: Record<string, unknown> = {};
+    export let fullWidth = false;
 
     let element: HTMLInputElement;
     let error: string;
@@ -59,7 +60,7 @@
     }
 </script>
 
-<FormItem>
+<FormItem {fullWidth}>
     <Label {required} {optionalText} {tooltip} hide={!showLabel} for={id}>
         {label}{#if popover}
             <Drop isPopover bind:show display="inline-block">

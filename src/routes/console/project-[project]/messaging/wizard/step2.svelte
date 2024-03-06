@@ -41,13 +41,19 @@
         $targetsById = rest;
     }
 
+    async function beforeSubmit() {
+        if (topicIdsLength === 0 && targetIdsLength === 0) {
+            throw new Error('At least one topic or target is required.');
+        }
+    }
+
     $: topicIdsLength = Object.keys($topicsById).length;
     $: targetIdsLength = Object.keys($targetsById).length;
     $: $messageParams[$providerType].targets = Object.keys($targetsById);
     $: $messageParams[$providerType].topics = Object.keys($topicsById);
 </script>
 
-<WizardStep>
+<WizardStep {beforeSubmit}>
     <svelte:fragment slot="title">Targets</svelte:fragment>
     <svelte:fragment slot="subtitle">
         Select targets to whom this message should be directed.

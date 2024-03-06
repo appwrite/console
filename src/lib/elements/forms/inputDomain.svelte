@@ -16,6 +16,7 @@
     export let maxlength: number = null;
     export let popover: typeof SvelteComponent<unknown> = null;
     export let popoverProps: Record<string, unknown> = {};
+    export let fullWidth = false;
 
     // https://www.geeksforgeeks.org/how-to-validate-a-domain-name-using-regular-expression/
     const pattern = String.raw`(?!-)[A-Za-z0-9\-]+([\-\.]{1}[a-z0-9]+)*\.[A-Za-z]{2,18}`;
@@ -50,7 +51,7 @@
     }
 </script>
 
-<FormItem>
+<FormItem {fullWidth}>
     <Label {required} hide={!showLabel} for={id}>
         {label}{#if popover}
             <Drop isPopover bind:show display="inline-block">
