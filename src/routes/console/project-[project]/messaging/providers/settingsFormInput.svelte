@@ -65,7 +65,7 @@
         {popover}
         {popoverProps}
         {fullWidth}
-        bind:value={params[input.name]}/>
+        bind:value={params[input.name]} />
 {:else if input.type === 'password'}
     <InputPassword
         id={input.name}
@@ -76,7 +76,7 @@
         {popover}
         {popoverProps}
         {fullWidth}
-        bind:value={params[input.name]}/>
+        bind:value={params[input.name]} />
 {:else if input.type === 'email'}
     <InputEmail
         id={input.name}
@@ -87,7 +87,7 @@
         {popover}
         {popoverProps}
         {fullWidth}
-        bind:value={params[input.name]}/>
+        bind:value={params[input.name]} />
 {:else if input.type === 'domain'}
     <InputDomain
         id={input.name}
@@ -97,7 +97,7 @@
         {popover}
         {popoverProps}
         {fullWidth}
-        bind:value={params[input.name]}/>
+        bind:value={params[input.name]} />
 {:else if input.type === 'phone'}
     <InputPhone
         id={input.name}
@@ -107,7 +107,7 @@
         {popover}
         {popoverProps}
         {fullWidth}
-        bind:value={params[input.name]}/>
+        bind:value={params[input.name]} />
 {:else if input.type === 'file'}
     <InputFile
         label={input.label}
@@ -116,7 +116,7 @@
         tooltip={input.tooltip}
         {popover}
         {popoverProps}
-        bind:files={files[input.name]}/>
+        bind:files={files[input.name]} />
 {:else if input.type === 'switch'}
     <InputSwitch label={input.label} id={input.name} bind:value={params[input.name]}>
         <svelte:fragment slot="description">
