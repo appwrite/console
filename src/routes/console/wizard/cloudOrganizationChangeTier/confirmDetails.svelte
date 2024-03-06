@@ -10,7 +10,12 @@
     import { plansInfo } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
-    import { changeOrganizationFinalAction, changeOrganizationTier, isUpgrade } from './store';
+    import {
+        changeOrganizationFinalAction,
+        changeOrganizationTier,
+        feedbackDowngradeOptions,
+        isUpgrade
+    } from './store';
 
     const plan = $plansInfo.get($changeOrganizationTier.billingPlan);
     const collaboratorPrice = plan?.addons.member?.price ?? 0;
@@ -44,37 +49,6 @@
     $: if (!$isUpgrade) {
         $changeOrganizationFinalAction = 'Confirm plan change';
     }
-
-    const options = [
-        {
-            value: 'availableFeatures',
-            label: "The available features don't meet my needs"
-        },
-        {
-            value: 'bugs',
-            label: 'I experienced bugs or unexpected outages while using the console'
-        },
-        {
-            value: 'starter',
-            label: 'The Starter plan is enough for my projects'
-        },
-        {
-            value: 'budget',
-            label: "I don't have the budget"
-        },
-        {
-            value: 'tryOut',
-            label: 'I just wanted to try it out'
-        },
-        {
-            value: 'alternative',
-            label: 'I found an alternative/competitor to meet my needs'
-        },
-        {
-            value: 'other',
-            label: 'Other'
-        }
-    ];
 </script>
 
 {#if downgradeToStarter}
@@ -90,7 +64,7 @@
                 label="What made you decide to change your plan?*"
                 placeholder="Select one"
                 required
-                {options}
+                options={feedbackDowngradeOptions}
                 bind:value={$changeOrganizationTier.feedbackDowngradeReason} />
             <InputTextarea
                 id="comment"

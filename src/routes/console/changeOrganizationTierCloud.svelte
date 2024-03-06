@@ -14,6 +14,7 @@
         changeOrganizationFinalAction,
         changeOrganizationTier,
         changeTierSteps,
+        feedbackDowngradeOptions,
         isUpgrade
     } from './wizard/cloudOrganizationChangeTier/store';
     import { goto, invalidate } from '$app/navigation';
@@ -24,7 +25,6 @@
     import { wizard } from '$lib/stores/wizard';
     import { tierToPlan } from '$lib/stores/billing';
     import { user } from '$lib/stores/user';
-    import { feedback } from '$lib/stores/feedback';
     import { VARS } from '$lib/system';
 
     const dispatch = createEventDispatcher();
@@ -43,24 +43,21 @@
                     $changeOrganizationTier.paymentMethodId,
                     $changeOrganizationTier.billingAddressId
                 );
-                feedback.submitFeedback(
-                    'downgrade',
-                    $changeOrganizationTier.feedbackMessage,
-                    $user?.name ?? '',
-                    $user.email
-                );
 
-                await fetch(`${VARS.GROWTH_ENDPOINT}/billing`, {
+                await fetch(`${VARS.GROWTH_ENDPOINT}/feedback/billing`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        from: $organization.billingPlan,
-                        to: $changeOrganizationTier.billingPlan,
+                        from: tierToPlan($organization.billingPlan).name,
+                        to: tierToPlan($changeOrganizationTier.billingPlan).name,
                         email: $user.email,
                         message: $changeOrganizationTier.feedbackMessage,
-                        reason: $changeOrganizationTier.feedbackDowngradeReason
+                        reason: feedbackDowngradeOptions.find(
+                            (option) =>
+                                option.value === $changeOrganizationTier.feedbackDowngradeReason
+                        )?.label
                     })
                 });
 
