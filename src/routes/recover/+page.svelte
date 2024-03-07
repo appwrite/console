@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { browser } from '$app/environment';
     import { base } from '$app/paths';
     import {
         Button,
@@ -66,57 +67,61 @@
     <title>Recover - Appwrite</title>
 </svelte:head>
 
+<!-- if browser checks allow us to partially prerender on the server to improve FCP and LCP -->
 <Unauthenticated>
-    <svelte:fragment slot="title">Password Recovery</svelte:fragment>
-    <svelte:fragment>
-        {#if userId && secret}
-            <Form onSubmit={setPassword}>
-                <FormList>
-                    <InputPassword
-                        label="New password"
-                        placeholder="Enter password"
-                        id="password"
-                        autofocus={true}
-                        required={true}
-                        showPasswordButton={true}
-                        bind:value={password} />
-                    <InputPassword
-                        label="Confirm password"
-                        placeholder="Confirm password"
-                        id="confirm-password"
-                        required={true}
-                        showPasswordButton={true}
-                        bind:value={confirmPassword} />
+    <svelte:fragment slot="title"
+        >{#if browser}Password Recovery{/if}</svelte:fragment>
+    <svelte:fragment
+        >{#if browser}
+            {#if userId && secret}
+                <Form onSubmit={setPassword}>
+                    <FormList>
+                        <InputPassword
+                            label="New password"
+                            placeholder="Enter password"
+                            id="password"
+                            autofocus={true}
+                            required={true}
+                            showPasswordButton={true}
+                            bind:value={password} />
+                        <InputPassword
+                            label="Confirm password"
+                            placeholder="Confirm password"
+                            id="confirm-password"
+                            required={true}
+                            showPasswordButton={true}
+                            bind:value={confirmPassword} />
 
-                    <FormItem>
-                        <Button fullWidth submit>Update</Button>
-                    </FormItem>
-                </FormList>
-            </Form>
-        {:else}
-            <Form onSubmit={recover}>
-                <FormList>
-                    <InputEmail
-                        id="email"
-                        label="Email"
-                        placeholder="Email"
-                        autofocus={true}
-                        required={true}
-                        bind:value={email} />
+                        <FormItem>
+                            <Button fullWidth submit>Update</Button>
+                        </FormItem>
+                    </FormList>
+                </Form>
+            {:else}
+                <Form onSubmit={recover}>
+                    <FormList>
+                        <InputEmail
+                            id="email"
+                            label="Email"
+                            placeholder="Email"
+                            autofocus={true}
+                            required={true}
+                            bind:value={email} />
 
-                    <FormItem>
-                        <Button fullWidth submit>Recover</Button>
-                    </FormItem>
-                </FormList>
-            </Form>
-        {/if}
+                        <FormItem>
+                            <Button fullWidth submit>Recover</Button>
+                        </FormItem>
+                    </FormList>
+                </Form>
+            {/if}{/if}
     </svelte:fragment>
-    <svelte:fragment slot="links">
-        <li class="inline-links-item">
-            <a href={`${base}/login`}><span class="text">Sign in</span></a>
-        </li>
-        <li class="inline-links-item">
-            <a href={`${base}/register`}><span class="text">Sign Up</span></a>
-        </li>
+    <svelte:fragment slot="links"
+        >{#if browser}
+            <li class="inline-links-item">
+                <a href={`${base}/login`}><span class="text">Sign in</span></a>
+            </li>
+            <li class="inline-links-item">
+                <a href={`${base}/register`}><span class="text">Sign Up</span></a>
+            </li>{/if}
     </svelte:fragment>
 </Unauthenticated>

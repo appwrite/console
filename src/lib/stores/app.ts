@@ -6,10 +6,12 @@ export type AppStore = {
     themeInUse: 'light' | 'dark';
 };
 
-export const app = writable<AppStore>({
+const defaultValue = {
     theme: 'auto',
     themeInUse: 'light'
-});
+};
+
+export const app = writable<AppStore>(getInitialValue());
 
 export const iconPath = derived(app, ($app) => {
     return (name: string, type: 'color' | 'grayscale') => {
@@ -18,9 +20,22 @@ export const iconPath = derived(app, ($app) => {
 });
 
 if (browser) {
-    app.update((n) => ({
-        ...n,
-        ...(JSON.parse(localStorage.getItem('appwrite')) ?? {})
-    }));
     app.subscribe((u) => localStorage.setItem('appwrite', JSON.stringify(u) ?? '{}'));
+}
+
+function getInitialValue() {
+    if (!browser) {
+        return defaultValue;
+    }
+    const localStorageValue = JSON.parse(localStorage.getItem('appwrite')) || {};
+    const value = { ...localStorageValue, ...defaultValue };
+    if (value.theme === 'auto' && window.matchMedia) {
+        const darkThemeMq = window.matchMedia('(prefers-color-scheme: dark)');
+        if (darkThemeMq.matches) {
+            value.themeInUse = 'dark';
+        } else {
+            value.themeInUse = '';
+        }
+    }
+    return value;
 }
