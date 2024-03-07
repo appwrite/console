@@ -45,8 +45,8 @@
     ): Array<[string, number]> {
         return metrics.reduceRight(
             (acc, curr) => {
-                acc.total -= curr.value;
                 acc.data.unshift([curr.date, acc.total]);
+                acc.total -= curr.value;
                 return acc;
             },
             {
