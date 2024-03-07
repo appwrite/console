@@ -1,14 +1,14 @@
 <script lang="ts">
     // export let data: string[] = [];
-    export let value: string;
-    export let checked = false;
+    export let value = false;
 </script>
 
-<div class="u-flex u-cross-baseline u-gap-12">
-    <span
-        class="u-flex-basis-140 u-flex-shrink-0 u-text-start u-trim-start u-x-small u-color-text-gray u-font-code"
-        data-private>
-        <input id={value} type="checkbox" bind:checked />
+<li class="drop-list-item">
+    <button
+        class="drop-button u-flex u-cross-center u-gap-12"
+        on:click|preventDefault
+        type="button">
+        <input type="checkbox" bind:checked={value} />
         <slot />
-    </span>
-</div>
+    </button>
+</li>

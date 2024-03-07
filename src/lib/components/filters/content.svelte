@@ -14,8 +14,7 @@
     import type { Column } from '$lib/helpers/types';
     import type { Writable } from 'svelte/store';
     import { tooltip } from '$lib/actions/tooltip';
-    import InputSelectSearch from '$lib/elements/forms/inputSelectSearch.svelte';
-    import { SelectSearchCheckbox, SelectSearchItem } from '$lib/elements';
+    import { SelectSearchCheckbox } from '$lib/elements';
 
     export let columns: Writable<Column[]>;
 
@@ -113,7 +112,6 @@
         operatorKey = null;
     }
 
-    let search: string;
     // We cast to any to not cause type errors in the input components
     /* eslint  @typescript-eslint/no-explicit-any: 'off' */
     let value: any = null;
@@ -188,19 +186,12 @@
                         <InputSelectCheckbox
                             name="value"
                             bind:tags={arrayValues}
-                            bind:search
                             placeholder="Select value"
                             options={column?.elements?.map((value) => ({
                                 label: value,
                                 value,
-                                data: arrayValues
-                            }))}
-                            let:option={o}>
-                            <SelectSearchCheckbox
-                                bind:checked={arrayValues[0]}
-                                bind:value={o.value}>
-                                {o.label}
-                            </SelectSearchCheckbox>
+                                checked: arrayValues.includes(value)
+                            }))}>
                         </InputSelectCheckbox>
                     {:else}
                         <InputTags
