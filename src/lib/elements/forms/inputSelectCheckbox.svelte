@@ -1,5 +1,6 @@
 <script lang="ts">
     import { DropList } from '$lib/components';
+    import { i } from 'vitest/dist/reporters-rzC174PQ';
     import { SelectSearchCheckbox } from '..';
 
     type Option = {
@@ -66,7 +67,9 @@
             bind:value={search}
             bind:this={input} />
         <span
-            class="icon-cheveron-down u-position-absolute u-inset-block-start-4 u-inset-inline-end-12"
+            class:icon-chevron-up={show}
+            class:icon-chevron-down={!show}
+            class="u-position-absolute u-inset-block-start-4 u-inset-inline-end-12"
             aria-hidden="true"></span>
     </button>
 
