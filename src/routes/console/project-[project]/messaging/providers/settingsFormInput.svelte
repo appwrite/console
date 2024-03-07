@@ -41,7 +41,18 @@
     >;
     export let fullWidth = false;
 
-    let popoverImage = input.popoverImage;
+    const popover = input.popover ? PopoverContent : null;
+    const popoverProps = getPopoverProps(input);
+
+    function getPopoverProps(input: ProviderInput) {
+        if (!input.popover) {
+            return {};
+        }
+        return {
+            lines: input.popover,
+            image: input.popoverImage
+        };
+    }
 </script>
 
 {#if input.type === 'text'}
@@ -51,13 +62,10 @@
         placeholder={input.placeholder}
         required={!input.optional}
         tooltip={input.tooltip}
-        isPopoverDefined={input.popover !== undefined}
+        {popover}
+        {popoverProps}
         {fullWidth}
-        bind:value={params[input.name]}>
-        <svelte:fragment slot="popover">
-            <PopoverContent lines={input.popover} {popoverImage} />
-        </svelte:fragment>
-    </InputText>
+        bind:value={params[input.name]} />
 {:else if input.type === 'password'}
     <InputPassword
         id={input.name}
@@ -65,13 +73,10 @@
         placeholder={input.placeholder}
         required={!input.optional}
         showPasswordButton
-        isPopoverDefined={input.popover !== undefined}
+        {popover}
+        {popoverProps}
         {fullWidth}
-        bind:value={params[input.name]}>
-        <svelte:fragment slot="popover">
-            <PopoverContent lines={input.popover} {popoverImage} />
-        </svelte:fragment>
-    </InputPassword>
+        bind:value={params[input.name]} />
 {:else if input.type === 'email'}
     <InputEmail
         id={input.name}
@@ -79,52 +84,39 @@
         placeholder={input.placeholder}
         required={!input.optional}
         tooltip={input.tooltip}
-        isPopoverDefined={input.popover !== undefined}
+        {popover}
+        {popoverProps}
         {fullWidth}
-        bind:value={params[input.name]}>
-        <svelte:fragment slot="popover">
-            <PopoverContent lines={input.popover} {popoverImage} />
-        </svelte:fragment>
-    </InputEmail>
+        bind:value={params[input.name]} />
 {:else if input.type === 'domain'}
     <InputDomain
         id={input.name}
         label={input.label}
         placeholder={input.placeholder}
         required={!input.optional}
-        isPopoverDefined={input.popover !== undefined}
+        {popover}
+        {popoverProps}
         {fullWidth}
-        bind:value={params[input.name]}>
-        <svelte:fragment slot="popover">
-            <PopoverContent lines={input.popover} {popoverImage} />
-        </svelte:fragment>
-    </InputDomain>
+        bind:value={params[input.name]} />
 {:else if input.type === 'phone'}
     <InputPhone
         id={input.name}
         label={input.label}
         placeholder={input.placeholder}
         required={!input.optional}
-        isPopoverDefined={input.popover !== undefined}
+        {popover}
+        {popoverProps}
         {fullWidth}
-        bind:value={params[input.name]}>
-        <svelte:fragment slot="popover">
-            <PopoverContent lines={input.popover} {popoverImage} />
-        </svelte:fragment>
-    </InputPhone>
+        bind:value={params[input.name]} />
 {:else if input.type === 'file'}
     <InputFile
         label={input.label}
         allowedFileExtensions={input.allowedFileExtensions}
         required={!input.optional}
         tooltip={input.tooltip}
-        isPopoverDefined={input.popover !== undefined}
-        bind:files={files[input.name]}>
-        {fullWidth}
-        <svelte:fragment slot="popover">
-            <PopoverContent lines={input.popover} {popoverImage} />
-        </svelte:fragment>
-    </InputFile>
+        {popover}
+        {popoverProps}
+        bind:files={files[input.name]} />
 {:else if input.type === 'switch'}
     <InputSwitch label={input.label} id={input.name} bind:value={params[input.name]}>
         <svelte:fragment slot="description">

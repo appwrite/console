@@ -88,5 +88,7 @@
     </svelte:fragment>
 </CardGrid>
 
-<Mfa bind:showSetup />
+{#if showSetup}
+    <Mfa bind:showSetup />
+{/if}
 <DeleteMfa bind:showDelete />

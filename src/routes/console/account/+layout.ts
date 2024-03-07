@@ -8,7 +8,7 @@ export const load: LayoutLoad = async ({ depends }) => {
     depends(Dependencies.FACTORS);
 
     return {
-        factors: await sdk.forConsole.account.listFactors(),
+        factors: await sdk.forConsole.account.listMfaFactors(),
         header: Header,
         breadcrumbs: Breadcrumbs
     };
