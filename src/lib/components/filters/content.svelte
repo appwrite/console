@@ -5,7 +5,8 @@
         InputSelect,
         InputText,
         InputTags,
-        FormList
+        FormList,
+        InputSelectCheckbox
     } from '$lib/elements/forms';
     import { Query } from '@appwrite.io/console';
     import { createEventDispatcher, onMount } from 'svelte';
@@ -184,31 +185,17 @@
             {#if column?.array}
                 <FormList class="u-margin-block-start-8">
                     {#if column.format === 'enum'}
-                        <InputSelectSearch
-                            id="value"
-                            bind:value
+                        <InputSelectCheckbox
+                            name="value"
+                            bind:tags={arrayValues}
                             bind:search
                             placeholder="Select value"
                             options={column?.elements?.map((value) => ({
                                 label: value,
                                 value,
                                 data: arrayValues
-                            }))}
-                            label="Value"
-                            showLabel={false}
-                            interactiveOutput
-                            let:option={o}>
-                            <SelectSearchCheckbox {value} data={o.data}>
-                                {o.label}
-                            </SelectSearchCheckbox>
-                            <svelte:fragment slot="output" let:option={o}>
-                                <output class="input-text is-read-only">
-                                    <SelectSearchItem data={o.data}>
-                                        {o.label}
-                                    </SelectSearchItem>
-                                </output>
-                            </svelte:fragment>
-                        </InputSelectSearch>
+                            }))}>
+                        </InputSelectCheckbox>
                     {:else}
                         <InputTags
                             label="values"
