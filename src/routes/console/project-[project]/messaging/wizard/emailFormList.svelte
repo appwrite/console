@@ -1,5 +1,6 @@
 <script lang="ts">
     import { messageParams, providerType } from './store';
+
     import {
         Button,
         FormList,
@@ -9,16 +10,21 @@
         InputText,
         InputTextarea
     } from '$lib/elements/forms';
+
     import { Pill } from '$lib/elements';
     import { Modal } from '$lib/components';
     import { user } from '$lib/stores/user';
     import { clickOnEnter } from '$lib/helpers/a11y';
-    import { ID, MessagingProviderType } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
+
+    import { ID, MessagingProviderType } from '@appwrite.io/console';
+    import { page } from '$app/stores';
+    import Alert from '$lib/components/alert.svelte';
 
     let showCustomId = false;
     let showTest = false;
     let selected = 'self';
+
     let otherEmail = '';
 
     async function sendTestEmail() {
@@ -44,6 +50,18 @@
 
     $: otherEmail = selected === 'self' ? '' : otherEmail;
 </script>
+
+{#if $page.data.providers.providers.filter((provider) => provider.type === MessagingProviderType.Email).length === 0}
+    <div style="margin-bottom:1.4rem">
+        <Alert type="warning">
+            <span slot="title">Enable a third-party provider</span>
+            <p>
+                All providers are currently disabled. Enable a third-party provider for sending
+                emails.
+            </p>
+        </Alert>
+    </div>
+{/if}
 
 <FormList>
     <InputText
