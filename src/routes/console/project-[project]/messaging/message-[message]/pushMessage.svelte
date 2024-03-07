@@ -36,7 +36,10 @@
         title = message.data.title;
         body = message.data.body;
         if (message.data?.image) {
-            file = await sdk.forProject.storage.getFile(message.data.image?.bucketId, message.data.image?.fileId);
+            file = await sdk.forProject.storage.getFile(
+                message.data.image?.bucketId,
+                message.data.image?.fileId
+            );
         }
 
         const dataEntries: [string, string][] = [];
@@ -121,7 +124,7 @@
                         disabled={message.status !== 'draft'}
                         bind:value={file}
                         label="Media"
-                       optionalText="(Optional)" />
+                        optionalText="(Optional)" />
                 </FormItem>
                 <form class="form">
                     <FormItem>
