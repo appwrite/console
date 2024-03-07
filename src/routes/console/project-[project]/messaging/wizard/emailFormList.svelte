@@ -67,6 +67,7 @@
     <InputText
         id="subject"
         label="Subject"
+        required
         placeholder="Enter subject"
         bind:value={$messageParams[$providerType]['subject']}>
     </InputText>
@@ -74,10 +75,10 @@
         <InputTextarea
             id="message"
             label="Message"
+            required
             placeholder="Type here..."
             bind:value={$messageParams[$providerType]['content']}>
         </InputTextarea>
-        <!-- TODO: Add support for draft messages -->
         <!-- <div class="u-flex u-main-end">
             <Button text on:click={() => (showTest = true)}>Send test message</Button>
         </div> -->

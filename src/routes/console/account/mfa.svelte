@@ -2,29 +2,32 @@
     import { invalidate } from '$app/navigation';
     import { Submit, trackError } from '$lib/actions/analytics';
     import { Modal, Output, Copy, Alert } from '$lib/components';
-    import LoadingDots from '$lib/components/loadingDots.svelte';
     import { Dependencies } from '$lib/constants';
     import { Button, FormList, InputDigits } from '$lib/elements/forms';
     import { Table, TableBody, TableCell, TableRow } from '$lib/elements/table';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { AuthenticatorType, type Models } from '@appwrite.io/console';
-
+    import QrFrame from '$lib/images/qr2.svg';
     export let showSetup = false;
     export let showRecoveryCodes = false;
 
     let copyParent: HTMLElement;
     let code: string;
     let type: Models.MfaType = null;
+    let step = 1;
+    let codes: Models.MfaRecoveryCodes = null;
+
     async function addAuthenticator(): Promise<URL> {
-        type = await sdk.forConsole.account.addAuthenticator(AuthenticatorType.Totp);
+        type = await sdk.forConsole.account.createMfaAuthenticator(AuthenticatorType.Totp);
 
         return sdk.forConsole.avatars.getQR(type.uri, 192 * 2);
     }
 
     async function verifyAuthenticator() {
         try {
-            await sdk.forConsole.account.verifyAuthenticator(AuthenticatorType.Totp, code);
+            await sdk.forConsole.account.updateMfaAuthenticator(AuthenticatorType.Totp, code);
+            codes = await sdk.forConsole.account.createMfaRecoveryCodes();
             await invalidate(Dependencies.ACCOUNT);
             await invalidate(Dependencies.FACTORS);
             showSetup = false;
@@ -49,52 +52,59 @@
             Install an authenticator app on your mobile device, open it and scan the provided QR
             code or enter it manually.
         </p>
+        {#if step === 1}
+            {#await addAuthenticator()}
+                <div class="loading">
+                    <div class="loader"></div>
+                </div>
+            {:then qr}
+                <div
+                    class="qr"
+                    style:background-image={`url(${QrFrame})`}
+                    style:background-repeat="no-repeat"
+                    style:background-position="center"
+                    style:background-size="contain">
+                    <img alt="MFA QR Code" class="code" src={qr.toString()} />
+                </div>
+                <span class="with-separators eyebrow-heading-3">or</span>
 
-        {#await addAuthenticator()}
-            <div class="qr">
-                <LoadingDots />
-            </div>
-        {:then qr}
-            <div class="qr">
-                <img alt="MFA QR Code" class="code" src={qr.toString()} />
-            </div>
-            <span class="with-separators eyebrow-heading-3">or</span>
+                <div bind:this={copyParent}>
+                    <label class="label" for="manual-code">Manual entry code</label>
+                    <button class="tooltip" aria-label="sec retinfo">
+                        <span class="icon-info" aria-hidden="true"></span>
+                        <span class="tooltip-popup" role="tooltip">
+                            <p class="text u-margin-block-start-8">
+                                Manually enter the following code into the authenticator app
+                            </p>
+                        </span>
+                    </button>
 
-            <div>
-                <label class="label" for="manual-code">Manual entry code</label>
-                <button class="tooltip" aria-label="sec retinfo">
-                    <span class="icon-info" aria-hidden="true"></span>
-                    <span class="tooltip-popup" role="tooltip">
-                        <p class="text u-margin-block-start-8">
-                            Manually enter the following code into the authenticator app
-                        </p>
-                    </span>
-                </button>
-
-                <div class="input-text-wrapper" style="--amount-of-buttons:1">
-                    <input id="manual-code" type="text" value={type.secret} readonly={true} />
-                    <div class="options-list">
-                        <div bind:this={copyParent}>
+                    <div class="input-text-wrapper" style="--amount-of-buttons:1">
+                        <input id="manual-code" type="text" value={type.secret} readonly={true} />
+                        <div class="options-list">
                             {#key copyParent}
-                                <Copy value={type.secret} appendTo="parent">
+                                <Copy value={type.secret} appendTo={copyParent}>
                                     <span class="icon-duplicate" aria-hidden="true" />
                                 </Copy>
                             {/key}
                         </div>
                     </div>
                 </div>
-            </div>
-        {/await}
-
-        <hr />
-        <FormList>
-            <label for="code">Enter the 6-digit one-time code generated by the app</label>
-            <InputDigits bind:value={code} autofocus />
-        </FormList>
+            {/await}
+        {:else}
+            <FormList>
+                <label for="code">Enter the 6-digit one-time code generated by the app</label>
+                <InputDigits bind:value={code} autofocus />
+            </FormList>
+        {/if}
     {/key}
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showSetup = false)}>Cancel</Button>
-        <Button submit>Continue</Button>
+        {#if step === 1}
+            <Button submit={false} on:click={() => (step = 2)}>Continue</Button>
+        {:else}
+            <Button submit>Continue</Button>
+        {/if}
     </svelte:fragment>
 </Modal>
 
@@ -103,8 +113,8 @@
     description="Learn more about multi-factor authentication in our documentation."
     bind:show={showRecoveryCodes}
     onSubmit={verifyAuthenticator}>
-    {#if type}
-        {@const formattedBackupCodes = type.backups.join('\n')}
+    {#if type && codes}
+        {@const formattedBackupCodes = codes.recoveryCodes.join('\n')}
         <Alert type="info">
             <span slot="title">
                 It is highly recommended to securely store your recovery codes
@@ -140,7 +150,7 @@
         </div>
         <Table noMargin noStyles>
             <TableBody>
-                {#each type.backups as code}
+                {#each codes.recoveryCodes as code}
                     <TableRow>
                         <TableCell title="code">
                             <Output value={code} hideCopyIcon>{code}</Output>
@@ -161,6 +171,12 @@
 </Modal>
 
 <style lang="scss">
+    .loading {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 351px;
+    }
     .qr {
         width: 100%;
         height: 220px;
@@ -174,14 +190,5 @@
             margin: 0 auto;
             display: block;
         }
-    }
-
-    hr {
-        height: 1px;
-        width: calc(100% + 2rem);
-        background-color: hsl(var(--color-border));
-
-        margin-block-start: 1rem;
-        margin-inline: -1rem;
     }
 </style>

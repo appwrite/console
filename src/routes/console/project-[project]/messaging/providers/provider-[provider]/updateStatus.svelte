@@ -134,16 +134,20 @@
     </div>
     <svelte:fragment slot="aside">
         <div class="u-flex u-main-space-between">
-            <div data-private>
+            <div data-private class="u-flex-vertical u-gap-16">
                 <ul>
                     <InputSwitch
                         id="enabled"
                         label={enabled ? 'Enabled' : 'Disabled'}
                         bind:value={enabled} />
                 </ul>
-                <p class="title">Provider: <Provider noIcon provider={$providerData.provider} /></p>
-                <p class="title">Channel: <ProviderType noIcon type={$providerData.type} /></p>
-                <p>Created: {toLocaleDateTime($providerData.$createdAt)}</p>
+                <div>
+                    <p class="title">
+                        Provider: <Provider noIcon provider={$providerData.provider} />
+                    </p>
+                    <p class="title">Type: <ProviderType noIcon type={$providerData.type} /></p>
+                    <p>Created: {toLocaleDateTime($providerData.$createdAt)}</p>
+                </div>
             </div>
         </div>
     </svelte:fragment>
