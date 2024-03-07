@@ -1,8 +1,10 @@
 import { browser } from '$app/environment';
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
 import relativeTime from 'dayjs/plugin/relativeTime';
 
 if (browser) {
+    dayjs.extend(utc);
     dayjs.extend(relativeTime);
 }
 
@@ -39,6 +41,21 @@ export const toLocaleDateTime = (datetime: string | number) => {
     };
 
     return date.toLocaleDateString('en', options);
+};
+
+export const utcHourToLocaleHour = (utcTimeString: string) => {
+    // we can use a default utc date format.
+    const utcDefaultDate = dayjs.utc(`1970-01-01T${utcTimeString}:00`);
+    return utcDefaultDate.local().format('HH:mm');
+};
+
+export const localeTimezoneShortHand = () => {
+    const options: Intl.DateTimeFormatOptions = {
+        timeZoneName: 'long'
+    };
+
+    const dateWithTimezone = new Intl.DateTimeFormat('en', options).format(new Date());
+    return dateWithTimezone.match(/\b([A-Z])/g).join('');
 };
 
 export const isSameDay = (date1: Date, date2: Date) => {
