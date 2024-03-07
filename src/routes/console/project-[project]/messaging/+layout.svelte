@@ -13,6 +13,7 @@
     import { topicsSearcher } from '$lib/commandCenter/searchers/topics';
     import { project } from '../store';
 
+    // TODO: finalize the commands
     $: $registerCommands([
         {
             label: 'Create message',
