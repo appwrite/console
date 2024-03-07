@@ -10,6 +10,7 @@
     import { wizard } from '$lib/stores/wizard';
     import { VARS } from '$lib/system';
     import { organization } from '$lib/stores/organization';
+    import { localeTimezoneShortHand, utcHourToLocaleHour } from '$lib/helpers/date';
 
     onDestroy(() => {
         $supportData = {
@@ -76,6 +77,8 @@
     }
 
     $wizard.finalAction = handleSubmit;
+
+    $: supportTimings = `${utcHourToLocaleHour('09:00')} - ${utcHourToLocaleHour('17:00')} ${localeTimezoneShortHand()}`;
 </script>
 
 <Wizard title="Contact us" steps={stepsComponents} finalAction="Submit" on:exit={resetData}>
@@ -85,7 +88,7 @@
             If you found a bug or have questions, please reach out to the Appwrite team. We try to
             respond to all messages within our office hours.
         </p>
-        <p class="text u-margin-block-start-32">Available: <b>Mon-Fri 09:00 - 17:00 UTC</b></p>
+        <p class="text u-margin-block-start-32">Available: <b>Mon-Fri, {supportTimings}</b></p>
         <div class="u-flex u-gap-4 u-cross-center">
             <span>Currently:</span>
             {#if isSupportOnline()}
