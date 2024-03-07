@@ -76,8 +76,7 @@
             '/recover',
             '/invite',
             '/card',
-            '/hackathon',
-            '/test'
+            '/hackathon'
         ];
         const acceptedAuthenticatedRoutes = ['/console', '/invite', '/card', '/hackathon'];
 
