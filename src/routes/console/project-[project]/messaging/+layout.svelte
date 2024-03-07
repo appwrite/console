@@ -1,57 +1,56 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
-    import { registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
+    import {
+        addSubPanel,
+        registerCommands,
+        registerSearchers,
+        updateCommandGroupRanks
+    } from '$lib/commandCenter';
+    import { CreateMessagePanel } from '$lib/commandCenter/panels';
+    import { messagesSearcher } from '$lib/commandCenter/searchers/messages';
+    import { providersSearcher } from '$lib/commandCenter/searchers/providers';
+    import { topicsSearcher } from '$lib/commandCenter/searchers/topics';
     import { project } from '../store';
-    import { showCreate } from './store';
 
     // TODO: finalize the commands
     $: $registerCommands([
         {
             label: 'Create message',
-            callback: () => {
-                if (!$page.url.pathname.endsWith('messaging')) {
-                    goto(`/console/project-${$project.$id}/messaging`);
-                }
-                $showCreate = true;
-            },
             keys: $page.url.pathname.endsWith('messaging') ? ['c'] : ['c', 'm'],
+            callback() {
+                addSubPanel(CreateMessagePanel);
+            },
             icon: 'plus',
             group: 'messaging'
         },
         {
-            label: 'Go to topics',
+            label: 'Go to Topics',
+            keys: ['g', 't'],
             callback() {
                 goto(`/console/project-${$project.$id}/messaging/topics`);
             },
-            keys: ['g', 't'],
             disabled:
                 $page.url.pathname.endsWith('topics') || $page.url.pathname.includes('message-'),
-            group: 'navigation',
-            rank: 10
+            group: 'messaging',
+            rank: 1
         },
         {
-            label: 'Go to providers',
+            label: 'Go to Providers',
+            keys: ['g', 'p'],
             callback() {
                 goto(`/console/project-${$project.$id}/messaging/providers`);
             },
-            keys: ['g', 'p'],
             disabled:
-                $page.url.pathname.endsWith('topics') || $page.url.pathname.includes('message-'),
-            group: 'navigation',
-            rank: 10
+                $page.url.pathname.endsWith('providers') || $page.url.pathname.includes('message-'),
+            group: 'messaging',
+            rank: 2
         }
-        // {
-        //     label: 'Find messages',
-        //     callback: () => {
-        //         addSubPanel(BucketsPanel);
-        //     },
-        //     group: 'messaging',
-        //     rank: -1
-        // }
     ]);
 
-    $: $updateCommandGroupRanks({ messaging: 200, navigation: 100 });
+    $registerSearchers(messagesSearcher, providersSearcher, topicsSearcher);
+
+    $: $updateCommandGroupRanks({ messaging: 400, providers: 300, topics: 200, navigation: 100 });
 </script>
 
 <svelte:head>

@@ -2,7 +2,7 @@
     import { ImagePreview } from '$lib/components';
 
     export let lines = [];
-    export let popoverImage: { src: { dark: string; light: string }; alt: string } | null = null;
+    export let image: { src: { dark: string; light: string }; alt: string } | null = null;
 </script>
 
 <div class="u-flex-vertical u-gap-16">
@@ -10,11 +10,8 @@
         <p>{@html line}</p>
     {/each}
 
-    {#if popoverImage}
-        <ImagePreview
-            darkSrc={popoverImage.src.dark}
-            lightSrc={popoverImage.src.light}
-            alt={popoverImage.alt} />
+    {#if image}
+        <ImagePreview darkSrc={image.src.dark} lightSrc={image.src.light} alt={image.alt} />
     {/if}
 </div>
 

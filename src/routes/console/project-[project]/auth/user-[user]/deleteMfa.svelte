@@ -15,7 +15,7 @@
 
     async function deleteProvider() {
         try {
-            await sdk.forConsole.users.deleteAuthenticator($user.$id, AuthenticatorType.Totp);
+            await sdk.forConsole.users.deleteMfaAuthenticator($user.$id, AuthenticatorType.Totp);
             await invalidate(Dependencies.ACCOUNT);
             await invalidate(Dependencies.FACTORS);
             showDelete = false;
@@ -43,12 +43,8 @@
     state="warning"
     bind:error
     headerDivider={false}>
-    <p class="u-bold">
-        Deleting the authentication method will disable multi-factor authentication for this
-        account. To re-enable it, user will need to add a new authentication method.
-    </p>
-    <p>Are you sure you want to delete this authentication method from your account?</p>
-
+    <p>Are you sure you want to delete this authentication?</p>
+    <p class="text u-bold">This action is irreversible.</p>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)}>Cancel</Button>
         <Button secondary submit>Delete</Button>

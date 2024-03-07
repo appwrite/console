@@ -16,10 +16,10 @@
     async function verify() {
         try {
             disabled = true;
-            const challenge = await sdk.forConsole.account.createChallenge(
+            const challenge = await sdk.forConsole.account.createMfaChallenge(
                 AuthenticationFactor.Totp
             );
-            await sdk.forConsole.account.updateChallenge(challenge.$id, code);
+            await sdk.forConsole.account.updateMfaChallenge(challenge.$id, code);
             await invalidate(Dependencies.ACCOUNT);
             trackEvent(Submit.AccountCreate);
             if ($page.url.searchParams) {
@@ -60,15 +60,5 @@
                 </FormItem>
             </FormList>
         </Form>
-    </svelte:fragment>
-    <svelte:fragment slot="links">
-        <li class="inline-links-item">
-            <a href={`${base}/recover`}><span class="text">Forgot Password?</span></a>
-        </li>
-        <li class="inline-links-item">
-            <a href={`${base}/register${$page?.url?.search ?? ''}`}>
-                <span class="text">Sign Up</span>
-            </a>
-        </li>
     </svelte:fragment>
 </Unauthenticated>

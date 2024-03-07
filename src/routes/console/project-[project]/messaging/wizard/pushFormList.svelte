@@ -92,6 +92,7 @@
         <InputText
             id="title"
             label="Title"
+            required
             placeholder="Enter title"
             bind:value={$messageParams[MessagingProviderType.Push]['title']}>
         </InputText>
@@ -100,6 +101,7 @@
                 id="message"
                 label="Message"
                 placeholder="Type here..."
+                required
                 maxlength={1000}
                 bind:value={$messageParams[MessagingProviderType.Push]['body']}>
             </InputTextarea>
