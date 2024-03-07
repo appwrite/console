@@ -194,7 +194,13 @@
                                 label: value,
                                 value,
                                 data: arrayValues
-                            }))}>
+                            }))}
+                            let:option={o}>
+                            <SelectSearchCheckbox
+                                bind:checked={arrayValues[0]}
+                                bind:value={o.value}>
+                                {o.label}
+                            </SelectSearchCheckbox>
                         </InputSelectCheckbox>
                     {:else}
                         <InputTags

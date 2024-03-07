@@ -8,13 +8,17 @@
     export let options: { value: string | boolean | number; label: string }[] = [];
 
     let show = false;
+
+    $: filteredOptions = search
+        ? options.filter((option) => option.label.toLowerCase().includes(search.toLowerCase()))
+        : options;
 </script>
 
 <DropList bind:show noStyle noArrow scrollable placement="bottom-end" position="static" fixed>
     <button
         class="tags-input u-position-relative u-padding-inline-end-40 u-cursor-pointer"
         type="button"
-        on:click={() => (show = true)}>
+        on:click={() => (show = !show)}>
         <div class="tags">
             <ul class="tags-list">
                 {#each tags as tag}
@@ -34,7 +38,7 @@
     </button>
 
     <svelte:fragment slot="list">
-        {#each options as option, i}
+        {#each filteredOptions as option}
             <slot {option} />
         {:else}
             <li class="drop-list-item">
