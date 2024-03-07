@@ -7,6 +7,7 @@
 
     export let label: string = null;
     export let value: Models.File = null;
+    export let disabled = false;
 
     export let optionalText: string = null;
     export let tooltip: string = null;
@@ -48,7 +49,7 @@
     {/if}
     <div
         role="region"
-        class="box is-no-shadow u-padding-24"
+        class="box is-no-shadow u-padding-24 is-border-dashed"
         style:--box-border-radius="var(--border-radius-xsmall)">
         <div class="upload-file-box">
             <div class="upload-file-box-image">
@@ -65,6 +66,7 @@
                 <button
                     class="button is-secondary is-full-width-mobile"
                     type="button"
+                    {disabled}
                     on:click={() => (show = true)}>
                     <span class="text">Browse</span>
                 </button>
@@ -98,5 +100,5 @@
 </div>
 
 {#if show}
-    <FilePicker bind:show {onSelect} />
+    <FilePicker selectedFile={value?.$id} selectedBucket={value?.bucketId} bind:show {onSelect} />
 {/if}

@@ -1,8 +1,8 @@
 <script lang="ts">
-    import { EmptySearch, Id, ModalWrapper, Trim } from '.';
+    import { Id, ModalWrapper, Trim } from '.';
     import { Button, Form } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
-    import { ID, Query } from '@appwrite.io/console';
+    import { ID, Query, Permission, Role } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
     import { calculateSize } from '$lib/helpers/sizeConvertion';
     import { toLocaleDate } from '$lib/helpers/date';
@@ -27,6 +27,7 @@
     import { page } from '$app/stores';
 
     export let show: boolean;
+    export let mimeTypeQuery: string = 'image/';
     export let selectedBucket: string = null;
     export let selectedFile: string = null;
     export let onSelect: (e: Models.File) => void;
@@ -59,7 +60,8 @@
             const file = await sdk.forProject.storage.createFile(
                 selectedBucket,
                 ID.unique(),
-                fileSelector.files[0]
+                fileSelector.files[0],
+                [Permission.read(Role.any())]
             );
             search.set($search === null ? '' : null);
             selectFile(file);
@@ -68,6 +70,12 @@
         } finally {
             uploading = false;
         }
+    }
+
+    function selectBucket(bucket: Models.Bucket | null) {
+        currentBucket = bucket;
+        selectedBucket = bucket?.$id ?? null;
+        resetFile();
     }
 
     function selectFile(file: Models.File) {
@@ -101,8 +109,11 @@
     let buckets: Promise<Models.BucketList> = loadBuckets();
     async function loadBuckets() {
         const response = await sdk.forProject.storage.listBuckets();
-
-        currentBucket = response.buckets[0] ?? null;
+        const bucket = response.buckets[0] ?? null;
+        if (bucket) {
+            currentBucket = bucket;
+            selectedBucket = bucket.$id;
+        }
 
         return response;
     }
@@ -112,7 +123,7 @@
         sdk.forProject.storage
             .listFiles(
                 currentBucket.$id,
-                [Query.startsWith('mimeType', 'image/'), Query.orderDesc('$createdAt')],
+                [Query.startsWith('mimeType', mimeTypeQuery), Query.orderDesc('$createdAt')],
                 $search || undefined
             )
             .then((response) => {
@@ -122,11 +133,6 @@
 
                 return response;
             });
-
-    $: {
-        selectedBucket = currentBucket?.$id;
-        resetFile();
-    }
 
     $: if ($search) {
         resetFile();
@@ -174,7 +180,7 @@
                                         type="button"
                                         class="drop-button"
                                         class:is-selected={isSelected}
-                                        on:click={() => (currentBucket = bucket)}>
+                                        on:click={() => selectBucket(bucket)}>
                                         <span>{bucket.name}</span>
                                     </button>
                                 </li>
@@ -294,7 +300,17 @@
                                 </header>
 
                                 {#if files}
-                                    {#await files then response}
+                                    {#await files}
+                                        <div
+                                            class="u-flex-vertical u-stretch u-position-relative u-main-center">
+                                            <div
+                                                class="u-position-absolute u-width-full-line u-flex u-flex-vertical u-main-center u-cross-center u-gap-16 u-margin-block-start-32"
+                                                style="inset-inline-start: 0;">
+                                                <div class="loader" />
+                                                <p class="text">Loading files...</p>
+                                            </div>
+                                        </div>
+                                    {:then response}
                                         <div class="u-flex-vertical u-stretch">
                                             {#if response?.files?.length}
                                                 {#if view === 'grid'}
@@ -345,7 +361,11 @@
                                                 {#if view === 'list'}
                                                     <Table noMargin noStyles transparent dense>
                                                         <TableHeader>
-                                                            <TableCellHead>Filename</TableCellHead>
+                                                            <TableCellHead
+                                                                ><span
+                                                                    class="u-margin-inline-start-8"
+                                                                    >Filename</span
+                                                                ></TableCellHead>
                                                             <TableCellHead width={140} onlyDesktop>
                                                                 ID
                                                             </TableCellHead>
@@ -369,7 +389,7 @@
                                                                             class="u-inline-flex u-cross-center u-gap-12">
                                                                             <input
                                                                                 type="radio"
-                                                                                class="is-small u-margin-inline-start-12"
+                                                                                class="is-small u-margin-inline-start-8"
                                                                                 name="file"
                                                                                 value={file.$id}
                                                                                 style:pointer-events="none"
@@ -423,27 +443,40 @@
                                                     </Table>
                                                 {/if}
                                             {:else if $search}
-                                                <EmptySearch hidePages hidePagination>
-                                                    <div class="common-section">
-                                                        <div class="u-text-center common-section">
-                                                            <b class="body-text-2 u-bold"
-                                                                >Sorry we couldn't find "{$search}"</b>
-                                                            <p>
-                                                                There are no files that match your
-                                                                search.
-                                                            </p>
-                                                        </div>
-                                                        <div
-                                                            class="u-flex u-gap-16 common-section u-main-center">
-                                                            <Button
-                                                                secondary
-                                                                on:click={() => ($search = '')}
-                                                                >Clear search</Button>
+                                                <article
+                                                    style:--card-bg-color="transparent"
+                                                    style:--shadow-small="none"
+                                                    style:--color-border="var(--color-neutral-15)"
+                                                    class="card u-grid u-cross-center u-width-full-line common-section is-border-dashed">
+                                                    <div
+                                                        class="u-flex u-flex-vertical u-cross-center u-gap-24 u-overflow-hidden">
+                                                        <div class="common-section">
+                                                            <div
+                                                                class="u-text-center common-section">
+                                                                <b class="body-text-2 u-bold"
+                                                                    >Sorry we couldn't find "{$search}"</b>
+                                                                <p>
+                                                                    There are no files that match
+                                                                    your search.
+                                                                </p>
+                                                            </div>
+                                                            <div
+                                                                class="u-flex u-gap-16 common-section u-main-center">
+                                                                <Button
+                                                                    secondary
+                                                                    on:click={() => ($search = '')}
+                                                                    >Clear search</Button>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </EmptySearch>
+                                                </article>
                                             {:else}
-                                                <Empty single>
+                                                <Empty
+                                                    single
+                                                    noMedia
+                                                    --card-bg-color="transparent"
+                                                    --shadow-small="none"
+                                                    --color-border="var(--color-neutral-15)">
                                                     <div class="common-section">
                                                         <div class="u-text-center common-section">
                                                             <Heading
@@ -470,7 +503,12 @@
                                 {/if}
                             {/if}
                         {:else}
-                            <Empty single>
+                            <Empty
+                                single
+                                noMedia
+                                --card-bg-color="transparent"
+                                --shadow-small="none"
+                                --color-border="var(--color-neutral-15)">
                                 <div class="u-text-center u-flex-vertical u-cross-center u-gap-24">
                                     <Heading size="7" tag="h2" trimmed={false}>
                                         No buckets found

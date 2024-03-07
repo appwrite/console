@@ -7,6 +7,7 @@
         FormItemPart,
         FormList,
         Helper,
+        InputFilePicker,
         InputText,
         InputTextarea,
         Label
@@ -21,18 +22,22 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { validateData } from '../wizard/pushFormList.svelte';
 
-    export let message: Models.Message & { data: Record<string, string> };
+    export let message: Models.Message & { data: Record<string, any> };
 
     let title = '';
     let body = '';
+    let file: Models.File = null;
     let originalCustomData: [string, string][] = [['', '']];
     let customData: [string, string][] = [['', '']];
     let dataError = '';
     let disabled = true;
 
-    onMount(() => {
+    onMount(async () => {
         title = message.data.title;
         body = message.data.body;
+        if (message.data?.image) {
+            file = await sdk.forProject.storage.getFile(message.data.image?.bucketId, message.data.image?.fileId);
+        }
 
         const dataEntries: [string, string][] = [];
         Object.entries(message.data['data'] ?? {}).forEach(([key, value]) => {
@@ -44,6 +49,7 @@
 
     async function update() {
         try {
+            const fileCompoundId = file ? `${file.bucketId}:${file.$id}` : undefined;
             const data = customData.reduce((acc, [key, value]) => {
                 if (key) {
                     acc[key] = value;
@@ -57,7 +63,9 @@
                 undefined,
                 title,
                 body,
-                data
+                data,
+                undefined,
+                fileCompoundId
             );
             originalCustomData = structuredClone(customData);
             await invalidate(Dependencies.MESSAGING_MESSAGE);
@@ -79,6 +87,8 @@
     $: disabled =
         title === message.data.title &&
         body === message.data.body &&
+        file?.$id === message.data.image?.fileId &&
+        file?.bucketId === message.data.image?.bucketId &&
         originalCustomData.length === customData.length &&
         originalCustomData.every(
             (ocd, i) =>
@@ -99,13 +109,20 @@
                 <InputText
                     id="title"
                     label="Title"
-                    disabled={message.status != 'draft'}
-                    bind:value={title}></InputText>
+                    disabled={message.status !== 'draft'}
+                    bind:value={title} />
                 <InputTextarea
                     id="message"
                     label="Message"
-                    disabled={message.status != 'draft'}
-                    bind:value={body}></InputTextarea>
+                    disabled={message.status !== 'draft'}
+                    bind:value={body} />
+                <FormItem>
+                    <InputFilePicker
+                        disabled={message.status !== 'draft'}
+                        bind:value={file}
+                        label="Media"
+                       optionalText="(Optional)" />
+                </FormItem>
                 <form class="form">
                     <FormItem>
                         <Label
@@ -125,7 +142,6 @@
                                         placeholder="Enter key"
                                         label="Key"
                                         showLabel={false} />
-
                                     <InputText
                                         id={`${rowIndex}-value`}
                                         isMultiple
