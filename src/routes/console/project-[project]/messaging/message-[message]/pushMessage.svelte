@@ -22,6 +22,7 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { validateData } from '../wizard/pushFormList.svelte';
 
+    /* eslint  @typescript-eslint/no-explicit-any: 'off' */
     export let message: Models.Message & { data: Record<string, any> };
 
     let title = '';
