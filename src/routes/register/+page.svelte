@@ -16,7 +16,7 @@
     import FormList from '$lib/elements/forms/formList.svelte';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { ID } from '@appwrite.io/console';
+    import { ID, OAuthProvider } from '@appwrite.io/console';
     import { isCloud } from '$lib/system';
     import { page } from '$app/stores';
     import { redirectTo } from '$routes/store';
@@ -28,7 +28,7 @@
         try {
             disabled = true;
             await sdk.forConsole.account.create(ID.unique(), mail, pass, name ?? '');
-            await sdk.forConsole.account.createEmailSession(mail, pass);
+            await sdk.forConsole.account.createEmailPasswordSession(mail, pass);
 
             if ($redirectTo) {
                 window.location.href = $redirectTo;
@@ -61,7 +61,7 @@
 
     function onGithubLogin() {
         sdk.forConsole.account.createOAuth2Session(
-            'github',
+            OAuthProvider.Github,
             window.location.origin,
             window.location.origin,
             ['read:user', 'user:email']

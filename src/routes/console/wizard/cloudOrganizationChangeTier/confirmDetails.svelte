@@ -49,7 +49,7 @@
 
 {#if downgradeToStarter}
     <WizardStep>
-        <svelte:fragment slot="title">Confirm plan change</svelte:fragment>
+        <svelte:fragment slot="title">Change confirmation</svelte:fragment>
         <svelte:fragment slot="subtitle">
             Your feedback is important to us and helps us improve the services Appwrite offer. If
             there is a specific reason you chose to change your plan at this time, please let us
@@ -65,7 +65,7 @@
     </WizardStep>
 {:else}
     <WizardStep>
-        <svelte:fragment slot="title">Confirm your details</svelte:fragment>
+        <svelte:fragment slot="title">Details</svelte:fragment>
         <svelte:fragment slot="subtitle">
             Confirm the details of your new organization and start your free trial.
         </svelte:fragment>

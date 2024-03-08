@@ -3,12 +3,14 @@
     export let noStyles = false;
     export let style = '';
     export let transparent = false;
+    export let dense = false;
 </script>
 
 <div
     class="table is-selected-columns-mobile"
     class:u-margin-block-start-32={!noMargin}
     class:is-remove-outer-styles={noStyles}
+    class:is-table-row-medium-size={dense}
     {style}
     style:--p-table-bg-color={transparent ? 'var(--transparent)' : ''}
     role="table"

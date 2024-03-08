@@ -45,7 +45,7 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h6" size="7">Document security</Heading>
+    <Heading tag="h6" size="7" id="document-security">Document security</Heading>
     <svelte:fragment slot="aside">
         <FormList>
             <InputSwitch

@@ -19,6 +19,20 @@ export type Column = {
     id: string;
     title: string;
     type: ColumnType;
+    /**
+     * Set to false to hide by default
+     */
     show: boolean;
     width?: number;
+    /**
+     * Set to false to disable filtering for this column
+     */
+    filter?: boolean;
 };
+
+export function isValueOfStringEnum<T extends Record<string, string>>(
+    enumType: T,
+    value: string
+): value is T[keyof T] {
+    return Object.values<string>(enumType).includes(value);
+}

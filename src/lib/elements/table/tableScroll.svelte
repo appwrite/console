@@ -5,6 +5,7 @@
     export let noMargin = false;
     export let style = '';
     export let transparent = false;
+    export let dense = false;
     let isOverflowing = false;
 
     const hasOverflow: Action<HTMLDivElement, unknown> = (node) => {
@@ -45,6 +46,7 @@
         <table
             class="table"
             class:is-sticky-scroll={isSticky && isOverflowing}
+            class:is-table-row-medium-size={dense}
             {style}
             style:--p-table-bg-color={transparent ? 'var(--transparent)' : ''}>
             <slot />

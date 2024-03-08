@@ -6,9 +6,11 @@
     import UpdateSecurity from './updateSecurity.svelte';
     import UpdateSignature from './updateSignature.svelte';
     import UpdateUrl from './updateURL.svelte';
+    import Details from './details.svelte';
 </script>
 
 <Container>
+    <Details />
     <UpdateSignature />
     <UpdateName />
     <UpdateUrl />

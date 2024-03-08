@@ -38,7 +38,7 @@
 </script>
 
 <WizardStep beforeSubmit={validateCoupon}>
-    <svelte:fragment slot="title">Add credits</svelte:fragment>
+    <svelte:fragment slot="title">Credits</svelte:fragment>
     <svelte:fragment slot="subtitle">
         Add Appwrite credits to your organization. A payment method is required before credits can
         be applied.

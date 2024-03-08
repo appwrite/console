@@ -4,39 +4,22 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { isTrackingAllowed, trackPageView } from '$lib/actions/analytics';
-    import { reportWebVitals } from '$lib/helpers/vitals';
     import { Notifications, Progress } from '$lib/layout';
     import { app } from '$lib/stores/app';
     import { ENV, isCloud } from '$lib/system';
     import * as Sentry from '@sentry/svelte';
     import LogRocket from 'logrocket';
     import { onMount } from 'svelte';
-    import { onCLS, onFCP, onFID, onINP, onLCP, onTTFB } from 'web-vitals';
     import Loading from './loading.svelte';
     import { loading, requestedMigration } from './store';
     import { parseIfString } from '$lib/helpers/object';
     import Consent, { consent } from '$lib/components/consent.svelte';
     import type { Models } from '@appwrite.io/console';
 
-    if (browser) {
-        window.VERCEL_ANALYTICS_ID = import.meta.env.VERCEL_ANALYTICS_ID?.toString() ?? false;
-    }
-
     onMount(async () => {
         if ($page.url.searchParams.has('migrate')) {
             const migrateData = $page.url.searchParams.get('migrate');
             requestedMigration.set(parseIfString(migrateData) as Record<string, string>);
-        }
-        /**
-         * Reporting Web Vitals.
-         */
-        if (ENV.PROD && window.VERCEL_ANALYTICS_ID) {
-            onCLS(reportWebVitals);
-            onFID(reportWebVitals);
-            onLCP(reportWebVitals);
-            onFCP(reportWebVitals);
-            onINP(reportWebVitals);
-            onTTFB(reportWebVitals);
         }
 
         if (ENV.PROD) {
@@ -76,7 +59,8 @@
             '/recover',
             '/invite',
             '/card',
-            '/hackathon'
+            '/hackathon',
+            '/mfa'
         ];
         const acceptedAuthenticatedRoutes = ['/console', '/invite', '/card', '/hackathon'];
 

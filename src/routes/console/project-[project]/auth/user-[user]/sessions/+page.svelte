@@ -11,8 +11,10 @@
         TableHeader,
         TableRow
     } from '$lib/elements/table';
+    import { isValueOfStringEnum } from '$lib/helpers/types';
     import { Container, ContainerHeader } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
+    import { Browser } from '@appwrite.io/console';
     import DeleteAllSessions from '../deleteAllSessions.svelte';
     import DeleteSessions from '../deleteSession.svelte';
     import type { PageData } from './$types';
@@ -23,8 +25,11 @@
     let showDeleteAll = false;
     let selectedSessionId: string;
 
-    const getBrowser = (clientCode: string) =>
-        sdk.forProject.avatars.getBrowser(clientCode, 40, 40);
+    function getBrowser(clientCode: string) {
+        const code = clientCode.toLowerCase();
+        if (!isValueOfStringEnum(Browser, code)) return '';
+        return sdk.forProject.avatars.getBrowser(code, 40, 40);
+    }
 </script>
 
 <Container>
@@ -46,15 +51,23 @@
             </TableHeader>
             <TableBody>
                 {#each data.sessions.sessions as session}
+                    {@const browser = getBrowser(session.clientCode)}
                     <TableRow>
                         <TableCell title="Client">
                             <div class="u-flex u-gap-12 u-cross-center">
                                 <div class="avatar">
-                                    <img
-                                        height="20"
-                                        width="20"
-                                        src={getBrowser(session.clientCode).toString()}
-                                        alt={session.clientName} />
+                                    {#if browser}
+                                        <img
+                                            height="20"
+                                            width="20"
+                                            src={getBrowser(session.clientCode).toString()}
+                                            alt={session.clientName} />
+                                    {:else}
+                                        <span
+                                            class="icon-globe-alt"
+                                            style="font-size: 20px"
+                                            aria-hidden="true" />
+                                    {/if}
                                 </div>
                                 <p class="text">
                                     {session.clientName}
