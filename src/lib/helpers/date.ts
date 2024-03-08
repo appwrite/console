@@ -1,10 +1,8 @@
 import { browser } from '$app/environment';
 import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
 import relativeTime from 'dayjs/plugin/relativeTime';
 
 if (browser) {
-    dayjs.extend(utc);
     dayjs.extend(relativeTime);
 }
 
@@ -44,9 +42,15 @@ export const toLocaleDateTime = (datetime: string | number) => {
 };
 
 export const utcHourToLocaleHour = (utcTimeString: string) => {
-    // we can use a default utc date format.
-    const utcDefaultDate = dayjs.utc(`1970-01-01T${utcTimeString}:00`);
-    return utcDefaultDate.local().format('HH:mm');
+    const defaultDate = new Date(`1970-01-01T${utcTimeString}:00Z`);
+
+    const options: Intl.DateTimeFormatOptions = {
+        hour: 'numeric',
+        minute: 'numeric',
+        hourCycle: 'h23'
+    };
+
+    return new Intl.DateTimeFormat('en', options).format(defaultDate);
 };
 
 export const localeTimezoneShortHand = () => {
