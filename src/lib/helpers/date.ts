@@ -42,7 +42,9 @@ export const toLocaleDateTime = (datetime: string | number) => {
 };
 
 export const utcHourToLocaleHour = (utcTimeString: string) => {
-    const defaultDate = new Date(`1970-01-01T${utcTimeString}:00Z`);
+    const now = new Date();
+    const [hours, minutes] = utcTimeString.split(':').map(Number);
+    const currentDate = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes));
 
     const options: Intl.DateTimeFormatOptions = {
         hour: 'numeric',
@@ -50,7 +52,7 @@ export const utcHourToLocaleHour = (utcTimeString: string) => {
         hourCycle: 'h23'
     };
 
-    return new Intl.DateTimeFormat('en', options).format(defaultDate);
+    return new Intl.DateTimeFormat('en', options).format(currentDate);
 };
 
 export const localeTimezoneShortHand = () => {
