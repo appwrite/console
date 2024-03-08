@@ -50,7 +50,7 @@
                 case MessagingProviderType.Push:
                     {
                         const file = $messageParams[MessagingProviderType.Push].file;
-                        const fileCompoundId = `${file.bucketId}:${file.bucketId}`;
+                        const fileCompoundId = `${file.bucketId}:${file.$id}`;
                         const customData: Record<string, string> = {};
                         const { data } = $messageParams[MessagingProviderType.Push];
                         if (data && data.length > 0) {
