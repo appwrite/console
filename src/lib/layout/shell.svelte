@@ -4,6 +4,7 @@
     import { page } from '$app/stores';
     import { log } from '$lib/stores/logs';
     import { wizard } from '$lib/stores/wizard';
+    import { activeHeaderAlert } from '$routes/console/store';
 
     export let isOpen = false;
     export let showSideNavigation = false;
@@ -47,9 +48,9 @@
     class:grid-with-side={showSideNavigation}
     class:is-open={isOpen}
     class:u-hide={$wizard.show || $log.show || $wizard.cover}
-    class:is-fixed-layout={$$slots.alert}>
-    {#if $$slots.alert}
-        <slot name="alert" />
+    class:is-fixed-layout={$activeHeaderAlert?.show}>
+    {#if $activeHeaderAlert?.show}
+        <svelte:component this={$activeHeaderAlert.component} />
     {/if}
     <header class="main-header u-padding-inline-end-0">
         <button

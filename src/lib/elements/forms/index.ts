@@ -32,3 +32,4 @@ export { default as InputDateRange } from './inputDateRange.svelte';
 export { default as InputTime } from './inputTime.svelte';
 export { default as InputDigits } from './inputDigits.svelte';
 export { default as InputSelectCheckbox } from './inputSelectCheckbox.svelte';
+export { default as InputFilePicker } from './inputFilePicker.svelte';

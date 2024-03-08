@@ -4,7 +4,7 @@
     import { disableCommands } from '$lib/commandCenter';
 
     export let show = false;
-    export let size: 'small' | 'big' = null;
+    export let size: 'small' | 'big' | 'huge' = null;
     export let closable = true;
     export let headerDivider = true;
     export let style = '';
@@ -73,6 +73,7 @@
     class:u-hide={!show}
     class:is-small={size === 'small'}
     class:is-big={size === 'big'}
+    class:is-huge={size === 'huge'}
     class:is-separate-header={headerDivider}
     bind:this={dialog}
     on:cancel|preventDefault
@@ -81,3 +82,18 @@
         <slot close={closeModal} />
     {/if}
 </dialog>
+
+<style lang="scss">
+    @import '@appwrite.io/pink/src/abstract/variables/_devices.scss';
+
+    .modal.is-huge {
+        block-size: 100%;
+        min-block-size: 80vh;
+
+        @media #{$break1}, #{$break2} {
+            min-inline-size: 100%;
+            min-block-size: 100%;
+            border-radius: 0;
+        }
+    }
+</style>
