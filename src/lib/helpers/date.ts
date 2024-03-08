@@ -44,7 +44,7 @@ export const toLocaleDateTime = (datetime: string | number) => {
 export const utcHourToLocaleHour = (utcTimeString: string) => {
     const now = new Date();
     const [hours, minutes] = utcTimeString.split(':').map(Number);
-    const currentDate = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes));
+    const customTime = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes);
 
     const options: Intl.DateTimeFormatOptions = {
         hour: 'numeric',
@@ -52,7 +52,7 @@ export const utcHourToLocaleHour = (utcTimeString: string) => {
         hourCycle: 'h23'
     };
 
-    return new Intl.DateTimeFormat('en', options).format(currentDate);
+    return new Intl.DateTimeFormat('en', options).format(new Date(customTime));
 };
 
 export const utcWeekDayToLocaleWeekDay = (utcDay: string, utcTimeString: string) => {
@@ -60,8 +60,13 @@ export const utcWeekDayToLocaleWeekDay = (utcDay: string, utcTimeString: string)
 
     // easy mapping instead of passing numbers.
     const dayMap = {
-        'Sunday': 0, 'Monday': 1, 'Tuesday': 2,
-        'Wednesday': 3, 'Thursday': 4, 'Friday': 5, 'Saturday': 6
+        Sunday: 0,
+        Monday: 1,
+        Tuesday: 2,
+        Wednesday: 3,
+        Thursday: 4,
+        Friday: 5,
+        Saturday: 6
     };
 
     const utcDayNumber = dayMap[utcDay];

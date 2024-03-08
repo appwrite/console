@@ -10,7 +10,11 @@
     import { wizard } from '$lib/stores/wizard';
     import { VARS } from '$lib/system';
     import { organization } from '$lib/stores/organization';
-    import { localeTimezoneShortHand, utcHourToLocaleHour, utcWeekDayToLocaleWeekDay } from '$lib/helpers/date';
+    import {
+        localeTimezoneShortHand,
+        utcHourToLocaleHour,
+        utcWeekDayToLocaleWeekDay
+    } from '$lib/helpers/date';
 
     onDestroy(() => {
         $supportData = {
@@ -90,7 +94,9 @@
             If you found a bug or have questions, please reach out to the Appwrite team. We try to
             respond to all messages within our office hours.
         </p>
-        <p class="text u-margin-block-start-32">Available: <b>{supportWeekDays}, {supportTimings}</b></p>
+        <p class="text u-margin-block-start-32">
+            Available: <b>{supportWeekDays}, {supportTimings}</b>
+        </p>
         <div class="u-flex u-gap-4 u-cross-center">
             <span>Currently:</span>
             {#if isSupportOnline()}
