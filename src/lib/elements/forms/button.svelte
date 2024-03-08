@@ -15,6 +15,7 @@
     export let disabled = false;
     export let external = false;
     export let href: string = null;
+    export let download: string = undefined;
     export let fullWidth = false;
     export let fullWidthMobile = false;
     export let ariaLabel: string = null;
@@ -63,6 +64,7 @@
         on:click
         on:click={track}
         {href}
+        {download}
         target={external ? '_blank' : ''}
         rel={external ? 'noopener noreferrer' : ''}
         class={resolvedClasses}

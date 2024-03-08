@@ -11,6 +11,8 @@
     import { func } from '../store';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
     import { runtimesList } from '../../store';
+    import { isValueOfStringEnum } from '$lib/helpers/types';
+    import { Runtime } from '@appwrite.io/console';
 
     const functionId = $page.params.function;
     let runtime: string = null;
@@ -29,6 +31,9 @@
 
     async function updateRuntime() {
         try {
+            if (!isValueOfStringEnum(Runtime, runtime)) {
+                throw new Error(`Invalid runtime: ${runtime}`);
+            }
             await sdk.forProject.functions.update(
                 functionId,
                 $func.name,

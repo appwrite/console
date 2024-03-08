@@ -4,11 +4,11 @@ type TemplateRuntime = {
 };
 
 const TemplateRuntimes = {
-    NODE: { name: 'node', versions: ['20.0', '19.0', '18.0', '16.0', '14.5'] },
-    PHP: { name: 'php', versions: ['8.2', '8.1', '8.0'] },
-    RUBY: { name: 'ruby', versions: ['3.2', '3.1', '3.0'] },
+    NODE: { name: 'node', versions: ['21.0', '20.0', '19.0', '18.0', '16.0', '14.5'] },
+    PHP: { name: 'php', versions: ['8.3', '8.2', '8.1', '8.0'] },
+    RUBY: { name: 'ruby', versions: ['3.3', '3.2', '3.1', '3.0'] },
     PYTHON: { name: 'python', versions: ['3.12', '3.11', '3.10', '3.9', '3.8'] },
-    DART: { name: 'dart', versions: ['3.1', '3.0', '2.19', '2.18', '2.17', '2.16', '2.16'] },
+    DART: { name: 'dart', versions: ['3.3', '3.1', '3.0', '2.19', '2.18', '2.17', '2.16', '2.16'] },
     BUN: { name: 'bun', versions: ['1.0'] }
 };
 
@@ -515,6 +515,30 @@ export const marketplace: MarketplaceTemplate[] = [
                 'npm install',
                 'src/main.js',
                 'node/sync-with-meilisearch'
+            ),
+            ...getRuntimes(
+                TemplateRuntimes.PYTHON,
+                'pip install -r requirements.txt',
+                'src/main.py',
+                'python/sync-with-meilisearch'
+            ),
+            ...getRuntimes(
+                TemplateRuntimes.PHP,
+                'composer install',
+                'src/index.php',
+                'php/sync-with-meilisearch'
+            ),
+            ...getRuntimes(
+                TemplateRuntimes.BUN,
+                'bun install',
+                'src/main.ts',
+                'bun/sync-with-meilisearch'
+            ),
+            ...getRuntimes(
+                TemplateRuntimes.RUBY,
+                'bundle install',
+                'lib/main.rb',
+                'ruby/sync-with-meilisearch'
             )
         ],
         instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/sync-with-meilisearch">file</a>.`,
@@ -599,6 +623,36 @@ export const marketplace: MarketplaceTemplate[] = [
                 'npm install',
                 'src/main.js',
                 'node/whatsapp-with-vonage'
+            ),
+            ...getRuntimes(
+                TemplateRuntimes.PYTHON,
+                'pip install -r requirements.txt',
+                'src/main.py',
+                'python/whatsapp_with_vonage'
+            ),
+            ...getRuntimes(
+                TemplateRuntimes.PHP,
+                'composer install',
+                'src/index.php',
+                'php/whatsapp-with-vonage'
+            ),
+            ...getRuntimes(
+                TemplateRuntimes.DART,
+                'dart pub get',
+                'lib/main.dart',
+                'dart/whatsapp-with-vonage'
+            ),
+            ...getRuntimes(
+                TemplateRuntimes.RUBY,
+                'bundle install',
+                'lib/main.rb',
+                'ruby/whatsapp-with-vonage'
+            ),
+            ...getRuntimes(
+                TemplateRuntimes.BUN,
+                'bun install',
+                'src/main.ts',
+                'bun/whatsapp-with-vonage'
             )
         ],
         instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/whatsapp-with-vonage">file</a>.`,

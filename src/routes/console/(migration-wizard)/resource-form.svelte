@@ -3,7 +3,7 @@
     import { Button } from '$lib/elements/forms';
     import { deepMap } from '$lib/helpers/object';
     import type { WritableValue } from '$lib/helpers/types';
-    import { sdk, type getSdkForProject } from '$lib/stores/sdk';
+    import { type getSdkForProject } from '$lib/stores/sdk';
 
     import { onMount } from 'svelte';
 
@@ -107,19 +107,10 @@
                     );
                     break;
                 case 'firebase':
-                    if ($provider.projectId) {
-                        // OAuth
-                        report = await sdk.forProject.migrations.getFirebaseReportOAuth(
-                            providerResources.firebase,
-                            $provider.projectId
-                        );
-                    } else if ($provider.serviceAccount) {
-                        // Manual auth
-                        report = await projectSdk.migrations.getFirebaseReport(
-                            providerResources.firebase,
-                            $provider.serviceAccount
-                        );
-                    }
+                    report = await projectSdk.migrations.getFirebaseReport(
+                        providerResources.firebase,
+                        $provider.serviceAccount
+                    );
 
                     break;
                 case 'nhost':
@@ -353,7 +344,7 @@
             <div />
             <span>Import all functions and their active deployment</span>
             <ul>
-                {#if resources?.includes('envVar')}
+                {#if resources?.includes('environment variable')}
                     <li class="checkbox-field">
                         <input
                             type="checkbox"
