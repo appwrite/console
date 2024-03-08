@@ -8,12 +8,8 @@ export const load: PageLoad = async ({ depends, parent }) => {
     const { organization } = await parent();
     depends(Dependencies.ORGANIZATION);
 
-    const projects = await sdk.forConsole.projects.list([Query.equal('teamId', organization.$id)]);
-
-    if (isCloud) {
-        return {
-            projects,
-            invoices: await sdk.forConsole.billing.listInvoices(organization.$id)
-        };
-    } else return { projects };
+    return {
+        projects: await sdk.forConsole.projects.list([Query.equal('teamId', organization.$id)]),
+        invoices: isCloud ? await sdk.forConsole.billing.listInvoices(organization.$id) : undefined
+    };
 };

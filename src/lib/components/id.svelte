@@ -47,7 +47,7 @@
     }
 </script>
 
-<Copy {value} {event}>
+<Copy {value} {event} appendTo="parent">
     <div
         class="interactive-text-output is-buttons-on-top"
         class:u-text-center={centered}
