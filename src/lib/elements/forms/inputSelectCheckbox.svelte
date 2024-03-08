@@ -1,6 +1,5 @@
 <script lang="ts">
     import { DropList } from '$lib/components';
-    import { i } from 'vitest/dist/reporters-rzC174PQ';
     import { SelectSearchCheckbox } from '..';
 
     type Option = {
