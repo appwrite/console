@@ -14,7 +14,6 @@
     import type { Column } from '$lib/helpers/types';
     import type { Writable } from 'svelte/store';
     import { tooltip } from '$lib/actions/tooltip';
-    import { SelectSearchCheckbox } from '$lib/elements';
 
     export let columns: Writable<Column[]>;
 
