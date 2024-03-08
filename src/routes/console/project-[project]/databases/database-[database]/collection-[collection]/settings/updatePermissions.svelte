@@ -56,7 +56,7 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h6" size="7">Permissions</Heading>
+    <Heading tag="h6" size="7" id="permissions">Permissions</Heading>
     <p class="text">
         Choose who can access your collection and documents. For more about <a
             href="https://appwrite.io/docs/products/databases/permissions"

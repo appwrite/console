@@ -16,6 +16,7 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { isCloud } from '$lib/system';
     import { page } from '$app/stores';
+    import { OAuthProvider } from '@appwrite.io/console';
     import { redirectTo } from '$routes/store';
 
     let mail: string, pass: string, disabled: boolean;
@@ -23,7 +24,8 @@
     async function login() {
         try {
             disabled = true;
-            await sdk.forConsole.account.createEmailSession(mail, pass);
+            await sdk.forConsole.account.createEmailPasswordSession(mail, pass);
+            await invalidate(Dependencies.ACCOUNT);
             addNotification({
                 type: 'success',
                 message: 'Successfully logged in.'
@@ -70,7 +72,7 @@
             }
         }
         sdk.forConsole.account.createOAuth2Session(
-            'github',
+            OAuthProvider.Github,
             window.location.origin + url,
             window.location.origin,
             ['read:user', 'user:email']

@@ -15,23 +15,23 @@
     import Label from '$lib/elements/forms/label.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import type { Models } from '@appwrite.io/console';
+    import { ExecutionMethod, type Models } from '@appwrite.io/console';
 
     export let selectedFunction: Models.Function = null;
 
     let path = '/';
-    let method = 'GET';
+    let method = ExecutionMethod.GET;
     let body = '';
     let headers: [string, string][] = [['', '']];
     let error: string = null;
 
     const methodOptions = [
-        { label: 'GET', value: 'GET' },
-        { label: 'POST', value: 'POST' },
-        { label: 'PUT', value: 'PUT' },
-        { label: 'PATCH', value: 'PATCH' },
-        { label: 'DELETE', value: 'DELETE' },
-        { label: 'OPTIONS', value: 'OPTIONS' }
+        { label: 'GET', value: ExecutionMethod.GET },
+        { label: 'POST', value: ExecutionMethod.POST },
+        { label: 'PUT', value: ExecutionMethod.PUT },
+        { label: 'PATCH', value: ExecutionMethod.PATCH },
+        { label: 'DELETE', value: ExecutionMethod.DELETE },
+        { label: 'OPTIONS', value: ExecutionMethod.OPTIONS }
     ];
 
     let show = false;

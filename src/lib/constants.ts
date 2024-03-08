@@ -3,6 +3,7 @@ export const CARD_LIMIT = 6; // default card limit
 export const INTERVAL = 5 * 60000; // default interval to check for feedback
 
 export enum Dependencies {
+    FACTORS = 'dependency:factors',
     CREDIT = 'dependency:credit',
     INVOICES = 'dependency:invoices',
     ADDRESS = 'dependency:address',
@@ -17,6 +18,7 @@ export enum Dependencies {
     ACCOUNT_SESSIONS = 'dependency:account_sessions',
     USER = 'dependency:user',
     USERS = 'dependency:users',
+    USER_TARGETS = 'dependency:user_targets',
     SESSIONS = 'dependency:sessions',
     TEAM = 'dependency:team',
     TEAMS = 'dependency:teams',
@@ -47,7 +49,14 @@ export enum Dependencies {
     MIGRATIONS = 'dependency:migrations',
     COLLECTIONS = 'dependency:collections',
     RUNTIMES = 'dependency:runtimes',
-    CONSOLE_VARIABLES = 'dependency:console_variables'
+    CONSOLE_VARIABLES = 'dependency:console_variables',
+    MESSAGING_PROVIDERS = 'dependency:messaging_providers',
+    MESSAGING_PROVIDER = 'dependency:messaging_provider',
+    MESSAGING_MESSAGES = 'dependency:messaging_messages',
+    MESSAGING_MESSAGE = 'dependency:messaging_message',
+    MESSAGING_TOPICS = 'dependency:messaging_topics',
+    MESSAGING_TOPIC = 'dependency:messaging_topic',
+    MESSAGING_TOPIC_SUBSCRIBERS = 'dependency:messaging_topic_subscribers'
 }
 
 export const scopes: {
@@ -55,6 +64,11 @@ export const scopes: {
     description: string;
     category: string;
 }[] = [
+    {
+        scope: 'sessions.write',
+        description: "Access to create, update and delete your project's sessions",
+        category: 'Auth'
+    },
     {
         scope: 'users.read',
         description: "Access to read your project's users",
@@ -167,6 +181,57 @@ export const scopes: {
         scope: 'execution.write',
         description: "Access to execute your project's functions",
         category: 'Functions'
+    },
+    {
+        scope: 'targets.read',
+        description: "Access to read your project's messaging targets",
+        category: 'Messaging'
+    },
+    {
+        scope: 'targets.write',
+        description: "Access to create, update, and delete your project's messaging targets",
+        category: 'Messaging'
+    },
+    {
+        scope: 'providers.read',
+        description: "Access to read your project's messaging providers",
+        category: 'Messaging'
+    },
+    {
+        scope: 'providers.write',
+        description: "Access to create, update, and delete your project's messaging providers",
+        category: 'Messaging'
+    },
+    {
+        scope: 'messages.read',
+        description: "Access to read your project's messages",
+        category: 'Messaging'
+    },
+    {
+        scope: 'messages.write',
+        description: "Access to create, update, and delete your project's messages",
+        category: 'Messaging'
+    },
+    {
+        scope: 'topics.read',
+        description: "Access to read your project's messaging topics",
+        category: 'Messaging'
+    },
+    {
+        scope: 'topics.write',
+        description: "Access to create, update, and delete your project's messaging topics",
+        category: 'Messaging'
+    },
+    {
+        scope: 'subscribers.read',
+        description: "Access to read your project's messaging topic subscribers",
+        category: 'Messaging'
+    },
+    {
+        scope: 'subscribers.write',
+        description:
+            "Access to create, update, and delete your project's messaging topic subscribers",
+        category: 'Messaging'
     },
     {
         scope: 'locale.read',
