@@ -55,6 +55,25 @@ export const utcHourToLocaleHour = (utcTimeString: string) => {
     return new Intl.DateTimeFormat('en', options).format(currentDate);
 };
 
+export const utcWeekDayToLocaleWeekDay = (utcDay: string, utcTimeString: string) => {
+    const now = new Date();
+
+    // easy mapping instead of passing numbers.
+    const dayMap = {
+        'Sunday': 0, 'Monday': 1, 'Tuesday': 2,
+        'Wednesday': 3, 'Thursday': 4, 'Friday': 5, 'Saturday': 6
+    };
+
+    const utcDayNumber = dayMap[utcDay];
+    const [hours, minutes] = utcTimeString.split(':').map(Number);
+
+    const daysUntilNextUtcDay = (7 + utcDayNumber - now.getUTCDay()) % 7;
+    now.setUTCDate(now.getUTCDate() + daysUntilNextUtcDay);
+    now.setUTCHours(hours, minutes, 0, 0);
+
+    return new Intl.DateTimeFormat('en', { weekday: 'short' }).format(now);
+};
+
 export const localeTimezoneShortHand = () => {
     const options: Intl.DateTimeFormatOptions = {
         timeZoneName: 'long'
