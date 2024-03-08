@@ -118,12 +118,10 @@
         <ul class="selects u-flex u-gap-8 u-margin-block-start-16">
             <InputSelect
                 id="column"
-                options={$columns
-                    .filter((c) => c.filter !== false)
-                    .map((c) => ({
-                        label: c.title,
-                        value: c.id
-                    }))}
+                options={$columns.map((c) => ({
+                    label: c.title,
+                    value: c.id
+                }))}
                 placeholder="Select column"
                 bind:value={columnId} />
             <InputSelect
@@ -134,7 +132,7 @@
                 bind:value={operatorKey} />
         </ul>
         {#if column && operator && !operator?.hideInput}
-            <ul class="u-margin-block-start-8">
+            <div class="u-margin-block-start-8">
                 {#if column.type === 'integer' || column.type === 'double'}
                     <InputNumber id="value" bind:value placeholder="Enter value" />
                 {:else if column.type === 'boolean'}
@@ -150,7 +148,7 @@
                 {:else}
                     <InputText id="value" bind:value placeholder="Enter value" />
                 {/if}
-            </ul>
+            </div>
         {/if}
         <Button text disabled={isDisabled} class="u-margin-block-start-4" submit>
             <i class="icon-plus" />

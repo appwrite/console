@@ -23,7 +23,7 @@
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">Install</svelte:fragment>
+    <svelte:fragment slot="title">Get the SDK</svelte:fragment>
     <svelte:fragment slot="subtitle">
         Choose your preferred method of installation
         <div class="u-flex u-gap-16 u-margin-block-start-8">

@@ -9,7 +9,7 @@ const config = {
     // for more information about preprocessors
     preprocess: sequence([preprocess(), preprocessMeltUI()]),
     compilerOptions: {
-        accessors: !!process.env.VITEST
+        accessors: process.env.VITEST
     },
     kit: {
         alias: {

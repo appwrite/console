@@ -6,123 +6,77 @@
     import { sdk } from '$lib/stores/sdk';
     import { createPlatform } from '../store';
     import { Submit, trackEvent } from '$lib/actions/analytics';
-    import { PlatformType } from '@appwrite.io/console';
-    import { isValueOfStringEnum } from '$lib/helpers/types';
 
-    // enum Platform {
-    //     Android = 'flutter-android',
-    //     Ios = 'flutter-ios',
-    //     Linux = 'flutter-linux',
-    //     Macos = 'flutter-macos',
-    //     Windows = 'flutter-windows',
-    //     Web = 'flutter-web'
-    // }
+    enum Platform {
+        Android = 'flutter-android',
+        Ios = 'flutter-ios',
+        Linux = 'flutter-linux',
+        Macos = 'flutter-macos',
+        Windows = 'flutter-windows',
+        Web = 'flutter-web'
+    }
 
-    // function isPlatform(value: string): value is Platform {
-    //     return Object.values(Platform).includes(value as Platform);
-    // }
+    function isPlatform(value: string): value is Platform {
+        return Object.values(Platform).includes(value as Platform);
+    }
 
-    let platform: PlatformType = isValueOfStringEnum(PlatformType, $createPlatform.type)
+    let platform: Platform = isPlatform($createPlatform.type)
         ? $createPlatform.type
-        : PlatformType.Flutterandroid;
+        : Platform.Android;
 
     const projectId = $page.params.project;
     const suggestions = ['*.vercel.app', '*.netlify.app', '*.gitpod.io'];
     const placeholder: Record<
-        PlatformType,
+        Platform,
         {
             name: string;
             hostname: string;
             tooltip: string;
         }
     > = {
-        [PlatformType.Flutterandroid]: {
+        [Platform.Android]: {
             name: 'My Android App',
             hostname: 'com.company.appname',
             tooltip:
                 'Your package name is generally the applicationId in your app-level build.gradle file.'
         },
-        [PlatformType.Flutterios]: {
+        [Platform.Ios]: {
             name: 'My iOS App',
             hostname: 'com.company.appname',
             tooltip:
                 "You can find your Bundle Identifier in the General tab for your app's primary target in Xcode."
         },
-        [PlatformType.Flutterlinux]: {
+        [Platform.Linux]: {
             name: 'My Linux App',
             hostname: 'appname',
             tooltip: 'Your application name'
         },
-        [PlatformType.Fluttermacos]: {
+        [Platform.Macos]: {
             name: 'My mac OS App',
             hostname: 'com.company.appname',
             tooltip:
                 "You can find your Bundle Identifier in the General tab for your app's primary target in Xcode."
         },
-        [PlatformType.Flutterweb]: {
+        [Platform.Web]: {
             name: 'My Web App',
             hostname: 'localhost',
             tooltip:
                 'The hostname that your website will use to interact with the Appwrite APIs in production or development environments. No protocol or port number required.'
         },
-        [PlatformType.Flutterwindows]: {
+        [Platform.Windows]: {
             name: 'My Windows App',
             hostname: 'appname',
             tooltip: 'Your application name'
-        },
-        // The following are not used, but added to avoid TS errors
-        [PlatformType.Web]: {
-            name: '',
-            hostname: '',
-            tooltip: ''
-        },
-        [PlatformType.Appleios]: {
-            name: '',
-            hostname: '',
-            tooltip: ''
-        },
-        [PlatformType.Applemacos]: {
-            name: '',
-            hostname: '',
-            tooltip: ''
-        },
-        [PlatformType.Applewatchos]: {
-            name: '',
-            hostname: '',
-            tooltip: ''
-        },
-        [PlatformType.Appletvos]: {
-            name: '',
-            hostname: '',
-            tooltip: ''
-        },
-        [PlatformType.Android]: {
-            name: '',
-            hostname: '',
-            tooltip: ''
-        },
-        [PlatformType.Unity]: {
-            name: '',
-            hostname: '',
-            tooltip: ''
         }
     };
 
-    const hostname: Record<PlatformType, string> = {
-        [PlatformType.Flutterandroid]: 'Package Name',
-        [PlatformType.Flutterios]: 'Bundle ID',
-        [PlatformType.Flutterlinux]: 'Package Name',
-        [PlatformType.Fluttermacos]: 'Bundle ID',
-        [PlatformType.Flutterweb]: 'Hostname',
-        [PlatformType.Flutterwindows]: 'Package Name',
-        // The following are not used, but added to avoid TS errors
-        [PlatformType.Web]: '',
-        [PlatformType.Appleios]: '',
-        [PlatformType.Applemacos]: '',
-        [PlatformType.Applewatchos]: '',
-        [PlatformType.Appletvos]: '',
-        [PlatformType.Android]: '',
-        [PlatformType.Unity]: ''
+    const hostname: Record<Platform, string> = {
+        [Platform.Android]: 'Package Name',
+        [Platform.Ios]: 'Bundle ID',
+        [Platform.Linux]: 'Package Name',
+        [Platform.Macos]: 'Bundle ID',
+        [Platform.Web]: 'Hostname',
+        [Platform.Windows]: 'Package Name'
     };
 
     async function beforeSubmit() {
@@ -134,9 +88,9 @@
             projectId,
             platform,
             $createPlatform.name,
-            platform !== PlatformType.Flutterweb ? $createPlatform.key : undefined,
+            platform !== Platform.Web ? $createPlatform.key : undefined,
             undefined,
-            platform === PlatformType.Flutterweb ? $createPlatform.hostname : undefined
+            platform === Platform.Web ? $createPlatform.hostname : undefined
         );
 
         trackEvent(Submit.PlatformCreate, {
@@ -148,53 +102,53 @@
     }
 
     $: registee = {
-        [PlatformType.Flutterandroid]: 'package name',
-        [PlatformType.Flutterios]: 'Bundle ID',
-        [PlatformType.Flutterlinux]: 'Package name',
-        [PlatformType.Fluttermacos]: 'Bundle ID',
-        [PlatformType.Flutterwindows]: 'Package name',
-        [PlatformType.Flutterweb]: 'Hostname'
+        [Platform.Android]: 'package name',
+        [Platform.Ios]: 'bundle ID',
+        [Platform.Linux]: 'package name',
+        [Platform.Macos]: 'bundle ID',
+        [Platform.Windows]: 'package name',
+        [Platform.Web]: 'hostname'
     }[platform];
 </script>
 
 <WizardStep {beforeSubmit}>
-    <svelte:fragment slot="title">{registee} registration</svelte:fragment>
+    <svelte:fragment slot="title">Register your {registee}</svelte:fragment>
     <svelte:fragment slot="subtitle">
         <div class="u-flex u-gap-16 u-margin-block-start-8 u-flex-wrap">
             <Pill
                 button
-                on:click={() => (platform = PlatformType.Flutterandroid)}
-                selected={platform === PlatformType.Flutterandroid}>
+                on:click={() => (platform = Platform.Android)}
+                selected={platform === Platform.Android}>
                 Android
             </Pill>
             <Pill
                 button
-                on:click={() => (platform = PlatformType.Flutterios)}
-                selected={platform === PlatformType.Flutterios}>
+                on:click={() => (platform = Platform.Ios)}
+                selected={platform === Platform.Ios}>
                 iOS
             </Pill>
             <Pill
                 button
-                on:click={() => (platform = PlatformType.Flutterlinux)}
-                selected={platform === PlatformType.Flutterlinux}>
+                on:click={() => (platform = Platform.Linux)}
+                selected={platform === Platform.Linux}>
                 Linux
             </Pill>
             <Pill
                 button
-                on:click={() => (platform = PlatformType.Fluttermacos)}
-                selected={platform === PlatformType.Fluttermacos}>
+                on:click={() => (platform = Platform.Macos)}
+                selected={platform === Platform.Macos}>
                 macOS
             </Pill>
             <Pill
                 button
-                on:click={() => (platform = PlatformType.Flutterwindows)}
-                selected={platform === PlatformType.Flutterwindows}>
+                on:click={() => (platform = Platform.Windows)}
+                selected={platform === Platform.Windows}>
                 Windows
             </Pill>
             <Pill
                 button
-                on:click={() => (platform = PlatformType.Flutterweb)}
-                selected={platform === PlatformType.Flutterweb}>
+                on:click={() => (platform = Platform.Web)}
+                selected={platform === Platform.Web}>
                 Web
             </Pill>
         </div>
@@ -207,7 +161,7 @@
             placeholder={placeholder[platform].name}
             required
             bind:value={$createPlatform.name} />
-        {#if platform === PlatformType.Flutterweb}
+        {#if platform === Platform.Web}
             <div>
                 <InputText
                     id="hostname"

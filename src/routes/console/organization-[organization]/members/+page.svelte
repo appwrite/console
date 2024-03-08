@@ -20,6 +20,7 @@
     import type { Models } from '@appwrite.io/console';
     import type { PageData } from './$types';
     import Delete from '../deleteMember.svelte';
+    import { toLocaleDate } from '$lib/helpers/date';
 
     export let data: PageData;
 
@@ -63,10 +64,10 @@
 
         <TableScroll>
             <TableHeader>
-                <TableCellHead width={160}>Name</TableCellHead>
+                <TableCellHead width={140}>Name</TableCellHead>
                 <TableCellHead width={120}>Email</TableCellHead>
-                <TableCellHead width={90}>2FA</TableCellHead>
-                <TableCellHead width={60} />
+                <TableCellHead width={100}>Joined</TableCellHead>
+                <TableCellHead width={90} />
                 <TableCellHead width={30} />
             </TableHeader>
             <TableBody
@@ -87,17 +88,8 @@
                             </div>
                         </TableCell>
                         <TableCellText title="Email">{member.userEmail}</TableCellText>
-                        <TableCellText title="2FA">
-                            <Pill success={member.mfa}>
-                                {#if member.mfa}
-                                    <span
-                                        class="icon-check-circle u-color-text-success"
-                                        aria-hidden="true" />
-                                    <p class="text">enabled</p>
-                                {:else}
-                                    <p class="text">disabled</p>
-                                {/if}
-                            </Pill>
+                        <TableCellText title="Joined">
+                            {member.joined ? toLocaleDate(member.joined) : ''}
                         </TableCellText>
                         <TableCell>
                             {#if member.invited && !member.joined}

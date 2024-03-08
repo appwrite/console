@@ -9,7 +9,6 @@
 
     export let query = '[]';
     export let columns: Writable<Column[]>;
-    export let fullWidthMobile = false;
 
     const parsedQueries = queryParamToMap(query);
     queries.set(parsedQueries);
@@ -56,7 +55,7 @@
 </div>
 
 <div class="is-only-mobile">
-    <Button secondary on:click={() => (showFiltersMobile = !showFiltersMobile)} {fullWidthMobile}>
+    <Button secondary on:click={() => (showFiltersMobile = !showFiltersMobile)}>
         <i class="icon-filter u-opacity-50" />
         Filters
         {#if applied > 0}

@@ -2,8 +2,6 @@
     This is the root command panel. It precedes all other command panels.
  -->
 <script lang="ts">
-    import { base } from '$app/paths';
-    import { app } from '$lib/stores/app';
     import { debounce } from '$lib/helpers/debounce';
     import { isMac } from '$lib/helpers/platform';
     import { commands, searchers, type Command, isKeyedCommand } from '../commands';
@@ -56,13 +54,7 @@
 <Template options={results} bind:search searchPlaceholder="Search for commands or content...">
     <div slot="option" class="u-flex u-main-space-between content" let:option={command}>
         <div class="u-flex u-gap-8 u-cross-center">
-            {#if command.image}
-                <img
-                    src={`${base}/icons/${$app.themeInUse}/color/${command.image}.svg`}
-                    alt={command.label} />
-            {:else}
-                <i class="icon-{command.icon ?? 'arrow-sm-right'}" />
-            {/if}
+            <i class="icon-{command.icon ?? 'arrow-sm-right'}" />
             <span>
                 {command.label}
             </span>

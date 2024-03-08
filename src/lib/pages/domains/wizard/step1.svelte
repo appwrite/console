@@ -6,9 +6,9 @@
     import { sdk } from '$lib/stores/sdk';
     import { isSelfHosted } from '$lib/system';
     import { func } from '$routes/console/project-[project]/functions/function-[function]/store';
+    import { ProxyTypes } from '../index.svelte';
     import { domain, typeStore } from './store';
     import { consoleVariables } from '$routes/console/store';
-    import { ResourceType } from '@appwrite.io/console';
 
     let error = null;
     const isDomainsEnabled = $consoleVariables?._APP_DOMAIN_ENABLED === true;
@@ -22,7 +22,7 @@
             $domain = await sdk.forProject.proxy.createRule(
                 $domain.domain,
                 $typeStore,
-                $typeStore === ResourceType.Function ? $func.$id : undefined
+                $typeStore === ProxyTypes.FUNCTION ? $func.$id : undefined
             );
 
             trackEvent(Submit.DomainCreate);
@@ -34,7 +34,7 @@
 </script>
 
 <WizardStep beforeSubmit={createDomain}>
-    <svelte:fragment slot="title">Domain</svelte:fragment>
+    <svelte:fragment slot="title">Add function domain</svelte:fragment>
     <svelte:fragment slot="subtitle">
         Use your self-owned domain as the endpoint of your Appwrite API. <a
             href="https://appwrite.io/docs/advanced/platform/custom-domains"

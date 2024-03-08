@@ -20,7 +20,6 @@
     import { Button } from '$lib/elements/forms';
     import CreateAttributeDropdown from '../attributes/createAttributeDropdown.svelte';
     import type { Option } from '../attributes/store';
-    import FailedModal from '../failedModal.svelte';
 
     let showDropdown = [];
     let selectedIndex: Models.Index = null;
@@ -30,8 +29,6 @@
     let showCreateAttribute = false;
     let showCreateDropdown = false;
     let selectedAttribute: Option['name'] = null;
-    let showFailed = false;
-    let error = '';
 </script>
 
 <Container>
@@ -63,24 +60,13 @@
                                 <div class="u-flex u-main-space-between">
                                     <span class="text u-trim"> {index.key}</span>
                                     {#if index.status !== 'available'}
-                                        <div class="u-inline-flex u-gap-12 u-cross-center">
-                                            <Pill
-                                                warning={index.status === 'processing'}
-                                                danger={['deleting', 'stuck', 'failed'].includes(
-                                                    index.status
-                                                )}>
-                                                {index.status}
-                                            </Pill>
-                                            {#if index.error}
-                                                <Button
-                                                    link
-                                                    on:click={(e) => {
-                                                        e.preventDefault();
-                                                        error = index.error;
-                                                        showFailed = true;
-                                                    }}>Details</Button>
-                                            {/if}
-                                        </div>
+                                        <Pill
+                                            warning={index.status === 'processing'}
+                                            danger={['deleting', 'stuck', 'failed'].includes(
+                                                index.status
+                                            )}>
+                                            {index.status}
+                                        </Pill>
                                     {/if}
                                 </div>
                             </TableCell>
@@ -176,5 +162,3 @@
 {/if}
 
 <CreateAttribute bind:showCreate={showCreateAttribute} bind:selectedOption={selectedAttribute} />
-
-<FailedModal bind:show={showFailed} title="Create index" header="Creation failed" {error} />

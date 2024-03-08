@@ -25,7 +25,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { loading } from '$routes/store';
     import type { Models } from '@appwrite.io/console';
-    import { ID, Region } from '@appwrite.io/console';
+    import { ID } from '@appwrite.io/console';
     import { openImportWizard } from '../project-[project]/settings/migrations/(import)';
     import { readOnly } from '$lib/stores/billing';
     import type { RegionList } from '$lib/sdk/billing';
@@ -105,7 +105,7 @@
                 ID.unique(),
                 `Imported project ${new Date().toISOString()}`,
                 $page.params.organization,
-                Region.Default
+                'default'
             );
             trackEvent(Submit.ProjectCreate, {
                 teamId: $page.params.organization

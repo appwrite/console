@@ -8,13 +8,12 @@
     import { timeFromNow, toLocaleDateTime } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { Runtime, type Models } from '@appwrite.io/console';
+    import type { Models } from '@appwrite.io/console';
     import { func, repositories } from '../store';
     import { invalidate } from '$app/navigation';
     import InputSelectSearch from '$lib/elements/forms/inputSelectSearch.svelte';
     import { sortBranches } from './updateConfiguration.svelte';
     import { installations } from '$lib/wizards/functions/store';
-    import { isValueOfStringEnum } from '$lib/helpers/types';
 
     export let show: boolean;
 
@@ -49,9 +48,6 @@
 
     async function handleSubmit() {
         try {
-            if (!isValueOfStringEnum(Runtime, $func.runtime)) {
-                throw new Error(`Invalid runtime: ${$func.runtime}`);
-            }
             await sdk.forProject.functions.update(
                 functionId,
                 $func.name,

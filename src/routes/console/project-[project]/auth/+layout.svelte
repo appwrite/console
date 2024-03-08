@@ -1,8 +1,7 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
-    import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
-    import { TeamsPanel, UsersPanel } from '$lib/commandCenter/panels';
+    import { registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import { readOnly } from '$lib/stores/billing';
     import { GRACE_PERIOD_OVERRIDE } from '$lib/system';
     import { project } from '../store';
@@ -78,22 +77,6 @@
             group: 'navigation',
             rank: 1,
             disabled: $page.url.pathname.endsWith('settings')
-        },
-        {
-            label: 'Find users',
-            callback: () => {
-                addSubPanel(UsersPanel);
-            },
-            group: 'users',
-            rank: -1
-        },
-        {
-            label: 'Find teams',
-            callback: () => {
-                addSubPanel(TeamsPanel);
-            },
-            group: 'teams',
-            rank: -1
         }
     ]);
 

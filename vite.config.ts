@@ -8,16 +8,16 @@ const config = defineConfig({
     },
     ssr: {
         noExternal: [
-            '@analytics/google-analytics',
-            '@sentry/browser',
-            '@sentry-internal/tracing',
-            'analytics',
-            'dayjs',
-            'dotenv',
             'echarts',
             'prismjs',
-            'zrender'
+            '@analytics/google-analytics',
+            'analytics',
+            'dayjs',
+            'dotenv'
         ]
+    },
+    define: {
+        'import.meta.env.VERCEL_ANALYTICS_ID': JSON.stringify(process.env.VERCEL_ANALYTICS_ID)
     },
     server: {
         port: 3000

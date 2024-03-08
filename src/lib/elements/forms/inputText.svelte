@@ -1,9 +1,8 @@
 <script lang="ts">
-    import { SvelteComponent, onMount } from 'svelte';
+    import { onMount } from 'svelte';
     import { FormItem, FormItemPart, Helper, Label } from '.';
     import NullCheckbox from './nullCheckbox.svelte';
     import TextCounter from './textCounter.svelte';
-    import { Drop } from '$lib/components';
 
     export let label: string = undefined;
     export let optionalText: string | undefined = undefined;
@@ -23,12 +22,9 @@
     export let maxlength: number = null;
     export let tooltip: string = null;
     export let isMultiple = false;
-    export let popover: typeof SvelteComponent<unknown> = null;
-    export let popoverProps: Record<string, unknown> = {};
 
     let element: HTMLInputElement;
     let error: string;
-    let show = false;
 
     onMount(() => {
         if (element && autofocus) {
@@ -78,30 +74,7 @@
 <svelte:component this={wrapper} {fullWidth}>
     {#if label}
         <Label {required} {hideRequired} {tooltip} {optionalText} hide={!showLabel} for={id}>
-            {label}{#if popover}
-                <Drop isPopover bind:show display="inline-block">
-                    <!-- TODO: make unclicked icon greyed out and hover and clicked filled -->
-                    &nbsp;<button
-                        type="button"
-                        on:click={() => (show = !show)}
-                        class="tooltip"
-                        aria-label="input tooltip">
-                        <span
-                            class="icon-info"
-                            aria-hidden="true"
-                            style:font-size="var(--icon-size-small)" />
-                    </button>
-                    <svelte:fragment slot="list">
-                        <div
-                            class="dropped card u-max-width-250"
-                            style:--p-card-padding=".75rem"
-                            style:--card-border-radius="var(--border-radius-small)"
-                            style:box-shadow="var(--shadow-large)">
-                            <svelte:component this={popover} {...popoverProps} />
-                        </div>
-                    </svelte:fragment>
-                </Drop>
-            {/if}
+            {label}
         </Label>
     {/if}
 

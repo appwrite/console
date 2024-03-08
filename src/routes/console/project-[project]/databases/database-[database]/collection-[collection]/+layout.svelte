@@ -137,45 +137,6 @@
             group: 'collections'
         },
         {
-            label: 'Display Name',
-            async callback() {
-                await goto(
-                    `/console/project-${$project.$id}/databases/database-${$database.$id}/collection-${$collection.$id}/settings#display-name`
-                );
-            },
-            group: 'collections',
-            disabled:
-                $page.url.pathname.endsWith('display-name') ||
-                $page.url.pathname.endsWith('settings'),
-            icon: 'eye'
-        },
-        {
-            label: 'Permissions',
-            async callback() {
-                await goto(
-                    `/console/project-${$project.$id}/databases/database-${$database.$id}/collection-${$collection.$id}/settings#permissions`
-                );
-            },
-            group: 'collections',
-            disabled:
-                $page.url.pathname.endsWith('permissions') ||
-                $page.url.pathname.endsWith('settings'),
-            icon: 'puzzle'
-        },
-        {
-            label: 'Document security',
-            async callback() {
-                await goto(
-                    `/console/project-${$project.$id}/databases/database-${$database.$id}/collection-${$collection.$id}/settings#document-security`
-                );
-            },
-            group: 'collections',
-            disabled:
-                $page.url.pathname.endsWith('document-security') ||
-                $page.url.pathname.endsWith('settings'),
-            icon: 'lock-closed'
-        },
-        {
             label: 'Create index',
             keys: $page.url.pathname.endsWith('indexes') ? ['c'] : ['c', 'i'],
             callback() {

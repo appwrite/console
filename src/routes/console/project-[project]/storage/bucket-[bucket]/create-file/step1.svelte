@@ -18,7 +18,7 @@
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">File</svelte:fragment>
+    <svelte:fragment slot="title">Create file</svelte:fragment>
     <svelte:fragment slot="subtitle">Upload a file to add it to your bucket.</svelte:fragment>
 
     {#if isCloud}

@@ -6,14 +6,13 @@
     import { parseIfString } from '$lib/helpers/object';
     import { formatNum } from '$lib/helpers/string';
     import type { Models } from '@appwrite.io/console';
-    import { ResourcesFriendly } from '$lib/stores/migration';
 
     export let migrations: Models.Migration[] = [];
     export let migrationId: string = null;
 
     $: details = migrations.find((migration) => migration.$id === migrationId);
 
-    $: show = !!details && migrationId !== null;
+    $: show = !!details;
 
     type StatusCounters = {
         [resource in 'Database' | 'Collection' | 'Function' | 'Users']?: StatusCounter;
@@ -107,10 +106,7 @@
                         </div>
 
                         <div>
-                            <span class="u-capitalize"
-                                >{total(Object.values(entityCounter)) > 1
-                                    ? ResourcesFriendly[entity].plural
-                                    : ResourcesFriendly[entity].singular}</span>
+                            <span class="u-capitalize">{entity + 's'}</span>
                             <span class="inline-tag">{totalItems(entityCounter)}</span>
                         </div>
                     </div>

@@ -15,18 +15,15 @@
     import { sdk } from '$lib/stores/sdk';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { Browser, type Models } from '@appwrite.io/console';
+    import type { Models } from '@appwrite.io/console';
     import type { PageData } from './$types';
     import { Submit, trackEvent } from '$lib/actions/analytics';
     import { base } from '$app/paths';
-    import { isValueOfStringEnum } from '$lib/helpers/types';
 
     export let data: PageData;
 
     function getBrowser(clientCode: string) {
-        const code = clientCode.toLowerCase();
-        if (!isValueOfStringEnum(Browser, code)) return '';
-        return sdk.forProject.avatars.getBrowser(code, 40, 40);
+        return sdk.forConsole.avatars.getBrowser(clientCode, 40, 40);
     }
 
     async function logout(session: Models.Session) {
@@ -65,24 +62,16 @@
             </TableHeader>
             <TableBody>
                 {#each data.sessions.sessions as session}
-                    {@const browser = getBrowser(session.clientCode)}
                     <TableRow>
                         <TableCell title="Client">
                             <div class="u-flex u-gap-12 u-cross-center">
                                 {#if session.clientName}
                                     <div class="avatar is-small">
-                                        {#if browser}
-                                            <img
-                                                height="20"
-                                                width="20"
-                                                src={getBrowser(session.clientCode).toString()}
-                                                alt={session.clientName} />
-                                        {:else}
-                                            <span
-                                                class="icon-globe-alt"
-                                                style="font-size: 20px"
-                                                aria-hidden="true" />
-                                        {/if}
+                                        <img
+                                            height="20"
+                                            width="20"
+                                            src={getBrowser(session.clientCode).toString()}
+                                            alt={session.clientName} />
                                     </div>
                                     <Trim>
                                         {session.clientName}
@@ -127,7 +116,7 @@
                     <Button
                         external
                         secondary
-                        href="https://appwrite.io/docs/references/cloud/client-web/account#createEmailPasswordSession">
+                        href="https://appwrite.io/docs/references/cloud/client-web/account#createEmailSession">
                         Documentation
                     </Button>
                 </div>

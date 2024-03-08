@@ -9,8 +9,6 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { func } from '../store';
-    import { isValueOfStringEnum } from '$lib/helpers/types';
-    import { Runtime } from '@appwrite.io/console';
 
     const functionId = $page.params.function;
     let functionName: string = null;
@@ -21,9 +19,6 @@
 
     async function updateName() {
         try {
-            if (!isValueOfStringEnum(Runtime, $func.runtime)) {
-                throw new Error(`Invalid runtime: ${$func.runtime}`);
-            }
             await sdk.forProject.functions.update(
                 functionId,
                 functionName,

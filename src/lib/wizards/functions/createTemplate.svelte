@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { ID, Runtime } from '@appwrite.io/console';
+    import { ID } from '@appwrite.io/console';
     import { Wizard } from '$lib/layout';
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
     import { sdk } from '$lib/stores/sdk';
@@ -16,13 +16,9 @@
     import CreateRepository from './steps/createRepository.svelte';
     import TemplateVariables from './steps/templateVariables.svelte';
     import { scopes } from '$lib/constants';
-    import { isValueOfStringEnum } from '$lib/helpers/types';
 
     async function create() {
         try {
-            if (!isValueOfStringEnum(Runtime, $templateConfig.runtime)) {
-                throw new Error(`Invalid runtime: ${$templateConfig.runtime}`);
-            }
             const runtimeDetail = $template.runtimes.find(
                 (r) => r.name === $templateConfig.runtime
             );

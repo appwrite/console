@@ -57,7 +57,7 @@
 
     $: $registerCommands([
         {
-            label: 'Go to Projects',
+            label: 'Go to projects',
             callback: () => {
                 goto('/console');
             },
@@ -77,6 +77,15 @@
             keys: ['a', 'i'],
             icon: 'sparkles',
             disabled: !isAssistantEnabled
+        },
+        {
+            label: 'Go to account',
+            callback: () => {
+                goto('/console/account');
+            },
+            keys: ['i'],
+            group: 'navigation',
+            rank: -2
         },
         {
             label: 'Create new organization',

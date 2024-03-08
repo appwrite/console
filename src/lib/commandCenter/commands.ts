@@ -5,7 +5,6 @@ import { onMount } from 'svelte';
 import { derived, writable } from 'svelte/store';
 import { nanoid } from 'nanoid/non-secure';
 import { trackEvent } from '$lib/actions/analytics';
-import { omit } from '$lib/helpers/omit';
 
 const groups = [
     'ungrouped',
@@ -18,10 +17,6 @@ const groups = [
     'platforms',
     'databases',
     'functions',
-    'messaging',
-    'messages',
-    'providers',
-    'topics',
     'storage',
     'domains',
     'webhooks',
@@ -49,7 +44,6 @@ type BaseCommand = {
     forceEnable?: boolean;
     group?: CommandGroup;
     icon?: string;
-    image?: string;
     rank?: number;
     nested?: boolean;
     keepOpen?: boolean;
@@ -75,23 +69,7 @@ export const disabledMap = writable<Map<string, boolean>>(new Map());
 
 // Derived stores
 export const commands = derived(commandMap, ($commandMap) => {
-    const res: Command[] = [];
-    const keys = new Set<string>();
-
-    const allCommands = Array.from($commandMap.values()).flat().toReversed();
-
-    for (const command of allCommands) {
-        if (isKeyedCommand(command) && !command.disabled) {
-            const keysString = command.keys.join('+');
-            if (keys.has(keysString)) {
-                res.push(omit(command, 'keys'));
-                continue;
-            }
-            keys.add(keysString);
-        }
-        res.push(command);
-    }
-    return res;
+    return Array.from($commandMap.values()).flat();
 });
 
 const commandsEnabled = derived(disabledMap, ($disabledMap) => {
@@ -131,9 +109,9 @@ function hasDisputing(command: KeyedCommand, allCommands: Command[]) {
 }
 
 export const commandCenterKeyDownHandler = derived(
-    [commands, commandsEnabled, wizard],
-    ([$commands, enabled, $wizard]) => {
-        const commandsArr = $commands;
+    [commandMap, commandsEnabled, wizard],
+    ([$commandMap, enabled, $wizard]) => {
+        const commandsArr = Array.from($commandMap.values()).flat();
         let recentKeyCodes: number[] = [];
         let validCommands: KeyedCommand[] = [];
 

@@ -51,7 +51,7 @@
 </script>
 
 <WizardStep beforeSubmit={handleBefore}>
-    <svelte:fragment slot="title">Details</svelte:fragment>
+    <svelte:fragment slot="title">Confirm your details</svelte:fragment>
     <svelte:fragment slot="subtitle">
         Confirm the details of your new organization and start your free trial.
     </svelte:fragment>

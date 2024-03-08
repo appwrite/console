@@ -39,7 +39,6 @@
             aria-checked={value}
             bind:this={element}
             bind:checked={value}
-            on:change
             on:invalid={handleInvalid} />
 
         <div class="choice-item-content" class:u-width-full-line={fullWidth}>

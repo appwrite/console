@@ -10,8 +10,6 @@
     export let value = '';
     export let required = false;
     export let nullable = false;
-    export let min: string | number | undefined = undefined;
-    export let max: string | number | undefined = undefined;
     export let disabled = false;
     export let readonly = false;
     export let autofocus = false;
@@ -67,18 +65,12 @@
             {readonly}
             {required}
             step=".001"
-            {min}
-            {max}
             autocomplete={autocomplete ? 'on' : 'off'}
             type="date"
-            style={disabled ? '' : 'cursor: pointer;'}
             class="input-text"
             bind:value
             bind:this={element}
             on:invalid={handleInvalid}
-            on:click={function () {
-                this.showPicker();
-            }}
             style:--amount-of-buttons={isNullable ? 2.75 : 1}
             style:--button-size={isNullable ? '2rem' : '1rem'} />
         {#if isNullable}

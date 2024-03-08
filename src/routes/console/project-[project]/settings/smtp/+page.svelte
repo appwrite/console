@@ -23,8 +23,6 @@
     import { organization } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
     import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
-    import { SMTPSecure } from '@appwrite.io/console';
-    import InputSelect from '$lib/elements/forms/inputSelect.svelte';
 
     let enabled = false;
     let senderName: string;
@@ -34,13 +32,7 @@
     let port: number;
     let username: string;
     let password: string;
-    let secure: string;
-
-    const options = [
-        { value: 'tls', label: 'TLS' },
-        { value: 'ssl', label: 'SSL' },
-        { value: '', label: 'None' }
-    ];
+    let secure = false;
 
     onMount(() => {
         enabled = $project.smtpEnabled ?? false;
@@ -51,7 +43,7 @@
         port = $project.smtpPort;
         username = $project.smtpUsername;
         password = $project.smtpPassword;
-        secure = $project.smtpSecure === 'tls' ? 'tls' : $project.smtpSecure === 'ssl' ? 'ssl' : '';
+        secure = $project.smtpSecure === 'tls';
     });
 
     async function updateSmtp() {
@@ -66,7 +58,7 @@
                 username = undefined;
                 password = undefined;
             }
-            await sdk.forConsole.projects.updateSmtp(
+            await sdk.forConsole.projects.updateSmtpConfiguration(
                 $project.$id,
                 enabled,
                 senderName ? senderName : undefined,
@@ -76,7 +68,7 @@
                 port ? port : undefined,
                 username ? username : undefined,
                 password ? password : undefined,
-                secure ? SMTPSecure.Tls : undefined
+                secure ? 'tls' : undefined
             );
 
             invalidate(Dependencies.PROJECT);
@@ -105,7 +97,7 @@
             port: $project.smtpPort,
             username: $project.smtpUsername,
             password: $project.smtpPassword,
-            secure: $project.smtpSecure
+            secure: $project.smtpSecure === 'tls'
         }
     );
 
@@ -117,7 +109,7 @@
         port = undefined;
         username = undefined;
         password = undefined;
-        secure = undefined;
+        secure = false;
     }
 </script>
 
@@ -197,12 +189,10 @@
                                 label="Password"
                                 bind:value={password}
                                 placeholder="Enter password" />
-                            <InputSelect
-                                id="tls"
-                                label="Secure protocol"
-                                placeholder="Select protocol"
-                                bind:value={secure}
-                                {options} />
+
+                            <InputChoice bind:value={secure} id="tls" label="TLS secure protocol">
+                                Enable if TLS is supported on your SMTP server.
+                            </InputChoice>
                         {/if}
                     </FormList>
                 {/if}

@@ -41,7 +41,7 @@
 </script>
 
 <WizardStep beforeSubmit={handleSubmit}>
-    <svelte:fragment slot="title">Details</svelte:fragment>
+    <svelte:fragment slot="title">Payment details</svelte:fragment>
     <svelte:fragment slot="subtitle">
         Add a payment method to your organization. You will not be charged until you upgrade to a
         Pro or Scale plan.

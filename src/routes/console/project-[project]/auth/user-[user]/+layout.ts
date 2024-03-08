@@ -12,8 +12,7 @@ export const load: LayoutLoad = async ({ params, depends }) => {
         return {
             header: Header,
             breadcrumbs: Breadcrumbs,
-            user: await sdk.forProject.users.get(params.user),
-            userFactors: await sdk.forProject.users.listMfaFactors(params.user)
+            user: await sdk.forProject.users.get(params.user)
         };
     } catch (e) {
         error(e.code, e.message);

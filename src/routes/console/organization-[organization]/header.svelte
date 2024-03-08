@@ -78,7 +78,7 @@
               },
               ...permanentTabSettings
           ]
-        : [...permanentTabs, ...permanentTabSettings];
+        : permanentTabs;
 </script>
 
 {#if $organization?.$id}

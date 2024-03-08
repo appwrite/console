@@ -19,8 +19,6 @@
     import { Button } from '$lib/elements/forms';
     import DropList from '$lib/components/dropList.svelte';
     import DropListItem from '$lib/components/dropListItem.svelte';
-    import { isValueOfStringEnum } from '$lib/helpers/types';
-    import { Runtime } from '@appwrite.io/console';
 
     const functionId = $page.params.function;
     const eventSet: Writable<Set<string>> = writable(new Set($func.events));
@@ -31,9 +29,6 @@
 
     async function updateEvents() {
         try {
-            if (!isValueOfStringEnum(Runtime, $func.runtime)) {
-                throw new Error(`Invalid runtime: ${$func.runtime}`);
-            }
             await sdk.forProject.functions.update(
                 functionId,
                 $func.name,

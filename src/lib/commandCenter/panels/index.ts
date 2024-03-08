@@ -78,9 +78,3 @@ export const FilesPanel: SubPanel = {
     name: 'Files',
     component: Files
 };
-
-import CreateMessage from './createMessage.svelte';
-export const CreateMessagePanel: SubPanel = {
-    name: 'Create Message',
-    component: CreateMessage
-};

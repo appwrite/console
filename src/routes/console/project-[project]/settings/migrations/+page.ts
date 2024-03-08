@@ -1,6 +1,19 @@
 import { Dependencies } from '$lib/constants.js';
 import { sdk } from '$lib/stores/sdk';
 
+async function getFirebaseProjects() {
+    try {
+        const res = await sdk.forProject.migrations.listFirebaseProjects();
+        return res.projects;
+    } catch (e) {
+        if (e.type === 'user_identity_not_found') {
+            return [];
+        } else {
+            throw e;
+        }
+    }
+}
+
 export async function load({ depends }) {
     depends(Dependencies.MIGRATIONS);
 
@@ -8,7 +21,8 @@ export async function load({ depends }) {
         const { migrations } = await sdk.forProject.migrations.list();
 
         return {
-            migrations
+            migrations,
+            firebaseProjects: getFirebaseProjects()
         };
     } catch {
         return {

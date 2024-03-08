@@ -37,7 +37,6 @@
                 $webhook.events,
                 $webhook.url,
                 security,
-                true,
                 httpUser || undefined,
                 httpPass || undefined
             );

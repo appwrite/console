@@ -53,7 +53,18 @@
         }
 
         try {
-            await sdk.forConsole.projects.updateServiceStatusAll($project.$id, status);
+            const path = '/projects/' + $project.$id + '/service/all';
+            await sdk.forConsole.client.call(
+                'PATCH',
+                new URL(sdk.forConsole.client.config.endpoint + path),
+                {
+                    'X-Appwrite-Project': sdk.forConsole.client.config.project,
+                    'content-type': 'application/json'
+                },
+                {
+                    status: status
+                }
+            );
             invalidate(Dependencies.PROJECT);
             addNotification({
                 type: 'success',

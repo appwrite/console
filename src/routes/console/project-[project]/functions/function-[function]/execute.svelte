@@ -15,23 +15,23 @@
     import Label from '$lib/elements/forms/label.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { ExecutionMethod, type Models } from '@appwrite.io/console';
+    import type { Models } from '@appwrite.io/console';
 
     export let selectedFunction: Models.Function = null;
 
     let path = '/';
-    let method = ExecutionMethod.GET;
+    let method = 'GET';
     let body = '';
     let headers: [string, string][] = [['', '']];
     let error: string = null;
 
     const methodOptions = [
-        { label: 'GET', value: ExecutionMethod.GET },
-        { label: 'POST', value: ExecutionMethod.POST },
-        { label: 'PUT', value: ExecutionMethod.PUT },
-        { label: 'PATCH', value: ExecutionMethod.PATCH },
-        { label: 'DELETE', value: ExecutionMethod.DELETE },
-        { label: 'OPTIONS', value: ExecutionMethod.OPTIONS }
+        { label: 'GET', value: 'GET' },
+        { label: 'POST', value: 'POST' },
+        { label: 'PUT', value: 'PUT' },
+        { label: 'PATCH', value: 'PATCH' },
+        { label: 'DELETE', value: 'DELETE' },
+        { label: 'OPTIONS', value: 'OPTIONS' }
     ];
 
     let show = false;
@@ -121,7 +121,11 @@
                     </Button>
                 </svelte:fragment>
             </Alert>
-            <InputTextarea label="Body" placeholder={`Hello, World!`} id="body" bind:value={body} />
+            <InputTextarea
+                label="Body"
+                placeholder={`{ "myKey": "myValue" }`}
+                id="body"
+                bind:value={body} />
         {:else}
             <InputText label="Path" id="path" placeholder="/" bind:value={path} required />
 
@@ -210,7 +214,7 @@
 
                         <InputTextarea
                             label="Body"
-                            placeholder={`Hello, World!`}
+                            placeholder={`{ "myKey": "myValue" }`}
                             id="body"
                             bind:value={body} />
                     </FormList>

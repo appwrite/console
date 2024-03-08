@@ -29,6 +29,3 @@ export { default as Label } from './label.svelte';
 export { default as InputProjectId } from './inputProjectId.svelte';
 export { default as InputDate } from './inputDate.svelte';
 export { default as InputDateRange } from './inputDateRange.svelte';
-export { default as InputTime } from './inputTime.svelte';
-export { default as InputDigits } from './inputDigits.svelte';
-export { default as InputFilePicker } from './inputFilePicker.svelte';

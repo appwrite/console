@@ -17,12 +17,25 @@
     let error = '';
 
     onMount(async () => {
-        labels = [...$user.labels];
+        // TODO: Remove type cast when console SDK is updated
+        labels = [...($user as unknown as { labels: string[] }).labels];
     });
 
     async function updateLabels() {
         try {
-            await sdk.forProject.users.updateLabels($user.$id, labels);
+            // TODO: Use SDK method when console SDK is updated
+            // await sdk.forProject.users.updateLabels($user.$id, labels);
+            const path = `/users/${$user.$id}/labels`;
+            await sdk.forProject.client.call(
+                'PUT',
+                new URL(sdk.forConsole.client.config.endpoint + path),
+                {
+                    'content-type': 'application/json'
+                },
+                {
+                    labels: labels
+                }
+            );
             await invalidate(Dependencies.USER);
             isDisabled = true;
 

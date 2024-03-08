@@ -6,9 +6,15 @@
     import { sdk } from '$lib/stores/sdk';
     import { createPlatform } from '../store';
     import { Submit, trackEvent } from '$lib/actions/analytics';
-    import { PlatformType } from '@appwrite.io/console';
 
-    let platform: PlatformType = PlatformType.Appleios;
+    enum Platform {
+        iOS = 'apple-ios',
+        macOS = 'apple-macos',
+        watchOS = 'apple-watchos',
+        tvOS = 'apple-tvos'
+    }
+
+    let platform: Platform = Platform.iOS;
 
     const projectId = $page.params.project;
 
@@ -36,7 +42,7 @@
 </script>
 
 <WizardStep {beforeSubmit}>
-    <svelte:fragment slot="title">Apple registration</svelte:fragment>
+    <svelte:fragment slot="title">Register your bundle ID</svelte:fragment>
 
     <FormList isCommonSection>
         <FormItem>
@@ -44,26 +50,26 @@
             <div class="u-flex u-gap-16 u-margin-block-start-8">
                 <Pill
                     button
-                    on:click={() => (platform = PlatformType.Appleios)}
-                    selected={platform === PlatformType.Appleios}>
+                    on:click={() => (platform = Platform.iOS)}
+                    selected={platform === Platform.iOS}>
                     iOS
                 </Pill>
                 <Pill
                     button
-                    on:click={() => (platform = PlatformType.Applemacos)}
-                    selected={platform === PlatformType.Applemacos}>
+                    on:click={() => (platform = Platform.macOS)}
+                    selected={platform === Platform.macOS}>
                     macOS
                 </Pill>
                 <Pill
                     button
-                    on:click={() => (platform = PlatformType.Applewatchos)}
-                    selected={platform === PlatformType.Applewatchos}>
+                    on:click={() => (platform = Platform.watchOS)}
+                    selected={platform === Platform.watchOS}>
                     watchOS
                 </Pill>
                 <Pill
                     button
-                    on:click={() => (platform = PlatformType.Appletvos)}
-                    selected={platform === PlatformType.Appletvos}>
+                    on:click={() => (platform = Platform.tvOS)}
+                    selected={platform === Platform.tvOS}>
                     tvOS
                 </Pill>
             </div>

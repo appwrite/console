@@ -14,7 +14,20 @@
 
     const handleTransfer = async () => {
         try {
-            await sdk.forConsole.projects.updateTeam($project.$id, teamId);
+            await sdk.forConsole.client.call(
+                'PATCH',
+                new URL(
+                    sdk.forConsole.client.config.endpoint + '/projects/' + $project.$id + '/team'
+                ),
+                {
+                    'X-Appwrite-Project': sdk.forConsole.client.config.project,
+                    'content-type': 'application/json'
+                },
+                {
+                    teamId: teamId
+                }
+            );
+            // await sdk.forConsole.projects.update($project.$id, password);
             show = false;
             addNotification({
                 type: 'success',

@@ -4,16 +4,13 @@ import {
     toLocaleDateTime,
     isSameDay,
     isValidDate,
-    diffDays,
-    toLocaleDateISO,
-    toLocaleTimeISO
+    diffDays
 } from '$lib/helpers/date';
 
 describe('local date', () => {
     [
         ['2022-11-15 08:26:28', 'Nov 15, 2022'],
-        ['2022-11-15 00:26:28', 'Nov 15, 2022'],
-        ['2022-11-15 00:26:28Z', 'Nov 14, 2022']
+        ['2022-11-15 00:26:28', 'Nov 15, 2022']
     ].forEach(([value, expected]) => {
         it(value, () => {
             expect(toLocaleDate(value)).toBe(expected);
@@ -28,8 +25,7 @@ describe('local date', () => {
 describe('local date time', () => {
     [
         ['2022-11-15 08:26:28', 'Nov 15, 2022, 08:26'],
-        ['2022-11-15 00:26:28', 'Nov 15, 2022, 00:26'],
-        ['2022-11-15 00:26:28Z', 'Nov 14, 2022, 19:26']
+        ['2022-11-15 00:26:28', 'Nov 15, 2022, 00:26']
     ].forEach(([value, expected]) => {
         it(value, () => {
             expect(toLocaleDateTime(value)).toBe(expected);
@@ -38,38 +34,6 @@ describe('local date time', () => {
 
     it('invalid date', () => {
         expect(toLocaleDateTime('')).toBe('n/a');
-    });
-});
-
-describe('local date ISO', () => {
-    [
-        ['2022-11-15 20:26:28Z', '2022-11-15'],
-        ['2022-11-15 08:26:28Z', '2022-11-15'],
-        ['2022-11-16 00:26:28Z', '2022-11-15']
-    ].forEach(([value, expected]) => {
-        it(value, () => {
-            expect(toLocaleDateISO(value)).toBe(expected);
-        });
-    });
-
-    it('invalid date', () => {
-        expect(toLocaleDateISO('')).toBe('n/a');
-    });
-});
-
-describe('local time ISO', () => {
-    [
-        ['2022-11-15 20:26:28Z', '15:26:28'],
-        ['2022-11-15 08:26:28Z', '03:26:28'],
-        ['2022-11-16 00:26:28Z', '19:26:28']
-    ].forEach(([value, expected]) => {
-        it(value, () => {
-            expect(toLocaleTimeISO(value)).toBe(expected);
-        });
-    });
-
-    it('invalid date', () => {
-        expect(toLocaleTimeISO('')).toBe('n/a');
     });
 });
 

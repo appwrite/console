@@ -1,15 +1,18 @@
-import { isValueOfStringEnum } from '$lib/helpers/types';
+import type { Metric, UsageUsers } from '$lib/sdk/usage';
 import { sdk } from '$lib/stores/sdk';
-import { UserUsageRange } from '@appwrite.io/console';
 import type { PageLoad } from './$types';
 import { error } from '@sveltejs/kit';
 
 export const load: PageLoad = async ({ params }) => {
-    const period = isValueOfStringEnum(UserUsageRange, params.period)
-        ? params.period
-        : UserUsageRange.ThirtyDays;
+    const { period } = params;
     try {
-        return sdk.forProject.users.getUsage(period);
+        const response = (await sdk.forProject.users.getUsage(
+            period ?? '30d'
+        )) as unknown as UsageUsers;
+        return {
+            usersTotal: response.usersTotal,
+            users: response.users as Metric[]
+        };
     } catch (e) {
         error(e.code, e.message);
     }

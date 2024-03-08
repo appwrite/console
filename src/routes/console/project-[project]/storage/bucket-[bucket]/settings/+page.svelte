@@ -14,10 +14,6 @@
         const bucketData = get(bucket);
         const values = { ...bucketData, ...updates };
 
-        if (!isValueOfStringEnum(Compression, values.compression)) {
-            throw new Error(`Invalid compression: ${values.compression}`);
-        }
-
         try {
             await sdk.forProject.storage.updateBucket(
                 values.$id,
@@ -78,7 +74,7 @@
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { Compression, type Models } from '@appwrite.io/console';
+    import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { get, writable } from 'svelte/store';
     import Delete from '../deleteBucket.svelte';
@@ -86,7 +82,6 @@
     import UpdateMaxFileSize from './updateMaxFileSize.svelte';
     import { readOnly } from '$lib/stores/billing';
     import { GRACE_PERIOD_OVERRIDE } from '$lib/system';
-    import { isValueOfStringEnum } from '$lib/helpers/types';
 
     let showDelete = false;
 

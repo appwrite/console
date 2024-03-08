@@ -39,6 +39,7 @@
     <LocaleOptions on:select={onLocaleChange} bind:value={locale} />
 
     <EmailTemplate bind:loading>
+        <Id value={'{{team}}'}>{'{{team}}'}</Id>
         <Id value={'{{user}}'}>{'{{user}}'}</Id>
         <Id value={'{{project}}'}>{'{{project}}'}</Id>
         <Id value={'{{redirect}}'}>{'{{redirect}}'}</Id>

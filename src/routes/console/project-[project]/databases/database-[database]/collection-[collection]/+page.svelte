@@ -1,7 +1,8 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { Empty, EmptySearch, Heading, PaginationWithLimit } from '$lib/components';
-    import { Filters, hasPageQueries, queries } from '$lib/components/filters';
+    import Filters from '$lib/components/filters/filters.svelte';
+    import { hasPageQueries, queries } from '$lib/components/filters/store';
     import ViewSelector from '$lib/components/viewSelector.svelte';
     import { Button } from '$lib/elements/forms';
     import type { ColumnType } from '$lib/helpers/types';

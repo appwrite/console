@@ -3,7 +3,6 @@
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
-    import type { SmsTemplateLocale, SmsTemplateType } from '@appwrite.io/console';
     import { project } from '../../store';
     import { loadSmsTemplate } from './+page.svelte';
     import { baseSmsTemplate, smsTemplate } from './store';
@@ -14,11 +13,10 @@
 
     async function reset() {
         try {
-            // TODO: fix TemplateType and TemplateLocale typing once SDK is updated
             await sdk.forConsole.projects.deleteSmsTemplate(
                 $project.$id,
-                $smsTemplate.type as SmsTemplateType,
-                $smsTemplate.locale as SmsTemplateLocale
+                $smsTemplate.type,
+                $smsTemplate.locale
             );
 
             $smsTemplate = await loadSmsTemplate(

@@ -1,23 +1,23 @@
 <script lang="ts">
-    import { Alert, DropList, Heading } from '$lib/components';
-    import { BillingPlan } from '$lib/constants';
-    import { Pill } from '$lib/elements';
-    import { Button } from '$lib/elements/forms';
     import {
-        checkForProjectLimitation,
-        checkForUsageFees,
-        getServiceLimit,
-        readOnly,
-        showUsageRatesModal,
         tierToPlan,
-        type PlanServices
+        getServiceLimit,
+        type PlanServices,
+        showUsageRatesModal,
+        checkForUsageFees,
+        readOnly,
+        checkForProjectLimitation
     } from '$lib/stores/billing';
+    import { Alert, DropList, Heading } from '$lib/components';
+    import { Pill } from '$lib/elements';
     import { organization } from '$lib/stores/organization';
-    import { wizard } from '$lib/stores/wizard';
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
-    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
     import { createEventDispatcher, onMount } from 'svelte';
+    import { wizard } from '$lib/stores/wizard';
+    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
     import { ContainerButton } from '.';
+    import { Button } from '$lib/elements/forms';
+    import { BillingPlan } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
 
     export let isFlex = true;
@@ -36,14 +36,7 @@
 
     let showDropdown = false;
 
-    // TODO: remove the default billing limits when backend is updated with billing code
-    const { bandwidth, documents, storage, users, executions } = $organization?.billingLimits ?? {
-        bandwidth: 1,
-        documents: 1,
-        storage: 1,
-        users: 1,
-        executions: 1
-    };
+    const { bandwidth, documents, storage, users, executions } = $organization?.billingLimits ?? {};
     const limitedServices = [
         { name: 'bandwidth', value: bandwidth },
         { name: 'documents', value: documents },

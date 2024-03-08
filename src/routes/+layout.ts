@@ -13,10 +13,9 @@ export const ssr = false;
 export const load: LayoutLoad = async ({ depends, url }) => {
     depends(Dependencies.ACCOUNT);
 
-    if (url.searchParams.has('forceRedirect')) {
-        redirectTo.set(url.searchParams.get('forceRedirect') || null);
-        url.searchParams.delete('forceRedirect');
-    }
+    redirectTo.set(url.searchParams.get('forceRedirect') || null);
+
+    url.searchParams.delete('forceRedirect');
 
     try {
         const account = await sdk.forConsole.account.get<{ organization?: string }>();
@@ -40,19 +39,13 @@ export const load: LayoutLoad = async ({ depends, url }) => {
             '/auth/oauth2/success',
             '/auth/oauth2/failure',
             '/card',
-            '/hackathon',
-            '/mfa'
+            '/hackathon'
         ];
 
-        const redirectUrl = url.pathname && url.pathname !== '/' ? `redirect=${url.pathname}` : '';
-        const path = url.search ? `${url.search}&${redirectUrl}` : `?${redirectUrl}`;
-
-        if (error.type === 'user_more_factors_required') {
-            if (url.pathname === '/mfa') return;
-            redirect(303, `/mfa${path}`);
-        }
-
         if (!acceptedRoutes.some((n) => url.pathname.startsWith(n))) {
+            const redirectUrl =
+                url.pathname && url.pathname !== '/' ? `redirect=${url.pathname}` : '';
+            const path = url.search ? `${url.search}&${redirectUrl}` : `?${redirectUrl}`;
             redirect(303, `/login${path}`);
         }
     }

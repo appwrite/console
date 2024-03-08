@@ -1,12 +1,12 @@
 import { sdk } from '$lib/stores/sdk';
 import { cachedStore } from '$lib/helpers/cache';
 import { writable, type Writable } from 'svelte/store';
-import type { Models, ProjectUsageRange } from '@appwrite.io/console';
+import type { Models } from '@appwrite.io/console';
 
 export const usage = cachedStore<
     Models.UsageProject,
     {
-        load: (start: string, end: string, period: ProjectUsageRange) => Promise<void>;
+        load: (start: string, end: string, period: '1h' | '1d') => Promise<void>;
     }
 >('projectUsage', function ({ set }) {
     return {

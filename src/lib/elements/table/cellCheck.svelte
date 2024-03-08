@@ -6,7 +6,6 @@
 
     export let id: string;
     export let selectedIds: string[] = [];
-    export let disabled: boolean = false;
     let el: HTMLInputElement;
 
     const handleClick = (e: Event) => {
@@ -36,7 +35,6 @@
         id="select-{id}"
         wrapperTag="div"
         checked={selectedIds.includes(id)}
-        {disabled}
         on:click={handleClick} />
 </TableCell>
 

@@ -6,7 +6,7 @@
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">API key</svelte:fragment>
+    <svelte:fragment slot="title">Create an API key</svelte:fragment>
     <svelte:fragment slot="subtitle">Let's create an API key.</svelte:fragment>
     <FormList>
         <InputText

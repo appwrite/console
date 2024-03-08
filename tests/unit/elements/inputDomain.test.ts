@@ -104,9 +104,7 @@ validStrings.forEach((validString) => {
 });
 
 invalidStrings.forEach((invalidString) => {
-    // TODO: skipping because these pass in the browser but fail
-    // in testing. It could be because of jsdom
-    test.skip(`validates ${invalidString} as invalid`, () => {
+    test(`validates ${invalidString} as invalid`, () => {
         const { getByLabelText } = render(InputDomain, {
             id: 'input',
             label: 'input',

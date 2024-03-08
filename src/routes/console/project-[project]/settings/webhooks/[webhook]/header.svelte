@@ -12,6 +12,6 @@
         <CoverTitle href={`/console/project-${projectId}/settings/webhooks`}>
             {$webhook?.name}
         </CoverTitle>
-        <Id value={$webhook?.$id} event="webhook">{$webhook?.$id}</Id>
+        <Id value={$webhook?.$id} event="webhook">Webhook ID</Id>
     </svelte:fragment>
 </Cover>

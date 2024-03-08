@@ -15,7 +15,6 @@
         userSearcher
     } from '$lib/commandCenter/searchers';
     import { MigrationBox } from '$lib/components';
-    import { page } from '$app/stores';
 
     onMount(() => {
         return sdk.forConsole.client.subscribe(['project', 'console'], (response) => {
@@ -29,19 +28,19 @@
 
     $: $registerCommands([
         {
-            label: 'Go to Auth',
-            callback: () => {
-                goto(`/console/project-${$project.$id}/auth`);
-            },
-            keys: ['g', 'a'],
-            group: 'navigation'
-        },
-        {
             label: 'Go to Databases',
             callback: () => {
                 goto(`/console/project-${$project.$id}/databases`);
             },
-            keys: ['g', 'd'],
+            keys: ['d'],
+            group: 'navigation'
+        },
+        {
+            label: 'Go to Auth',
+            callback: () => {
+                goto(`/console/project-${$project.$id}/auth`);
+            },
+            keys: ['a'],
             group: 'navigation'
         },
         {
@@ -49,16 +48,7 @@
             callback: () => {
                 goto(`/console/project-${$project.$id}/functions`);
             },
-            keys: ['g', 'f'],
-            group: 'navigation'
-        },
-        {
-            label: 'Go to Messaging',
-            callback: () => {
-                goto(`/console/project-${$project.$id}/messaging`);
-            },
-            keys: ['g', 'm'],
-            disabled: $page.url.pathname.endsWith('messaging'),
+            keys: ['f'],
             group: 'navigation'
         },
         {
@@ -66,23 +56,23 @@
             callback: () => {
                 goto(`/console/project-${$project.$id}/storage`);
             },
-            keys: ['g', 's'],
+            keys: ['s'],
             group: 'navigation'
         },
         {
-            label: 'Go to Settings',
+            label: 'Go to settings',
             callback: () => {
                 goto(`/console/project-${$project.$id}/settings`);
             },
-            keys: ['g', 'e'],
+            keys: ['p'],
             group: 'navigation'
         },
         {
-            label: 'Go to Overview',
+            label: 'Go to overview',
             callback: () => {
                 goto(`/console/project-${$project.$id}`);
             },
-            keys: ['g', 'o'],
+            keys: ['o'],
             group: 'navigation'
         }
     ]);

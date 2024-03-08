@@ -11,7 +11,8 @@ import Microsoft from '../../routes/console/project-[project]/auth/microsoftOAut
 import Oidc from '../../routes/console/project-[project]/auth/oidcOAuth.svelte';
 import Okta from '../../routes/console/project-[project]/auth/oktaOAuth.svelte';
 
-export type Provider = Models.AuthProvider & {
+export type Provider = Models.Provider & {
+    key: string;
     icon: string;
     docs?: string;
     component?: typeof SvelteComponent<unknown>;
@@ -23,12 +24,13 @@ export type Providers = {
 
 const setProviders = (project: Models.Project): Provider[] => {
     return (
-        project?.oAuthProviders.map((n) => {
+        project?.providers.map((n) => {
+            const p = n as Models.Provider & { key: string };
             let docs: Provider['docs'];
-            let icon: Provider['icon'] = n.key.toLowerCase();
+            let icon: Provider['icon'] = p.key.toLowerCase();
             let component: Provider['component'] = Main;
 
-            switch (n.key.toLowerCase()) {
+            switch (p.key.toLowerCase()) {
                 case 'amazon':
                     docs = 'https://developer.amazon.com/apps-and-games/services-and-apis';
                     break;
@@ -156,7 +158,7 @@ const setProviders = (project: Models.Project): Provider[] => {
             }
 
             return {
-                ...n,
+                ...p,
                 icon,
                 docs,
                 component

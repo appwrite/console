@@ -23,7 +23,6 @@
                 $createWebhook.events,
                 $createWebhook.url,
                 $createWebhook.security,
-                true,
                 $createWebhook.httpUser || undefined,
                 $createWebhook.httpPass || undefined
             );

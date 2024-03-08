@@ -16,7 +16,6 @@
     import { Container } from '$lib/layout';
     import Create from '../createAttribute.svelte';
     import { isRelationship } from '../document-[document]/attributes/store';
-    import FailedModal from '../failedModal.svelte';
     import CreateIndex from '../indexes/createIndex.svelte';
     import { attributes, type Attributes } from '../store';
     import CreateAttributeDropdown from './createAttributeDropdown.svelte';
@@ -36,8 +35,6 @@
     let showDelete = false;
     let showEdit = false;
     let showCreateIndex = false;
-    let showFailed = false;
-    let error = '';
 
     enum attributeFormatIcon {
         ip = 'location-marker',
@@ -92,24 +89,13 @@
                                     <span class="text u-trim-1" data-private>{attribute.key}</span>
                                 </div>
                                 {#if attribute.status !== 'available'}
-                                    <div class="u-inline-flex u-gap-12 u-cross-center">
-                                        <Pill
-                                            warning={attribute.status === 'processing'}
-                                            danger={['deleting', 'stuck', 'failed'].includes(
-                                                attribute.status
-                                            )}>
-                                            {attribute.status}
-                                        </Pill>
-                                        {#if attribute.error}
-                                            <Button
-                                                link
-                                                on:click={(e) => {
-                                                    e.preventDefault();
-                                                    error = attribute.error;
-                                                    showFailed = true;
-                                                }}>Details</Button>
-                                        {/if}
-                                    </div>
+                                    <Pill
+                                        warning={attribute.status === 'processing'}
+                                        danger={['deleting', 'stuck', 'failed'].includes(
+                                            attribute.status
+                                        )}>
+                                        {attribute.status}
+                                    </Pill>
                                 {:else if attribute.required}
                                     <Pill>Required</Pill>
                                 {/if}
@@ -172,17 +158,15 @@
                                             Create Index
                                         </DropListItem>
                                     {/if}
-                                    {#if attribute.status !== 'processing'}
-                                        <DropListItem
-                                            icon="trash"
-                                            on:click={() => {
-                                                selectedAttribute = attribute;
-                                                showDelete = true;
-                                                showDropdown[index] = false;
-                                            }}>
-                                            Delete
-                                        </DropListItem>
-                                    {/if}
+                                    <DropListItem
+                                        icon="trash"
+                                        on:click={() => {
+                                            selectedAttribute = attribute;
+                                            showDelete = true;
+                                            showDropdown[index] = false;
+                                        }}>
+                                        Delete
+                                    </DropListItem>
                                 </svelte:fragment>
                             </DropList>
                         </TableCell>
@@ -230,4 +214,3 @@
 <Delete bind:showDelete {selectedAttribute} />
 <Edit bind:showEdit {selectedAttribute} />
 <CreateIndex bind:showCreateIndex externalAttribute={selectedAttribute} />
-<FailedModal bind:show={showFailed} title="Create attribute" header="Creation failed" {error} />

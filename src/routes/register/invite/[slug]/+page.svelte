@@ -72,7 +72,7 @@
             if (!res.ok) {
                 throw new Error((await res.json()).message);
             } else {
-                await sdk.forConsole.account.createEmailPasswordSession(mail, pass);
+                await sdk.forConsole.account.createEmailSession(mail, pass);
                 const prefs = await sdk.forConsole.account.getPrefs();
                 const newPrefs = { ...prefs, code };
                 await sdk.forConsole.account.updatePrefs(newPrefs);

@@ -16,7 +16,6 @@
     export let hideColumns = false;
     export let allowNoColumns = false;
     export let showColsTextMobile = false;
-    export let fullWidthMobile = false;
 
     let showSelectColumns = false;
 
@@ -32,15 +31,12 @@
         } else {
             const prefs = preferences.get($page.route);
 
-            // Override the shown columns only if a preference was set
-            if (prefs?.columns) {
-                columns.set(
-                    $columns.map((column) => {
-                        column.show = prefs.columns?.includes(column.id) ?? true;
-                        return column;
-                    })
-                );
-            }
+            columns.set(
+                $columns.map((column) => {
+                    column.show = prefs.columns?.includes(column.id) ?? true;
+                    return column;
+                })
+            );
         }
 
         columns.subscribe((ctx) => {
@@ -75,11 +71,8 @@
 <div class="grid-header-col-4">
     {#if !hideColumns && view === View.Table}
         {#if $columns?.length}
-            <DropList bind:show={showSelectColumns} scrollable wrapperFullWidth={fullWidthMobile}>
-                <Button
-                    secondary
-                    on:click={() => (showSelectColumns = !showSelectColumns)}
-                    {fullWidthMobile}>
+            <DropList bind:show={showSelectColumns} scrollable>
+                <Button secondary on:click={() => (showSelectColumns = !showSelectColumns)}>
                     <span
                         class="icon-view-boards u-opacity-50"
                         aria-hidden="true"

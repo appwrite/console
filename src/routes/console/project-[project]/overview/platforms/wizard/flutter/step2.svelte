@@ -9,7 +9,7 @@
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">Install</svelte:fragment>
+    <svelte:fragment slot="title">Get the SDK</svelte:fragment>
 
     <p>
         Add Appwrite SDK to your package's <code class="inline-code">pubspec.yaml</code> file. You can

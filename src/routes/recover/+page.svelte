@@ -47,10 +47,7 @@
 
     async function setPassword() {
         try {
-            if (password !== confirmPassword) {
-                throw new Error('Passwords do not match');
-            }
-            await sdk.forConsole.account.updateRecovery(userId, secret, password);
+            await sdk.forConsole.account.updateRecovery(userId, secret, password, confirmPassword);
             await goto(`${base}/login`);
             addNotification({
                 type: 'success',

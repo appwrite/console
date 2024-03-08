@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { ID, Runtime } from '@appwrite.io/console';
+    import { ID } from '@appwrite.io/console';
     import { Wizard } from '$lib/layout';
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
     import { sdk } from '$lib/stores/sdk';
@@ -19,13 +19,9 @@
     import Details from './steps/details.svelte';
     import Configuration from './steps/configuration.svelte';
     import ExecuteAccess from './steps/executeAccess.svelte';
-    import { isValueOfStringEnum } from '$lib/helpers/types';
 
     async function create() {
         try {
-            if (!isValueOfStringEnum(Runtime, $createFunction.runtime)) {
-                throw new Error(`Invalid runtime: ${$createFunction.runtime}`);
-            }
             const response = await sdk.forProject.functions.create(
                 $createFunction.$id || ID.unique(),
                 $createFunction.name,

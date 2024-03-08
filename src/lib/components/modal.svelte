@@ -5,7 +5,7 @@
     import { disableCommands } from '$lib/commandCenter';
 
     export let show = false;
-    export let size: 'small' | 'big' | 'huge' = null;
+    export let size: 'small' | 'big' = null;
     export let icon: string = null;
     export let state: 'success' | 'warning' | 'error' | 'info' = null;
     export let error: string = null;
