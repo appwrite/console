@@ -40,6 +40,10 @@ export const feedbackDowngradeOptions = [
         label: "The available features don't meet my needs"
     },
     {
+        value: 'traction',
+        label: "My project isn't getting traction"
+    },
+    {
         value: 'bugs',
         label: 'I experienced bugs or unexpected outages while using the console'
     },
