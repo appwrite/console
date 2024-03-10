@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Button, FormList, InputText } from '$lib/elements/forms';
+    import { formatCurrency } from '$lib/helpers/numbers';
     import type { Coupon } from '$lib/sdk/billing';
     import { sdk } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
@@ -64,7 +65,9 @@
                 <span class="icon-tag u-color-text-success" />
                 <slot data={couponData}>
                     <span>
-                        {couponData.code.toUpperCase()} applied (-${couponData.credits})
+                        {couponData.code.toUpperCase()} applied (-{formatCurrency(
+                            couponData.credits
+                        )})
                     </span>
                 </slot>
             </div>

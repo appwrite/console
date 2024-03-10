@@ -2,7 +2,14 @@ import { page } from '$app/stores';
 import { derived, get, writable } from 'svelte/store';
 import { sdk } from './sdk';
 import { organization, type Organization } from './organization';
-import type { InvoiceList, AddressesList, Invoice, PaymentList, PlansMap } from '$lib/sdk/billing';
+import type {
+    InvoiceList,
+    AddressesList,
+    Invoice,
+    PaymentList,
+    PlansMap,
+    PaymentMethodData
+} from '$lib/sdk/billing';
 import { isCloud } from '$lib/system';
 import { cachedStore } from '$lib/helpers/cache';
 import { Query } from '@appwrite.io/console';
@@ -11,9 +18,11 @@ import PaymentAuthRequired from '$lib/components/billing/alerts/paymentAuthRequi
 import { addNotification, notifications } from './notifications';
 import { goto } from '$app/navigation';
 import { base } from '$app/paths';
-import { activeHeaderAlert } from '$routes/console/store';
+import { activeHeaderAlert, orgMissingPaymentMethod } from '$routes/console/store';
 import MarkedForDeletion from '$lib/components/billing/alerts/markedForDeletion.svelte';
 import { BillingPlan } from '$lib/constants';
+import PaymentMandate from '$lib/components/billing/alerts/paymentMandate.svelte';
+import MissingPaymentMethod from '$lib/components/billing/alerts/missingPaymentMethod.svelte';
 
 export type Tier = 'tier-0' | 'tier-1' | 'tier-2';
 
@@ -261,7 +270,41 @@ export function checkForMarkedForDeletion(org: Organization) {
             id: 'markedForDeletion',
             component: MarkedForDeletion,
             show: true,
-            importance: 5
+            importance: 10
+        });
+    }
+}
+
+export const paymentMissingMandate = writable<PaymentMethodData>(null);
+
+export async function checkForMandate(org: Organization) {
+    const paymentId = org.paymentMethodId ?? org.backupPaymentMethodId;
+    const paymentMethod = await sdk.forConsole.billing.getPaymentMethod(paymentId);
+    if (paymentMethod.mandateId === null && paymentMethod.country === 'in') {
+        headerAlert.add({
+            id: 'paymentMandate',
+            component: PaymentMandate,
+            show: true,
+            importance: 8
+        });
+        activeHeaderAlert.set(headerAlert.get());
+        paymentMissingMandate.set(paymentMethod);
+    }
+}
+
+export async function checkForMissingPaymentMethod() {
+    const orgs = await sdk.forConsole.billing.listOrganization([
+        Query.notEqual('billingPlan', BillingPlan.STARTER),
+        Query.isNull('paymentMethodId'),
+        Query.isNull('backupPaymentMethodId')
+    ]);
+    if (orgs?.total) {
+        orgMissingPaymentMethod.set(orgs.teams[0]);
+        headerAlert.add({
+            id: 'missingPaymentMethod',
+            component: MissingPaymentMethod,
+            show: true,
+            importance: 8
         });
     }
 }

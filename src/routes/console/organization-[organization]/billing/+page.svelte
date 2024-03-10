@@ -20,6 +20,8 @@
     import { wizard } from '$lib/stores/wizard';
     import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
     import { BillingPlan } from '$lib/constants';
+    import RetryPaymentModal from './retryPaymentModal.svelte';
+    import { selectedInvoice, showRetryModal } from './store';
 
     $: defaultPaymentMethod = $paymentMethods?.paymentMethods?.find(
         (method: PaymentMethodData) => method.$id === $organization?.paymentMethodId
@@ -30,29 +32,40 @@
     );
 
     onMount(async () => {
-        if (
-            $page.url.searchParams.has('type') &&
-            $page.url.searchParams.get('type') === 'upgrade'
-        ) {
-            wizard.start(ChangeOrganizationTierCloud);
-        }
+        if ($page.url.searchParams.has('type')) {
+            if ($page.url.searchParams.get('type') === 'upgrade') {
+                wizard.start(ChangeOrganizationTierCloud);
+            }
 
-        if (
-            $page.url.searchParams.has('invoice') &&
-            $page.url.searchParams.has('type') &&
-            $page.url.searchParams.get('type') === 'confirmation'
-        ) {
-            const invoiceId = $page.url.searchParams.get('invoice');
-            const invoice = await sdk.forConsole.billing.getInvoice(
-                $page.params.organization,
-                invoiceId
-            );
+            if (
+                $page.url.searchParams.has('invoice') &&
+                $page.url.searchParams.get('type') === 'confirmation'
+            ) {
+                const invoiceId = $page.url.searchParams.get('invoice');
+                const invoice = await sdk.forConsole.billing.getInvoice(
+                    $page.params.organization,
+                    invoiceId
+                );
 
-            await confirmPayment(
-                $organization.$id,
-                invoice.clientSecret,
-                $organization.paymentMethodId
-            );
+                await confirmPayment(
+                    $organization.$id,
+                    invoice.clientSecret,
+                    $organization.paymentMethodId
+                );
+            }
+
+            if (
+                $page.url.searchParams.has('invoice') &&
+                $page.url.searchParams.get('type') === 'retry'
+            ) {
+                const invoiceId = $page.url.searchParams.get('invoice');
+                const invoice = await sdk.forConsole.billing.getInvoice(
+                    $page.params.organization,
+                    invoiceId
+                );
+                selectedInvoice.set(invoice);
+                showRetryModal.set(true);
+            }
         }
         if ($page.url.searchParams.has('clientSecret')) {
             const clientSecret = $page.url.searchParams.get('clientSecret');
@@ -101,3 +114,7 @@
     {/if}
     <AvailableCredit />
 </Container>
+
+{#if $selectedInvoice}
+    <RetryPaymentModal bind:show={$showRetryModal} bind:invoice={$selectedInvoice} />
+{/if}

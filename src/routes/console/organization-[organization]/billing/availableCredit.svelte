@@ -18,6 +18,7 @@
     import AddCreditWizard from './addCreditWizard.svelte';
     import { Button } from '$lib/elements/forms';
     import AddCreditModal from './addCreditModal.svelte';
+    import { formatCurrency } from '$lib/helpers/numbers';
     import { BillingPlan } from '$lib/constants';
     import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
     import { trackEvent } from '$lib/actions/analytics';
@@ -68,7 +69,7 @@
     }
 </script>
 
-<CardGrid>
+<CardGrid hideFooter={$organization?.billingPlan !== BillingPlan.STARTER}>
     <Heading tag="h2" size="6">Available credit</Heading>
 
     <p class="text">Appwrite credit will automatically be applied to your next invoice.</p>
@@ -88,7 +89,7 @@
             <div class="u-flex u-cross-center u-main-space-between">
                 <div class="u-flex u-gap-8 u-cross-center">
                     <h4 class="body-text-1 u-bold">Credit balance</h4>
-                    <span class="inline-tag">${balance}</span>
+                    <span class="inline-tag">{formatCurrency(balance)}</span>
                 </div>
                 {#if creditList?.total}
                     <Button secondary on:click={handleCredits}>
@@ -114,7 +115,7 @@
                                     {toLocaleDate(credit.expiration)}
                                 </TableCellText>
                                 <TableCellText title="amount">
-                                    ${credit.credits}
+                                    {formatCurrency(credit.credits)}
                                 </TableCellText>
                             </TableRow>
                         {/each}

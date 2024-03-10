@@ -5,9 +5,10 @@
     import type { Provider } from '$lib/stores/oauth-providers';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import { updateOAuth } from './updateOAuth';
+    import { updateOAuth } from '../updateOAuth';
 
     export let provider: Provider;
+    export let show = false;
 
     const projectId = $page.params.project;
 
@@ -34,7 +35,7 @@
     };
 </script>
 
-<Modal {error} size="big" show onSubmit={update} on:close>
+<Modal {error} size="big" bind:show onSubmit={update} on:close>
     <svelte:fragment slot="title">{provider.name} OAuth2 Settings</svelte:fragment>
     <FormList>
         <p>

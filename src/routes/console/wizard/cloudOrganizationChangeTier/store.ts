@@ -23,6 +23,7 @@ export const changeOrganizationTier = writable<{
     };
     taxId?: string;
     feedbackMessage?: string;
+    feedbackDowngradeReason?: string;
     couponCode?: string;
 }>({
     billingPlan: BillingPlan.PRO,
@@ -32,3 +33,38 @@ export const changeOrganizationTier = writable<{
     billingAddressId: null,
     taxId: null
 });
+
+export const feedbackDowngradeOptions = [
+    {
+        value: 'availableFeatures',
+        label: "The available features don't meet my needs"
+    },
+    {
+        value: 'traction',
+        label: "My project isn't getting traction"
+    },
+    {
+        value: 'bugs',
+        label: 'I experienced bugs or unexpected outages while using the console'
+    },
+    {
+        value: 'starter',
+        label: 'The Starter plan is enough for my projects'
+    },
+    {
+        value: 'budget',
+        label: "I don't have the budget"
+    },
+    {
+        value: 'tryOut',
+        label: 'I just wanted to try it out'
+    },
+    {
+        value: 'alternative',
+        label: 'I found an alternative/competitor to meet my needs'
+    },
+    {
+        value: 'other',
+        label: 'Other'
+    }
+];

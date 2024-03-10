@@ -13,7 +13,7 @@
     import { organization } from '$lib/stores/organization';
     import { createOrganization } from './store';
     import { plansInfo, type Tier } from '$lib/stores/billing';
-    import { abbreviateNumber } from '$lib/helpers/numbers';
+    import { abbreviateNumber, formatCurrency } from '$lib/helpers/numbers';
     import { BillingPlan } from '$lib/constants';
 
     export let show = false;
@@ -87,7 +87,7 @@
                         </TableCellText>
                         {#if !isFree}
                             <TableCellText title="rate">
-                                ${plan.addons.member.price}/{usage?.unit}
+                                {formatCurrency(plan.addons.member.price)}/{usage?.unit}
                             </TableCellText>
                         {/if}
                     </TableRow>
@@ -100,7 +100,9 @@
                         </TableCellText>
                         {#if !isFree}
                             <TableCellText title="rate">
-                                ${addon?.price}/{['MB', 'GB', 'TB'].includes(addon?.unit)
+                                {formatCurrency(addon?.price)}/{['MB', 'GB', 'TB'].includes(
+                                    addon?.unit
+                                )
                                     ? addon?.value
                                     : abbreviateNumber(addon?.value, 0)}{usage?.unit}
                             </TableCellText>
