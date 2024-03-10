@@ -13,7 +13,8 @@ const config = defineConfig({
             '@analytics/google-analytics',
             'analytics',
             'dayjs',
-            'dotenv'
+            'dotenv',
+            'zrender'
         ]
     },
     define: {
