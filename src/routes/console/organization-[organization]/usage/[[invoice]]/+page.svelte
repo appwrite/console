@@ -225,7 +225,7 @@
                 {@const max = getServiceLimit('executions', tier)}
                 <ProgressBarBig
                     currentUnit="Executions"
-                    currentValue={current.toString()}
+                    currentValue={formatNum(current)}
                     maxUnit="Executions"
                     maxValue={formatNum(max)}
                     progressValue={current}
