@@ -119,13 +119,13 @@ export const utcWeekDayToLocaleWeekDay = (utcDay: WeekDay, utcTimeString: string
     return new Intl.DateTimeFormat('en', { weekday: 'short' }).format(now);
 };
 
-export const localeTimezoneShortHand = () => {
+export const localeTimezoneName = () => {
     const options: Intl.DateTimeFormatOptions = {
-        timeZoneName: 'long'
+        timeZoneName: 'longGeneric'
     };
 
     const dateWithTimezone = new Intl.DateTimeFormat('en', options).format(new Date());
-    return dateWithTimezone.match(/\b([A-Z])/g).join('');
+    return dateWithTimezone.split(', ')[1];
 };
 
 export const isSameDay = (date1: Date, date2: Date) => {
