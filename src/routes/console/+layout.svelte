@@ -20,6 +20,7 @@
         calculateTrialDay,
         paymentExpired,
         checkForMarkedForDeletion,
+        checkForMandate,
         checkForMissingPaymentMethod
     } from '$lib/stores/billing';
     import { goto } from '$app/navigation';
@@ -271,6 +272,7 @@
             await checkForUsageLimit(org);
             checkForMarkedForDeletion(org);
             await checkPaymentAuthorizationRequired(org);
+            await checkForMandate(org);
         }
     });
 

@@ -5,11 +5,12 @@
     import type { Provider } from '$lib/stores/oauth-providers';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import { updateOAuth } from './updateOAuth';
+    import { updateOAuth } from '../updateOAuth';
 
     const projectId = $page.params.project;
 
     export let provider: Provider;
+    export let show = false;
 
     let appId: string = null;
     let enabled: boolean = null;
@@ -37,7 +38,7 @@
     $: secret = keyID && teamID && p8 ? JSON.stringify({ keyID, teamID, p8 }) : provider.secret;
 </script>
 
-<Modal {error} onSubmit={update} size="big" show on:close>
+<Modal {error} onSubmit={update} size="big" bind:show on:close>
     <svelte:fragment slot="title">{provider.name} OAuth2 Settings</svelte:fragment>
     <FormList>
         <p>

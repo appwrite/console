@@ -2,7 +2,7 @@
     import { Box, CreditCardBrandImage } from '$lib/components';
     import { CouponInput } from '$lib/components/billing';
     import { BillingPlan } from '$lib/constants';
-    import { FormList, InputTextarea } from '$lib/elements/forms';
+    import { FormList, InputSelect, InputTextarea } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
     import { formatCurrency } from '$lib/helpers/numbers';
     import { WizardStep } from '$lib/layout';
@@ -10,7 +10,12 @@
     import { plansInfo } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
-    import { changeOrganizationFinalAction, changeOrganizationTier, isUpgrade } from './store';
+    import {
+        changeOrganizationFinalAction,
+        changeOrganizationTier,
+        feedbackDowngradeOptions,
+        isUpgrade
+    } from './store';
 
     const plan = $plansInfo.get($changeOrganizationTier.billingPlan);
     const collaboratorPrice = plan?.addons.member?.price ?? 0;
@@ -28,7 +33,6 @@
         status: null,
         credits: null
     };
-    let comment: string = null;
 
     async function fetchCard() {
         try {
@@ -51,16 +55,22 @@
     <WizardStep>
         <svelte:fragment slot="title">Confirm plan change</svelte:fragment>
         <svelte:fragment slot="subtitle">
-            Your feedback is important to us and helps us improve the services Appwrite offer. If
-            there is a specific reason you chose to change your plan at this time, please let us
-            know.
+            Your feedback is important to us and helps us improve the services Appwrite offers.
+            Please let us know if there is a specific reason for changing your plan.
         </svelte:fragment>
         <FormList>
+            <InputSelect
+                id="reason"
+                label="What made you decide to change your plan?*"
+                placeholder="Select one"
+                required
+                options={feedbackDowngradeOptions}
+                bind:value={$changeOrganizationTier.feedbackDowngradeReason} />
             <InputTextarea
                 id="comment"
                 label="Your feedback here"
-                placeholder="This is my reason for downgrading..."
-                bind:value={comment} />
+                placeholder="Enter feedback"
+                bind:value={$changeOrganizationTier.feedbackMessage} />
         </FormList>
     </WizardStep>
 {:else}
