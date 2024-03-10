@@ -15,7 +15,9 @@
     import Label from '$lib/elements/forms/label.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { showFunctionExecute, execute } from './store';
+    import type { Models } from '@appwrite.io/console';
+
+    export let selectedFunction: Models.Function = null;
 
     let path = '/';
     let method = 'GET';
@@ -32,7 +34,12 @@
         { label: 'OPTIONS', value: 'OPTIONS' }
     ];
 
+    let show = false;
     let submitting = false;
+
+    $: if (selectedFunction && !show) {
+        show = true;
+    }
 
     const handleSubmit = async () => {
         submitting = true;
@@ -44,7 +51,7 @@
             }
 
             await sdk.forProject.functions.createExecution(
-                $execute.$id,
+                selectedFunction.$id,
                 body,
                 true,
                 path,
@@ -53,7 +60,7 @@
             );
             if (!$page.url?.toString()?.includes('/executions')) {
                 await goto(
-                    `${base}/console/project-${$page.params.project}/functions/function-${$execute.$id}/executions`
+                    `${base}/console/project-${$page.params.project}/functions/function-${selectedFunction.$id}/executions`
                 );
             }
             invalidate(Dependencies.EXECUTIONS);
@@ -72,8 +79,8 @@
     };
 
     function close() {
-        $execute = null;
-        $showFunctionExecute = false;
+        selectedFunction = null;
+        show = false;
     }
 
     afterNavigate(close);
@@ -82,9 +89,10 @@
 <Modal
     title="Execute function"
     headerDivider={false}
-    bind:show={$showFunctionExecute}
+    bind:show
     size="big"
     onSubmit={handleSubmit}
+    on:close={close}
     bind:error>
     <p class="text">
         Manually execute your function. <a
@@ -97,7 +105,7 @@
     </p>
 
     <FormList>
-        {#if $execute?.version !== 'v3'}
+        {#if selectedFunction?.version !== 'v3'}
             <Alert type="info">
                 <svelte:fragment slot="title">
                     Customizable execution data now available for functions v3.0
@@ -113,11 +121,7 @@
                     </Button>
                 </svelte:fragment>
             </Alert>
-            <InputTextarea
-                label="Body"
-                placeholder={`{ "myKey": "myValue" }`}
-                id="body"
-                bind:value={body} />
+            <InputTextarea label="Body" placeholder={`Hello, World!`} id="body" bind:value={body} />
         {:else}
             <InputText label="Path" id="path" placeholder="/" bind:value={path} required />
 
@@ -206,7 +210,7 @@
 
                         <InputTextarea
                             label="Body"
-                            placeholder={`{ "myKey": "myValue" }`}
+                            placeholder={`Hello, World!`}
                             id="body"
                             bind:value={body} />
                     </FormList>
