@@ -45,7 +45,7 @@
             {#if isPaid}
                 <p class="u-line-height-1-5 u-margin-block-start-8">
                     Get personalized support from the Appwrite team from <b>{supportTimings}</b>
-                    <Label tooltip="{localeTimezoneName()}" />
+                    <Label tooltip={localeTimezoneName()} />
                 </p>
             {/if}
         </div>

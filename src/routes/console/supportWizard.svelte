@@ -103,9 +103,8 @@
             respond to all messages within our office hours.
         </p>
         <p class="text u-margin-block-start-32">
-            Available: <b>{supportWeekDays}, {supportTimings}
-            <Label tooltip="{localeTimezoneName()}" />
-        </b>
+            Available: <b>{supportWeekDays}, {supportTimings}</b>
+            <Label tooltip={localeTimezoneName()} />
         </p>
         <div class="u-flex u-gap-4 u-cross-center">
             <span>Currently:</span>
