@@ -10,11 +10,8 @@
     import { wizard } from '$lib/stores/wizard';
     import { VARS } from '$lib/system';
     import { organization } from '$lib/stores/organization';
-    import {
-        localeTimezoneShortHand,
-        utcHourToLocaleHour,
-        utcWeekDayToLocaleWeekDay
-    } from '$lib/helpers/date';
+    import type { WeekDay } from '$lib/helpers/date';
+    import { localeTimezoneShortHand, utcHourToLocaleHour, utcWeekDayToLocaleWeekDay } from '$lib/helpers/date';
 
     onDestroy(() => {
         $supportData = {
@@ -82,7 +79,7 @@
 
     $wizard.finalAction = handleSubmit;
 
-    const workTimings = { start: '09:00', end: '17:00', startDay: 'Monday', endDay: 'Friday' };
+    const workTimings = { start: '09:00', end: '17:00', startDay: 'Monday' as WeekDay, endDay: 'Friday' as WeekDay };
     $: supportTimings = `${utcHourToLocaleHour(workTimings.start)} - ${utcHourToLocaleHour(workTimings.end)} ${localeTimezoneShortHand()}`;
     $: supportWeekDays = `${utcWeekDayToLocaleWeekDay(workTimings.startDay, workTimings.start)} - ${utcWeekDayToLocaleWeekDay(workTimings.endDay, workTimings.end)}`;
 </script>

@@ -2,6 +2,8 @@ import { browser } from '$app/environment';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 
+export type WeekDay = 'Sunday' | 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday';
+
 if (browser) {
     dayjs.extend(relativeTime);
 }
@@ -87,11 +89,11 @@ export const utcHourToLocaleHour = (utcTimeString: string) => {
     return new Intl.DateTimeFormat('en', options).format(new Date(customTime));
 };
 
-export const utcWeekDayToLocaleWeekDay = (utcDay: string, utcTimeString: string) => {
+export const utcWeekDayToLocaleWeekDay = (utcDay: WeekDay, utcTimeString: string) => {
     const now = new Date();
 
     // easy mapping instead of passing numbers.
-    const dayMap = {
+    const dayMap: { [day in WeekDay]: number } = {
         Sunday: 0,
         Monday: 1,
         Tuesday: 2,
