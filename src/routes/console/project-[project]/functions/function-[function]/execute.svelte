@@ -15,9 +15,7 @@
     import Label from '$lib/elements/forms/label.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import type { Models } from '@appwrite.io/console';
-
-    export let selectedFunction: Models.Function = null;
+    import { showFunctionExecute, execute } from './store';
 
     let path = '/';
     let method = 'GET';
@@ -34,12 +32,7 @@
         { label: 'OPTIONS', value: 'OPTIONS' }
     ];
 
-    let show = false;
     let submitting = false;
-
-    $: if (selectedFunction && !show) {
-        show = true;
-    }
 
     const handleSubmit = async () => {
         submitting = true;
@@ -51,7 +44,7 @@
             }
 
             await sdk.forProject.functions.createExecution(
-                selectedFunction.$id,
+                $execute.$id,
                 body,
                 true,
                 path,
@@ -60,7 +53,7 @@
             );
             if (!$page.url?.toString()?.includes('/executions')) {
                 await goto(
-                    `${base}/console/project-${$page.params.project}/functions/function-${selectedFunction.$id}/executions`
+                    `${base}/console/project-${$page.params.project}/functions/function-${$execute.$id}/executions`
                 );
             }
             invalidate(Dependencies.EXECUTIONS);
@@ -79,8 +72,8 @@
     };
 
     function close() {
-        selectedFunction = null;
-        show = false;
+        $execute = null;
+        $showFunctionExecute = false;
     }
 
     afterNavigate(close);
@@ -89,10 +82,9 @@
 <Modal
     title="Execute function"
     headerDivider={false}
-    bind:show
+    bind:show={$showFunctionExecute}
     size="big"
     onSubmit={handleSubmit}
-    on:close={close}
     bind:error>
     <p class="text">
         Manually execute your function. <a
@@ -105,7 +97,7 @@
     </p>
 
     <FormList>
-        {#if selectedFunction?.version !== 'v3'}
+        {#if $execute?.version !== 'v3'}
             <Alert type="info">
                 <svelte:fragment slot="title">
                     Customizable execution data now available for functions v3.0
