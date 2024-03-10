@@ -3,6 +3,7 @@
     import { onDestroy } from 'svelte';
     import { isSupportOnline, supportData } from './wizard/support/store';
     import Step1 from './wizard/support/step1.svelte';
+    import Label from '$lib/elements/forms/label.svelte';
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
     import { user } from '$lib/stores/user';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
@@ -10,11 +11,11 @@
     import { wizard } from '$lib/stores/wizard';
     import { VARS } from '$lib/system';
     import { organization } from '$lib/stores/organization';
-    import type { WeekDay } from '$lib/helpers/date';
     import {
-        localeTimezoneShortHand,
+        localeTimezoneName,
         utcHourToLocaleHour,
-        utcWeekDayToLocaleWeekDay
+        utcWeekDayToLocaleWeekDay,
+        type WeekDay
     } from '$lib/helpers/date';
 
     onDestroy(() => {
@@ -90,7 +91,7 @@
         endDay: 'Friday' as WeekDay
     };
 
-    $: supportTimings = `${utcHourToLocaleHour(workTimings.start)} - ${utcHourToLocaleHour(workTimings.end)} ${localeTimezoneShortHand()}`;
+    $: supportTimings = `${utcHourToLocaleHour(workTimings.start)} - ${utcHourToLocaleHour(workTimings.end)}`;
     $: supportWeekDays = `${utcWeekDayToLocaleWeekDay(workTimings.startDay, workTimings.start)} - ${utcWeekDayToLocaleWeekDay(workTimings.endDay, workTimings.end)}`;
 </script>
 
@@ -102,7 +103,9 @@
             respond to all messages within our office hours.
         </p>
         <p class="text u-margin-block-start-32">
-            Available: <b>{supportWeekDays}, {supportTimings}</b>
+            Available: <b>{supportWeekDays}, {supportTimings}
+            <Label tooltip="{localeTimezoneName()}" />
+        </b>
         </p>
         <div class="u-flex u-gap-4 u-cross-center">
             <span>Currently:</span>
