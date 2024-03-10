@@ -42,7 +42,7 @@
                 {
                     name: 'offset',
                     options: {
-                        offset: [-arrowSize, noArrow ? 0 : arrowSize / 1.5]
+                        offset: [noArrow ? 0 : -arrowSize, noArrow ? 0 : arrowSize / 1.5]
                     }
                 },
                 {

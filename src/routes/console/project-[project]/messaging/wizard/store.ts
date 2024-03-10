@@ -23,8 +23,8 @@ export type SMSMessageParams = MessageParams & {
 export type PushMessageParams = MessageParams & {
     title: string;
     body: string;
-    file: Models.File;
     data: [string, string][];
+    file: Models.File;
     action?: string;
     icon?: string;
     sound?: string;
