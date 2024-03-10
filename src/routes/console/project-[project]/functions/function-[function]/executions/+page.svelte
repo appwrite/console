@@ -19,7 +19,7 @@
     import { log } from '$lib/stores/logs';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import { func } from '../store';
+    import { func, showFunctionExecute } from '../store';
     import type { Models } from '@appwrite.io/console';
     import { organization } from '$lib/stores/organization';
     import { getServiceLimit, showUsageRatesModal } from '$lib/stores/billing';
@@ -54,7 +54,10 @@
         title="Executions"
         buttonText="Execute now"
         buttonEvent="execute_function"
-        buttonMethod={() => (selectedFunction = $func)}>
+        buttonMethod={() => {
+            selectedFunction = $func;
+            $showFunctionExecute = true;
+        }}>
         <svelte:fragment slot="tooltip" let:tier let:limit let:upgradeMethod>
             <p class="u-bold">The {tier} plan has limits</p>
             <ul>
