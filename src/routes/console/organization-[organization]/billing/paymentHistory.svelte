@@ -65,7 +65,7 @@
     </p>
     <svelte:fragment slot="aside">
         {#if invoiceList.total - 1 > 0}
-            <TableScroll noMargin transparent>
+            <TableScroll noMargin transparent noStyles>
                 <TableHeader>
                     <TableCellHead width={100}>Due Date</TableCellHead>
                     <TableCellHead width={80}>Status</TableCellHead>
@@ -94,7 +94,7 @@
                                 <TableCellText title="due">
                                     {formatCurrency(invoice.amount)}
                                 </TableCellText>
-                                <TableCell showOverflow>
+                                <TableCell showOverflow right>
                                     <DropList
                                         bind:show={showDropdown[i]}
                                         placement="bottom-start"
