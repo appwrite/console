@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-    import { Query, type Models } from '@appwrite.io/console';
+    import { Query, type Models, RelationshipType, RelationMutate } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
 
     export async function submitRelationship(
@@ -8,6 +8,12 @@
         _key: string,
         data: Partial<Models.AttributeRelationship>
     ) {
+        if (!isValueOfStringEnum(RelationshipType, data.relationType)) {
+            throw new Error(`Invalid relationship type: ${data.relationType}`);
+        }
+        if (!isValueOfStringEnum(RelationMutate, data.onDelete)) {
+            throw new Error(`Invalid on delete: ${data.onDelete}`);
+        }
         await sdk.forProject.databases.createRelationshipAttribute(
             databaseId,
             collectionId,
@@ -25,6 +31,9 @@
         collectionId: string,
         data: Partial<Models.AttributeRelationship>
     ) {
+        if (!isValueOfStringEnum(RelationMutate, data.onDelete)) {
+            throw new Error(`Invalid on delete: ${data.onDelete}`);
+        }
         await sdk.forProject.databases.updateRelationshipAttribute(
             databaseId,
             collectionId,
@@ -44,6 +53,7 @@
     import arrowTwo from './arrow-two.svg';
     import { camelize } from '$lib/helpers/string';
     import { SelectSearchItem } from '$lib/elements';
+    import { isValueOfStringEnum } from '$lib/helpers/types';
 
     // Props
     export let data: Models.AttributeRelationship;

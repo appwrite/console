@@ -57,7 +57,7 @@
     }
 </script>
 
-<Modal title="Invite Member" {error} size="big" bind:show={showCreate} onSubmit={create}>
+<Modal title="Invite member" {error} size="big" bind:show={showCreate} onSubmit={create}>
     {#if isCloud}
         <Alert type="info">
             {#if $organization?.billingPlan === BillingPlan.SCALE}

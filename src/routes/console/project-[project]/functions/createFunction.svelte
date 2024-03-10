@@ -16,7 +16,8 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { ID } from '@appwrite.io/console';
+    import { ID, Runtime } from '@appwrite.io/console';
+    import { isValueOfStringEnum } from '$lib/helpers/types';
 
     const projectId = $page.params.project;
 
@@ -26,6 +27,9 @@
 
     async function create() {
         try {
+            if (!isValueOfStringEnum(Runtime, $createFunction.runtime)) {
+                throw new Error(`Invalid runtime: ${$createFunction.runtime}`);
+            }
             const response = await sdk.forProject.functions.create(
                 $createFunction.id ?? ID.unique(),
                 $createFunction.name,

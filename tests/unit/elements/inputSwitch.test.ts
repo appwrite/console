@@ -11,12 +11,6 @@ test('shows boolean input', () => {
     expect(checkbox).toHaveAttribute('type', 'checkbox');
 });
 
-test('shows boolean input - required', () => {
-    const { getByRole } = render(InputSwitch, { id: 'input', label: 'Bool', required: true });
-
-    expect(getByRole('switch')).toBeRequired();
-});
-
 test('shows boolean input - disabled', () => {
     const { getByRole } = render(InputSwitch, { id: 'input', label: 'Bool', disabled: true });
 

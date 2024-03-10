@@ -49,19 +49,10 @@
                     break;
                 }
                 case 'firebase': {
-                    if ($provider.projectId) {
-                        // OAuth
-                        await sdk.forProject.migrations.createFirebaseOAuthMigration(
-                            resources,
-                            $provider.projectId
-                        );
-                    } else if ($provider.serviceAccount) {
-                        // Manual auth
-                        await sdk.forProject.migrations.createFirebaseMigration(
-                            resources,
-                            $provider.serviceAccount
-                        );
-                    }
+                    await sdk.forProject.migrations.createFirebaseMigration(
+                        resources,
+                        $provider.serviceAccount
+                    );
                     invalidate(Dependencies.MIGRATIONS);
                     break;
                 }
