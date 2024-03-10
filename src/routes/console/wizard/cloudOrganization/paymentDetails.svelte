@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { FormList, InputNumber } from '$lib/elements/forms';
+    import { Button, FormList, InputNumber } from '$lib/elements/forms';
     import InputChoice from '$lib/elements/forms/inputChoice.svelte';
     import { WizardStep } from '$lib/layout';
     import { onMount } from 'svelte';
@@ -12,6 +12,8 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { showUsageRatesModal } from '$lib/stores/billing';
     import { PaymentBoxes } from '$lib/components/billing';
+    import { Alert } from '$lib/components';
+    import FeedbackModal from '$lib/components/feedback/feedbackModal.svelte';
 
     const today = new Date();
     const billingPayDate = new Date(today.getTime() + 44 * 24 * 60 * 60 * 1000);
@@ -20,8 +22,15 @@
     let name: string;
     let budgetEnabled = false;
     let initialPaymentMethodId: string;
+    let showIndianMandateAlert = false;
+    let showContactUs = false;
 
     onMount(async () => {
+        const locale = await sdk.forProject.locale.get();
+        if (locale.countryCode === 'in') {
+            showIndianMandateAlert = true;
+        }
+
         methods = await sdk.forConsole.billing.listPaymentMethods();
         initialPaymentMethodId =
             methods.paymentMethods.find((method) => !!method?.last4)?.$id ?? null;
@@ -78,8 +87,19 @@
             >{toLocaleDate(billingPayDate.toString())}</b
         >.
     </svelte:fragment>
+    {#if !showIndianMandateAlert}
+        <Alert type="warning" class="u-margin-block-start-8">
+            <svelte:fragment slot="title">Indian credit or debit card-holders</svelte:fragment>
+            To comply with RBI regulations in India, Appwrite will ask for verification to charge up
+            to $150 USD on your payment method. We will never charge more than the cost of your plan
+            and the resources you use, or your budget cap limit. For higher usage limits, <Button
+                link
+                on:click={() => (showContactUs = true)}>please contact us.</Button>
+        </Alert>
+    {/if}
 
-    <FormList class="u-margin-block-start-8">
+    <FormList
+        class={!showIndianMandateAlert ? 'u-margin-block-start-16' : 'u-margin-block-start-8'}>
         <PaymentBoxes
             methods={filteredMethods}
             bind:name
@@ -113,3 +133,5 @@
         </InputChoice>
     </FormList>
 </WizardStep>
+
+<FeedbackModal bind:show={showContactUs} />
