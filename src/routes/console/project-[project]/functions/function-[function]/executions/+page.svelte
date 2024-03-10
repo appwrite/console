@@ -19,18 +19,15 @@
     import { log } from '$lib/stores/logs';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import { func, showFunctionExecute } from '../store';
+    import { func, execute, showFunctionExecute } from '../store';
     import type { Models } from '@appwrite.io/console';
     import { organization } from '$lib/stores/organization';
     import { getServiceLimit, showUsageRatesModal } from '$lib/stores/billing';
     import { project } from '$routes/console/project-[project]/store';
     import Create from '../create.svelte';
-    import Execute from '../execute.svelte';
     import { abbreviateNumber } from '$lib/helpers/numbers';
 
     export let data;
-
-    let selectedFunction: Models.Function = null;
 
     onMount(() => {
         return sdk.forConsole.client.subscribe('console', (response) => {
@@ -55,7 +52,7 @@
         buttonText="Execute now"
         buttonEvent="execute_function"
         buttonMethod={() => {
-            selectedFunction = $func;
+            $execute = $func;
             $showFunctionExecute = true;
         }}>
         <svelte:fragment slot="tooltip" let:tier let:limit let:upgradeMethod>
@@ -172,7 +169,3 @@
         </EmptySearch>
     {/if}
 </Container>
-
-<!-- <CreateDeployment bind:showCreate /> -->
-
-<Execute {selectedFunction} />
