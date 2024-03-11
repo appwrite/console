@@ -13,7 +13,6 @@
     import ChangeOrganizationTierCloud from '../changeOrganizationTierCloud.svelte';
     import { goto } from '$app/navigation';
     import { last } from '$lib/helpers/array';
-    import { BillingPlan } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
 
     export let show = false;
@@ -58,25 +57,14 @@
 </script>
 
 <Modal bind:show title="Limit reached">
-    <svelte:fragment slot="title">
-        Your usage exceeds the {tierToPlan($organization.billingPlan).name} plan limits
-    </svelte:fragment>
-
-    {#if $organization.billingPlan === BillingPlan.STARTER}
-        <p class="text">
-            Usage for <b>{$organization.name}</b> organization has reached the limits of the {tierToPlan(
-                $organization.billingPlan
-            ).name} plan. Consider upgrading to increase your resource usage.
-        </p>
-    {:else}
-        <p class="text">
-            Usage for <b>{$organization.name}</b> organization has reached the limits of the {tierToPlan(
-                $organization.billingPlan
-            ).name} plan. Excess usage fees will apply.
-        </p>
-    {/if}
+    <p class="text">
+        Usage for <b>{$organization.name}</b> organization has reached the limits of the {tierToPlan(
+            $organization.billingPlan
+        ).name} plan. Excess usage fees will apply.
+    </p>
 
     <PlanExcess {excess} currentTier={$organization.billingPlan} />
+
     <svelte:fragment slot="footer">
         <div class="u-flex u-main-space-between u-width-full-line">
             <Button text on:click={() => (show = false)}>Cancel</Button>

@@ -12,6 +12,7 @@
     export let disabled = false;
     export let autofocus = false;
     export let isWithEndButton = true;
+    export let fullWidth = false;
 
     let element: HTMLInputElement;
     let timer: ReturnType<typeof setTimeout>;
@@ -58,7 +59,7 @@
 </script>
 
 <div class="u-flex u-gap-12 common-section u-main-space-between">
-    <div class="u-flex-basis-50-percent">
+    <div class={fullWidth ? 'u-width-full-line' : 'u-flex-basis-50-percent'}>
         <div class="input-text-wrapper" class:is-with-end-button={isWithEndButton}>
             <input
                 {placeholder}

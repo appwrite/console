@@ -1,4 +1,4 @@
-import type { Client, Models, Query } from '@appwrite.io/console';
+import type { Client, Models } from '@appwrite.io/console';
 import type { Organization, OrganizationList } from '../stores/organization';
 import type { PaymentMethod } from '@stripe/stripe-js';
 import type { Tier } from '$lib/stores/billing';
@@ -275,7 +275,7 @@ export class Billing {
         this.client = client;
     }
 
-    async listOrganization(queries: Query[] = []): Promise<OrganizationList> {
+    async listOrganization(queries: string[] = []): Promise<OrganizationList> {
         const path = `/organizations`;
         const params = {
             queries
@@ -465,7 +465,7 @@ export class Billing {
         );
     }
 
-    async listInvoices(organizationId: string, queries: Query[] = []): Promise<InvoiceList> {
+    async listInvoices(organizationId: string, queries: string[] = []): Promise<InvoiceList> {
         const path = `/organizations/${organizationId}/invoices`;
         const params = {
             organizationId,
@@ -886,7 +886,7 @@ export class Billing {
         );
     }
 
-    async listAddresses(queries: Query[] = []): Promise<AddressesList> {
+    async listAddresses(queries: string[] = []): Promise<AddressesList> {
         const path = `/account/billing-addresses`;
         const params = {
             queries

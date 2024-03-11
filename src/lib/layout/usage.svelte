@@ -4,7 +4,7 @@
     export function periodToDates(period: UsagePeriods): {
         start: string;
         end: string;
-        period: '1h' | '1d';
+        period: ProjectUsageRange;
     } {
         const start = new Date();
         switch (period) {
@@ -26,7 +26,7 @@
         return {
             start: start.toISOString(),
             end: end.toISOString(),
-            period: period === '24h' ? '1h' : '1d'
+            period: period === '24h' ? ProjectUsageRange.OneHour : ProjectUsageRange.OneDay
         };
     }
 
@@ -45,8 +45,8 @@
     ): Array<[string, number]> {
         return metrics.reduceRight(
             (acc, curr) => {
-                acc.total -= curr.value;
                 acc.data.unshift([curr.date, acc.total]);
+                acc.total -= curr.value;
                 return acc;
             },
             {
@@ -62,7 +62,7 @@
     import { BarChart } from '$lib/charts';
     import { formatNumberWithCommas } from '$lib/helpers/numbers';
     import { Card, SecondaryTabs, SecondaryTabsItem, Heading } from '$lib/components';
-    import type { Models } from '@appwrite.io/console';
+    import { ProjectUsageRange, type Models } from '@appwrite.io/console';
     import { page } from '$app/stores';
 
     type MetricMetadata = {

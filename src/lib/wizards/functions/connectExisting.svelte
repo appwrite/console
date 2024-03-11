@@ -11,9 +11,14 @@
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { isValueOfStringEnum } from '$lib/helpers/types';
+    import { Runtime } from '@appwrite.io/console';
 
     async function createGitHubInstallation() {
         try {
+            if (!isValueOfStringEnum(Runtime, $func.runtime)) {
+                throw new Error(`Invalid runtime: ${$func.runtime}`);
+            }
             await sdk.forProject.functions.update(
                 $func.$id,
                 $func.name,
