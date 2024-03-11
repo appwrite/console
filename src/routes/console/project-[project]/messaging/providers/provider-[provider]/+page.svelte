@@ -142,7 +142,8 @@
                 authKey: $providerData.credentials['authKey'],
                 authKeyId: $providerData.credentials['authKeyId'],
                 teamId: $providerData.credentials['teamId'],
-                bundleId: $providerData.credentials['bundleId']
+                bundleId: $providerData.credentials['bundleId'],
+                sandbox: $providerData.options['sandbox']
             };
             break;
     }
