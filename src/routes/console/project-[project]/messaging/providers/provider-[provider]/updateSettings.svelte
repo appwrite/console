@@ -26,6 +26,7 @@
     let updated = false;
     let newMemberModal = false;
     let message = '';
+    let ready = false;
 
     const { displayName } = getProviderDisplayNameAndIcon(provider);
 
@@ -61,6 +62,7 @@
                 originalfiles[input.name] = dataTransfer.files;
             }
         }
+        ready = true;
     });
 
     async function update() {
@@ -229,7 +231,10 @@
             provider settings.
         </p>
         <svelte:fragment slot="aside">
-            <SettingsFormList bind:files {inputs} bind:params={formValues} />
+            <!-- Must wait until ready or else the files input won't be set properly -->
+            {#if ready}
+                <SettingsFormList bind:files {inputs} bind:params={formValues} />
+            {/if}
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
