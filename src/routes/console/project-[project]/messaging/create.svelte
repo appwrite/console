@@ -148,6 +148,8 @@
             }
         ]
     });
+
+    $wizard.finalAction = create;
 </script>
 
-<Wizard title="Create message" steps={stepsComponents} on:finish={create} finalAction="Send" />
+<Wizard title="Create message" steps={stepsComponents} finalAction="Send" />
