@@ -25,13 +25,6 @@ export const load = async ({ url, route }) => {
     const parsedQueries = queryParamToMap(query || '[]');
     queries.set(parsedQueries);
 
-    // TODO: remove when the API is ready with data
-    // This allows us to mock w/ data and when search returns 0 results
-    let messages: {
-        messages: Models.Message[];
-        total: number;
-    } = { messages: [], total: 0 };
-
     const params = [
         Query.limit(limit),
         Query.offset(offset),
@@ -45,8 +38,6 @@ export const load = async ({ url, route }) => {
 
     const response = await sdk.forProject.messaging.listMessages(params);
 
-    messages = { messages: response.messages, total: response.total };
-
     return {
         offset,
         limit,
@@ -54,6 +45,6 @@ export const load = async ({ url, route }) => {
         query,
         page,
         view,
-        messages
+        messages: { messages: response.messages, total: response.total }
     };
 };
