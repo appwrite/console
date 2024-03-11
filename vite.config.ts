@@ -41,6 +41,11 @@ const testConfig = defineConfig({
                     include: ['@analytics/type-utils']
                 }
             }
+        },
+        server: {
+            deps: {
+                inline: ['@analytics/type-utils']
+            }
         }
     }
 });
