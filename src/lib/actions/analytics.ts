@@ -151,6 +151,7 @@ export enum Submit {
     AccountDelete = 'submit_account_delete',
     AccountDeleteSession = 'submit_account_delete_session',
     AccountDeleteAllSessions = 'submit_account_delete_all_sessions',
+    AccountAuthenticatorDelete = 'submit_account_authenticator_delete',
     UserCreate = 'submit_user_create',
     UserDelete = 'submit_user_delete',
     UserUpdateEmail = 'submit_user_update_email',
