@@ -22,10 +22,10 @@
                 type: 'success',
                 message: 'The authenticator has been removed'
             });
-            trackEvent(Submit.AccountDelete);
+            trackEvent(Submit.UserAuthenticatorDelete);
         } catch (e) {
             error = e.message;
-            trackError(e, Submit.AccountDelete);
+            trackError(e, Submit.UserAuthenticatorDelete);
         }
     }
 

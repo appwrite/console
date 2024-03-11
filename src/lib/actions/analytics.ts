@@ -164,6 +164,7 @@ export enum Submit {
     UserUpdateVerificationPhone = 'submit_user_update_verification_phone',
     UserTargetCreate = 'submit_user_target_create',
     UserTargetDelete = 'submit_user_target_delete',
+    UserAuthenticatorDelete = 'submit_user_authenticator_delete',
     OrganizationCreate = 'submit_organization_create',
     OrganizationDelete = 'submit_organization_delete',
     OrganizationUpdateName = 'submit_organization_update_name',
