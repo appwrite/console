@@ -269,6 +269,7 @@ export enum Submit {
     PaymentMethodUpdate = 'submit_payment_method_update',
     PaymentMethodDelete = 'submit_payment_method_delete',
     RetryPayment = 'submit_retry_payment',
+    VerifyPayment = 'submit_verify_payment',
     BillingAddressCreate = 'submit_billing_address_create',
     BillingAddressUpdate = 'submit_billing_address_update',
     BillingAddressDelete = 'submit_billing_address_delete',
