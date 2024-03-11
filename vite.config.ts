@@ -35,13 +35,6 @@ const testConfig = defineConfig({
         globals: true,
         pool: 'threads',
         setupFiles: ['./tests/unit/setup.ts'],
-        deps: {
-            optimizer: {
-                web: {
-                    include: ['@analytics/type-utils']
-                }
-            }
-        },
         server: {
             deps: {
                 inline: ['@analytics/type-utils']
