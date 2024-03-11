@@ -1,5 +1,5 @@
-import type { Client, Models, Query } from '@appwrite.io/console';
-import type { Organization } from '../stores/organization';
+import type { Client, Models } from '@appwrite.io/console';
+import type { Organization, OrganizationList } from '../stores/organization';
 import type { PaymentMethod } from '@stripe/stripe-js';
 import type { Tier } from '$lib/stores/billing';
 
@@ -18,6 +18,7 @@ export type PaymentMethodData = {
     clientSecret: string;
     failed: boolean;
     name: string;
+    mandateId?: string;
 };
 
 export type PaymentList = {
@@ -274,6 +275,22 @@ export class Billing {
         this.client = client;
     }
 
+    async listOrganization(queries: string[] = []): Promise<OrganizationList> {
+        const path = `/organizations`;
+        const params = {
+            queries
+        };
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'GET',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            params
+        );
+    }
+
     async createOrganization(
         organizationId: string,
         name: string,
@@ -448,7 +465,7 @@ export class Billing {
         );
     }
 
-    async listInvoices(organizationId: string, queries: Query[] = []): Promise<InvoiceList> {
+    async listInvoices(organizationId: string, queries: string[] = []): Promise<InvoiceList> {
         const path = `/organizations/${organizationId}/invoices`;
         const params = {
             organizationId,
@@ -515,6 +532,28 @@ export class Billing {
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
             'get',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            params
+        );
+    }
+
+    async retryPayment(
+        organizationId: string,
+        invoiceId: string,
+        paymentMethodId: string
+    ): Promise<Invoice> {
+        const path = `/organizations/${organizationId}/invoices/${invoiceId}/payments`;
+        const params = {
+            organizationId,
+            invoiceId,
+            paymentMethodId
+        };
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'post',
             uri,
             {
                 'content-type': 'application/json'
@@ -827,7 +866,27 @@ export class Billing {
         );
     }
 
-    async listAddresses(queries: Query[] = []): Promise<AddressesList> {
+    async setupPaymentMandate(
+        organizationId: string,
+        paymentMethodId: string
+    ): Promise<PaymentMethodData> {
+        const path = `/account/payment-methods/${paymentMethodId}/setup`;
+        const params = {
+            organizationId,
+            paymentMethodId
+        };
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'post',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            params
+        );
+    }
+
+    async listAddresses(queries: string[] = []): Promise<AddressesList> {
         const path = `/account/billing-addresses`;
         const params = {
             queries

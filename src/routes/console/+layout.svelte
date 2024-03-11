@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { BillingPlan, INTERVAL } from '$lib/constants';
+    import { INTERVAL } from '$lib/constants';
     import { Logs } from '$lib/layout';
     import Footer from '$lib/layout/footer.svelte';
     import Header from '$lib/layout/header.svelte';
@@ -19,9 +19,9 @@
         checkPaymentAuthorizationRequired,
         calculateTrialDay,
         paymentExpired,
-        checkForFreeOrgOverflow,
-        checkForPostReleaseProModal,
-        checkForMarkedForDeletion
+        checkForMarkedForDeletion,
+        checkForMandate,
+        checkForMissingPaymentMethod
     } from '$lib/stores/billing';
     import { goto } from '$app/navigation';
     import { CommandCenter, registerCommands, registerSearchers } from '$lib/commandCenter';
@@ -33,7 +33,6 @@
     import { project } from './project-[project]/store';
     import { feedback } from '$lib/stores/feedback';
     import { VARS, hasStripePublicKey, isCloud } from '$lib/system';
-    import { sdk } from '$lib/stores/sdk';
     import { loadStripe } from '@stripe/stripe-js';
     import { stripe } from '$lib/stores/stripe';
     import MobileSupportModal from './wizard/support/mobileSupportModal.svelte';
@@ -41,10 +40,8 @@
     import ExcesLimitModal from './organization-[organization]/excesLimitModal.svelte';
     import { showExcess } from './organization-[organization]/store';
     import UsageRates from './wizard/cloudOrganization/usageRates.svelte';
-    import { activeHeaderAlert, consoleVariables, showPostReleaseModal } from './store';
-    import { Query } from '@appwrite.io/console';
+    import { activeHeaderAlert, consoleVariables } from './store';
     import { headerAlert } from '$lib/stores/headerAlert';
-    import PostReleaseModal from './(billing-modal)/postReleaseModal.svelte';
 
     function kebabToSentenceCase(str: string) {
         return str
@@ -61,7 +58,7 @@
 
     $: $registerCommands([
         {
-            label: 'Go to projects',
+            label: 'Go to Projects',
             callback: () => {
                 goto('/console');
             },
@@ -81,15 +78,6 @@
             keys: ['a', 'i'],
             icon: 'sparkles',
             disabled: !isAssistantEnabled
-        },
-        {
-            label: 'Go to account',
-            callback: () => {
-                goto('/console/account');
-            },
-            keys: ['i'],
-            group: 'navigation',
-            rank: -2
         },
         {
             label: 'Create new organization',
@@ -244,23 +232,13 @@
     onMount(async () => {
         loading.set(false);
 
-        if (isCloud) {
-            if (!$page.url.pathname.includes('/console/onboarding')) {
-                const orgs = await sdk.forConsole.teams.list([
-                    Query.equal('billingPlan', BillingPlan.STARTER)
-                ]);
-
-                checkForPostReleaseProModal(orgs);
-                checkForFreeOrgOverflow(orgs);
-            }
-        }
-
         setInterval(() => {
             checkForFeedback(INTERVAL);
         }, INTERVAL);
 
         if (isCloud && hasStripePublicKey) {
             $stripe = await loadStripe(VARS.STRIPE_PUBLIC_KEY);
+            await checkForMissingPaymentMethod();
         }
     });
 
@@ -285,6 +263,7 @@
             await checkForUsageLimit(org);
             checkForMarkedForDeletion(org);
             await checkPaymentAuthorizationRequired(org);
+            await checkForMandate(org);
         }
     });
 
@@ -313,11 +292,6 @@
         !$page.url.pathname.includes('/console/account') &&
         !$page.url.pathname.includes('/console/card') &&
         !$page.url.pathname.includes('/console/onboarding')}>
-    <svelte:fragment slot="alert">
-        {#if $activeHeaderAlert?.show}
-            <svelte:component this={$activeHeaderAlert.component} />
-        {/if}
-    </svelte:fragment>
     <Header slot="header" />
     <SideNavigation slot="side" bind:isOpen />
     <slot />
@@ -345,8 +319,4 @@
 {/if}
 {#if isCloud && $showUsageRatesModal}
     <UsageRates bind:show={$showUsageRatesModal} tier={$organization?.billingPlan} />
-{/if}
-{#if isCloud && $showPostReleaseModal && !$page.url.pathname.includes('/console/onboarding')}
-    <!-- {#if true} -->
-    <PostReleaseModal show={true} />
 {/if}

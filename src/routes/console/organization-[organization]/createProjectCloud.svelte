@@ -10,7 +10,7 @@
     import { Dependencies } from '$lib/constants';
     import { page } from '$app/stores';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { ID } from '@appwrite.io/console';
+    import { ID, Region } from '@appwrite.io/console';
     import { createProject } from './wizard/store';
     import { wizard } from '$lib/stores/wizard';
 
@@ -22,11 +22,12 @@
 
     async function create() {
         try {
+            // TODO: fix typing once SDK is updated
             const project = await sdk.forConsole.projects.create(
                 $createProject?.id ?? ID.unique(),
                 $createProject.name,
                 teamId,
-                $createProject.region
+                $createProject.region as Region
             );
             trackEvent(Submit.ProjectCreate, {
                 customId: !!$createProject?.id,
@@ -58,11 +59,11 @@
 
     const stepsComponents: WizardStepsType = new Map();
     stepsComponents.set(1, {
-        label: 'Project details',
+        label: 'Details',
         component: Step1
     });
     stepsComponents.set(2, {
-        label: 'Select region',
+        label: 'Region',
         component: Step2
     });
 </script>

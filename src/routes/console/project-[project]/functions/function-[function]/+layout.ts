@@ -22,6 +22,6 @@ export const load: LayoutLoad = async ({ params, depends }) => {
             ])
         };
     } catch (e) {
-        throw error(e.code, e.message);
+        error(e.code, e.message);
     }
 };

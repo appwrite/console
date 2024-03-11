@@ -15,6 +15,7 @@ export const createOrganization = writable<{
     collaborators?: string[];
     billingBudget?: number;
     taxId?: string;
+    couponCode?: string;
 }>({
     id: null,
     name: null,
@@ -22,5 +23,6 @@ export const createOrganization = writable<{
     paymentMethodId: null,
     collaborators: [],
     billingAddressId: null,
-    taxId: null
+    taxId: null,
+    couponCode: null
 });

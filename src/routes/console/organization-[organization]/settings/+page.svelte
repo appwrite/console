@@ -8,8 +8,10 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { onMount } from 'svelte';
-    import Delete from './deleteOrganization.svelte';
+    import Delete from './deleteOrganizationModal.svelte';
+    import DownloadDPA from './downloadDPA.svelte';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { isCloud } from '$lib/system';
 
     export let data;
     let name: string;
@@ -63,6 +65,10 @@
             </CardGrid>
         </Form>
 
+        {#if isCloud}
+            <DownloadDPA />
+        {/if}
+
         <CardGrid danger>
             <div>
                 <Heading tag="h6" size="7">Delete organization</Heading>
@@ -93,4 +99,6 @@
     {/if}
 </Container>
 
-<Delete bind:showDelete invoices={data.invoices} />
+{#if isCloud && data.invoices}
+    <Delete bind:showDelete invoices={data.invoices} />
+{/if}

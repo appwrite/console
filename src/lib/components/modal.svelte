@@ -5,7 +5,7 @@
     import { disableCommands } from '$lib/commandCenter';
 
     export let show = false;
-    export let size: 'small' | 'big' = null;
+    export let size: 'small' | 'big' | 'huge' = null;
     export let icon: string = null;
     export let state: 'success' | 'warning' | 'error' | 'info' = null;
     export let error: string = null;
@@ -71,19 +71,21 @@
             </p>
         </header>
         <div class="modal-content">
-            {#if error}
-                <div bind:this={alert}>
-                    <Alert
-                        dismissible
-                        type="warning"
-                        on:dismiss={() => {
-                            error = null;
-                        }}>
-                        {error}
-                    </Alert>
-                </div>
-            {/if}
-            <slot />
+            <div class="modal-content-spacer u-flex-vertical u-gap-24 u-width-full-line">
+                {#if error}
+                    <div bind:this={alert}>
+                        <Alert
+                            dismissible
+                            type="warning"
+                            on:dismiss={() => {
+                                error = null;
+                            }}>
+                            {error}
+                        </Alert>
+                    </div>
+                {/if}
+                <slot />
+            </div>
         </div>
 
         {#if $$slots.footer}

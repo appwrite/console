@@ -1,18 +1,17 @@
 import type { Models } from '@appwrite.io/console';
 import type { SvelteComponent } from 'svelte';
 import { writable } from 'svelte/store';
-import Apple from '../../routes/console/project-[project]/auth/appleOAuth.svelte';
-import Auth0 from '../../routes/console/project-[project]/auth/auth0OAuth.svelte';
-import Authentik from '../../routes/console/project-[project]/auth/authentikOAuth.svelte';
-import GitLab from '../../routes/console/project-[project]/auth/gitlabOAuth.svelte';
-import Google from '../../routes/console/project-[project]/auth/googleOAuth.svelte';
-import Main from '../../routes/console/project-[project]/auth/mainOAuth.svelte';
-import Microsoft from '../../routes/console/project-[project]/auth/microsoftOAuth.svelte';
-import Oidc from '../../routes/console/project-[project]/auth/oidcOAuth.svelte';
-import Okta from '../../routes/console/project-[project]/auth/oktaOAuth.svelte';
+import Apple from '../../routes/console/project-[project]/auth/(providers)/appleOAuth.svelte';
+import Auth0 from '../../routes/console/project-[project]/auth/(providers)/auth0OAuth.svelte';
+import Authentik from '../../routes/console/project-[project]/auth/(providers)/authentikOAuth.svelte';
+import GitLab from '../../routes/console/project-[project]/auth/(providers)/gitlabOAuth.svelte';
+import Google from '../../routes/console/project-[project]/auth/(providers)/googleOAuth.svelte';
+import Main from '../../routes/console/project-[project]/auth/(providers)/mainOAuth.svelte';
+import Microsoft from '../../routes/console/project-[project]/auth/(providers)/microsoftOAuth.svelte';
+import Oidc from '../../routes/console/project-[project]/auth/(providers)/oidcOAuth.svelte';
+import Okta from '../../routes/console/project-[project]/auth/(providers)/oktaOAuth.svelte';
 
-export type Provider = Models.Provider & {
-    key: string;
+export type Provider = Models.AuthProvider & {
     icon: string;
     docs?: string;
     component?: typeof SvelteComponent<unknown>;
@@ -24,13 +23,12 @@ export type Providers = {
 
 const setProviders = (project: Models.Project): Provider[] => {
     return (
-        project?.providers.map((n) => {
-            const p = n as Models.Provider & { key: string };
+        project?.oAuthProviders.map((n) => {
             let docs: Provider['docs'];
-            let icon: Provider['icon'] = p.key.toLowerCase();
+            let icon: Provider['icon'] = n.key.toLowerCase();
             let component: Provider['component'] = Main;
 
-            switch (p.key.toLowerCase()) {
+            switch (n.key.toLowerCase()) {
                 case 'amazon':
                     docs = 'https://developer.amazon.com/apps-and-games/services-and-apis';
                     break;
@@ -150,6 +148,9 @@ const setProviders = (project: Models.Project): Provider[] => {
                 case 'yandex':
                     docs = 'https://tech.yandex.com/oauth/';
                     break;
+                case 'zoho':
+                    docs = 'https://www.zoho.com/accounts/protocol/oauth/sign-in-using-zoho.html';
+                    break;
                 case 'zoom':
                     docs = 'https://marketplace.zoom.us/docs/guides/auth/oauth/';
                     break;
@@ -158,7 +159,7 @@ const setProviders = (project: Models.Project): Provider[] => {
             }
 
             return {
-                ...p,
+                ...n,
                 icon,
                 docs,
                 component

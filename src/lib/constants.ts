@@ -3,6 +3,7 @@ export const CARD_LIMIT = 6; // default card limit
 export const INTERVAL = 5 * 60000; // default interval to check for feedback
 
 export enum Dependencies {
+    FACTORS = 'dependency:factors',
     CREDIT = 'dependency:credit',
     INVOICES = 'dependency:invoices',
     ADDRESS = 'dependency:address',
@@ -17,6 +18,7 @@ export enum Dependencies {
     ACCOUNT_SESSIONS = 'dependency:account_sessions',
     USER = 'dependency:user',
     USERS = 'dependency:users',
+    USER_TARGETS = 'dependency:user_targets',
     SESSIONS = 'dependency:sessions',
     TEAM = 'dependency:team',
     TEAMS = 'dependency:teams',
@@ -47,7 +49,14 @@ export enum Dependencies {
     MIGRATIONS = 'dependency:migrations',
     COLLECTIONS = 'dependency:collections',
     RUNTIMES = 'dependency:runtimes',
-    CONSOLE_VARIABLES = 'dependency:console_variables'
+    CONSOLE_VARIABLES = 'dependency:console_variables',
+    MESSAGING_PROVIDERS = 'dependency:messaging_providers',
+    MESSAGING_PROVIDER = 'dependency:messaging_provider',
+    MESSAGING_MESSAGES = 'dependency:messaging_messages',
+    MESSAGING_MESSAGE = 'dependency:messaging_message',
+    MESSAGING_TOPICS = 'dependency:messaging_topics',
+    MESSAGING_TOPIC = 'dependency:messaging_topic',
+    MESSAGING_TOPIC_SUBSCRIBERS = 'dependency:messaging_topic_subscribers'
 }
 
 export const scopes: {
@@ -55,6 +64,11 @@ export const scopes: {
     description: string;
     category: string;
 }[] = [
+    {
+        scope: 'sessions.write',
+        description: "Access to create, update and delete your project's sessions",
+        category: 'Auth'
+    },
     {
         scope: 'users.read',
         description: "Access to read your project's users",
@@ -169,6 +183,57 @@ export const scopes: {
         category: 'Functions'
     },
     {
+        scope: 'targets.read',
+        description: "Access to read your project's messaging targets",
+        category: 'Messaging'
+    },
+    {
+        scope: 'targets.write',
+        description: "Access to create, update, and delete your project's messaging targets",
+        category: 'Messaging'
+    },
+    {
+        scope: 'providers.read',
+        description: "Access to read your project's messaging providers",
+        category: 'Messaging'
+    },
+    {
+        scope: 'providers.write',
+        description: "Access to create, update, and delete your project's messaging providers",
+        category: 'Messaging'
+    },
+    {
+        scope: 'messages.read',
+        description: "Access to read your project's messages",
+        category: 'Messaging'
+    },
+    {
+        scope: 'messages.write',
+        description: "Access to create, update, and delete your project's messages",
+        category: 'Messaging'
+    },
+    {
+        scope: 'topics.read',
+        description: "Access to read your project's messaging topics",
+        category: 'Messaging'
+    },
+    {
+        scope: 'topics.write',
+        description: "Access to create, update, and delete your project's messaging topics",
+        category: 'Messaging'
+    },
+    {
+        scope: 'subscribers.read',
+        description: "Access to read your project's messaging topic subscribers",
+        category: 'Messaging'
+    },
+    {
+        scope: 'subscribers.write',
+        description:
+            "Access to create, update, and delete your project's messaging topic subscribers",
+        category: 'Messaging'
+    },
+    {
         scope: 'locale.read',
         description: "Access to access your project's Locale service",
         category: 'Other'
@@ -278,345 +343,6 @@ export const eventServices: Array<EventService> = [
         ]
     }
 ];
-
-export const usageRates = {
-    'tier-0': [
-        {
-            id: 'members',
-            resource: 'Organization members',
-            amount: 1,
-            unit: '',
-            rate: '$20/member'
-        },
-        { id: 'bandwith', resource: 'Bandwidth', amount: 10, unit: 'GB', rate: '$0.04/GB' },
-        { id: 'storage', resource: 'Storage', amount: 2, unit: 'GB', rate: '$0.025/GB' },
-        {
-            id: 'executions',
-            resource: 'Function executions',
-            amount: 750000,
-            unit: 'executions',
-            rate: '$2/1M executions'
-        },
-        {
-            id: 'users',
-            resource: 'Active users',
-            amount: 200000,
-            unit: 'AU',
-            rate: '$0.0012/user'
-        },
-        {
-            id: 'connections',
-            resource: 'Concurrent connections',
-            amount: 750,
-            unit: 'connections',
-            rate: '$5/1K connections'
-        }
-    ],
-    'tier-1': [
-        {
-            id: 'members',
-            resource: 'Organization members',
-            amount: 'Unlimited',
-            unit: '',
-            rate: '$20/member'
-        },
-        { id: 'bandwith', resource: 'Bandwidth', amount: 1, unit: 'TB', rate: '$0.04/GB' },
-        { id: 'storage', resource: 'Storage', amount: 150, unit: 'GB', rate: '$0.025/GB' },
-        {
-            id: 'executions',
-            resource: 'Function executions',
-            amount: 3500000,
-            unit: 'executions',
-            rate: '$2/1M executions'
-        },
-        {
-            id: 'users',
-            resource: 'Active users',
-            amount: 200000,
-            unit: 'AU',
-            rate: '$0.0012/user'
-        },
-        {
-            id: 'connections',
-            resource: 'Concurrent connections',
-            amount: 750,
-            unit: 'connections',
-            rate: '$5/1K connections'
-        }
-    ],
-    'tier-2': [
-        {
-            id: 'members',
-            resource: 'Organization members',
-            amount: 'Unlimited',
-            unit: '',
-            rate: '$20/member'
-        },
-        { id: 'bandwith', resource: 'Bandwidth', amount: 1, unit: 'TB', rate: '$0.04/GB' },
-        { id: 'storage', resource: 'Storage', amount: 150, unit: 'GB', rate: '$0.025/GB' },
-        {
-            id: 'executions',
-            resource: 'Function executions',
-            amount: 3500000,
-            unit: 'executions',
-            rate: '$2/1M executions'
-        },
-        {
-            id: 'users',
-            resource: 'Active users',
-            amount: 200000,
-            unit: 'AU',
-            rate: '$0.0012/user'
-        },
-        {
-            id: 'connections',
-            resource: 'Concurrent connections',
-            amount: 750,
-            unit: 'connections',
-            rate: '$5/1K connections'
-        }
-    ]
-};
-
-//resources: bandwidth, buckets, file size limit, functions, executions, users,teams,logs, members, platforms, webhooks, databases, connections, messages
-export const limitRates = {
-    'tier-0': [
-        {
-            id: 'bandwith',
-            amount: 10,
-            unit: 'GB'
-        },
-        {
-            id: 'buckets',
-            amount: 3,
-            unit: ''
-        },
-        {
-            id: 'file-size-limit',
-            amount: 1,
-            unit: 'MB'
-        },
-        {
-            id: 'storage',
-            amount: 5,
-            unit: 'GB'
-        },
-        {
-            id: 'functions',
-            amount: 1,
-            unit: ''
-        },
-        {
-            id: 'executions',
-            amount: 750000,
-            unit: 'executions'
-        },
-        {
-            id: 'users',
-            amount: 200000,
-            unit: 'AU'
-        },
-
-        {
-            id: 'teams',
-            amount: 1,
-            unit: ''
-        },
-
-        {
-            id: 'logs',
-            amount: 1,
-            unit: ''
-        },
-
-        {
-            id: 'members',
-            amount: 1,
-            unit: ''
-        },
-        {
-            id: 'platforms',
-            amount: 1,
-            unit: ''
-        },
-        {
-            id: 'webhooks',
-            amount: 1,
-            unit: ''
-        },
-        {
-            id: 'databases',
-            amount: 1,
-            unit: ''
-        },
-        {
-            id: 'connections',
-            amount: 1,
-            unit: ''
-        },
-        {
-            id: 'messages',
-            amount: 1,
-            unit: ''
-        }
-    ],
-    'tier-1': [
-        {
-            id: 'bandwith',
-            amount: 10,
-            unit: 'GB'
-        },
-        {
-            id: 'buckets',
-            amount: 1,
-            unit: ''
-        },
-        {
-            id: 'file-size-limit',
-            amount: 5,
-            unit: 'MB'
-        },
-        {
-            id: 'storage',
-            amount: 5,
-            unit: 'GB'
-        },
-        {
-            id: 'functions',
-            amount: 1,
-            unit: ''
-        },
-        {
-            id: 'executions',
-            amount: 750000,
-            unit: 'executions'
-        },
-        {
-            id: 'users',
-            amount: 200000,
-            unit: 'AU'
-        },
-
-        {
-            id: 'teams',
-            amount: 1,
-            unit: ''
-        },
-        {
-            id: 'logs',
-            amount: 1,
-            unit: ''
-        },
-        {
-            id: 'members',
-            amount: 1,
-            unit: ''
-        },
-        {
-            id: 'platforms',
-            amount: 1,
-            unit: ''
-        },
-        {
-            id: 'webhooks',
-            amount: 1,
-            unit: ''
-        },
-        {
-            id: 'databases',
-            amount: 1,
-            unit: ''
-        },
-        {
-            id: 'connections',
-            amount: 1,
-            unit: ''
-        },
-        {
-            id: 'messages',
-            amount: 1,
-            unit: ''
-        }
-    ],
-    'tier-2': [
-        {
-            id: 'bandwith',
-            amount: 10,
-            unit: 'GB'
-        },
-        {
-            id: 'buckets',
-            amount: 1,
-            unit: ''
-        },
-        {
-            id: 'file-size-limit',
-            amount: 5,
-            unit: 'MB'
-        },
-        {
-            id: 'storage',
-            amount: 5,
-            unit: 'GB'
-        },
-        {
-            id: 'functions',
-            amount: 1,
-            unit: ''
-        },
-        {
-            id: 'executions',
-            amount: 750000,
-            unit: 'executions'
-        },
-        {
-            id: 'users',
-            amount: 200000,
-            unit: 'AU'
-        },
-
-        {
-            id: 'teams',
-            amount: 1,
-            unit: ''
-        },
-        {
-            id: 'logs',
-            amount: 1,
-            unit: ''
-        },
-        {
-            id: 'members',
-            amount: 1,
-            unit: ''
-        },
-        {
-            id: 'platforms',
-            amount: 1,
-            unit: ''
-        },
-        {
-            id: 'webhooks',
-            amount: 1,
-            unit: ''
-        },
-        {
-            id: 'databases',
-            amount: 1,
-            unit: ''
-        },
-        {
-            id: 'connections',
-            amount: 1,
-            unit: ''
-        },
-        {
-            id: 'messages',
-            amount: 1,
-            unit: ''
-        }
-    ]
-};
 
 export enum BillingPlan {
     STARTER = 'tier-0',

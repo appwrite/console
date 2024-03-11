@@ -1,5 +1,7 @@
 <script lang="ts">
     import { tooltip } from '$lib/actions/tooltip';
+    import { app } from '$lib/stores/app';
+    import { base } from '$app/paths';
 
     export let name: string;
     export let group: string;
@@ -7,6 +9,7 @@
     export let disabled = false;
     export let padding = 1;
     export let icon: string = null;
+    export let imageIcon: string = null;
     export let fullHeight = true;
     export let borderRadius: 'xsmall' | 'small' | 'medium' | 'large' = 'small';
     export let backgroundColor: string = null;
@@ -56,6 +59,14 @@
             </div>
             {#if icon}
                 <span class={`icon-${icon} u-margin-inline-start-auto`} aria-hidden="true" />
+            {/if}
+            {#if imageIcon}
+                <img
+                    class="u-margin-inline-start-auto"
+                    style:max-inline-size="1.25rem"
+                    style:max-block-size="1.25rem"
+                    src={`${base}/icons/${$app.themeInUse}/color/${imageIcon}.svg`}
+                    alt={imageIcon} />
             {/if}
         {/if}
     </div>

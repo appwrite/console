@@ -4,6 +4,7 @@
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
+    import type { EmailTemplateLocale, EmailTemplateType } from '@appwrite.io/console';
     import { project } from '../../store';
     import { loadEmailTemplate } from './+page.svelte';
     import { baseEmailTemplate, emailTemplate } from './store';
@@ -14,10 +15,11 @@
 
     async function reset() {
         try {
+            // TODO: fix TemplateType and TemplateLocale typing once SDK is updated
             await sdk.forConsole.projects.deleteEmailTemplate(
                 $project.$id,
-                $emailTemplate.type,
-                $emailTemplate.locale
+                $emailTemplate.type as EmailTemplateType,
+                $emailTemplate.locale as EmailTemplateLocale
             );
             $emailTemplate = await loadEmailTemplate(
                 $project.$id,

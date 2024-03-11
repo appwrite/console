@@ -1,23 +1,24 @@
 <script lang="ts">
-    import {
-        tierToPlan,
-        getServiceLimit,
-        type PlanServices,
-        showUsageRatesModal,
-        checkForUsageFees,
-        readOnly,
-        checkForProjectLimitation
-    } from '$lib/stores/billing';
     import { Alert, DropList, Heading } from '$lib/components';
-    import { Pill } from '$lib/elements';
-    import { organization } from '$lib/stores/organization';
-    import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
-    import { createEventDispatcher, onMount } from 'svelte';
-    import { wizard } from '$lib/stores/wizard';
-    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
-    import { ContainerButton } from '.';
-    import { Button } from '$lib/elements/forms';
     import { BillingPlan } from '$lib/constants';
+    import { Pill } from '$lib/elements';
+    import { Button } from '$lib/elements/forms';
+    import {
+        checkForProjectLimitation,
+        checkForUsageFees,
+        getServiceLimit,
+        readOnly,
+        showUsageRatesModal,
+        tierToPlan,
+        type PlanServices
+    } from '$lib/stores/billing';
+    import { organization } from '$lib/stores/organization';
+    import { wizard } from '$lib/stores/wizard';
+    import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
+    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
+    import { createEventDispatcher, onMount } from 'svelte';
+    import { ContainerButton } from '.';
+    import { trackEvent } from '$lib/actions/analytics';
 
     export let isFlex = true;
     export let title: string;
@@ -35,7 +36,14 @@
 
     let showDropdown = false;
 
-    const { bandwidth, documents, storage, users, executions } = $organization?.billingLimits ?? {};
+    // TODO: remove the default billing limits when backend is updated with billing code
+    const { bandwidth, documents, storage, users, executions } = $organization?.billingLimits ?? {
+        bandwidth: 1,
+        documents: 1,
+        storage: 1,
+        users: 1,
+        executions: 1
+    };
     const limitedServices = [
         { name: 'bandwidth', value: bandwidth },
         { name: 'documents', value: documents },
@@ -92,8 +100,12 @@
                     <span class="text">
                         You've reached the {services} limit for the {tier} plan. <Button
                             link
-                            on:click={upgradeMethod}>Upgrade</Button> your organization for additional
-                        resources.
+                            on:click={upgradeMethod}
+                            on:click={() =>
+                                trackEvent('click_organization_upgrade', {
+                                    from: 'button',
+                                    source: 'inline_alert'
+                                })}>Upgrade</Button> your organization for additional resources.
                     </span>
                 </Alert>
             {/if}
@@ -108,24 +120,28 @@
             <DropList bind:show={showDropdown} width="16">
                 {#if hasProjectLimitation}
                     <Pill button on:click={() => (showDropdown = !showDropdown)}>
-                        <span class="icon-info" />{total}/{limit}
-                        {title} used
+                        <span class="icon-info" />{total}/{limit} created
                     </Pill>
                 {:else}
                     <Pill button on:click={() => (showDropdown = !showDropdown)}>
-                        <span class="icon-info" />{title} limited
+                        <span class="icon-info" />Limits applied
                     </Pill>
                 {/if}
                 <svelte:fragment slot="list">
                     <slot name="tooltip" {limit} {tier} {title} {upgradeMethod} {hasUsageFees}>
                         {#if hasProjectLimitation}
                             <p class="text">
-                                Your are limited to {limit}
+                                You are limited to {limit}
                                 {title.toLocaleLowerCase()} per project on the {tier} plan.
                                 {#if $organization?.billingPlan === BillingPlan.STARTER}<Button
                                         link
-                                        on:click={upgradeMethod}>Upgrade</Button>
-                                    for addtional {title.toLocaleLowerCase()}.
+                                        on:click={upgradeMethod}
+                                        on:click={() =>
+                                            trackEvent('click_organization_upgrade', {
+                                                from: 'button',
+                                                source: 'resource_limit_tag'
+                                            })}>Upgrade</Button>
+                                    for additional {title.toLocaleLowerCase()}.
                                 {/if}
                             </p>
                         {:else if hasUsageFees}

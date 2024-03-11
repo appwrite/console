@@ -33,17 +33,23 @@
         TableRowLink
     } from '$lib/elements/table';
     import { toLocaleDate } from '$lib/helpers/date';
-    import { bytesToSize, calculateSize } from '$lib/helpers/sizeConvertion';
+    import {
+        bytesToSize,
+        calculateSize,
+        humanFileSize,
+        sizeToBytes
+    } from '$lib/helpers/sizeConvertion';
     import { Container, ContainerHeader } from '$lib/layout';
     import type { Models } from '@appwrite.io/console';
     import { addNotification } from '$lib/stores/notifications';
     import { uploader } from '$lib/stores/uploader';
     import { wizard } from '$lib/stores/wizard';
     import { tooltip } from '$lib/actions/tooltip';
-    import { showUsageRatesModal } from '$lib/stores/billing';
+    import { getServiceLimit, showUsageRatesModal } from '$lib/stores/billing';
     import { sdk } from '$lib/stores/sdk.js';
     import Create from './create-file/create.svelte';
     import DeleteFile from './deleteFile.svelte';
+    import { isCloud } from '$lib/system';
 
     export let data;
 
@@ -53,9 +59,12 @@
 
     const projectId = $page.params.project;
     const bucketId = $page.params.bucket;
-    const usedStorage = bytesToSize(data.organizationUsage.storageTotal, 'GB');
+    const usedStorage =
+        isCloud && data?.organizationUsage?.storageTotal
+            ? bytesToSize(data.organizationUsage.storageTotal, 'GB')
+            : null;
     const getPreview = (fileId: string) =>
-        sdk.forProject.storage.getFilePreview(bucketId, fileId, 32, 32).toString() + '&mode=admin';
+        sdk.forProject.storage.getFilePreview(bucketId, fileId, 64, 64).toString() + '&mode=admin';
 
     async function fileDeleted(event: CustomEvent<Models.File>) {
         showDelete = false;
@@ -77,6 +86,10 @@
             trackError(error, Submit.FileDelete);
         }
     }
+
+    $: maxFileSize = isCloud
+        ? humanFileSize(sizeToBytes(getServiceLimit('fileSize'), 'MB', 1000))
+        : null;
 </script>
 
 <Container>
@@ -101,10 +114,12 @@
         <svelte:fragment slot="tooltip" let:limit let:tier let:upgradeMethod>
             {#if tier === 'Starter'}
                 <p class="text">
-                    You are limited to {limit} GB of storage on the {tier} plan.
+                    You are limited to {limit} GB of total storage and {Math.floor(
+                        parseInt(maxFileSize.value)
+                    )}{maxFileSize.unit} on the {tier} plan.
                     <button class="link" type="button" on:click|preventDefault={upgradeMethod}
                         >Upgrade</button>
-                    for addtional storage.
+                    for additional storage.
                 </p>
             {:else}
                 <p class="text">

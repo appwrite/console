@@ -1,19 +1,16 @@
-import type { Metric, UsageDatabases } from '$lib/sdk/usage';
+import { isValueOfStringEnum } from '$lib/helpers/types';
 import { sdk } from '$lib/stores/sdk';
+import { DatabaseUsageRange } from '@appwrite.io/console';
 import type { PageLoad } from './$types';
 import { error } from '@sveltejs/kit';
 
 export const load: PageLoad = async ({ params }) => {
-    const { period } = params;
+    const period = isValueOfStringEnum(DatabaseUsageRange, params.period)
+        ? params.period
+        : DatabaseUsageRange.ThirtyDays;
     try {
-        const response = (await sdk.forProject.databases.getUsage(
-            period ?? '30d'
-        )) as unknown as UsageDatabases;
-        return {
-            databasesTotal: response.databasesTotal,
-            databases: response.databases as Metric[]
-        };
+        return sdk.forProject.databases.getUsage(period);
     } catch (e) {
-        throw error(e.code, e.message);
+        error(e.code, e.message);
     }
 };

@@ -5,6 +5,7 @@ import { get, writable } from 'svelte/store';
 import type { PaymentMethodData } from '$lib/sdk/billing';
 import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
 import { addNotification } from './notifications';
+import { organization } from './organization';
 
 export const stripe = writable<Stripe>();
 let paymentMethod: PaymentMethodData;
@@ -19,7 +20,12 @@ export async function initializeStripe() {
     isStripeInitialized.set(true);
 
     const methods = await sdk.forConsole.billing.listPaymentMethods();
-    clientSecret = methods.paymentMethods[0]?.clientSecret;
+
+    // Get the client secret from empty payment method if available
+    clientSecret = methods.paymentMethods?.filter(
+        (method) => !!method?.clientSecret && !method?.providerMethodId
+    )[0]?.clientSecret;
+
     // If there is no payment method, create an empty one and get the client secret
     if (!clientSecret) {
         paymentMethod = await sdk.forConsole.billing.createPaymentMethod();
@@ -63,7 +69,8 @@ export async function submitStripeCard(name: string, urlRoute?: string) {
             clientSecret,
             confirmParams: {
                 return_url: `${baseUrl}${
-                    urlRoute ?? `organization/billing?clientSecret=${clientSecret}`
+                    urlRoute ??
+                    `organization-${get(organization).$id}/billing?clientSecret=${clientSecret}`
                 }`,
                 payment_method_data: {
                     billing_details: {
@@ -101,9 +108,15 @@ export async function submitStripeCard(name: string, urlRoute?: string) {
     }
 }
 
-export async function confirmPayment(orgId: string, clientSecret: string, paymentMethodId: string) {
+export async function confirmPayment(
+    orgId: string,
+    clientSecret: string,
+    paymentMethodId: string,
+    route?: string
+) {
     try {
-        const url = `${window.location.origin}/console/organization-${orgId}/billing`;
+        const url =
+            window.location.origin + (route ? route : `/console/organization-${orgId}/billing`);
 
         const paymentMethod = await sdk.forConsole.billing.getPaymentMethod(paymentMethodId);
 
@@ -122,6 +135,45 @@ export async function confirmPayment(orgId: string, clientSecret: string, paymen
             title: 'Error',
             message:
                 'There was an error processing your payment, try again later. If the problem persists, please contact support.',
+            type: 'error'
+        });
+    }
+}
+
+export async function confirmSetup(
+    clientSecret: string,
+    paymentMethodId: string,
+    urlRoute?: string
+) {
+    const baseUrl = 'https://cloud.appwrite.io/console/';
+
+    const { setupIntent, error } = await get(stripe).confirmCardSetup(clientSecret, {
+        payment_method: paymentMethodId,
+        return_url: `${baseUrl}${
+            urlRoute ?? `organization-${get(organization).$id}/billing?clientSecret=${clientSecret}`
+        }`
+    });
+
+    if (error) {
+        const e = new Error(error.message);
+        trackError(e, Submit.VerifyPayment);
+        addNotification({
+            message: error.message,
+            type: 'error'
+        });
+    }
+
+    if (setupIntent && setupIntent.status === 'succeeded') {
+        trackEvent(Submit.VerifyPayment);
+        addNotification({
+            message: 'Payment method verified successfully',
+            type: 'success'
+        });
+    } else {
+        const e = new Error('Something went wrong. Please try again later.');
+        trackError(e, Submit.VerifyPayment);
+        addNotification({
+            message: e.message,
             type: 'error'
         });
     }

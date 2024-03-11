@@ -5,6 +5,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { createPlatform } from '../store';
     import { Submit, trackEvent } from '$lib/actions/analytics';
+    import { PlatformType } from '@appwrite.io/console';
 
     const projectId = $page.params.project;
 
@@ -24,7 +25,7 @@
 
         const platform = await sdk.forConsole.projects.createPlatform(
             projectId,
-            'android',
+            PlatformType.Android,
             $createPlatform.name,
             $createPlatform.key || undefined,
             undefined,
@@ -40,7 +41,7 @@
 </script>
 
 <WizardStep {beforeSubmit}>
-    <svelte:fragment slot="title">Register your Android app</svelte:fragment>
+    <svelte:fragment slot="title">Android registration</svelte:fragment>
     <FormList>
         <InputText
             id="name"
