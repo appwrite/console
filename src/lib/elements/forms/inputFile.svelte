@@ -36,6 +36,11 @@
         hovering = false;
         if (!ev.dataTransfer.items) return;
         for (let i = 0; i < ev.dataTransfer.items.length; i++) {
+            const fileExtension = ev.dataTransfer.items[i].getAsFile().name.split('.')[1];
+            if (!allowedFileExtensions.includes(fileExtension)) {
+                error = 'Invalid file extension';
+                return;
+            }
             if (ev.dataTransfer.items[i].kind === 'file') {
                 const dataTransfer = new DataTransfer();
                 dataTransfer.items.add(ev.dataTransfer.items[i].getAsFile());
