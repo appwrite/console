@@ -184,7 +184,8 @@
                         formValues['authKey'],
                         formValues['authKeyId'],
                         formValues['teamId'],
-                        formValues['bundleId']
+                        formValues['bundleId'],
+                        formValues['sandbox']
                     );
                     break;
             }
