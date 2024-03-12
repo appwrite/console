@@ -15,7 +15,6 @@
     import CreateAttribute from './createAttribute.svelte';
     import Create from './createDocument.svelte';
     import { collection, columns } from './store';
-    import { tooltip } from '$lib/actions/tooltip';
     import Table from './table.svelte';
 
     export let data: PageData;
@@ -149,17 +148,3 @@
 </Container>
 
 <CreateAttribute bind:showCreate={showCreateAttribute} bind:selectedOption={selectedAttribute} />
-
-<style lang="scss">
-    .heading-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 2rem;
-
-        @media (min-width: 768px) {
-            :global(h2) {
-                grid-column: span 2;
-            }
-        }
-    }
-</style>
