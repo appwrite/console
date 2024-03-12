@@ -6,6 +6,7 @@
     import { Button } from '$lib/elements/forms';
     import type { ColumnType } from '$lib/helpers/types';
     import { Container } from '$lib/layout';
+    import ContainerHeader from '$lib/layout/containerHeader.svelte';
     import { preferences } from '$lib/stores/preferences';
     import { wizard } from '$lib/stores/wizard';
     import type { PageData } from './$types';
@@ -14,6 +15,7 @@
     import CreateAttribute from './createAttribute.svelte';
     import Create from './createDocument.svelte';
     import { collection, columns } from './store';
+    import { tooltip } from '$lib/actions/tooltip';
     import Table from './table.svelte';
 
     export let data: PageData;
@@ -42,29 +44,9 @@
 </script>
 
 <Container>
-    <div class="heading-grid u-main-justify-between u-cross-center">
-        <Heading tag="h2" size="5">Documents</Heading>
-        <div class="u-flex u-main-end is-only-mobile">
-            <Button
-                disabled={!(hasAttributes && hasValidAttributes)}
-                on:click={openWizard}
-                event="create_document">
-                <span class="icon-plus" aria-hidden="true" />
-                <span class="text">Create document</span>
-            </Button>
-        </div>
-
-        <Filters query={data.query} {columns} />
-
-        <div class="u-flex u-main-end u-gap-16">
-            <ViewSelector
-                view={data.view}
-                {columns}
-                isCustomCollection
-                hideView
-                allowNoColumns
-                showColsTextMobile />
-            <div class="is-not-mobile">
+    <ContainerHeader title="Documents" total={data.documents.total}>
+        <div class={data.documents.total ? 'is-only-mobile' : ''}>
+            <div>
                 <Button
                     disabled={!(hasAttributes && hasValidAttributes)}
                     on:click={openWizard}
@@ -74,8 +56,30 @@
                 </Button>
             </div>
         </div>
-    </div>
 
+        {#if data.documents.total}
+            <div class="u-flex u-main-end u-gap-16">
+                <Filters query={data.query} {columns} />
+
+                <ViewSelector
+                    view={data.view}
+                    {columns}
+                    isCustomCollection
+                    hideView
+                    allowNoColumns
+                    showColsTextMobile />
+                <div class="is-not-mobile">
+                    <Button
+                        disabled={!(hasAttributes && hasValidAttributes)}
+                        on:click={openWizard}
+                        event="create_document">
+                        <span class="icon-plus" aria-hidden="true" />
+                        <span class="text">Create document</span>
+                    </Button>
+                </div>
+            </div>
+        {/if}
+    </ContainerHeader>
     {#if hasAttributes && hasValidAttributes}
         {#if data.documents.total}
             <Table {data} />
