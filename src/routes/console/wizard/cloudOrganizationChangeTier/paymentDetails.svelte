@@ -13,6 +13,7 @@
     import { symmetricDifference } from '$lib/helpers/array';
     import { showUsageRatesModal } from '$lib/stores/billing';
     import { PaymentBoxes } from '$lib/components/billing';
+    import { page } from '$app/stores';
 
     let methods: PaymentList;
     let filteredMethods: PaymentMethodData[];
@@ -48,7 +49,7 @@
             }
         } else {
             try {
-                await submitStripeCard(name);
+                await submitStripeCard(name, $page?.params?.organization ?? null);
                 const latestMethods = await sdk.forConsole.billing.listPaymentMethods();
                 const paymentMethod = symmetricDifference(
                     methods.paymentMethods,
