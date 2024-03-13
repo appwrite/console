@@ -6,6 +6,7 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
+    import { base } from '$app/paths';
 
     export let show = false;
 
@@ -20,7 +21,7 @@
 
     async function handleSubmit() {
         try {
-            const card = await submitStripeCard(name);
+            const card = await submitStripeCard(name, '/account/payments');
             invalidate(Dependencies.PAYMENT_METHODS);
             dispatch('submit', card);
             show = false;
