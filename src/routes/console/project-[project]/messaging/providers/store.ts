@@ -506,6 +506,30 @@ export const providers: ProvidersMap = {
                     }
                 ]
             },
+            [Providers.Telnyx]: {
+                imageIcon: 'telnyx',
+                title: 'Telnyx',
+                description: '',
+                configure: [
+                    {
+                        label: 'API Key',
+                        name: 'apiKey',
+                        type: 'password',
+                        placeholder: 'Enter API key',
+                        popover: [
+                            '<b>How to get the API key?</b>',
+                            'Create an account in <a class="link" href="https://portal.telnyx.com/#/app/auth/v2" target="_blank" rel="noopener noreferrer">Telnyx</a>.',
+                            'Head to <b>Account Settings dropdown section on the left-hand side -> Keys & Credentials</b>'
+                        ]
+                    },
+                    {
+                        label: 'Sender number',
+                        name: 'from',
+                        type: 'phone',
+                        placeholder: 'Enter phone'
+                    }
+                ]
+            },
             [Providers.Textmagic]: {
                 imageIcon: 'textmagic',
                 title: 'Textmagic',
@@ -598,6 +622,11 @@ export type Msg91ProviderParams = ProviderParams & {
 export type TelesignProviderParams = ProviderParams & {
     from: string;
     customerId: string;
+    apiKey: string;
+};
+
+export type TelnyxProviderParams = ProviderParams & {
+    from: string;
     apiKey: string;
 };
 

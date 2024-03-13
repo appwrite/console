@@ -49,6 +49,15 @@
                         $providerParams[$provider].enabled
                     );
                     break;
+                case Providers.Telnyx:
+                    response = await sdk.forProject.messaging.createTelnyxProvider(
+                        providerId,
+                        $providerParams[$provider].name,
+                        $providerParams[$provider].from,
+                        $providerParams[$provider].apiKey,
+                        $providerParams[$provider].enabled
+                    );
+                    break;
                 case Providers.Textmagic:
                     response = await sdk.forProject.messaging.createTextmagicProvider(
                         providerId,

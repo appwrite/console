@@ -3,6 +3,7 @@
         Twilio = 'twilio',
         Msg91 = 'msg91',
         Telesign = 'telesign',
+        Telnyx = 'telnyx',
         Textmagic = 'textmagic',
         Vonage = 'vonage',
         Mailgun = 'mailgun',
@@ -40,6 +41,9 @@
                 break;
             case Providers.Telesign:
                 icon = 'telesign';
+                break;
+            case Providers.Telnyx:
+                icon = 'telnyx';
                 break;
             case Providers.Msg91:
                 icon = 'msg91';

@@ -44,6 +44,13 @@
                         enabled
                     );
                     break;
+                case Providers.Telnyx:
+                    response = await sdk.forProject.messaging.updateTelnyxProvider(
+                        providerId,
+                        undefined,
+                        enabled
+                    );
+                    break;
                 case Providers.Textmagic:
                     response = await sdk.forProject.messaging.updateTextmagicProvider(
                         providerId,
