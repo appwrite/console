@@ -9,6 +9,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { PaymentBoxes } from '$lib/components/billing';
     import { addCreditWizardStore } from '../store';
+    import { organization } from '$lib/stores/organization';
 
     let methods: PaymentList;
     let name: string;
@@ -21,7 +22,7 @@
 
     async function handleSubmit() {
         try {
-            const method = await submitStripeCard(name);
+            const method = await submitStripeCard(name, $organization.$id);
             $addCreditWizardStore.paymentMethodId = method.$id;
             invalidate(Dependencies.PAYMENT_METHODS);
         } catch (e) {
