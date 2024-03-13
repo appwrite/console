@@ -20,7 +20,7 @@
 
     async function handleSubmit() {
         try {
-            const card = await submitStripeCard(name);
+            const card = await submitStripeCard(name, '/account/payments');
             invalidate(Dependencies.PAYMENT_METHODS);
             dispatch('submit', card);
             show = false;
