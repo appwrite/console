@@ -63,7 +63,7 @@ export const bucketSearcher = (async (query: string) => {
                 icon: 'puzzle'
             },
             {
-                label: 'File Security',
+                label: 'File level permissions',
                 async callback() {
                     await goto(
                         `/console/project-${$project.$id}/storage/bucket-${bucket.$id}/settings#file-security`
