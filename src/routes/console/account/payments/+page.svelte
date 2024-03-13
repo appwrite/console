@@ -6,10 +6,8 @@
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
     import { confirmPayment } from '$lib/stores/stripe';
-    import { user } from '$lib/stores/user';
 
     let showPayment = false;
-    user;
 
     onMount(async () => {
         if ($page.url.searchParams.has('clientSecret')) {
