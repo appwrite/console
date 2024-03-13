@@ -518,8 +518,9 @@ export const providers: ProvidersMap = {
                         placeholder: 'Enter API key',
                         popover: [
                             '<b>How to get the API key?</b>',
-                            'Create an account in <a class="link" href="https://portal.telnyx.com/#/app/auth/v2" target="_blank" rel="noopener noreferrer">Telnyx</a>.',
-                            'Head to <b>Account Settings dropdown section on the left-hand side -> Keys & Credentials</b>'
+                            'Create an account in <a class="link" href="https://telnyx.com/sign-up" target="_blank" rel="noopener noreferrer">Telnyx</a>.',
+                            'Create an <a class="link" href="https://portal.telnyx.com/#/app/auth/v2" target="_blank" rel="noopener noreferrer">Auth V2 API Key</a>.',
+                            '(Head to <b>Account Settings dropdown section on the left-hand side -> Keys & Credentials</b>)'
                         ]
                     },
                     {
