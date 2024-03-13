@@ -25,7 +25,7 @@
         TableRow,
         TableScroll
     } from '$lib/elements/table';
-    import { deploymentList, execute, func, proxyRuleList } from './store';
+    import { deploymentList, execute, func, proxyRuleList, showFunctionExecute } from './store';
     import { Container, ContainerHeader } from '$lib/layout';
     import { app } from '$lib/stores/app';
     import { calculateSize, humanFileSize } from '$lib/helpers/sizeConvertion';
@@ -151,7 +151,10 @@
 
                         <Button
                             secondary
-                            on:click={() => ($execute = $func)}
+                            on:click={() => {
+                                $execute = $func;
+                                $showFunctionExecute = true;
+                            }}
                             disabled={isCloud && $readOnly && !GRACE_PERIOD_OVERRIDE}>
                             Execute now
                         </Button>

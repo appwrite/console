@@ -14,6 +14,7 @@
     import { project } from '../../store';
 
     const projectId = $page.params.project;
+    let showProvider = false;
 
     $: {
         authMethods.load($project);
@@ -74,6 +75,7 @@
                             class="card u-flex u-flex-vertical u-cross-center u-width-full-line"
                             on:click={() => {
                                 selectedProvider = provider;
+                                showProvider = true;
                                 trackEvent(`click_select_provider`, {
                                     provider: provider.key.toLowerCase()
                                 });
@@ -99,9 +101,13 @@
     </Container>
 {/if}
 
-{#if selectedProvider}
+{#if selectedProvider && showProvider}
     <svelte:component
         this={selectedProvider.component}
         bind:provider={selectedProvider}
-        on:close={() => (selectedProvider = null)} />
+        bind:show={showProvider}
+        on:close={() => {
+            selectedProvider = null;
+            showProvider = false;
+        }} />
 {/if}

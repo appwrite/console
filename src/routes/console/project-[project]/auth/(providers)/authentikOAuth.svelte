@@ -5,24 +5,24 @@
     import type { Provider } from '$lib/stores/oauth-providers';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import { updateOAuth } from './updateOAuth';
+    import { updateOAuth } from '../updateOAuth';
 
     export let provider: Provider;
+    export let show = false;
 
-    const projectId = $page.params.project;
-
-    let enabled: boolean = null;
     let appId: string = null;
-    let secret: string = null;
-
-    onMount(() => {
-        enabled ??= provider.enabled;
-        appId ??= provider.appId;
-        secret ??= provider.secret;
-    });
-
+    let enabled: boolean = null;
+    let clientSecret: string = null;
+    let authentikDomain: string = null;
     let error: string;
 
+    onMount(() => {
+        appId ??= provider.appId;
+        enabled ??= provider.enabled;
+        if (provider.secret) ({ clientSecret, authentikDomain } = JSON.parse(provider.secret));
+    });
+
+    const projectId = $page.params.project;
     const update = async () => {
         const result = await updateOAuth({ projectId, provider, secret, appId, enabled });
 
@@ -32,9 +32,14 @@
             provider = null;
         }
     };
+
+    $: secret =
+        clientSecret && authentikDomain
+            ? JSON.stringify({ clientSecret, authentikDomain })
+            : provider.secret;
 </script>
 
-<Modal {error} size="big" show onSubmit={update} on:close>
+<Modal {error} size="big" bind:show onSubmit={update} on:close>
     <svelte:fragment slot="title">{provider.name} OAuth2 Settings</svelte:fragment>
     <FormList>
         <p>
@@ -45,18 +50,23 @@
         </p>
         <InputSwitch id="state" bind:value={enabled} label={enabled ? 'Enabled' : 'Disabled'} />
         <InputText
-            id="appID"
-            label="App ID"
+            id="clientID"
+            label="Client ID"
             autofocus={true}
             placeholder="Enter ID"
             bind:value={appId} />
         <InputPassword
             id="secret"
-            label="App Secret"
-            placeholder="Enter App Secret"
+            label="Client Secret"
+            placeholder="Enter Client Secret"
             minlength={0}
             showPasswordButton
-            bind:value={secret} />
+            bind:value={clientSecret} />
+        <InputText
+            id="domain"
+            label="Authentik Base-Domain"
+            placeholder="Your Authentik domain"
+            bind:value={authentikDomain} />
         <Alert type="info">
             To complete set up, add this OAuth2 redirect URI to your {provider.name} app configuration.
         </Alert>
@@ -69,11 +79,10 @@
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (provider = null)}>Cancel</Button>
         <Button
-            disabled={!appId ||
-                !secret ||
-                (appId === provider.appId &&
-                    secret === provider.secret &&
-                    enabled === provider.enabled)}
+            disabled={(secret === provider.secret &&
+                enabled === provider.enabled &&
+                appId === provider.appId) ||
+                !(appId && clientSecret && authentikDomain)}
             submit>Update</Button>
     </svelte:fragment>
 </Modal>

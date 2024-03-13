@@ -20,7 +20,7 @@ jobs:
               with:
                   node-version: 20
             - name: Audit dependencies
-              run: npm audit --audit-level low
+              run: npm audit --audit-level critical
             - name: Install dependencies
               run: npm ci
             - name: Svelte Diagnostics

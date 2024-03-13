@@ -5,27 +5,24 @@
     import type { Provider } from '$lib/stores/oauth-providers';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import { updateOAuth } from './updateOAuth';
-
-    const projectId = $page.params.project;
+    import { updateOAuth } from '../updateOAuth';
 
     export let provider: Provider;
+    export let show = false;
 
     let appId: string = null;
     let enabled: boolean = null;
     let clientSecret: string = null;
-    let oktaDomain: string = null;
-    let authorizationServerId: string = null;
+    let endpoint: string = null;
     let error: string;
 
     onMount(() => {
         appId ??= provider.appId;
         enabled ??= provider.enabled;
-        if (provider.secret) {
-            ({ clientSecret, oktaDomain, authorizationServerId } = JSON.parse(provider.secret));
-        }
+        if (provider.secret) ({ clientSecret, endpoint } = JSON.parse(provider.secret));
     });
 
+    const projectId = $page.params.project;
     const update = async () => {
         const result = await updateOAuth({ projectId, provider, secret, appId, enabled });
 
@@ -37,12 +34,10 @@
     };
 
     $: secret =
-        clientSecret && oktaDomain && authorizationServerId
-            ? JSON.stringify({ clientSecret, oktaDomain, authorizationServerId })
-            : provider.secret;
+        clientSecret && endpoint ? JSON.stringify({ clientSecret, endpoint }) : provider.secret;
 </script>
 
-<Modal {error} onSubmit={update} size="big" show on:close>
+<Modal {error} size="big" bind:show onSubmit={update} on:close>
     <svelte:fragment slot="title">{provider.name} OAuth2 Settings</svelte:fragment>
     <FormList>
         <p>
@@ -54,28 +49,22 @@
         <InputSwitch id="state" bind:value={enabled} label={enabled ? 'Enabled' : 'Disabled'} />
         <InputText
             id="appID"
-            label="Client ID"
+            label="App ID"
             autofocus={true}
             placeholder="Enter ID"
             bind:value={appId} />
         <InputPassword
             id="secret"
-            label="Client Secret"
-            placeholder="Enter Client Secret"
+            label="App Secret"
+            placeholder="Enter App Secret"
             minlength={0}
             showPasswordButton
             bind:value={clientSecret} />
         <InputText
-            id="domain"
-            label="Okta Domain"
-            placeholder="dev-1337.okta.com"
-            bind:value={oktaDomain} />
-        <InputText
-            id="serverID"
-            label="Authorization Server ID"
-            placeholder="default"
-            bind:value={authorizationServerId} />
-
+            id="endpoint"
+            label="Endpoint (optional)"
+            placeholder="Your endpoint"
+            bind:value={endpoint} />
         <Alert type="info">
             To complete set up, add this OAuth2 redirect URI to your {provider.name} app configuration.
         </Alert>
@@ -91,7 +80,7 @@
             disabled={(secret === provider.secret &&
                 enabled === provider.enabled &&
                 appId === provider.appId) ||
-                !(appId && clientSecret && oktaDomain && authorizationServerId)}
+                !(appId && clientSecret)}
             submit>Update</Button>
     </svelte:fragment>
 </Modal>
