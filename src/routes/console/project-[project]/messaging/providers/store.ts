@@ -465,14 +465,18 @@ export const providers: ProvidersMap = {
                         placeholder: 'Enter sender ID',
                         popover: [
                             '<b>How to create a Sender ID?</b>',
-                            'Head to <b><a class="link" href="https://control.msg91.com/signin/" target="_blank" rel="noopener noreferrer">MSG91</a> dashboard -> SMS -> Sender ID -> Create sender ID.</b>'
+                            'Head to <b><a class="link" href="https://control.msg91.com/signin/" target="_blank" rel="noopener noreferrer">MSG91</a> dashboard -> SMS -> Sender ID -> Create Sender ID.</b>'
                         ]
                     },
                     {
-                        label: 'Sender number',
-                        name: 'from',
-                        type: 'phone',
-                        placeholder: 'Enter phone'
+                        label: 'Template ID',
+                        name: 'templateId',
+                        type: 'text',
+                        placeholder: 'Enter template ID',
+                        popover: [
+                            '<b>How to create a Template ID?</b>',
+                            'Head to <b><a class="link" href="https://control.msg91.com/signin/" target="_blank" rel="noopener noreferrer">MSG91</a> dashboard -> SMS -> Templates -> Create Template.</b>'
+                        ]
                     }
                 ]
             },
@@ -590,7 +594,7 @@ export type TwilioProviderParams = ProviderParams & {
 };
 
 export type Msg91ProviderParams = ProviderParams & {
-    from: string;
+    templateId: string;
     senderId: string;
     authKey: string;
 };

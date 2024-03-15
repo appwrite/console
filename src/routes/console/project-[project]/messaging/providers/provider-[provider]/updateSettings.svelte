@@ -92,9 +92,9 @@
                         providerId,
                         undefined,
                         undefined,
+                        formValues['templateId'],
                         formValues['senderId'],
-                        formValues['authKey'],
-                        formValues['from']
+                        formValues['authKey']
                     );
                     break;
                 case Providers.Telesign:
