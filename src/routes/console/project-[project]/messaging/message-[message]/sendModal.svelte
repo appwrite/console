@@ -75,7 +75,7 @@
             });
             show = false;
         } catch (error) {
-            show = false
+            show = false;
             addNotification({
                 message: error.message,
                 type: 'error'
