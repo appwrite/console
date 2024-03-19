@@ -44,7 +44,18 @@
                 </p>
             {/if}
         </div>
-        {#if $organization?.billingPlan === BillingPlan.STARTER}
+        {#if $organization?.billingPlan === BillingPlan.PRO || $organization?.billingPlan === BillingPlan.SCALE}
+            <Button
+                secondary
+                fullWidth
+                on:click={() => {
+                    show = false;
+                    $showSupportModal = false;
+                    wizard.start(SupportWizard);
+                }}>
+                <span class="text">Contact our Support Team</span>
+            </Button>
+        {:else}
             <Button
                 fullWidth
                 external
@@ -56,17 +67,6 @@
                     });
                 }}>
                 <span class="text">Get Premium support</span>
-            </Button>
-        {:else}
-            <Button
-                secondary
-                fullWidth
-                on:click={() => {
-                    show = false;
-                    $showSupportModal = false;
-                    wizard.start(SupportWizard);
-                }}>
-                <span class="text">Contact our Support Team</span>
             </Button>
         {/if}
     </section>
