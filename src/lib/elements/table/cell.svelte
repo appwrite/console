@@ -10,14 +10,14 @@
 </script>
 
 <div
-    {style}
-    style:--p-col-width={width?.toString() ?? ''}
-    class="table-col {className}"
-    class:u-overflow-visible={showOverflow}
-    class:is-only-desktop={onlyDesktop}
-    class:u-flex={right}
-    class:u-main-end={right}
-    data-title={title}
-    role="cell">
-    <slot />
+        {style}
+        style:--p-col-width={width?.toString() ?? ''}
+        class="table-col {className}"
+        class:u-overflow-visible={showOverflow}
+        class:is-only-desktop={onlyDesktop}
+        class:u-flex={right}
+        class:u-main-end={right}
+        data-title={title}
+        role="cell">
+    <div class="u-width-fit-content"><slot /></div>
 </div>
