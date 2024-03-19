@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { INTERVAL } from '$lib/constants';
+    import { BillingPlan, INTERVAL } from '$lib/constants';
     import { Logs } from '$lib/layout';
     import Footer from '$lib/layout/footer.svelte';
     import Header from '$lib/layout/header.svelte';
@@ -267,12 +267,14 @@
     organization.subscribe(async (org) => {
         if (!org) return;
         if (isCloud) {
-            calculateTrialDay(org);
-            await paymentExpired(org);
             await checkForUsageLimit(org);
             checkForMarkedForDeletion(org);
-            await checkPaymentAuthorizationRequired(org);
-            await checkForMandate(org);
+            if (org?.billingPlan !== BillingPlan.STARTER) {
+                calculateTrialDay(org);
+                await paymentExpired(org);
+                await checkPaymentAuthorizationRequired(org);
+                await checkForMandate(org);
+            }
         }
     });
 
