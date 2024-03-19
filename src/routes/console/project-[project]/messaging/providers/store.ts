@@ -1,7 +1,7 @@
 import type { Column } from '$lib/helpers/types';
+import { MessagingProviderType, SmtpEncryption } from '@appwrite.io/console';
 import { writable } from 'svelte/store';
 import { Providers } from '../provider.svelte';
-import { MessagingProviderType, SmtpEncryption } from '@appwrite.io/console';
 
 export const columns = writable<Column[]>([
     { id: '$id', title: 'Provider ID', type: 'string', show: true },
@@ -304,7 +304,7 @@ export const providers: ProvidersMap = {
             [Providers.SMTP]: {
                 classIcon: 'mail',
                 title: 'SMTP',
-                description: 'Generic SMTP server.',
+                description: 'Generic SMTP server',
                 configure: [
                     {
                         label: 'Server host',
