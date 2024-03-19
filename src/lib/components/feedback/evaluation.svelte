@@ -6,7 +6,9 @@
     <legend class="label is-required u-margin-0 u-line-height-1-5 u-bold">
         <slot />
     </legend>
-    <ol class="u-flex u-main-space-between u-margin-block-start-16 u-overflow-x-auto">
+    <ol
+        class="u-flex u-main-space-between u-margin-block-start-16 u-overflow-x-auto"
+        style="padding-block: 0.13rem">
         {#each Array(11) as _, i}
             <li>
                 <input
