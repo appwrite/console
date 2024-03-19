@@ -4,11 +4,11 @@
     import Evaluation from './evaluation.svelte';
 </script>
 
-<Evaluation bind:value={$feedbackData.value}>
-    How likely are you to recommend Appwrite to a friend or colleague?
-</Evaluation>
-{#if $feedbackData.value}
-    <FormList>
+<FormList>
+    <Evaluation bind:value={$feedbackData.value}>
+        How likely are you to recommend Appwrite to a friend or colleague?
+    </Evaluation>
+    {#if $feedbackData.value !== null}
         <InputTextarea
             id="feedback"
             placeholder="Your message here"
@@ -26,5 +26,5 @@
             id="email"
             bind:value={$feedbackData.email}
             placeholder="Enter email" />
-    </FormList>
-{/if}
+    {/if}
+</FormList>
