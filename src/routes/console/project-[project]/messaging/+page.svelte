@@ -89,6 +89,8 @@
             showDelete = false;
         }
     }
+
+    console.log(data);
 </script>
 
 <Container>

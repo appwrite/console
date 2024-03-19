@@ -88,7 +88,8 @@
     $: dataError = validateData(customData || []);
 
     const providers = () => {
-        return $page.data.providers.providers.filter((provider) => provider.type === 'push');
+      console.log($page);
+        return $page.data.providers.providers.filter((provider) => provider.type === MessagingProviderType.Push);
     };
 </script>
 

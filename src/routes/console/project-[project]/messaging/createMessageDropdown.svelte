@@ -23,6 +23,9 @@
             <DropListItem
                 icon={option.icon}
                 on:click={() => {
+                  console.log(type);
+                  console.log(providers);
+
                     if (
                         type !== MessagingProviderType.Email &&
                         type !== MessagingProviderType.Sms &&
