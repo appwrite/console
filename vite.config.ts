@@ -13,7 +13,8 @@ const config = defineConfig({
             '@analytics/google-analytics',
             'analytics',
             'dayjs',
-            'dotenv'
+            'dotenv',
+            'zrender'
         ]
     },
     define: {
@@ -36,7 +37,11 @@ const testConfig = defineConfig({
         pool: 'threads',
         setupFiles: ['./tests/unit/setup.ts'],
         deps: {
-            inline: ['@analytics/type-utils']
+            optimizer: {
+                web: {
+                    include: ['@analytics/type-utils']
+                }
+            }
         }
     }
 });

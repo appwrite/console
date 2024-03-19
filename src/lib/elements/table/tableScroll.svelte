@@ -5,6 +5,8 @@
     export let noMargin = false;
     export let style = '';
     export let transparent = false;
+    export let noStyles = false;
+
     let isOverflowing = false;
 
     const hasOverflow: Action<HTMLDivElement, unknown> = (node) => {
@@ -44,6 +46,7 @@
     <div class="table-wrapper" use:hasOverflow={(v) => (isOverflowing = v)}>
         <table
             class="table"
+            class:is-remove-outer-styles={noStyles}
             class:is-sticky-scroll={isSticky && isOverflowing}
             {style}
             style:--p-table-bg-color={transparent ? 'var(--transparent)' : ''}>

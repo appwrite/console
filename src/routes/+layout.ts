@@ -13,9 +13,10 @@ export const ssr = false;
 export const load: LayoutLoad = async ({ depends, url }) => {
     depends(Dependencies.ACCOUNT);
 
-    redirectTo.set(url.searchParams.get('forceRedirect') || null);
-
-    url.searchParams.delete('forceRedirect');
+    if (url.searchParams.has('forceRedirect')) {
+        redirectTo.set(url.searchParams.get('forceRedirect') || null);
+        url.searchParams.delete('forceRedirect');
+    }
 
     try {
         const account = await sdk.forConsole.account.get<{ organization?: string }>();

@@ -5,23 +5,25 @@
     import type { Provider } from '$lib/stores/oauth-providers';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import { updateOAuth } from './updateOAuth';
+    import { updateOAuth } from '../updateOAuth';
 
     export let provider: Provider;
+    export let show = false;
 
     let appId: string = null;
     let enabled: boolean = null;
     let clientSecret: string = null;
-    let authentikDomain: string = null;
+    let tenantID: string = null;
     let error: string;
 
     onMount(() => {
         appId ??= provider.appId;
         enabled ??= provider.enabled;
-        if (provider.secret) ({ clientSecret, authentikDomain } = JSON.parse(provider.secret));
+        if (provider.secret) ({ clientSecret, tenantID } = JSON.parse(provider.secret));
     });
 
     const projectId = $page.params.project;
+
     const update = async () => {
         const result = await updateOAuth({ projectId, provider, secret, appId, enabled });
 
@@ -33,24 +35,23 @@
     };
 
     $: secret =
-        clientSecret && authentikDomain
-            ? JSON.stringify({ clientSecret, authentikDomain })
-            : provider.secret;
+        clientSecret && tenantID ? JSON.stringify({ clientSecret, tenantID }) : provider.secret;
 </script>
 
-<Modal {error} size="big" show onSubmit={update} on:close>
+<Modal {error} onSubmit={update} size="big" bind:show on:close>
     <svelte:fragment slot="title">{provider.name} OAuth2 Settings</svelte:fragment>
     <FormList>
         <p>
             To use {provider.name} authentication in your application, first fill in this form. For more
             info you can
-            <a class="link" href={provider.docs} target="_blank" rel="noopener noreferrer"
-                >visit the docs.</a>
+            <a class="link" href={provider.docs} target="_blank" rel="noopener noreferrer">
+                visit the docs.
+            </a>
         </p>
         <InputSwitch id="state" bind:value={enabled} label={enabled ? 'Enabled' : 'Disabled'} />
         <InputText
-            id="clientID"
-            label="Client ID"
+            id="appID"
+            label="Application (client) ID"
             autofocus={true}
             placeholder="Enter ID"
             bind:value={appId} />
@@ -58,14 +59,14 @@
             id="secret"
             label="Client Secret"
             placeholder="Enter Client Secret"
-            minlength={0}
             showPasswordButton
+            minlength={0}
             bind:value={clientSecret} />
         <InputText
-            id="domain"
-            label="Authentik Base-Domain"
-            placeholder="Your Authentik domain"
-            bind:value={authentikDomain} />
+            id="tenant"
+            label="Target Tenant"
+            placeholder="'common','organizations','consumers' or your TenantID"
+            bind:value={tenantID} />
         <Alert type="info">
             To complete set up, add this OAuth2 redirect URI to your {provider.name} app configuration.
         </Alert>
@@ -81,7 +82,7 @@
             disabled={(secret === provider.secret &&
                 enabled === provider.enabled &&
                 appId === provider.appId) ||
-                !(appId && clientSecret && authentikDomain)}
+                !(appId && clientSecret && tenantID)}
             submit>Update</Button>
     </svelte:fragment>
 </Modal>

@@ -33,7 +33,7 @@
     async function handleSubmit() {
         try {
             if (!selectedPaymentMethodId) {
-                const method = await submitStripeCard(name);
+                const method = await submitStripeCard(name, $organization.$id);
                 selectedPaymentMethodId = method.$id;
             }
             isBackup

@@ -5,6 +5,7 @@ import { get, writable } from 'svelte/store';
 import type { PaymentMethodData } from '$lib/sdk/billing';
 import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
 import { addNotification } from './notifications';
+import { organization } from './organization';
 
 export const stripe = writable<Stripe>();
 let paymentMethod: PaymentMethodData;
@@ -50,7 +51,7 @@ export async function unmountPaymentElement() {
     elements = null;
 }
 
-export async function submitStripeCard(name: string, urlRoute?: string) {
+export async function submitStripeCard(name: string, organizationId?: string) {
     try {
         // If a payment method was created during initialization, use it, otherwise create a new one
         if (!paymentMethod) {
@@ -61,15 +62,20 @@ export async function submitStripeCard(name: string, urlRoute?: string) {
         // // Element needs to be submitted before confirming the setup intent
         elements.submit();
 
-        const baseUrl = 'https://cloud.appwrite.io/console/';
+        const baseUrl = 'https://cloud.appwrite.io/console';
+        const accountUrl = `${baseUrl}/account/payments?clientSecret=${clientSecret}`;
+        const orgUrl = `${baseUrl}/organization-${organizationId}/billing?clientSecret=${clientSecret}`;
+
+        const returnUrl = new URL(organizationId ? orgUrl : accountUrl);
+
+        returnUrl.searchParams.append('clientSecret', clientSecret);
+        returnUrl.searchParams.append('paymentMethodId', paymentMethod.$id);
 
         const { setupIntent, error } = await get(stripe).confirmSetup({
             elements,
             clientSecret,
             confirmParams: {
-                return_url: `${baseUrl}${
-                    urlRoute ?? `organization/billing?clientSecret=${clientSecret}`
-                }`,
+                return_url: returnUrl.toString(),
                 payment_method_data: {
                     billing_details: {
                         name
@@ -133,6 +139,45 @@ export async function confirmPayment(
             title: 'Error',
             message:
                 'There was an error processing your payment, try again later. If the problem persists, please contact support.',
+            type: 'error'
+        });
+    }
+}
+
+export async function confirmSetup(
+    clientSecret: string,
+    paymentMethodId: string,
+    urlRoute?: string
+) {
+    const baseUrl = 'https://cloud.appwrite.io/console/';
+
+    const { setupIntent, error } = await get(stripe).confirmCardSetup(clientSecret, {
+        payment_method: paymentMethodId,
+        return_url: `${baseUrl}${
+            urlRoute ?? `organization-${get(organization).$id}/billing?clientSecret=${clientSecret}`
+        }`
+    });
+
+    if (error) {
+        const e = new Error(error.message);
+        trackError(e, Submit.VerifyPayment);
+        addNotification({
+            message: error.message,
+            type: 'error'
+        });
+    }
+
+    if (setupIntent && setupIntent.status === 'succeeded') {
+        trackEvent(Submit.VerifyPayment);
+        addNotification({
+            message: 'Payment method verified successfully',
+            type: 'success'
+        });
+    } else {
+        const e = new Error('Something went wrong. Please try again later.');
+        trackError(e, Submit.VerifyPayment);
+        addNotification({
+            message: e.message,
             type: 'error'
         });
     }

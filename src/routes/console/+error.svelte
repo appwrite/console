@@ -6,7 +6,9 @@
 </script>
 
 <Container>
-    <Heading size="1" tag="h3">{$page.status}</Heading>
-    <Heading size="3" tag="h4">{$page.error.message}</Heading>
-    <Button href="/console">Back to the console</Button>
+    <div class="u-flex-vertical u-gap-16">
+        <Heading size="1" tag="h3">{$page.error.status || 'Invalid Argument'}</Heading>
+        <Heading size="4" tag="h4" trimmed={false}>{$page.error.message}</Heading>
+        <Button href="/console">Back to the console</Button>
+    </div>
 </Container>

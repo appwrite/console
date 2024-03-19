@@ -5,7 +5,7 @@
     import { Dependencies } from '$lib/constants';
     import { invalidate, goto } from '$app/navigation';
     import { registerCommands } from '$lib/commandCenter';
-    import { execute, func, showCreateDeployment } from './store';
+    import { func, showCreateDeployment } from './store';
     import { project } from '../../store';
     import type { Models } from '@appwrite.io/console';
     import Execute from './execute.svelte';
@@ -147,4 +147,4 @@
 
 <slot />
 
-<Execute selectedFunction={$execute} />
+<Execute />
