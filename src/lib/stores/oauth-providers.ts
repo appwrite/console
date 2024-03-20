@@ -74,6 +74,9 @@ const setProviders = (project: Models.Project): Provider[] => {
                 case 'facebook':
                     docs = 'https://developers.facebook.com/';
                     break;
+                case 'fortytwo':
+                    docs = 'https://api.intra.42.fr/apidoc/';
+                    break;
                 case 'github':
                     docs = 'https://developer.github.com';
                     break;
