@@ -19,6 +19,7 @@ export type PaymentMethodData = {
     failed: boolean;
     name: string;
     mandateId?: string;
+    lastError?: string;
 };
 
 export type PaymentList = {
