@@ -76,13 +76,19 @@
 
 <Container>
     {#if $failedInvoice}
-        <Alert type="error" class="common-section">
-            <svelte:fragment slot="title">
-                The scheduled payment for {$organization.name} failed
-            </svelte:fragment>
-            To avoid service disruptions in organization's your projects, please verify your payment
-            details and update them if necessary.
-        </Alert>
+        {#if $failedInvoice?.lastError}
+            <Alert type="error" class="common-section">
+                The scheduled payment for {$organization.name} failed due to following error: {$failedInvoice.lastError}
+            </Alert>
+        {:else}
+            <Alert type="error" class="common-section">
+                <svelte:fragment slot="title">
+                    The scheduled payment for {$organization.name} failed
+                </svelte:fragment>
+                To avoid service disruptions in organization's your projects, please verify your payment
+                details and update them if necessary.
+            </Alert>
+        {/if}
     {/if}
     {#if defaultPaymentMethod?.failed && !backupPaymentMethod}
         <Alert type="error" class="common-section">

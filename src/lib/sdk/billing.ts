@@ -48,6 +48,7 @@ export type Invoice = {
         rate: number;
         desc: string;
     }[];
+    lastError?: string;
 };
 
 export type InvoiceList = {
