@@ -6,6 +6,8 @@
     import { AvatarInitials, EmptySearch, Modal, PaginationInline } from '..';
     import type { Writable } from 'svelte/store';
     import type { Permission } from './permissions.svelte';
+    import Table from '$lib/elements/table/table.svelte';
+    import { TableBody, TableCell, TableRow } from '$lib/elements/table';
 
     export let show: boolean;
     export let groups: Writable<Map<string, Permission>>;
@@ -77,13 +79,13 @@
         bind:value={search} />
     {#if results?.teams?.length}
         <div class="table-wrapper">
-            <table class="table is-table-layout-auto is-remove-outer-styles">
-                <tbody class="table-tbody">
+            <Table noStyles isAutoLayout tag="table">
+                <TableBody>
                     {#each results.teams as team (team.$id)}
                         {@const role = `team:${team.$id}`}
                         {@const exists = $groups.has(role)}
-                        <tr class="table-row">
-                            <td class="table-col" data-title="Enabled" style="--p-col-width:40">
+                        <TableRow>
+                            <TableCell title="Enabled" width={40}>
                                 <input
                                     id={team.$id}
                                     type="checkbox"
@@ -92,8 +94,8 @@
                                     checked={exists || selected.has(role)}
                                     disabled={exists}
                                     on:change={(event) => onSelection(event, role)} />
-                            </td>
-                            <td class="table-col" data-title="Team">
+                            </TableCell>
+                            <TableCell title="Team">
                                 <label class="u-flex u-cross-center u-gap-8" for={team.$id}>
                                     <AvatarInitials size={32} name={team.name} />
                                     <div class="u-line-height-1-5">
@@ -101,11 +103,11 @@
                                         <div class="u-x-small">{team.$id}</div>
                                     </div>
                                 </label>
-                            </td>
-                        </tr>
+                            </TableCell>
+                        </TableRow>
                     {/each}
-                </tbody>
-            </table>
+                </TableBody>
+            </Table>
         </div>
         <div class="u-flex u-margin-block-start-32 u-main-space-between">
             <p class="text">Total results: {results?.total}</p>

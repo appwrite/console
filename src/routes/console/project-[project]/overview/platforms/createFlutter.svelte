@@ -9,13 +9,10 @@
     import Step3 from './wizard/flutter/step3.svelte';
     import Step4 from './wizard/step4.svelte';
     import { Dependencies } from '$lib/constants';
-    import { onboarding } from '../../store';
 
     async function onFinish() {
-        await Promise.all([
-            $onboarding && invalidate(Dependencies.PROJECT),
-            invalidate(Dependencies.PLATFORMS)
-        ]);
+        await Promise.all([invalidate(Dependencies.PROJECT), invalidate(Dependencies.PLATFORMS)]);
+
         createPlatform.reset();
         wizard.hide();
     }
