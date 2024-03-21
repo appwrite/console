@@ -20,9 +20,9 @@
     {#if $collection.documentSecurity}
         <div class="common-section">
             <Alert type="info">
-                <svelte:fragment slot="title">Document security is enabled</svelte:fragment>
-                Users will be able to access this document if they have been granted
-                <b>either document or collection permissions</b>.
+                <svelte:fragment slot="title">Document level permissions are enabled</svelte:fragment>
+                Users will be able to access this document if they have been granted 
+                <b>either document or collection level permissions.</b>
             </Alert>
         </div>
         <div class="common-section">
@@ -30,9 +30,10 @@
         </div>
     {:else}
         <Alert type="info">
-            <svelte:fragment slot="title">Document security is disabled</svelte:fragment>
-            If you want to assign document permissions, navigate to Collection settings and enable document
-            security. Otherwise, only collection permissions will be used.
+            <svelte:fragment slot="title">Document level permissions are disabled</svelte:fragment>
+                If you want to assign different permissions to individual documents. Go to 
+                you collection's settings and enable document level permissions. Otherwise, 
+                all documents in the collection share the same collection level permissions.
         </Alert>
     {/if}
 </WizardStep>

@@ -45,22 +45,23 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h6" size="7" id="document-security">Document security</Heading>
+    <Heading tag="h6" size="7" id="document-security">Document level permissions</Heading>
     <svelte:fragment slot="aside">
         <FormList>
             <InputSwitch
                 bind:value={collectionDocumentSecurity}
                 id="security"
-                label="Document security" />
+                label="Document level permissions" />
         </FormList>
         <p class="text">
-            When document security is enabled, users will be able to access documents for which they
-            have been granted <b>either document or collection permissions</b>.
+            When document level permissions are enabled, users will be able to access documents for which they
+            have been granted <b>either document or collection level permissions</b>.
         </p>
         <p class="text">
-            If document security is disabled, users can access documents <b
-                >only if they have collection permissions</b
-            >. Document permissions will be ignored.
+            When document level permissions are disabled, users can only access 
+            documents <b>if they have been granted collection level 
+            permissions</b>. You will not be able to assign different permissions
+            to individual documents.
         </p>
     </svelte:fragment>
     <svelte:fragment slot="actions">

@@ -299,22 +299,23 @@
 
         <Form onSubmit={updateFileSecurity}>
             <CardGrid>
-                <Heading tag="h6" size="7" id="file-security">File security</Heading>
+                <Heading tag="h6" size="7" id="file-security">File level permissions</Heading>
                 <svelte:fragment slot="aside">
                     <FormList>
                         <InputSwitch
                             bind:value={bucketFileSecurity}
                             id="security"
-                            label="File security" />
+                            label="File  level permissions" />
                     </FormList>
                     <p class="text">
-                        When file security is enabled, users will be able to access files for which
-                        they have been granted <b>either File or Bucket permissions</b>.
+                        When file level permissions are enabled, users will be able to access files for which they
+                        have been granted <b>either file or bucket level permissions</b>.
                     </p>
                     <p class="text">
-                        If file security is disabled, users can access files <b
-                            >only if they have Bucket permissions</b
-                        >. File permissions will be ignored..
+                        When file level permissions are disabled, users can only access 
+                        files <b>if they have been granted file level 
+                        permissions</b>. You will not be able to assign different permissions
+                        to individual files.
                     </p>
                 </svelte:fragment>
                 <svelte:fragment slot="actions">

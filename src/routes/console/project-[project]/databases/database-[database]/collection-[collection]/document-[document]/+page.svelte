@@ -83,11 +83,10 @@
             {#if $collection.documentSecurity}
                 {#if showPermissionAlert}
                     <Alert type="info" dismissible on:dismiss={() => (showPermissionAlert = false)}>
-                        <svelte:fragment slot="title">Document security is enabled</svelte:fragment>
+                        <svelte:fragment slot="title">Document level permissions are enabled</svelte:fragment>
                         <p class="text">
-                            Users will be able to access this document if they have been granted <b
-                                >either document or collection permissions.
-                            </b>
+                            Users will be able to access this document if they have been granted 
+                            <b>either document or collection level permissions.</b>
                         </p>
                     </Alert>
                 {/if}
@@ -96,11 +95,11 @@
                 {/if}
             {:else}
                 <Alert type="info">
-                    <svelte:fragment slot="title">Document security is disabled</svelte:fragment>
+                    <svelte:fragment slot="title">Document level permissions are disabled</svelte:fragment>
                     <p class="text">
-                        If you want to assign document permissions. Go to Collection settings and
-                        enable document security. Otherwise, only collection permissions will be
-                        used.
+                        If you want to assign different permissions to individual documents. Go to 
+                        you collection's settings and enable document level permissions. Otherwise, 
+                        all documents in the collection share the same collection level permissions.
                     </p>
                 </Alert>
             {/if}

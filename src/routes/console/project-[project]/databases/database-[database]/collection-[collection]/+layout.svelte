@@ -163,7 +163,7 @@
             icon: 'puzzle'
         },
         {
-            label: 'Document security',
+            label: 'Document level permissions',
             async callback() {
                 await goto(
                     `/console/project-${$project.$id}/databases/database-${$database.$id}/collection-${$collection.$id}/settings#document-security`

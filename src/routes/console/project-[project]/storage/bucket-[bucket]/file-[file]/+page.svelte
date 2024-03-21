@@ -123,10 +123,10 @@
                 {#if $bucket.fileSecurity}
                     {#if showFileAlert}
                         <Alert type="info" dismissible on:dismiss={() => (showFileAlert = false)}>
-                            <svelte:fragment slot="title">File security is enabled</svelte:fragment>
+                            <svelte:fragment slot="title">File level permissions are enabled</svelte:fragment>
                             <p class="text">
-                                Users will be able to access this file if they have been granted <b
-                                    >either File or Bucket permissions.
+                                Users will be able to access this file if they have been granted 
+                                <b>either file or bucket level permissions.</b>
                                 </b>
                             </p>
                         </Alert>
@@ -134,10 +134,11 @@
                     <Permissions bind:permissions={filePermissions} />
                 {:else}
                     <Alert type="info">
-                        <svelte:fragment slot="title">File security is disabled</svelte:fragment>
+                        <svelte:fragment slot="title">File level permissions are disabled</svelte:fragment>
                         <p class="text">
-                            If you want to assign document permissions. Go to Bucket settings and
-                            enable file security. Otherwise, only Bucket permissions will be used.
+                            If you want to assign different permissions to individual files. Go to 
+                            you bucket's settings and enable file level permissions. Otherwise, 
+                            all files in the bucket share the same bucket level permissions.
                         </p>
                     </Alert>
                 {/if}

@@ -82,9 +82,9 @@
         {#if $bucket.fileSecurity}
             <div class="common-section">
                 <Alert type="info">
-                    <svelte:fragment slot="title">File security enabled</svelte:fragment>
-                    Users will be able to access this file if they have been granted
-                    <b>either File or Bucket permissions</b>.
+                    <svelte:fragment slot="title">File level permissions enabled</svelte:fragment>
+                    Users will be able to access this file if they have been granted 
+                    <b>either file or bucket level permissions.</b>
                 </Alert>
             </div>
             <div class="common-section">
@@ -92,9 +92,10 @@
             </div>
         {:else}
             <Alert type="info">
-                <svelte:fragment slot="title">File security disabled</svelte:fragment>
-                If you want to assign file permissions, navigate to Bucket settings and enable file security.
-                Otherwise, only Bucket permissions will be used.
+                <svelte:fragment slot="title">File level permissions disabled</svelte:fragment>
+                If you want to assign different permissions to individual files. Go to 
+                you bucket's settings and enable file level permissions. Otherwise, 
+                all file in the bucket share the same bucket level permissions.
             </Alert>
         {/if}
     </FormList>
