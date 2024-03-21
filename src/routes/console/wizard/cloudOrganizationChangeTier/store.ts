@@ -1,11 +1,14 @@
 import { BillingPlan } from '$lib/constants';
 import type { WizardStepsType } from '$lib/layout/wizard.svelte';
 import type { Tier } from '$lib/stores/billing';
+import { TRIAL_PERIOD_OVERRIDE } from '$lib/system';
 import { writable } from 'svelte/store';
 
 export const changeTierSteps = writable<WizardStepsType>(new Map());
 export const isUpgrade = writable<boolean>(false);
-export const changeOrganizationFinalAction = writable<string>('Start trial');
+export const changeOrganizationFinalAction = writable<string>(
+    TRIAL_PERIOD_OVERRIDE ? 'Create' : 'Start trial'
+);
 
 export const changeOrganizationTier = writable<{
     billingPlan: Tier;

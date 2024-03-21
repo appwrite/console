@@ -13,7 +13,7 @@
     import CreateOrganization from '../../createOrganization.svelte';
     import { sdk } from '$lib/stores/sdk';
     import type { PageData } from './$types';
-    import { isCloud } from '$lib/system';
+    import { TRIAL_PERIOD_OVERRIDE, isCloud } from '$lib/system';
     import { Pill } from '$lib/elements';
     import type { Models } from '@appwrite.io/console';
     import type { Organization } from '$lib/stores/organization';
@@ -82,7 +82,7 @@
                                     <Pill>FREE</Pill>
                                 </div>
                             {/if}
-                            {#if organization?.billingTrialStartDate && $daysLeftInTrial > 0 && organization.billingPlan !== BillingPlan.STARTER}
+                            {#if organization?.billingTrialStartDate && $daysLeftInTrial > 0 && organization.billingPlan !== BillingPlan.STARTER && !TRIAL_PERIOD_OVERRIDE}
                                 <div
                                     class="u-flex u-cross-center"
                                     use:tooltip={{

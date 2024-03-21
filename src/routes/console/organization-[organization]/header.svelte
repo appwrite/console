@@ -18,7 +18,7 @@
         organizationList
     } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
-    import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
+    import { GRACE_PERIOD_OVERRIDE, TRIAL_PERIOD_OVERRIDE, isCloud } from '$lib/system';
     import CreateOrganizationCloud from '../createOrganizationCloud.svelte';
 
     let areMembersLimited: boolean;
@@ -94,7 +94,7 @@
                             {#if isCloud && $organization?.billingPlan === BillingPlan.STARTER}
                                 <Pill>FREE</Pill>
                             {/if}
-                            {#if isCloud && $organization?.billingTrialStartDate && $daysLeftInTrial > 0 && $organization.billingPlan !== BillingPlan.STARTER}
+                            {#if isCloud && $organization?.billingTrialStartDate && $daysLeftInTrial > 0 && $organization.billingPlan !== BillingPlan.STARTER && !TRIAL_PERIOD_OVERRIDE}
                                 <div
                                     class="u-flex u-cross-center"
                                     use:tooltip={{

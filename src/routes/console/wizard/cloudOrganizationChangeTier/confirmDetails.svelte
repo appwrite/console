@@ -16,6 +16,7 @@
         feedbackDowngradeOptions,
         isUpgrade
     } from './store';
+    import { TRIAL_PERIOD_OVERRIDE } from '$lib/system';
 
     const plan = $plansInfo.get($changeOrganizationTier.billingPlan);
     const collaboratorPrice = plan?.addons.member?.price ?? 0;
@@ -77,7 +78,9 @@
     <WizardStep>
         <svelte:fragment slot="title">Confirm your details</svelte:fragment>
         <svelte:fragment slot="subtitle">
-            Confirm the details of your new organization and start your free trial.
+            Confirm the details of your new organization{TRIAL_PERIOD_OVERRIDE
+                ? '.'
+                : ' and start your free trial.'}
         </svelte:fragment>
 
         <p class="body-text-1 u-bold">Organization name</p>
@@ -144,9 +147,9 @@
 
             <p class="text u-margin-block-start-16">
                 This amount, and any additional usage fees, will be charged on a recurring 30-day
-                billing cycle after your trial period ends on <b
-                    >{toLocaleDate(billingPayDate.toString())}</b
-                >.
+                billing cycle{TRIAL_PERIOD_OVERRIDE
+                    ? '.'
+                    : ` after your trial period ends on ${toLocaleDate(billingPayDate.toString())}`}.
             </p>
         </Box>
     </WizardStep>

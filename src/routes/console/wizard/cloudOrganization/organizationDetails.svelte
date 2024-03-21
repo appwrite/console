@@ -8,6 +8,7 @@
     import { plansInfo, tierFree, tierPro, tierScale } from '$lib/stores/billing';
     import { organizationList, type Organization } from '$lib/stores/organization';
     import { updateStepStatus } from '$lib/stores/wizard';
+    import { TRIAL_PERIOD_OVERRIDE } from '$lib/system';
     import { createOrganization, createOrgSteps } from './store';
 
     let showCustomId = false;
@@ -108,7 +109,9 @@
                             {tierPro.description}
                         </p>
                     </div>
-                    <Pill>14 DAY FREE TRIAL</Pill>
+                    {#if !TRIAL_PERIOD_OVERRIDE}
+                        <Pill>14 DAY FREE TRIAL</Pill>
+                    {/if}
                 </svelte:fragment>
             </LabelCard>
         </li>
@@ -131,7 +134,6 @@
                         </p>
                     </div>
                     <div class:u-opacity-50={disabled}>
-                        <!-- <Pill>14 DAY FREE TRIAL</Pill> -->
                         <Pill disabled>COMING SOON</Pill>
                     </div>
                 </svelte:fragment>

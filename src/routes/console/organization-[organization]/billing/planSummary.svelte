@@ -16,6 +16,7 @@
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { BillingPlan } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
+    import { TRIAL_PERIOD_OVERRIDE } from '$lib/system';
 
     let currentInvoice: Invoice;
     const today = new Date();
@@ -29,7 +30,7 @@
 
     $: currentPlan = $plansInfo?.get($organization?.billingPlan);
     $: extraUsage = currentInvoice?.amount - currentPlan?.price;
-    $: isTrial = new Date($organization?.billingStartDate).getTime() - today.getTime() > 0;
+    $: isTrial = (new Date($organization?.billingStartDate).getTime() - today.getTime() > 0 ) && !TRIAL_PERIOD_OVERRIDE;
 </script>
 
 {#if $organization}
@@ -53,7 +54,7 @@
                         <h6 class="body-text-1 u-bold u-trim-1">
                             {tierToPlan($organization?.billingPlan)?.name} plan
                         </h6>
-                        {#if $organization?.billingPlan !== BillingPlan.STARTER && isTrial}
+                        {#if $organization?.billingPlan !== BillingPlan.STARTER && isTrial && }
                             <Pill>TRIAL</Pill>
                         {/if}
                     </div>
