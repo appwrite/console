@@ -17,7 +17,10 @@ test('onboarding - free tier', async ({ page }) => {
 
     await test.step('create project', async () => {
         await page.waitForURL('/console/organization-**');
-        await page.getByRole('article').getByRole('button', { name: 'Create project', exact: true }).click();
+        await page
+            .getByRole('article')
+            .getByRole('button', { name: 'Create project', exact: true })
+            .click();
         await page.getByPlaceholder('Project name').click();
         await page.getByPlaceholder('Project name').fill('Test Project');
         await page.getByRole('button', { name: 'Next' }).click();
@@ -60,7 +63,10 @@ test('onboarding - pro', async ({ page }) => {
 
     await test.step('create project', async () => {
         await page.waitForURL('/console/organization-**');
-        await page.getByRole('article').getByRole('button', { name: 'Create project', exact: true }).click();
+        await page
+            .getByRole('article')
+            .getByRole('button', { name: 'Create project', exact: true })
+            .click();
         await page.getByPlaceholder('Project name').click();
         await page.getByPlaceholder('Project name').fill('Test Project');
         await page.getByRole('button', { name: 'Next' }).click();
