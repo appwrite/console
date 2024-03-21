@@ -15,7 +15,8 @@
         "test": "vitest run",
         "test:ui": "vitest --ui",
         "test:watch": "vitest watch",
-        "e2e": "playwright test tests/e2e"
+        "e2e": "playwright test tests/e2e",
+        "e2e:ui": "playwright test tests/e2e --ui"
     },
     "dependencies": {
         "@appwrite.io/console": "^0.5.0",
