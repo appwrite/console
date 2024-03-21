@@ -766,7 +766,7 @@ export class Billing {
     async getOrganizationBillingAddress(
         organizationId: string,
         billingAddressId: string
-    ): Promise<PaymentMethodData> {
+    ): Promise<Address> {
         const path = `/organizations/${organizationId}/billing-addresses/${billingAddressId}`;
         const params = {
             organizationId,
