@@ -9,6 +9,7 @@ import type {
     SMTPProviderParams,
     SendgridProviderParams,
     TelesignProviderParams,
+    TelnyxProviderParams,
     TextmagicProviderParams,
     TwilioProviderParams,
     VonageProviderParams
@@ -20,6 +21,7 @@ export const providerParams = writable<{
     twilio: Partial<TwilioProviderParams>;
     msg91: Partial<Msg91ProviderParams>;
     telesign: Partial<TelesignProviderParams>;
+    telnyx: Partial<TelnyxProviderParams>;
     textmagic: Partial<TextmagicProviderParams>;
     vonage: Partial<VonageProviderParams>;
     mailgun: Partial<MailgunProviderParams>;
@@ -31,6 +33,7 @@ export const providerParams = writable<{
     twilio: null,
     msg91: null,
     telesign: null,
+    telnyx: null,
     textmagic: null,
     vonage: null,
     mailgun: null,

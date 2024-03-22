@@ -44,6 +44,15 @@
                     from: ''
                 };
                 break;
+            case Providers.Telnyx:
+                $providerParams[$provider] = {
+                    providerId: id,
+                    name: name,
+                    enabled: true,
+                    apiKey: '',
+                    from: ''
+                };
+                break;
             case Providers.Textmagic:
                 $providerParams[$provider] = {
                     providerId: id,

@@ -6,6 +6,7 @@
         TwilioProviderParams,
         Msg91ProviderParams,
         TelesignProviderParams,
+        TelnyxProviderParams,
         TextmagicProviderParams,
         VonageProviderParams,
         MailgunProviderParams,
@@ -21,6 +22,7 @@
         | TwilioProviderParams
         | Msg91ProviderParams
         | TelesignProviderParams
+        | TelnyxProviderParams
         | TextmagicProviderParams
         | VonageProviderParams
         | MailgunProviderParams

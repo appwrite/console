@@ -38,6 +38,12 @@
                         providerName
                     );
                     break;
+                case Providers.Telnyx:
+                    response = await sdk.forProject.messaging.updateTelnyxProvider(
+                        providerId,
+                        providerName
+                    );
+                    break;
                 case Providers.Textmagic:
                     response = await sdk.forProject.messaging.updateTextmagicProvider(
                         providerId,

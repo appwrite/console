@@ -107,6 +107,16 @@
                         formValues['from']
                     );
                     break;
+                case Providers.Telnyx:
+                    response = await sdk.forProject.messaging.updateTelnyxProvider(
+                        providerId,
+                        undefined,
+                        undefined,
+                        undefined,
+                        formValues['apiKey'],
+                        formValues['from']
+                    );
+                    break;
                 case Providers.Textmagic:
                     response = await sdk.forProject.messaging.updateTextmagicProvider(
                         providerId,
