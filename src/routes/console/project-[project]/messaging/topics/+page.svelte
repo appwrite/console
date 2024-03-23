@@ -52,29 +52,31 @@
     <div class="u-flex u-flex-vertical">
         <div class="u-flex u-main-space-between">
             <Heading tag="h2" size="5">Topics</Heading>
-            <div class="is-only-mobile">
+            <div class={data.topics.total ? 'is-only-mobile' : ''}>
                 <Button on:click={() => ($showCreate = true)} event="create_topic">
                     <span class="icon-plus" aria-hidden="true" />
                     <span class="text">Create topic</span>
                 </Button>
             </div>
         </div>
-        <!-- TODO: fix width of search input in mobile -->
-        <SearchQuery search={data.search} placeholder="Search by name or ID">
-            <div class="u-flex u-gap-16 is-not-mobile">
-                <Filters query={data.query} {columns} />
-                <ViewSelector
-                    view={View.Table}
-                    {columns}
-                    hideView
-                    allowNoColumns
-                    showColsTextMobile />
-                <Button on:click={() => ($showCreate = true)} event="create_topic">
-                    <span class="icon-plus" aria-hidden="true" />
-                    <span class="text">Create topic</span>
-                </Button>
-            </div>
-        </SearchQuery>
+        {#if data.topics.total}
+            <!-- TODO: fix width of search input in mobile -->
+            <SearchQuery search={data.search} placeholder="Search by name or ID">
+                <div class="u-flex u-gap-16 is-not-mobile">
+                    <Filters query={data.query} {columns} />
+                    <ViewSelector
+                        view={View.Table}
+                        {columns}
+                        hideView
+                        allowNoColumns
+                        showColsTextMobile />
+                    <Button on:click={() => ($showCreate = true)} event="create_topic">
+                        <span class="icon-plus" aria-hidden="true" />
+                        <span class="text">Create topic</span>
+                    </Button>
+                </div>
+            </SearchQuery>
+        {/if}
         <div class="u-flex u-gap-16 is-only-mobile u-margin-block-start-16">
             <div class="u-flex-basis-50-percent">
                 <!-- TODO: fix width -->

@@ -44,11 +44,27 @@
 <Container>
     <ContainerHeader
         title="Teams"
-        isFlex={false}
+        isFlex={!data.teams.total}
         total={data.teams.total}
         buttonDisabled={isCloud && $readOnly}
         let:isButtonDisabled>
-        <SearchQuery search={data.search} placeholder="Search by name">
+        {#if data.teams.total}
+            <SearchQuery search={data.search} placeholder="Search by name">
+                <div
+                    use:tooltip={{
+                        content: `Upgrade to add more teams`,
+                        disabled: !isButtonDisabled
+                    }}>
+                    <Button
+                        on:click={() => ($showCreateTeam = true)}
+                        event="create_team"
+                        disabled={isButtonDisabled}>
+                        <span class="icon-plus" aria-hidden="true" />
+                        <span class="text">Create team</span>
+                    </Button>
+                </div>
+            </SearchQuery>
+        {:else}
             <div
                 use:tooltip={{
                     content: `Upgrade to add more teams`,
@@ -62,7 +78,7 @@
                     <span class="text">Create team</span>
                 </Button>
             </div>
-        </SearchQuery>
+        {/if}
     </ContainerHeader>
 
     {#if data.teams.total}

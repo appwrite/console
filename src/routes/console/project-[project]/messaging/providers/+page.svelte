@@ -28,23 +28,25 @@
     <div class="u-flex u-flex-vertical">
         <div class="u-flex u-main-space-between">
             <Heading tag="h2" size="5">Providers</Heading>
-            <div class="is-only-mobile">
+            <div class={data.providers.total ? 'is-only-mobile' : ''}>
                 <CreateProviderDropdown bind:showCreateDropdown={showCreateDropdownMobile} />
             </div>
         </div>
-        <!-- TODO: fix width of search input in mobile -->
-        <SearchQuery search={data.search} placeholder="Search provider">
-            <div class="u-flex u-gap-16 is-not-mobile">
-                <Filters query={data.query} {columns} />
-                <ViewSelector
-                    view={data.view}
-                    {columns}
-                    hideView
-                    allowNoColumns
-                    showColsTextMobile />
-                <CreateProviderDropdown bind:showCreateDropdown={showCreateDropdownDesktop} />
-            </div>
-        </SearchQuery>
+        {#if data.providers.total}
+            <!-- TODO: fix width of search input in mobile -->
+            <SearchQuery search={data.search} placeholder="Search provider">
+                <div class="u-flex u-gap-16 is-not-mobile">
+                    <Filters query={data.query} {columns} />
+                    <ViewSelector
+                        view={data.view}
+                        {columns}
+                        hideView
+                        allowNoColumns
+                        showColsTextMobile />
+                    <CreateProviderDropdown bind:showCreateDropdown={showCreateDropdownDesktop} />
+                </div>
+            </SearchQuery>
+        {/if}
         <div class="u-flex u-gap-16 is-only-mobile u-margin-block-start-16">
             <div class="u-flex-basis-50-percent">
                 <!-- TODO: fix width -->
