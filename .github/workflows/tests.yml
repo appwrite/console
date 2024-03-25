@@ -28,6 +28,8 @@ jobs:
             - name: Linter
               run: npm run lint
             - name: Unit Tests
-              run: npm test
+              run: npm run test
+            - name: E2E Tests
+              run: npx playwright install && npm run e2e
             - name: Build Console
               run: npm run build
