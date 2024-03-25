@@ -18,6 +18,7 @@ export enum Dependencies {
     ACCOUNT_SESSIONS = 'dependency:account_sessions',
     USER = 'dependency:user',
     USERS = 'dependency:users',
+    USER_IDENTITIES = 'dependency:user_identities',
     USER_TARGETS = 'dependency:user_targets',
     SESSIONS = 'dependency:sessions',
     TEAM = 'dependency:team',
