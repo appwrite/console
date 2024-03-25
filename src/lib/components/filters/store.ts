@@ -5,14 +5,19 @@ import { page } from '$app/stores';
 import deepEqual from 'deep-equal';
 import type { Column, ColumnType } from '$lib/helpers/types';
 
+export type TagValue = {
+    tag: string;
+    value: string | number | string[];
+};
+
 export type Operator = {
-    toTag: (attribute: string, input?: string | number) => string;
-    toQuery: (attribute: string, input?: string | number) => string;
+    toTag: (attribute: string, input?: string | number | string[]) => string | TagValue;
+    toQuery: (attribute: string, input?: string | number | string[]) => string;
     types: ColumnType[];
     hideInput?: boolean;
 };
 
-export function mapToQueryParams(map: Map<string, string>) {
+export function mapToQueryParams(map: Map<string | TagValue, string>) {
     return encodeURIComponent(JSON.stringify(Array.from(map.entries())));
 }
 
@@ -22,13 +27,13 @@ export function queryParamToMap(queryParam: string) {
     return new Map(queries);
 }
 
-function initQueries(initialValue = new Map<string, string>()) {
+function initQueries(initialValue = new Map<string | TagValue, string>()) {
     const queries = writable(initialValue);
 
     type AddFilterArgs = {
         operator: Operator;
         column: Column;
-        value: string | number;
+        value: string | number | string[];
     };
 
     function addFilter({ column, operator, value }: AddFilterArgs) {
@@ -38,7 +43,7 @@ function initQueries(initialValue = new Map<string, string>()) {
         });
     }
 
-    function removeFilter(tag: string) {
+    function removeFilter(tag: string | TagValue) {
         queries.update((map) => {
             map.delete(tag);
             return map;

@@ -9,6 +9,7 @@
 
     export let query = '[]';
     export let columns: Writable<Column[]>;
+    export let disabled = false;
     export let fullWidthMobile = false;
 
     const parsedQueries = queryParamToMap(query);
@@ -29,7 +30,7 @@
 
 <div class="is-not-mobile">
     <Drop bind:show={showFiltersDesktop} noArrow>
-        <Button secondary on:click={() => (showFiltersDesktop = !showFiltersDesktop)}>
+        <Button secondary on:click={() => (showFiltersDesktop = !showFiltersDesktop)} {disabled}>
             <i class="icon-filter u-opacity-50" />
             Filters
             {#if applied > 0}

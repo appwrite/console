@@ -91,7 +91,11 @@
                 id: attribute.key,
                 title: attribute.key,
                 type: attribute.type as ColumnType,
-                show: selected?.includes(attribute.key) ?? true
+                show: selected?.includes(attribute.key) ?? true,
+                array: attribute?.array,
+                format:
+                    'format' in attribute && attribute?.format === 'enum' ? attribute.format : null,
+                elements: 'elements' in attribute ? attribute.elements : null
             }))
         );
     }

@@ -1,12 +1,19 @@
 <script lang="ts">
-    import { Button, InputNumber } from '$lib/elements/forms';
-    import InputSelect from '$lib/elements/forms/inputSelect.svelte';
-    import InputText from '$lib/elements/forms/inputText.svelte';
+    import {
+        Button,
+        InputNumber,
+        InputSelect,
+        InputText,
+        InputTags,
+        FormList,
+        InputSelectCheckbox
+    } from '$lib/elements/forms';
     import { Query } from '@appwrite.io/console';
-    import { createEventDispatcher } from 'svelte';
-    import { tags, type Operator, queries } from './store';
+    import { createEventDispatcher, onMount } from 'svelte';
+    import { tags, type Operator, queries, type TagValue } from './store';
     import type { Column } from '$lib/helpers/types';
     import type { Writable } from 'svelte/store';
+    import { tooltip } from '$lib/actions/tooltip';
 
     export let columns: Writable<Column[]>;
 
@@ -17,6 +24,7 @@
 
     let columnId: string | null = null;
     $: column = $columns.find((c) => c.id === columnId) as Column;
+    let arrayValues: string[] = [];
 
     dispatch('apply', { applied: $tags.length });
 
@@ -61,17 +69,31 @@
             toTag: (attribute, input) => `**${attribute}** not equal to **${input}**`,
             types: ['string', 'integer', 'double', 'boolean']
         },
-        'not null': {
+        'is not null': {
             toQuery: Query.isNotNull,
             toTag: (attribute) => `**${attribute}** is not null`,
             types: ['string', 'integer', 'double', 'boolean', 'datetime', 'relationship'],
             hideInput: true
         },
-        null: {
+        'is null': {
             toQuery: Query.isNull,
             toTag: (attribute) => `**${attribute}** is null`,
             types: ['string', 'integer', 'double', 'boolean', 'datetime', 'relationship'],
             hideInput: true
+        },
+        contains: {
+            toQuery: Query.contains,
+            toTag: (attribute, input) => {
+                if (Array.isArray(input) && input.length > 2) {
+                    return {
+                        value: input,
+                        tag: `**${attribute}** contains **${formatArray(input)}** `
+                    };
+                } else {
+                    return `**${attribute}** contains **${input}**`;
+                }
+            },
+            types: ['string', 'integer', 'double', 'boolean', 'datetime', 'enum']
         }
     };
 
@@ -93,21 +115,44 @@
     /* eslint  @typescript-eslint/no-explicit-any: 'off' */
     let value: any = null;
 
-    $: {
-        columnId;
-        value = null;
-    }
+    onMount(() => {
+        value = column?.array ? [] : null;
+    });
 
     // This Map is keyed by tags, and has a query as the value
     function addFilter() {
         if (!column || !operator) return;
-
-        queries.addFilter({ column, operator, value: value ?? '' });
-        value = null;
+        if (column.array) {
+            queries.addFilter({ column, operator, value: arrayValues });
+            arrayValues = [];
+        } else {
+            queries.addFilter({ column, operator, value: value ?? '' });
+            value = null;
+        }
     }
 
     function tagFormat(node: HTMLElement) {
         node.innerHTML = node.innerHTML.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+    }
+
+    function formatArray(array: string[]) {
+        if (!array?.length) return;
+        if (array.length > 2) {
+            return `${array[0]} or ${array.length - 1} others`;
+        } else {
+            return array.join(' or ');
+        }
+    }
+
+    function isTypeTagValue(obj: any): obj is TagValue {
+        if (typeof obj === 'string') return false;
+        return (
+            obj &&
+            typeof obj.tag === 'string' &&
+            (typeof obj.value === 'string' ||
+                typeof obj.value === 'number' ||
+                Array.isArray(obj.value))
+        );
     }
 
     $: isDisabled = !operator;
@@ -134,23 +179,55 @@
                 bind:value={operatorKey} />
         </ul>
         {#if column && operator && !operator?.hideInput}
-            <ul class="u-margin-block-start-8">
-                {#if column.type === 'integer' || column.type === 'double'}
-                    <InputNumber id="value" bind:value placeholder="Enter value" />
-                {:else if column.type === 'boolean'}
-                    <InputSelect
-                        id="value"
-                        placeholder="Select a value"
-                        required={true}
-                        options={[
-                            { label: 'True', value: true },
-                            { label: 'False', value: false }
-                        ].filter(Boolean)}
-                        bind:value />
-                {:else}
-                    <InputText id="value" bind:value placeholder="Enter value" />
-                {/if}
-            </ul>
+            {#if column?.array}
+                <FormList class="u-margin-block-start-8">
+                    {#if column.format === 'enum'}
+                        <InputSelectCheckbox
+                            name="value"
+                            bind:tags={arrayValues}
+                            placeholder="Select value"
+                            options={column?.elements?.map((value) => ({
+                                label: value,
+                                value,
+                                checked: arrayValues.includes(value)
+                            }))}>
+                        </InputSelectCheckbox>
+                    {:else}
+                        <InputTags
+                            label="values"
+                            showLabel={false}
+                            id="value"
+                            bind:tags={arrayValues}
+                            placeholder="Enter values" />
+                    {/if}
+                </FormList>
+            {:else}
+                <ul class="u-margin-block-start-8">
+                    {#if column.format === 'enum'}
+                        <InputSelect
+                            id="value"
+                            bind:value
+                            placeholder="Select value"
+                            options={column?.elements?.map((value) => ({ label: value, value }))}
+                            label="Value"
+                            showLabel={false} />
+                    {:else if column.type === 'integer' || column.type === 'double'}
+                        <InputNumber id="value" bind:value placeholder="Enter value" />
+                    {:else if column.type === 'boolean'}
+                        <InputSelect
+                            id="value"
+                            placeholder="Select a value"
+                            required={true}
+                            options={[
+                                { label: 'True', value: true },
+                                { label: 'False', value: false }
+                            ].filter(Boolean)}
+                            bind:value />
+                    {:else}
+                        <InputText id="value" bind:value placeholder="Enter value" />
+                    {/if}
+                </ul>
+            {/if}
         {/if}
         <Button text disabled={isDisabled} class="u-margin-block-start-4" submit>
             <i class="icon-plus" />
@@ -160,16 +237,32 @@
 
     <ul class="u-flex u-flex-wrap u-cross-center u-gap-8 u-margin-block-start-16 tags">
         {#each $tags as tag (tag)}
-            <button
-                class="tag"
-                on:click={() => {
-                    queries.removeFilter(tag);
-                }}>
-                <span class="text" use:tagFormat>
-                    {tag}
-                </span>
-                <i class="icon-x" />
-            </button>
+            {#if isTypeTagValue(tag)}
+                <button
+                    use:tooltip={{
+                        content: tag?.value?.toString()
+                    }}
+                    class="tag"
+                    on:click={() => {
+                        queries.removeFilter(tag);
+                    }}>
+                    <span class="text" use:tagFormat>
+                        {tag.tag}
+                    </span>
+                    <i class="icon-x" />
+                </button>
+            {:else}
+                <button
+                    class="tag"
+                    on:click={() => {
+                        queries.removeFilter(tag);
+                    }}>
+                    <span class="text" use:tagFormat>
+                        {tag}
+                    </span>
+                    <i class="icon-x" />
+                </button>
+            {/if}
         {/each}
     </ul>
 </div>
