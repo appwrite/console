@@ -54,7 +54,7 @@
             );
             await invalidate(Dependencies.FUNCTION);
             addNotification({
-                message: 'Permissions have been updated',
+                message: 'Events have been updated',
                 type: 'success'
             });
             trackEvent(Submit.FunctionUpdateEvents);
