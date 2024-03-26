@@ -3,6 +3,7 @@
     import { onDestroy } from 'svelte';
     import { isSupportOnline, supportData } from './wizard/support/store';
     import Step1 from './wizard/support/step1.svelte';
+    import Label from '$lib/elements/forms/label.svelte';
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
     import { user } from '$lib/stores/user';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
@@ -10,6 +11,12 @@
     import { wizard } from '$lib/stores/wizard';
     import { VARS } from '$lib/system';
     import { organization } from '$lib/stores/organization';
+    import {
+        localeTimezoneName,
+        utcHourToLocaleHour,
+        utcWeekDayToLocaleWeekDay,
+        type WeekDay
+    } from '$lib/helpers/date';
 
     onDestroy(() => {
         $supportData = {
@@ -76,6 +83,16 @@
     }
 
     $wizard.finalAction = handleSubmit;
+
+    const workTimings = {
+        start: '09:00',
+        end: '17:00',
+        startDay: 'Monday' as WeekDay,
+        endDay: 'Friday' as WeekDay
+    };
+
+    $: supportTimings = `${utcHourToLocaleHour(workTimings.start)} - ${utcHourToLocaleHour(workTimings.end)}`;
+    $: supportWeekDays = `${utcWeekDayToLocaleWeekDay(workTimings.startDay, workTimings.start)} - ${utcWeekDayToLocaleWeekDay(workTimings.endDay, workTimings.end)}`;
 </script>
 
 <Wizard title="Contact us" steps={stepsComponents} finalAction="Submit" on:exit={resetData}>
@@ -85,7 +102,10 @@
             If you found a bug or have questions, please reach out to the Appwrite team. We try to
             respond to all messages within our office hours.
         </p>
-        <p class="text u-margin-block-start-32">Available: <b>Mon-Fri 09:00 - 17:00 UTC</b></p>
+        <p class="text u-margin-block-start-32">
+            Available: <b>{supportWeekDays}, {supportTimings}</b>
+            <Label tooltip={localeTimezoneName()} />
+        </p>
         <div class="u-flex u-gap-4 u-cross-center">
             <span>Currently:</span>
             {#if isSupportOnline()}
