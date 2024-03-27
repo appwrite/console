@@ -13,6 +13,7 @@
     import { Pill } from '$lib/elements';
     import { BillingPlan } from '$lib/constants';
     import { formatCurrency } from '$lib/helpers/numbers';
+    import { TRIAL_PERIOD_OVERRIDE } from '$lib/system';
 
     let usage: OrganizationUsage = null;
     let members: Models.MembershipList = null;
@@ -161,7 +162,7 @@
                     <div class:u-opacity-50={disabled}>
                         {#if $organization.billingPlan === BillingPlan.PRO}
                             <Pill disabled>CURRENT PLAN</Pill>
-                        {:else}
+                        {:else if !TRIAL_PERIOD_OVERRIDE}
                             <Pill>14 DAY FREE TRIAL</Pill>
                         {/if}
                     </div>
