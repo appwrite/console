@@ -16,8 +16,7 @@
                 style="color:hsl(var(--color-danger-100));" />Message failed
         </p>
         <p>
-            The message has been sent with errors. Please refer to the logs below for more
-            information.
+            The message could not be sent due to an error. Please refer to the logs below for more information.
         </p>
         <div style="max-inline-size: 524px">
             <Code language="html" code={errors.join('\n')} noMargin noBoxPadding allowScroll />
