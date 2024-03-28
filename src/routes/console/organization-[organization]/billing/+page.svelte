@@ -22,6 +22,7 @@
     import { BillingPlan } from '$lib/constants';
     import RetryPaymentModal from './retryPaymentModal.svelte';
     import { selectedInvoice, showRetryModal } from './store';
+    import { Button } from '$lib/elements/forms';
 
     $: defaultPaymentMethod = $paymentMethods?.paymentMethods?.find(
         (method: PaymentMethodData) => method.$id === $organization?.paymentMethodId
@@ -76,13 +77,27 @@
 
 <Container>
     {#if $failedInvoice}
-        <Alert type="error" class="common-section">
-            <svelte:fragment slot="title">
-                The scheduled payment for {$organization.name} failed
-            </svelte:fragment>
-            To avoid service disruptions in organization's your projects, please verify your payment
-            details and update them if necessary.
-        </Alert>
+        {#if $failedInvoice?.lastError}
+            <Alert type="error" class="common-section">
+                The scheduled payment for {$organization.name} failed due to following error: {$failedInvoice.lastError}
+                <svelte:fragment slot="buttons">
+                    <Button
+                        text
+                        on:click={() => {
+                            $selectedInvoice = $failedInvoice;
+                            $showRetryModal = true;
+                        }}>Try again</Button>
+                </svelte:fragment>
+            </Alert>
+        {:else}
+            <Alert type="error" class="common-section">
+                <svelte:fragment slot="title">
+                    The scheduled payment for {$organization.name} failed
+                </svelte:fragment>
+                To avoid service disruptions in organization's your projects, please verify your payment
+                details and update them if necessary.
+            </Alert>
+        {/if}
     {/if}
     {#if defaultPaymentMethod?.failed && !backupPaymentMethod}
         <Alert type="error" class="common-section">
