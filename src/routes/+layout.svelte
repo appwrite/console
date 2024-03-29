@@ -3,7 +3,7 @@
     import { afterNavigate, goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { isTrackingAllowed, trackPageView } from '$lib/actions/analytics';
+    import { trackPageView } from '$lib/actions/analytics';
     import { reportWebVitals } from '$lib/helpers/vitals';
     import { Notifications, Progress } from '$lib/layout';
     import { app } from '$lib/stores/app';
@@ -15,7 +15,7 @@
     import Loading from './loading.svelte';
     import { loading, requestedMigration } from './store';
     import { parseIfString } from '$lib/helpers/object';
-    import Consent, { consent } from '$lib/components/consent.svelte';
+    import Consent from '$lib/components/consent.svelte';
 
     if (browser) {
         window.VERCEL_ANALYTICS_ID = import.meta.env.VERCEL_ANALYTICS_ID?.toString() ?? false;
