@@ -10,7 +10,6 @@
     import { user } from '$lib/stores/user';
     import { ENV, isCloud } from '$lib/system';
     import * as Sentry from '@sentry/svelte';
-    import LogRocket from 'logrocket';
     import { onMount } from 'svelte';
     import { onCLS, onFCP, onFID, onINP, onLCP, onTTFB } from 'web-vitals';
     import Loading from './loading.svelte';
@@ -48,17 +47,6 @@
                 integrations: [new Sentry.BrowserTracing()],
                 tracesSampleRate: 1.0
             });
-
-            /**
-             * LogRocket
-             */
-            if ($consent?.accepted?.analytics && isCloud && isTrackingAllowed()) {
-                LogRocket.init('rgthvf/appwrite', {
-                    dom: {
-                        inputSanitizer: true
-                    }
-                });
-            }
         }
 
         /**
