@@ -10,9 +10,9 @@
     import { Dependencies } from '$lib/constants';
     import { initializeStripe, isStripeInitialized, submitStripeCard } from '$lib/stores/stripe';
     import { organization } from '$lib/stores/organization';
-    import { symmetricDifference } from '$lib/helpers/array';
     import { showUsageRatesModal } from '$lib/stores/billing';
     import { PaymentBoxes } from '$lib/components/billing';
+    import { page } from '$app/stores';
 
     let methods: PaymentList;
     let filteredMethods: PaymentMethodData[];
@@ -48,15 +48,10 @@
             }
         } else {
             try {
-                await submitStripeCard(name);
-                const latestMethods = await sdk.forConsole.billing.listPaymentMethods();
-                const paymentMethod = symmetricDifference(
-                    methods.paymentMethods,
-                    latestMethods.paymentMethods
-                )[0] as PaymentMethodData;
-                const card = await sdk.forConsole.billing.getPaymentMethod(paymentMethod.$id);
+                const method = await submitStripeCard(name, $page?.params?.organization ?? null);
+                const card = await sdk.forConsole.billing.getPaymentMethod(method.$id);
                 if (card?.last4) {
-                    $changeOrganizationTier.paymentMethodId = paymentMethod.$id;
+                    $changeOrganizationTier.paymentMethodId = method.$id;
                 } else {
                     throw new Error(
                         'The payment method you selected is not valid. Please select a different one.'
