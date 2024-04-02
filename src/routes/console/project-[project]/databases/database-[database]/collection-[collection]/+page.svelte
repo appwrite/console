@@ -9,37 +9,44 @@
     import { Container } from '$lib/layout';
     import { preferences } from '$lib/stores/preferences';
     import { wizard } from '$lib/stores/wizard';
-    import type { PageData } from './$types';
     import CreateAttributeDropdown from './attributes/createAttributeDropdown.svelte';
     import type { Option } from './attributes/store';
     import CreateAttribute from './createAttribute.svelte';
     import Create from './createDocument.svelte';
-    import { collection, columns } from './store';
+    import { columns, type Attributes } from './store';
     import Table from './table.svelte';
 
-    export let data: PageData;
+    export let data;
 
     let showCreateAttribute = false;
     let showCreateDropdown = false;
     let selectedAttribute: Option['name'] = null;
 
     $: selected = preferences.getCustomCollectionColumns($page.params.collection);
-    $: columns.set(
-        $collection.attributes.map((attribute) => ({
-            id: attribute.key,
-            title: attribute.key,
-            type: attribute.type as ColumnType,
-            show: selected?.includes(attribute.key) ?? true
-        }))
-    );
+    $: setColumns(data.collection.attributes as unknown as Attributes[]);
 
     function openWizard() {
         wizard.start(Create);
     }
 
-    $: hasAttributes = !!$collection.attributes.length;
+    function setColumns(attr: Attributes[]) {
+        columns.set(
+            attr.map((attribute) => {
+                return {
+                    id: attribute.key,
+                    title: attribute.key,
+                    type: attribute.type as ColumnType,
+                    show: selected?.includes(attribute.key) ?? true
+                };
+            })
+        );
+    }
 
-    $: hasValidAttributes = $collection?.attributes?.some((attr) => attr.status === 'available');
+    $: hasAttributes = !!data?.collection?.attributes?.length;
+
+    $: hasValidAttributes = data?.collection?.attributes?.some(
+        (attr) => (attr as unknown as Attributes).status === 'available'
+    );
 </script>
 
 <Container>

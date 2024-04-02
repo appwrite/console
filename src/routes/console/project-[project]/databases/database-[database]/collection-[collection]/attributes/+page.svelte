@@ -17,11 +17,13 @@
     import Create from '../createAttribute.svelte';
     import { isRelationship } from '../document-[document]/attributes/store';
     import CreateIndex from '../indexes/createIndex.svelte';
-    import { attributes, type Attributes } from '../store';
+    import { type Attributes } from '../store';
     import CreateAttributeDropdown from './createAttributeDropdown.svelte';
     import Delete from './deleteAttribute.svelte';
     import Edit from './edit.svelte';
     import { attributeOptions, type Option } from './store';
+
+    export let data;
 
     const projectId = $page.params.project;
     const databaseId = $page.params.database;
@@ -51,7 +53,7 @@
         <CreateAttributeDropdown bind:showCreateDropdown bind:selectedOption bind:showCreate />
     </div>
 
-    {#if $attributes.length}
+    {#if data.attributes?.length}
         <Table>
             <TableHeader>
                 <TableCellHead>Key</TableCellHead>
@@ -60,7 +62,7 @@
                 <TableCellHead width={30} />
             </TableHeader>
             <TableBody>
-                {#each $attributes as attribute, index}
+                {#each data.attributes as attribute, index}
                     {@const option = attributeOptions.find(
                         (option) => option.type === attribute.type
                     )}
@@ -175,7 +177,7 @@
             </TableBody>
         </Table>
         <div class="u-flex common-section u-main-space-between">
-            <p class="text">Total results: {$attributes.length}</p>
+            <p class="text">Total results: {data.attributes.length}</p>
         </div>
     {:else}
         <Empty single target="attribute" on:click={() => (showEmptyCreateDropdown = true)}>

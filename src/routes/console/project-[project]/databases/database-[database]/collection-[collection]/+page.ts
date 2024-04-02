@@ -2,15 +2,17 @@ import { Dependencies, PAGE_LIMIT } from '$lib/constants';
 import { getLimit, getPage, getQuery, getView, pageToOffset, View } from '$lib/helpers/load';
 import { sdk } from '$lib/stores/sdk';
 import { Query } from '@appwrite.io/console';
-import type { PageLoad } from './$types';
 import { queries, queryParamToMap } from '$lib/components/filters/store';
 
-export const load: PageLoad = async ({ params, depends, url, route }) => {
+export async function load({ params, depends, url, route, parent }) {
+    await parent();
     depends(Dependencies.DOCUMENTS);
-    const page = getPage(url);
+    depends(Dependencies.COLLECTION);
+
+    const navigationPage = getPage(url);
     const limit = getLimit(url, route, PAGE_LIMIT);
     const view = getView(url, route, View.Grid);
-    const offset = pageToOffset(page, limit);
+    const offset = pageToOffset(navigationPage, limit);
     const query = getQuery(url);
 
     const paramQueries = url.searchParams.get('query');
@@ -22,6 +24,10 @@ export const load: PageLoad = async ({ params, depends, url, route }) => {
         limit,
         view,
         query,
+        collection: await sdk.forProject.databases.getCollection(
+            params.database,
+            params.collection
+        ),
         documents: await sdk.forProject.databases.listDocuments(
             params.database,
             params.collection,
@@ -33,4 +39,4 @@ export const load: PageLoad = async ({ params, depends, url, route }) => {
             ]
         )
     };
-};
+}
