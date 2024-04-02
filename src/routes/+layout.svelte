@@ -4,18 +4,16 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { trackPageView } from '$lib/actions/analytics';
-    import { reportWebVitals } from '$lib/helpers/vitals';
     import { Notifications, Progress } from '$lib/layout';
     import { app } from '$lib/stores/app';
-    import { user } from '$lib/stores/user';
     import { ENV, isCloud } from '$lib/system';
     import * as Sentry from '@sentry/svelte';
     import { onMount } from 'svelte';
-    import { onCLS, onFCP, onFID, onINP, onLCP, onTTFB } from 'web-vitals';
     import Loading from './loading.svelte';
     import { loading, requestedMigration } from './store';
     import { parseIfString } from '$lib/helpers/object';
     import Consent from '$lib/components/consent.svelte';
+    import type { Models } from '@appwrite.io/console';
 
     if (browser) {
         window.VERCEL_ANALYTICS_ID = import.meta.env.VERCEL_ANALYTICS_ID?.toString() ?? false;
@@ -25,17 +23,6 @@
         if ($page.url.searchParams.has('migrate')) {
             const migrateData = $page.url.searchParams.get('migrate');
             requestedMigration.set(parseIfString(migrateData) as Record<string, string>);
-        }
-        /**
-         * Reporting Web Vitals.
-         */
-        if (ENV.PROD && window.VERCEL_ANALYTICS_ID) {
-            onCLS(reportWebVitals);
-            onFID(reportWebVitals);
-            onLCP(reportWebVitals);
-            onFCP(reportWebVitals);
-            onINP(reportWebVitals);
-            onTTFB(reportWebVitals);
         }
 
         if (ENV.PROD) {
@@ -52,37 +39,43 @@
         /**
          * Handle initial load.
          */
-        if (!$page.url.pathname.startsWith('/auth') && !$page.url.pathname.startsWith('/git')) {
-            const acceptedRoutes = [
-                '/login',
-                '/register',
-                '/recover',
-                '/invite',
-                '/card',
-                '/hackathon'
-            ];
-            if ($user) {
-                if (
-                    !$page.url.pathname.startsWith('/console') &&
-                    !$page.url.pathname.startsWith('/invite') &&
-                    !$page.url.pathname.startsWith('/card') &&
-                    !$page.url.pathname.startsWith('/hackathon')
-                ) {
+
+        function shouldRedirect(route: string, routes: string[]) {
+            return !routes.some((n) => route.startsWith(n));
+        }
+
+        const authenticationRoutes = ['/auth', '/git'];
+        const acceptedUnauthenticatedRoutes = [
+            '/login',
+            '/register',
+            '/recover',
+            '/invite',
+            '/card',
+            '/hackathon',
+            '/mfa'
+        ];
+        const acceptedAuthenticatedRoutes = ['/console', '/invite', '/card', '/hackathon'];
+
+        const pathname = $page.url.pathname;
+        const user = $page.data.account as Models.User<Record<string, string>>;
+
+        if (shouldRedirect(pathname, authenticationRoutes)) {
+            if (user?.$id) {
+                if (shouldRedirect(pathname, acceptedAuthenticatedRoutes)) {
                     await goto(`${base}/console`, {
                         replaceState: true
                     });
                 }
-                loading.set(false);
             } else {
-                if (acceptedRoutes.some((n) => $page.url.pathname.startsWith(n))) {
-                    await goto(`${base}${$page.url.pathname}${$page.url.search}`);
+                if (acceptedUnauthenticatedRoutes.some((n) => pathname.startsWith(n))) {
+                    await goto(`${base}${pathname}${$page.url.search}`);
                 } else {
                     await goto(`${base}/login`, {
                         replaceState: true
                     });
                 }
-                loading.set(false);
             }
+            loading.set(false);
         }
     });
 

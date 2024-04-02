@@ -20,6 +20,11 @@
             event: 'memberships'
         },
         {
+            href: `${path}/targets`,
+            title: 'Targets',
+            event: 'targets'
+        },
+        {
             href: `${path}/sessions`,
             title: 'Sessions',
             event: 'sessions'

@@ -1,6 +1,7 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
+    import { SvelteComponent, onMount } from 'svelte';
     import { FormItem, Helper, Label } from '.';
+    import { Drop } from '$lib/components';
 
     export let id: string;
     export let label: string;
@@ -15,10 +16,14 @@
     export let showPasswordButton = false;
     export let minlength = 8;
     export let maxlength: number = null;
+    export let popover: typeof SvelteComponent<unknown> = null;
+    export let popoverProps: Record<string, unknown> = {};
+    export let fullWidth = false;
 
     let element: HTMLInputElement;
     let error: string;
     let showInPlainText = false;
+    let showPopover = false;
 
     onMount(() => {
         if (element && autofocus) {
@@ -46,9 +51,32 @@
     }
 </script>
 
-<FormItem>
+<FormItem {fullWidth}>
     <Label {required} hide={!showLabel} for={id}>
-        {label}
+        {label}{#if popover}
+            <Drop isPopover bind:show={showPopover} display="inline-block">
+                <!-- TODO: make unclicked icon greyed out and hover and clicked filled -->
+                &nbsp;<button
+                    type="button"
+                    on:click={() => (showPopover = !showPopover)}
+                    class="tooltip"
+                    aria-label="input tooltip">
+                    <span
+                        class="icon-info"
+                        aria-hidden="true"
+                        style="font-size: var(--icon-size-small)" />
+                </button>
+                <svelte:fragment slot="list">
+                    <div
+                        class="dropped card u-max-width-250"
+                        style:--card-border-radius="var(--border-radius-small)"
+                        style:--p-card-padding=".75rem"
+                        style:box-shadow="var(--shadow-large)">
+                        <svelte:component this={popover} {...popoverProps} />
+                    </div>
+                </svelte:fragment>
+            </Drop>
+        {/if}
     </Label>
 
     <div class="input-text-wrapper" style={showPasswordButton ? '--amount-of-buttons: 1' : ''}>

@@ -35,21 +35,23 @@ export const createMigrationFormStore = () => {
     };
 };
 
-const resources = [
-    'user',
-    'team',
-    'membership',
-    'file',
-    'bucket',
-    'function',
-    'envVar',
-    'deployment',
-    'database',
-    'collection',
-    'index',
-    'attribute',
-    'document'
-] as const;
+export const ResourcesFriendly = {
+    user: { singular: 'User', plural: 'Users' },
+    team: { singular: 'Team', plural: 'Teams' },
+    membership: { singular: 'Membership', plural: 'Memberships' },
+    file: { singular: 'File', plural: 'Files' },
+    bucket: { singular: 'Bucket', plural: 'Buckets' },
+    function: { singular: 'Function', plural: 'Functions' },
+    'environment variable': { singular: 'Environment Variable', plural: 'Environment Variables' },
+    deployment: { singular: 'Deployment', plural: 'Deployments' },
+    database: { singular: 'Database', plural: 'Databases' },
+    collection: { singular: 'Collection', plural: 'Collections' },
+    index: { singular: 'Index', plural: 'Indexes' },
+    attribute: { singular: 'Attribute', plural: 'Attributes' },
+    document: { singular: 'Document', plural: 'Documents' }
+};
+
+const resources = Object.keys(ResourcesFriendly);
 
 type Resource = (typeof resources)[number];
 
@@ -101,7 +103,7 @@ export const migrationFormToResources = (
         addResource('function');
     }
     if (formData.functions.env) {
-        addResource('envVar');
+        addResource('environment variable');
     }
     if (formData.functions.inactive) {
         addResource('deployment');
@@ -155,7 +157,7 @@ export const resourcesToMigrationForm = (
     if (resources.includes('function') && isVersionAtLeast(version, '1.4.0')) {
         formData.functions.root = true;
     }
-    if (resources.includes('envVar') && isVersionAtLeast(version, '1.4.0')) {
+    if (resources.includes('environment variable') && isVersionAtLeast(version, '1.4.0')) {
         formData.functions.env = true;
     }
     if (resources.includes('deployment') && isVersionAtLeast(version, '1.4.0')) {
