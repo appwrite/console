@@ -29,7 +29,7 @@
 
     async function create() {
         try {
-            await uploader.uploadFile(
+            uploader.uploadFile(
                 bucketId,
                 $createFile.id ?? ID.unique(),
                 $createFile.files[0],
