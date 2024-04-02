@@ -1263,46 +1263,6 @@ export const marketplace: MarketplaceTemplate[] = [
     },
     {
         icon: 'icon-chip',
-        id: 'chat-with-perplexity-ai',
-        name: 'Chat with Perplexity AI',
-        tagline: 'Create a chatbot using the Perplexity AI API.',
-        permissions: ['any'],
-        events: [],
-        cron: '',
-        timeout: 15,
-        usecases: ['AI'],
-        runtimes: [
-            ...getRuntimes(
-                TemplateRuntimes.NODE,
-                'npm install',
-                'src/main.js',
-                'node/chat-with-perplexity-ai'
-            )
-        ],
-        instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/chat-with-perplexity-ai">file</a>.`,
-        vcsProvider: 'github',
-        providerRepositoryId: 'templates',
-        providerOwner: 'appwrite',
-        providerBranch: 'main',
-        variables: [
-            {
-                name: 'PERPLEXITY_API_KEY',
-                description: `A unique key used to authenticate with the Perplexity API. <a class="u-bold" target="_blank" href="https://docs.perplexity.ai/docs/getting-started">Learn more</a>.`,
-                placeholder: `pplex-68...999`,
-                required: true,
-                type: 'password'
-            },
-            {
-                name: 'PERPLEXITY_MAX_TOKENS',
-                description: `The maximum number of tokens to generate. <a class="u-bold" target="_blank" href="https://docs.perplexity.ai/docs/getting-started">Learn more</a>.`,
-                placeholder: `512`,
-                required: false,
-                type: 'number'
-            }
-        ]
-    },
-    {
-        icon: 'icon-chip',
         id: 'generate-with-replicate',
         name: 'Generate with Replicate',
         tagline: "Generate text, audio and images using Replicate's API.",
