@@ -36,8 +36,6 @@
         await sdk.forProject.functions.deleteVariable($func.$id, variableId);
         await Promise.all([invalidate(Dependencies.VARIABLES), invalidate(Dependencies.FUNCTION)]);
     };
-
-    $: console.log(data.variables);
 </script>
 
 <Container>
