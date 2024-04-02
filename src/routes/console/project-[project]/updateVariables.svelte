@@ -138,9 +138,11 @@
             selectedVar = null;
             showPromoteModal = false;
 
-            await invalidate(Dependencies.FUNCTION);
-            await invalidate(Dependencies.VARIABLES);
-            await invalidate(Dependencies.PROJECT_VARIABLES);
+            await Promise.all([
+                await invalidate(Dependencies.FUNCTION),
+                await invalidate(Dependencies.VARIABLES),
+                await invalidate(Dependencies.PROJECT_VARIABLES)
+            ]);
 
             addNotification({
                 type: 'success',

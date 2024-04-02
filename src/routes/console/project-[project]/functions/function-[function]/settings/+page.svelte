@@ -24,21 +24,20 @@
 
     const sdkCreateVariable = async (key: string, value: string) => {
         await sdk.forProject.functions.createVariable($func.$id, key, value);
-        await invalidate(Dependencies.VARIABLES);
-        await invalidate(Dependencies.FUNCTION);
+        await Promise.all([invalidate(Dependencies.VARIABLES), invalidate(Dependencies.FUNCTION)]);
     };
 
     const sdkUpdateVariable = async (variableId: string, key: string, value: string) => {
         await sdk.forProject.functions.updateVariable($func.$id, variableId, key, value);
-        await invalidate(Dependencies.VARIABLES);
-        await invalidate(Dependencies.FUNCTION);
+        await Promise.all([invalidate(Dependencies.VARIABLES), invalidate(Dependencies.FUNCTION)]);
     };
 
     const sdkDeleteVariable = async (variableId: string) => {
         await sdk.forProject.functions.deleteVariable($func.$id, variableId);
-        await invalidate(Dependencies.VARIABLES);
-        await invalidate(Dependencies.FUNCTION);
+        await Promise.all([invalidate(Dependencies.VARIABLES), invalidate(Dependencies.FUNCTION)]);
     };
+
+    $: console.log(data.variables);
 </script>
 
 <Container>
