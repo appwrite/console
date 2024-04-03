@@ -38,7 +38,7 @@
                 providerId: $providerData.$id,
                 name: $providerData.name,
                 enabled: $providerData.enabled,
-                from: $providerData.options['from'],
+                templateId: $providerData.credentials['templateId'],
                 senderId: $providerData.credentials['senderId'],
                 authKey: $providerData.credentials['authKey']
             };
