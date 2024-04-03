@@ -30,7 +30,9 @@
 
     $: currentPlan = $plansInfo?.get($organization?.billingPlan);
     $: extraUsage = currentInvoice?.amount - currentPlan?.price;
-    $: isTrial = (new Date($organization?.billingStartDate).getTime() - today.getTime() > 0 ) && !TRIAL_PERIOD_OVERRIDE;
+    $: isTrial =
+        new Date($organization?.billingStartDate).getTime() - today.getTime() > 0 &&
+        !TRIAL_PERIOD_OVERRIDE;
 </script>
 
 {#if $organization}
@@ -54,7 +56,7 @@
                         <h6 class="body-text-1 u-bold u-trim-1">
                             {tierToPlan($organization?.billingPlan)?.name} plan
                         </h6>
-                        {#if $organization?.billingPlan !== BillingPlan.STARTER && isTrial && }
+                        {#if $organization?.billingPlan !== BillingPlan.STARTER && isTrial && !TRIAL_PERIOD_OVERRIDE}
                             <Pill>TRIAL</Pill>
                         {/if}
                     </div>
