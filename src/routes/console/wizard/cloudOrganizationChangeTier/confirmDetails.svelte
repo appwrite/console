@@ -62,11 +62,11 @@
         <Alert>
             <svelte:fragment slot="title"
                 >Your {tierToPlan($organization.billingPlan).name} plan subscription will end on {toLocaleDate(
-                    $organization.billingCurrentInvoiceDate
+                    $organization.billingNextInvoiceDate
                 )}</svelte:fragment>
             <p class="text">
                 Following the payment of your final invoice on {toLocaleDate(
-                    $organization.billingCurrentInvoiceDate
+                    $organization.billingNextInvoiceDate
                 )}, your organization will switch to the {tierToPlan(
                     $changeOrganizationTier.billingPlan
                 ).name} plan. Until then, you can continue to use the resources available to the {tierToPlan(
