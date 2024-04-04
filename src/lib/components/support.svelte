@@ -13,6 +13,7 @@
     import { BillingPlan } from '$lib/constants';
     import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
     import { trackEvent } from '$lib/actions/analytics';
+    import CreateOrganizationCloud from '$routes/console/createOrganizationCloud.svelte';
 
     export let show = false;
 
@@ -55,7 +56,7 @@
                 }}>
                 <span class="text">Contact our Support Team</span>
             </Button>
-        {:else}
+        {:else if $organization?.$id}
             <Button
                 fullWidth
                 external
@@ -68,6 +69,20 @@
                 }}>
                 <span class="text">Get Premium support</span>
             </Button>
+        {:else}
+            <Button
+                fullWidth
+                external
+                on:click={() => {
+                    wizard.start(CreateOrganizationCloud);
+                    trackEvent('click_organization_create', {
+                        from: 'button',
+                        source: 'support_menu'
+                    });
+                }}>
+                <span class="text">Get Premium support</span>
+            </Button>
+            <p>Create a Pro organization for personalized support from the Appwrite team</p>
         {/if}
     </section>
 {/if}
