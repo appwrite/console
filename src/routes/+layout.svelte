@@ -3,17 +3,16 @@
     import { afterNavigate, goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { isTrackingAllowed, trackPageView } from '$lib/actions/analytics';
+    import { trackPageView } from '$lib/actions/analytics';
     import { Notifications, Progress } from '$lib/layout';
     import { app } from '$lib/stores/app';
     import { ENV, isCloud } from '$lib/system';
     import * as Sentry from '@sentry/svelte';
-    import LogRocket from 'logrocket';
     import { onMount } from 'svelte';
     import Loading from './loading.svelte';
     import { loading, requestedMigration } from './store';
     import { parseIfString } from '$lib/helpers/object';
-    import Consent, { consent } from '$lib/components/consent.svelte';
+    import Consent from '$lib/components/consent.svelte';
     import type { Models } from '@appwrite.io/console';
 
     onMount(async () => {
@@ -31,17 +30,6 @@
                 integrations: [new Sentry.BrowserTracing()],
                 tracesSampleRate: 1.0
             });
-
-            /**
-             * LogRocket
-             */
-            if ($consent?.accepted?.analytics && isCloud && isTrackingAllowed()) {
-                LogRocket.init('rgthvf/appwrite', {
-                    dom: {
-                        inputSanitizer: true
-                    }
-                });
-            }
         }
 
         /**
