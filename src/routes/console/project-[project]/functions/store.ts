@@ -4,7 +4,7 @@ import type { Models } from '@appwrite.io/console';
 
 export const runtimesList = derived(page, async ($page) => {
     const { runtimes } = (await $page.data.runtimesList) as Models.RuntimeList;
-    const filtered = runtimes.filter((runtime) => !runtime.name.startsWith('python-ml'));
+    const filtered = runtimes.filter((runtime) => !runtime.$id.startsWith('python-ml'));
     return { runtimes: filtered, total: filtered.length };
 });
 
