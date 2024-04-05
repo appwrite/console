@@ -23,6 +23,7 @@ import MarkedForDeletion from '$lib/components/billing/alerts/markedForDeletion.
 import { BillingPlan } from '$lib/constants';
 import PaymentMandate from '$lib/components/billing/alerts/paymentMandate.svelte';
 import MissingPaymentMethod from '$lib/components/billing/alerts/missingPaymentMethod.svelte';
+import LimitReached from '$lib/components/billing/alerts/limitReached.svelte';
 
 export type Tier = 'tier-0' | 'tier-1' | 'tier-2';
 
@@ -179,6 +180,10 @@ export function calculateTrialDay(org: Organization) {
 }
 
 export async function checkForUsageLimit(org: Organization) {
+    if (org.billingPlan !== BillingPlan.STARTER) {
+        readOnly.set(false);
+        return;
+    }
     if (!org?.billingLimits) {
         readOnly.set(false);
         return;
@@ -198,7 +203,24 @@ export async function checkForUsageLimit(org: Organization) {
         membersOverflow > 0
     ) {
         readOnly.set(true);
-    } else readOnly.set(false);
+        headerAlert.add({
+            id: 'limitReached',
+            component: LimitReached,
+            show: true,
+            importance: 7
+        });
+    } else if (
+        bandwidth >= 75 ||
+        documents >= 75 ||
+        executions >= 75 ||
+        storage >= 75 ||
+        users >= 75
+    ) {
+        readOnly.set(false);
+        //show notification
+    } else {
+        readOnly.set(false);
+    }
 }
 
 export async function checkPaymentAuthorizationRequired(org: Organization) {
