@@ -24,6 +24,10 @@ import { BillingPlan } from '$lib/constants';
 import PaymentMandate from '$lib/components/billing/alerts/paymentMandate.svelte';
 import MissingPaymentMethod from '$lib/components/billing/alerts/missingPaymentMethod.svelte';
 import LimitReached from '$lib/components/billing/alerts/limitReached.svelte';
+import { wizard } from './wizard';
+import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
+import { trackEvent } from '$lib/actions/analytics';
+import { browser } from '$app/environment';
 
 export type Tier = 'tier-0' | 'tier-1' | 'tier-2';
 
@@ -189,19 +193,20 @@ export async function checkForUsageLimit(org: Organization) {
         return;
     }
     const { bandwidth, documents, executions, storage, users } = org?.billingLimits ?? {};
+    const resources = [
+        { value: bandwidth, name: 'bandwidth' },
+        { value: documents, name: 'documents' },
+        { value: executions, name: 'executions' },
+        { value: storage, name: 'storage' },
+        { value: users, name: 'users' }
+    ];
+
     const members = await sdk.forConsole.teams.listMemberships(org.$id);
     const plan = get(plansInfo)?.get(org.billingPlan);
     const membersOverflow =
         members?.total > plan.members ? members.total - (plan.members || members.total) : 0;
 
-    if (
-        bandwidth >= 100 ||
-        documents >= 100 ||
-        executions >= 100 ||
-        storage >= 100 ||
-        users >= 100 ||
-        membersOverflow > 0
-    ) {
+    if (resources.some((r) => r.value >= 100) || membersOverflow > 0) {
         readOnly.set(true);
         headerAlert.add({
             id: 'limitReached',
@@ -209,15 +214,40 @@ export async function checkForUsageLimit(org: Organization) {
             show: true,
             importance: 7
         });
-    } else if (
-        bandwidth >= 75 ||
-        documents >= 75 ||
-        executions >= 75 ||
-        storage >= 75 ||
-        users >= 75
-    ) {
+    } else if (resources.some((r) => r.value >= 75)) {
         readOnly.set(false);
-        //show notification
+        if (browser) {
+            const lastNotification =
+                parseInt(localStorage.getItem('limitReachedNotification')) ?? 0;
+            const now = new Date().getTime();
+            if (now - lastNotification < 1000 * 60 * 60 * 24 * 3) return;
+
+            localStorage.setItem('limitReachedNotification', now.toString());
+            addNotification({
+                type: 'warning',
+                isHtml: true,
+                timeout: 0,
+                message: `<b>${org.name}</b> has reached <b>75%</b> of the Starter plan's ${resources.find((r) => r.value >= 75).name} limit. Upgrade to ensure there are no service disruptions.`,
+                buttons: [
+                    {
+                        name: 'View usage',
+                        method: () => {
+                            goto(`${base}/console/organization-${org.$id}/usage`);
+                        }
+                    },
+                    {
+                        name: 'Upgrade plan',
+                        method: () => {
+                            wizard.start(ChangeOrganizationTierCloud);
+                            trackEvent('click_organization_upgrade', {
+                                from: 'button',
+                                source: 'limit_reached_notification'
+                            });
+                        }
+                    }
+                ]
+            });
+        }
     } else {
         readOnly.set(false);
     }
