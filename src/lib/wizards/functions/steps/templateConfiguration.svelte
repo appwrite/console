@@ -25,6 +25,10 @@
                 return allowedRuntimes.includes(runtime.value);
             });
 
+        if (options.length == 1) {
+            $templateConfig.runtime = options[0].value;
+        }
+
         return options;
     }
 </script>
