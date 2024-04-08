@@ -42,7 +42,7 @@
 
             addNotification({
                 type: 'success',
-                message: `File has been uploaded`
+                message: `File upload in progress`
             });
             trackEvent(Submit.FileCreate, {
                 customId: !!$createFile.id
