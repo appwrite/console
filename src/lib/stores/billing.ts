@@ -220,7 +220,7 @@ export async function checkForUsageLimit(org: Organization) {
             const lastNotification =
                 parseInt(localStorage.getItem('limitReachedNotification')) ?? 0;
             const now = new Date().getTime();
-            if (now - lastNotification < 1000 * 60 * 60 * 24 * 3) return;
+            if (now - lastNotification < 1000 * 60 * 60 * 24) return;
 
             localStorage.setItem('limitReachedNotification', now.toString());
             addNotification({
