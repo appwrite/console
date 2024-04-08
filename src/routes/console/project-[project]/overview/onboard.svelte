@@ -191,7 +191,7 @@
             background-position: top right;
         }
     }
-    .onboard-cover {
+    .onboard-cover img{
       max-inline-size: none;
       max-block-size: none;
     }
