@@ -223,11 +223,15 @@ export async function checkForUsageLimit(org: Organization) {
             if (now - lastNotification < 1000 * 60 * 60 * 24) return;
 
             localStorage.setItem('limitReachedNotification', now.toString());
+            let message = `<b>${org.name}</b> has reached <b>75%</b> of the Starter plan's ${resources.find((r) => r.value >= 75).name} limit. Upgrade to ensure there are no service disruptions.`;
+            if (resources.filter((r) => r.value >= 75)?.length > 1) {
+                message = `Usage for <b>${org.name}</b> has reached 75% of the Starter plan limit. Upgrade to ensure there are no service disruptions.`;
+            }
             addNotification({
                 type: 'warning',
                 isHtml: true,
                 timeout: 0,
-                message: `<b>${org.name}</b> has reached <b>75%</b> of the Starter plan's ${resources.find((r) => r.value >= 75).name} limit. Upgrade to ensure there are no service disruptions.`,
+                message,
                 buttons: [
                     {
                         name: 'View usage',
