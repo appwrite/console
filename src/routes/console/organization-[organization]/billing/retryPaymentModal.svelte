@@ -30,8 +30,21 @@
     let paymentMethodId: string;
     let setAsDefault = false;
 
-    onMount(() => {
-        paymentMethodId = $organization.paymentMethodId;
+    onMount(async () => {
+        if (!$organization.paymentMethodId && !$organization.backupPaymentMethodId) {
+            paymentMethodId = $paymentMethods?.total ? $paymentMethods.paymentMethods[0].$id : null;
+        } else {
+            paymentMethodId = $organization.paymentMethodId
+                ? $organization.paymentMethodId
+                : $organization.backupPaymentMethodId;
+            // If the selected payment method does not belong to the current user, select the first one.
+            if (
+                $paymentMethods?.total &&
+                !$paymentMethods.paymentMethods.some((method) => method.$id === paymentMethodId)
+            ) {
+                paymentMethodId = $paymentMethods.paymentMethods[0].$id;
+            }
+        }
     });
 
     async function handleSubmit() {
