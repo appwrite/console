@@ -18,7 +18,7 @@
         "e2e": "playwright test tests/e2e"
     },
     "dependencies": {
-        "@appwrite.io/console": "^0.6.0",
+        "@appwrite.io/console": "^0.6.1",
         "@appwrite.io/pink": "0.8.0",
         "@appwrite.io/pink-icons": "0.8.0",
         "@popperjs/core": "^2.11.8",
@@ -31,7 +31,6 @@
         "deep-equal": "^2.2.2",
         "dotenv": "^16.3.1",
         "echarts": "^5.4.3",
-        "logrocket": "^5.0.1",
         "nanoid": "^4.0.2",
         "plausible-tracker": "^0.3.8",
         "pretty-bytes": "^6.1.1",

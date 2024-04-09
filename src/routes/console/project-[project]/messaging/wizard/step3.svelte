@@ -5,6 +5,9 @@
     import { MessagingProviderType } from '@appwrite.io/console';
     import { messageParams, providerType } from './store';
     import { isSameDay, toLocaleDateISO, toLocaleTimeISO } from '$lib/helpers/date';
+    import { wizard } from '$lib/stores/wizard';
+    import { Modal } from '$lib/components';
+    import { topicsById } from '../store';
 
     let when: 'now' | 'later' = 'now';
     let now = new Date();
@@ -13,6 +16,21 @@
     let time: string;
     let dateTime: Date;
     let docsUrl = `https://appwrite.io/docs/products/messaging`;
+    let showConfimation = false;
+
+    let totalTargets = $messageParams[$providerType].targets?.length ?? 0;
+
+    const topics = $messageParams[$providerType].topics;
+
+    for (const topic of topics) {
+        if ($providerType == MessagingProviderType.Push) {
+            totalTargets += $topicsById[topic].pushTotal;
+        } else if ($providerType == MessagingProviderType.Email) {
+            totalTargets += $topicsById[topic].emailTotal;
+        } else if ($providerType == MessagingProviderType.Sms) {
+            totalTargets += $topicsById[topic].smsTotal;
+        }
+    }
 
     switch ($providerType) {
         case MessagingProviderType.Email:
@@ -40,6 +58,18 @@
         timeZoneName: 'longGeneric'
     };
 
+    async function askForConfirmation() {
+        $wizard.interceptorNotificationEnabled = false;
+        showConfimation = true;
+        throw 'Show confirmation';
+    }
+
+    async function submit() {
+        $wizard.interceptorNotificationEnabled = true;
+        await $wizard.finalAction();
+        showConfimation = false;
+    }
+
     $: if (when === 'now') {
         date = time = '';
     }
@@ -56,7 +86,7 @@
     }
 </script>
 
-<WizardStep>
+<WizardStep beforeSubmit={askForConfirmation}>
     <svelte:fragment slot="title">Schedule</svelte:fragment>
     <svelte:fragment slot="subtitle"
         >Schedule the time you want to deliver this message. Learn more in our <Button
@@ -97,16 +127,14 @@
     </Helper>
 </WizardStep>
 
-<!-- <Modal
-    title="Send message"
-    bind:show={showDelete}
-    onSubmit={deleteAccount}
-    icon="exclamation"
-    state="warning"
-    headerDivider={false}>
-    <p>Are you sure you want to delete your account?</p>
+<Modal title="Send message" bind:show={showConfimation} headerDivider={false} onSubmit={submit}>
+    <p>
+        You are about to send a message to an estimated <span class="u-bold">{totalTargets}</span> recipients.
+        Would you like to proceed?
+    </p>
+    <p class="u-bold">This action is irreversible.</p>
     <svelte:fragment slot="footer">
-        <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-        <Button secondary submit>Delete</Button>
+        <Button text on:click={() => (showConfimation = false)}>Cancel</Button>
+        <Button secondary submit>Send</Button>
     </svelte:fragment>
-</Modal> -->
+</Modal>

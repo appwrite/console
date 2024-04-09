@@ -33,7 +33,7 @@
                     response = await sdk.forProject.messaging.createMsg91Provider(
                         providerId,
                         $providerParams[$provider].name,
-                        $providerParams[$provider].from,
+                        $providerParams[$provider].templateId,
                         $providerParams[$provider].senderId,
                         $providerParams[$provider].authKey,
                         $providerParams[$provider].enabled
