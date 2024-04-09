@@ -139,9 +139,9 @@
             showPromoteModal = false;
 
             await Promise.all([
-               invalidate(Dependencies.FUNCTION),
-               invalidate(Dependencies.VARIABLES),
-               invalidate(Dependencies.PROJECT_VARIABLES)
+                invalidate(Dependencies.FUNCTION),
+                invalidate(Dependencies.VARIABLES),
+                invalidate(Dependencies.PROJECT_VARIABLES)
             ]);
 
             addNotification({
