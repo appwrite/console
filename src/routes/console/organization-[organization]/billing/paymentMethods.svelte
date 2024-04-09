@@ -137,7 +137,7 @@
                                     showDelete = true;
                                     showDropdown = false;
                                 }}>
-                                Delete
+                                Remove
                             </DropListItem>
                         </svelte:fragment>
                     </DropList>
