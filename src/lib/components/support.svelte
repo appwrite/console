@@ -6,7 +6,6 @@
     import SupportOnlineDark from '$lib/images/support/support-online-dark.png';
     import { app } from '$lib/stores/app';
     import { wizard } from '$lib/stores/wizard';
-    import Label from '../elements/forms/label.svelte';
     import SupportWizard from '../../routes/console/supportWizard.svelte';
     import { isSupportOnline, showSupportModal } from '../../routes/console/wizard/support/store';
     import { isCloud } from '$lib/system';
@@ -22,7 +21,7 @@
         $organization?.billingPlan === BillingPlan.PRO ||
         $organization?.billingPlan === BillingPlan.SCALE;
 
-    $: supportTimings = `${utcHourToLocaleHour('09:00')} - ${utcHourToLocaleHour('17:00')}`;
+    $: supportTimings = `${utcHourToLocaleHour('09:00')} - ${utcHourToLocaleHour('17:00')} ${localeTimezoneName()}`;
 </script>
 
 {#if isCloud}
@@ -45,7 +44,6 @@
             {#if isPaid}
                 <p class="u-line-height-1-5 u-margin-block-start-8">
                     Get personalized support from the Appwrite team from <b>{supportTimings}</b>
-                    <Label tooltip={localeTimezoneName()} />
                 </p>
             {/if}
         </div>
