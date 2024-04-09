@@ -27,7 +27,6 @@ import LimitReached from '$lib/components/billing/alerts/limitReached.svelte';
 import { wizard } from './wizard';
 import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
 import { trackEvent } from '$lib/actions/analytics';
-import { browser } from '$app/environment';
 
 export type Tier = 'tier-0' | 'tier-1' | 'tier-2';
 
@@ -216,42 +215,39 @@ export async function checkForUsageLimit(org: Organization) {
         });
     } else if (resources.some((r) => r.value >= 75)) {
         readOnly.set(false);
-        if (browser) {
-            const lastNotification =
-                parseInt(localStorage.getItem('limitReachedNotification')) ?? 0;
-            const now = new Date().getTime();
-            if (now - lastNotification < 1000 * 60 * 60 * 24) return;
+        const lastNotification = parseInt(localStorage.getItem('limitReachedNotification')) ?? 0;
+        const now = new Date().getTime();
+        if (now - lastNotification < 1000 * 60 * 60 * 24) return;
 
-            localStorage.setItem('limitReachedNotification', now.toString());
-            let message = `<b>${org.name}</b> has reached <b>75%</b> of the Starter plan's ${resources.find((r) => r.value >= 75).name} limit. Upgrade to ensure there are no service disruptions.`;
-            if (resources.filter((r) => r.value >= 75)?.length > 1) {
-                message = `Usage for <b>${org.name}</b> has reached 75% of the Starter plan limit. Upgrade to ensure there are no service disruptions.`;
-            }
-            addNotification({
-                type: 'warning',
-                isHtml: true,
-                timeout: 0,
-                message,
-                buttons: [
-                    {
-                        name: 'View usage',
-                        method: () => {
-                            goto(`${base}/console/organization-${org.$id}/usage`);
-                        }
-                    },
-                    {
-                        name: 'Upgrade plan',
-                        method: () => {
-                            wizard.start(ChangeOrganizationTierCloud);
-                            trackEvent('click_organization_upgrade', {
-                                from: 'button',
-                                source: 'limit_reached_notification'
-                            });
-                        }
-                    }
-                ]
-            });
+        localStorage.setItem('limitReachedNotification', now.toString());
+        let message = `<b>${org.name}</b> has reached <b>75%</b> of the Starter plan's ${resources.find((r) => r.value >= 75).name} limit. Upgrade to ensure there are no service disruptions.`;
+        if (resources.filter((r) => r.value >= 75)?.length > 1) {
+            message = `Usage for <b>${org.name}</b> has reached 75% of the Starter plan limit. Upgrade to ensure there are no service disruptions.`;
         }
+        addNotification({
+            type: 'warning',
+            isHtml: true,
+            timeout: 0,
+            message,
+            buttons: [
+                {
+                    name: 'View usage',
+                    method: () => {
+                        goto(`${base}/console/organization-${org.$id}/usage`);
+                    }
+                },
+                {
+                    name: 'Upgrade plan',
+                    method: () => {
+                        wizard.start(ChangeOrganizationTierCloud);
+                        trackEvent('click_organization_upgrade', {
+                            from: 'button',
+                            source: 'limit_reached_notification'
+                        });
+                    }
+                }
+            ]
+        });
     } else {
         readOnly.set(false);
     }
