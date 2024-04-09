@@ -95,9 +95,8 @@
     {/if}
     {#if $organization?.billingPlanDowngrade}
         <Alert type="info" class="common-section">
-            Your organization will change to a Starter plan once your current billing cycle ends on {toLocaleDate(
-                $organization.billingNextInvoiceDate
-            )}.
+            Your organization will change to a Starter plan once your current billing cycle ends and
+            your invoice is paid on {toLocaleDate($organization.billingNextInvoiceDate)}.
         </Alert>
     {/if}
     <div class="common-section">
