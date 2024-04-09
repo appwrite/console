@@ -31,11 +31,11 @@
         setFiles(new DataTransfer().files);
     }
 
-    function isFileExtensionAllowed(fileExtension: string){
+    function isFileExtensionAllowed(fileExtension: string) {
         if (allowedFileExtensions.length && !allowedFileExtensions.includes(fileExtension)) {
-            return false
+            return false;
         }
-        return true
+        return true;
     }
     function dropHandler(ev: DragEvent) {
         ev.dataTransfer.dropEffect = 'move';
@@ -84,7 +84,7 @@
 
         const isValidFiles = Array.from(target.files).every((file) => {
             const fileExtension = file.name.split('.').pop();
-            return isFileExtensionAllowed(fileExtension)
+            return isFileExtensionAllowed(fileExtension);
         });
 
         if (!isValidFiles) {
