@@ -21,18 +21,20 @@
 
     onMount(async () => {
         methods = await sdk.forConsole.billing.listPaymentMethods();
-        selectedPaymentMethodId = isBackup
-            ? $organization.backupPaymentMethodId
-            : $organization.paymentMethodId;
+
         if (!$organization.paymentMethodId && !$organization.backupPaymentMethodId) {
             selectedPaymentMethodId = methods?.total ? methods.paymentMethods[0].$id : null;
-        }
-        // If the selected payment method does not belong to the current user, reset it
-        if (
-            methods?.total &&
-            !methods.paymentMethods.some((method) => method.$id === selectedPaymentMethodId)
-        ) {
-            selectedPaymentMethodId = null;
+        } else {
+            selectedPaymentMethodId = isBackup
+                ? $organization.backupPaymentMethodId
+                : $organization.paymentMethodId;
+            // If the selected payment method does not belong to the current user, select the first one.
+            if (
+                methods?.total &&
+                !methods.paymentMethods.some((method) => method.$id === selectedPaymentMethodId)
+            ) {
+                selectedPaymentMethodId = methods.paymentMethods[0].$id;
+            }
         }
     });
 
