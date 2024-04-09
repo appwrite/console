@@ -31,13 +31,19 @@
         setFiles(new DataTransfer().files);
     }
 
+    function isFileExtensionAllowed(fileExtension: string){
+        if (allowedFileExtensions.length && !allowedFileExtensions.includes(fileExtension)) {
+            return false
+        }
+        return true
+    }
     function dropHandler(ev: DragEvent) {
         ev.dataTransfer.dropEffect = 'move';
         hovering = false;
         if (!ev.dataTransfer.items) return;
         for (let i = 0; i < ev.dataTransfer.items.length; i++) {
             const fileExtension = ev.dataTransfer.items[i].getAsFile().name.split('.')[1];
-            if (!allowedFileExtensions.includes(fileExtension)) {
+            if (!isFileExtensionAllowed(fileExtension)) {
                 error = 'Invalid file extension';
                 return;
             }
@@ -78,9 +84,7 @@
 
         const isValidFiles = Array.from(target.files).every((file) => {
             const fileExtension = file.name.split('.').pop();
-            return allowedFileExtensions?.length
-                ? allowedFileExtensions.includes(fileExtension)
-                : true;
+            return isFileExtensionAllowed(fileExtension)
         });
 
         if (!isValidFiles) {
