@@ -81,18 +81,18 @@ export function getServiceLimit(serviceId: PlanServices, tier: Tier = null): num
 }
 
 export const failedInvoice = cachedStore<
-    false | Invoice,
+    Invoice,
     {
         load: (orgId: string) => Promise<void>;
     }
 >('failedInvoice', function ({ set }) {
     return {
         load: async (orgId) => {
-            if (!isCloud) set(false);
+            if (!isCloud) set(null);
             const invoices = await sdk.forConsole.billing.listInvoices(orgId);
             const failedInvoices = invoices.invoices.filter((i) => i.status === 'failed');
             // const failedInvoices = invoices.invoices;
-            if (failedInvoices.length > 0) {
+            if (failedInvoices?.length > 0) {
                 const firstFailed = failedInvoices[0];
                 const today = new Date();
                 const thirtyDaysAgo = new Date(today.setDate(today.getDate() - 30));
@@ -100,7 +100,7 @@ export const failedInvoice = cachedStore<
                 if (failedDate < thirtyDaysAgo) {
                     readOnly.set(true);
                 }
-            } else set(false);
+            } else set(null);
         }
     };
 });
