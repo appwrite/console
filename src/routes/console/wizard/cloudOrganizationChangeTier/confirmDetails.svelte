@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Box, CreditCardBrandImage } from '$lib/components';
+    import { Alert, Box, CreditCardBrandImage } from '$lib/components';
     import { CouponInput } from '$lib/components/billing';
     import { BillingPlan } from '$lib/constants';
     import { FormList, InputSelect, InputTextarea } from '$lib/elements/forms';
@@ -7,7 +7,7 @@
     import { formatCurrency } from '$lib/helpers/numbers';
     import { WizardStep } from '$lib/layout';
     import type { Coupon } from '$lib/sdk/billing';
-    import { plansInfo } from '$lib/stores/billing';
+    import { plansInfo, tierToPlan } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import {
@@ -58,17 +58,33 @@
             Your feedback is important to us and helps us improve the services Appwrite offers.
             Please let us know if there is a specific reason for changing your plan.
         </svelte:fragment>
-        <FormList>
+
+        <Alert>
+            <svelte:fragment slot="title"
+                >Your {tierToPlan($organization.billingPlan).name} plan subscription will end on {toLocaleDate(
+                    $organization.billingNextInvoiceDate
+                )}</svelte:fragment>
+            <p class="text">
+                Following the payment of your final invoice on {toLocaleDate(
+                    $organization.billingNextInvoiceDate
+                )}, your organization will switch to the {tierToPlan(
+                    $changeOrganizationTier.billingPlan
+                ).name} plan. Until then, you can continue to use the resources available to the {tierToPlan(
+                    $organization.billingPlan
+                ).name} plan.
+            </p>
+        </Alert>
+        <FormList class="u-margin-block-start-24">
             <InputSelect
                 id="reason"
-                label="What made you decide to change your plan?*"
+                label="Reason for plan change"
                 placeholder="Select one"
                 required
                 options={feedbackDowngradeOptions}
                 bind:value={$changeOrganizationTier.feedbackDowngradeReason} />
             <InputTextarea
                 id="comment"
-                label="Your feedback here"
+                label="If you would like to elaborate, please do so here"
                 placeholder="Enter feedback"
                 bind:value={$changeOrganizationTier.feedbackMessage} />
         </FormList>
