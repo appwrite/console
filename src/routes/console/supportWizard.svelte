@@ -3,7 +3,6 @@
     import { onDestroy } from 'svelte';
     import { isSupportOnline, supportData } from './wizard/support/store';
     import Step1 from './wizard/support/step1.svelte';
-    import Label from '$lib/elements/forms/label.svelte';
     import type { WizardStepsType } from '$lib/layout/wizard.svelte';
     import { user } from '$lib/stores/user';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
@@ -91,7 +90,7 @@
         endDay: 'Friday' as WeekDay
     };
 
-    $: supportTimings = `${utcHourToLocaleHour(workTimings.start)} - ${utcHourToLocaleHour(workTimings.end)}`;
+    $: supportTimings = `${utcHourToLocaleHour(workTimings.start)} - ${utcHourToLocaleHour(workTimings.end)} ${localeTimezoneName()}`;
     $: supportWeekDays = `${utcWeekDayToLocaleWeekDay(workTimings.startDay, workTimings.start)} - ${utcWeekDayToLocaleWeekDay(workTimings.endDay, workTimings.end)}`;
 </script>
 
@@ -104,7 +103,6 @@
         </p>
         <p class="text u-margin-block-start-32">
             Available: <b>{supportWeekDays}, {supportTimings}</b>
-            <Label tooltip={localeTimezoneName()} />
         </p>
         <div class="u-flex u-gap-4 u-cross-center">
             <span>Currently:</span>
