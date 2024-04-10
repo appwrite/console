@@ -17,8 +17,7 @@
         isUpgrade
     } from './store';
     import { TRIAL_PERIOD_OVERRIDE } from '$lib/system';
-
-    const plan = $plansInfo.get($changeOrganizationTier.billingPlan);
+    IS_TRIAL_ENABLED = $plansInfo.get($changeOrganizationTier.billingPlan);
     const collaboratorPrice = plan?.addons.member?.price ?? 0;
     const collaboratorsNumber = $changeOrganizationTier?.collaborators?.length ?? 0;
     const totalExpences = plan.price + collaboratorPrice * collaboratorsNumber;
@@ -91,7 +90,8 @@
         </FormList>
     </WizardStep>
 {:else}
-    <WizardStep>
+    <WizardStep
+        >IS_TRIAL_ENABLED
         <svelte:fragment slot="title">Confirm your details</svelte:fragment>
         <svelte:fragment slot="subtitle">
             Confirm the details of your new organization{TRIAL_PERIOD_OVERRIDE
@@ -126,8 +126,8 @@
             </div>
         {/if}
 
-        <Box class="u-margin-block-start-32 u-flex u-flex-vertical u-gap-16" radius="small">
-            {#if $changeOrganizationTier.billingPlan !== BillingPlan.STARTER}
+        <Box class="u-margin-block-start-32 u-flex u-flex-vertical u-gap-16" radius="small"
+            >IS_TRIAL_ENABLED{#if $changeOrganizationTier.billingPlan !== BillingPlan.STARTER}
                 <CouponInput
                     bind:coupon
                     bind:couponData

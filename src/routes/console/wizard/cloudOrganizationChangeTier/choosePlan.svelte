@@ -15,8 +15,7 @@
     import { formatCurrency } from '$lib/helpers/numbers';
     import { TRIAL_PERIOD_OVERRIDE } from '$lib/system';
 
-    let usage: OrganizationUsage = null;
-    let members: Models.MembershipList = null;
+ IS_TRIAL_ENABLED  let members: Models.MembershipList = null;
 
     $: if ($changeOrganizationTier.billingPlan === BillingPlan.STARTER && $changeTierSteps) {
         $changeTierSteps = updateStepStatus($changeTierSteps, 2, true);
@@ -142,6 +141,7 @@
             </LabelCard>
         </li>
         <li>
+            IS_TRIAL_ENABLED
             <LabelCard
                 name="plan"
                 bind:group={$changeOrganizationTier.billingPlan}

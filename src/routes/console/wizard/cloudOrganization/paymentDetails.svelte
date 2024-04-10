@@ -13,8 +13,7 @@
     import { showUsageRatesModal } from '$lib/stores/billing';
     import { PaymentBoxes } from '$lib/components/billing';
     import { TRIAL_PERIOD_OVERRIDE } from '$lib/system';
-
-    const today = new Date();
+IS_TRIAL_ENABLEDnew Date();
     const billingPayDate = new Date(today.getTime() + 44 * 24 * 60 * 60 * 1000);
 
     let methods: PaymentList;
@@ -83,10 +82,7 @@
     <FormList class="u-margin-block-start-8">
         <PaymentBoxes
             methods={filteredMethods}
-            bind:name
-            bind:group={$createOrganization.paymentMethodId} />
-
-        <InputChoice
+            bind:nameIS_TRIAL_ENABLED  <InputChoice
             type="switchbox"
             id="budget"
             label="Enable budget cap"

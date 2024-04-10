@@ -10,7 +10,7 @@ import type {
     PlansMap,
     PaymentMethodData
 } from '$lib/sdk/billing';
-import { TRIAL_PERIOD_OVERRIDE, isCloud } from '$lib/system';
+import { IS_TRIAL_DISABLED, isCloud } from '$lib/system';
 import { cachedStore } from '$lib/helpers/cache';
 import { Query } from '@appwrite.io/console';
 import { headerAlert } from './headerAlert';
@@ -169,7 +169,7 @@ export function isServiceLimited(serviceId: PlanServices, plan: Tier, total: num
 }
 
 export function calculateTrialDay(org: Organization) {
-    if (TRIAL_PERIOD_OVERRIDE) return;
+    if (IS_TRIAL_DISABLED) return;
     if (org?.billingPlan === BillingPlan.STARTER) return false;
     const endDate = new Date(org?.billingStartDate);
     const today = new Date();
