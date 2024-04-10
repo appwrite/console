@@ -44,7 +44,7 @@
             toTag: (attribute, input) => `**${attribute}** greater than **${input}**`,
             types: ['integer', 'double', 'datetime']
         },
-        'greater than or equal to': {
+        'greater than or equal': {
             toQuery: (attr, input) => Query.greaterThanEqual(attr, Number(input)),
             toTag: (attribute, input) => `**${attribute}** greater than or equal to **${input}**`,
             types: ['integer', 'double', 'datetime']
@@ -54,7 +54,7 @@
             toTag: (attribute, input) => `**${attribute}** less than **${input}**`,
             types: ['integer', 'double', 'datetime']
         },
-        'less than or equal to': {
+        'less than or equal': {
             toQuery: Query.lessThanEqual,
             toTag: (attribute, input) => `**${attribute}** less than or equal to **${input}**`,
             types: ['integer', 'double', 'datetime']
@@ -64,7 +64,7 @@
             toTag: (attribute, input) => `**${attribute}** equal to **${input}**`,
             types: ['string', 'integer', 'double', 'boolean']
         },
-        'not equal to': {
+        'not equal': {
             toQuery: Query.notEqual,
             toTag: (attribute, input) => `**${attribute}** not equal to **${input}**`,
             types: ['string', 'integer', 'double', 'boolean']
