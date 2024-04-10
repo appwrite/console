@@ -12,8 +12,9 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { showUsageRatesModal } from '$lib/stores/billing';
     import { PaymentBoxes } from '$lib/components/billing';
-    import { TRIAL_PERIOD_OVERRIDE } from '$lib/system';
-IS_TRIAL_ENABLEDnew Date();
+    import { IS_TRIAL_DISABLED } from '$lib/system';
+
+    const today = new Date();
     const billingPayDate = new Date(today.getTime() + 44 * 24 * 60 * 60 * 1000);
 
     let methods: PaymentList;
@@ -74,15 +75,18 @@ IS_TRIAL_ENABLEDnew Date();
 <WizardStep beforeSubmit={handleSubmit}>
     <svelte:fragment slot="title">Payment details</svelte:fragment>
     <svelte:fragment slot="subtitle">
-        Add a payment method to your organization. {#if !TRIAL_PERIOD_OVERRIDE}You will not be
-            charged until your trial ends on <b>{toLocaleDate(billingPayDate.toString())}</b>.
+        Add a payment method to your organization. {#if !IS_TRIAL_DISABLED}You will not be charged
+            until your trial ends on <b>{toLocaleDate(billingPayDate.toString())}</b>.
         {/if}
     </svelte:fragment>
 
     <FormList class="u-margin-block-start-8">
         <PaymentBoxes
             methods={filteredMethods}
-            bind:nameIS_TRIAL_ENABLED  <InputChoice
+            bind:name
+            bind:group={$createOrganization.paymentMethodId} />
+
+        <InputChoice
             type="switchbox"
             id="budget"
             label="Enable budget cap"

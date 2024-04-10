@@ -18,8 +18,9 @@
         organizationList
     } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
-    import { GRACE_PERIOD_OVERRIDE, TRIAL_PERIOD_OVERRIDE, isCloud } from '$lib/system';
-    import CreateOrganizationCloud from '../createOrganizationCloud.sveltIS_TRIAL_ENABLED
+    import { GRACE_PERIOD_OVERRIDE, IS_TRIAL_DISABLED, isCloud } from '$lib/system';
+    import CreateOrganizationCloud from '../createOrganizationCloud.svelte';
+
     let areMembersLimited: boolean;
     $: organization.subscribe(() => {
         const limit = getServiceLimit('members') || Infinity;
@@ -93,7 +94,7 @@
                             {#if isCloud && $organization?.billingPlan === BillingPlan.STARTER}
                                 <Pill>FREE</Pill>
                             {/if}
-                            {#if isCloud && $organization?.billingTrialStartDate && $daysLeftInTrial > 0 && $organization.billingPlan !== BillingPlan.STARTER && !TRIAL_PERIOD_OVERRIDE}
+                            {#if isCloud && $organization?.billingTrialStartDate && $daysLeftInTrial > 0 && $organization.billingPlan !== BillingPlan.STARTER && !IS_TRIAL_DISABLED}
                                 <div
                                     class="u-flex u-cross-center"
                                     use:tooltip={{
@@ -101,7 +102,7 @@
                                             $organization.billingStartDate
                                         )}. ${$daysLeftInTrial} days remaining.`
                                     }}>
-                                    <Pill>TRIAL</Pill>IS_TRIAL_ENABLED
+                                    <Pill>TRIAL</Pill>
                                 </div>
                             {/if}
                         </span>

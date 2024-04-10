@@ -13,9 +13,10 @@
     import { Pill } from '$lib/elements';
     import { BillingPlan } from '$lib/constants';
     import { formatCurrency } from '$lib/helpers/numbers';
-    import { TRIAL_PERIOD_OVERRIDE } from '$lib/system';
+    import { IS_TRIAL_DISABLED } from '$lib/system';
 
- IS_TRIAL_ENABLED  let members: Models.MembershipList = null;
+    let usage: OrganizationUsage = null;
+    let members: Models.MembershipList = null;
 
     $: if ($changeOrganizationTier.billingPlan === BillingPlan.STARTER && $changeTierSteps) {
         $changeTierSteps = updateStepStatus($changeTierSteps, 2, true);
@@ -141,7 +142,6 @@
             </LabelCard>
         </li>
         <li>
-            IS_TRIAL_ENABLED
             <LabelCard
                 name="plan"
                 bind:group={$changeOrganizationTier.billingPlan}
@@ -162,7 +162,7 @@
                     <div class:u-opacity-50={disabled}>
                         {#if $organization.billingPlan === BillingPlan.PRO}
                             <Pill disabled>CURRENT PLAN</Pill>
-                        {:else if !TRIAL_PERIOD_OVERRIDE}
+                        {:else if !IS_TRIAL_DISABLED}
                             <Pill>14 DAY FREE TRIAL</Pill>
                         {/if}
                     </div>

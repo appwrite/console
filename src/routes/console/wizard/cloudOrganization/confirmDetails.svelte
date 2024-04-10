@@ -127,7 +127,7 @@
             <p class="text u-margin-block-start-16">
                 This amount, and any additional usage fees, will be charged on a recurring 30-day
                 billing cycle{IS_TRIAL_DISABLED
-                    ? '.'
+                    ? ''
                     : ` after your trial period ends on ${toLocaleDate(billingPayDate.toString())}`}.
             </p>
         {/if}
