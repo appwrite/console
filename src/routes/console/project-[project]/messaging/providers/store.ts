@@ -1,7 +1,7 @@
 import type { Column } from '$lib/helpers/types';
+import { MessagingProviderType, SmtpEncryption } from '@appwrite.io/console';
 import { writable } from 'svelte/store';
 import { Providers } from '../provider.svelte';
-import { MessagingProviderType, SmtpEncryption } from '@appwrite.io/console';
 
 export const columns = writable<Column[]>([
     { id: '$id', title: 'Provider ID', type: 'string', show: true },
@@ -304,7 +304,7 @@ export const providers: ProvidersMap = {
             [Providers.SMTP]: {
                 classIcon: 'mail',
                 title: 'SMTP',
-                description: 'Generic SMTP server.',
+                description: 'Generic SMTP server',
                 configure: [
                     {
                         label: 'Server host',
@@ -465,14 +465,18 @@ export const providers: ProvidersMap = {
                         placeholder: 'Enter sender ID',
                         popover: [
                             '<b>How to create a Sender ID?</b>',
-                            'Head to <b><a class="link" href="https://control.msg91.com/signin/" target="_blank" rel="noopener noreferrer">MSG91</a> dashboard -> SMS -> Sender ID -> Create sender ID.</b>'
+                            'Head to <b><a class="link" href="https://control.msg91.com/signin/" target="_blank" rel="noopener noreferrer">MSG91</a> dashboard -> SMS -> Sender ID -> Create Sender ID.</b>'
                         ]
                     },
                     {
-                        label: 'Sender number',
-                        name: 'from',
-                        type: 'phone',
-                        placeholder: 'Enter phone'
+                        label: 'Template ID',
+                        name: 'templateId',
+                        type: 'text',
+                        placeholder: 'Enter template ID',
+                        popover: [
+                            '<b>How to create a Template ID?</b>',
+                            'Head to <b><a class="link" href="https://control.msg91.com/signin/" target="_blank" rel="noopener noreferrer">MSG91</a> dashboard -> SMS -> Templates -> Create Template.</b>'
+                        ]
                     }
                 ]
             },
@@ -590,7 +594,7 @@ export type TwilioProviderParams = ProviderParams & {
 };
 
 export type Msg91ProviderParams = ProviderParams & {
-    from: string;
+    templateId: string;
     senderId: string;
     authKey: string;
 };

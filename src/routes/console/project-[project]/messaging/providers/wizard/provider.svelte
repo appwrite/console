@@ -29,7 +29,7 @@
                     providerId: id,
                     name: name,
                     enabled: true,
-                    from: '',
+                    templateId: '',
                     senderId: '',
                     authKey: ''
                 };

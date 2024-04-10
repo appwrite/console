@@ -49,8 +49,8 @@
                     break;
                 case MessagingProviderType.Push:
                     {
-                        const file = $messageParams[MessagingProviderType.Push].file;
-                        const fileCompoundId = `${file.bucketId}:${file.$id}`;
+                        const file = $messageParams[MessagingProviderType.Push]?.file;
+                        const fileCompoundId = file ? `${file.bucketId}:${file.$id}` : undefined;
                         const customData: Record<string, string> = {};
                         const { data } = $messageParams[MessagingProviderType.Push];
                         if (data && data.length > 0) {
@@ -148,6 +148,8 @@
             }
         ]
     });
+
+    $wizard.finalAction = create;
 </script>
 
-<Wizard title="Create message" steps={stepsComponents} on:finish={create} finalAction="Send" />
+<Wizard title="Create message" steps={stepsComponents} finalAction="Send" />

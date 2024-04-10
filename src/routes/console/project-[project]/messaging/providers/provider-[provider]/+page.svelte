@@ -38,7 +38,7 @@
                 providerId: $providerData.$id,
                 name: $providerData.name,
                 enabled: $providerData.enabled,
-                from: $providerData.options['from'],
+                templateId: $providerData.credentials['templateId'],
                 senderId: $providerData.credentials['senderId'],
                 authKey: $providerData.credentials['authKey']
             };
@@ -142,7 +142,8 @@
                 authKey: $providerData.credentials['authKey'],
                 authKeyId: $providerData.credentials['authKeyId'],
                 teamId: $providerData.credentials['teamId'],
-                bundleId: $providerData.credentials['bundleId']
+                bundleId: $providerData.credentials['bundleId'],
+                sandbox: $providerData.options['sandbox']
             };
             break;
     }

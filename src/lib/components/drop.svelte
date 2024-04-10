@@ -106,6 +106,7 @@
 <svelte:window on:click={onBlur} on:keydown={onKeyDown} />
 
 <div
+    class="u-min-width-0"
     class:drop-wrapper={!noStyle}
     class:u-cross-child-start={childStart}
     class:u-width-full-line={wrapperFullWidth}
@@ -119,7 +120,7 @@
     bind:this={tooltip}
     class:u-width-full-line={fullWidth}
     style:--arrow-size={`${arrowSize}px`}
-    style:z-index="10">
+    style:z-index="1">
     <div
         class="drop-arrow"
         class:is-popover={isPopover}

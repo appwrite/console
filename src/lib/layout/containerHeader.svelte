@@ -120,19 +120,18 @@
             <DropList bind:show={showDropdown} width="16">
                 {#if hasProjectLimitation}
                     <Pill button on:click={() => (showDropdown = !showDropdown)}>
-                        <span class="icon-info" />{total}/{limit}
-                        {title} used
+                        <span class="icon-info" />{total}/{limit} created
                     </Pill>
                 {:else}
                     <Pill button on:click={() => (showDropdown = !showDropdown)}>
-                        <span class="icon-info" />{title} limited
+                        <span class="icon-info" />Limits applied
                     </Pill>
                 {/if}
                 <svelte:fragment slot="list">
                     <slot name="tooltip" {limit} {tier} {title} {upgradeMethod} {hasUsageFees}>
                         {#if hasProjectLimitation}
                             <p class="text">
-                                Your are limited to {limit}
+                                You are limited to {limit}
                                 {title.toLocaleLowerCase()} per project on the {tier} plan.
                                 {#if $organization?.billingPlan === BillingPlan.STARTER}<Button
                                         link
@@ -142,7 +141,7 @@
                                                 from: 'button',
                                                 source: 'resource_limit_tag'
                                             })}>Upgrade</Button>
-                                    for addtional {title.toLocaleLowerCase()}.
+                                    for additional {title.toLocaleLowerCase()}.
                                 {/if}
                             </p>
                         {:else if hasUsageFees}
