@@ -37,8 +37,7 @@
     import { stripe } from '$lib/stores/stripe';
     import MobileSupportModal from './wizard/support/mobileSupportModal.svelte';
     import { showSupportModal } from './wizard/support/store';
-    import ExcesLimitModal from './organization-[organization]/excesLimitModal.svelte';
-    import { showExcess } from './organization-[organization]/store';
+
     import UsageRates from './wizard/cloudOrganization/usageRates.svelte';
     import { activeHeaderAlert, consoleVariables } from './store';
     import { headerAlert } from '$lib/stores/headerAlert';
@@ -325,9 +324,6 @@
     <MobileSupportModal bind:show={$showSupportModal}></MobileSupportModal>
 {/if}
 
-{#if isCloud && $showExcess}
-    <ExcesLimitModal bind:show={$showExcess}></ExcesLimitModal>
-{/if}
 {#if isCloud && $showUsageRatesModal}
     <UsageRates bind:show={$showUsageRatesModal} tier={$organization?.billingPlan} />
 {/if}

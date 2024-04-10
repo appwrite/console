@@ -107,7 +107,8 @@
         <Heading tag="h6" size="7">Bandwidth</Heading>
 
         <p class="text">
-            Calculated for all bandwidth used across all projects in your organization.
+            Calculated for all bandwidth used across all projects in your organization. Resets at
+            the start of each billing cycle.
         </p>
 
         <svelte:fragment slot="aside">
