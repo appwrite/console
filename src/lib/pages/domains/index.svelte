@@ -147,11 +147,15 @@
                                 <span class="icon-dots-horizontal" aria-hidden="true" />
                             </Button>
                             <svelte:fragment slot="list">
-                                <DropListItem icon="refresh" on:click={() => openRetry(domain, i)}>
-                                    {domain.status === 'unverfied'
-                                        ? 'Retry generation'
-                                        : 'Retry verification'}
-                                </DropListItem>
+                                {#if domain.status !== 'verified'}
+                                    <DropListItem
+                                        icon="refresh"
+                                        on:click={() => openRetry(domain, i)}>
+                                        {domain.status === 'unverfied'
+                                            ? 'Retry generation'
+                                            : 'Retry verification'}
+                                    </DropListItem>
+                                {/if}
                                 <DropListItem
                                     icon="trash"
                                     on:click={() => {
