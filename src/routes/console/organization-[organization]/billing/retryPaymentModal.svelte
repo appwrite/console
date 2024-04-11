@@ -39,7 +39,7 @@
         try {
             if (paymentMethodId === null) {
                 try {
-                    const method = await submitStripeCard(name);
+                    const method = await submitStripeCard(name, $organization.$id);
                     const card = await sdk.forConsole.billing.getPaymentMethod(method.$id);
                     if (card?.last4) {
                         paymentMethodId = card.$id;

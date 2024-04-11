@@ -106,6 +106,7 @@
 <svelte:window on:click={onBlur} on:keydown={onKeyDown} />
 
 <div
+    class="u-min-width-0"
     class:drop-wrapper={!noStyle}
     class:u-cross-child-start={childStart}
     class:u-width-full-line={wrapperFullWidth}
