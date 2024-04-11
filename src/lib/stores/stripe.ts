@@ -51,7 +51,7 @@ export async function unmountPaymentElement() {
     elements = null;
 }
 
-export async function submitStripeCard(name: string, urlRoute?: string) {
+export async function submitStripeCard(name: string, organizationId?: string) {
     try {
         // If a payment method was created during initialization, use it, otherwise create a new one
         if (!paymentMethod) {
@@ -62,16 +62,20 @@ export async function submitStripeCard(name: string, urlRoute?: string) {
         // // Element needs to be submitted before confirming the setup intent
         elements.submit();
 
-        const baseUrl = 'https://cloud.appwrite.io/console/';
+        const baseUrl = 'https://cloud.appwrite.io/console';
+        const accountUrl = `${baseUrl}/account/payments?clientSecret=${clientSecret}`;
+        const orgUrl = `${baseUrl}/organization-${organizationId}/billing?clientSecret=${clientSecret}`;
+
+        const returnUrl = new URL(organizationId ? orgUrl : accountUrl);
+
+        returnUrl.searchParams.append('clientSecret', clientSecret);
+        returnUrl.searchParams.append('paymentMethodId', paymentMethod.$id);
 
         const { setupIntent, error } = await get(stripe).confirmSetup({
             elements,
             clientSecret,
             confirmParams: {
-                return_url: `${baseUrl}${
-                    urlRoute ??
-                    `organization-${get(organization).$id}/billing?clientSecret=${clientSecret}`
-                }`,
+                return_url: returnUrl.toString(),
                 payment_method_data: {
                     billing_details: {
                         name
