@@ -2,7 +2,15 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { tooltip } from '$lib/actions/tooltip';
-    import { AvatarGroup, DropList, DropListItem, DropListLink, Tab, Tabs } from '$lib/components';
+    import {
+        AvatarGroup,
+        DropList,
+        DropListItem,
+        DropListLink,
+        Heading,
+        Tab,
+        Tabs
+    } from '$lib/components';
     import { BillingPlan } from '$lib/constants';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
@@ -41,6 +49,13 @@
     $: avatars = $members.memberships?.map((m) => m.userName) ?? [];
     $: organizationId = $page.params.organization;
     $: path = `/console/organization-${organizationId}`;
+    $: permanentTabSettings = [
+        {
+            href: `${path}/settings`,
+            event: 'settings',
+            title: 'Settings'
+        }
+    ];
     $: permanentTabs = [
         {
             href: path,
@@ -55,13 +70,7 @@
             hasChildren: true
         }
     ];
-    $: permanentTabSettings = [
-        {
-            href: `${path}/settings`,
-            event: 'settings',
-            title: 'Settings'
-        }
-    ];
+
     $: tabs = isCloud
         ? [
               ...permanentTabs,
@@ -84,13 +93,15 @@
 {#if $organization?.$id}
     <Cover>
         <svelte:fragment slot="header">
-            <DropList bind:show={showDropdown} placement="bottom-start" noArrow scrollable>
+            <DropList bind:show={showDropdown} placement="bottom-end" noArrow scrollable>
                 <button
-                    class="button is-text u-padding-inline-0"
+                    class="button is-text u-padding-inline-0 u-max-width-100-percent"
                     on:click={() => (showDropdown = !showDropdown)}>
-                    <h1 class="heading-level-4 u-flex u-cross-center u-gap-8">
-                        <span class="u-flex u-cross-center u-gap-8">
-                            {$organization.name}
+                    <Heading tag="h1" size="4" class="u-flex u-cross-center u-gap-8">
+                        <span class="u-flex u-cross-center u-gap-8 u-min-width-0">
+                            <span class="u-trim">
+                                {$organization.name}
+                            </span>
                             {#if isCloud && $organization?.billingPlan === BillingPlan.STARTER}
                                 <Pill>FREE</Pill>
                             {/if}
@@ -109,7 +120,7 @@
                         <span
                             class={`icon-cheveron-${showDropdown ? 'up' : 'down'}`}
                             aria-hidden="true" />
-                    </h1>
+                    </Heading>
                 </button>
                 <svelte:fragment slot="list">
                     {#each $organizationList.teams as org}
