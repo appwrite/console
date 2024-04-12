@@ -3,7 +3,8 @@
         number,
         {
             label: string;
-            component: typeof SvelteComponent<unknown>;
+            component?: typeof SvelteComponent<unknown>;
+            href?: string;
             optional?: boolean;
             disabled?: boolean;
         }
@@ -19,6 +20,8 @@
     import { wizard } from '$lib/stores/wizard';
     import { createEventDispatcher, type SvelteComponent } from 'svelte';
     import WizardExitModal from './wizardExitModal.svelte';
+    import WizardHeader from './wizardHeader.svelte';
+    import WizardMainWrapper from './wizardMainWrapper.svelte';
 
     export let title: string;
     export let steps: WizardStepsType;
@@ -132,24 +135,8 @@
 
 <svelte:window on:keydown={handleKeydown} />
 
-<section class="wizard">
-    <div class="wizard-header-strip" />
-    <div class="wizard-start-bg" />
-    <div class="wizard-end-bg" />
-
-    <header class="wizard-header">
-        <div class="body-text-1 u-bold">{title}</div>
-
-        <slot name="header" />
-        <button
-            class="button is-text is-only-icon u-margin-inline-start-auto"
-            style="--button-size:1.5rem;"
-            aria-label="close wizard"
-            on:click={handleExit}>
-            <span class="icon-x" aria-hidden="true" />
-        </button>
-    </header>
-
+<WizardMainWrapper>
+    <WizardHeader {title} on:click={handleExit} />
     <aside class="wizard-side">
         <slot name="aside">
             <Steps
@@ -195,7 +182,7 @@
             </div>
         </Form>
     </div>
-</section>
+</WizardMainWrapper>
 
 {#if showExitModal}
     <WizardExitModal
