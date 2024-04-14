@@ -37,6 +37,8 @@
                         : $organizationList.teams[0].$id;
 
                 await goto(`${base}/console/organization-${teamId}`);
+            } else if ($organizationList?.total == 1) {
+                await goto(`${base}/console/organization-${$organizationList.teams[0].$id}`);
             } else {
                 await goto(`${base}/console/onboarding`);
             }
