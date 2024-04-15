@@ -70,6 +70,7 @@
 
 <dialog
     class="modal"
+    class:u-hide={!show}
     class:is-small={size === 'small'}
     class:is-big={size === 'big'}
     class:is-separate-header={headerDivider}

@@ -274,6 +274,7 @@
                 await checkPaymentAuthorizationRequired(org);
                 await checkForMandate(org);
             }
+            $activeHeaderAlert = headerAlert.get();
         }
     });
 
