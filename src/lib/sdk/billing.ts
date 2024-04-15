@@ -94,11 +94,11 @@ export type Credit = {
     /**
      * Provided credit amount
      */
-    credits: number;
+    total: number;
     /**
-     * Remaining up credit amount
+     * Remaining credit amount
      */
-    creditsRemaining: number;
+    credits: number;
     /**
      * Credit expiration time in ISO 8601 format.
      */
