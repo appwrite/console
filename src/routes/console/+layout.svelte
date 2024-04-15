@@ -21,7 +21,8 @@
         paymentExpired,
         checkForMarkedForDeletion,
         checkForMandate,
-        checkForMissingPaymentMethod
+        checkForMissingPaymentMethod,
+        checkForUpgradeBanner
     } from '$lib/stores/billing';
     import { goto } from '$app/navigation';
     import { CommandCenter, registerCommands, registerSearchers } from '$lib/commandCenter';
@@ -268,6 +269,7 @@
         if (isCloud) {
             await checkForUsageLimit(org);
             checkForMarkedForDeletion(org);
+            checkForUpgradeBanner(org);
             if (org?.billingPlan !== BillingPlan.STARTER) {
                 calculateTrialDay(org);
                 await paymentExpired(org);

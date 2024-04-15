@@ -8,14 +8,15 @@
     import GradientBanner from '../gradientBanner.svelte';
 
     function handleClose() {
-        localStorage.setItem('hideUpgradeBanner', 'true');
+        const now = new Date().getTime();
+        localStorage.setItem('upgradeBanner', now.toString());
         trackEvent('close_upgrade_banner', {
             source: 'upgrade_banner'
         });
     }
 </script>
 
-{#if $organization?.$id && $organization?.billingPlan === BillingPlan.PRO && !$page.url.pathname.includes('/console/account')}
+{#if $organization?.$id && $organization?.billingPlan !== BillingPlan.PRO && !$page.url.pathname.includes('/console/account')}
     <GradientBanner
         on:close={handleClose}
         on:click={() => {

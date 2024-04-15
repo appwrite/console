@@ -27,6 +27,7 @@ import LimitReached from '$lib/components/billing/alerts/limitReached.svelte';
 import { wizard } from './wizard';
 import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
 import { trackEvent } from '$lib/actions/analytics';
+import UpgradeToPro from '$lib/components/billing/alerts/upgradeToPro.svelte';
 
 export type Tier = 'tier-0' | 'tier-1' | 'tier-2';
 
@@ -358,6 +359,21 @@ export async function checkForMissingPaymentMethod() {
             component: MissingPaymentMethod,
             show: true,
             importance: 8
+        });
+    }
+}
+
+export function checkForUpgradeBanner(org: Organization) {
+    if (org?.billingPlan !== BillingPlan.STARTER) return;
+    const localData = localStorage.getItem('upgradeBanner');
+    const hideUpgradeBanner = localData ? parseInt(localData) : 0;
+    const now = new Date().getTime();
+    if (now - hideUpgradeBanner >= 1000 * 60 * 60 * 24 * 5) {
+        headerAlert.add({
+            id: 'upgradeBanner',
+            component: UpgradeToPro,
+            show: true,
+            importance: 1
         });
     }
 }
