@@ -363,12 +363,16 @@ export async function checkForMissingPaymentMethod() {
     }
 }
 
-export function checkForUpgradeBanner(org: Organization) {
+export async function checkForUpgradeBanner(org: Organization) {
     if (org?.billingPlan !== BillingPlan.STARTER) return;
+    const orgs = await sdk.forConsole.billing.listOrganization([
+        Query.notEqual('billingPlan', BillingPlan.STARTER)
+    ]);
+    if (orgs?.total) return;
     const localData = localStorage.getItem('upgradeBanner');
     const hideUpgradeBanner = localData ? parseInt(localData) : 0;
     const now = new Date().getTime();
-    if (now - hideUpgradeBanner >= 1000 * 60 * 60 * 24 * 5) {
+    if (now - hideUpgradeBanner >= 1000 * 60 * 60 * 24 * 14) {
         headerAlert.add({
             id: 'upgradeBanner',
             component: UpgradeToPro,

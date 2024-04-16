@@ -269,7 +269,7 @@
         if (isCloud) {
             await checkForUsageLimit(org);
             checkForMarkedForDeletion(org);
-            checkForUpgradeBanner(org);
+            await checkForUpgradeBanner(org);
             if (org?.billingPlan !== BillingPlan.STARTER) {
                 calculateTrialDay(org);
                 await paymentExpired(org);
