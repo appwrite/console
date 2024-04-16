@@ -73,16 +73,9 @@
         </p>
     {:else}
         <p data-private>
-            Are you sure you want to delete <b>{$organization.name}</b>?
-            {#if $projects.total > 0}
-                All projects ({$projects.total}) and data associated with this organization will be
-                deleted.
-            {:else}
-                There are <b>no projects</b> associated with this organization.
-            {/if}
+            Are you sure you want to delete <b>{$organization.name}</b>? All projects ({$projects.total})
+            and data associated with this organization will be deleted. This action is irreversible.
         </p>
-
-        <p><b>This action is irreversible.</b></p>
     {/if}
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)}>Cancel</Button>
