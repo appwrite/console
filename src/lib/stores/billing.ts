@@ -183,7 +183,7 @@ export function calculateTrialDay(org: Organization) {
 }
 
 export async function checkForUsageLimit(org: Organization) {
-    if (org.billingPlan !== BillingPlan.STARTER) {
+    if (org?.billingPlan !== BillingPlan.STARTER) {
         readOnly.set(false);
         return;
     }

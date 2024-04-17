@@ -277,6 +277,7 @@
                     calculateTrialDay(org);
                 }
             }
+            $activeHeaderAlert = headerAlert.get();
         }
     });
 
