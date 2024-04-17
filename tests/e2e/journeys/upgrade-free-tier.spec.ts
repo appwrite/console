@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
 import { registerUserStep } from '../steps/account';
 import { createFreeProject } from '../steps/free-project';
 import { enterAddress, enterCreditCard } from '../steps/pro-project';
