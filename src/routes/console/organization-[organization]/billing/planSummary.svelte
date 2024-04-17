@@ -16,7 +16,6 @@
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { BillingPlan } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
-    import { IS_TRIAL_DISABLED } from '$lib/system';
 
     let currentInvoice: Invoice;
     const today = new Date();
@@ -32,7 +31,7 @@
     $: extraUsage = currentInvoice?.amount - currentPlan?.price;
     $: isTrial =
         new Date($organization?.billingStartDate).getTime() - today.getTime() > 0 &&
-        !IS_TRIAL_DISABLED;
+        $plansInfo.get($organization.billingPlan)?.trialDays;
 </script>
 
 {#if $organization}
@@ -56,7 +55,7 @@
                         <h6 class="body-text-1 u-bold u-trim-1">
                             {tierToPlan($organization?.billingPlan)?.name} plan
                         </h6>
-                        {#if $organization?.billingPlan !== BillingPlan.STARTER && isTrial && !IS_TRIAL_DISABLED}
+                        {#if $organization?.billingPlan !== BillingPlan.STARTER && isTrial}
                             <Pill>TRIAL</Pill>
                         {/if}
                     </div>

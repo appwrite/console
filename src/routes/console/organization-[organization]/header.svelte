@@ -9,7 +9,13 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover } from '$lib/layout';
-    import { daysLeftInTrial, getServiceLimit, readOnly, tierToPlan } from '$lib/stores/billing';
+    import {
+        daysLeftInTrial,
+        getServiceLimit,
+        plansInfo,
+        readOnly,
+        tierToPlan
+    } from '$lib/stores/billing';
     import {
         members,
         newMemberModal,
@@ -18,7 +24,7 @@
         organizationList
     } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
-    import { GRACE_PERIOD_OVERRIDE, IS_TRIAL_DISABLED, isCloud } from '$lib/system';
+    import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
     import CreateOrganizationCloud from '../createOrganizationCloud.svelte';
 
     let areMembersLimited: boolean;
@@ -94,7 +100,7 @@
                             {#if isCloud && $organization?.billingPlan === BillingPlan.STARTER}
                                 <Pill>FREE</Pill>
                             {/if}
-                            {#if isCloud && $organization?.billingTrialStartDate && $daysLeftInTrial > 0 && $organization.billingPlan !== BillingPlan.STARTER && !IS_TRIAL_DISABLED}
+                            {#if isCloud && $organization?.billingTrialStartDate && $daysLeftInTrial > 0 && $organization.billingPlan !== BillingPlan.STARTER && $plansInfo.get($organization.billingPlan)?.trialDays}
                                 <div
                                     class="u-flex u-cross-center"
                                     use:tooltip={{

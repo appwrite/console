@@ -9,7 +9,6 @@
     import type { Coupon } from '$lib/sdk/billing';
     import { plansInfo } from '$lib/stores/billing';
     import { sdk } from '$lib/stores/sdk';
-    import { IS_TRIAL_DISABLED } from '$lib/system';
     import { createOrganization, createOrganizationFinalAction } from './store';
 
     const plan = $plansInfo?.get($createOrganization.billingPlan);
@@ -54,7 +53,7 @@
 <WizardStep beforeSubmit={handleBefore}>
     <svelte:fragment slot="title">Confirm your details</svelte:fragment>
     <svelte:fragment slot="subtitle">
-        Confirm the details of your new organization{IS_TRIAL_DISABLED
+        Confirm the details of your new organization{!plan.trialDays
             ? '.'
             : ' and start your free trial.'}
     </svelte:fragment>
@@ -126,7 +125,7 @@
         {#if $createOrganization.billingPlan !== BillingPlan.STARTER}
             <p class="text u-margin-block-start-16">
                 This amount, and any additional usage fees, will be charged on a recurring 30-day
-                billing cycle{IS_TRIAL_DISABLED
+                billing cycle{!plan.trialDays
                     ? ''
                     : ` after your trial period ends on ${toLocaleDate(billingPayDate.toString())}`}.
             </p>

@@ -13,11 +13,11 @@
     import CreateOrganization from '../../createOrganization.svelte';
     import { sdk } from '$lib/stores/sdk';
     import type { PageData } from './$types';
-    import { IS_TRIAL_DISABLED, isCloud } from '$lib/system';
+    import { isCloud } from '$lib/system';
     import { Pill } from '$lib/elements';
     import type { Models } from '@appwrite.io/console';
     import type { Organization } from '$lib/stores/organization';
-    import { daysLeftInTrial } from '$lib/stores/billing';
+    import { daysLeftInTrial, plansInfo } from '$lib/stores/billing';
     import { tooltip } from '$lib/actions/tooltip';
     import { toLocaleDate } from '$lib/helpers/date';
     import { wizard } from '$lib/stores/wizard';
@@ -82,7 +82,7 @@
                                     <Pill>FREE</Pill>
                                 </div>
                             {/if}
-                            {#if organization?.billingTrialStartDate && $daysLeftInTrial > 0 && organization.billingPlan !== BillingPlan.STARTER && !IS_TRIAL_DISABLED}
+                            {#if organization?.billingTrialStartDate && $daysLeftInTrial > 0 && organization.billingPlan !== BillingPlan.STARTER && $plansInfo.get(organization.billingPlan)?.trialDays}
                                 <div
                                     class="u-flex u-cross-center"
                                     use:tooltip={{

@@ -16,7 +16,6 @@
         feedbackDowngradeOptions,
         isUpgrade
     } from './store';
-    import { IS_TRIAL_DISABLED } from '$lib/system';
 
     const plan = $plansInfo.get($changeOrganizationTier.billingPlan);
     const collaboratorPrice = plan?.addons.member?.price ?? 0;
@@ -78,7 +77,9 @@
     <WizardStep>
         <svelte:fragment slot="title">Confirm your details</svelte:fragment>
         <svelte:fragment slot="subtitle">
-            Confirm the details of your new organization{IS_TRIAL_DISABLED
+            Confirm the details of your new organization{!$plansInfo.get(
+                $changeOrganizationTier.billingPlan
+            )?.trialDays
                 ? '.'
                 : ' and start your free trial.'}
         </svelte:fragment>
@@ -147,7 +148,7 @@
 
             <p class="text u-margin-block-start-16">
                 This amount, and any additional usage fees, will be charged on a recurring 30-day
-                billing cycle{IS_TRIAL_DISABLED
+                billing cycle{!$plansInfo.get($changeOrganizationTier.billingPlan)?.trialDays
                     ? ''
                     : ` after your trial period ends on ${toLocaleDate(billingPayDate.toString())}`}.
             </p>

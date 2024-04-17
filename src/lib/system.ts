@@ -24,4 +24,3 @@ export const isCloud = MODE === Mode.CLOUD;
 export const isSelfHosted = MODE !== Mode.CLOUD;
 export const hasStripePublicKey = !!VARS.STRIPE_PUBLIC_KEY;
 export const GRACE_PERIOD_OVERRIDE = false;
-export const IS_TRIAL_DISABLED = true;
