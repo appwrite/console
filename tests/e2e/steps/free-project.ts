@@ -16,7 +16,6 @@ export async function createFreeProject(page: Page): Promise<Metadata> {
         plan.selectOption('tier-0');
         await page.getByRole('button', { name: 'Get started' }).click();
         await page.waitForURL('/console/organization-**');
-        console.log(page.url());
         return getOrganizationIdFromUrl(page.url());
     });
 
