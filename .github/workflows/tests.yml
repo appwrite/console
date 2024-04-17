@@ -8,7 +8,7 @@ on:
             - 'static/**/*'
 
 env:
-    VITE_STRIPE_PUBLIC_KEY: ${{ env.VITE_STRIPE_PUBLIC_KEY }}
+    VITE_STRIPE_PUBLIC_KEY: ${{ vars.VITE_STRIPE_PUBLIC_KEY }}
     VITE_APPWRITE_ENDPOINT: http://appwrite.test/v1
 
 jobs:
