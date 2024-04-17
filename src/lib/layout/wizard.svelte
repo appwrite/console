@@ -97,6 +97,7 @@
                 $wizard.nextDisabled = true;
                 if (finalMethod) {
                     await finalMethod();
+                    trackEvent('wizard_finish');
                     $wizard.nextDisabled = false;
                 } else {
                     trackEvent('wizard_finish');
