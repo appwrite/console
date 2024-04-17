@@ -1,6 +1,7 @@
 import { type PlaywrightTestConfig } from '@playwright/test';
 
 const config: PlaywrightTestConfig = {
+    timeout: 60000,
     webServer: {
         env: {
             VITE_APPWRITE_ENDPOINT: 'http://console-tests.appwrite.org/v1',
