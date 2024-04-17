@@ -1,19 +1,34 @@
 import { test, type Page } from '@playwright/test';
 
-export function registerUserStep(page: Page) {
-    return test.step('Register User', async () => {
-        const seed = Date.now();
+type Metadata = {
+    name: string;
+    email: string;
+    password: string;
+};
+
+export function registerUserStep(page: Page): Promise<Metadata> {
+    return test.step('register user', async () => {
+        const seed = crypto.randomUUID();
         await page.goto('/register');
         await page.getByRole('button', { name: 'Only required', exact: true }).click();
-        const name = page.locator('id=name');
-        const mail = page.locator('id=email');
-        const pass = page.locator('id=password');
-        const terms = page.locator('id=terms');
-        await name.fill('testuser ' + seed);
-        await mail.fill('testuser+' + seed + '@apppwrite.io');
-        await pass.fill('testuser+' + seed + '@apppwrite.io');
-        await terms.check();
+        const inputs = {
+            name: page.locator('id=name'),
+            email: page.locator('id=email'),
+            password: page.locator('id=password'),
+            terms: page.locator('id=terms')
+        };
+        const values = {
+            name: 'testuser ' + seed,
+            email: 'testuser+' + seed + '@apppwrite.io',
+            password: 'testuser+' + seed + '@apppwrite.io'
+        };
+        await inputs.name.fill(values.name);
+        await inputs.email.fill(values.email);
+        await inputs.password.fill(values.password);
+        await inputs.terms.check();
         await page.getByRole('button', { name: 'Sign up', exact: true }).click();
         await page.waitForURL('/console/onboarding');
+
+        return values;
     });
 }
