@@ -49,6 +49,10 @@
     $: if (!$isUpgrade) {
         $changeOrganizationFinalAction = 'Confirm plan change';
     }
+
+    $: if (plan?.trialDays) {
+        $changeOrganizationFinalAction = 'Start trial';
+    }
 </script>
 
 {#if downgradeToStarter}

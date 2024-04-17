@@ -1,13 +1,10 @@
 import { BillingPlan } from '$lib/constants';
 import type { WizardStepsType } from '$lib/layout/wizard.svelte';
-import { plansInfo, type Tier } from '$lib/stores/billing';
-import { organization } from '$lib/stores/organization';
-import { get, writable } from 'svelte/store';
+import { type Tier } from '$lib/stores/billing';
+import { writable } from 'svelte/store';
 
 export const createOrgSteps = writable<WizardStepsType>(new Map());
-export const createOrganizationFinalAction = writable<string>(
-    get(plansInfo)?.get(get(organization)?.billingPlan)?.trialDays ? 'Start trial' : 'Create'
-);
+export const createOrganizationFinalAction = writable<string>('Create');
 
 export const createOrganization = writable<{
     id?: string;
