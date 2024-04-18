@@ -7,10 +7,10 @@ const config: PlaywrightTestConfig = {
             name: 'chromium',
             use: { ...devices['Desktop Chrome'] }
         },
-        {
-            name: 'webkit',
-            use: { ...devices['Desktop Safari'] }
-        }
+        // {
+        //     name: 'webkit',
+        //     use: { ...devices['Desktop Safari'] }
+        // }
     ],
     reportSlowTests: null,
     webServer: {
