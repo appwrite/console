@@ -16,6 +16,7 @@
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { BillingPlan } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
+    import { Table, TableCell, TableCellText, TableRow, TableRowButton } from '$lib/elements/table';
 
     let currentInvoice: Invoice;
     const today = new Date();
@@ -34,19 +35,39 @@
 
 {#if $organization}
     <CardGrid>
-        <Heading tag="h2" size="6">Overview</Heading>
+        <Heading tag="h2" size="6">Payment estimates</Heading>
 
         <p class="text">
-            A summary of the current plan. For more information on Appwrite plans, <a
-                type="button"
-                class="link"
-                href="https://appwrite.io/pricing"
-                target="_blank"
-                rel="noopener noreferrer">
-                view our pricing page.
-            </a>
+            A breakdown of your estimated upcoming payment for the current billing period. Totals
+            displayed exclude accumulated credits.
         </p>
         <svelte:fragment slot="aside">
+            <p class="text u-bold">
+                Billing period: {toLocaleDate($organization?.billingCurrentInvoiceDate)} - {toLocaleDate(
+                    $organization?.billingNextInvoiceDate
+                )}
+            </p>
+            <Table noMargin noStyles>
+                <TableRow>
+                    <TableCell>{tierToPlan($organization?.billingPlan)?.name} plan</TableCell>
+                    <TableCell style="text-align: right;">
+                        {isTrial
+                            ? formatCurrency(0)
+                            : formatCurrency(currentPlan?.price)}</TableCell>
+                </TableRow>
+                <TableRowButton>
+                    <TableCell>Add-ons <span class="inline-tag">number</span></TableCell>
+                    <TableCell style="text-align: right;">
+                        {formatCurrency(currentInvoice?.amount ?? 0)}
+                    </TableCell>
+                </TableRowButton>
+                <TableRow>
+                    <TableCell>Current total (USD)</TableCell>
+                    <TableCellText style="text-align: right;">
+                        {formatCurrency(currentInvoice?.amount ?? 0)}
+                    </TableCellText>
+                </TableRow>
+            </Table>
             <Box class="u-flex-vertical u-gap-8">
                 <div class="u-flex u-main-space-between u-cross-center">
                     <div class="u-flex u-gap-8 u-cross-center">
@@ -122,14 +143,6 @@
                     </div>
                 {/if}
             </Box>
-            <div class="u-flex u-main-space-between u-cross-center">
-                <p class="body-text-1 u-bold">Billing period:</p>
-                <p class="text">
-                    {toLocaleDate($organization?.billingCurrentInvoiceDate)} - {toLocaleDate(
-                        $organization?.billingNextInvoiceDate
-                    )}
-                </p>
-            </div>
         </svelte:fragment>
         <svelte:fragment slot="actions">
             {#if $organization?.billingPlan === BillingPlan.STARTER}
