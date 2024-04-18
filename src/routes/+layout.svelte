@@ -21,7 +21,50 @@
         window.VERCEL_ANALYTICS_ID = import.meta.env.VERCEL_ANALYTICS_ID?.toString() ?? false;
     }
 
+    let getCookie = (name) => {
+        let nameEQ = name + '=';
+        let ca = document.cookie.split(';');
+        console.log(ca);
+        for (var i = 0; i < ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+        }
+        return null;
+    };
+
+    let setCookie = (name, value) => {
+        document.cookie =
+            name +
+            '=' +
+            (value || '') +
+            '; path=/; Secure; Domain=.appwrite.io; SameSite=Lax';
+    };
+
     onMount(async () => {
+        // handle sources
+        if(browser) {
+            const source = getCookie('source');
+            let sources = source ? decodeURIComponent(source).split(',') : [];
+            console.log(sources);
+    
+            const urlParams = $page.url.searchParams;
+            const ref = urlParams.get('ref');
+            const utm_source = urlParams.get('utm_source');
+            const utm_medium = urlParams.get('utm_medium');
+            const utm_campaign = urlParams.get('utm_campaign');
+    
+            // Aggregate and display sources from URL parameters
+            if (ref) sources.push(`ref=${ref}`);
+            if (utm_source) sources.push(`utm_source=${utm_source}`);
+            if (utm_medium) sources.push(`utm_medium=${utm_medium}`);
+            if (utm_campaign) sources.push(`utm_campaign=${utm_campaign}`);
+    
+            sources = [...new Set(sources)];
+            const encodedSources = encodeURIComponent(sources.join(','));
+            setCookie('source', encodedSources);
+        }
+
         if ($page.url.searchParams.has('migrate')) {
             const migrateData = $page.url.searchParams.get('migrate');
             requestedMigration.set(parseIfString(migrateData) as Record<string, string>);
