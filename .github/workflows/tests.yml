@@ -31,6 +31,6 @@ jobs:
             - name: Unit Tests
               run: npm run test
             - name: E2E Tests
-              run: npx playwright install && npm run e2e
+              run: npx playwright install-deps && npx playwright install && npm run e2e
             - name: Build Console
               run: npm run build
