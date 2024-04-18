@@ -7,7 +7,7 @@ type Metadata = {
 };
 
 export async function enterCreditCard(page: Page) {
-    await page.getByPlaceholder('Cardholder name').fill('Test User');
+    await page.getByPlaceholder('cardholder').fill('Test User');
     const stripe = page.frameLocator('[title="Secure payment input frame"]');
     await stripe.locator('id=Field-numberInput').fill('4242424242424242');
     await stripe.locator('id=Field-expiryInput').fill('1250');
@@ -30,13 +30,13 @@ export async function createProProject(page: Page): Promise<Metadata> {
         await page.waitForURL('/console/onboarding');
         await page.locator('id=name').fill('test org');
         await page.locator('id=plan').selectOption('tier-1');
-        await page.getByRole('button', { name: 'Get started' }).click();
+        await page.getByRole('button', { name: 'get started' }).click();
         await enterCreditCard(page);
         await enterAddress(page);
         // skip members
-        await page.getByRole('button', { name: 'Next' }).click();
+        await page.getByRole('button', { name: 'next' }).click();
         // start pro trial
-        await page.getByRole('button', { name: 'Start trial' }).click();
+        await page.getByRole('button', { name: 'start trial' }).click();
         await page.waitForURL('/console/organization-**');
 
         return getOrganizationIdFromUrl(page.url());
@@ -44,15 +44,11 @@ export async function createProProject(page: Page): Promise<Metadata> {
 
     const projectId = await test.step('create project', async () => {
         await page.waitForURL('/console/organization-**');
-        await page
-            .getByRole('article')
-            .getByRole('button', { name: 'Create project', exact: true })
-            .click();
-        await page.getByPlaceholder('Project name').click();
-        await page.getByPlaceholder('Project name').fill('Test Project');
-        await page.getByRole('button', { name: 'Next' }).click();
-        await page.locator('label').filter({ hasText: 'Frankfurt' }).click();
-        await page.getByRole('button', { name: 'Create' }).click();
+        await page.getByRole('button', { name: 'create project' }).first().click();
+        await page.getByPlaceholder('project name').fill('test project');
+        await page.getByRole('button', { name: 'next' }).click();
+        await page.locator('label').filter({ hasText: 'frankfurt' }).click();
+        await page.getByRole('button', { name: 'create' }).click();
         await page.waitForURL('/console/project-**/overview/platforms');
         expect(page.url()).toContain('/console/project-');
 

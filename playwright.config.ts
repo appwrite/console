@@ -1,7 +1,18 @@
-import { type PlaywrightTestConfig } from '@playwright/test';
+import { type PlaywrightTestConfig, devices } from '@playwright/test';
 
 const config: PlaywrightTestConfig = {
     timeout: 60000,
+    projects: [
+        {
+            name: 'chromium',
+            use: { ...devices['Desktop Chrome'] }
+        },
+        {
+            name: 'webkit',
+            use: { ...devices['Desktop Safari'] }
+        }
+    ],
+    reportSlowTests: null,
     webServer: {
         env: {
             VITE_APPWRITE_ENDPOINT: 'http://console-tests.appwrite.org/v1',
