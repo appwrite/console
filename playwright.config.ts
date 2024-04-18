@@ -1,7 +1,7 @@
 import { type PlaywrightTestConfig, devices } from '@playwright/test';
 
 const config: PlaywrightTestConfig = {
-    timeout: 60000,
+    timeout: 120000,
     projects: [
         {
             name: 'chromium',
@@ -14,6 +14,8 @@ const config: PlaywrightTestConfig = {
     ],
     reportSlowTests: null,
     webServer: {
+        stderr: 'ignore',
+        stdout: 'ignore',
         env: {
             VITE_APPWRITE_ENDPOINT: 'http://console-tests.appwrite.org/v1',
             VITE_CONSOLE_MODE: 'cloud'

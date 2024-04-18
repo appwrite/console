@@ -26,7 +26,7 @@ export function registerUserStep(page: Page): Promise<Metadata> {
         await inputs.email.fill(values.email);
         await inputs.password.fill(values.password);
         await inputs.terms.check();
-        await page.getByRole('button', { name: 'sign up' }).click();
+        await page.getByRole('button', { name: 'Sign up', exact: true }).click();
         await page.waitForURL('/console/onboarding');
 
         return values;
