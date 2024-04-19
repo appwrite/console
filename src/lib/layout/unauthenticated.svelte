@@ -41,8 +41,11 @@
     <section class="grid-1-1-col-2 u-flex">
         <slot name="top" />
         <div class="container u-flex u-flex-vertical u-cross-center u-main-center">
-            <div class="u-max-width-500 u-width-full-line">
-                <h1 class="heading-level-2 u-margin-block-start-auto">
+            <div class="form-container u-width-full-line">
+                <h1 class="heading-level-4 u-margin-block-start-auto is-not-mobile">
+                    <slot name="title" />
+                </h1>
+                <h1 class="heading-level-5 u-margin-block-start-auto is-only-mobile">
                     <slot name="title" />
                 </h1>
                 <div class="u-margin-block-start-24">
@@ -127,5 +130,9 @@
         background-clip: text;
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
+    }
+
+    .form-container {
+        max-inline-size: 27.5rem;
     }
 </style>
