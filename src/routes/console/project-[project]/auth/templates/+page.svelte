@@ -45,6 +45,7 @@
     import { wizard } from '$lib/stores/wizard';
     import { BillingPlan } from '$lib/constants';
     import EmailSignature from './emailSignature.svelte';
+    import { isCloud } from '$lib/system';
 
     const projectId = $page.params.project;
 
@@ -234,5 +235,7 @@
             </Collapsible>
         </svelte:fragment>
     </CardGrid>-->
-    <EmailSignature />
+    {#if isCloud && $organization?.billingPlan === BillingPlan.STARTER}
+        <EmailSignature />
+    {/if}
 </Container>
