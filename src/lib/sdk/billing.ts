@@ -19,6 +19,7 @@ export type PaymentMethodData = {
     failed: boolean;
     name: string;
     mandateId?: string;
+    lastError?: string;
 };
 
 export type PaymentList = {
@@ -48,6 +49,7 @@ export type Invoice = {
         rate: number;
         desc: string;
     }[];
+    lastError?: string;
 };
 
 export type InvoiceList = {
