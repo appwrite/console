@@ -26,6 +26,7 @@
     export let href: string = null;
     let classes = '';
     export { classes as class };
+    export let style = '';
 
     function getElement() {
         switch (true) {
@@ -46,6 +47,7 @@
     class:is-border-dashed={isDashed}
     class:is-danger={danger}
     class:is-allowed-focus={href}
+    {style}
     on:click
     on:keyup={clickOnEnter}
     role={href || isButton ? 'button' : 'generic'}

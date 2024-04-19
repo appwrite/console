@@ -10,23 +10,31 @@
     export let source = 'empty_state_card';
 </script>
 
-<Card>
-    <div class="u-flex u-flex-vertical u-gap-8 u-cross-center u-main-center">
-        <p class="text u-bold">
-            <slot name="title" />
-        </p>
-        <p class="text">
-            <slot nextTier={tierToPlan(getNextTier($organization.billingPlan)).name} />
-        </p>
-        <Button
-            class="u-margin-block-start-32"
-            secondary
-            on:click={() => {
-                wizard.start(ChangeOrganizationTierCloud);
-                trackEvent('click_organization_upgrade', {
-                    from: 'button',
-                    source
-                });
-            }}>Upgrade plan</Button>
+<Card style="--card-padding:1.5rem;">
+    <div class="u-flex u-gap-24 u-flex-vertical-mobile">
+        {#if $$slots?.image}
+            <div class="u-stretch">
+                <div class="file-preview u-width-full-line u-height-100-percent">
+                    <slot name="image" />
+                </div>
+            </div>
+        {/if}
+        <div class="u-stretch u-flex-vertical">
+            <h3 class="body-text-2 u-bold"><slot name="title" /></h3>
+            <p class="u-margin-block-start-8">
+                <slot nextTier={tierToPlan(getNextTier($organization.billingPlan)).name} />
+            </p>
+            <Button
+                class="u-margin-block-start-32"
+                secondary
+                fullWidth
+                on:click={() => {
+                    wizard.start(ChangeOrganizationTierCloud);
+                    trackEvent('click_organization_upgrade', {
+                        from: 'button',
+                        source
+                    });
+                }}>Upgrade plan</Button>
+        </div>
     </div>
 </Card>
