@@ -39,6 +39,11 @@
         }
     });
 
+    async function back() {
+        await sdk.forConsole.account.deleteSession('current');
+        await goto(`${base}/`);
+    }
+
     async function verify() {
         try {
             disabled = true;
@@ -75,6 +80,15 @@
 </svelte:head>
 
 <Unauthenticated>
+    <svelte:fragment slot="top">
+        <div class="top u-flex u-position-absolute u-main-center">
+            <div class="flex u-width-full-line">
+                <Button text noMargin class="u-border-width-0" on:click={back}>
+                    <span class="icon-cheveron-left u-font-size-20" aria-hidden="true" />
+                    Back</Button>
+            </div>
+        </div>
+    </svelte:fragment>
     <svelte:fragment slot="title">Verify your identity</svelte:fragment>
     <svelte:fragment>
         <Form onSubmit={verify}>
@@ -163,3 +177,31 @@
         </Form>
     </svelte:fragment>
 </Unauthenticated>
+
+<style lang="scss">
+    @import '@appwrite.io/pink/src/abstract/variables/_devices.scss';
+    .top {
+        inset-block-start: 5.85rem;
+        inline-size: 100%;
+        max-inline-size: 27.5rem;
+
+        div {
+            max-inline-size: 27.5rem;
+        }
+    }
+
+    @media (max-width: 440px) {
+        .top {
+            inset-block-start: 0rem;
+            padding-inline: 0.5rem;
+        }
+    }
+
+    /* for smaller screens */
+    @media #{$break2open} {
+        .top {
+            inset-block-start: 5.85rem;
+            padding-inline: 0;
+        }
+    }
+</style>

@@ -38,7 +38,8 @@
             <p>Build like a team of hundreds<span class="underscore">_</span></p>
         </div>
     </section>
-    <section class="grid-1-1-col-2 u-flex u-main-center u-cross-center">
+    <section class="grid-1-1-col-2 u-flex">
+        <slot name="top" />
         <div class="container u-flex u-flex-vertical u-cross-center u-main-center">
             <div class="u-max-width-500 u-width-full-line">
                 <h1 class="heading-level-2 u-margin-block-start-auto">
