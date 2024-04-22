@@ -10,6 +10,7 @@
     export let readonly = false;
     export let autofocus = false;
     export let fullWidth = false;
+    export let autoSubmit = true;
 
     let element: HTMLOListElement;
 
@@ -21,9 +22,12 @@
         placeholder: '',
         defaultValue: value.split(''),
         onValueChange: ({ next }) => {
+            if (!autoSubmit) {
+                return next;
+            }
             value = next.join('');
 
-            if (value.length === 6 && !autoSubmitted) {
+            if (value.length === length && !autoSubmitted) {
                 autoSubmitted = true;
                 const firstInputElement = element.querySelector('input');
                 firstInputElement?.form.requestSubmit();
