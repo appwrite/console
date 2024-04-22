@@ -21,9 +21,11 @@
                     <span class="collapsible-button-optional"><slot name="subtitle" /></span>
                 {/if}
             </div>
-            <div class="icon">
-                <span class="icon-cheveron-down" aria-hidden="true" />
-            </div>
+            <slot name="end">
+                <div class="icon">
+                    <span class="icon-cheveron-down" aria-hidden="true" />
+                </div>
+            </slot>
         </summary>
         <div
             class="collapsible-content"
