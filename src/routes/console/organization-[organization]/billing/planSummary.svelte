@@ -28,6 +28,7 @@
 
     let currentInvoice: Invoice;
     let showAddons = false;
+    let extraMembers = 0;
     const today = new Date();
     onMount(async () => {
         const invoices = await sdk.forConsole.billing.listInvoices($organization.$id, [
@@ -35,7 +36,8 @@
             Query.orderDesc('$createdAt')
         ]);
         currentInvoice = invoices.invoices[0];
-        console.log(currentInvoice);
+        const members = await sdk.forConsole.teams.listMemberships($organization.$id, []);
+        extraMembers = members.total > 1 ? members.total - 1 : 0;
     });
 
     $: currentPlan = $plansInfo?.get($organization?.billingPlan);
@@ -74,7 +76,10 @@
                     on:click={() => (showAddons = !showAddons)}
                     on:keyup={clickOnEnter}>
                     <TableCell>
-                        Add-ons <span class="inline-tag">number</span>
+                        Add-ons <span class="inline-tag"
+                            >{extraMembers
+                                ? currentInvoice?.usage?.length + 1
+                                : currentInvoice?.usage?.length}</span>
                         <span class="icon-cheveron-down"></span>
                     </TableCell>
                     <TableCellText style="text-align: right;">
@@ -83,56 +88,72 @@
                 </li>
                 <!-- {#if currentInvoice?.usage?.length && $organization?.billingPlan !== BillingPlan.STARTER && !isTrial && showAddons} -->
                 {#if extraUsage && showAddons && $organization?.billingPlan !== BillingPlan.STARTER && !isTrial}
-                    {@const extraMembers = currentInvoice.usage.find((u) => u.name === 'members')}
                     <li class="table-row">
                         <td class="table-col" width="100%" colspan="2">
                             <Box>
                                 <TableList>
                                     {#if extraMembers}
                                         <li class="table-row">
-                                            <span>{extraMembers}</span>
+                                            <TableCell>
+                                                <div class="u-flex u-flex-vertical">
+                                                    <span>Additional members</span>
+                                                    <span>
+                                                        {extraMembers}
+                                                    </span>
+                                                </div>
+                                            </TableCell>
+                                            <TableCellText style="text-align: right;">
+                                                <!-- TODO: fetch the price from the backend -->
+                                                {formatCurrency(extraMembers * 15)}
+                                            </TableCellText>
                                         </li>
                                     {/if}
-                                    <li class="table-row">
-                                        <span>asde</span>
-                                    </li>
+                                    {#if currentInvoice?.usage}
+                                        {#each currentInvoice.usage as excess}
+                                            <li class="table-row">
+                                                {#if ['storage', 'bandwidth'].includes(excess.name)}
+                                                    {@const excessValue = humanFileSize(
+                                                        excess.value
+                                                    )}
+                                                    <TableCell>
+                                                        <div class="u-flex u-flex-vertical">
+                                                            <p>{excess.name}</p>
+                                                            <span
+                                                                title={formatNumberWithCommas(
+                                                                    excess.value ?? 0
+                                                                ) + 'bytes'}>
+                                                                {excessValue.value ??
+                                                                    0}{excessValue.unit}
+                                                            </span>
+                                                        </div>
+                                                    </TableCell>
+                                                    <TableCellText style="text-align: right;">
+                                                        {formatCurrency(excess.amount)}
+                                                    </TableCellText>
+                                                {/if}
+                                                {#if ['users', 'executions'].includes(excess.name)}
+                                                    <TableCell>
+                                                        <div class="u-flex u-flex-vertical">
+                                                            <p>
+                                                                {excess.name}
+                                                            </p>
+                                                            <span
+                                                                title={formatNumberWithCommas(
+                                                                    excess.value
+                                                                )}
+                                                                >{abbreviateNumber(
+                                                                    excess.value
+                                                                )}</span>
+                                                        </div>
+                                                    </TableCell>
+                                                    <TableCellText style="text-align: right;">
+                                                        {formatCurrency(excess.amount)}
+                                                    </TableCellText>
+                                                {/if}
+                                            </li>
+                                        {/each}
+                                    {/if}
                                 </TableList>
-                                {#if currentInvoice?.usage}
-                                    {#each currentInvoice.usage as excess}
-                                        {#if ['storage', 'bandwidth'].includes(excess.name)}
-                                            {@const excessValue = humanFileSize(excess.value)}
-                                            <li
-                                                class="u-flex u-main-space-between u-margin-block-start-8">
-                                                <p class="text u-color-text-gray">
-                                                    <span
-                                                        title={formatNumberWithCommas(
-                                                            excess.value ?? 0
-                                                        ) + 'bytes'}>
-                                                        {excessValue.value ?? 0}{excessValue.unit}
-                                                    </span>
-                                                    {excess.name}
-                                                </p>
-                                                <p class="text">
-                                                    {formatCurrency(excess.amount)}
-                                                </p>
-                                            </li>
-                                        {/if}
-                                        {#if ['users', 'executions'].includes(excess.name)}
-                                            <li
-                                                class="u-flex u-main-space-between u-margin-block-start-8">
-                                                <p class="text u-color-text-gray">
-                                                    <span
-                                                        title={formatNumberWithCommas(excess.value)}
-                                                        >{abbreviateNumber(excess.value)}</span>
-                                                    {excess.name}
-                                                </p>
-                                                <p class="text">
-                                                    {formatCurrency(excess.amount)}
-                                                </p>
-                                            </li>
-                                        {/if}
-                                    {/each}
-                                {/if}
                             </Box>
                         </td>
                     </li>
