@@ -14,7 +14,7 @@
     <section
         class="u-flex u-flex-vertical"
         style:--url={`url(${$app.themeInUse === 'dark' ? imgDark : imgLight})`}>
-        <div class="logo u-flex u-gap-16">
+        <div class="logo u-flex u-gap-16 is-not-mobile">
             <a href={user ? '/console' : '/'}>
                 {#if $app.themeInUse === 'dark'}
                     <img
@@ -38,7 +38,7 @@
             <p>Build like a team of hundreds<span class="underscore">_</span></p>
         </div>
     </section>
-    <section class="grid-1-1-col-2 u-flex">
+    <section class="grid-1-1-col-2 u-flex u-flex-vertical u-cross-center u-main-center">
         <slot name="top" />
         <div class="container u-flex u-flex-vertical u-cross-center u-main-center">
             <div class="form-container u-width-full-line">
@@ -52,9 +52,29 @@
                     <slot />
                 </div>
 
-                <ul class="inline-links is-center is-with-sep u-margin-block-start-32">
+                <ul
+                    class="inline-links is-center is-with-sep u-margin-block-start-32"
+                    class:u-hide={!$$slots.links}>
                     <slot name="links" />
                 </ul>
+            </div>
+            <div
+                class="logo u-flex u-gap-16 u-margin-inline-auto is-only-mobile u-margin-block-start-32">
+                <a href={user ? '/console' : '/'}>
+                    {#if $app.themeInUse === 'dark'}
+                        <img
+                            src={AppwriteLogoDark}
+                            width="93"
+                            class="u-block u-only-dark"
+                            alt="Appwrite Logo" />
+                    {:else}
+                        <img
+                            src={AppwriteLogoLight}
+                            width="93"
+                            class="u-block u-only-light"
+                            alt="Appwrite Logo" />
+                    {/if}
+                </a>
             </div>
         </div>
     </section>
