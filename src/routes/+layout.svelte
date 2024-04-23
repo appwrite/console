@@ -42,7 +42,7 @@
             if (utm_campaign) sources.push(`utm_campaign=${utm_campaign}`);
     
             sources = [...new Set(sources)];
-            Cookies.set('source', sources);
+            Cookies.set('source', sources, { domain: '.appwrite.io'});
         }
 
         if ($page.url.searchParams.has('migrate')) {
