@@ -34,15 +34,18 @@
             const utm_source = urlParams.get('utm_source');
             const utm_medium = urlParams.get('utm_medium');
             const utm_campaign = urlParams.get('utm_campaign');
+            const referrer = document.referrer;
     
             // Aggregate and display sources from URL parameters
             if (ref) sources.push(`ref=${ref}`);
             if (utm_source) sources.push(`utm_source=${utm_source}`);
             if (utm_medium) sources.push(`utm_medium=${utm_medium}`);
             if (utm_campaign) sources.push(`utm_campaign=${utm_campaign}`);
+            if (referrer) sources.push(`referrer=${referrer}`);
+            
     
             sources = [...new Set(sources)];
-            Cookies.set('source', sources, { domain: '.appwrite.io'});
+            Cookies.set('source', sources, { domain: '.appwrite.io' });
         }
 
         if ($page.url.searchParams.has('migrate')) {
