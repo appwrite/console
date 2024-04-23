@@ -58,6 +58,7 @@ export const load: PageLoad = async ({ params, parent }) => {
         organizationUsage: usage,
         projectNames: projectNames.projects,
         invoices,
-        currentInvoice
+        currentInvoice,
+        organizationMembers: await sdk.forConsole.teams.listMemberships(params.organization)
     };
 };

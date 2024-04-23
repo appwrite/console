@@ -14,6 +14,7 @@
     import type { OrganizationUsage } from '$lib/sdk/billing';
     import { BillingPlan } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
+    import TotalMembers from './totalMembers.svelte';
 
     export let data;
 
@@ -102,6 +103,7 @@
                 ]} />
                 </div>-->
     </div>
+    <TotalMembers members={data?.organizationMembers} />
 
     <CardGrid>
         <Heading tag="h6" size="7">Bandwidth</Heading>
