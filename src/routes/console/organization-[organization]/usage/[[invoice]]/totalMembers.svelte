@@ -1,6 +1,7 @@
 <script lang="ts">
     import { tooltip } from '$lib/actions/tooltip';
     import { AvatarInitials, CardGrid, Heading, Paginator } from '$lib/components';
+    import { EmptyCardCloud } from '$lib/components/billing';
     import { BillingPlan } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import {
@@ -49,7 +50,10 @@
                         }}></span>
                 </p>
             </div>
-            <Paginator items={members.memberships} let:paginatedItems>
+            <Paginator
+                items={members.memberships}
+                let:paginatedItems
+                hideFooter={members?.total <= 5}>
                 <TableScroll noMargin noStyles>
                     <TableHeader>
                         <TableCellHead>Members</TableCellHead>
@@ -62,12 +66,14 @@
                                     <div class="u-flex u-gap-12 u-cross-center">
                                         <AvatarInitials size={32} name={member.userName} />
                                         <span class="text u-trim">
-                                            {member.userName ? member.userName : 'n/a'}
+                                            {member.userName ? member.userName : member.userEmail}
                                         </span>
                                     </div>
                                 </TableCell>
                                 <TableCellText title="joined">
-                                    {member.joined ? toLocaleDate(member.joined) : 'Never'}
+                                    {member.joined
+                                        ? toLocaleDate(member.joined)
+                                        : toLocaleDate(member.$createdAt)}
                                 </TableCellText>
                             </TableRow>
                         {/each}
@@ -75,7 +81,7 @@
                 </TableScroll>
             </Paginator>
         {:else}
-            test
+            <EmptyCardCloud service="members" />
         {/if}
     </svelte:fragment>
 </CardGrid>
