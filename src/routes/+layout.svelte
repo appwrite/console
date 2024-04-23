@@ -22,29 +22,43 @@
         window.VERCEL_ANALYTICS_ID = import.meta.env.VERCEL_ANALYTICS_ID?.toString() ?? false;
     }
 
+    let format = (arr) => {
+        const counts = {}; // Object to store the counts
+
+        // Loop through each item in the array
+        arr.forEach((item) => {
+            // Increment the count for each key in the object
+            counts[item] = (counts[item] || 0) + 1;
+        });
+
+        // Convert counts object into the required string format array
+        const formattedArray = Object.entries(counts).map(([key, value]) => `${key},${value}`);
+
+        return formattedArray;
+    };
+
     onMount(async () => {
         // handle sources
-        if(browser) {
+        if (browser) {
             const source = Cookies.get('source');
             let sources = source ? decodeURIComponent(source).split(',') : [];
             console.log(sources);
-    
+
             const urlParams = $page.url.searchParams;
             const ref = urlParams.get('ref');
             const utm_source = urlParams.get('utm_source');
             const utm_medium = urlParams.get('utm_medium');
             const utm_campaign = urlParams.get('utm_campaign');
             const referrer = document.referrer;
-    
+
             // Aggregate and display sources from URL parameters
             if (ref) sources.push(`ref=${ref}`);
             if (utm_source) sources.push(`utm_source=${utm_source}`);
             if (utm_medium) sources.push(`utm_medium=${utm_medium}`);
             if (utm_campaign) sources.push(`utm_campaign=${utm_campaign}`);
             if (referrer) sources.push(`referrer=${referrer}`);
-            
-    
-            sources = [...new Set(sources)];
+
+            sources = format(sources);
             Cookies.set('source', sources, { domain: '.appwrite.io' });
         }
 
