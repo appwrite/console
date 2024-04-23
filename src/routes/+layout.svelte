@@ -42,8 +42,7 @@
             if (utm_campaign) sources.push(`utm_campaign=${utm_campaign}`);
     
             sources = [...new Set(sources)];
-            const encodedSources = encodeURIComponent(sources.join(','));
-            Cookies.set('source', encodedSources);
+            Cookies.set('source', sources);
         }
 
         if ($page.url.searchParams.has('migrate')) {
