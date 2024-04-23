@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { CardGrid, EmptyCardAsideCloud, Heading } from '$lib/components';
+    import { CardGrid, EmptyCardImageCloud, Heading } from '$lib/components';
     import { app } from '$lib/stores/app';
     import EmailDark from './email-footer-dark.svg';
     import EmailLight from './email-footer-light.svg';
@@ -12,7 +12,7 @@
     <p class="text">Enable or disable Appwrite branding in your email template signature.</p>
 
     <svelte:fragment slot="aside">
-        <EmptyCardAsideCloud source="email_signature_card" let:nextTier>
+        <EmptyCardImageCloud source="email_signature_card" let:nextTier>
             <svelte:fragment slot="image">
                 <div class="is-only-mobile">
                     {#if $app.themeInUse === 'dark'}
@@ -51,6 +51,6 @@
             </svelte:fragment>
             <svelte:fragment slot="title">Upgrade to edit email signature</svelte:fragment>
             Upgrade to a {nextTier} plan to enable or disable Appwrite branding in your emails.
-        </EmptyCardAsideCloud>
+        </EmptyCardImageCloud>
     </svelte:fragment>
 </CardGrid>
