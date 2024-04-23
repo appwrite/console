@@ -16,35 +16,16 @@
     import { loading, requestedMigration } from './store';
     import { parseIfString } from '$lib/helpers/object';
     import Consent from '$lib/components/consent.svelte';
+    import Cookies from 'js-cookie';
 
     if (browser) {
         window.VERCEL_ANALYTICS_ID = import.meta.env.VERCEL_ANALYTICS_ID?.toString() ?? false;
     }
 
-    let getCookie = (name) => {
-        let nameEQ = name + '=';
-        let ca = document.cookie.split(';');
-        console.log(ca);
-        for (var i = 0; i < ca.length; i++) {
-            let c = ca[i];
-            while (c.charAt(0) == ' ') c = c.substring(1, c.length);
-            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
-        }
-        return null;
-    };
-
-    let setCookie = (name, value) => {
-        document.cookie =
-            name +
-            '=' +
-            (value || '') +
-            '; path=/; Secure; Domain=.appwrite.io; SameSite=Lax';
-    };
-
     onMount(async () => {
         // handle sources
         if(browser) {
-            const source = getCookie('source');
+            const source = Cookies.get('source');
             let sources = source ? decodeURIComponent(source).split(',') : [];
             console.log(sources);
     
@@ -62,7 +43,7 @@
     
             sources = [...new Set(sources)];
             const encodedSources = encodeURIComponent(sources.join(','));
-            setCookie('source', encodedSources);
+            Cookies.set('source', encodedSources);
         }
 
         if ($page.url.searchParams.has('migrate')) {
