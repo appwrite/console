@@ -10,7 +10,7 @@
     export let source = 'empty_state_card';
 </script>
 
-<Card style="--card-padding:1.5rem;">
+<Card style="--card-padding:1.5rem; --card-padding-mobile: 2rem">
     <div class="u-flex u-gap-24 u-flex-vertical-mobile">
         {#if $$slots?.image}
             <div class="u-stretch">
