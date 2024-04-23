@@ -81,7 +81,7 @@
                 </TableScroll>
             </Paginator>
         {:else}
-            <EmptyCardCloud service="members" />
+            <EmptyCardCloud service="members" eventSource="organization_usage" />
         {/if}
     </svelte:fragment>
 </CardGrid>

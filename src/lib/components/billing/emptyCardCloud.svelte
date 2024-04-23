@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { trackEvent } from '$lib/actions/analytics';
     import { BillingPlan } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { tierToPlan } from '$lib/stores/billing';
@@ -7,6 +8,7 @@
     import { Card } from '..';
 
     export let service: string;
+    export let eventSource: string;
 </script>
 
 <Card>
@@ -21,7 +23,13 @@
                 class="u-margin-block-start-16"
                 secondary
                 fullWidthMobile
-                on:click={() => wizard.start(ChangeOrganizationTierCloud)}>
+                on:click={() => {
+                    trackEvent('click_organization_upgrade', {
+                        from: 'button',
+                        source: eventSource
+                    });
+                    wizard.start(ChangeOrganizationTierCloud);
+                }}>
                 Upgrade
             </Button>
         </div>
