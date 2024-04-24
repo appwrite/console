@@ -86,7 +86,7 @@
             {readonly}
             {step}
             type="number"
-            class="input-text"
+            class="input-text u-remove-input-number-buttons"
             bind:value
             bind:this={element}
             on:invalid={handleInvalid}
