@@ -22,25 +22,10 @@
         window.VERCEL_ANALYTICS_ID = import.meta.env.VERCEL_ANALYTICS_ID?.toString() ?? false;
     }
 
-    // Format source array to count source occurrences
-    let format = (arr) => {
-        const counts = {};
-
-        arr.forEach((item) => {
-            const key = item.split(';')[0];
-            counts[key] = (counts[key] || 0) + 1;
-        });
-        return Object.entries(counts).map(([key, count]) => `${key};${count}`);
-    };
-
     onMount(async () => {
         // handle sources
         if (browser) {
-            const source = Cookies.get('source');
-            console.log(source);
-            let sources = source ? decodeURIComponent(source).split(',') : [];
-            console.log(sources);
-
+            let currentSources = [];
             const urlParams = $page.url.searchParams;
             const ref = urlParams.get('ref');
             const utm_source = urlParams.get('utm_source');
@@ -49,14 +34,19 @@
             const referrer = document.referrer;
 
             // Aggregate and display sources from URL parameters
-            if (ref) sources.push(`ref=${ref}`);
-            if (utm_source) sources.push(`utm_source=${utm_source}`);
-            if (utm_medium) sources.push(`utm_medium=${utm_medium}`);
-            if (utm_campaign) sources.push(`utm_campaign=${utm_campaign}`);
-            if (referrer) sources.push(`referrer=${referrer}`);
+            if (ref) currentSources.push(`ref=${ref}`);
+            if (utm_source) currentSources.push(`utm_source=${utm_source}`);
+            if (utm_medium) currentSources.push(`utm_medium=${utm_medium}`);
+            if (utm_campaign) currentSources.push(`utm_campaign=${utm_campaign}`);
+            if (referrer) currentSources.push(`referrer=${referrer}`);
 
-            sources = format(sources);
-            Cookies.set('source', sources, { domain: '.appwrite.io' });
+            if (currentSources.length) {
+                let currentSource = currentSources.join(';');
+                const source = Cookies.get('source');
+                let sources = source ? decodeURIComponent(source).split(',') : [];
+                sources.push(currentSource);
+                Cookies.set('source', sources, { domain: '.gitpod.io' });
+            }
         }
 
         if ($page.url.searchParams.has('migrate')) {
