@@ -6,6 +6,7 @@
         hide?: boolean;
         tooltip?: string;
         for?: string;
+        class?: string;
     }
 
     export let required: $$Props['required'] = false;
@@ -13,12 +14,14 @@
     export let optionalText: $$Props['optionalText'] = undefined;
     export let hide: $$Props['hide'] = false;
     export let tooltip: $$Props['tooltip'] = null;
+    let classes: string = undefined;
+    export { classes as class };
 </script>
 
 <label
     class:is-required={required && !hideRequired}
     class:u-hide={hide}
-    class="label"
+    class="label {classes}"
     {...$$restProps}>
     <slot />
 </label>

@@ -114,7 +114,7 @@ export type TierData = {
 
 export const tierFree: TierData = {
     name: 'Starter',
-    description: 'For personal, passion projects.'
+    description: 'For personal hobby projects of small scale and students.'
 };
 
 export const tierPro: TierData = {
