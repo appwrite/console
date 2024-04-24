@@ -45,6 +45,9 @@
                 const source = Cookies.get('source');
                 let sources = source ? decodeURIComponent(source).split(',') : [];
                 sources.push(currentSource);
+                if(sources.length > 50) {
+                    sources.shift();
+                }
                 Cookies.set('source', sources, { domain: '.gitpod.io' });
             }
         }
