@@ -1,25 +1,25 @@
 <script lang="ts">
+    import { goto, invalidate } from '$app/navigation';
+    import { base } from '$app/paths';
+    import { Submit, trackEvent } from '$lib/actions/analytics';
     import { Empty, Heading, Trim } from '$lib/components';
-    import { Button } from '$lib/elements/forms';
+    import { Dependencies } from '$lib/constants';
     import { Pill } from '$lib/elements';
+    import { Button } from '$lib/elements/forms';
     import {
         TableBody,
+        TableCell,
+        TableCellHead,
+        TableCellText,
         TableHeader,
         TableRow,
-        TableCellHead,
-        TableCell,
-        TableCellText,
         TableScroll
     } from '$lib/elements/table';
+    import { isValueOfStringEnum } from '$lib/helpers/types';
     import { Container } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
-    import { goto, invalidate } from '$app/navigation';
-    import { Dependencies } from '$lib/constants';
     import { Browser, type Models } from '@appwrite.io/console';
     import type { PageData } from './$types';
-    import { Submit, trackEvent } from '$lib/actions/analytics';
-    import { base } from '$app/paths';
-    import { isValueOfStringEnum } from '$lib/helpers/types';
 
     export let data: PageData;
 
@@ -70,17 +70,18 @@
                         <TableCell title="Client">
                             <div class="u-flex u-gap-12 u-cross-center">
                                 {#if session.clientName}
-                                    <div class="avatar is-small">
+                                    <div class="avatar">
                                         {#if browser}
                                             <img
                                                 height="20"
                                                 width="20"
                                                 src={getBrowser(session.clientCode).toString()}
+                                                style="--p-text-size: 1.25rem"
                                                 alt={session.clientName} />
                                         {:else}
                                             <span
                                                 class="icon-globe-alt"
-                                                style="font-size: 20px"
+                                                style="--p-text-size: 1.25rem"
                                                 aria-hidden="true" />
                                         {/if}
                                     </div>
