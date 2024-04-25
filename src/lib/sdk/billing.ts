@@ -261,6 +261,7 @@ export type Plan = {
         storage: AdditionalResource;
         users: AdditionalResource;
     };
+    trialDays: number;
 };
 
 export type PlansInfo = {

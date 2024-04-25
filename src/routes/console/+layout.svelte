@@ -21,7 +21,8 @@
         paymentExpired,
         checkForMarkedForDeletion,
         checkForMandate,
-        checkForMissingPaymentMethod
+        checkForMissingPaymentMethod,
+        plansInfo
     } from '$lib/stores/billing';
     import { goto } from '$app/navigation';
     import { CommandCenter, registerCommands, registerSearchers } from '$lib/commandCenter';
@@ -269,10 +270,12 @@
             await checkForUsageLimit(org);
             checkForMarkedForDeletion(org);
             if (org?.billingPlan !== BillingPlan.STARTER) {
-                calculateTrialDay(org);
                 await paymentExpired(org);
                 await checkPaymentAuthorizationRequired(org);
                 await checkForMandate(org);
+                if ($plansInfo.get(org.billingPlan)?.trialDays) {
+                    calculateTrialDay(org);
+                }
             }
             $activeHeaderAlert = headerAlert.get();
         }
