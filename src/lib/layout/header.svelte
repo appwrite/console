@@ -24,9 +24,6 @@
     import CreateOrganizationCloud from '$routes/console/createOrganizationCloud.svelte';
     import { Feedback } from '$lib/components/feedback';
     import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
-    import { Pill } from '$lib/elements';
-    import { showExcess } from '$routes/console/organization-[organization]/store';
-    import { readOnly } from '$lib/stores/billing';
     import { BillingPlan } from '$lib/constants';
 
     let showDropdown = false;
@@ -103,17 +100,6 @@
 
 {#if $page.data.breadcrumbs}
     <svelte:component this={$page.data.breadcrumbs} />
-{/if}
-
-{#if !$page.url.pathname.includes('/console/account') && $readOnly}
-    <div style="min-inline-size: fit-content">
-        <Pill danger button on:click={() => ($showExcess = true)}>
-            <div>
-                <span class="icon-exclamation-circle" aria-hidden="true" />
-                <span>limit reached</span>
-            </div>
-        </Pill>
-    </div>
 {/if}
 
 <div class="main-header-end">
