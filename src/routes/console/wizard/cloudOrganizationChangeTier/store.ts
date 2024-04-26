@@ -1,11 +1,11 @@
 import { BillingPlan } from '$lib/constants';
 import type { WizardStepsType } from '$lib/layout/wizard.svelte';
-import type { Tier } from '$lib/stores/billing';
+import { type Tier } from '$lib/stores/billing';
 import { writable } from 'svelte/store';
 
 export const changeTierSteps = writable<WizardStepsType>(new Map());
 export const isUpgrade = writable<boolean>(false);
-export const changeOrganizationFinalAction = writable<string>('Start trial');
+export const changeOrganizationFinalAction = writable<string>('Create');
 
 export const changeOrganizationTier = writable<{
     billingPlan: Tier;

@@ -104,7 +104,10 @@
     </div>
     <CardGrid>
         <Heading tag="h4" size="7">Bandwidth</Heading>
-        <p class="text">Calculated for all bandwidth used in your project.</p>
+        <p class="text">
+            Calculated for all bandwidth used across your project. Resets at the start of each
+            billing cycle.
+        </p>
         <svelte:fragment slot="aside">
             {#if network}
                 {@const humanized = humanFileSize(total(network))}

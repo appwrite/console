@@ -19,6 +19,7 @@ export type PaymentMethodData = {
     failed: boolean;
     name: string;
     mandateId?: string;
+    lastError?: string;
 };
 
 export type PaymentList = {
@@ -48,6 +49,7 @@ export type Invoice = {
         rate: number;
         desc: string;
     }[];
+    lastError?: string;
 };
 
 export type InvoiceList = {
@@ -92,11 +94,11 @@ export type Credit = {
     /**
      * Provided credit amount
      */
-    credits: number;
+    total: number;
     /**
-     * Remaining up credit amount
+     * Remaining credit amount
      */
-    creditsRemaining: number;
+    credits: number;
     /**
      * Credit expiration time in ISO 8601 format.
      */
@@ -259,6 +261,7 @@ export type Plan = {
         storage: AdditionalResource;
         users: AdditionalResource;
     };
+    trialDays: number;
 };
 
 export type PlansInfo = {
@@ -735,6 +738,46 @@ export class Billing {
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
             'PATCH',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            params
+        );
+    }
+
+    async getOrganizationPaymentMethod(
+        organizationId: string,
+        paymentMethodId: string
+    ): Promise<PaymentMethodData> {
+        const path = `/organizations/${organizationId}/payment-methods/${paymentMethodId}`;
+        const params = {
+            organizationId,
+            paymentMethodId
+        };
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'GET',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            params
+        );
+    }
+
+    async getOrganizationBillingAddress(
+        organizationId: string,
+        billingAddressId: string
+    ): Promise<Address> {
+        const path = `/organizations/${organizationId}/billing-addresses/${billingAddressId}`;
+        const params = {
+            organizationId,
+            billingAddressId
+        };
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'GET',
             uri,
             {
                 'content-type': 'application/json'

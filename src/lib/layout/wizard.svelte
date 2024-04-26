@@ -28,6 +28,7 @@
     export let steps: WizardStepsType;
     export let confirmExit = false;
     export let finalAction = 'Create';
+    export let finalMethod: () => Promise<void> = null;
 
     const dispatch = createEventDispatcher();
 
@@ -98,11 +99,18 @@
                 }
             } else {
                 $wizard.nextDisabled = true;
-                trackEvent('wizard_finish');
-                dispatch('finish');
-                setTimeout(() => {
+                if (finalMethod) {
+                    await finalMethod();
+                    trackEvent('wizard_finish');
                     $wizard.nextDisabled = false;
-                }, 2000);
+                } else {
+                    trackEvent('wizard_finish');
+                    dispatch('finish');
+
+                    setTimeout(() => {
+                        $wizard.nextDisabled = false;
+                    }, 2000);
+                }
             }
         } else {
             if (steps.get($wizard.step + 1)?.disabled) {

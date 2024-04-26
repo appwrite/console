@@ -68,4 +68,4 @@
     });
 </script>
 
-<Wizard title="Create project" steps={stepsComponents} on:finish={create} on:exit={onFinish} />
+<Wizard title="Create project" steps={stepsComponents} finalMethod={create} on:exit={onFinish} />

@@ -108,7 +108,9 @@
                             {tierPro.description}
                         </p>
                     </div>
-                    <Pill>14 DAY FREE TRIAL</Pill>
+                    {#if proPlan?.trialDays}
+                        <Pill>14 DAY FREE TRIAL</Pill>
+                    {/if}
                 </svelte:fragment>
             </LabelCard>
         </li>
@@ -131,7 +133,6 @@
                         </p>
                     </div>
                     <div class:u-opacity-50={disabled}>
-                        <!-- <Pill>14 DAY FREE TRIAL</Pill> -->
                         <Pill disabled>COMING SOON</Pill>
                     </div>
                 </svelte:fragment>
