@@ -84,7 +84,7 @@
                     sign-in method. <Button
                         link
                         external
-                        href="https://appwrite.io/docs/products/auth/2fa">Learn more.</Button>
+                        href="https://appwrite.io/docs/products/auth/mfa">Learn more.</Button>
                 </p>
             </div>
             <div class="u-flex-vertical u-gap-16">
