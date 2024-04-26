@@ -120,7 +120,7 @@
     bind:this={tooltip}
     class:u-width-full-line={fullWidth}
     style:--arrow-size={`${arrowSize}px`}
-    style:z-index="1">
+    style:z-index="10">
     <div
         class="drop-arrow"
         class:is-popover={isPopover}
