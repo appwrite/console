@@ -9,7 +9,6 @@
     import type { Coupon } from '$lib/sdk/billing';
     import { plansInfo } from '$lib/stores/billing';
     import { sdk } from '$lib/stores/sdk';
-    import { onMount } from 'svelte';
     import { createOrganization, createOrganizationFinalAction } from './store';
 
     const plan = $plansInfo?.get($createOrganization.billingPlan);
@@ -18,8 +17,6 @@
     const totalExpences = plan.price + collaboratorPrice * collaboratorsNumber;
     const today = new Date();
     const billingPayDate = new Date(today.getTime() + 44 * 24 * 60 * 60 * 1000);
-
-    onMount(() => {});
 
     let coupon: string = null;
     let couponData: Partial<Coupon> = {
