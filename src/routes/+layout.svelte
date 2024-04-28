@@ -16,7 +16,7 @@
     import { loading, requestedMigration } from './store';
     import { parseIfString } from '$lib/helpers/object';
     import Consent from '$lib/components/consent.svelte';
-    import Cookies from 'js-cookie';
+    import { sdk } from '$lib/stores/sdk';
 
     if (browser) {
         window.VERCEL_ANALYTICS_ID = import.meta.env.VERCEL_ANALYTICS_ID?.toString() ?? false;
@@ -25,30 +25,21 @@
     onMount(async () => {
         // handle sources
         if (browser) {
-            let currentSources = [];
             const urlParams = $page.url.searchParams;
             const ref = urlParams.get('ref');
-            const utm_source = urlParams.get('utm_source');
-            const utm_medium = urlParams.get('utm_medium');
-            const utm_campaign = urlParams.get('utm_campaign');
+            const utmSource = urlParams.get('utm_source');
+            const utmMedium = urlParams.get('utm_medium');
+            const utmCampaign = urlParams.get('utm_campaign');
             const referrer = document.referrer;
 
-            // Aggregate and display sources from URL parameters
-            if (ref) currentSources.push(`ref=${ref}`);
-            if (utm_source) currentSources.push(`utm_source=${utm_source}`);
-            if (utm_medium) currentSources.push(`utm_medium=${utm_medium}`);
-            if (utm_campaign) currentSources.push(`utm_campaign=${utm_campaign}`);
-            if (referrer) currentSources.push(`referrer=${referrer}`);
-
-            if (currentSources.length) {
-                let currentSource = currentSources.join(';');
-                const source = Cookies.get('source');
-                let sources = source ? decodeURIComponent(source).split(',') : [];
-                sources.push(currentSource);
-                if(sources.length > 50) {
-                    sources.shift();
-                }
-                Cookies.set('source', sources, { domain: '.appwrite.io' });
+            if (ref || referrer || utmSource || utmCampaign || utmMedium) {
+                await sdk.forConsole.sources.create(
+                    ref,
+                    referrer,
+                    utmSource,
+                    utmCampaign,
+                    utmMedium
+                );
             }
         }
 
