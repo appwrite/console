@@ -3,10 +3,10 @@ services:
         build:
             context: .
             args:
-                CONSOLE_MODE: ${VITE_CONSOLE_MODE}
-                APPWRITE_ENDPOINT: ${VITE_APPWRITE_ENDPOINT}
-                APPWRITE_GROWTH_ENDPOINT: ${VITE_APPWRITE_GROWTH_ENDPOINT}
-                STRIPE_PUBLIC_KEY: ${VITE_STRIPE_PUBLIC_KEY}
+                VITE_CONSOLE_MODE: ${VITE_CONSOLE_MODE}
+                VITE_APPWRITE_ENDPOINT: ${VITE_APPWRITE_ENDPOINT}
+                VITE_APPWRITE_GROWTH_ENDPOINT: ${VITE_APPWRITE_GROWTH_ENDPOINT}
+                VITE_STRIPE_PUBLIC_KEY: ${VITE_STRIPE_PUBLIC_KEY}
         environment:
             - VITE_CONSOLE_MODE
             - VITE_APPWRITE_ENDPOINT
