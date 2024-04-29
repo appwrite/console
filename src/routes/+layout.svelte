@@ -33,13 +33,17 @@
             const referrer = document.referrer;
 
             if (ref || referrer || utmSource || utmCampaign || utmMedium) {
-                await sdk.forConsole.sources.create(
-                    ref,
-                    referrer,
-                    utmSource,
-                    utmCampaign,
-                    utmMedium
-                );
+                try {
+                    await sdk.forConsole.sources.create(
+                        ref,
+                        referrer,
+                        utmSource,
+                        utmCampaign,
+                        utmMedium
+                    );
+                } catch (e) {
+                    // ignore error
+                }
             }
         }
 
