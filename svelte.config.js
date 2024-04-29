@@ -1,4 +1,4 @@
-import adapter from '@sveltejs/adapter-node';
+import adapter from '@sveltejs/adapter-static';
 import preprocess from 'svelte-preprocess';
 import { preprocessMeltUI } from '@melt-ui/pp';
 import sequence from 'svelte-sequential-preprocessor';
@@ -15,7 +15,9 @@ const config = {
         alias: {
             $routes: './src/routes'
         },
-        adapter: adapter(),
+        adapter: adapter({
+            fallback: 'index.html'
+        }),
         paths: {
             base: '/console'
         }
