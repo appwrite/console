@@ -1,8 +1,12 @@
 {
     "rewrites": [
         {
-            "source": "/(.*)",
+            "source": "/console/(.*)",
             "destination": "/"
+        },
+        {
+            "source": "/",
+            "destination": "/console"
         }
     ],
     "installCommand": "npm install --legacy-peer-deps"
