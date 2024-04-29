@@ -22,7 +22,7 @@
         window.VERCEL_ANALYTICS_ID = import.meta.env.VERCEL_ANALYTICS_ID?.toString() ?? false;
     }
 
-    onMount(() => {
+    onMount(async () => {
         // handle sources
         if (isCloud) {
             const urlParams = $page.url.searchParams;
@@ -38,13 +38,7 @@
             }
 
             if (ref || referrer || utmSource || utmCampaign || utmMedium) {
-                sdk.forConsole.sources.create(
-                    ref,
-                    referrer,
-                    utmSource,
-                    utmCampaign,
-                    utmMedium
-                );
+                sdk.forConsole.sources.create(ref, referrer, utmSource, utmCampaign, utmMedium);
             }
         }
 
