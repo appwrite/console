@@ -124,7 +124,7 @@
                 <p class="text">
                     <button class="link" type="button" on:click|preventDefault={upgradeMethod}
                         >Upgrade</button>
-                    for additional storage.
+                    for additional storage resources.
                 </p>
             {:else}
                 <p class="text">
