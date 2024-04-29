@@ -3,7 +3,7 @@
     import { getServiceLimit, type PlanServices } from '$lib/stores/billing';
     import { wizard } from '$lib/stores/wizard';
     import { isCloud } from '$lib/system';
-    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
+    import ChangeOrganizationTierCloud from '$routes/(console)/changeOrganizationTierCloud.svelte';
     import { Button } from '../forms';
 
     let tableBody: HTMLDivElement;

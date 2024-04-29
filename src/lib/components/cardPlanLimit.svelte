@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
     import { wizard } from '$lib/stores/wizard';
-    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
+    import ChangeOrganizationTierCloud from '$routes/(console)/changeOrganizationTierCloud.svelte';
 
     export let service: string;
 </script>

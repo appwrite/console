@@ -1,7 +1,13 @@
 {
+    "redirects": [
+        {
+            "source": "/",
+            "destination": "/console"
+        }
+    ],
     "rewrites": [
         {
-            "source": "/(.*)",
+            "source": "/console/(.*)",
             "destination": "/"
         }
     ],

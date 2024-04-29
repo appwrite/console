@@ -5,9 +5,9 @@
     import { WizardStep } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { isSelfHosted } from '$lib/system';
-    import { func } from '$routes/console/project-[project]/functions/function-[function]/store';
+    import { func } from '$routes/(console)/project-[project]/functions/function-[function]/store';
     import { domain, typeStore } from './store';
-    import { consoleVariables } from '$routes/console/store';
+    import { consoleVariables } from '$routes/(console)/store';
     import { ResourceType } from '@appwrite.io/console';
 
     let error = null;

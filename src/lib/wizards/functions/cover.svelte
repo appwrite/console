@@ -35,7 +35,7 @@
     import { marketplace, type MarketplaceTemplate } from '$lib/stores/marketplace';
     import { Button } from '$lib/elements/forms';
     import { page } from '$app/stores';
-    import { baseRuntimesList } from '$routes/console/project-[project]/functions/store';
+    import { baseRuntimesList } from '$routes/(console)/project-[project]/functions/store';
     import { trackEvent } from '$lib/actions/analytics';
     import type { Models } from '@appwrite.io/console';
     import WizardCover from '$lib/layout/wizardCover.svelte';
@@ -44,7 +44,7 @@
     import CreateGit from './createGit.svelte';
     import { tooltip } from '$lib/actions/tooltip';
     import { isSelfHosted } from '$lib/system';
-    import { consoleVariables } from '$routes/console/store';
+    import { consoleVariables } from '$routes/(console)/store';
 
     const isVcsEnabled = $consoleVariables?._APP_VCS_ENABLED === true;
     let hasInstallations: boolean;
@@ -256,7 +256,7 @@
                         text
                         noMargin
                         class="u-margin-inline-start-auto u-margin-block-start-16"
-                        href={`${base}/console/project-${$page.params.project}/functions/templates`}>
+                        href={`${base}/project-${$page.params.project}/functions/templates`}>
                         <span> All templates </span>
                         <span class="icon-cheveron-right" aria-hidden="true" />
                     </Button>

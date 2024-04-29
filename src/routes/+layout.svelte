@@ -35,12 +35,11 @@
         /**
          * Handle initial load.
          */
-
         function shouldRedirect(route: string, routes: string[]) {
             return !routes.some((n) => route.startsWith(n));
         }
 
-        const authenticationRoutes = ['/auth', '/git'];
+        const authenticationRoutes = [`/auth`, `/git`];
         const acceptedUnauthenticatedRoutes = [
             '/login',
             '/register',
@@ -50,19 +49,20 @@
             '/hackathon',
             '/mfa'
         ];
-        const acceptedAuthenticatedRoutes = ['/console', '/invite', '/card', '/hackathon'];
+        const acceptedAuthenticatedRoutes = [`/console`, `/invite`, `/card`, `/hackathon`];
 
-        const pathname = $page.url.pathname;
+        const routeId = $page.route.id;
         const user = $page.data.account as Models.User<Record<string, string>>;
 
-        if (shouldRedirect(pathname, authenticationRoutes)) {
+        if (shouldRedirect(routeId, authenticationRoutes)) {
             if (user?.$id) {
-                if (shouldRedirect(pathname, acceptedAuthenticatedRoutes)) {
-                    await goto(`${base}/console`, {
+                if (shouldRedirect(routeId, acceptedAuthenticatedRoutes)) {
+                    await goto(`${base}/account`, {
                         replaceState: true
                     });
                 }
             } else {
+                const pathname = $page.url.pathname;
                 if (acceptedUnauthenticatedRoutes.some((n) => pathname.startsWith(n))) {
                     await goto(`${base}${pathname}${$page.url.search}`);
                 } else {

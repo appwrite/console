@@ -8,10 +8,10 @@
     import { readOnly, tierToPlan } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
-    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
+    import ChangeOrganizationTierCloud from '$routes/(console)/changeOrganizationTierCloud.svelte';
 </script>
 
-{#if $organization?.$id && $organization?.billingPlan === BillingPlan.STARTER && $readOnly && !$page.url.pathname.includes('/console/account')}
+{#if $organization?.$id && $organization?.billingPlan === BillingPlan.STARTER && $readOnly && !$page.url.pathname.includes(`${base}/account`)}
     <HeaderAlert
         type="error"
         title={`${$organization.name} usage has reached the ${tierToPlan($organization.billingPlan).name} plan limit`}>
@@ -20,10 +20,7 @@
             plan. Consider upgrading to increase your resource usage.
         </svelte:fragment>
         <svelte:fragment slot="buttons">
-            <Button
-                href={`${base}/console/organization-${$organization?.$id}/usage`}
-                text
-                fullWidthMobile>
+            <Button href={`${base}/organization-${$organization?.$id}/usage`} text fullWidthMobile>
                 <span class="text">View usage</span>
             </Button>
             <Button

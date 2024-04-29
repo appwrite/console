@@ -38,9 +38,7 @@
                 $choices.silentMode || undefined,
                 $choices.rootDir || undefined
             );
-            goto(
-                `${base}/console/project-${$page.params.project}/functions/function-${response.$id}`
-            );
+            goto(`${base}/project-${$page.params.project}/functions/function-${response.$id}`);
             addNotification({
                 message: `${$createFunction.name} has been created`,
                 type: 'success'

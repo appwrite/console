@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Button } from '$lib/elements/forms';
     import { HeaderAlert } from '$lib/layout';
@@ -9,7 +10,7 @@
     const endpoint = VARS.APPWRITE_ENDPOINT ?? `${$page.url.origin}/v1`;
 </script>
 
-{#if $actionRequiredInvoices && $actionRequiredInvoices?.invoices?.length && !$page.url.pathname.includes('/console/account')}
+{#if $actionRequiredInvoices && $actionRequiredInvoices?.invoices?.length && !$page.url.pathname.includes(`${base}/account`)}
     <HeaderAlert title="Authorization required" type="error">
         Please authorize your upcoming payment for {$organization.name}. Your bank requires this
         security measure to proceed with payment.
@@ -21,7 +22,7 @@
             </Button>
             <Button
                 secondary
-                href={`/console/organization-${$organization.$id}/billing?type=confirmation&invoice=${$actionRequiredInvoices.invoices[0].$id}`}>
+                href={`${base}/organization-${$organization.$id}/billing?type=confirmation&invoice=${$actionRequiredInvoices.invoices[0].$id}`}>
                 Authorize payment
             </Button>
         </svelte:fragment>

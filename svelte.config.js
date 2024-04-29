@@ -19,7 +19,7 @@ const config = {
             fallback: 'index.html'
         }),
         paths: {
-            base: ''
+            base: '/console'
         }
     },
     vitePlugin: {

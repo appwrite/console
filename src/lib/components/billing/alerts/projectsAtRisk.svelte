@@ -7,7 +7,7 @@
     import { failedInvoice } from '$lib/stores/billing';
 </script>
 
-{#if $failedInvoice && !$page.url.pathname.includes('/console/account')}
+{#if $failedInvoice && !$page.url.pathname.includes(`${base}/account`)}
     {@const daysPassed = diffDays(new Date($failedInvoice.dueAt), new Date())}
     <HeaderAlert title="Your projects are at risk">
         <svelte:fragment>
@@ -22,7 +22,7 @@
         </svelte:fragment>
         <svelte:fragment slot="buttons">
             <Button
-                href={`${base}/console/organization-${$failedInvoice?.teamId}/billing#paymentMethods`}
+                href={`${base}/organization-${$failedInvoice?.teamId}/billing#paymentMethods`}
                 secondary
                 fullWidthMobile>
                 <span class="text">Update billing details</span>
