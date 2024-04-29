@@ -24,7 +24,7 @@
 
     onMount(async () => {
         // handle sources
-        if (browser && isCloud) {
+        if (isCloud) {
             const urlParams = $page.url.searchParams;
             const ref = urlParams.get('ref');
             const utmSource = urlParams.get('utm_source');
