@@ -168,6 +168,7 @@ export enum Submit {
     UserUpdateStatus = 'submit_user_update_status',
     UserUpdateVerificationEmail = 'submit_user_update_verification_email',
     UserUpdateVerificationPhone = 'submit_user_update_verification_phone',
+    UserIdentityDelete = 'submit_user_identity_delete',
     UserTargetCreate = 'submit_user_target_create',
     UserTargetDelete = 'submit_user_target_delete',
     UserAuthenticatorDelete = 'submit_user_authenticator_delete',
