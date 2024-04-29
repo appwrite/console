@@ -21,9 +21,9 @@
     import { sdk } from '$lib/stores/sdk';
     import { isCloud } from '$lib/system';
     import { wizard } from '$lib/stores/wizard';
-    import CreateOrganizationCloud from '$routes/console/createOrganizationCloud.svelte';
+    import CreateOrganizationCloud from '$routes/(console)/createOrganizationCloud.svelte';
     import { Feedback } from '$lib/components/feedback';
-    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
+    import ChangeOrganizationTierCloud from '$routes/(console)/changeOrganizationTierCloud.svelte';
     import { BillingPlan } from '$lib/constants';
 
     let showDropdown = false;
@@ -79,10 +79,7 @@
 <svelte:window on:click={onBlur} />
 
 <div class="logo u-inline-flex u-gap-16 u-cross-center">
-    <a
-        href={$organization
-            ? `${base}/console/organization-${$organization.$id}`
-            : `${base}/console`}>
+    <a href={$organization ? `${base}/organization-${$organization.$id}` : `${base}/`}>
         <img
             src={$app.themeInUse == 'dark' ? AppwriteLogoDark : AppwriteLogoLight}
             width="120"
@@ -104,7 +101,7 @@
 
 <div class="main-header-end">
     <nav class="u-flex is-only-desktop u-cross-center">
-        {#if isCloud && $organization?.billingPlan === BillingPlan.STARTER && !$page.url.pathname.startsWith('/console/account')}
+        {#if isCloud && $organization?.billingPlan === BillingPlan.STARTER && !$page.url.pathname.startsWith(`${base}/account`)}
             <Button
                 disabled={$organization?.markedForDeletion}
                 on:click={() => {
@@ -183,7 +180,7 @@
                                 <ul class="drop-list">
                                     {#each $organizationList.teams as org}
                                         <DropListLink
-                                            href={`${base}/console/organization-${org.$id}`}
+                                            href={`${base}/organization-${org.$id}`}
                                             on:click={() => {
                                                 showDropdown = false;
                                             }}>{org.name}</DropListLink>
@@ -197,7 +194,7 @@
                                     New organization
                                 </DropListItem>
                                 <DropListLink
-                                    href={`${base}/console/account`}
+                                    href={`${base}/account`}
                                     on:click={() => (showDropdown = false)}>
                                     Your account
                                 </DropListLink>

@@ -15,7 +15,7 @@
     import { organization } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
-    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
+    import ChangeOrganizationTierCloud from '$routes/(console)/changeOrganizationTierCloud.svelte';
     import { createEventDispatcher, onMount } from 'svelte';
     import { ContainerButton } from '.';
     import { trackEvent } from '$lib/actions/analytics';

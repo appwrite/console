@@ -6,12 +6,12 @@
     import SupportOnlineDark from '$lib/images/support/support-online-dark.png';
     import { app } from '$lib/stores/app';
     import { wizard } from '$lib/stores/wizard';
-    import SupportWizard from '../../routes/console/supportWizard.svelte';
-    import { isSupportOnline, showSupportModal } from '../../routes/console/wizard/support/store';
+    import SupportWizard from '$routes/(console)/supportWizard.svelte';
+    import { isSupportOnline, showSupportModal } from '$routes/(console)/(wizard)/support/store';
     import { isCloud } from '$lib/system';
     import { organization } from '$lib/stores/organization';
     import { BillingPlan } from '$lib/constants';
-    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
+    import ChangeOrganizationTierCloud from '$routes/(console)/changeOrganizationTierCloud.svelte';
     import { trackEvent } from '$lib/actions/analytics';
 
     export let show = false;

@@ -3,6 +3,7 @@
     import AppwriteLogoLight from '$lib/images/appwrite-logo-light.svg';
     import LoginDark from '$lib/images/login/login-dark-mode.png';
     import LoginLight from '$lib/images/login/login-light-mode.png';
+    import { base } from '$app/paths';
     import { app } from '$lib/stores/app';
     import { user } from '$lib/stores/user';
 
@@ -15,7 +16,7 @@
         class="u-flex u-flex-vertical"
         style:--url={`url(${$app.themeInUse === 'dark' ? imgDark : imgLight})`}>
         <div class="logo u-flex u-gap-16 is-not-mobile">
-            <a href={user ? '/console' : '/'}>
+            <a href={user ? `${base}/console` : base}>
                 {#if $app.themeInUse === 'dark'}
                     <img
                         src={AppwriteLogoDark}
@@ -60,7 +61,7 @@
             </div>
             <div
                 class="logo u-flex u-gap-16 u-margin-inline-auto is-only-mobile u-margin-block-start-32">
-                <a href={user ? '/console' : '/'}>
+                <a href={user ? `${base}/console` : base}>
                     {#if $app.themeInUse === 'dark'}
                         <img
                             src={AppwriteLogoDark}

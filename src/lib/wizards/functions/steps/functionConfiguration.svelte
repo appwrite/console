@@ -7,7 +7,7 @@
     import { onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
     import { choices, createFunction, installation, repository } from '../store';
-    import { runtimesList } from '$routes/console/project-[project]/functions/store';
+    import { runtimesList } from '$routes/(console)/project-[project]/functions/store';
 
     let showCustomId = false;
 

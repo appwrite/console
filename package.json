@@ -42,7 +42,7 @@
         "@melt-ui/pp": "^0.1.4",
         "@melt-ui/svelte": "^0.61.2",
         "@playwright/test": "^1.37.1",
-        "@sveltejs/adapter-static": "^3.0.1",
+        "@sveltejs/adapter-node": "^5.0.1",
         "@sveltejs/kit": "^2.3.4",
         "@sveltejs/vite-plugin-svelte": "^3.0.1",
         "@testing-library/dom": "^9.0.1",

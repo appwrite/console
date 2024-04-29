@@ -18,14 +18,14 @@ import PaymentAuthRequired from '$lib/components/billing/alerts/paymentAuthRequi
 import { addNotification, notifications } from './notifications';
 import { goto } from '$app/navigation';
 import { base } from '$app/paths';
-import { activeHeaderAlert, orgMissingPaymentMethod } from '$routes/console/store';
+import { activeHeaderAlert, orgMissingPaymentMethod } from '$routes/(console)/store';
 import MarkedForDeletion from '$lib/components/billing/alerts/markedForDeletion.svelte';
 import { BillingPlan } from '$lib/constants';
 import PaymentMandate from '$lib/components/billing/alerts/paymentMandate.svelte';
 import MissingPaymentMethod from '$lib/components/billing/alerts/missingPaymentMethod.svelte';
 import LimitReached from '$lib/components/billing/alerts/limitReached.svelte';
 import { wizard } from './wizard';
-import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
+import ChangeOrganizationTierCloud from '$routes/(console)/changeOrganizationTierCloud.svelte';
 import { trackEvent } from '$lib/actions/analytics';
 
 export type Tier = 'tier-0' | 'tier-1' | 'tier-2';
@@ -233,7 +233,7 @@ export async function checkForUsageLimit(org: Organization) {
                 {
                     name: 'View usage',
                     method: () => {
-                        goto(`${base}/console/organization-${org.$id}/usage`);
+                        goto(`${base}/organization-${org.$id}/usage`);
                     }
                 },
                 {
@@ -297,7 +297,7 @@ export async function paymentExpired(org: Organization) {
                 {
                     name: 'Update payment details',
                     method: () => {
-                        goto(`${base}/console/account/payments`);
+                        goto(`${base}/account/payments`);
                     }
                 }
             ]
@@ -311,7 +311,7 @@ export async function paymentExpired(org: Organization) {
                 {
                     name: 'Update payment details',
                     method: () => {
-                        goto(`${base}/console/account/payments`);
+                        goto(`${base}/account/payments`);
                     }
                 }
             ]

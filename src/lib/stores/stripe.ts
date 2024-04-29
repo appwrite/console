@@ -6,6 +6,7 @@ import type { PaymentMethodData } from '$lib/sdk/billing';
 import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
 import { addNotification } from './notifications';
 import { organization } from './organization';
+import { base } from '$app/paths';
 
 export const stripe = writable<Stripe>();
 let paymentMethod: PaymentMethodData;
@@ -62,7 +63,7 @@ export async function submitStripeCard(name: string, organizationId?: string) {
         // // Element needs to be submitted before confirming the setup intent
         elements.submit();
 
-        const baseUrl = 'https://cloud.appwrite.io/console';
+        const baseUrl = 'https://cloud.appwrite.io' + base;
         const accountUrl = `${baseUrl}/account/payments?clientSecret=${clientSecret}`;
         const orgUrl = `${baseUrl}/organization-${organizationId}/billing?clientSecret=${clientSecret}`;
 
@@ -120,7 +121,7 @@ export async function confirmPayment(
 ) {
     try {
         const url =
-            window.location.origin + (route ? route : `/console/organization-${orgId}/billing`);
+            window.location.origin + (route ? route : `${base}/organization-${orgId}/billing`);
 
         const paymentMethod = await sdk.forConsole.billing.getPaymentMethod(paymentMethodId);
 
@@ -149,7 +150,7 @@ export async function confirmSetup(
     paymentMethodId: string,
     urlRoute?: string
 ) {
-    const baseUrl = 'https://cloud.appwrite.io/console/';
+    const baseUrl = `https://cloud.appwrite.io${base}/`;
 
     const { setupIntent, error } = await get(stripe).confirmCardSetup(clientSecret, {
         payment_method: paymentMethodId,

@@ -14,7 +14,7 @@
     import { beforeNavigate } from '$app/navigation';
     import { Pill } from '$lib/elements';
     import { isCloud } from '$lib/system';
-    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
+    import ChangeOrganizationTierCloud from '$routes/(console)/changeOrganizationTierCloud.svelte';
     import { wizard } from '$lib/stores/wizard';
     import { getServiceLimit, tierToPlan } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';

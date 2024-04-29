@@ -6,6 +6,7 @@ import { redirect } from '@sveltejs/kit';
 import { Dependencies } from '$lib/constants';
 import type { LayoutLoad } from './$types';
 import { redirectTo } from './store';
+import { base } from '$app/paths';
 
 export const ssr = false;
 
@@ -42,12 +43,12 @@ export const load: LayoutLoad = async ({ depends, url }) => {
         const path = url.search ? `${url.search}&${redirectUrl}` : `?${redirectUrl}`;
 
         if (error.type === 'user_more_factors_required') {
-            if (url.pathname === '/mfa') return;
-            redirect(303, `/mfa${path}`);
+            if (url.pathname === base + '/mfa') return;
+            redirect(303, `${base}/mfa${path}`);
         }
 
-        if (!acceptedRoutes.some((n) => url.pathname.startsWith(n))) {
-            redirect(303, `/login${path}`);
+        if (!acceptedRoutes.some((n) => url.pathname.startsWith(base + n))) {
+            redirect(303, `${base}/login${path}`);
         }
     }
 };
