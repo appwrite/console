@@ -24,13 +24,18 @@
 
     onMount(async () => {
         // handle sources
-        if (browser) {
+        if (browser && isCloud) {
             const urlParams = $page.url.searchParams;
             const ref = urlParams.get('ref');
             const utmSource = urlParams.get('utm_source');
             const utmMedium = urlParams.get('utm_medium');
             const utmCampaign = urlParams.get('utm_campaign');
-            const referrer = document.referrer.length ? document.referrer : null;
+            let referrer = document.referrer.length ? document.referrer : null;
+
+            // Skip our own
+            if(referrer?.includes('appwrite.io')) {
+                referrer = null;
+            }
 
             if (ref || referrer || utmSource || utmCampaign || utmMedium) {
                 try {
