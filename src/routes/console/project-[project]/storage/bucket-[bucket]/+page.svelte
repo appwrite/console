@@ -113,10 +113,15 @@
         </svelte:fragment>
         <svelte:fragment slot="tooltip" let:limit let:tier let:upgradeMethod>
             {#if tier === 'Starter'}
+                <p class="u-bold">The {tier} plan has limits</p>
+                <ul>
+                    <li>{limit}GB total file storage</li>
+                    <li>
+                        {Math.floor(parseInt(maxFileSize.value))}{maxFileSize.unit} file upload size
+                        limit
+                    </li>
+                </ul>
                 <p class="text">
-                    You are limited to <b>{limit}GB</b> of total storage and maximum upload file
-                    size limit of <b>{Math.floor(parseInt(maxFileSize.value))}{maxFileSize.unit}</b>
-                    on the {tier} plan.
                     <button class="link" type="button" on:click|preventDefault={upgradeMethod}
                         >Upgrade</button>
                     for additional storage.
