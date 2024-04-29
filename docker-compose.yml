@@ -1,5 +1,16 @@
 services:
-  console:
-    build: .
-    ports:
-      - "3000:3000"
+    console:
+        build:
+            context: .
+            args:
+                CONSOLE_MODE: ${VITE_CONSOLE_MODE}
+                APPWRITE_ENDPOINT: ${VITE_APPWRITE_ENDPOINT}
+                APPWRITE_GROWTH_ENDPOINT: ${VITE_APPWRITE_GROWTH_ENDPOINT}
+                STRIPE_PUBLIC_KEY: ${VITE_STRIPE_PUBLIC_KEY}
+        environment:
+            - VITE_CONSOLE_MODE
+            - VITE_APPWRITE_ENDPOINT
+            - VITE_APPWRITE_GROWTH_ENDPOINT
+            - VITE_STRIPE_PUBLIC_KEY
+        ports:
+            - '3000:3000'
