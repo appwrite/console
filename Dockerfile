@@ -1,5 +1,7 @@
 FROM node:20-alpine as build
 
+WORKDIR /app
+
 ADD ./build.js /app/build.js
 ADD ./tsconfig.json /app/tsconfig.json
 ADD ./svelte.config.js /app/svelte.config.js
@@ -8,8 +10,6 @@ ADD ./package.json /app/package.json
 ADD ./package-lock.json /app/package-lock.json
 ADD ./src /app/src
 ADD ./static /app/static
-
-WORKDIR /app
 
 ARG VITE_CONSOLE_MODE
 ARG VITE_APPWRITE_ENDPOINT
@@ -25,7 +25,8 @@ RUN npm ci
 RUN npm run build
 
 FROM nginx:1.25-alpine
-EXPOSE 3000
-COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
 
+EXPOSE 3000
+
+COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/build /usr/share/nginx/html/console
