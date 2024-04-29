@@ -12,7 +12,7 @@ export class Sources {
         referrer: string,
         utmSource: string,
         utmCampaign: string,
-        utmMedium: string,
+        utmMedium: string
     ): Promise<any> {
         const path = `/console/sources`;
         const params = {
@@ -20,7 +20,7 @@ export class Sources {
             referrer,
             utmSource,
             utmCampaign,
-            utmMedium,
+            utmMedium
         };
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(

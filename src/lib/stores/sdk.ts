@@ -72,7 +72,7 @@ export const sdk = {
         console: new Console(clientConsole),
         assistant: new Assistant(clientConsole),
         billing: new Billing(clientConsole),
-        sources: new Sources(clientConsole),
+        sources: new Sources(clientConsole)
     },
     get forProject() {
         const projectId = getProjectId();
