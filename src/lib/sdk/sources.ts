@@ -1,5 +1,15 @@
 import type { Client } from '@appwrite.io/console';
 
+type Source = {
+    $id: string;
+    fingerprint: string;
+    referrer: string;
+    ref: string;
+    utmSource: string;
+    utmCampaign: string;
+    utmMedium: string;
+};
+
 export class Sources {
     client: Client;
 
@@ -13,7 +23,7 @@ export class Sources {
         utmSource: string,
         utmCampaign: string,
         utmMedium: string
-    ): Promise<any> {
+    ): Promise<Source> {
         const path = `/console/sources`;
         const params = {
             ref,
