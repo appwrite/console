@@ -75,10 +75,10 @@
 
         return {
             value:
-                formattedColumn.length > 120
-                    ? `${formattedColumn.slice(0, 120)}...`
+                formattedColumn.length > 125
+                    ? `${formattedColumn.slice(0, 125)}...`
                     : formattedColumn,
-            truncated: formattedColumn.length > 120,
+            truncated: formattedColumn.length > 125,
             whole: formattedColumn
         };
     }
