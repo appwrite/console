@@ -73,14 +73,14 @@
             formattedColumn = `${column}`;
         }
 
-        return {
-            value:
-                formattedColumn.length > 20
-                    ? `${formattedColumn.slice(0, 20)}...`
-                    : formattedColumn,
-            truncated: formattedColumn.length > 20,
-            whole: formattedColumn
-        };
+        // return {
+        //     value:
+        //         formattedColumn.length > 20
+        //             ? `${formattedColumn.slice(0, 20)}...`
+        //             : formattedColumn,
+        //     truncated: formattedColumn.length > 20,
+        //     whole: formattedColumn
+        // };
     }
 
     $: selected = preferences.getCustomCollectionColumns($page.params.collection);
@@ -139,7 +139,7 @@
     let checked = false;
 </script>
 
-<TableScroll isSticky>
+<TableScroll>
     <TableHeader>
         <TableCellHeadCheck
             bind:selected={selectedDb}
