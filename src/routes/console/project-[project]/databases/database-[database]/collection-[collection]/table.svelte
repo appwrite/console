@@ -215,7 +215,7 @@
                             {@const formatted = formatColumn(document[column.id])}
                             <TableCell>
                                 <div
-                                        class="u-width-fit-content u-max-width-100-percent u-trim-1"
+                                        class="u-width-fit-content u-max-width-100-percent u-trim"
                                     use:tooltip={{
                                         content: formatted.whole,
                                         disabled: !formatted.truncated
