@@ -19,5 +19,5 @@
         class:u-main-end={right}
         data-title={title}
         role="cell">
-    <div class="u-width-fit-content u-max-width-100-percent u-trim-1"><slot /></div>
+    <slot />
 </div>
