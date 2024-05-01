@@ -75,10 +75,10 @@
 
         return {
             value:
-                formattedColumn.length > 20
-                    ? `${formattedColumn.slice(0, 20)}...`
+                formattedColumn.length > 130
+                    ? `${formattedColumn.slice(0, 130)}...`
                     : formattedColumn,
-            truncated: formattedColumn.length > 20,
+            truncated: formattedColumn.length > 130,
             whole: formattedColumn
         };
     }
@@ -139,7 +139,7 @@
     let checked = false;
 </script>
 
-<TableScroll isSticky>
+<TableScroll>
     <TableHeader>
         <TableCellHeadCheck
             bind:selected={selectedDb}
@@ -215,6 +215,7 @@
                             {@const formatted = formatColumn(document[column.id])}
                             <TableCell>
                                 <div
+                                        class="u-width-fit-content u-max-width-100-percent u-trim"
                                     use:tooltip={{
                                         content: formatted.whole,
                                         disabled: !formatted.truncated
