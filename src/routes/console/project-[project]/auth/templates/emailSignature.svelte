@@ -14,24 +14,20 @@
     <svelte:fragment slot="aside">
         <EmptyCardImageCloud source="email_signature_card" let:nextTier>
             <svelte:fragment slot="image">
-                <div class="is-only-mobile">
+                <div class=" is-only-mobile u-width-full-line u-height-100-percent">
                     {#if $app.themeInUse === 'dark'}
                         <img
                             src={EmailMobileDark}
-                            width="266"
-                            height="171"
                             class="u-image-object-fit-cover u-only-dark"
                             alt="Email Signature Example" />
                     {:else}
                         <img
                             src={EmailMobileLight}
-                            width="266"
-                            height="171"
                             class="u-image-object-fit-cover u-only-light"
                             alt="Email Signature Example" />
                     {/if}
                 </div>
-                <div class="is-not-mobile">
+                <div class="is-not-mobile u-width-full-line u-height-100-percent">
                     {#if $app.themeInUse === 'dark'}
                         <img
                             src={EmailDark}
