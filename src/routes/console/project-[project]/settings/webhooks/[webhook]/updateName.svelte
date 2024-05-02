@@ -26,6 +26,7 @@
                 $webhook.events,
                 $webhook.url,
                 $webhook.security,
+                true,
                 $webhook.httpUser || undefined,
                 $webhook.httpPass || undefined
             );

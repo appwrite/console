@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Alert, Box, CreditCardBrandImage } from '$lib/components';
+    import { Box, CreditCardBrandImage } from '$lib/components';
     import { CouponInput } from '$lib/components/billing';
     import { BillingPlan } from '$lib/constants';
     import { FormList, InputSelect, InputTextarea } from '$lib/elements/forms';
@@ -7,7 +7,7 @@
     import { formatCurrency } from '$lib/helpers/numbers';
     import { WizardStep } from '$lib/layout';
     import type { Coupon } from '$lib/sdk/billing';
-    import { plansInfo, tierToPlan } from '$lib/stores/billing';
+    import { plansInfo } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import {
@@ -49,51 +49,43 @@
     $: if (!$isUpgrade) {
         $changeOrganizationFinalAction = 'Confirm plan change';
     }
+
+    $: if (plan?.trialDays) {
+        $changeOrganizationFinalAction = 'Start trial';
+    }
 </script>
 
 {#if downgradeToStarter}
     <WizardStep>
-        <svelte:fragment slot="title">Confirm plan change</svelte:fragment>
+        <svelte:fragment slot="title">Change confirmation</svelte:fragment>
         <svelte:fragment slot="subtitle">
             Your feedback is important to us and helps us improve the services Appwrite offers.
             Please let us know if there is a specific reason for changing your plan.
         </svelte:fragment>
-
-        <Alert>
-            <svelte:fragment slot="title"
-                >Your {tierToPlan($organization.billingPlan).name} plan subscription will end on {toLocaleDate(
-                    $organization.billingNextInvoiceDate
-                )}</svelte:fragment>
-            <p class="text">
-                Following the payment of your final invoice on {toLocaleDate(
-                    $organization.billingNextInvoiceDate
-                )}, your organization will switch to the {tierToPlan(
-                    $changeOrganizationTier.billingPlan
-                ).name} plan. Until then, you can continue to use the resources available to the {tierToPlan(
-                    $organization.billingPlan
-                ).name} plan.
-            </p>
-        </Alert>
-        <FormList class="u-margin-block-start-24">
+        <FormList>
             <InputSelect
                 id="reason"
-                label="Reason for plan change"
+                label="What made you decide to change your plan?*"
                 placeholder="Select one"
                 required
                 options={feedbackDowngradeOptions}
                 bind:value={$changeOrganizationTier.feedbackDowngradeReason} />
             <InputTextarea
                 id="comment"
-                label="If you would like to elaborate, please do so here"
+                label="Your feedback here"
                 placeholder="Enter feedback"
                 bind:value={$changeOrganizationTier.feedbackMessage} />
         </FormList>
     </WizardStep>
 {:else}
     <WizardStep>
-        <svelte:fragment slot="title">Confirm your details</svelte:fragment>
+        <svelte:fragment slot="title">Details</svelte:fragment>
         <svelte:fragment slot="subtitle">
-            Confirm the details of your new organization and start your free trial.
+            Confirm the details of your new organization{!$plansInfo.get(
+                $changeOrganizationTier.billingPlan
+            )?.trialDays
+                ? '.'
+                : ' and start your free trial.'}
         </svelte:fragment>
 
         <p class="body-text-1 u-bold">Organization name</p>
@@ -160,9 +152,9 @@
 
             <p class="text u-margin-block-start-16">
                 This amount, and any additional usage fees, will be charged on a recurring 30-day
-                billing cycle after your trial period ends on <b
-                    >{toLocaleDate(billingPayDate.toString())}</b
-                >.
+                billing cycle{!$plansInfo.get($changeOrganizationTier.billingPlan)?.trialDays
+                    ? ''
+                    : ` after your trial period ends on ${toLocaleDate(billingPayDate.toString())}`}.
             </p>
         </Box>
     </WizardStep>

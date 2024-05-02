@@ -56,10 +56,8 @@
         request();
     }
 
-    $: balance = creditList?.credits?.reduce(
-        (acc: number, curr: Credit) => acc + curr.creditsRemaining,
-        0
-    );
+    $: balance =
+        creditList?.credits?.reduce((acc: number, curr: Credit) => acc + curr.credits, 0) ?? 0;
 
     $: {
         if (reloadOnWizardClose && !$wizard.show) {
@@ -115,7 +113,7 @@
                                     {toLocaleDate(credit.expiration)}
                                 </TableCellText>
                                 <TableCellText title="amount">
-                                    {formatCurrency(credit.credits)}
+                                    {formatCurrency(credit.total)}
                                 </TableCellText>
                             </TableRow>
                         {/each}
