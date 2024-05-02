@@ -9,6 +9,7 @@
     export let disabled = false;
     export let autofocus = false;
     export let isWithEndButton = true;
+    export let style: string = '';
 
     const dispatch = createEventDispatcher();
     let element: HTMLInputElement;
@@ -53,6 +54,7 @@
         {placeholder}
         {disabled}
         {required}
+        {style}
         type="search"
         class="input-text"
         bind:this={element}

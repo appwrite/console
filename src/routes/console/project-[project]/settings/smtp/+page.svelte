@@ -23,6 +23,7 @@
     import { organization } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
     import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
+    import { SMTPSecure } from '@appwrite.io/console';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
 
     let enabled = false;
@@ -65,7 +66,7 @@
                 username = undefined;
                 password = undefined;
             }
-            await sdk.forConsole.projects.updateSmtpConfiguration(
+            await sdk.forConsole.projects.updateSmtp(
                 $project.$id,
                 enabled,
                 senderName ? senderName : undefined,
@@ -75,7 +76,7 @@
                 port ? port : undefined,
                 username ? username : undefined,
                 password ? password : undefined,
-                secure ? secure : undefined
+                secure ? SMTPSecure.Tls : undefined
             );
 
             invalidate(Dependencies.PROJECT);

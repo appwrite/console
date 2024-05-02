@@ -24,6 +24,8 @@
     import { selectedInvoice, showRetryModal } from './store';
     import { Button } from '$lib/elements/forms';
 
+    export let data;
+
     $: defaultPaymentMethod = $paymentMethods?.paymentMethods?.find(
         (method: PaymentMethodData) => method.$id === $organization?.paymentMethodId
     );
@@ -120,7 +122,7 @@
     <PlanSummary />
     <PaymentHistory />
     <PaymentMethods />
-    <BillingAddress />
+    <BillingAddress billingAddress={data.billingAddress} />
     <TaxId />
     <BudgetCap />
     {#if $organization?.billingPlan !== BillingPlan.STARTER && !!$organization?.billingBudget}

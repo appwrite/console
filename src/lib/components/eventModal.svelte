@@ -332,7 +332,7 @@
         </div>
     {:else}
         <div class="input-text-wrapper" style="--amount-of-buttons:2" bind:this={copyParent}>
-            <!-- 
+            <!--
                 This object syntax avoids TS erroring because 'type' isn't a valid HTMLDivElement attribute
                 (we need to set it to 'text' to add styling)
              -->
