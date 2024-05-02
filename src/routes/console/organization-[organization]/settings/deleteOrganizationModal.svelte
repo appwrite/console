@@ -51,7 +51,7 @@
         }
     }
 
-    $: upcomingInvoice = invoices.invoices.find((i) => i.status === 'upcoming' && i.amount > 0);
+    $: upcomingInvoice = invoices?.invoices.find((i) => i.status === 'upcoming' && i.amount > 0);
 </script>
 
 <Modal
