@@ -1,10 +1,10 @@
 <script lang="ts">
     import { CardGrid, EmptyCardImageCloud, Heading } from '$lib/components';
     import { app } from '$lib/stores/app';
-    import EmailDark from './email-footer-dark.svg';
-    import EmailLight from './email-footer-light.svg';
-    import EmailMobileDark from './email-footer-mobile-dark.svg';
-    import EmailMobileLight from './email-footer-mobile-light.svg';
+    import EmailDark from './email-footer-dark.png';
+    import EmailLight from './email-footer-light.png';
+    import EmailMobileDark from './email-footer-mobile-dark.png';
+    import EmailMobileLight from './email-footer-mobile-light.png';
 </script>
 
 <CardGrid>
