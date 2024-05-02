@@ -5,6 +5,7 @@
     import DropListItem from '$lib/components/dropListItem.svelte';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
+    import type { Address } from '$lib/sdk/billing';
     import { addressList } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { organization } from '$lib/stores/organization';
@@ -12,6 +13,8 @@
     import AddressModal from '$routes/console/account/payments/addressModal.svelte';
     import EditAddressModal from '$routes/console/account/payments/editAddressModal.svelte';
     import ReplaceAddress from './replaceAddress.svelte';
+
+    export let billingAddress: Address = null;
 
     let showDropdown = false;
     let showBillingAddressDropdown = false;
@@ -40,10 +43,6 @@
             trackError(error, Submit.OrganizationBillingAddressUpdate);
         }
     }
-
-    $: billingAddress = $addressList?.billingAddresses?.find(
-        (address) => address.$id === $organization?.billingAddressId
-    );
 </script>
 
 <CardGrid>

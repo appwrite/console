@@ -41,6 +41,38 @@ export const toLocaleDateTime = (datetime: string | number) => {
     return date.toLocaleDateString('en', options);
 };
 
+/**
+ * Returns a date string usig the local timezone in ISO format (yyyy-mm-dd)
+ *
+ * @param datetime date string or milliseconds since the epoch
+ */
+export const toLocaleDateISO = (datetime: string | number) => {
+    const date = new Date(datetime);
+
+    if (isNaN(date.getTime())) {
+        return 'n/a';
+    }
+
+    // Use Sweden's locale (sv) since it matches ISO format
+    return date.toLocaleDateString('sv');
+};
+
+/**
+ * Returns a time string usig the local timezone in ISO format (hh:mm:ss)
+ *
+ * @param datetime date string or milliseconds since the epoch
+ */
+export const toLocaleTimeISO = (datetime: string | number) => {
+    const date = new Date(datetime);
+
+    if (isNaN(date.getTime())) {
+        return 'n/a';
+    }
+
+    // Use Sweden's locale (sv) since it matches ISO format
+    return date.toLocaleTimeString('sv');
+};
+
 export const isSameDay = (date1: Date, date2: Date) => {
     return (
         date1.getFullYear() === date2.getFullYear() &&

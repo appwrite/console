@@ -85,10 +85,10 @@
             <span class="text">Add platform</span>
         </Button>
         <svelte:fragment slot="list">
-            <DropListItem on:click={() => addPlatform(Platform.Web)}>Web App</DropListItem>
-            <DropListItem on:click={() => addPlatform(Platform.Flutter)}>Flutter App</DropListItem>
-            <DropListItem on:click={() => addPlatform(Platform.Android)}>Android App</DropListItem>
-            <DropListItem on:click={() => addPlatform(Platform.Apple)}>Apple App</DropListItem>
+            <DropListItem on:click={() => addPlatform(Platform.Web)}>Web app</DropListItem>
+            <DropListItem on:click={() => addPlatform(Platform.Flutter)}>Flutter app</DropListItem>
+            <DropListItem on:click={() => addPlatform(Platform.Android)}>Android app</DropListItem>
+            <DropListItem on:click={() => addPlatform(Platform.Apple)}>Apple app</DropListItem>
         </svelte:fragment>
     </DropList>
 </ContainerHeader>
