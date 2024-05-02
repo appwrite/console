@@ -15,6 +15,7 @@
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { BillingPlan } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
+    import { tooltip } from '$lib/actions/tooltip';
 
     let currentInvoice: Invoice;
     let extraMembers = 0;
@@ -137,12 +138,15 @@
 
                 <CollapsibleItem noContent isInfo gap={4}>
                     <span class="body-text-2">Current total (USD)</span>
-                    <button class="tooltip u-cross-center" aria-label="variables info">
-                        <span class="icon-info" aria-hidden="true"></span>
-                        <span class="tooltip-popup" role="tooltip">
-                            Set variables or secret keys.
-                        </span>
-                    </button>
+                    <span class="tooltip u-cross-center" aria-label="total info">
+                        <span
+                            class="icon-info"
+                            aria-hidden="true"
+                            use:tooltip={{
+                                content:
+                                    'Totals displayed are estimates updated every 24 hours and may not accurately reflect your invoice.'
+                            }}></span>
+                    </span>
                     <div class="body-text-2 u-margin-inline-start-auto">
                         {formatCurrency(currentInvoice?.amount ?? 0)}
                     </div>
