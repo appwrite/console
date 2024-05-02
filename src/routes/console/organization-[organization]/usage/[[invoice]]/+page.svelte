@@ -103,7 +103,6 @@
                 ]} />
                 </div>-->
     </div>
-    <TotalMembers members={data?.organizationMembers} />
 
     <CardGrid>
         <Heading tag="h6" size="7">Bandwidth</Heading>
@@ -300,6 +299,7 @@
             {/if}
         </svelte:fragment>
     </CardGrid>
+    <TotalMembers members={data?.organizationMembers} />
 
     <p class="text common-section u-color-text-gray">
         Metrics are estimates updated every 24 hours and may not accurately reflect your invoice.
