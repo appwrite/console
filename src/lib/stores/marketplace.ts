@@ -1353,7 +1353,7 @@ export const marketplace: MarketplaceTemplate[] = [
         icon: 'icon-chip',
         id: 'generate-with-together-ai',
         name: 'Generate with Together AI',
-        tagline: "Generate text and images using Togther AI's API.",
+        tagline: "Generate text and images using Together AI's API.",
         permissions: ['any'],
         events: [],
         cron: '',
