@@ -1,13 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import {
-        Box,
-        CardGrid,
-        Collapsible,
-        CollapsibleItem,
-        EyebrowHeading,
-        Heading
-    } from '$lib/components';
+    import { Box, CardGrid, EyebrowHeading, Heading } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
