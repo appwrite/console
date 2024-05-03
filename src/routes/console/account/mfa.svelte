@@ -1,25 +1,24 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { Submit, trackError } from '$lib/actions/analytics';
-    import { Modal, Output, Copy, Alert } from '$lib/components';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { Modal, CopyInput } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, FormList, InputDigits } from '$lib/elements/forms';
-    import { Table, TableBody, TableCell, TableRow } from '$lib/elements/table';
-    import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { AuthenticatorType, type Models } from '@appwrite.io/console';
     import QrFrame from '$lib/images/qr2.svg';
+
     export let showSetup = false;
-    export let showRecoveryCodes = false;
 
     let copyParent: HTMLElement;
     let code: string;
     let type: Models.MfaType = null;
     let step = 1;
-    let codes: Models.MfaRecoveryCodes = null;
+    let error = '';
 
     async function addAuthenticator(): Promise<URL> {
         type = await sdk.forConsole.account.createMfaAuthenticator(AuthenticatorType.Totp);
+        trackEvent(Submit.AccountAuthenticatorCreate);
 
         return sdk.forConsole.avatars.getQR(type.uri, 192 * 2);
     }
@@ -27,32 +26,27 @@
     async function verifyAuthenticator() {
         try {
             await sdk.forConsole.account.updateMfaAuthenticator(AuthenticatorType.Totp, code);
-            codes = await sdk.forConsole.account.createMfaRecoveryCodes();
-            await invalidate(Dependencies.ACCOUNT);
-            await invalidate(Dependencies.FACTORS);
+            await Promise.all([invalidate(Dependencies.ACCOUNT), invalidate(Dependencies.FACTORS)]);
             showSetup = false;
-            showRecoveryCodes = true;
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
-            trackError(error, Submit.AccountDelete);
+            trackEvent(Submit.AccountAuthenticatorUpdate);
+        } catch (e) {
+            error = e.message;
+            trackError(e, Submit.AccountAuthenticatorUpdate);
         }
     }
 </script>
 
 <Modal
-    title="Scan QR code"
-    description="Open your authentication app and scan the QR code."
+    title={step == 1 ? 'Scan QR code' : 'Enter verification code'}
     bind:show={showSetup}
-    onSubmit={verifyAuthenticator}>
+    onSubmit={verifyAuthenticator}
+    {error}>
     {#key showSetup}
-        <p>
-            Install an authenticator app on your mobile device, open it and scan the provided QR
-            code or enter it manually.
-        </p>
         {#if step === 1}
+            <p>
+                Install an authenticator app on your mobile device, open it and scan the provided QR
+                code or enter it manually.
+            </p>
             {#await addAuthenticator()}
                 <div class="loading">
                     <div class="loader"></div>
@@ -69,26 +63,12 @@
                 <span class="with-separators eyebrow-heading-3">or</span>
 
                 <div bind:this={copyParent}>
-                    <label class="label" for="manual-code">Manual entry code</label>
-                    <button class="tooltip" aria-label="sec retinfo">
-                        <span class="icon-info" aria-hidden="true"></span>
-                        <span class="tooltip-popup" role="tooltip">
-                            <p class="text u-margin-block-start-8">
-                                Manually enter the following code into the authenticator app
-                            </p>
-                        </span>
-                    </button>
-
-                    <div class="input-text-wrapper" style="--amount-of-buttons:1">
-                        <input id="manual-code" type="text" value={type.secret} readonly={true} />
-                        <div class="options-list">
-                            {#key copyParent}
-                                <Copy value={type.secret} appendTo={copyParent}>
-                                    <span class="icon-duplicate" aria-hidden="true" />
-                                </Copy>
-                            {/key}
-                        </div>
-                    </div>
+                    <CopyInput
+                        showLabel={true}
+                        label="Manual entry code"
+                        labelTooltip="Manually enter the following code into the authenticator app"
+                        value={type.secret}
+                        appendTo={copyParent} />
                 </div>
             {/await}
         {:else}
@@ -105,68 +85,6 @@
         {:else}
             <Button submit>Continue</Button>
         {/if}
-    </svelte:fragment>
-</Modal>
-
-<Modal
-    title="Save recovery codes"
-    description="Learn more about multi-factor authentication in our documentation."
-    bind:show={showRecoveryCodes}
-    onSubmit={verifyAuthenticator}>
-    {#if type && codes}
-        {@const formattedBackupCodes = codes.recoveryCodes.join('\n')}
-        <Alert type="info">
-            <span slot="title">
-                It is highly recommended to securely store your recovery codes
-            </span>
-            <p>
-                Use security codes for emergency sign-ins in case you've lost access to your mobile
-                device. Each recovery code can only be used once, but you can re-generate a new set
-                of 6 codes anytime.
-            </p>
-        </Alert>
-        <div
-            style:flex-direction="row-reverse"
-            class="u-flex u-flex-vertical-mobile u-main-space-between u-gap-16">
-            <ul class="buttons-list">
-                <li class="buttons-list-item">
-                    <Button
-                        download="backups.txt"
-                        href={`data:application/octet-stream;charset=utf-8,${formattedBackupCodes}`}
-                        text>
-                        <span class="icon-download" />
-                        <span class="text">Download</span>
-                    </Button>
-                </li>
-                <li class="buttons-list-item">
-                    <Copy value={formattedBackupCodes} appendTo="parent">
-                        <Button text>
-                            <span class="icon-duplicate" />
-                            <span class="text">Copy all</span>
-                        </Button>
-                    </Copy>
-                </li>
-            </ul>
-        </div>
-        <Table noMargin noStyles>
-            <TableBody>
-                {#each codes.recoveryCodes as code}
-                    <TableRow>
-                        <TableCell title="code">
-                            <Output value={code} hideCopyIcon>{code}</Output>
-                        </TableCell>
-                        <TableCell title="actions" width={24}>
-                            <Copy value={code} appendTo="parent">
-                                <span class="icon-duplicate" aria-hidden="true" />
-                            </Copy>
-                        </TableCell>
-                    </TableRow>
-                {/each}
-            </TableBody>
-        </Table>
-    {/if}
-    <svelte:fragment slot="footer">
-        <Button secondary on:click={() => (showRecoveryCodes = false)}>Close</Button>
     </svelte:fragment>
 </Modal>
 
