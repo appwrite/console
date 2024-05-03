@@ -1648,6 +1648,76 @@ export const marketplace: MarketplaceTemplate[] = [
                 type: 'text'
             }
         ]
+    },
+    {
+        icon: 'icon-chip',
+        id: 'speak-with-lmnt',
+        name: 'Speak with LMNT',
+        tagline: 'Convert text to speech using the LMNT API.',
+        permissions: ['any'],
+        cron: '',
+        events: [],
+        timeout: 15,
+        usecases: ['AI'],
+        runtimes: [
+            ...getRuntimes(
+                TemplateRuntimes.NODE,
+                'npm install',
+                'src/main.js',
+                'node/speak-with-lmnt'
+            )
+        ],
+        instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/speak-with-lmnt">file</a>.`,
+        vcsProvider: 'github',
+        providerRepositoryId: 'templates',
+        providerOwner: 'appwrite',
+        providerBranch: 'main',
+        variables: [
+            {
+                name: 'LMNT_API_KEY',
+                description: `A unique key used to authenticate with the LMNT API. <a class="u-bold" target="_blank" href="https://app.lmnt.com/account">Learn more</a>.`,
+                placeholder: 'd03xxxxxxxx26',
+                required: true,
+                type: 'password'
+            },
+            {
+                name: 'APPWRITE_API_KEY',
+                description: `The API Key to authenticate against Appwrite's server APIs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/advanced/platform/api-keys">Learn more</a>.`,
+                value: '',
+                placeholder: 'd1efb...aec35',
+                required: true,
+                type: 'password'
+            },
+            {
+                name: 'APPWRITE_ENDPOINT',
+                description: `The URL endpoint of the Appwrite server. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/references#api">Learn more</a>.`,
+                value: 'https://cloud.appwrite.io/v1',
+                placeholder: 'https://cloud.appwrite.io/v1',
+                required: false,
+                type: 'url'
+            },
+            {
+                name: 'APPWRITE_DATABASE_ID',
+                description: `The ID of the database where the responses are stored.  <a class="u-bold" target="_blank" href="https://appwrite.io/docs/products/databases/databases">Learn more</a>.`,
+                placeholder: 'my-database',
+                required: true,
+                type: 'text'
+            },
+            {
+                name: 'APPWRITE_COLLECTION_ID',
+                description: `The ID of the collection where the responses are stored. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/products/databases/collections">Learn more</a>.`,
+                placeholder: 'my-collection',
+                required: true,
+                type: 'text'
+            },
+            {
+                name: 'APPWRITE_BUCKET_ID',
+                description: `The ID of the bucket where audio is stored. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/products/storage/buckets">Learn more</a>.`,
+                placeholder: 'generated_speech',
+                required: true,
+                type: 'text'
+            }
+        ]
     }
 ];
 
