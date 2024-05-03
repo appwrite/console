@@ -1889,38 +1889,3 @@ export type MarketplaceTemplate = {
     providerBranch: string;
     variables: Variable[];
 };
-
-/*
-Template:
-    {
-        "icon": "algolia",
-        "id": "sync-with-algolia",
-        "name": "Sync with Algolia",
-        "tagline": "Search your Appwrite Database with Algolia.",
-        "permissions": ["any"],
-        "events": [ "users.*.create" ],
-        "cron": "0 * * * *",
-        "timeout": 15,
-        "runtimes": [
-            {
-                "name": "node-18",
-                "entrypoint": "src/main.js",
-                "commands": "npm install"
-            }
-        ],
-        "instructions": "# Some markdown stuff",
-        "vcsProvider": "github",
-        "vcsRepositoryName": "templates-for-node",
-        "vcsOwnerName": "loks0n",
-        "vcsRootDirectory": "sync-with-algolia",
-        "variables": [
-            {
-                "name": "ALGOLIA_API_KEY",
-                "description": "Algolia read-write API key.",
-                "value": "",
-                "placeholder": "sk_1df...h9jef",
-                "required": true
-            }
-        ]
-    }
-*/
