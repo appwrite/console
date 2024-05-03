@@ -10,7 +10,7 @@
     import { initializeStripe, isStripeInitialized, submitStripeCard } from '$lib/stores/stripe';
     import { sdk } from '$lib/stores/sdk';
     import { toLocaleDate } from '$lib/helpers/date';
-    import { showUsageRatesModal } from '$lib/stores/billing';
+    import { plansInfo, showUsageRatesModal } from '$lib/stores/billing';
     import { PaymentBoxes } from '$lib/components/billing';
 
     const today = new Date();
@@ -74,9 +74,11 @@
 <WizardStep beforeSubmit={handleSubmit}>
     <svelte:fragment slot="title">Payment details</svelte:fragment>
     <svelte:fragment slot="subtitle">
-        Add a payment method to your organization. You will not be charged until your trial ends on <b
-            >{toLocaleDate(billingPayDate.toString())}</b
-        >.
+        Add a payment method to your organization. {#if $plansInfo.get($createOrganization.billingPlan)?.trialDays}You
+            will not be charged until your trial ends on <b
+                >{toLocaleDate(billingPayDate.toString())}</b
+            >.
+        {/if}
     </svelte:fragment>
 
     <FormList class="u-margin-block-start-8">

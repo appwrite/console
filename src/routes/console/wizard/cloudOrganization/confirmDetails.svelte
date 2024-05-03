@@ -48,12 +48,18 @@
     $: if ($createOrganization.billingPlan === BillingPlan.STARTER) {
         $createOrganizationFinalAction = 'Create organization';
     }
+
+    $: if (plan?.trialDays) {
+        $createOrganizationFinalAction = 'Start trial';
+    }
 </script>
 
 <WizardStep beforeSubmit={handleBefore}>
-    <svelte:fragment slot="title">Confirm your details</svelte:fragment>
+    <svelte:fragment slot="title">Details</svelte:fragment>
     <svelte:fragment slot="subtitle">
-        Confirm the details of your new organization and start your free trial.
+        Confirm the details of your new organization{!plan.trialDays
+            ? '.'
+            : ' and start your free trial.'}
     </svelte:fragment>
 
     <p class="body-text-1 u-bold">Organization name</p>
@@ -123,9 +129,9 @@
         {#if $createOrganization.billingPlan !== BillingPlan.STARTER}
             <p class="text u-margin-block-start-16">
                 This amount, and any additional usage fees, will be charged on a recurring 30-day
-                billing cycle after your trial period ends on <b
-                    >{toLocaleDate(billingPayDate.toString())}</b
-                >.
+                billing cycle{!plan.trialDays
+                    ? ''
+                    : ` after your trial period ends on ${toLocaleDate(billingPayDate.toString())}`}.
             </p>
         {/if}
     </Box>

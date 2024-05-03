@@ -21,7 +21,7 @@
             invalidate(Dependencies.FUNCTION_DOMAINS);
             addNotification({
                 message:
-                    $domain.status === 'unverfied'
+                    $domain.status === 'unverified'
                         ? 'Domain certificate has been generated successfully'
                         : 'Domain has been verified successfully',
                 type: 'success'

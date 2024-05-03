@@ -7,7 +7,7 @@
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">Update Permissions</svelte:fragment>
+    <svelte:fragment slot="title">Permissions</svelte:fragment>
     <svelte:fragment slot="subtitle">
         Choose who can access your buckets and files. For more information, check out the
         <a

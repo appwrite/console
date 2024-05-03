@@ -9,6 +9,8 @@
     import { sdk } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
     import { func } from '../store';
+    import { isValueOfStringEnum } from '$lib/helpers/types';
+    import { Runtime } from '@appwrite.io/console';
 
     export let show = false;
     const functionId = $page.params.function;
@@ -18,6 +20,9 @@
 
     const handleSubmit = async () => {
         try {
+            if (!isValueOfStringEnum(Runtime, $func.runtime)) {
+                throw new Error(`Invalid runtime: ${$func.runtime}`);
+            }
             await sdk.forProject.functions.update(
                 functionId,
                 $func.name,

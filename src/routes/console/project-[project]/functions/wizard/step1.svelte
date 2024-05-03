@@ -20,7 +20,7 @@
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">Configuration function</svelte:fragment>
+    <svelte:fragment slot="title">Configuration</svelte:fragment>
     <svelte:fragment slot="subtitle">Create your new Appwrite Function.</svelte:fragment>
     <FormList>
         <InputText

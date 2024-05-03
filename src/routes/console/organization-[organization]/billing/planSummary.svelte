@@ -42,7 +42,9 @@
 
     $: currentPlan = $plansInfo?.get($organization?.billingPlan);
     $: extraUsage = currentInvoice?.amount - currentPlan?.price || 0;
-    $: isTrial = new Date($organization?.billingStartDate).getTime() - today.getTime() > 0;
+    $: isTrial =
+        new Date($organization?.billingStartDate).getTime() - today.getTime() > 0 &&
+        $plansInfo.get($organization.billingPlan)?.trialDays;
 </script>
 
 {#if $organization}
