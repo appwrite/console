@@ -1351,6 +1351,40 @@ export const marketplace: MarketplaceTemplate[] = [
     },
     {
         icon: 'icon-chip',
+        id: 'generate-with-together-ai',
+        name: 'Generate with Together AI',
+        tagline: "Generate text and images using Togther AI's API.",
+        permissions: ['any'],
+        events: [],
+        cron: '',
+        timeout: 300,
+        usecases: ['AI'],
+        runtimes: [
+            ...getRuntimes(
+                TemplateRuntimes.NODE,
+                'npm install',
+                'src/main.js',
+                'node/generate-with-together-ai'
+            )
+        ],
+        instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/generate-with-together-ai">file</a>.`,
+        vcsProvider: 'github',
+        providerRepositoryId: 'templates',
+        providerOwner: 'appwrite',
+        providerBranch: 'main',
+        variables: [
+            {
+                name: 'TOGETHER_API_KEY',
+                description: `A unique key used to authenticate with the Together AI API. <a class="u-bold" target="_blank" href="https://docs.together.ai/reference/authentication-1">Learn more</a>.`,
+                value: '',
+                placeholder: 'd1efb...aec35',
+                required: true,
+                type: 'password'
+            }
+        ]
+    },
+    {
+        icon: 'icon-chip',
         id: 'chat-with-perplexity-ai',
         name: 'Chat with Perplexity AI',
         tagline: 'Create a chatbot using the Perplexity AI API.',
