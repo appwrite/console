@@ -1380,6 +1380,29 @@ export const marketplace: MarketplaceTemplate[] = [
                 placeholder: 'd1efb...aec35',
                 required: true,
                 type: 'password'
+            },
+            {
+                name: 'APPWRITE_API_KEY',
+                description: `The API Key to authenticate against Appwrite's server APIs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/advanced/platform/api-keys">Learn more</a>.`,
+                value: '',
+                placeholder: 'd1efb...aec35',
+                required: true,
+                type: 'password'
+            },
+            {
+                name: 'APPWRITE_ENDPOINT',
+                description: `The URL endpoint of the Appwrite server. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/references#api">Learn more</a>.`,
+                value: 'https://cloud.appwrite.io/v1',
+                placeholder: 'https://cloud.appwrite.io/v1',
+                required: false,
+                type: 'url'
+            },
+            {
+                name: 'APPWRITE_BUCKET_ID',
+                description: `The ID of the bucket where audio is stored. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/products/storage/buckets">Learn more</a>.`,
+                placeholder: 'generated_speech',
+                required: true,
+                type: 'text'
             }
         ]
     },
