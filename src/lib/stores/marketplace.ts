@@ -1697,20 +1697,6 @@ export const marketplace: MarketplaceTemplate[] = [
                 type: 'url'
             },
             {
-                name: 'APPWRITE_DATABASE_ID',
-                description: `The ID of the database where the responses are stored.  <a class="u-bold" target="_blank" href="https://appwrite.io/docs/products/databases/databases">Learn more</a>.`,
-                placeholder: 'my-database',
-                required: true,
-                type: 'text'
-            },
-            {
-                name: 'APPWRITE_COLLECTION_ID',
-                description: `The ID of the collection where the responses are stored. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/products/databases/collections">Learn more</a>.`,
-                placeholder: 'my-collection',
-                required: true,
-                type: 'text'
-            },
-            {
                 name: 'APPWRITE_BUCKET_ID',
                 description: `The ID of the bucket where audio is stored. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/products/storage/buckets">Learn more</a>.`,
                 placeholder: 'generated_speech',
