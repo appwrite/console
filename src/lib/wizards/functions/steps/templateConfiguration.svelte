@@ -25,10 +25,6 @@
                 return allowedRuntimes.includes(runtime.value);
             });
 
-        if (options.length == 1) {
-            $templateConfig.runtime = options[0].value;
-        }
-
         return options;
     }
 </script>
@@ -61,7 +57,7 @@
                 id="runtime"
                 placeholder="Select runtime"
                 required
-                disabled={options.length <= 1}
+                disabled={options.length < 1}
                 {options}
                 bind:value={$templateConfig.runtime} />
         {/await}
