@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { tooltip as tooltipAction } from '$lib/actions/tooltip';
+
     interface $$Props extends Partial<HTMLLabelElement> {
         required?: boolean;
         hideRequired?: boolean;
@@ -31,12 +33,12 @@
 {/if}
 
 {#if tooltip}
-    <button type="button" on:click|preventDefault class="tooltip" aria-label="input tooltip">
+    <button
+        type="button"
+        on:click|preventDefault
+        class="tooltip"
+        aria-label="input tooltip"
+        use:tooltipAction={{ content: tooltip }}>
         <span class="icon-info" aria-hidden="true" style="font-size: var(--icon-size-small)" />
-        <span class="tooltip-popup" role="tooltip">
-            <p class="text">
-                {tooltip}
-            </p>
-        </span>
     </button>
 {/if}
