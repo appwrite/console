@@ -1,13 +1,9 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
-    import SupportOfflineLight from '$lib/images/support/support-offline-light.png';
-    import SupportOfflineDark from '$lib/images/support/support-offline-dark.png';
-    import SupportOnlineLight from '$lib/images/support/support-online-light.png';
-    import SupportOnlineDark from '$lib/images/support/support-online-dark.png';
     import { app } from '$lib/stores/app';
     import { wizard } from '$lib/stores/wizard';
     import SupportWizard from '../../routes/console/supportWizard.svelte';
-    import { isSupportOnline, showSupportModal } from '../../routes/console/wizard/support/store';
+    import { showSupportModal } from '../../routes/console/wizard/support/store';
     import { isCloud } from '$lib/system';
     import { organization } from '$lib/stores/organization';
     import { BillingPlan } from '$lib/constants';
@@ -23,19 +19,6 @@
 
 {#if isCloud}
     <section class="drop-section u-grid u-gap-24 u-padding-24">
-        <div class="u-flex u-main-center">
-            {#if isSupportOnline()}
-                {#if $app.themeInUse === 'light'}
-                    <img src={SupportOnlineLight} alt="Support" height="87" width="230" />
-                {:else}
-                    <img src={SupportOnlineDark} alt="Support" height="87" width="230" />
-                {/if}
-            {:else if $app.themeInUse === 'light'}
-                <img src={SupportOfflineLight} alt="Support" height="87" width="230" />
-            {:else}
-                <img src={SupportOfflineDark} alt="Support" height="87" width="230" />
-            {/if}
-        </div>
         <div>
             <h4 class="eyebrow-heading-3">Premium support</h4>
             {#if isPaid}
