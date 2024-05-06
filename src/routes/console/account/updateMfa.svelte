@@ -24,6 +24,10 @@
         try {
             await sdk.forConsole.account.updateMFA(!$user.mfa);
             await invalidate(Dependencies.ACCOUNT);
+            addNotification({
+                message: `Multi-factor authentication has been ${$user.mfa ? 'enabled' : 'disabled'}`,
+                type: 'success'
+            });
             trackEvent(Submit.AccountUpdateMfa, { mfa: !$user.mfa });
         } catch (error) {
             addNotification({
