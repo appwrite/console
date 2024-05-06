@@ -1,9 +1,24 @@
 <script lang="ts">
+    import { goto, invalidate, preloadData } from '$app/navigation';
     import { base } from '$app/paths';
-    import { LabelCard } from '$lib/components';
+    import { page } from '$app/stores';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { tooltip } from '$lib/actions/tooltip';
+    import { Box, LabelCard } from '$lib/components';
     import { SelectPaymentMethod } from '$lib/components/billing';
-    import { BillingPlan } from '$lib/constants';
-    import { Button, Form, FormList, InputTags, InputText, Label } from '$lib/elements/forms';
+    import ValidateCreditModal from '$lib/components/billing/validateCreditModal.svelte';
+    import { BillingPlan, Dependencies } from '$lib/constants';
+    import {
+        Button,
+        Form,
+        FormList,
+        InputChoice,
+        InputNumber,
+        InputTags,
+        InputText,
+        Label
+    } from '$lib/elements/forms';
+    import { toLocaleDate } from '$lib/helpers/date';
     import { formatCurrency } from '$lib/helpers/numbers';
     import {
         WizardSecondaryContainer,
@@ -11,20 +26,33 @@
         WizardSecondaryFooter,
         WizardSecondaryHeader
     } from '$lib/layout';
-    import type { PaymentList } from '$lib/sdk/billing';
-    import { plansInfo, tierFree, tierPro } from '$lib/stores/billing';
+    import type { Coupon, PaymentList } from '$lib/sdk/billing';
+    import { plansInfo, tierFree, tierPro, tierToPlan } from '$lib/stores/billing';
+    import { addNotification } from '$lib/stores/notifications';
     import { organizationList, type Organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
+    import { ID } from '@appwrite.io/console';
     import { onMount } from 'svelte';
 
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$/i;
     $: anyOrgFree = $organizationList.teams?.find(
         (org) => (org as Organization)?.billingPlan === BillingPlan.STARTER
     );
-
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$/i;
+    const today = new Date();
+    const billingPayDate = new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000);
     let methods: PaymentList;
+    let name: string;
     let billingPlan: BillingPlan = BillingPlan.STARTER;
     let paymentMethodId: string;
+    let collaborators: string[] = [];
+    let couponData: Partial<Coupon> = {
+        code: null,
+        status: null,
+        credits: null
+    };
+    let budgetEnabled = false;
+    let billingBudget: number;
+    let showCreditModal = false;
 
     onMount(async () => {
         if (anyOrgFree) {
@@ -34,9 +62,69 @@
 
     async function loadPaymentMethods() {
         methods = await sdk.forConsole.billing.listPaymentMethods();
-        // initialPaymentMethodId =
-        //     methods.paymentMethods.find((method) => !!method?.last4)?.$id ?? null;
-        // $createOrganization.paymentMethodId = initialPaymentMethodId;
+        paymentMethodId = methods.paymentMethods.find((method) => !!method?.last4)?.$id ?? null;
+    }
+
+    async function create() {
+        try {
+            const org = await sdk.forConsole.billing.createOrganization(
+                ID.unique(),
+                name,
+                billingPlan,
+                paymentMethodId,
+                'billingAddressId'
+            );
+
+            //Add budget
+            if (billingBudget) {
+                await sdk.forConsole.billing.updateBudget(org.$id, billingBudget, [75]);
+            }
+
+            //Add coupon
+            if (couponData?.code) {
+                await sdk.forConsole.billing.addCredit(org.$id, couponData.code);
+                trackEvent(Submit.CreditRedeem);
+            }
+
+            //Add collaborators
+            if (collaborators?.length) {
+                collaborators.forEach(async (collaborator) => {
+                    await sdk.forConsole.teams.createMembership(
+                        org.$id,
+                        ['owner'],
+                        collaborator,
+                        undefined,
+                        undefined,
+                        `${$page.url.origin}/console/organization-${org.$id}`
+                    );
+                });
+            }
+
+            //Add tax ID
+            // if (taxId) {
+            //     await sdk.forConsole.billing.updateTaxId(org.$id, taxId);
+            // }
+
+            trackEvent(Submit.OrganizationCreate, {
+                plan: tierToPlan(billingPlan)?.name,
+                budget_cap_enabled: !!billingBudget,
+                members_invited: collaborators?.length
+            });
+
+            await invalidate(Dependencies.ACCOUNT);
+            await preloadData(`${base}/console/organization-${org.$id}`);
+            await goto(`${base}/console/organization-${org.$id}`);
+            addNotification({
+                type: 'success',
+                message: `${name ?? 'Organization'} has been created`
+            });
+        } catch (e) {
+            addNotification({
+                type: 'error',
+                message: e.message
+            });
+            trackError(e, Submit.OrganizationCreate);
+        }
     }
 
     $: freePlan = $plansInfo.get(BillingPlan.STARTER);
@@ -44,6 +132,15 @@
     $: if (billingPlan === BillingPlan.PRO) {
         loadPaymentMethods();
     }
+    $: currentPlan = $plansInfo.get(billingPlan);
+    $: extraSeatsCost = (collaborators?.length ?? 0) * (currentPlan?.addons?.member?.price ?? 0);
+    $: grossCost = currentPlan.price + extraSeatsCost;
+    $: estimatedTotal =
+        couponData?.status === 'active'
+            ? grossCost - couponData.credits >= 0
+                ? grossCost - couponData.credits
+                : 0
+            : grossCost;
 </script>
 
 <svelte:head>
@@ -53,9 +150,14 @@
 <WizardSecondaryContainer>
     <WizardSecondaryHeader href={`${base}/console`}>Create organization</WizardSecondaryHeader>
     <WizardSecondaryContent>
-        <Form onSubmit={() => console.log('test')}>
+        <Form onSubmit={create}>
             <FormList>
-                <InputText label="Name" placeholder="Enter name" id="name" required />
+                <InputText
+                    bind:value={name}
+                    label="Name"
+                    placeholder="Enter name"
+                    id="name"
+                    required />
             </FormList>
             <Label class="u-margin-block-start-16">Select plan</Label>
             <p class="text">
@@ -110,6 +212,7 @@
             {#if billingPlan === BillingPlan.PRO}
                 <FormList class="u-margin-block-start-16">
                     <InputTags
+                        bind:tags={collaborators}
                         label="Invite members by email"
                         tooltip="Invited members will have access to all services and payment data within your organization"
                         placeholder="Enter email address(es)"
@@ -119,20 +222,107 @@
                     <SelectPaymentMethod bind:methods bind:value={paymentMethodId}
                     ></SelectPaymentMethod>
                 </FormList>
-                <Button text noMargin class="u-margin-block-start-16">
-                    <span class="icon-plus"></span> <span class="text">Add credits</span>
-                </Button>
+                {#if !couponData?.code}
+                    <Button
+                        text
+                        noMargin
+                        class="u-margin-block-start-16"
+                        on:click={() => (showCreditModal = true)}>
+                        <span class="icon-plus"></span> <span class="text">Add credits</span>
+                    </Button>
+                {/if}
             {/if}
         </Form>
         <svelte:fragment slot="aside">
-            <div class="card">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Recusandae, incidunt!
-            </div>
+            {#if billingPlan !== BillingPlan.STARTER}
+                <Box class="u-margin-block-start-32 u-flex u-flex-vertical u-gap-16" radius="small">
+                    <span class="u-flex u-main-space-between">
+                        <p class="text">{currentPlan.name} plan</p>
+                        <p class="text">{formatCurrency(currentPlan.price)}</p>
+                    </span>
+                    <span class="u-flex u-main-space-between">
+                        <p class="text">Additional seats ({collaborators?.length})</p>
+                        <p class="text">
+                            {formatCurrency(extraSeatsCost)}
+                        </p>
+                    </span>
+                    {#if couponData?.status === 'active'}
+                        <span class="u-flex u-main-space-between">
+                            <div class="u-flex u-cross-center u-gap-4">
+                                <p class="text">
+                                    <span
+                                        class="icon-tag u-color-text-success"
+                                        aria-hidden="true" />
+                                    {couponData.code.toUpperCase()}
+                                </p>
+                                <button
+                                    type="button"
+                                    class="button is-text is-only-icon"
+                                    style="--button-size:1.5rem;"
+                                    aria-label="Close"
+                                    title="Close"
+                                    on:click={() =>
+                                        (couponData = {
+                                            code: null,
+                                            status: null,
+                                            credits: null
+                                        })}>
+                                    <span class="icon-x" aria-hidden="true" />
+                                </button>
+                            </div>
+                            <p
+                                class="inline-tag"
+                                use:tooltip={{ content: formatCurrency(couponData.credits) }}>
+                                Credits applied
+                            </p>
+                        </span>
+                    {/if}
+                    <div class="u-sep-block-start" />
+                    <span class="u-flex u-main-space-between">
+                        <p class="text">Estimated total</p>
+                        <p class="text">
+                            {formatCurrency(estimatedTotal)}
+                        </p>
+                    </span>
+
+                    {@const trialEndDate = new Date(
+                        billingPayDate.getTime() + currentPlan.trialDays * 24 * 60 * 60 * 1000
+                    )}
+                    <p class="text u-margin-block-start-16">
+                        Your payment method will be charged this amount plus usage fees every 30
+                        days {!currentPlan.trialDays
+                            ? `starting ${toLocaleDate(billingPayDate.toString())}`
+                            : ` after your trial period ends on ${toLocaleDate(trialEndDate.toString())}`}.
+                    </p>
+                    <FormList>
+                        <InputChoice
+                            type="switchbox"
+                            id="budget"
+                            label="Budget cap"
+                            tooltip="If enabled, you will be notified when your spending reaches 75% of the set cap. Update cap alerts in your organization settings."
+                            fullWidth
+                            bind:value={budgetEnabled}>
+                            {#if budgetEnabled}
+                                <div class="u-margin-block-start-16">
+                                    <InputNumber
+                                        id="budget"
+                                        label="Budget cap (USD)"
+                                        placeholder="0"
+                                        min={0}
+                                        bind:value={billingBudget} />
+                                </div>
+                            {/if}
+                        </InputChoice>
+                    </FormList>
+                </Box>
+            {/if}
         </svelte:fragment>
     </WizardSecondaryContent>
 
     <WizardSecondaryFooter>
-        <Button href={`${base}/console`} secondary>Cancel</Button>
-        <Button on:click>Create organization</Button>
+        <Button fullWidthMobile href={`${base}/console`} secondary>Cancel</Button>
+        <Button fullWidthMobile on:click>Create organization</Button>
     </WizardSecondaryFooter>
 </WizardSecondaryContainer>
+
+<ValidateCreditModal bind:show={showCreditModal} bind:couponData />

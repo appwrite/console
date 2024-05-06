@@ -3,9 +3,9 @@
     import type { PaymentList, PaymentMethodData } from '$lib/sdk/billing';
     import { sdk } from '$lib/stores/sdk';
     import { hasStripePublicKey, isCloud } from '$lib/system';
-    import PaymentModal from '$routes/console/account/payments/paymentModal.svelte';
     import { onMount } from 'svelte';
     import { Card, CreditCardBrandImage } from '..';
+    import PaymentModal from './paymentModal.svelte';
 
     export let methods: PaymentList;
     export let value: string;
@@ -30,6 +30,7 @@
     <InputSelectSearch
         id="method"
         label="Payment method"
+        placeholder="Select payment method"
         bind:value
         options={filteredMethods.map((method) => {
             return {
@@ -48,6 +49,12 @@
                 </span>
             </span>
         </span>
+        <svelte:fragment slot="end">
+            <Button text on:click={() => (showPaymentModal = true)}>
+                <span class="icon-plus"></span>
+                <span class="text">Add new payment method</span>
+            </Button>
+        </svelte:fragment>
     </InputSelectSearch>
 {:else}
     <Card isDashed style="--p-card-padding: 1rem; --p-card-bg-color: transparent" isTile>
