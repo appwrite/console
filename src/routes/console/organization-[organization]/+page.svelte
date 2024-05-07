@@ -30,7 +30,6 @@
     import { readOnly } from '$lib/stores/billing';
     import type { RegionList } from '$lib/sdk/billing';
     import { onMount } from 'svelte';
-    import CreateOrganizationCloud from '../createOrganizationCloud.svelte';
     import { organization } from '$lib/stores/organization';
 
     export let data;
@@ -125,7 +124,7 @@
             if ($page.url.searchParams.has('type')) {
                 const paramType = $page.url.searchParams.get('type');
                 if (paramType === 'createPro') {
-                    wizard.start(CreateOrganizationCloud);
+                    goto(`${base}/console/create-organization`);
                 }
             }
         }

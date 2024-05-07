@@ -61,6 +61,28 @@
     let showCreditModal = false;
 
     onMount(async () => {
+        if ($page.url.searchParams.has('coupon')) {
+            const coupon = $page.url.searchParams.get('coupon');
+            try {
+                const response = await sdk.forConsole.billing.getCoupon(coupon);
+                couponData = response;
+            } catch (e) {
+                couponData = {
+                    code: null,
+                    status: null,
+                    credits: null
+                };
+            }
+        }
+        if ($page.url.searchParams.has('name')) {
+            name = $page.url.searchParams.get('name');
+        }
+        if ($page.url.searchParams.has('plan')) {
+            const plan = $page.url.searchParams.get('plan');
+            if (plan && plan in BillingPlan) {
+                billingPlan = plan as BillingPlan;
+            }
+        }
         if (anyOrgFree) {
             billingPlan = BillingPlan.PRO;
         }

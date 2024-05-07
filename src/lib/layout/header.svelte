@@ -21,7 +21,6 @@
     import { sdk } from '$lib/stores/sdk';
     import { isCloud } from '$lib/system';
     import { wizard } from '$lib/stores/wizard';
-    import CreateOrganizationCloud from '$routes/console/createOrganizationCloud.svelte';
     import { Feedback } from '$lib/components/feedback';
     import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
     import { BillingPlan } from '$lib/constants';
@@ -56,7 +55,7 @@
     function createOrg() {
         showDropdown = false;
         if (isCloud) {
-            wizard.start(CreateOrganizationCloud);
+            goto(`${base}/console/create-organization`);
         } else newOrgModal.set(true);
     }
 
