@@ -33,6 +33,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { ID } from '@appwrite.io/console';
     import { onMount } from 'svelte';
+    import { writable } from 'svelte/store';
 
     $: anyOrgFree = $organizationList.teams?.find(
         (org) => (org as Organization)?.billingPlan === BillingPlan.STARTER
@@ -40,6 +41,10 @@
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$/i;
     const today = new Date();
     const billingPayDate = new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000);
+
+    let formComponent: Form;
+    let isSubmitting = writable(false);
+
     let methods: PaymentList;
     let name: string;
     let billingPlan: BillingPlan = BillingPlan.STARTER;
@@ -50,6 +55,7 @@
         status: null,
         credits: null
     };
+    let taxId: string;
     let budgetEnabled = false;
     let billingBudget: number;
     let showCreditModal = false;
@@ -67,43 +73,54 @@
 
     async function create() {
         try {
-            const org = await sdk.forConsole.billing.createOrganization(
-                ID.unique(),
-                name,
-                billingPlan,
-                paymentMethodId,
-                'billingAddressId'
-            );
+            let org: Organization;
+            if (billingPlan === BillingPlan.STARTER) {
+                org = await sdk.forConsole.billing.createOrganization(
+                    ID.unique(),
+                    name,
+                    BillingPlan.STARTER,
+                    null,
+                    null
+                );
+            } else {
+                org = await sdk.forConsole.billing.createOrganization(
+                    ID.unique(),
+                    name,
+                    billingPlan,
+                    paymentMethodId,
+                    '663a2ebf0ac1f0348a58' //TODO: change hardcoded address when it's not mandatory anymore
+                );
 
-            //Add budget
-            if (billingBudget) {
-                await sdk.forConsole.billing.updateBudget(org.$id, billingBudget, [75]);
+                //Add budget
+                if (billingBudget) {
+                    await sdk.forConsole.billing.updateBudget(org.$id, billingBudget, [75]);
+                }
+
+                //Add coupon
+                if (couponData?.code) {
+                    await sdk.forConsole.billing.addCredit(org.$id, couponData.code);
+                    trackEvent(Submit.CreditRedeem);
+                }
+
+                //Add collaborators
+                if (collaborators?.length) {
+                    collaborators.forEach(async (collaborator) => {
+                        await sdk.forConsole.teams.createMembership(
+                            org.$id,
+                            ['owner'],
+                            collaborator,
+                            undefined,
+                            undefined,
+                            `${$page.url.origin}/console/organization-${org.$id}`
+                        );
+                    });
+                }
+
+                // Add tax ID
+                if (taxId) {
+                    await sdk.forConsole.billing.updateTaxId(org.$id, taxId);
+                }
             }
-
-            //Add coupon
-            if (couponData?.code) {
-                await sdk.forConsole.billing.addCredit(org.$id, couponData.code);
-                trackEvent(Submit.CreditRedeem);
-            }
-
-            //Add collaborators
-            if (collaborators?.length) {
-                collaborators.forEach(async (collaborator) => {
-                    await sdk.forConsole.teams.createMembership(
-                        org.$id,
-                        ['owner'],
-                        collaborator,
-                        undefined,
-                        undefined,
-                        `${$page.url.origin}/console/organization-${org.$id}`
-                    );
-                });
-            }
-
-            //Add tax ID
-            // if (taxId) {
-            //     await sdk.forConsole.billing.updateTaxId(org.$id, taxId);
-            // }
 
             trackEvent(Submit.OrganizationCreate, {
                 plan: tierToPlan(billingPlan)?.name,
@@ -150,7 +167,7 @@
 <WizardSecondaryContainer>
     <WizardSecondaryHeader href={`${base}/console`}>Create organization</WizardSecondaryHeader>
     <WizardSecondaryContent>
-        <Form onSubmit={create}>
+        <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
             <FormList>
                 <InputText
                     bind:value={name}
@@ -219,7 +236,7 @@
                         validityRegex={emailRegex}
                         validityMessage="Invalid email address"
                         id="members" />
-                    <SelectPaymentMethod bind:methods bind:value={paymentMethodId}
+                    <SelectPaymentMethod bind:methods bind:value={paymentMethodId} bind:taxId
                     ></SelectPaymentMethod>
                 </FormList>
                 {#if !couponData?.code}
@@ -253,7 +270,13 @@
                                     <span
                                         class="icon-tag u-color-text-success"
                                         aria-hidden="true" />
-                                    {couponData.code.toUpperCase()}
+                                    {#if couponData.credits > 100}
+                                        {couponData.code.toUpperCase()}
+                                    {:else}
+                                        <span
+                                            use:tooltip={{ content: couponData.code.toUpperCase() }}
+                                            >Credits applied</span>
+                                    {/if}
                                 </p>
                                 <button
                                     type="button"
@@ -270,11 +293,16 @@
                                     <span class="icon-x" aria-hidden="true" />
                                 </button>
                             </div>
-                            <p
-                                class="inline-tag"
-                                use:tooltip={{ content: formatCurrency(couponData.credits) }}>
-                                Credits applied
-                            </p>
+                            {#if couponData.credits > 100}
+                                <p
+                                    class="inline-tag"
+                                    use:tooltip={{ content: formatCurrency(couponData.credits) }}>
+                                    Credits applied
+                                </p>
+                            {:else}
+                                <span class="u-color-text-success"
+                                    >-{formatCurrency(couponData.credits)}</span>
+                            {/if}
                         </span>
                     {/if}
                     <div class="u-sep-block-start" />
@@ -298,7 +326,7 @@
                         <InputChoice
                             type="switchbox"
                             id="budget"
-                            label="Budget cap"
+                            label="Enable budget cap"
                             tooltip="If enabled, you will be notified when your spending reaches 75% of the set cap. Update cap alerts in your organization settings."
                             fullWidth
                             bind:value={budgetEnabled}>
@@ -321,7 +349,12 @@
 
     <WizardSecondaryFooter>
         <Button fullWidthMobile href={`${base}/console`} secondary>Cancel</Button>
-        <Button fullWidthMobile on:click>Create organization</Button>
+        <Button
+            fullWidthMobile
+            on:click={() => formComponent.triggerSubmit()}
+            disabled={$isSubmitting}>
+            Create organization
+        </Button>
     </WizardSecondaryFooter>
 </WizardSecondaryContainer>
 

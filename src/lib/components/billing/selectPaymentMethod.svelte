@@ -1,15 +1,18 @@
 <script lang="ts">
-    import { Button, InputSelectSearch } from '$lib/elements/forms';
+    import { Button, InputChoice, InputSelectSearch, InputText } from '$lib/elements/forms';
     import type { PaymentList, PaymentMethodData } from '$lib/sdk/billing';
     import { sdk } from '$lib/stores/sdk';
     import { hasStripePublicKey, isCloud } from '$lib/system';
     import { onMount } from 'svelte';
     import { Card, CreditCardBrandImage } from '..';
     import PaymentModal from './paymentModal.svelte';
+    import { capitalize } from '$lib/helpers/string';
 
     export let methods: PaymentList;
     export let value: string;
+    export let taxId = '';
 
+    let showTaxId = false;
     let showPaymentModal = false;
 
     async function cardSaved(event: CustomEvent<PaymentMethodData>) {
@@ -35,21 +38,34 @@
         options={filteredMethods.map((method) => {
             return {
                 value: method.$id,
-                label: `ending in ${method.last4}`,
+                label: `${capitalize(method.brand)} ending in ${method.last4}`,
                 data: [method.brand]
             };
         })}
         interactiveOutput
         let:option={o}>
+        <svelte:fragment slot="output" let:option={o}>
+            <output class="input-text">
+                <span class="u-flex u-gap-16 u-flex-vertical">
+                    <span class="u-flex u-gap-16">
+                        <span class="u-flex u-cross-center u-gap-8" style="padding-inline:0.25rem">
+                            <span>{o.label}</span>
+                            <CreditCardBrandImage brand={o.data?.toString()} />
+                        </span>
+                    </span>
+                </span>
+            </output>
+        </svelte:fragment>
+
         <span class="u-flex u-gap-16 u-flex-vertical">
             <span class="u-flex u-gap-16">
                 <span class="u-flex u-cross-center u-gap-8" style="padding-inline:0.25rem">
-                    <span> <span class="u-capitalize">{o.data}</span> {o.label}</span>
+                    <span>{o.label}</span>
                     <CreditCardBrandImage brand={o.data?.toString()} />
                 </span>
             </span>
         </span>
-        <svelte:fragment slot="end">
+        <svelte:fragment slot="listEnd">
             <Button text on:click={() => (showPaymentModal = true)}>
                 <span class="icon-plus"></span>
                 <span class="text">Add new payment method</span>
@@ -71,5 +87,18 @@
 {/if}
 
 {#if showPaymentModal && isCloud && hasStripePublicKey}
-    <PaymentModal bind:show={showPaymentModal} on:submit={cardSaved} />
+    <PaymentModal bind:show={showPaymentModal} on:submit={cardSaved}>
+        <InputChoice
+            type="checkbox"
+            id="taxIdCheck"
+            label="I'm purchasing as a bussiness"
+            fullWidth
+            bind:value={showTaxId}>
+            {#if showTaxId}
+                <div class="u-margin-block-start-16">
+                    <InputText id="taxId" label="Tax ID" placeholder="Tax ID" bind:value={taxId} />
+                </div>
+            {/if}
+        </InputChoice>
+    </PaymentModal>
 {/if}

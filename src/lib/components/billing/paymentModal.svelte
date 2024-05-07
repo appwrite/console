@@ -70,6 +70,7 @@
 
 <FakeModal bind:show title="Add payment method" bind:error onSubmit={handleSubmit}>
     <FormList gap={16}>
+        <slot />
         <InputText
             id="name"
             label="Cardholder name"

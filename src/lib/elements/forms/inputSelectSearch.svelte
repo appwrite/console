@@ -194,11 +194,11 @@
             {/each}
         </svelte:fragment>
         <svelte:fragment slot="other">
-            {#if $$slots.end}
+            {#if $$slots.listEnd}
                 <section class="drop-section">
                     <ul class="drop-list">
                         <li class="drop-list-item">
-                            <slot name="end" />
+                            <slot name="listEnd" />
                         </li>
                     </ul>
                 </section>
