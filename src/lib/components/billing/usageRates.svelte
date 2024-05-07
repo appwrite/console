@@ -10,18 +10,17 @@
         TableRow
     } from '$lib/elements/table';
     import { toLocaleDate } from '$lib/helpers/date';
-    import { organization } from '$lib/stores/organization';
-    import { createOrganization } from './store';
-    import { plansInfo, type Tier } from '$lib/stores/billing';
+    import { organization, type Organization } from '$lib/stores/organization';
+    import { plansInfo } from '$lib/stores/billing';
     import { abbreviateNumber, formatCurrency } from '$lib/helpers/numbers';
     import { BillingPlan } from '$lib/constants';
 
     export let show = false;
-    export let tier: Tier;
+    export let org: Organization;
 
-    $: plan = $plansInfo?.get(tier);
+    $: plan = $plansInfo?.get(org.billingPlan);
 
-    $: nextDate = $createOrganization?.name
+    $: nextDate = org?.name
         ? new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1).toString()
         : $organization?.billingNextInvoiceDate;
 
@@ -50,7 +49,7 @@
         }
     ];
 
-    $: isFree = tier === BillingPlan.STARTER;
+    $: isFree = org.billingPlan === BillingPlan.STARTER;
 </script>
 
 <Modal bind:show size="big" headerDivider={false} title="Usage rates">
@@ -58,12 +57,12 @@
         Usage on the Starter plan is limited for the following resources. Next billing period: {toLocaleDate(
             nextDate
         )}.
-    {:else if tier === BillingPlan.PRO}
+    {:else if org.billingPlan === BillingPlan.PRO}
         <p>
             Usage on the Pro plan will be charged at the end of each billing period at the following
             rates. Next billing period: {toLocaleDate(nextDate)}.
         </p>
-    {:else if tier === BillingPlan.SCALE}
+    {:else if org.billingPlan === BillingPlan.SCALE}
         <p>
             Usage on the Scale plan will be charged at the end of each billing period at the
             following rates. Next billing period: {toLocaleDate(nextDate)}.
