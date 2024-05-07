@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { goto, invalidate, preloadData } from '$app/navigation';
+    import { afterNavigate, goto, invalidate, preloadData } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
@@ -41,6 +41,13 @@
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$/i;
     const today = new Date();
     const billingPayDate = new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000);
+
+    let previousPage: string = `${base}/console`;
+
+    afterNavigate(({ from }) => {
+        previousPage = from?.url?.pathname || previousPage;
+        console.log(previousPage);
+    });
 
     let formComponent: Form;
     let isSubmitting = writable(false);
@@ -96,6 +103,7 @@
     async function create() {
         try {
             let org: Organization;
+
             if (billingPlan === BillingPlan.STARTER) {
                 org = await sdk.forConsole.billing.createOrganization(
                     ID.unique(),
@@ -105,6 +113,17 @@
                     null
                 );
             } else {
+                // Create free organization if coming from onboarding
+                if (previousPage.includes('/console/onboarding') && !anyOrgFree) {
+                    await sdk.forConsole.billing.createOrganization(
+                        ID.unique(),
+                        'Personal Projects',
+                        BillingPlan.STARTER,
+                        null,
+                        null
+                    );
+                }
+
                 org = await sdk.forConsole.billing.createOrganization(
                     ID.unique(),
                     name,
@@ -187,7 +206,7 @@
 </svelte:head>
 
 <WizardSecondaryContainer>
-    <WizardSecondaryHeader href={`${base}/console`}>Create organization</WizardSecondaryHeader>
+    <WizardSecondaryHeader href={previousPage}>Create organization</WizardSecondaryHeader>
     <WizardSecondaryContent>
         <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
             <FormList>
