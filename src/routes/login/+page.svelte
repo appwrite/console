@@ -18,6 +18,7 @@
     import { page } from '$app/stores';
     import { OAuthProvider } from '@appwrite.io/console';
     import { redirectTo } from '$routes/store';
+    import { user } from '$lib/stores/user';
 
     let mail: string, pass: string, disabled: boolean;
 
@@ -26,17 +27,18 @@
             disabled = true;
             await sdk.forConsole.account.createEmailPasswordSession(mail, pass);
             await invalidate(Dependencies.ACCOUNT);
-            addNotification({
-                type: 'success',
-                message: 'Successfully logged in.'
-            });
+            trackEvent(Submit.AccountLogin);
+            if ($user) {
+                addNotification({
+                    type: 'success',
+                    message: 'Successfully logged in.'
+                });
+            }
             if ($redirectTo) {
                 window.location.href = $redirectTo;
                 return;
             }
 
-            await invalidate(Dependencies.ACCOUNT);
-            trackEvent(Submit.AccountCreate);
 
             if ($page.url.searchParams) {
                 const redirect = $page.url.searchParams.get('redirect');

@@ -67,6 +67,10 @@
             trackError(error, Submit.AccountRecoveryCodesUpdate);
         }
     }
+
+    $: if (!showRecoveryCodes) {
+        codes = null;
+    }
 </script>
 
 <CardGrid>
@@ -194,7 +198,10 @@
 <DeleteMfa bind:showDelete />
 
 <MfaRecoveryCodes bind:showRecoveryCodes {codes} />
-<MfaRegenerateCodes bind:show={showRegenerateRecoveryCodes} {regenerateRecoveryCodes} />
+<MfaRegenerateCodes
+    bind:show={showRegenerateRecoveryCodes}
+    {regenerateRecoveryCodes}
+    factors={$factors} />
 
 <style lang="scss">
     @import '@appwrite.io/pink/src/abstract/variables/_devices.scss';
