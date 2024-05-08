@@ -3,22 +3,15 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { tooltip } from '$lib/actions/tooltip';
-    import { Box, LabelCard } from '$lib/components';
-    import { SelectPaymentMethod } from '$lib/components/billing';
+    import { LabelCard } from '$lib/components';
+    import {
+        EstimatedTotalBox,
+        PlanComparisonBox,
+        SelectPaymentMethod
+    } from '$lib/components/billing';
     import ValidateCreditModal from '$lib/components/billing/validateCreditModal.svelte';
     import { BillingPlan, Dependencies } from '$lib/constants';
-    import {
-        Button,
-        Form,
-        FormList,
-        InputChoice,
-        InputNumber,
-        InputTags,
-        InputText,
-        Label
-    } from '$lib/elements/forms';
-    import { toLocaleDate } from '$lib/helpers/date';
+    import { Button, Form, FormList, InputTags, InputText, Label } from '$lib/elements/forms';
     import { formatCurrency } from '$lib/helpers/numbers';
     import {
         WizardSecondaryContainer,
@@ -39,9 +32,6 @@
         (org) => (org as Organization)?.billingPlan === BillingPlan.STARTER
     );
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$/i;
-    const today = new Date();
-    const billingPayDate = new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000);
-
     let previousPage: string = `${base}/console`;
 
     afterNavigate(({ from }) => {
@@ -63,7 +53,7 @@
         credits: null
     };
     let taxId: string;
-    let budgetEnabled = false;
+
     let billingBudget: number;
     let showCreditModal = false;
 
@@ -190,15 +180,6 @@
     $: if (billingPlan === BillingPlan.PRO) {
         loadPaymentMethods();
     }
-    $: currentPlan = $plansInfo.get(billingPlan);
-    $: extraSeatsCost = (collaborators?.length ?? 0) * (currentPlan?.addons?.member?.price ?? 0);
-    $: grossCost = currentPlan.price + extraSeatsCost;
-    $: estimatedTotal =
-        couponData?.status === 'active'
-            ? grossCost - couponData.credits >= 0
-                ? grossCost - couponData.credits
-                : 0
-            : grossCost;
 </script>
 
 <svelte:head>
@@ -293,97 +274,13 @@
         </Form>
         <svelte:fragment slot="aside">
             {#if billingPlan !== BillingPlan.STARTER}
-                <Box class="u-margin-block-start-32 u-flex u-flex-vertical u-gap-16" radius="small">
-                    <span class="u-flex u-main-space-between">
-                        <p class="text">{currentPlan.name} plan</p>
-                        <p class="text">{formatCurrency(currentPlan.price)}</p>
-                    </span>
-                    <span class="u-flex u-main-space-between">
-                        <p class="text">Additional seats ({collaborators?.length})</p>
-                        <p class="text">
-                            {formatCurrency(extraSeatsCost)}
-                        </p>
-                    </span>
-                    {#if couponData?.status === 'active'}
-                        <span class="u-flex u-main-space-between">
-                            <div class="u-flex u-cross-center u-gap-4">
-                                <p class="text">
-                                    <span
-                                        class="icon-tag u-color-text-success"
-                                        aria-hidden="true" />
-                                    {#if couponData.credits > 100}
-                                        {couponData.code.toUpperCase()}
-                                    {:else}
-                                        <span
-                                            use:tooltip={{ content: couponData.code.toUpperCase() }}
-                                            >Credits applied</span>
-                                    {/if}
-                                </p>
-                                <button
-                                    type="button"
-                                    class="button is-text is-only-icon"
-                                    style="--button-size:1.5rem;"
-                                    aria-label="Close"
-                                    title="Close"
-                                    on:click={() =>
-                                        (couponData = {
-                                            code: null,
-                                            status: null,
-                                            credits: null
-                                        })}>
-                                    <span class="icon-x" aria-hidden="true" />
-                                </button>
-                            </div>
-                            {#if couponData.credits > 100}
-                                <p
-                                    class="inline-tag"
-                                    use:tooltip={{ content: formatCurrency(couponData.credits) }}>
-                                    Credits applied
-                                </p>
-                            {:else}
-                                <span class="u-color-text-success"
-                                    >-{formatCurrency(couponData.credits)}</span>
-                            {/if}
-                        </span>
-                    {/if}
-                    <div class="u-sep-block-start" />
-                    <span class="u-flex u-main-space-between">
-                        <p class="text">Estimated total</p>
-                        <p class="text">
-                            {formatCurrency(estimatedTotal)}
-                        </p>
-                    </span>
-
-                    {@const trialEndDate = new Date(
-                        billingPayDate.getTime() + currentPlan.trialDays * 24 * 60 * 60 * 1000
-                    )}
-                    <p class="text u-margin-block-start-16">
-                        Your payment method will be charged this amount plus usage fees every 30
-                        days {!currentPlan.trialDays
-                            ? `starting ${toLocaleDate(billingPayDate.toString())}`
-                            : ` after your trial period ends on ${toLocaleDate(trialEndDate.toString())}`}.
-                    </p>
-                    <FormList>
-                        <InputChoice
-                            type="switchbox"
-                            id="budget"
-                            label="Enable budget cap"
-                            tooltip="If enabled, you will be notified when your spending reaches 75% of the set cap. Update cap alerts in your organization settings."
-                            fullWidth
-                            bind:value={budgetEnabled}>
-                            {#if budgetEnabled}
-                                <div class="u-margin-block-start-16">
-                                    <InputNumber
-                                        id="budget"
-                                        label="Budget cap (USD)"
-                                        placeholder="0"
-                                        min={0}
-                                        bind:value={billingBudget} />
-                                </div>
-                            {/if}
-                        </InputChoice>
-                    </FormList>
-                </Box>
+                <EstimatedTotalBox
+                    {billingPlan}
+                    {collaborators}
+                    bind:couponData
+                    bind:billingBudget />
+            {:else}
+                <PlanComparisonBox />
             {/if}
         </svelte:fragment>
     </WizardSecondaryContent>
