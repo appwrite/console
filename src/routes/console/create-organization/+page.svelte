@@ -36,7 +36,6 @@
 
     afterNavigate(({ from }) => {
         previousPage = from?.url?.pathname || previousPage;
-        console.log(previousPage);
     });
 
     let formComponent: Form;
