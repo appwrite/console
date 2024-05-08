@@ -958,7 +958,7 @@ export const marketplace: MarketplaceTemplate[] = [
         ]
     },
     {
-        icon: 'icon-chip',
+        icon: 'icon-chat',
         id: 'text-generation-with-huggingface',
         name: 'Text generation',
         tagline: 'Generate text using the Hugging Face inference API.',
@@ -991,7 +991,7 @@ export const marketplace: MarketplaceTemplate[] = [
         ]
     },
     {
-        icon: 'icon-chip',
+        icon: 'icon-translate',
         id: 'language-translation-with-huggingface',
         name: 'Language translation',
         tagline: 'Translate text using the Hugging Face inference API.',
@@ -1024,7 +1024,7 @@ export const marketplace: MarketplaceTemplate[] = [
         ]
     },
     {
-        icon: 'icon-chip',
+        icon: 'icon-eye',
         id: 'image-classification-with-huggingface',
         name: 'Image classification',
         tagline: 'Classify images using the Hugging Face inference API.',
@@ -1097,7 +1097,7 @@ export const marketplace: MarketplaceTemplate[] = [
         ]
     },
     {
-        icon: 'icon-chip',
+        icon: 'icon-eye',
         id: 'object-detection-with-huggingface',
         name: 'Object detection',
         tagline: 'Detect objects in images using the Hugging Face inference API.',
@@ -1170,7 +1170,7 @@ export const marketplace: MarketplaceTemplate[] = [
         ]
     },
     {
-        icon: 'icon-chip',
+        icon: 'icon-text',
         id: 'speech-recognition-with-huggingface',
         name: 'Speech recognition',
         tagline: 'Transcribe audio to text using the Hugging Face inference API.',
@@ -1243,7 +1243,7 @@ export const marketplace: MarketplaceTemplate[] = [
         ]
     },
     {
-        icon: 'icon-chip',
+        icon: 'icon-chat',
         id: 'text-to-speech-with-huggingface',
         name: 'Text to speech',
         tagline: 'Convert text to speech using the Hugging Face inference API.',
@@ -1351,6 +1351,63 @@ export const marketplace: MarketplaceTemplate[] = [
     },
     {
         icon: 'icon-chip',
+        id: 'generate-with-together-ai',
+        name: 'Generate with Together AI',
+        tagline: "Generate text and images using Together AI's API.",
+        permissions: ['any'],
+        events: [],
+        cron: '',
+        timeout: 300,
+        usecases: ['AI'],
+        runtimes: [
+            ...getRuntimes(
+                TemplateRuntimes.NODE,
+                'npm install',
+                'src/main.js',
+                'node/generate-with-together-ai'
+            )
+        ],
+        instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/generate-with-together-ai">file</a>.`,
+        vcsProvider: 'github',
+        providerRepositoryId: 'templates',
+        providerOwner: 'appwrite',
+        providerBranch: 'main',
+        variables: [
+            {
+                name: 'TOGETHER_API_KEY',
+                description: `A unique key used to authenticate with the Together AI API. <a class="u-bold" target="_blank" href="https://docs.together.ai/reference/authentication-1">Learn more</a>.`,
+                value: '',
+                placeholder: 'd1efb...aec35',
+                required: true,
+                type: 'password'
+            },
+            {
+                name: 'APPWRITE_API_KEY',
+                description: `The API Key to authenticate against Appwrite's server APIs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/advanced/platform/api-keys">Learn more</a>.`,
+                value: '',
+                placeholder: 'd1efb...aec35',
+                required: true,
+                type: 'password'
+            },
+            {
+                name: 'APPWRITE_ENDPOINT',
+                description: `The URL endpoint of the Appwrite server. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/references#api">Learn more</a>.`,
+                value: 'https://cloud.appwrite.io/v1',
+                placeholder: 'https://cloud.appwrite.io/v1',
+                required: false,
+                type: 'url'
+            },
+            {
+                name: 'APPWRITE_BUCKET_ID',
+                description: `The ID of the bucket where audio is stored. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/products/storage/buckets">Learn more</a>.`,
+                placeholder: 'generated_speech',
+                required: true,
+                type: 'text'
+            }
+        ]
+    },
+    {
+        icon: 'icon-chip',
         id: 'chat-with-perplexity-ai',
         name: 'Chat with Perplexity AI',
         tagline: 'Create a chatbot using the Perplexity AI API.',
@@ -1424,7 +1481,7 @@ export const marketplace: MarketplaceTemplate[] = [
         ]
     },
     {
-        icon: 'icon-chip',
+        icon: 'icon-document-search',
         id: 'sync-with-pinecone',
         name: 'Sync with Pinecone',
         tagline: "Sync your Appwrite database with Pinecone's vector database.",
@@ -1580,7 +1637,7 @@ export const marketplace: MarketplaceTemplate[] = [
         ]
     },
     {
-        icon: 'icon-chip',
+        icon: 'icon-chat',
         id: 'speak-with-elevenlabs',
         name: 'Speak with ElevenLabs',
         tagline: 'Convert text to speech using the ElevenLabs API.',
@@ -1648,6 +1705,153 @@ export const marketplace: MarketplaceTemplate[] = [
                 type: 'text'
             }
         ]
+    },
+    {
+        icon: 'icon-chip',
+        id: 'speak-with-lmnt',
+        name: 'Speak with LMNT',
+        tagline: 'Convert text to speech using the LMNT API.',
+        permissions: ['any'],
+        cron: '',
+        events: [],
+        timeout: 15,
+        usecases: ['AI'],
+        runtimes: [
+            ...getRuntimes(
+                TemplateRuntimes.NODE,
+                'npm install',
+                'src/main.js',
+                'node/speak-with-lmnt'
+            )
+        ],
+        instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/speak-with-lmnt">file</a>.`,
+        vcsProvider: 'github',
+        providerRepositoryId: 'templates',
+        providerOwner: 'appwrite',
+        providerBranch: 'main',
+        variables: [
+            {
+                name: 'LMNT_API_KEY',
+                description: `A unique key used to authenticate with the LMNT API. <a class="u-bold" target="_blank" href="https://app.lmnt.com/account">Learn more</a>.`,
+                placeholder: 'd03xxxxxxxx26',
+                required: true,
+                type: 'password'
+            },
+            {
+                name: 'APPWRITE_API_KEY',
+                description: `The API Key to authenticate against Appwrite's server APIs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/advanced/platform/api-keys">Learn more</a>.`,
+                value: '',
+                placeholder: 'd1efb...aec35',
+                required: true,
+                type: 'password'
+            },
+            {
+                name: 'APPWRITE_ENDPOINT',
+                description: `The URL endpoint of the Appwrite server. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/references#api">Learn more</a>.`,
+                value: 'https://cloud.appwrite.io/v1',
+                placeholder: 'https://cloud.appwrite.io/v1',
+                required: false,
+                type: 'url'
+            },
+            {
+                name: 'APPWRITE_BUCKET_ID',
+                description: `The ID of the bucket where audio is stored. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/products/storage/buckets">Learn more</a>.`,
+                placeholder: 'generated_speech',
+                required: true,
+                type: 'text'
+            }
+        ]
+    },
+    {
+        icon: 'icon-music-note',
+        id: 'music-generation-with-huggingface',
+        name: 'Music generation',
+        tagline: 'Generate music from a text prompt using the Hugging Face inference API.',
+        permissions: ['any'],
+        events: [],
+        cron: '',
+        timeout: 15,
+        usecases: ['AI'],
+        runtimes: [
+            ...getRuntimes(
+                TemplateRuntimes.NODE,
+                'npm install && npm run setup',
+                'src/main.js',
+                'node/music-generation-with-huggingface'
+            )
+        ],
+        instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/music-generation-with-huggingface">file</a>.`,
+        vcsProvider: 'github',
+        providerRepositoryId: 'templates',
+        providerOwner: 'appwrite',
+        providerBranch: 'main',
+        variables: [
+            {
+                name: 'APPWRITE_API_KEY',
+                description: `The API Key to authenticate against Appwrite's server APIs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/advanced/platform/api-keys">Learn more</a>.`,
+                value: '',
+                placeholder: 'd1efb...aec35',
+                required: true,
+                type: 'password'
+            },
+            {
+                name: 'APPWRITE_ENDPOINT',
+                description: `The URL endpoint of the Appwrite server. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/references#api">Learn more</a>.`,
+                value: 'https://cloud.appwrite.io/v1',
+                placeholder: 'https://cloud.appwrite.io/v1',
+                required: false,
+                type: 'url'
+            },
+            {
+                name: 'APPWRITE_BUCKET_ID',
+                description: `The ID of the bucket where generated music is stored. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/products/storage/buckets">Learn more</a>.`,
+                value: 'generated_music',
+                placeholder: 'generated_music',
+                required: false,
+                type: 'text'
+            },
+            {
+                name: 'HUGGINGFACE_ACCESS_TOKEN',
+                description: `Secret for sending requests to the Hugging Face API. <a class="u-bold" target="_blank" href="https://huggingface.co/docs/api-inference/en/quicktour#get-your-api-token">Learn more</a>.`,
+                placeholder: 'hf_MUvn...',
+                required: true,
+                type: 'password'
+            }
+        ]
+    },
+    {
+        icon: 'icon-chip',
+        id: 'generate-with-fal-ai',
+        name: 'Generate with fal.ai',
+        tagline: "Generate images using fal.ai's API.",
+        permissions: ['any'],
+        events: [],
+        cron: '',
+        timeout: 300,
+        usecases: ['AI'],
+        runtimes: [
+            ...getRuntimes(
+                TemplateRuntimes.NODE,
+                'npm install',
+                'src/main.js',
+                'node/generate-with-fal-ai'
+            )
+        ],
+        instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/generate-with-fal-ai">file</a>.`,
+        vcsProvider: 'github',
+        providerRepositoryId: 'templates',
+        providerOwner: 'appwrite',
+        providerBranch: 'main',
+        variables: [
+            {
+                name: 'FAL_API_KEY',
+                description: `A unique key used to authenticate with the fal.ai API. <a class="u-bold" target="_blank" href="https://fal.ai/docs/authentication/key-based">Learn more</a>.`,
+                value: '',
+                placeholder: 'd1efb...aec35',
+                required: true,
+                type: 'password'
+            }
+        ]
     }
 ];
 
@@ -1685,38 +1889,3 @@ export type MarketplaceTemplate = {
     providerBranch: string;
     variables: Variable[];
 };
-
-/*
-Template:
-    {
-        "icon": "algolia",
-        "id": "sync-with-algolia",
-        "name": "Sync with Algolia",
-        "tagline": "Search your Appwrite Database with Algolia.",
-        "permissions": ["any"],
-        "events": [ "users.*.create" ],
-        "cron": "0 * * * *",
-        "timeout": 15,
-        "runtimes": [
-            {
-                "name": "node-18",
-                "entrypoint": "src/main.js",
-                "commands": "npm install"
-            }
-        ],
-        "instructions": "# Some markdown stuff",
-        "vcsProvider": "github",
-        "vcsRepositoryName": "templates-for-node",
-        "vcsOwnerName": "loks0n",
-        "vcsRootDirectory": "sync-with-algolia",
-        "variables": [
-            {
-                "name": "ALGOLIA_API_KEY",
-                "description": "Algolia read-write API key.",
-                "value": "",
-                "placeholder": "sk_1df...h9jef",
-                "required": true
-            }
-        ]
-    }
-*/
