@@ -118,7 +118,7 @@
                     name,
                     billingPlan,
                     paymentMethodId,
-                    '663a2ebf0ac1f0348a58' //TODO: change hardcoded address when it's not mandatory anymore
+                    null
                 );
 
                 //Add budget
