@@ -20,6 +20,11 @@
     let showRegenerateRecoveryCodes = false;
     let codes: Models.MfaRecoveryCodes = null;
 
+    $: enabledFactors = Object.entries($factors)
+        .filter(([_, enabled]) => enabled)
+        .map(([factor, _]) => factor);
+    $: enabledMethods = enabledFactors.filter((factor) => factor !== 'recoveryCode');
+
     async function updateMfa() {
         try {
             await sdk.forConsole.account.updateMFA(!$user.mfa);
@@ -156,40 +161,44 @@
                     {/if}
                 </div>
 
-                <div class="u-flex-vertical u-gap-16">
-                    <div class="u-sep-block-end" style="padding-block-end: 8px;">
-                        <EyebrowHeading tag="h6" size={3} class="u-normal">Recovery</EyebrowHeading>
-                    </div>
-                    <div
-                        class="method u-flex u-flex-vertical-mobile u-gap-16 u-main-space-between u-sep-block-end"
-                        style="padding-block-end: 16px">
-                        <div class="u-flex u-gap-8">
-                            <div class="avatar is-size-x-small">
-                                <span class="icon-lock-open" aria-hidden="true" />
+                {#if enabledMethods.length > 0}
+                    <div class="u-flex-vertical u-gap-16">
+                        <div class="u-sep-block-end" style="padding-block-end: 8px;">
+                            <EyebrowHeading tag="h6" size={3} class="u-normal"
+                                >Recovery</EyebrowHeading>
+                        </div>
+                        <div
+                            class="method u-flex u-flex-vertical-mobile u-gap-16 u-main-space-between u-sep-block-end"
+                            style="padding-block-end: 16px">
+                            <div class="u-flex u-gap-8">
+                                <div class="avatar is-size-x-small">
+                                    <span class="icon-lock-open" aria-hidden="true" />
+                                </div>
+                                <div class="u-flex-vertical u-gap-4 body-text-2">
+                                    <span class="u-bold">Recovery codes</span>
+                                    <span
+                                        >Use in case you can't receive two-factor authentication
+                                        codes.</span>
+                                </div>
                             </div>
-                            <div class="u-flex-vertical u-gap-4 body-text-2">
-                                <span class="u-bold">Recovery codes</span>
-                                <span
-                                    >Use in case you can't receive two-factor authentication codes.</span>
+                            <div class="method-button">
+                                {#if $factors.recoveryCode}
+                                    <Button
+                                        class="method-button"
+                                        text
+                                        secondary
+                                        on:click={() => (showRegenerateRecoveryCodes = true)}
+                                        >Regenerate</Button>
+                                {:else}
+                                    <Button
+                                        class="method-button"
+                                        secondary
+                                        on:click={createRecoveryCodes}>View</Button>
+                                {/if}
                             </div>
                         </div>
-                        <div class="method-button">
-                            {#if $factors.recoveryCode}
-                                <Button
-                                    class="method-button"
-                                    text
-                                    secondary
-                                    on:click={() => (showRegenerateRecoveryCodes = true)}
-                                    >Regenerate</Button>
-                            {:else}
-                                <Button
-                                    class="method-button"
-                                    secondary
-                                    on:click={createRecoveryCodes}>View</Button>
-                            {/if}
-                        </div>
                     </div>
-                </div>
+                {/if}
             {/if}
         </div>
     </svelte:fragment>
