@@ -24,7 +24,8 @@
     import { addNotification } from '$lib/stores/notifications';
     import { organization, organizationList, type Organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
-    import { ID } from '@appwrite.io/console';
+    import { user } from '$lib/stores/user';
+    import { VARS } from '$lib/system';
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
 
@@ -87,36 +88,113 @@
         paymentMethodId = methods.paymentMethods.find((method) => !!method?.last4)?.$id ?? null;
     }
 
-    async function create() {
-        try {
-            let org: Organization;
+    const feedbackDowngradeOptions = [
+        {
+            value: 'availableFeatures',
+            label: "The available features don't meet my needs"
+        },
+        {
+            value: 'traction',
+            label: "My project isn't getting traction"
+        },
+        {
+            value: 'bugs',
+            label: 'I experienced bugs or unexpected outages while using the console'
+        },
+        {
+            value: 'starter',
+            label: 'The Starter plan is enough for my projects'
+        },
+        {
+            value: 'budget',
+            label: "I don't have the budget"
+        },
+        {
+            value: 'tryOut',
+            label: 'I just wanted to try it out'
+        },
+        {
+            value: 'alternative',
+            label: 'I found an alternative/competitor to meet my needs'
+        },
+        {
+            value: 'other',
+            label: 'Other'
+        }
+    ];
 
-            if (billingPlan === BillingPlan.STARTER) {
-                org = await sdk.forConsole.billing.createOrganization(
-                    ID.unique(),
-                    name,
-                    BillingPlan.STARTER,
-                    null,
-                    null
-                );
-            } else {
-                org = await sdk.forConsole.billing.createOrganization(
-                    ID.unique(),
-                    name,
+    let feedbackDowngradeReason: string;
+    let feedbackMessage: string;
+
+    async function update() {
+        //Downgrade
+        if (billingPlan === BillingPlan.STARTER) {
+            try {
+                await sdk.forConsole.billing.updatePlan(
+                    $organization.$id,
                     billingPlan,
                     paymentMethodId,
-                    '663a2ebf0ac1f0348a58' //TODO: change hardcoded address when it's not mandatory anymore
+                    null
                 );
 
-                //Add budget
-                if (billingBudget) {
-                    await sdk.forConsole.billing.updateBudget(org.$id, billingBudget, [75]);
-                }
+                await fetch(`${VARS.GROWTH_ENDPOINT}/feedback/billing`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        from: tierToPlan($organization.billingPlan).name,
+                        to: tierToPlan(billingPlan).name,
+                        email: $user.email,
+                        reason: feedbackDowngradeOptions.find(
+                            (option) => option.value === feedbackDowngradeReason
+                        )?.label,
+                        orgId: $organization.$id,
+                        userId: $user.$id,
+                        message: feedbackMessage ?? ''
+                    })
+                });
+
+                addNotification({
+                    type: 'success',
+                    isHtml: true,
+                    message: `
+                    <b>${$organization.name}</b> has been changed to ${
+                        tierToPlan(billingPlan).name
+                    } plan.`
+                });
+
+                trackEvent(Submit.OrganizationDowngrade, {
+                    plan: tierToPlan(billingPlan)?.name
+                });
+            } catch (e) {
+                addNotification({
+                    type: 'error',
+                    message: e.message
+                });
+                trackError(
+                    e,
+                    isUpgrade ? Submit.OrganizationUpgrade : Submit.OrganizationDowngrade
+                );
+            }
+        } else {
+            try {
+                const org = await sdk.forConsole.billing.updatePlan(
+                    $organization.$id,
+                    billingPlan,
+                    paymentMethodId,
+                    null
+                );
 
                 //Add coupon
                 if (couponData?.code) {
                     await sdk.forConsole.billing.addCredit(org.$id, couponData.code);
                     trackEvent(Submit.CreditRedeem);
+                }
+
+                //Add budget
+                if (billingBudget) {
+                    await sdk.forConsole.billing.updateBudget(org.$id, billingBudget, [75]);
                 }
 
                 //Add collaborators
@@ -133,33 +211,47 @@
                     });
                 }
 
-                // Add tax ID
+                //Add tax ID
                 if (taxId) {
                     await sdk.forConsole.billing.updateTaxId(org.$id, taxId);
                 }
+
+                await invalidate(Dependencies.ACCOUNT);
+                await invalidate(Dependencies.ORGANIZATION);
+
+                await goto(`/console/organization-${org.$id}`);
+                if (isUpgrade) {
+                    addNotification({
+                        type: 'success',
+                        message: 'Your organization has been upgraded'
+                    });
+                } else {
+                    addNotification({
+                        type: 'success',
+                        isHtml: true,
+                        message: `
+                        <b>${$organization.name}</b> will change to ${
+                            tierToPlan(billingPlan).name
+                        } plan at the end of the current billing cycle.`
+                    });
+                }
+                trackEvent(isUpgrade ? Submit.OrganizationUpgrade : Submit.OrganizationDowngrade, {
+                    plan: tierToPlan(billingPlan)?.name
+                });
+            } catch (e) {
+                addNotification({
+                    type: 'error',
+                    message: e.message
+                });
+                trackError(
+                    e,
+                    isUpgrade ? Submit.OrganizationUpgrade : Submit.OrganizationDowngrade
+                );
             }
-
-            trackEvent(Submit.OrganizationCreate, {
-                plan: tierToPlan(billingPlan)?.name,
-                budget_cap_enabled: !!billingBudget,
-                members_invited: collaborators?.length
-            });
-
-            await invalidate(Dependencies.ACCOUNT);
-            await preloadData(`${base}/console/organization-${org.$id}`);
-            await goto(`${base}/console/organization-${org.$id}`);
-            addNotification({
-                type: 'success',
-                message: `${name ?? 'Organization'} has been created`
-            });
-        } catch (e) {
-            addNotification({
-                type: 'error',
-                message: e.message
-            });
-            trackError(e, Submit.OrganizationCreate);
         }
     }
+
+    $: isUpgrade = billingPlan > $organization.billingPlan;
 
     $: freePlan = $plansInfo.get(BillingPlan.STARTER);
     $: proPlan = $plansInfo.get(BillingPlan.PRO);
@@ -175,7 +267,7 @@
 <WizardSecondaryContainer>
     <WizardSecondaryHeader href={previousPage}>Change plan</WizardSecondaryHeader>
     <WizardSecondaryContent>
-        <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
+        <Form bind:this={formComponent} onSubmit={update} bind:isSubmitting>
             <Label class="u-margin-block-start-16">Select plan</Label>
             <p class="text">
                 For more details on our plans, visit our
