@@ -39,7 +39,6 @@
                 return;
             }
 
-
             if ($page.url.searchParams) {
                 const redirect = $page.url.searchParams.get('redirect');
                 $page.url.searchParams.delete('redirect');
@@ -57,7 +56,7 @@
                 type: 'error',
                 message: error.message
             });
-            trackError(error, Submit.AccountCreate);
+            trackError(error, Submit.AccountLogin);
         }
     }
 
