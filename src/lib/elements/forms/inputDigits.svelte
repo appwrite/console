@@ -28,7 +28,7 @@
                 autoSubmitted = false;
             }
 
-            if (autoSubmit && value.length === length && !autoSubmitted) {
+            if (element && autoSubmit && value.length === length && !autoSubmitted) {
                 autoSubmitted = true;
                 const firstInputElement = element.querySelector('input');
                 firstInputElement?.form.requestSubmit();
