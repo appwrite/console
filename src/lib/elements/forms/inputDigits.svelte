@@ -24,6 +24,10 @@
         onValueChange: ({ next }) => {
             value = next.join('');
 
+            if (value.length < length) {
+                autoSubmitted = false;
+            }
+
             if (autoSubmit && value.length === length && !autoSubmitted) {
                 autoSubmitted = true;
                 const firstInputElement = element.querySelector('input');
