@@ -25,25 +25,25 @@
     <div class="u-margin-block-start-24">
         {#if selectedTab === 'tier-0'}
             <h3 class="u-bold body-text-1">{plan.name} plan</h3>
-            <ul class="list u-margin-block-start-8">
-                <li class="list-item">
+            <ul class="un-order-list u-margin-block-start-8">
+                <li>
                     Limited to {plan.databases} Database, {plan.buckets} Buckets, {plan.functions} Functions
                     per project
                 </li>
-                <li class="list-item">Limited to 1 organization member</li>
-                <li class="list-item">{plan.bandwidth}GB bandwidth</li>
-                <li class="list-item">{plan.storage}GB storage</li>
-                <li class="list-item">{formatNum(plan.executions)} executions</li>
+                <li>Limited to 1 organization member</li>
+                <li>{plan.bandwidth}GB bandwidth</li>
+                <li>{plan.storage}GB storage</li>
+                <li>{formatNum(plan.executions)} executions</li>
             </ul>
         {:else if selectedTab === 'tier-1'}
             <h3 class="u-bold body-text-1">{plan.name} plan</h3>
-            <ul class="list u-margin-block-start-8">
-                <li class="list-item">Everything in the Starter plan, plus:</li>
-                <li class="list-item">Unlimited databases, buckets, functions</li>
-                <li class="list-item">{plan.bandwidth}GB bandwidth</li>
-                <li class="list-item">{plan.storage}GB storage</li>
-                <li class="list-item">{formatNum(plan.executions)} executions</li>
-                <li class="list-item">Email support</li>
+            <ul class="un-order-list u-margin-block-start-8">
+                <li>Everything in the Starter plan, plus:</li>
+                <li>Unlimited databases, buckets, functions</li>
+                <li>{plan.bandwidth}GB bandwidth</li>
+                <li>{plan.storage}GB storage</li>
+                <li>{formatNum(plan.executions)} executions</li>
+                <li>Email support</li>
             </ul>
         {/if}
     </div>

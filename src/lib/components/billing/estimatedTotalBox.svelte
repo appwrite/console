@@ -28,7 +28,7 @@
             : grossCost;
 </script>
 
-<Box class="u-margin-block-start-32 u-flex u-flex-vertical u-gap-16" radius="small">
+<Box class="u-margin-block-start-32 u-flex u-flex-vertical u-gap-8" radius="small">
     <span class="u-flex u-main-space-between">
         <p class="text">{currentPlan.name} plan</p>
         <p class="text">{formatCurrency(currentPlan.price)}</p>
