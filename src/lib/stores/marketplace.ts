@@ -1679,6 +1679,13 @@ export const marketplace: MarketplaceTemplate[] = [
                 placeholder: 'd03xxxxxxxx26',
                 required: true,
                 type: 'password'
+            },
+            {
+                name: 'ANYSCALE_MAX_TOKENS',
+                description: `The maximum number of tokens that Anyscale responses should contain. <a class="u-bold" target="_blank" href="https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them">Learn more</a>.`,
+                placeholder: '',
+                required: false,
+                type: 'number'
             }
         ]
     }
