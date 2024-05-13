@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { afterNavigate, goto, invalidate, preloadData } from '$app/navigation';
+    import { afterNavigate, goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
@@ -43,7 +43,6 @@
     let isSubmitting = writable(false);
 
     let methods: PaymentList;
-    let name: string;
     let billingPlan: Tier = $organization.billingPlan;
     let paymentMethodId: string;
     let collaborators: string[] = [];
