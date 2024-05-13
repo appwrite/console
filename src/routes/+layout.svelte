@@ -13,9 +13,29 @@
     import { loading, requestedMigration } from './store';
     import { parseIfString } from '$lib/helpers/object';
     import Consent from '$lib/components/consent.svelte';
+    import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
 
     onMount(async () => {
+        // handle sources
+        if (isCloud) {
+            const urlParams = $page.url.searchParams;
+            const ref = urlParams.get('ref');
+            const utmSource = urlParams.get('utm_source');
+            const utmMedium = urlParams.get('utm_medium');
+            const utmCampaign = urlParams.get('utm_campaign');
+            let referrer = document.referrer.length ? document.referrer : null;
+
+            // Skip our own
+            if (referrer?.includes('//appwrite.io')) {
+                referrer = null;
+            }
+
+            if (ref || referrer || utmSource || utmCampaign || utmMedium) {
+                sdk.forConsole.sources.create(ref, referrer, utmSource, utmCampaign, utmMedium);
+            }
+        }
+
         if ($page.url.searchParams.has('migrate')) {
             const migrateData = $page.url.searchParams.get('migrate');
             requestedMigration.set(parseIfString(migrateData) as Record<string, string>);
