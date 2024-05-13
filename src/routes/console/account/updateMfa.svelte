@@ -121,7 +121,15 @@
                         </div>
                         <div class="method-button">
                             {#if $factors.totp}
-                                <Button text on:click={() => (showDelete = true)}>Delete</Button>
+                                <Button
+                                    text
+                                    class="is-not-mobile"
+                                    on:click={() => (showDelete = true)}>Delete</Button>
+                                <Button
+                                    text
+                                    class="is-only-mobile"
+                                    noMargin
+                                    on:click={() => (showDelete = true)}>Delete</Button>
                             {:else}
                                 <Button secondary on:click={() => (showSetup = true)}>Add</Button>
                             {/if}
@@ -184,9 +192,14 @@
                             <div class="method-button">
                                 {#if $factors.recoveryCode}
                                     <Button
-                                        class="method-button"
+                                        class="method-button is-not-mobile"
                                         text
-                                        secondary
+                                        on:click={() => (showRegenerateRecoveryCodes = true)}
+                                        >Regenerate</Button>
+                                    <Button
+                                        class="method-button is-only-mobile"
+                                        text
+                                        noMargin
                                         on:click={() => (showRegenerateRecoveryCodes = true)}
                                         >Regenerate</Button>
                                 {:else}
