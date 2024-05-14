@@ -30,12 +30,7 @@
     import { type Coupon, type PaymentList } from '$lib/sdk/billing';
     import { plansInfo, tierFree, tierPro, tierToPlan, type Tier } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
-    import {
-        organization,
-        organizationList,
-        type Organization,
-        type OrganizationList
-    } from '$lib/stores/organization';
+    import { organization, organizationList, type Organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
     import { VARS } from '$lib/system';
@@ -77,8 +72,6 @@
     let feedbackDowngradeReason: string;
     let feedbackMessage: string;
 
-    let orgList: OrganizationList;
-
     onMount(async () => {
         if ($page.url.searchParams.has('coupon')) {
             const coupon = $page.url.searchParams.get('coupon');
@@ -100,10 +93,6 @@
             }
         }
         billingPlan = $organization.billingPlan;
-
-        if (anyOrgFree && billingPlan === BillingPlan.PRO) {
-            orgList = await sdk.forConsole.billing.listOrganization();
-        }
     });
 
     async function loadPaymentMethods() {
