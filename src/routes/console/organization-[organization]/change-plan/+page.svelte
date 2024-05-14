@@ -262,7 +262,7 @@
                 <Button href="https://appwrite.io/pricing" external link>pricing page</Button>.
             </p>
             {#if anyOrgFree && billingPlan === BillingPlan.PRO}
-                <Alert>
+                <Alert type="warning">
                     You are limited to one Starter organization per account. Consider upgrading or
                     deleting <Button link href={`${base}/console/organization-${anyOrgFree.$id}`}
                         >{anyOrgFree.name}</Button
@@ -330,8 +330,7 @@
                         validityRegex={emailRegex}
                         validityMessage="Invalid email address"
                         id="members" />
-                    <SelectPaymentMethod bind:methods bind:value={paymentMethodId} bind:taxId
-                    ></SelectPaymentMethod>
+                    <SelectPaymentMethod bind:methods bind:value={paymentMethodId} bind:taxId />
                 </FormList>
                 {#if !couponData?.code}
                     <Button
@@ -347,7 +346,7 @@
                 <FormList class="u-margin-block-start-16">
                     <InputSelect
                         id="reason"
-                        label="What made you decide to change your plan?*"
+                        label="What made you decide to change your plan?"
                         placeholder="Select one"
                         required
                         options={feedbackDowngradeOptions}
