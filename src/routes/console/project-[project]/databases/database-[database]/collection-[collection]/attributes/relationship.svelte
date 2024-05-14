@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-    import { Query, type Models, RelationshipType, RelationMutate } from '@appwrite.io/console';
+    import { ID, Query, type Models, RelationshipType, RelationMutate } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
 
     export async function submitRelationship(
@@ -21,7 +21,7 @@
             data.relationType,
             data.twoWay,
             data.key,
-            data.twoWayKey,
+            data.twoWayKey ?? ID.unique(),
             data.onDelete
         );
     }
