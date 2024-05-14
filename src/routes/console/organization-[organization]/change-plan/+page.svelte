@@ -320,7 +320,7 @@
                     </LabelCard>
                 </li>
             </ul>
-            {#if billingPlan === BillingPlan.PRO}
+            {#if billingPlan === BillingPlan.PRO && $organization.billingPlan !== BillingPlan.PRO}
                 <FormList class="u-margin-block-start-16">
                     <InputTags
                         bind:tags={collaborators}
@@ -343,7 +343,7 @@
                     </Button>
                 {/if}
             {/if}
-            {#if !isUpgrade && billingPlan === BillingPlan.STARTER}
+            {#if !isUpgrade && billingPlan === BillingPlan.STARTER && $organization.billingPlan !== BillingPlan.STARTER}
                 <FormList class="u-margin-block-start-16">
                     <InputSelect
                         id="reason"
@@ -361,7 +361,7 @@
             {/if}
         </Form>
         <svelte:fragment slot="aside">
-            {#if billingPlan !== BillingPlan.STARTER}
+            {#if billingPlan !== BillingPlan.STARTER && $organization.billingPlan !== BillingPlan.PRO}
                 <EstimatedTotalBox
                     {billingPlan}
                     {collaborators}
