@@ -9,12 +9,15 @@
     import { BillingPlan } from '$lib/constants';
     import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
     import { trackEvent } from '$lib/actions/analytics';
+    import { localeTimezoneName, utcHourToLocaleHour } from '$lib/helpers/date';
 
     export let show = false;
 
     $: isPaid =
         $organization?.billingPlan === BillingPlan.PRO ||
         $organization?.billingPlan === BillingPlan.SCALE;
+
+    $: supportTimings = `${utcHourToLocaleHour('09:00')} - ${utcHourToLocaleHour('17:00')} ${localeTimezoneName()}`;
 </script>
 
 {#if isCloud}
@@ -23,7 +26,7 @@
             <h4 class="eyebrow-heading-3">Premium support</h4>
             {#if isPaid}
                 <p class="u-line-height-1-5 u-margin-block-start-8">
-                    Get personalized support from the Appwrite team from <b>09:00 - 17:00 UTC</b>
+                    Get personalized support from the Appwrite team from <b>{supportTimings}</b>
                 </p>
             {/if}
         </div>
