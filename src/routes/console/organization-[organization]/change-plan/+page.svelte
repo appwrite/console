@@ -92,7 +92,7 @@
                 billingPlan = plan as BillingPlan;
             }
         }
-        billingPlan = $organization.billingPlan;
+        billingPlan = BillingPlan.PRO;
     });
 
     async function loadPaymentMethods() {
@@ -262,7 +262,7 @@
                 <Button href="https://appwrite.io/pricing" external link>pricing page</Button>.
             </p>
             {#if anyOrgFree && billingPlan === BillingPlan.PRO}
-                <Alert type="warning" class="u-margin-block-8">
+                <Alert type="warning" class="u-margin-block-16">
                     You are limited to one Starter organization per account. Consider upgrading or
                     deleting <Button link href={`${base}/console/organization-${anyOrgFree.$id}`}
                         >{anyOrgFree.name}</Button
