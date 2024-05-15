@@ -15,7 +15,8 @@
         "test": "TZ=EST vitest run",
         "test:ui": "TZ=EST vitest --ui",
         "test:watch": "TZ=EST vitest watch",
-        "e2e": "playwright test tests/e2e"
+        "e2e": "playwright test tests/e2e",
+        "e2e:ui": "playwright test tests/e2e --ui"
     },
     "dependencies": {
         "@appwrite.io/console": "^0.6.1",
@@ -41,7 +42,7 @@
     "devDependencies": {
         "@melt-ui/pp": "^0.1.4",
         "@melt-ui/svelte": "^0.61.2",
-        "@playwright/test": "^1.37.1",
+        "@playwright/test": "^1.44.0",
         "@sveltejs/adapter-static": "^3.0.1",
         "@sveltejs/kit": "^2.3.4",
         "@sveltejs/vite-plugin-svelte": "^3.0.1",
