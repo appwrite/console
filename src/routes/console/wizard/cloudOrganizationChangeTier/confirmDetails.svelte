@@ -49,11 +49,15 @@
     $: if (!$isUpgrade) {
         $changeOrganizationFinalAction = 'Confirm plan change';
     }
+
+    $: if (plan?.trialDays) {
+        $changeOrganizationFinalAction = 'Start trial';
+    }
 </script>
 
 {#if downgradeToStarter}
     <WizardStep>
-        <svelte:fragment slot="title">Confirm plan change</svelte:fragment>
+        <svelte:fragment slot="title">Change confirmation</svelte:fragment>
         <svelte:fragment slot="subtitle">
             Your feedback is important to us and helps us improve the services Appwrite offers.
             Please let us know if there is a specific reason for changing your plan.
@@ -75,9 +79,13 @@
     </WizardStep>
 {:else}
     <WizardStep>
-        <svelte:fragment slot="title">Confirm your details</svelte:fragment>
+        <svelte:fragment slot="title">Details</svelte:fragment>
         <svelte:fragment slot="subtitle">
-            Confirm the details of your new organization and start your free trial.
+            Confirm the details of your new organization{!$plansInfo.get(
+                $changeOrganizationTier.billingPlan
+            )?.trialDays
+                ? '.'
+                : ' and start your free trial.'}
         </svelte:fragment>
 
         <p class="body-text-1 u-bold">Organization name</p>
@@ -144,9 +152,9 @@
 
             <p class="text u-margin-block-start-16">
                 This amount, and any additional usage fees, will be charged on a recurring 30-day
-                billing cycle after your trial period ends on <b
-                    >{toLocaleDate(billingPayDate.toString())}</b
-                >.
+                billing cycle{!$plansInfo.get($changeOrganizationTier.billingPlan)?.trialDays
+                    ? ''
+                    : ` after your trial period ends on ${toLocaleDate(billingPayDate.toString())}`}.
             </p>
         </Box>
     </WizardStep>

@@ -64,10 +64,12 @@
                 deleted.
             </p>
             <p class="text"><b>This action is irreversible.</b></p>
-            <InputChoice id="delete" label="Delete" showLabel={false} bind:value={checked}>
-                Delete relationship between <b data-private>{selectedAttribute.key}</b> to
-                <b data-private>{selectedAttribute.twoWayKey}</b>
-            </InputChoice>
+            <ul>
+                <InputChoice id="delete" label="Delete" showLabel={false} bind:value={checked}>
+                    Delete relationship between <b data-private>{selectedAttribute.key}</b> to
+                    <b data-private>{selectedAttribute.twoWayKey}</b>
+                </InputChoice>
+            </ul>
         </div>
     {/if}
 

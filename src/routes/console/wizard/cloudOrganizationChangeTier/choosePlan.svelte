@@ -103,7 +103,7 @@
 </script>
 
 <WizardStep beforeSubmit={handleBefore}>
-    <svelte:fragment slot="title">Choose a plan</svelte:fragment>
+    <svelte:fragment slot="title">Plan selection</svelte:fragment>
 
     <p class="body-text-1 u-bold common-section">Plan</p>
     <p class="text u-margin-block-start-4">
@@ -161,8 +161,8 @@
                     <div class:u-opacity-50={disabled}>
                         {#if $organization.billingPlan === BillingPlan.PRO}
                             <Pill disabled>CURRENT PLAN</Pill>
-                        {:else}
-                            <Pill>14 DAY FREE TRIAL</Pill>
+                        {:else if proPlan?.trialDays}
+                            <Pill>{proPlan?.trialDays} DAY FREE TRIAL</Pill>
                         {/if}
                     </div>
                 </svelte:fragment>

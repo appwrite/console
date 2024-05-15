@@ -27,7 +27,6 @@
             <button
                 type="button"
                 class="button is-text is-only-icon"
-                style="--button-size:1.5rem;"
                 aria-label="close alert box"
                 on:click={() => dispatch('dismiss')}>
                 <span class="icon-x" aria-hidden="true" />

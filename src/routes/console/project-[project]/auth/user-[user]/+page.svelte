@@ -3,6 +3,7 @@
     import DangerZone from './dangerZone.svelte';
     import UpdateEmail from './updateEmail.svelte';
     import UpdateLabels from './updateLabels.svelte';
+    import UpdateMfa from './updateMfa.svelte';
     import UpdateName from './updateName.svelte';
     import UpdatePassword from './updatePassword.svelte';
     import UpdatePhone from './updatePhone.svelte';
@@ -18,5 +19,6 @@
     <UpdatePassword />
     <UpdateLabels />
     <UpdatePrefs />
+    <UpdateMfa />
     <DangerZone />
 </Container>

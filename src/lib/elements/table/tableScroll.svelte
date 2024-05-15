@@ -6,6 +6,7 @@
     export let style = '';
     export let transparent = false;
     export let noStyles = false;
+    export let dense = false;
 
     let isOverflowing = false;
 
@@ -48,6 +49,7 @@
             class="table"
             class:is-remove-outer-styles={noStyles}
             class:is-sticky-scroll={isSticky && isOverflowing}
+            class:is-table-row-medium-size={dense}
             {style}
             style:--p-table-bg-color={transparent ? 'var(--transparent)' : ''}>
             <slot />

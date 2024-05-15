@@ -30,7 +30,7 @@
             });
         } catch (error) {
             addNotification({
-                type: 'success',
+                type: 'error',
                 message: 'Something went wrong, please try again later'
             });
         }
@@ -52,7 +52,7 @@
             });
         } catch (error) {
             addNotification({
-                type: 'success',
+                type: 'error',
                 message: 'Something went wrong, please try again later'
             });
         }

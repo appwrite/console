@@ -73,7 +73,7 @@
 {#if hasInstallations}
     {#await loadInstallations()}
         <div class="u-flex u-gap-16">
-            <div class="u-width-full-line">
+            <ul class="u-width-full-line">
                 <InputSelect
                     disabled
                     id="installation"
@@ -86,7 +86,7 @@
                         }
                     ]}
                     value={null} />
-            </div>
+            </ul>
             <ul class="u-width-full-line">
                 <InputSearch placeholder="Search repositories" disabled />
             </ul>

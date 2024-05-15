@@ -5,7 +5,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { organization } from '$lib/stores/organization';
     import { Dependencies } from '$lib/constants';
-    import { submitStripeCard } from '$lib/stores/stripe';
+    import { initializeStripe, isStripeInitialized, submitStripeCard } from '$lib/stores/stripe';
     import { onMount } from 'svelte';
     import type { PaymentList } from '$lib/sdk/billing';
     import { addNotification } from '$lib/stores/notifications';
@@ -24,10 +24,18 @@
 
         if (!$organization.paymentMethodId && !$organization.backupPaymentMethodId) {
             selectedPaymentMethodId = methods?.total ? methods.paymentMethods[0].$id : null;
+        } else {
+            selectedPaymentMethodId = isBackup
+                ? $organization.backupPaymentMethodId
+                : $organization.paymentMethodId;
+            // If the selected payment method does not belong to the current user, select the first one.
+            if (
+                methods?.total &&
+                !methods.paymentMethods.some((method) => method.$id === selectedPaymentMethodId)
+            ) {
+                selectedPaymentMethodId = methods.paymentMethods[0].$id;
+            }
         }
-        selectedPaymentMethodId = isBackup
-            ? $organization.backupPaymentMethodId
-            : $organization.paymentMethodId;
     });
 
     async function handleSubmit() {
@@ -81,6 +89,14 @@
     }
 
     $: filteredMethods = methods?.paymentMethods.filter((method) => !!method?.last4);
+
+    $: if (selectedPaymentMethodId === null && !$isStripeInitialized) {
+        initializeStripe();
+    }
+
+    $: if (selectedPaymentMethodId) {
+        isStripeInitialized.set(false);
+    }
 
     $: if (!show) {
         selectedPaymentMethodId = null;

@@ -24,22 +24,17 @@
             } else {
                 await sdk.forConsole.teams.delete($organization.$id);
             }
-
-            await invalidate(Dependencies.ACCOUNT);
-            await invalidate(Dependencies.ORGANIZATION);
-            trackEvent(Submit.OrganizationDelete);
+            const prefs = await sdk.forConsole.account.getPrefs();
+            const newPrefs = { ...prefs, organization: null };
+            await sdk.forConsole.account.updatePrefs(newPrefs);
             if ($organizationList?.total > 1) {
-                const account = await sdk.forConsole.account.get();
-                const teamId =
-                    account.prefs.organization ??
-                    $organizationList.teams[0].$id === $organization.$id
-                        ? $organizationList.teams[1].$id
-                        : $organizationList.teams[0].$id;
-
-                await goto(`${base}/console/organization-${teamId}`);
+                await goto(`${base}/console/account/organizations`);
             } else {
                 await goto(`${base}/console/onboarding`);
             }
+            await invalidate(Dependencies.ACCOUNT);
+            await invalidate(Dependencies.ORGANIZATION);
+            trackEvent(Submit.OrganizationDelete);
             showDelete = false;
             addNotification({
                 type: 'success',
@@ -51,7 +46,7 @@
         }
     }
 
-    $: upcomingInvoice = invoices.invoices.find((i) => i.status === 'upcoming' && i.amount > 0);
+    $: upcomingInvoice = invoices?.invoices.find((i) => i.status === 'upcoming' && i.amount > 0);
 </script>
 
 <Modal

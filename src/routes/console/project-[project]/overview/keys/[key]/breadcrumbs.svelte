@@ -15,7 +15,7 @@
         },
         {
             href: `/console/project-${$project?.$id}/overview/keys`,
-            title: 'API Keys'
+            title: 'API keys'
         },
         {
             href: `/console/project-${$project?.$id}/overview/keys/${$key?.$id}`,
