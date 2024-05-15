@@ -7,8 +7,6 @@
     import { HeaderAlert } from '$lib/layout';
     import { readOnly, tierToPlan } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
-    import { wizard } from '$lib/stores/wizard';
-    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
 </script>
 
 {#if $organization?.$id && $organization?.billingPlan === BillingPlan.STARTER && $readOnly && !$page.url.pathname.includes('/console/account')}
@@ -21,14 +19,14 @@
         </svelte:fragment>
         <svelte:fragment slot="buttons">
             <Button
-                href={`${base}/console/organization-${$organization?.$id}/usage`}
+                href={`${base}/console/organization-${$organization.$id}/usage`}
                 text
                 fullWidthMobile>
                 <span class="text">View usage</span>
             </Button>
             <Button
+                href={`${base}/console/organization-${$organization.$id}/change-plan`}
                 on:click={() => {
-                    wizard.start(ChangeOrganizationTierCloud);
                     trackEvent('click_organization_upgrade', {
                         from: 'button',
                         source: 'limit_reached_banner'

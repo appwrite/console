@@ -9,11 +9,10 @@
     import type { Models } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
     import { Button } from '$lib/elements/forms';
-    import { wizard } from '$lib/stores/wizard';
-    import ChangeOrganizationTierCloud from '../changeOrganizationTierCloud.svelte';
     import { goto } from '$app/navigation';
     import { last } from '$lib/helpers/array';
     import { trackEvent } from '$lib/actions/analytics';
+    import { base } from '$app/paths';
 
     export let show = false;
     const plan = $plansInfo?.get($organization.billingPlan);
@@ -78,9 +77,9 @@
                     View usage
                 </Button>
                 <Button
+                    href={`${base}/console/organization-${$organization.$id}/change-plan`}
                     on:click={() => {
                         show = false;
-                        wizard.start(ChangeOrganizationTierCloud);
                         trackEvent('click_organization_upgrade', {
                             from: 'button',
                             source: 'limit_reached_modal'

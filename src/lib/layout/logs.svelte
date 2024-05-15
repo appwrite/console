@@ -14,13 +14,12 @@
     import { beforeNavigate } from '$app/navigation';
     import { Pill } from '$lib/elements';
     import { isCloud } from '$lib/system';
-    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
-    import { wizard } from '$lib/stores/wizard';
     import { getServiceLimit, tierToPlan } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { app } from '$lib/stores/app';
     import { Button } from '$lib/elements/forms';
     import { BillingPlan } from '$lib/constants';
+    import { base } from '$app/paths';
 
     let selectedRequest = 'parameters';
     let selectedResponse = 'logs';
@@ -315,8 +314,7 @@
                                             {#if $organization.billingPlan === BillingPlan.STARTER}
                                                 <Button
                                                     link
-                                                    on:click={() =>
-                                                        wizard.start(ChangeOrganizationTierCloud)}
+                                                    href={`${base}/console/organization-${$organization.$id}/change-plan`}
                                                     >Upgrade</Button> to increase your log retention
                                                 for a longer period.
                                             {/if}

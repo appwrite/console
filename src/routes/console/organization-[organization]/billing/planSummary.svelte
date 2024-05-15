@@ -6,8 +6,6 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { plansInfo, tierToPlan } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
-    import { wizard } from '$lib/stores/wizard';
-    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
     import { onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
     import type { Invoice } from '$lib/sdk/billing';
@@ -245,7 +243,7 @@
                     </Button>
                     <Button
                         disabled={$organization?.markedForDeletion}
-                        on:click={() => wizard.start(ChangeOrganizationTierCloud)}
+                        href={`${base}/console/organization-${$organization.$id}/change-plan`}
                         on:click={() =>
                             trackEvent('click_organization_upgrade', {
                                 from: 'button',
@@ -259,7 +257,7 @@
                     <Button
                         text
                         disabled={$organization?.markedForDeletion}
-                        on:click={() => wizard.start(ChangeOrganizationTierCloud)}
+                        href={`${base}/console/organization-${$organization.$id}/change-plan`}
                         on:click={() =>
                             trackEvent('click_organization_plan_update', {
                                 from: 'button',

@@ -20,9 +20,7 @@
     import { slide } from 'svelte/transition';
     import { sdk } from '$lib/stores/sdk';
     import { isCloud } from '$lib/system';
-    import { wizard } from '$lib/stores/wizard';
     import { Feedback } from '$lib/components/feedback';
-    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
     import { BillingPlan } from '$lib/constants';
 
     let showDropdown = false;
@@ -106,8 +104,8 @@
         {#if isCloud && $organization?.billingPlan === BillingPlan.STARTER && !$page.url.pathname.startsWith('/console/account')}
             <Button
                 disabled={$organization?.markedForDeletion}
+                href={`${base}/console/organization-${$organization.$id}/change-plan`}
                 on:click={() => {
-                    wizard.start(ChangeOrganizationTierCloud);
                     trackEvent('click_organization_upgrade', {
                         from: 'button',
                         source: 'top_nav'

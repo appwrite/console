@@ -51,8 +51,6 @@
     import { baseEmailTemplate, emailTemplate } from './store';
     import { Button } from '$lib/elements/forms';
     import { organization } from '$lib/stores/organization';
-    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
-    import { wizard } from '$lib/stores/wizard';
     import { BillingPlan } from '$lib/constants';
     import type {
         SmsTemplateLocale,
@@ -141,7 +139,8 @@
                     buttons={[
                         {
                             name: 'Upgrade plan',
-                            method: () => wizard.start(ChangeOrganizationTierCloud)
+                            method: () =>
+                                goto(`${base}/console/organization-${$organization.$id}/billing`)
                         }
                     ]}>
                     All emails sent using the Starter plan will include attribution to Appwrite in

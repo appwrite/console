@@ -9,7 +9,6 @@
     import { organization } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
     import { isCloud } from '$lib/system';
-    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
     import Create from '$routes/console/feedbackWizard.svelte';
     import { showSupportModal } from '$routes/console/wizard/support/store';
 
@@ -200,11 +199,11 @@
                     <ul class="drop-list is-only-mobile">
                         {#if isCloud && $organization?.billingPlan !== BillingPlan.SCALE}
                             <li class="drop-list-item">
-                                <button
+                                <a
                                     class="drop-button"
-                                    on:click={() => wizard.start(ChangeOrganizationTierCloud)}>
+                                    href={`${base}/console/organization-${$organization.$id}/change-plan`}>
                                     <span class="text">Upgrade</span>
-                                </button>
+                                </a>
                             </li>
                         {/if}
                         <li class="drop-list-item">

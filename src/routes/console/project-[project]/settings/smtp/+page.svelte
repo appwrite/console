@@ -21,8 +21,6 @@
     import deepEqual from 'deep-equal';
     import { onMount } from 'svelte';
     import { organization } from '$lib/stores/organization';
-    import { wizard } from '$lib/stores/wizard';
-    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
     import { SMTPSecure } from '@appwrite.io/console';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
 
@@ -139,7 +137,7 @@
                             <div class="alert-buttons u-flex">
                                 <Button
                                     text
-                                    on:click={() => wizard.start(ChangeOrganizationTierCloud)}>
+                                    href={`${base}/console/organization-${$organization.$id}/change-plan`}>
                                     Upgrade plan
                                 </Button>
                             </div>

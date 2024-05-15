@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { base } from '$app/paths';
     import { Alert, CustomId } from '$lib/components';
     import { BillingPlan } from '$lib/constants';
     import { Pill } from '$lib/elements';
@@ -7,9 +8,7 @@
     import WizardStep from '$lib/layout/wizardStep.svelte';
     import { getServiceLimit, tierToPlan } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
-    import { wizard } from '$lib/stores/wizard';
     import { isCloud } from '$lib/system';
-    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
     import { bucket } from '../store';
     import { createFile } from './store';
 
@@ -36,7 +35,9 @@
             <svelte:fragment slot="action">
                 {#if $organization?.billingPlan === BillingPlan.STARTER}
                     <div class="alert-buttons u-flex">
-                        <Button text on:click={() => wizard.start(ChangeOrganizationTierCloud)}>
+                        <Button
+                            text
+                            href={`${base}/console/organization-${$organization.$id}/change-plan`}>
                             Upgrade plan
                         </Button>
                     </div>

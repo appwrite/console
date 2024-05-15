@@ -17,12 +17,12 @@
     import { confirmPayment } from '$lib/stores/stripe';
     import { sdk } from '$lib/stores/sdk';
     import { toLocaleDate } from '$lib/helpers/date';
-    import { wizard } from '$lib/stores/wizard';
-    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
     import { BillingPlan } from '$lib/constants';
     import RetryPaymentModal from './retryPaymentModal.svelte';
     import { selectedInvoice, showRetryModal } from './store';
     import { Button } from '$lib/elements/forms';
+    import { goto } from '$app/navigation';
+    import { base } from '$app/paths';
 
     export let data;
 
@@ -37,7 +37,7 @@
     onMount(async () => {
         if ($page.url.searchParams.has('type')) {
             if ($page.url.searchParams.get('type') === 'upgrade') {
-                wizard.start(ChangeOrganizationTierCloud);
+                goto(`${base}/console/organization-${$organization.$id}/change-plan`);
             }
 
             if (

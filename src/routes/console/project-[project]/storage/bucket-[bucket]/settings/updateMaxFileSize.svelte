@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { base } from '$app/paths';
     import { Submit } from '$lib/actions/analytics';
     import { Alert, CardGrid, Heading } from '$lib/components';
     import { BillingPlan } from '$lib/constants';
@@ -7,9 +8,7 @@
     import { createByteUnitPair } from '$lib/helpers/unit';
     import { getServiceLimit, readOnly, tierToPlan } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
-    import { wizard } from '$lib/stores/wizard';
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
-    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
     import { bucket } from '../store';
     import { updateBucket } from './+page.svelte';
 
@@ -52,7 +51,7 @@
                             <div class="alert-buttons u-flex">
                                 <Button
                                     text
-                                    on:click={() => wizard.start(ChangeOrganizationTierCloud)}>
+                                    href={`${base}/console/organization-${$organization.$id}/change-plan`}>
                                     Upgrade plan
                                 </Button>
                             </div>

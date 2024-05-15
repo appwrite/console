@@ -20,8 +20,8 @@
     import AddCreditModal from './addCreditModal.svelte';
     import { formatCurrency } from '$lib/helpers/numbers';
     import { BillingPlan } from '$lib/constants';
-    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
     import { trackEvent } from '$lib/actions/analytics';
+    import { base } from '$app/paths';
 
     let offset = 0;
     let creditList: CreditList = {
@@ -132,8 +132,8 @@
         {#if $organization?.billingPlan === BillingPlan.STARTER}
             <Button
                 secondary
+                href={`${base}/console/organization-${$organization.$id}/change-plan`}
                 on:click={() => {
-                    wizard.start(ChangeOrganizationTierCloud);
                     trackEvent('click_organization_upgrade', {
                         from: 'button',
                         source: 'billing_add_credits'

@@ -13,12 +13,12 @@
         type PlanServices
     } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
-    import { wizard } from '$lib/stores/wizard';
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
-    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
     import { createEventDispatcher, onMount } from 'svelte';
     import { ContainerButton } from '.';
     import { trackEvent } from '$lib/actions/analytics';
+    import { base } from '$app/paths';
+    import { goto } from '$app/navigation';
 
     export let isFlex = true;
     export let title: string;
@@ -53,9 +53,11 @@
     ];
 
     const limit = getServiceLimit(serviceId) || Infinity;
+
+    //TODO: refactor this to be a string
     const upgradeMethod = () => {
         showDropdown = false;
-        wizard.start(ChangeOrganizationTierCloud);
+        goto(`${base}/console/organization-${$organization.$id}/change-plan`);
     };
     const dispatch = createEventDispatcher();
 
@@ -100,7 +102,7 @@
                     <span class="text">
                         You've reached the {services} limit for the {tier} plan. <Button
                             link
-                            on:click={upgradeMethod}
+                            href={`${base}/console/organization-${$organization.$id}/change-plan`}
                             on:click={() =>
                                 trackEvent('click_organization_upgrade', {
                                     from: 'button',
@@ -135,7 +137,7 @@
                                 {title.toLocaleLowerCase()} per project on the {tier} plan.
                                 {#if $organization?.billingPlan === BillingPlan.STARTER}<Button
                                         link
-                                        on:click={upgradeMethod}
+                                        href={`${base}/console/organization-${$organization.$id}/change-plan`}
                                         on:click={() =>
                                             trackEvent('click_organization_upgrade', {
                                                 from: 'button',
@@ -157,7 +159,10 @@
                                 You are limited to {limit}
                                 {title.toLocaleLowerCase()} per organization on the {tier} plan.
                                 {#if $organization?.billingPlan === BillingPlan.STARTER}
-                                    <Button link on:click={upgradeMethod}>Upgrade</Button>
+                                    <Button
+                                        link
+                                        href={`${base}/console/organization-${$organization.$id}/change-plan`}
+                                        >Upgrade</Button>
                                     for additional {title.toLocaleLowerCase()}.
                                 {/if}
                             </p>

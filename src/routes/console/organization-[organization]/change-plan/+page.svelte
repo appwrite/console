@@ -262,7 +262,7 @@
                 <Button href="https://appwrite.io/pricing" external link>pricing page</Button>.
             </p>
             {#if anyOrgFree && billingPlan === BillingPlan.PRO}
-                <Alert type="warning">
+                <Alert type="warning" class="u-margin-block-8">
                     You are limited to one Starter organization per account. Consider upgrading or
                     deleting <Button link href={`${base}/console/organization-${anyOrgFree.$id}`}
                         >{anyOrgFree.name}</Button
