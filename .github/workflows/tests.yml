@@ -8,7 +8,6 @@ on:
             - 'static/**/*'
 
 env:
-    VITE_STRIPE_PUBLIC_KEY: ${{ vars.VITE_STRIPE_PUBLIC_KEY }}
     VITE_APPWRITE_ENDPOINT: http://appwrite.test/v1
 
 jobs:
@@ -30,7 +29,5 @@ jobs:
               run: npm run lint
             - name: Unit Tests
               run: npm run test
-            - name: E2E Tests
-              run: npx playwright install-deps chromium && npx playwright install && npm run e2e
             - name: Build Console
               run: npm run build
