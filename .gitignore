@@ -9,6 +9,7 @@ node_modules
 .env.*
 !.env.example
 test-results/
+playwright-report/
 
 .DS_STORE
 .cache
