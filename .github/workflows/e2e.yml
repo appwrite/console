@@ -11,7 +11,7 @@ env:
     VITE_STRIPE_PUBLIC_KEY: ${{ vars.VITE_STRIPE_PUBLIC_KEY }}
 
 jobs:
-    build:
+    e2e:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v3
