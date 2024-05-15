@@ -9,14 +9,14 @@ importers:
   .:
     dependencies:
       '@appwrite.io/console':
-        specifier: ^0.6.2
+        specifier: ^0.6.1
         version: 0.6.2
       '@appwrite.io/pink':
-        specifier: 0.11.0
-        version: 0.11.0
+        specifier: ^0.19.0
+        version: 0.19.0
       '@appwrite.io/pink-icons':
-        specifier: 0.11.0
-        version: 0.11.0
+        specifier: ^0.19.0
+        version: 0.19.0
       '@popperjs/core':
         specifier: ^2.11.8
         version: 2.11.8
@@ -200,11 +200,11 @@ packages:
   '@appwrite.io/console@0.6.2':
     resolution: {integrity: sha512-3qYknuFwhvTN2GnPB8G1w5DgxfVorGtfj4uuEaXbTmMUmjA8fHaW5VkJriuUxCi6/TpxDxqV/hhEkdoXL+5H4w==}
 
-  '@appwrite.io/pink-icons@0.11.0':
-    resolution: {integrity: sha512-FOvP87m4S17QRQPrLzsSlwrbIeJNJi5RliGUQYONIhmI0PiwE4Xm5LXFE+NqFYsR56w2X3jYdJIHdIdZlH3XjA==}
+  '@appwrite.io/pink-icons@0.19.0':
+    resolution: {integrity: sha512-qXzIQrY9OVFUJ7/qCf5oRJqJEJ+ECQpzlU0JiLycbPnu/nbq+pbaFDPma+7cTHsaD8znRC8X+a7P22JNrsN0rg==}
 
-  '@appwrite.io/pink@0.11.0':
-    resolution: {integrity: sha512-0/ztJxeV6Cy1FnXy2ClLELzDnR4eRtGAhQ24napCg0VwOFevSIc0S7jcRrWVyA6WRuwex4eGiEn2JeYMTq70Xg==}
+  '@appwrite.io/pink@0.19.0':
+    resolution: {integrity: sha512-b5yJCtkqRfikgqpi6rxN0je7FkLdvtSPQ3XNW49yLN7euHHuMr74qj8XvWrvv41ilikanvvUWUD2C8PLvmOy8Q==}
 
   '@babel/code-frame@7.23.5':
     resolution: {integrity: sha512-CgH3s1a96LipHCmSUmYFPwY7MNx8C3avkq7i4Wl3cfa662ldtUe4VM1TPXX70pfmrlWTb6jLqTYrZyT2ZTJBgA==}
@@ -3205,11 +3205,11 @@ snapshots:
 
   '@appwrite.io/console@0.6.2': {}
 
-  '@appwrite.io/pink-icons@0.11.0': {}
+  '@appwrite.io/pink-icons@0.19.0': {}
 
-  '@appwrite.io/pink@0.11.0':
+  '@appwrite.io/pink@0.19.0':
     dependencies:
-      '@appwrite.io/pink-icons': 0.11.0
+      '@appwrite.io/pink-icons': 0.19.0
       normalize.css: 8.0.1
       the-new-css-reset: 1.11.2
 
