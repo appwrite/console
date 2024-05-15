@@ -6,6 +6,7 @@
     import { BillingPlan } from '$lib/constants';
     import { isMac } from '$lib/helpers/platform';
     import { slide } from '$lib/helpers/transition';
+    import { upgradeURL } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
     import { isCloud } from '$lib/system';
@@ -199,9 +200,7 @@
                     <ul class="drop-list is-only-mobile">
                         {#if isCloud && $organization?.billingPlan !== BillingPlan.SCALE}
                             <li class="drop-list-item">
-                                <a
-                                    class="drop-button"
-                                    href={`${base}/console/organization-${$organization.$id}/change-plan`}>
+                                <a class="drop-button" href={$upgradeURL}>
                                     <span class="text">Upgrade</span>
                                 </a>
                             </li>

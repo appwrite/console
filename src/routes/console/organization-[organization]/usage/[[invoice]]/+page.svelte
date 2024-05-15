@@ -1,7 +1,12 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
     import { Card, CardGrid, Heading, ProgressBarBig } from '$lib/components';
-    import { getServiceLimit, showUsageRatesModal, tierToPlan } from '$lib/stores/billing';
+    import {
+        getServiceLimit,
+        showUsageRatesModal,
+        tierToPlan,
+        upgradeURL
+    } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { Button } from '$lib/elements/forms';
     import { bytesToSize, humanFileSize } from '$lib/helpers/sizeConvertion';
@@ -12,7 +17,6 @@
     import type { OrganizationUsage } from '$lib/sdk/billing';
     import { BillingPlan } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
-    import { base } from '$app/paths';
 
     export let data;
 
@@ -43,7 +47,7 @@
 
         {#if $organization?.billingPlan === BillingPlan.STARTER}
             <Button
-                href={`${base}/console/organization-${$organization.$id}/change-plan`}
+                href={$upgradeURL}
                 on:click={() => {
                     trackEvent('click_organization_upgrade', {
                         from: 'button',
@@ -75,10 +79,7 @@
             <p class="text">
                 If you exceed the limits of the {plan} plan, services for your organization's projects
                 may be disrupted.
-                <a
-                    href={`${base}/console/organization-${$organization.$id}/change-plan`}
-                    class="link">Upgrade for greater capacity</a
-                >.
+                <a href={$upgradeURL} class="link">Upgrade for greater capacity</a>.
             </p>
         {/if}
 

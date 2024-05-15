@@ -14,12 +14,11 @@
     import { beforeNavigate } from '$app/navigation';
     import { Pill } from '$lib/elements';
     import { isCloud } from '$lib/system';
-    import { getServiceLimit, tierToPlan } from '$lib/stores/billing';
+    import { getServiceLimit, tierToPlan, upgradeURL } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { app } from '$lib/stores/app';
     import { Button } from '$lib/elements/forms';
     import { BillingPlan } from '$lib/constants';
-    import { base } from '$app/paths';
 
     let selectedRequest = 'parameters';
     let selectedResponse = 'logs';
@@ -312,11 +311,8 @@
                                             Logs are retained in rolling {hoursToDays(limit)} intervals
                                             with the {tier} plan.
                                             {#if $organization.billingPlan === BillingPlan.STARTER}
-                                                <Button
-                                                    link
-                                                    href={`${base}/console/organization-${$organization.$id}/change-plan`}
-                                                    >Upgrade</Button> to increase your log retention
-                                                for a longer period.
+                                                <Button link href={$upgradeURL}>Upgrade</Button> to increase
+                                                your log retention for a longer period.
                                             {/if}
                                         </Alert>
                                     {/if}

@@ -23,6 +23,7 @@
     import { organization } from '$lib/stores/organization';
     import { SMTPSecure } from '@appwrite.io/console';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
+    import { upgradeURL } from '$lib/stores/billing';
 
     let enabled = false;
     let senderName: string;
@@ -135,11 +136,7 @@
                         Custom SMTP is a Pro plan feature. Upgrade to enable custom SMTP sever.
                         <svelte:fragment slot="action">
                             <div class="alert-buttons u-flex">
-                                <Button
-                                    text
-                                    href={`${base}/console/organization-${$organization.$id}/change-plan`}>
-                                    Upgrade plan
-                                </Button>
+                                <Button text href={$upgradeURL}>Upgrade plan</Button>
                             </div>
                         </svelte:fragment>
                     </Alert>

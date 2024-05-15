@@ -1,9 +1,7 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
-    import { base } from '$app/paths';
     import { trackEvent } from '$lib/actions/analytics';
-    import { getServiceLimit, type PlanServices } from '$lib/stores/billing';
-    import { organization } from '$lib/stores/organization';
+    import { getServiceLimit, upgradeURL, type PlanServices } from '$lib/stores/billing';
     import { isCloud } from '$lib/system';
     import { Button } from '../forms';
 
@@ -20,7 +18,7 @@
 
     // TODO: refactor this to be a string
     const upgradeMethod = () => {
-        goto(`${base}/console/organization-${$organization.$id}/change-plan`);
+        goto($upgradeURL);
     };
 
     $: limitReached = limit !== 0 && limit < Infinity && total >= limit;
@@ -41,7 +39,7 @@
                     <span class="text">Upgrade your plan to add {name} to your organization</span>
                     <Button
                         secondary
-                        href={`${base}/console/organization-${$organization.$id}/change-plan`}
+                        href={$upgradeURL}
                         on:click={() =>
                             trackEvent('click_organization_upgrade', {
                                 from: 'button',

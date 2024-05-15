@@ -22,6 +22,7 @@
     import { isCloud } from '$lib/system';
     import { Feedback } from '$lib/components/feedback';
     import { BillingPlan } from '$lib/constants';
+    import { upgradeURL } from '$lib/stores/billing';
 
     let showDropdown = false;
     let showSupport = false;
@@ -104,7 +105,7 @@
         {#if isCloud && $organization?.billingPlan === BillingPlan.STARTER && !$page.url.pathname.startsWith('/console/account')}
             <Button
                 disabled={$organization?.markedForDeletion}
-                href={`${base}/console/organization-${$organization.$id}/change-plan`}
+                href={$upgradeURL}
                 on:click={() => {
                     trackEvent('click_organization_upgrade', {
                         from: 'button',

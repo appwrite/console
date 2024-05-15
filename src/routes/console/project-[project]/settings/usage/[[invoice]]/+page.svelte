@@ -10,7 +10,7 @@
         TableRow,
         Table
     } from '$lib/elements/table';
-    import { showUsageRatesModal, tierToPlan } from '$lib/stores/billing';
+    import { showUsageRatesModal, tierToPlan, upgradeURL } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { Button } from '$lib/elements/forms';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
@@ -51,7 +51,7 @@
         <Heading tag="h2" size="5">Usage</Heading>
 
         {#if $organization?.billingPlan === BillingPlan.STARTER}
-            <Button href={`${base}/console/organization-${$organization.$id}/change-plan`}>
+            <Button href={$upgradeURL}>
                 <span class="text">Upgrade</span>
             </Button>
         {/if}
@@ -74,10 +74,7 @@
         {:else if $organization.billingPlan === BillingPlan.STARTER}
             <p class="text">
                 If you exceed the limits of the {plan} plan, services for your projects may be disrupted.
-                <a
-                    href={`${base}/console/organization-${$organization.$id}/change-plan`}
-                    class="link">Upgrade for greater capacity</a
-                >.
+                <a href={$upgradeURL} class="link">Upgrade for greater capacity</a>.
             </p>
         {/if}
 

@@ -10,6 +10,7 @@
         readOnly,
         showUsageRatesModal,
         tierToPlan,
+        upgradeURL,
         type PlanServices
     } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
@@ -17,7 +18,6 @@
     import { createEventDispatcher, onMount } from 'svelte';
     import { ContainerButton } from '.';
     import { trackEvent } from '$lib/actions/analytics';
-    import { base } from '$app/paths';
     import { goto } from '$app/navigation';
 
     export let isFlex = true;
@@ -57,7 +57,7 @@
     //TODO: refactor this to be a string
     const upgradeMethod = () => {
         showDropdown = false;
-        goto(`${base}/console/organization-${$organization.$id}/change-plan`);
+        goto($upgradeURL);
     };
     const dispatch = createEventDispatcher();
 
@@ -102,7 +102,7 @@
                     <span class="text">
                         You've reached the {services} limit for the {tier} plan. <Button
                             link
-                            href={`${base}/console/organization-${$organization.$id}/change-plan`}
+                            href={$upgradeURL}
                             on:click={() =>
                                 trackEvent('click_organization_upgrade', {
                                     from: 'button',
@@ -137,7 +137,7 @@
                                 {title.toLocaleLowerCase()} per project on the {tier} plan.
                                 {#if $organization?.billingPlan === BillingPlan.STARTER}<Button
                                         link
-                                        href={`${base}/console/organization-${$organization.$id}/change-plan`}
+                                        href={$upgradeURL}
                                         on:click={() =>
                                             trackEvent('click_organization_upgrade', {
                                                 from: 'button',
@@ -159,10 +159,7 @@
                                 You are limited to {limit}
                                 {title.toLocaleLowerCase()} per organization on the {tier} plan.
                                 {#if $organization?.billingPlan === BillingPlan.STARTER}
-                                    <Button
-                                        link
-                                        href={`${base}/console/organization-${$organization.$id}/change-plan`}
-                                        >Upgrade</Button>
+                                    <Button link href={$upgradeURL}>Upgrade</Button>
                                     for additional {title.toLocaleLowerCase()}.
                                 {/if}
                             </p>

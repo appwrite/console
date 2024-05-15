@@ -4,7 +4,7 @@
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
-    import { plansInfo, tierToPlan } from '$lib/stores/billing';
+    import { plansInfo, tierToPlan, upgradeURL } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
@@ -243,7 +243,7 @@
                     </Button>
                     <Button
                         disabled={$organization?.markedForDeletion}
-                        href={`${base}/console/organization-${$organization.$id}/change-plan`}
+                        href={$upgradeURL}
                         on:click={() =>
                             trackEvent('click_organization_upgrade', {
                                 from: 'button',
@@ -257,7 +257,7 @@
                     <Button
                         text
                         disabled={$organization?.markedForDeletion}
-                        href={`${base}/console/organization-${$organization.$id}/change-plan`}
+                        href={$upgradeURL}
                         on:click={() =>
                             trackEvent('click_organization_plan_update', {
                                 from: 'button',

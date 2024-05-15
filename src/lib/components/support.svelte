@@ -9,7 +9,7 @@
     import { BillingPlan } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
     import { localeTimezoneName, utcHourToLocaleHour } from '$lib/helpers/date';
-    import { base } from '$app/paths';
+    import { upgradeURL } from '$lib/stores/billing';
 
     export let show = false;
 
@@ -33,7 +33,7 @@
         {#if $organization?.billingPlan === BillingPlan.STARTER}
             <Button
                 fullWidth
-                href={`${base}/console/organization-${$organization.$id}/change-plan`}
+                href={$upgradeURL}
                 on:click={() => {
                     trackEvent('click_organization_upgrade', {
                         from: 'button',

@@ -21,7 +21,7 @@
     import { formatCurrency } from '$lib/helpers/numbers';
     import { BillingPlan } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
-    import { base } from '$app/paths';
+    import { upgradeURL } from '$lib/stores/billing';
 
     let offset = 0;
     let creditList: CreditList = {
@@ -132,7 +132,7 @@
         {#if $organization?.billingPlan === BillingPlan.STARTER}
             <Button
                 secondary
-                href={`${base}/console/organization-${$organization.$id}/change-plan`}
+                href={$upgradeURL}
                 on:click={() => {
                     trackEvent('click_organization_upgrade', {
                         from: 'button',

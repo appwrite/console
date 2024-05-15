@@ -10,7 +10,7 @@
     import PaymentHistory from './paymentHistory.svelte';
     import TaxId from './taxId.svelte';
     import { Alert, Heading } from '$lib/components';
-    import { failedInvoice, paymentMethods } from '$lib/stores/billing';
+    import { failedInvoice, paymentMethods, upgradeURL } from '$lib/stores/billing';
     import type { PaymentMethodData } from '$lib/sdk/billing';
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
@@ -22,7 +22,6 @@
     import { selectedInvoice, showRetryModal } from './store';
     import { Button } from '$lib/elements/forms';
     import { goto } from '$app/navigation';
-    import { base } from '$app/paths';
 
     export let data;
 
@@ -37,7 +36,7 @@
     onMount(async () => {
         if ($page.url.searchParams.has('type')) {
             if ($page.url.searchParams.get('type') === 'upgrade') {
-                goto(`${base}/console/organization-${$organization.$id}/change-plan`);
+                goto($upgradeURL);
             }
 
             if (

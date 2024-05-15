@@ -5,7 +5,7 @@
     import { BillingPlan } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { HeaderAlert } from '$lib/layout';
-    import { readOnly, tierToPlan } from '$lib/stores/billing';
+    import { readOnly, tierToPlan, upgradeURL } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
 </script>
 
@@ -25,7 +25,7 @@
                 <span class="text">View usage</span>
             </Button>
             <Button
-                href={`${base}/console/organization-${$organization.$id}/change-plan`}
+                href={$upgradeURL}
                 on:click={() => {
                     trackEvent('click_organization_upgrade', {
                         from: 'button',

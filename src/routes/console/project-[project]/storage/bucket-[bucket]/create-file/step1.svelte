@@ -1,12 +1,11 @@
 <script lang="ts">
-    import { base } from '$app/paths';
     import { Alert, CustomId } from '$lib/components';
     import { BillingPlan } from '$lib/constants';
     import { Pill } from '$lib/elements';
     import { Button, FormList, InputFile } from '$lib/elements/forms';
     import { humanFileSize, sizeToBytes } from '$lib/helpers/sizeConvertion';
     import WizardStep from '$lib/layout/wizardStep.svelte';
-    import { getServiceLimit, tierToPlan } from '$lib/stores/billing';
+    import { getServiceLimit, tierToPlan, upgradeURL } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { isCloud } from '$lib/system';
     import { bucket } from '../store';
@@ -35,11 +34,7 @@
             <svelte:fragment slot="action">
                 {#if $organization?.billingPlan === BillingPlan.STARTER}
                     <div class="alert-buttons u-flex">
-                        <Button
-                            text
-                            href={`${base}/console/organization-${$organization.$id}/change-plan`}>
-                            Upgrade plan
-                        </Button>
+                        <Button text href={$upgradeURL}>Upgrade plan</Button>
                     </div>
                 {/if}
             </svelte:fragment>

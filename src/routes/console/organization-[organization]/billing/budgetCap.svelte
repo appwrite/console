@@ -1,11 +1,10 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { base } from '$app/paths';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Alert, CardGrid, Heading } from '$lib/components';
     import { BillingPlan, Dependencies } from '$lib/constants';
     import { Button, Form, FormList, InputNumber, InputSwitch } from '$lib/elements/forms';
-    import { showUsageRatesModal } from '$lib/stores/billing';
+    import { showUsageRatesModal, upgradeURL } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
@@ -96,7 +95,7 @@
             {#if $organization?.billingPlan === BillingPlan.STARTER}
                 <Button
                     secondary
-                    href={`${base}/console/organization-${$organization.$id}/change-plan`}
+                    href={$upgradeURL}
                     on:click={() => {
                         trackEvent('click_organization_upgrade', {
                             from: 'button',
