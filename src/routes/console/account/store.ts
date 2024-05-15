@@ -6,3 +6,7 @@ export const factors = derived(
     page,
     ($page) => $page.data.factors as Models.MfaFactors & { recoveryCode: boolean }
 );
+export const identities = derived(
+    page,
+    ($page) => $page.data.identities.identities as Models.Identity[]
+);
