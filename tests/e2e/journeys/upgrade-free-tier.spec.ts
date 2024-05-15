@@ -14,7 +14,7 @@ test('upgrade - free tier', async ({ page }) => {
         await enterAddress(page);
         // skip members
         await page.getByRole('button', { name: 'next' }).click();
-        await page.getByRole('button', { name: 'start trial' }).click();
+        await page.getByRole('button', { name: 'create' }).click();
         await page.waitForURL('/console/organization-**');
     });
 });

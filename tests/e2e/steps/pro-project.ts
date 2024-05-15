@@ -36,7 +36,7 @@ export async function createProProject(page: Page): Promise<Metadata> {
         // skip members
         await page.getByRole('button', { name: 'next' }).click();
         // start pro trial
-        await page.getByRole('button', { name: 'start trial' }).click();
+        await page.getByRole('button', { name: 'create' }).click();
         await page.waitForURL('/console/organization-**');
 
         return getOrganizationIdFromUrl(page.url());
