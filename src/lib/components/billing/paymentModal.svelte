@@ -68,7 +68,12 @@
     }
 </script>
 
-<FakeModal bind:show title="Add payment method" bind:error onSubmit={handleSubmit}>
+<FakeModal
+    bind:show
+    title="Add payment method"
+    bind:error
+    onSubmit={handleSubmit}
+    headerDivider={false}>
     <FormList gap={16}>
         <slot />
         <InputText
@@ -90,7 +95,7 @@
     </FormList>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (show = false)}>Cancel</Button>
-        <Button submit disabled={!name}>Save</Button>
+        <Button submit disabled={!name}>Add</Button>
     </svelte:fragment>
 </FakeModal>
 

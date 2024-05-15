@@ -4,7 +4,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { hasStripePublicKey, isCloud } from '$lib/system';
     import { onMount } from 'svelte';
-    import { Card, CreditCardBrandImage } from '..';
+    import { Alert, Card, CreditCardBrandImage } from '..';
     import PaymentModal from './paymentModal.svelte';
     import { capitalize } from '$lib/helpers/string';
 
@@ -27,9 +27,20 @@
     });
 
     $: filteredMethods = methods?.paymentMethods?.filter((method) => !!method?.last4);
+
+    $: selectedPaymentMethod = methods?.paymentMethods?.find((method) => method.$id === value);
 </script>
 
 {#if filteredMethods?.length}
+    {#if selectedPaymentMethod?.country === 'in'}
+        <Alert type="warning">
+            <svelte:fragment slot="title">Indian credit or debit card-holders</svelte:fragment>
+            To comply with RBI regulations in India, Appwrite will ask for verification to charge up
+            to $150 USD on your payment method. We will never charge more than the cost of your plan
+            and the resources you use, or your budget cap limit. For higher usage limits, please contact
+            us.
+        </Alert>
+    {/if}
     <InputSelectSearch
         id="method"
         label="Payment method"
@@ -73,7 +84,7 @@
         </svelte:fragment>
     </InputSelectSearch>
 {:else}
-    <Card isDashed style="--p-card-padding: 1rem; --p-card-bg-color: transparent" isTile>
+    <Card isDashed style="--p-card-padding: 0.75rem; --p-card-bg-color: transparent" isTile>
         <div class="u-flex u-main-space-between u-cross-center">
             <p>
                 <span class="icon-exclamation-circle"></span>
