@@ -360,6 +360,9 @@
             {/if}
         </Form>
         <svelte:fragment slot="aside">
+            <div>
+                <img src="/images/3D-card-illust-light.png" alt="" />
+            </div>
             {#if billingPlan !== BillingPlan.STARTER && $organization.billingPlan !== BillingPlan.PRO}
                 <EstimatedTotalBox
                     {billingPlan}
