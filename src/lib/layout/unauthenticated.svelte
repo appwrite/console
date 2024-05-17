@@ -10,19 +10,19 @@
     export const imgLight = LoginLight;
     export const imgDark = LoginDark;
 
-    export let variation: 'default' | 'gradient' = 'gradient';
+    export let variation: 'default' | 'card' = 'card';
 </script>
 
 <main class="grid-1-1 is-full-page" id="main">
     <section
         class="u-flex u-flex-vertical"
-        class:side-bg={variation === 'gradient'}
-        style:--url={variation === 'gradient'
+        class:side-bg={variation === 'card'}
+        style:--url={variation === 'card'
             ? ''
             : `url(${$app.themeInUse === 'dark' ? imgDark : imgLight})`}>
         <div
             class="logo u-flex u-gap-16 is-not-mobile"
-            class:u-margin-inline-auto={variation === 'gradient'}
+            class:u-margin-inline-auto={variation === 'card'}
             style="z-index: 10">
             <a href={user ? '/console' : '/'}>
                 {#if $app.themeInUse === 'dark'}
@@ -47,7 +47,7 @@
             <div class="tag-line is-not-mobile">
                 <p>Build like a team of hundreds<span class="underscore">_</span></p>
             </div>
-        {:else if variation === 'gradient'}
+        {:else if variation === 'card'}
             <div class="u-flex u-flex-vertical u-main-center u-cross-center" style=" height: 100%">
                 {#if $app.themeInUse === 'dark'}
                     <img

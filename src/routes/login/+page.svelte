@@ -21,6 +21,8 @@
 
     let mail: string, pass: string, disabled: boolean;
 
+    export let data;
+
     async function login() {
         try {
             disabled = true;
@@ -84,7 +86,7 @@
     <title>Sign in - Appwrite</title>
 </svelte:head>
 
-<Unauthenticated>
+<Unauthenticated variation={data?.couponData?.code ? 'card' : 'default'}>
     <svelte:fragment slot="title">Sign in</svelte:fragment>
     <svelte:fragment>
         <Form onSubmit={login}>
