@@ -119,8 +119,8 @@
                         $provider.subdomain,
                         $provider.region,
                         $provider.adminSecret,
-                        $provider.database,
-                        $provider.username,
+                        $provider.database || $provider.subdomain,
+                        $provider.username || 'postgres',
                         $provider.password
                     );
             }
@@ -186,7 +186,7 @@
     </div>
 </Box>
 
-{#if report && !isVersionAtLeast(version, '1.4.0')}
+{#if report && !isVersionAtLeast(version, '1.4.0') && $provider.provider == "appwrite"}
     <div class="u-margin-block-start-24">
         <Alert
             type="warning"
