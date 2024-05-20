@@ -73,8 +73,8 @@
     let feedbackMessage: string;
 
     onMount(async () => {
-        if ($page.url.searchParams.has('coupon')) {
-            const coupon = $page.url.searchParams.get('coupon');
+        if ($page.url.searchParams.has('code')) {
+            const coupon = $page.url.searchParams.get('code');
             try {
                 const response = await sdk.forConsole.billing.getCoupon(coupon);
                 couponData = response;
@@ -360,9 +360,6 @@
             {/if}
         </Form>
         <svelte:fragment slot="aside">
-            <div>
-                <img src="/images/3D-card-illust-light.png" alt="" />
-            </div>
             {#if billingPlan !== BillingPlan.STARTER && $organization.billingPlan !== BillingPlan.PRO}
                 <EstimatedTotalBox
                     {billingPlan}

@@ -38,7 +38,7 @@
             }
 
             await invalidate(Dependencies.ACCOUNT);
-            trackEvent(Submit.AccountCreate);
+            trackEvent(Submit.AccountCreate, { campaign_name: data?.couponData?.code });
 
             if ($page.url.searchParams) {
                 const redirect = $page.url.searchParams.get('redirect');
