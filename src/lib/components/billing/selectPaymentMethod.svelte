@@ -84,7 +84,7 @@
         </svelte:fragment>
     </InputSelectSearch>
 {:else}
-    <Card isDashed style="--p-card-padding: 0.75rem; --p-card-bg-color: transparent" isTile>
+    <Card isDashed --p-card-padding="1rem" --p-card-bg-color="transparent" isTile>
         <div class="u-flex u-main-space-between u-cross-center">
             <p>
                 <span class="icon-exclamation-circle"></span>

@@ -16,14 +16,12 @@
     export let optionalText: $$Props['optionalText'] = undefined;
     export let hide: $$Props['hide'] = false;
     export let tooltip: $$Props['tooltip'] = null;
-    let classes: string = undefined;
-    export { classes as class };
 </script>
 
 <label
     class:is-required={required && !hideRequired}
     class:u-hide={hide}
-    class="label {classes}"
+    class="label"
     {...$$restProps}>
     <slot />
 </label>
