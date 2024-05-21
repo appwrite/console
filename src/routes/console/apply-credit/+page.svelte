@@ -5,7 +5,7 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { EstimatedTotalBox, SelectPaymentMethod } from '$lib/components/billing';
     import { BillingPlan, Dependencies } from '$lib/constants';
-    import { Button, Form, FormList, InputSelect, InputTags } from '$lib/elements/forms';
+    import { Button, Form, FormList, InputSelect, InputTags, InputText } from '$lib/elements/forms';
     import {
         WizardSecondaryContainer,
         WizardSecondaryContent,
@@ -16,6 +16,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { organizationList, type Organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
+    import { ID } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
 
@@ -36,23 +37,18 @@
     let collaborators: string[];
     let taxId: string;
     let billingBudget: number;
-    let options = [
-        ...$organizationList?.teams?.map((team) => ({
-            value: team.$id,
-            label: team.name
-        })),
-        {
-            value: null,
-            label: 'Create new organization'
-        }
-    ];
+    let options = $organizationList?.teams?.map((team) => ({
+        value: team.$id,
+        label: team.name
+    }));
+    let name: string;
 
     onMount(async () => {
         await loadPaymentMethods();
-        if ($organizationList?.total === 1) {
-            selectedOrgId = $organizationList?.teams[0]?.$id;
-        } else if (!$organizationList?.total) {
+        if (!$organizationList?.total) {
             selectedOrgId = null;
+        } else {
+            selectedOrgId = $organizationList?.teams[0]?.$id;
         }
     });
 
@@ -67,12 +63,24 @@
 
     async function handleSubmit() {
         try {
-            const org = await sdk.forConsole.billing.updatePlan(
-                selectedOrg.$id,
-                BillingPlan.PRO,
-                paymentMethodId,
-                null
-            );
+            let org: Organization;
+            if (!selectedOrgId) {
+                org = await sdk.forConsole.billing.createOrganization(
+                    ID.unique(),
+                    name,
+                    BillingPlan.PRO,
+                    paymentMethodId
+                );
+            } else if (selectedOrg?.billingPlan !== BillingPlan.PRO) {
+                org = await sdk.forConsole.billing.updatePlan(
+                    selectedOrg.$id,
+                    BillingPlan.PRO,
+                    paymentMethodId,
+                    null
+                );
+            } else {
+                org = selectedOrg;
+            }
 
             //Add coupon
             if (data.couponData?.code) {
@@ -114,11 +122,11 @@
             });
             trackEvent(Submit.CreditRedeem);
         } catch (e) {
+            trackError(e, Submit.CreditRedeem);
             addNotification({
                 type: 'error',
                 message: e.message
             });
-            trackError(e, Submit.CreditRedeem);
         }
     }
 
@@ -144,13 +152,21 @@
                     label="Select organization"
                     {options}
                     required
-                    placeholder="Select organization"
+                    placeholder="Create new organization"
                     id="organization" />
             </FormList>
         {/if}
         {#if selectedOrg?.billingPlan !== BillingPlan.PRO || !selectedOrg?.paymentMethodId}
             <Form bind:this={formComponent} onSubmit={handleSubmit} bind:isSubmitting>
                 <FormList>
+                    {#if !selectedOrgId}
+                        <InputText
+                            label="Name"
+                            id="name"
+                            placeholder="Organization name"
+                            required
+                            bind:value={name} />
+                    {/if}
                     <InputTags
                         bind:tags={collaborators}
                         label="Invite members by email"
@@ -164,14 +180,16 @@
             </Form>
         {/if}
         <svelte:fragment slot="aside">
-            <div class="card">
-                <img src="/images/3D-card-illust-light.png" alt="" />
-            </div>
-            <EstimatedTotalBox
-                bind:billingPlan={selectedOrg.billingPlan}
-                {collaborators}
-                bind:couponData={data.couponData}
-                bind:billingBudget />
+            {#if selectedOrg?.billingPlan}
+                <div class="card">
+                    <img src="/images/3D-card-illust-light.png" alt="" />
+                </div>
+                <EstimatedTotalBox
+                    bind:billingPlan={selectedOrg.billingPlan}
+                    {collaborators}
+                    bind:couponData={data.couponData}
+                    bind:billingBudget />
+            {/if}
         </svelte:fragment>
     </WizardSecondaryContent>
 
