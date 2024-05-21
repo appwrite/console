@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
+    import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { AvatarInitials, DropList, DropListItem, DropListLink, Support } from '$lib/components';
     import { app } from '$lib/stores/app';
@@ -24,7 +24,7 @@
     import CreateOrganizationCloud from '$routes/console/createOrganizationCloud.svelte';
     import { Feedback } from '$lib/components/feedback';
     import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
-    import { BillingPlan } from '$lib/constants';
+    import { BillingPlan, Dependencies } from '$lib/constants';
 
     let showDropdown = false;
     let showSupport = false;
@@ -40,6 +40,7 @@
 
     async function logout() {
         await sdk.forConsole.account.deleteSession('current');
+        await invalidate(Dependencies.ACCOUNT);
         trackEvent(Submit.AccountLogout);
         await goto(`${base}/login`);
     }

@@ -3,13 +3,12 @@ import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
 import { Dependencies } from '$lib/constants';
 import { isValueOfStringEnum } from '$lib/helpers/types';
 import { addNotification } from '$lib/stores/notifications';
-import type { Provider } from '$lib/stores/oauth-providers';
 import { sdk } from '$lib/stores/sdk';
-import { OAuthProvider } from '@appwrite.io/console';
+import { OAuthProvider, type Models } from '@appwrite.io/console';
 
 type Args = {
     projectId: string;
-    provider: Provider;
+    provider: Models.AuthProvider;
     appId: string;
     secret: string;
     enabled: boolean;
