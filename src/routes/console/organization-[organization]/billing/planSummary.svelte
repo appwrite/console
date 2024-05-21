@@ -62,7 +62,7 @@
                 {#if $organization?.billingPlan !== BillingPlan.STARTER}
                     <CollapsibleItem isInfo gap={8}>
                         <svelte:fragment slot="beforetitle">
-                            <span class="body-text-2">Add-ons</span><span class="inline-tag"
+                            <span class="body-text-2"><b>Add-ons</b></span><span class="inline-tag"
                                 >{extraMembers
                                     ? currentInvoice?.usage?.length ?? 0 + 1
                                     : currentInvoice?.usage?.length ?? 0}</span>
@@ -72,30 +72,28 @@
                         </svelte:fragment>
                         <svelte:fragment slot="end">
                             <div class="body-text-2 u-margin-inline-start-auto">
-                                {formatCurrency(extraUsage)}
+                                <b>
+                                    {formatCurrency(extraUsage >= 0 ? extraUsage : 0)}
+                                </b>
                             </div>
                         </svelte:fragment>
                         <ul>
-                            {#if extraUsage && !isTrial}
-                                {#if extraMembers}
-                                    <li class="u-flex-vertical u-gap-4 u-padding-block-8">
-                                        <div class="u-flex u-gap-4">
-                                            <h5 class="body-text-2 u-stretch">
-                                                Additional members
-                                            </h5>
-                                            <div>
-                                                {formatCurrency(
-                                                    extraMembers * currentPlan.addons.member.price
-                                                )}
-                                            </div>
+                            {#if extraMembers}
+                                <li class="u-flex-vertical u-gap-4 u-padding-block-8">
+                                    <div class="u-flex u-gap-4">
+                                        <h5 class="body-text-2 u-stretch">Additional members</h5>
+                                        <div>
+                                            {formatCurrency(
+                                                extraMembers * currentPlan.addons.member.price
+                                            )}
                                         </div>
-                                        <div class="u-flex u-gap-4">
-                                            <h5 class="body-text-2 u-stretch u-color-text-offline">
-                                                {extraMembers}
-                                            </h5>
-                                        </div>
-                                    </li>
-                                {/if}
+                                    </div>
+                                    <div class="u-flex u-gap-4">
+                                        <h5 class="body-text-2 u-stretch u-color-text-offline">
+                                            {extraMembers}
+                                        </h5>
+                                    </div>
+                                </li>
                             {/if}
                             {#if currentInvoice?.usage}
                                 {#each currentInvoice.usage as excess, i}
