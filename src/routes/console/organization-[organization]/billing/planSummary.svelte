@@ -32,6 +32,7 @@
 
     $: currentPlan = $plansInfo?.get($organization?.billingPlan);
     $: extraUsage = (currentInvoice?.amount ?? 0) - (currentPlan?.price ?? 0);
+    $: extraAddons = currentInvoice?.usage?.length ?? 0;
     $: isTrial =
         new Date($organization?.billingStartDate).getTime() - today.getTime() > 0 &&
         $plansInfo.get($organization.billingPlan)?.trialDays;
@@ -59,13 +60,11 @@
                         {isTrial ? formatCurrency(0) : formatCurrency(currentPlan?.price)}
                     </div>
                 </CollapsibleItem>
-                {#if $organization?.billingPlan !== BillingPlan.STARTER}
+                {#if $organization?.billingPlan !== BillingPlan.STARTER && extraUsage}
                     <CollapsibleItem isInfo gap={8}>
                         <svelte:fragment slot="beforetitle">
                             <span class="body-text-2"><b>Add-ons</b></span><span class="inline-tag"
-                                >{extraMembers
-                                    ? currentInvoice?.usage?.length ?? 0 + 1
-                                    : currentInvoice?.usage?.length ?? 0}</span>
+                                >{extraMembers ? extraAddons + 1 : extraAddons}</span>
                             <div class="icon">
                                 <span class="icon-cheveron-down" aria-hidden="true"></span>
                             </div>
@@ -77,6 +76,7 @@
                                 </b>
                             </div>
                         </svelte:fragment>
+
                         <ul>
                             {#if extraMembers}
                                 <li class="u-flex-vertical u-gap-4 u-padding-block-8">
