@@ -36,6 +36,8 @@
             return 'failed';
         } else if (status === 'completed') {
             return 'completed';
+        } else if (status === 'processing') {
+            return 'processing';
         }
 
         return 'pending';
