@@ -10,7 +10,9 @@
     export const imgLight = LoginLight;
     export const imgDark = LoginDark;
 
-    export let variation: 'default' | 'card' = 'card';
+    export let campaign: string = null;
+
+    $: variation = campaign ? 'card' : 'default';
 </script>
 
 <main class="grid-1-1 is-full-page" id="main">
@@ -49,21 +51,13 @@
             </div>
         {:else if variation === 'card'}
             <div class="u-flex u-flex-vertical u-main-center u-cross-center" style=" height: 100%">
-                {#if $app.themeInUse === 'dark'}
-                    <img
-                        src="/images/3D-card-illust-dark.png"
-                        class="u-block"
-                        width="401"
-                        height="243"
-                        alt="promo" />
-                {:else}
-                    <img
-                        src="/images/3D-card-illust-light.png"
-                        class="u-block"
-                        width="401"
-                        height="243"
-                        alt="promo" />
-                {/if}
+                <img
+                    src={`/images/campaigns/${campaign}/${$app.themeInUse}.png`}
+                    class="u-block"
+                    width="401"
+                    height="243"
+                    alt="promo" />
+
                 <div class="u-text-center">
                     <Heading size="4" tag="h3" class="u-margin-block-start-56">
                         You've received $15 in credits

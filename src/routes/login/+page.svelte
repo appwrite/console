@@ -39,7 +39,10 @@
 
             await invalidate(Dependencies.ACCOUNT);
             trackEvent(Submit.AccountCreate, { campaign_name: data?.couponData?.code });
-
+            if (data?.couponData?.code) {
+                await goto(`${base}/console/apply-credit?code=${data?.couponData?.code}`);
+                return;
+            }
             if ($page.url.searchParams) {
                 const redirect = $page.url.searchParams.get('redirect');
                 $page.url.searchParams.delete('redirect');
@@ -86,7 +89,7 @@
     <title>Sign in - Appwrite</title>
 </svelte:head>
 
-<Unauthenticated variation={data?.couponData?.code ? 'card' : 'default'}>
+<Unauthenticated campaign={data?.couponData?.campaign}>
     <svelte:fragment slot="title">Sign in</svelte:fragment>
     <svelte:fragment>
         <Form onSubmit={login}>
