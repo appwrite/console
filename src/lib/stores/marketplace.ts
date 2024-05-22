@@ -1763,6 +1763,46 @@ export const marketplace: MarketplaceTemplate[] = [
         ]
     },
     {
+        icon: 'icon-chip',
+        id: 'chat-with-anyscale',
+        name: 'Chat with AnyScale',
+        tagline: 'Create a chatbot using the AnyScale API.',
+        permissions: ['any'],
+        cron: '',
+        events: [],
+        timeout: 15,
+        usecases: ['AI'],
+        runtimes: [
+            ...getRuntimes(
+                TemplateRuntimes.NODE,
+                'npm install',
+                'src/main.js',
+                'node/chat-with-anyscale'
+            )
+        ],
+        instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/chat-with-anyscale">file</a>.`,
+        vcsProvider: 'github',
+        providerRepositoryId: 'templates',
+        providerOwner: 'appwrite',
+        providerBranch: 'main',
+        variables: [
+            {
+                name: 'ANYSCALE_API_KEY',
+                description: `A unique key used to authenticate with the AnyScale API. <a class="u-bold" target="_blank" href="https://app.endpoints.anyscale.com/credentials">Learn more</a>.`,
+                placeholder: 'd03xxxxxxxx26',
+                required: true,
+                type: 'password'
+            },
+            {
+                name: 'ANYSCALE_MAX_TOKENS',
+                description: `The maximum number of tokens that Anyscale responses should contain. <a class="u-bold" target="_blank" href="https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them">Learn more</a>.`,
+                placeholder: '',
+                required: false,
+                type: 'number'
+            }
+        ]
+    },
+    {
         icon: 'icon-music-note',
         id: 'music-generation-with-huggingface',
         name: 'Music generation',
