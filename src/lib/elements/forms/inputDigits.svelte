@@ -22,12 +22,13 @@
         placeholder: '',
         defaultValue: value.split(''),
         onValueChange: ({ next }) => {
-            if (!autoSubmit) {
-                return next;
-            }
             value = next.join('');
 
-            if (value.length === length && !autoSubmitted) {
+            if (value.length < length) {
+                autoSubmitted = false;
+            }
+
+            if (element && autoSubmit && value.length === length && !autoSubmitted) {
                 autoSubmitted = true;
                 const firstInputElement = element.querySelector('input');
                 firstInputElement?.form.requestSubmit();

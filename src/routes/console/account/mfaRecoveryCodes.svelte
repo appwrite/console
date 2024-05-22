@@ -27,7 +27,7 @@
             <ul class="buttons-list">
                 <li class="buttons-list-item">
                     <Button
-                        download="backups.txt"
+                        download="appwrite-backups.txt"
                         href={`data:application/octet-stream;charset=utf-8,${formattedBackupCodes}`}
                         text>
                         <span class="icon-download u-font-size-20" aria-hidden="true" />

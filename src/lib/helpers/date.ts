@@ -2,6 +2,15 @@ import { browser } from '$app/environment';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 
+export type WeekDay =
+    | 'Sunday'
+    | 'Monday'
+    | 'Tuesday'
+    | 'Wednesday'
+    | 'Thursday'
+    | 'Friday'
+    | 'Saturday';
+
 if (browser) {
     dayjs.extend(relativeTime);
 }
@@ -71,6 +80,52 @@ export const toLocaleTimeISO = (datetime: string | number) => {
 
     // Use Sweden's locale (sv) since it matches ISO format
     return date.toLocaleTimeString('sv');
+};
+
+export const utcHourToLocaleHour = (utcTimeString: string) => {
+    const now = new Date();
+    const [hours, minutes] = utcTimeString.split(':').map(Number);
+    const customTime = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes);
+
+    const options: Intl.DateTimeFormatOptions = {
+        hour: 'numeric',
+        minute: 'numeric',
+        hourCycle: 'h23'
+    };
+
+    return new Intl.DateTimeFormat('en', options).format(new Date(customTime));
+};
+
+export const utcWeekDayToLocaleWeekDay = (utcDay: WeekDay, utcTimeString: string) => {
+    const now = new Date();
+
+    const daysOfTheWeek = {
+        Sunday: 0,
+        Monday: 1,
+        Tuesday: 2,
+        Wednesday: 3,
+        Thursday: 4,
+        Friday: 5,
+        Saturday: 6
+    };
+
+    const utcDayNumber = daysOfTheWeek[utcDay];
+    const [hours, minutes] = utcTimeString.split(':').map(Number);
+
+    const daysUntilNextUtcDay = (7 + utcDayNumber - now.getUTCDay()) % 7;
+    now.setUTCDate(now.getUTCDate() + daysUntilNextUtcDay);
+    now.setUTCHours(hours, minutes, 0, 0);
+
+    return new Intl.DateTimeFormat('en', { weekday: 'short' }).format(now);
+};
+
+export const localeTimezoneName = () => {
+    const options: Intl.DateTimeFormatOptions = {
+        timeZoneName: 'longGeneric'
+    };
+
+    const dateWithTimezone = new Intl.DateTimeFormat('en', options).format(new Date());
+    return dateWithTimezone.split(', ')[1];
 };
 
 export const isSameDay = (date1: Date, date2: Date) => {

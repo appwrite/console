@@ -42,12 +42,13 @@ export const load: LayoutLoad = async ({ depends, url }) => {
         const path = url.search ? `${url.search}&${redirectUrl}` : `?${redirectUrl}`;
 
         if (error.type === 'user_more_factors_required') {
-            if (url.pathname === '/mfa') return;
+            if (url.pathname === '/mfa') return {}; // Ensure any previous account/organizations are cleared
             redirect(303, `/mfa${path}`);
         }
 
         if (!acceptedRoutes.some((n) => url.pathname.startsWith(n))) {
             redirect(303, `/login${path}`);
         }
+        return {}; // Ensure any previous account/organizations are cleared
     }
 };

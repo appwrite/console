@@ -18,6 +18,7 @@
     class:u-flex={right}
     class:u-main-end={right}
     data-title={title}
-    role="cell">
+    role="cell"
+    data-private>
     <slot />
 </div>

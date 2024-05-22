@@ -57,7 +57,7 @@
                 id="runtime"
                 placeholder="Select runtime"
                 required
-                disabled={options.length <= 1}
+                disabled={options.length < 1}
                 {options}
                 bind:value={$templateConfig.runtime} />
         {/await}
