@@ -1892,7 +1892,7 @@ export const marketplace: MarketplaceTemplate[] = [
                 type: 'password'
             }
         ]
-        },
+    },
     {
         icon: 'icon-currency-dollar',
         id: 'subscriptions-with-lemon-squeezy',
