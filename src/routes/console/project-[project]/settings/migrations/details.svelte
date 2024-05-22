@@ -73,8 +73,8 @@
                 type="error"
                 buttons={[
                     {
-                        name: 'View logs',
-                        method() {
+                        slot: 'View logs',
+                        onClick() {
                             tab = 'logs';
                         }
                     }
