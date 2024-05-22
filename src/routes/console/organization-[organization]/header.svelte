@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { tooltip } from '$lib/actions/tooltip';
@@ -31,9 +32,7 @@
         organization,
         organizationList
     } from '$lib/stores/organization';
-    import { wizard } from '$lib/stores/wizard';
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
-    import CreateOrganizationCloud from '../createOrganizationCloud.svelte';
 
     let areMembersLimited: boolean;
     $: organization.subscribe(() => {
@@ -48,7 +47,7 @@
     function createOrg() {
         showDropdown = false;
         if (isCloud) {
-            wizard.start(CreateOrganizationCloud);
+            goto(`${base}/console/create-organization`);
         } else newOrgModal.set(true);
     }
 

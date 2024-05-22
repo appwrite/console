@@ -20,9 +20,8 @@
     import { daysLeftInTrial, plansInfo } from '$lib/stores/billing';
     import { tooltip } from '$lib/actions/tooltip';
     import { toLocaleDate } from '$lib/helpers/date';
-    import { wizard } from '$lib/stores/wizard';
-    import CreateOrganizationCloud from '$routes/console/createOrganizationCloud.svelte';
     import { BillingPlan } from '$lib/constants';
+    import { goto } from '$app/navigation';
 
     export let data: PageData;
     let addOrganization = false;
@@ -40,7 +39,7 @@
 
     function createOrg() {
         if (isCloud) {
-            wizard.start(CreateOrganizationCloud);
+            goto(`${base}/console/create-organization`);
         } else addOrganization = true;
     }
 </script>

@@ -1,19 +1,17 @@
 <script lang="ts">
     import { Modal } from '$lib/components';
     import { sizeToBytes } from '$lib/helpers/sizeConvertion';
-    import { plansInfo, tierToPlan } from '$lib/stores/billing';
+    import { plansInfo, tierToPlan, upgradeURL } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { onMount } from 'svelte';
-    import PlanExcess from '../wizard/cloudOrganizationChangeTier/planExcess.svelte';
     import type { OrganizationUsage } from '$lib/sdk/billing';
     import type { Models } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
     import { Button } from '$lib/elements/forms';
-    import { wizard } from '$lib/stores/wizard';
-    import ChangeOrganizationTierCloud from '../changeOrganizationTierCloud.svelte';
     import { goto } from '$app/navigation';
     import { last } from '$lib/helpers/array';
     import { trackEvent } from '$lib/actions/analytics';
+    import PlanExcess from '$lib/components/billing/planExcess.svelte';
 
     export let show = false;
     const plan = $plansInfo?.get($organization.billingPlan);
@@ -78,9 +76,9 @@
                     View usage
                 </Button>
                 <Button
+                    href={$upgradeURL}
                     on:click={() => {
                         show = false;
-                        wizard.start(ChangeOrganizationTierCloud);
                         trackEvent('click_organization_upgrade', {
                             from: 'button',
                             source: 'limit_reached_modal'

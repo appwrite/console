@@ -20,11 +20,9 @@
     import { slide } from 'svelte/transition';
     import { sdk } from '$lib/stores/sdk';
     import { isCloud } from '$lib/system';
-    import { wizard } from '$lib/stores/wizard';
-    import CreateOrganizationCloud from '$routes/console/createOrganizationCloud.svelte';
     import { Feedback } from '$lib/components/feedback';
-    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
     import { BillingPlan, Dependencies } from '$lib/constants';
+    import { upgradeURL } from '$lib/stores/billing';
 
     let showDropdown = false;
     let showSupport = false;
@@ -57,7 +55,7 @@
     function createOrg() {
         showDropdown = false;
         if (isCloud) {
-            wizard.start(CreateOrganizationCloud);
+            goto(`${base}/console/create-organization`);
         } else newOrgModal.set(true);
     }
 
@@ -108,8 +106,8 @@
         {#if isCloud && $organization?.billingPlan === BillingPlan.STARTER && !$page.url.pathname.startsWith('/console/account')}
             <Button
                 disabled={$organization?.markedForDeletion}
+                href={$upgradeURL}
                 on:click={() => {
-                    wizard.start(ChangeOrganizationTierCloud);
                     trackEvent('click_organization_upgrade', {
                         from: 'button',
                         source: 'top_nav'

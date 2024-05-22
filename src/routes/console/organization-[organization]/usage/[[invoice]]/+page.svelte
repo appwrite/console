@@ -1,13 +1,16 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
     import { Card, CardGrid, Heading, ProgressBarBig } from '$lib/components';
-    import { getServiceLimit, showUsageRatesModal, tierToPlan } from '$lib/stores/billing';
-    import { wizard } from '$lib/stores/wizard';
+    import {
+        getServiceLimit,
+        showUsageRatesModal,
+        tierToPlan,
+        upgradeURL
+    } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { Button } from '$lib/elements/forms';
     import { bytesToSize, humanFileSize } from '$lib/helpers/sizeConvertion';
     import { BarChart } from '$lib/charts';
-    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
     import ProjectBreakdown from './ProjectBreakdown.svelte';
     import { formatNum } from '$lib/helpers/string';
     import { accumulateFromEndingTotal, total } from '$lib/layout/usage.svelte';
@@ -45,8 +48,8 @@
 
         {#if $organization?.billingPlan === BillingPlan.STARTER}
             <Button
+                href={$upgradeURL}
                 on:click={() => {
-                    wizard.start(ChangeOrganizationTierCloud);
                     trackEvent('click_organization_upgrade', {
                         from: 'button',
                         source: 'organization_usage'
@@ -77,11 +80,7 @@
             <p class="text">
                 If you exceed the limits of the {plan} plan, services for your organization's projects
                 may be disrupted.
-                <button
-                    on:click={() => wizard.start(ChangeOrganizationTierCloud)}
-                    class="link"
-                    type="button">Upgrade for greater capacity</button
-                >.
+                <a href={$upgradeURL} class="link">Upgrade for greater capacity</a>.
             </p>
         {/if}
 

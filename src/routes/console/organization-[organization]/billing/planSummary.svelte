@@ -3,10 +3,8 @@
     import { CardGrid, Collapsible, CollapsibleItem, Heading } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
-    import { plansInfo, tierToPlan } from '$lib/stores/billing';
+    import { plansInfo, tierToPlan, upgradeURL } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
-    import { wizard } from '$lib/stores/wizard';
-    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
     import { onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
     import type { Invoice } from '$lib/sdk/billing';
@@ -162,7 +160,7 @@
                     </Button>
                     <Button
                         disabled={$organization?.markedForDeletion}
-                        on:click={() => wizard.start(ChangeOrganizationTierCloud)}
+                        href={$upgradeURL}
                         on:click={() =>
                             trackEvent('click_organization_upgrade', {
                                 from: 'button',
@@ -176,7 +174,7 @@
                     <Button
                         text
                         disabled={$organization?.markedForDeletion}
-                        on:click={() => wizard.start(ChangeOrganizationTierCloud)}
+                        href={$upgradeURL}
                         on:click={() =>
                             trackEvent('click_organization_plan_update', {
                                 from: 'button',
