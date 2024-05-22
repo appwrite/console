@@ -89,7 +89,7 @@
     <title>Sign in - Appwrite</title>
 </svelte:head>
 
-<Unauthenticated campaign={data?.couponData?.campaign}>
+<Unauthenticated coupon={data?.couponData}>
     <svelte:fragment slot="title">Sign in</svelte:fragment>
     <svelte:fragment>
         <Form onSubmit={login}>

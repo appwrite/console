@@ -13,6 +13,7 @@
         WizardSecondaryHeader
     } from '$lib/layout';
     import { type PaymentList } from '$lib/sdk/billing';
+    import { app } from '$lib/stores/app';
     import { addNotification } from '$lib/stores/notifications';
     import { organizationList, type Organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
@@ -180,16 +181,23 @@
             </Form>
         {/if}
         <svelte:fragment slot="aside">
-            {#if selectedOrg?.billingPlan}
-                <div class="card">
-                    <img src="/images/3D-card-illust-light.png" alt="" />
-                </div>
-                <EstimatedTotalBox
-                    bind:billingPlan={selectedOrg.billingPlan}
-                    {collaborators}
-                    bind:couponData={data.couponData}
-                    bind:billingBudget />
-            {/if}
+            <div class="card">
+                <!-- <img
+                    src={`/images/campaigns/${data?.couponData?.campaign}/${$app.themeInUse}.png`}
+                    class="u-block"
+                    width="401"
+                    height="243"
+                    alt="promo" /> -->
+                <img
+                    src={`/images/campaigns/startup/${$app.themeInUse}.png`}
+                    class="u-block u-image-object-fit-cover"
+                    alt="promo" />
+            </div>
+            <EstimatedTotalBox
+                billingPlan={BillingPlan.PRO}
+                {collaborators}
+                bind:couponData={data.couponData}
+                bind:billingBudget />
         </svelte:fragment>
     </WizardSecondaryContent>
 

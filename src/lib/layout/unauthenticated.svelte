@@ -4,15 +4,16 @@
     import AppwriteLogoLight from '$lib/images/appwrite-logo-light.svg';
     import LoginDark from '$lib/images/login/login-dark-mode.png';
     import LoginLight from '$lib/images/login/login-light-mode.png';
+    import type { Coupon } from '$lib/sdk/billing';
     import { app } from '$lib/stores/app';
     import { user } from '$lib/stores/user';
 
     export const imgLight = LoginLight;
     export const imgDark = LoginDark;
 
-    export let campaign: string = null;
+    export let coupon: Coupon = null;
 
-    $: variation = campaign ? 'card' : 'default';
+    $: variation = coupon?.code ? 'card' : 'default';
 </script>
 
 <main class="grid-1-1 is-full-page" id="main">
@@ -52,19 +53,19 @@
         {:else if variation === 'card'}
             <div class="u-flex u-flex-vertical u-main-center u-cross-center" style=" height: 100%">
                 <img
-                    src={`/images/campaigns/${campaign}/${$app.themeInUse}.png`}
-                    class="u-block"
+                    src={`/images/campaigns/${coupon.campaign}/${$app.themeInUse}.png`}
+                    class="u-block u-image-object-fit-cover"
                     width="401"
                     height="243"
                     alt="promo" />
 
                 <div class="u-text-center">
                     <Heading size="4" tag="h3" class="u-margin-block-start-56">
-                        You've received $15 in credits
+                        You've received ${coupon.credits} in credits
                     </Heading>
                     <p class="body-text-1 u-margin-block-start-8">
-                        Get $15 in credits when you sign up and create an organization with a Pro
-                        plan.
+                        Get ${coupon.credits} in credits when you upgrade or create an organization with
+                        a Pro plan.
                     </p>
                 </div>
             </div>

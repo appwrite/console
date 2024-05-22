@@ -14,7 +14,7 @@ export const load = async ({ url }) => {
         }
     }
     if (!couponData?.campaign) {
-        redirect(303, `${base}/console`);
+        // redirect(303, `${base}/console`);
     }
 
     return {
