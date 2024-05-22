@@ -256,7 +256,7 @@
     <WizardSecondaryHeader href={previousPage}>Change plan</WizardSecondaryHeader>
     <WizardSecondaryContent>
         <Form bind:this={formComponent} onSubmit={handleSubmit} bind:isSubmitting>
-            <Label class="u-margin-block-start-16">Select plan</Label>
+            <Label class="label u-margin-block-start-16">Select plan</Label>
             <p class="text">
                 For more details on our plans, visit our
                 <Button href="https://appwrite.io/pricing" external link>pricing page</Button>.
