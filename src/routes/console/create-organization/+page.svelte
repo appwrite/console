@@ -197,7 +197,7 @@
                     id="name"
                     required />
             </FormList>
-            <Label class="u-margin-block-start-16">Select plan</Label>
+            <Label class="label u-margin-block-start-16">Select plan</Label>
             <p class="text">
                 For more details on our plans, visit our
                 <Button href="https://appwrite.io/pricing" external link>pricing page</Button>.

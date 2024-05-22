@@ -49,6 +49,7 @@
     class:is-border-dashed={isDashed}
     class:is-danger={danger}
     class:is-allowed-focus={href}
+    {...$$restProps}
     {style}
     on:click
     on:keyup={clickOnEnter}

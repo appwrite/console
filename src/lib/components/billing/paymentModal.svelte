@@ -92,6 +92,7 @@
                 <!-- Stripe will create form elements here -->
             </div>
         </div>
+        <slot name="end"></slot>
     </FormList>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (show = false)}>Cancel</Button>
