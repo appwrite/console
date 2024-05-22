@@ -75,7 +75,7 @@
         }
         if ($page.url.searchParams.has('plan')) {
             const plan = $page.url.searchParams.get('plan');
-            if (plan && plan in BillingPlan) {
+            if (plan && Object.values(BillingPlan).includes(plan as BillingPlan)) {
                 billingPlan = plan as BillingPlan;
             }
         }
