@@ -28,6 +28,6 @@ jobs:
             - name: Linter
               run: npm run lint
             - name: Unit Tests
-              run: npm test
+              run: npm run test
             - name: Build Console
               run: npm run build

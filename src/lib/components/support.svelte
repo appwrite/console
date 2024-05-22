@@ -7,9 +7,9 @@
     import { isCloud } from '$lib/system';
     import { organization } from '$lib/stores/organization';
     import { BillingPlan } from '$lib/constants';
-    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
     import { trackEvent } from '$lib/actions/analytics';
     import { localeTimezoneName, utcHourToLocaleHour } from '$lib/helpers/date';
+    import { upgradeURL } from '$lib/stores/billing';
 
     export let show = false;
 
@@ -33,9 +33,8 @@
         {#if $organization?.billingPlan === BillingPlan.STARTER}
             <Button
                 fullWidth
-                external
+                href={$upgradeURL}
                 on:click={() => {
-                    wizard.start(ChangeOrganizationTierCloud);
                     trackEvent('click_organization_upgrade', {
                         from: 'button',
                         source: 'support_menu'

@@ -6,9 +6,18 @@ import { Dependencies } from '$lib/constants';
 
 export const load: LayoutLoad = async ({ depends }) => {
     depends(Dependencies.FACTORS);
+    depends(Dependencies.IDENTITIES);
+
+    const promises = [
+        sdk.forConsole.account.listMfaFactors(),
+        sdk.forConsole.account.listIdentities()
+    ];
+
+    const [factors, identities] = await Promise.all(promises);
 
     return {
-        factors: await sdk.forConsole.account.listMfaFactors(),
+        factors,
+        identities,
         header: Header,
         breadcrumbs: Breadcrumbs
     };

@@ -1,11 +1,13 @@
 <script lang="ts">
-    import { createEventDispatcher } from 'svelte';
-    import type { Buttons } from '../stores/notifications';
+    import { createEventDispatcher, type ComponentProps } from 'svelte';
     import { Button } from '$lib/elements/forms';
 
     export let dismissible = false;
     export let type: 'info' | 'success' | 'warning' | 'error' | 'default' = 'info';
-    export let buttons: Buttons[] = [];
+    export let buttons: (ComponentProps<Button> & {
+        slot: string;
+        onClick?: (e: MouseEvent) => void;
+    })[] = [];
     export let isAction = false;
     export let isStandalone = false;
     let classes = '';
@@ -53,8 +55,8 @@
                     <div class="alert-buttons u-flex">
                         <slot name="buttons">
                             {#each buttons as button}
-                                <Button text on:click={button.method}>
-                                    <span class="text">{button.name}</span>
+                                <Button text {...button} on:click={button.onClick}>
+                                    <span class="text">{button.slot}</span>
                                 </Button>
                             {/each}
                         </slot>
@@ -66,9 +68,9 @@
             <div class="alert-buttons u-flex u-gap-16 u-cross-child-center">
                 <slot name="buttons">
                     {#each buttons as button}
-                        <button type="button" class="button is-text" on:click={button.method}>
-                            <span class="text">{button.name}</span>
-                        </button>
+                        <Button text {...button} on:click={button.onClick}>
+                            + <span class="text">{button.slot}</span>
+                        </Button>
                     {/each}
                 </slot>
             </div>

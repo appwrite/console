@@ -4,12 +4,10 @@
     import { Alert, CardGrid, Heading } from '$lib/components';
     import { BillingPlan, Dependencies } from '$lib/constants';
     import { Button, Form, FormList, InputNumber, InputSwitch } from '$lib/elements/forms';
-    import { showUsageRatesModal } from '$lib/stores/billing';
+    import { showUsageRatesModal, upgradeURL } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
-    import { wizard } from '$lib/stores/wizard';
-    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
     import { onMount } from 'svelte';
 
     let capActive = false;
@@ -97,8 +95,8 @@
             {#if $organization?.billingPlan === BillingPlan.STARTER}
                 <Button
                     secondary
+                    href={$upgradeURL}
                     on:click={() => {
-                        wizard.start(ChangeOrganizationTierCloud);
                         trackEvent('click_organization_upgrade', {
                             from: 'button',
                             source: 'billing_budget_cap'

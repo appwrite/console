@@ -84,7 +84,10 @@
         </svelte:fragment>
     </InputSelectSearch>
 {:else}
-    <Card isDashed --p-card-padding="1rem" --p-card-bg-color="transparent" isTile>
+    <Card
+        isDashed
+        style="--p-card-padding:1rem; --p-card-bg-color: transparent; --p-card-border-radius: 0.5rem"
+        isTile>
         <div class="u-flex u-main-space-between u-cross-center">
             <p>
                 <span class="icon-exclamation-circle"></span>
@@ -99,17 +102,23 @@
 
 {#if showPaymentModal && isCloud && hasStripePublicKey}
     <PaymentModal bind:show={showPaymentModal} on:submit={cardSaved}>
-        <InputChoice
-            type="checkbox"
-            id="taxIdCheck"
-            label="I'm purchasing as a bussiness"
-            fullWidth
-            bind:value={showTaxId}>
-            {#if showTaxId}
-                <div class="u-margin-block-start-16">
-                    <InputText id="taxId" label="Tax ID" placeholder="Tax ID" bind:value={taxId} />
-                </div>
-            {/if}
-        </InputChoice>
+        <svelte:fragment slot="end">
+            <InputChoice
+                type="checkbox"
+                id="taxIdCheck"
+                label="I'm purchasing as a business"
+                fullWidth
+                bind:value={showTaxId}>
+                {#if showTaxId}
+                    <div class="u-margin-block-start-8">
+                        <InputText
+                            id="taxId"
+                            label="Tax ID"
+                            placeholder="Tax ID"
+                            bind:value={taxId} />
+                    </div>
+                {/if}
+            </InputChoice>
+        </svelte:fragment>
     </PaymentModal>
 {/if}

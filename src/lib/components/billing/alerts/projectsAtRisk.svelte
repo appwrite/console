@@ -4,10 +4,10 @@
     import { Button } from '$lib/elements/forms';
     import { diffDays, toLocaleDate } from '$lib/helpers/date';
     import { HeaderAlert } from '$lib/layout';
-    import { failedInvoice } from '$lib/stores/billing';
+    import { failedInvoice, hideBillingHeaderRoutes } from '$lib/stores/billing';
 </script>
 
-{#if $failedInvoice && !$page.url.pathname.includes('/console/account')}
+{#if $failedInvoice && !hideBillingHeaderRoutes.includes($page.url.pathname)}
     {@const daysPassed = diffDays(new Date($failedInvoice.dueAt), new Date())}
     <HeaderAlert title="Your projects are at risk">
         <svelte:fragment>
