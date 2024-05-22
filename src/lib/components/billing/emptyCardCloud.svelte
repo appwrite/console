@@ -2,9 +2,7 @@
     import { trackEvent } from '$lib/actions/analytics';
     import { BillingPlan } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
-    import { tierToPlan } from '$lib/stores/billing';
-    import { wizard } from '$lib/stores/wizard';
-    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
+    import { tierToPlan, upgradeURL } from '$lib/stores/billing';
     import { Card } from '..';
 
     export let service: string;
@@ -23,12 +21,12 @@
                 class="u-margin-block-start-16"
                 secondary
                 fullWidthMobile
+                href={$upgradeURL}
                 on:click={() => {
                     trackEvent('click_organization_upgrade', {
                         from: 'button',
                         source: eventSource
                     });
-                    wizard.start(ChangeOrganizationTierCloud);
                 }}>
                 Upgrade
             </Button>
