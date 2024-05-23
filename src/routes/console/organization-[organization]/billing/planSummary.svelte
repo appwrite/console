@@ -147,7 +147,9 @@
                             }}></span>
                     </span>
                     <div class="body-text-2 u-margin-inline-start-auto">
-                        {formatCurrency(currentInvoice?.amount ?? 0)}
+                        {$organization?.billingPlan === BillingPlan.STARTER
+                            ? formatCurrency(0)
+                            : formatCurrency(currentInvoice?.amount ?? 0)}
                     </div>
                 </CollapsibleItem>
             </Collapsible>
