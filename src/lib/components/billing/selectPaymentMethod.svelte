@@ -56,7 +56,7 @@
         interactiveOutput
         let:option={o}>
         <svelte:fragment slot="output" let:option={o}>
-            <output class="input-text">
+            <output class="input-text u-cursor-pointer">
                 <span class="u-flex u-gap-16 u-flex-vertical">
                     <span class="u-flex u-gap-16">
                         <span class="u-flex u-cross-center u-gap-8" style="padding-inline:0.25rem">
