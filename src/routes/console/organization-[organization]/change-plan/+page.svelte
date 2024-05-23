@@ -275,11 +275,10 @@
                 class="u-flex u-gap-16 u-margin-block-start-8"
                 style="--p-grid-item-size:16em; --p-grid-item-size-small-screens:16rem; --grid-gap: 1rem;">
                 <li class="u-flex-basis-50-percent">
-                    <!-- disabled={!!anyOrgFree} -->
-
                     <LabelCard
                         name="plan"
                         bind:group={billingPlan}
+                        disabled={!!anyOrgFree}
                         value="tier-0"
                         tooltipShow={!!anyOrgFree}
                         tooltipText="You are limited to 1 Free organization per account.">
