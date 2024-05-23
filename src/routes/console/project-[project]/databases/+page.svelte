@@ -50,11 +50,13 @@
         }}>
         <svelte:fragment>
             <div class="u-flex u-gap-16 u-cross-center u-flex-wrap">
-                <ViewSelector
-                    {columns}
-                    view={data.view}
-                    hideColumns={!data.databases.total}
-                    hideView={!data.databases.total} />
+                {#if data.databases.total > 0}
+                    <ViewSelector
+                        {columns}
+                        view={data.view}
+                        hideColumns={!data.databases.total}
+                        hideView={!data.databases.total} />
+                {/if}
                 <div
                     use:tooltip={{
                         content: `Upgrade to add more databases`,

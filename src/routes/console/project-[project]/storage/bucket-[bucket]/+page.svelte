@@ -93,9 +93,29 @@
 </script>
 
 <Container>
-    <ContainerHeader title="Files" serviceId="storage" isFlex={false} total={usedStorage}>
+    <ContainerHeader
+        title="Files"
+        serviceId="storage"
+        isFlex={!data.files.total}
+        total={usedStorage}>
         <svelte:fragment let:isButtonDisabled>
-            <SearchQuery search={data.search} placeholder="Search by filename">
+            {#if data.files.total}
+                <SearchQuery search={data.search} placeholder="Search by filename">
+                    <div
+                        use:tooltip={{
+                            content: `Upgrade to add more files`,
+                            disabled: !isButtonDisabled
+                        }}>
+                        <Button
+                            on:click={() => wizard.start(Create)}
+                            event="create_file"
+                            disabled={isButtonDisabled}>
+                            <span class="icon-plus" aria-hidden="true" />
+                            <span class="text">Create file</span>
+                        </Button>
+                    </div>
+                </SearchQuery>
+            {:else}
                 <div
                     use:tooltip={{
                         content: `Upgrade to add more files`,
@@ -109,7 +129,7 @@
                         <span class="text">Create file</span>
                     </Button>
                 </div>
-            </SearchQuery>
+            {/if}
         </svelte:fragment>
         <svelte:fragment slot="tooltip" let:limit let:tier let:upgradeMethod>
             {#if tier === 'Starter'}

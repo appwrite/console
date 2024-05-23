@@ -93,28 +93,31 @@
 
 <Container>
     <ContainerHeader title="Messages">
-        <div class="is-only-mobile">
+        <div class={data.messages.total > 0 ? 'is-only-mobile' : ''}>
             <CreateMessageDropdown bind:showCreateDropdown={showCreateDropdownMobile} />
         </div>
     </ContainerHeader>
     <div class="u-flex u-flex-vertical u-gap-16 u-margin-block-start-16">
-        <SearchQuery
-            fullWidth
-            search={data.search}
-            placeholder="Search by message ID, description, type, or status">
-            <div class="is-not-mobile u-width-full-line">
-                <div class="u-flex u-gap-16 u-main-end">
-                    <Filters query={data.query} {columns} />
-                    <ViewSelector
-                        view={data.view}
-                        {columns}
-                        hideView
-                        allowNoColumns
-                        showColsTextMobile />
-                    <CreateMessageDropdown bind:showCreateDropdown={showCreateDropdownDesktop} />
+        {#if data.messages.total > 0}
+            <SearchQuery
+                fullWidth
+                search={data.search}
+                placeholder="Search by message ID, description, type, or status">
+                <div class="is-not-mobile u-width-full-line">
+                    <div class="u-flex u-gap-16 u-main-end">
+                        <Filters query={data.query} {columns} />
+                        <ViewSelector
+                            view={data.view}
+                            {columns}
+                            hideView
+                            allowNoColumns
+                            showColsTextMobile />
+                    </div>
                 </div>
-            </div>
-        </SearchQuery>
+                <CreateMessageDropdown bind:showCreateDropdown={showCreateDropdownDesktop} />
+            </SearchQuery>
+        {/if}
+
         <div class="is-only-mobile u-flex u-gap-16">
             <div class="u-flex-basis-50-percent">
                 <ViewSelector

@@ -13,6 +13,7 @@
     export let autofocus = false;
     export let isWithEndButton = true;
     export let fullWidth = false;
+    export let showField = true;
 
     let element: HTMLInputElement;
     let timer: ReturnType<typeof setTimeout>;
@@ -59,26 +60,28 @@
 </script>
 
 <div class="u-flex u-gap-12 common-section u-main-space-between">
-    <div class={fullWidth ? 'u-width-full-line' : 'u-flex-basis-50-percent'}>
-        <div class="input-text-wrapper" class:is-with-end-button={isWithEndButton}>
-            <input
-                {placeholder}
-                {disabled}
-                {required}
-                type="search"
-                class="input-text"
-                bind:value={search} />
-            <span class="icon-search" aria-hidden="true" />
-            {#if isWithEndButton && search}
-                <button
-                    class="button is-text is-only-icon"
-                    style="--button-size:1.5rem;"
-                    aria-label="Clear search"
-                    on:click={() => (search = '')}>
-                    <span class="icon-x" aria-hidden="true" />
-                </button>
-            {/if}
+    {#if showField}
+        <div class={fullWidth ? 'u-width-full-line' : 'u-flex-basis-50-percent'}>
+            <div class="input-text-wrapper" class:is-with-end-button={isWithEndButton}>
+                <input
+                    {placeholder}
+                    {disabled}
+                    {required}
+                    type="search"
+                    class="input-text"
+                    bind:value={search} />
+                <span class="icon-search" aria-hidden="true" />
+                {#if isWithEndButton && search}
+                    <button
+                        class="button is-text is-only-icon"
+                        style="--button-size:1.5rem;"
+                        aria-label="Clear search"
+                        on:click={() => (search = '')}>
+                        <span class="icon-x" aria-hidden="true" />
+                    </button>
+                {/if}
+            </div>
         </div>
-    </div>
+    {/if}
     <slot />
 </div>

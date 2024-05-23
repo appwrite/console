@@ -42,8 +42,8 @@
 </script>
 
 <Container>
-    <ContainerHeader title="Users" isFlex={false} total={data.users.total} let:isButtonDisabled>
-        <SearchQuery search={data.search} placeholder="Search by name, email, phone, or ID">
+    <ContainerHeader title="Users" total={data.users.total} let:isButtonDisabled>
+        <div class={data.users.total ? 'is-only-mobile' : ''}>
             <div
                 use:tooltip={{
                     content: `Upgrade to add more users`,
@@ -56,8 +56,29 @@
                     <span class="icon-plus" aria-hidden="true" />
                     <span class="text">Create user</span>
                 </Button>
-            </div></SearchQuery>
+            </div>
+        </div>
     </ContainerHeader>
+
+    <div class="u-flex u-flex-vertical u-gap-16 u-margin-block-start-16">
+        {#if data.users.total > 0}
+            <SearchQuery search={data.search} placeholder="Search by name, email, phone, or ID">
+                <div
+                    use:tooltip={{
+                        content: `Upgrade to add more users`,
+                        disabled: data.users.total === 0
+                    }}>
+                    <Button
+                        on:click={() => ($showCreateUser = true)}
+                        event="create_user"
+                        disabled={data.users.total === 0}>
+                        <span class="icon-plus" aria-hidden="true" />
+                        <span class="text">Create user</span>
+                    </Button>
+                </div>
+            </SearchQuery>
+        {/if}
+    </div>
     {#if data.users.total}
         <Table>
             <TableHeader>
