@@ -186,7 +186,9 @@
 </svelte:head>
 
 <WizardSecondaryContainer>
-    <WizardSecondaryHeader href={previousPage}>Create organization</WizardSecondaryHeader>
+    <WizardSecondaryHeader href={previousPage} showExitModal>
+        Create organization
+    </WizardSecondaryHeader>
     <WizardSecondaryContent>
         <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
             <FormList>
