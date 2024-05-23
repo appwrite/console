@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
+    import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { AvatarInitials, DropList, DropListItem, DropListLink, Support } from '$lib/components';
     import { app } from '$lib/stores/app';
@@ -21,7 +21,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { isCloud } from '$lib/system';
     import { Feedback } from '$lib/components/feedback';
-    import { BillingPlan } from '$lib/constants';
+    import { BillingPlan, Dependencies } from '$lib/constants';
     import { upgradeURL } from '$lib/stores/billing';
 
     let showDropdown = false;
@@ -38,6 +38,7 @@
 
     async function logout() {
         await sdk.forConsole.account.deleteSession('current');
+        await invalidate(Dependencies.ACCOUNT);
         trackEvent(Submit.AccountLogout);
         await goto(`${base}/login`);
     }

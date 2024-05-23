@@ -75,7 +75,7 @@
         }
         if ($page.url.searchParams.has('plan')) {
             const plan = $page.url.searchParams.get('plan');
-            if (plan && plan in BillingPlan) {
+            if (plan && Object.values(BillingPlan).includes(plan as BillingPlan)) {
                 billingPlan = plan as BillingPlan;
             }
         }
@@ -197,7 +197,7 @@
                     id="name"
                     required />
             </FormList>
-            <Label class="u-margin-block-start-16">Select plan</Label>
+            <Label class="label u-margin-block-start-16">Select plan</Label>
             <p class="text">
                 For more details on our plans, visit our
                 <Button href="https://appwrite.io/pricing" external link>pricing page</Button>.

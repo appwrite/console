@@ -5,7 +5,6 @@
     import { formatCurrency } from '$lib/helpers/numbers';
     import type { Coupon } from '$lib/sdk/billing';
     import { plansInfo, type Tier } from '$lib/stores/billing';
-    import { Box } from '..';
 
     export let billingPlan: Tier;
     export let collaborators: string[];
@@ -26,9 +25,12 @@
                 ? grossCost - couponData.credits
                 : 0
             : grossCost;
+    $: trialEndDate = new Date(
+        billingPayDate.getTime() + currentPlan.trialDays * 24 * 60 * 60 * 1000
+    );
 </script>
 
-<Box class="u-margin-block-start-32 u-flex u-flex-vertical u-gap-8" radius="small">
+<section class="card u-margin-block-start-32 u-flex u-flex-vertical u-gap-8">
     <span class="u-flex u-main-space-between">
         <p class="text">{currentPlan.name} plan</p>
         <p class="text">{formatCurrency(currentPlan.price)}</p>
@@ -83,15 +85,12 @@
         </p>
     </span>
 
-    {@const trialEndDate = new Date(
-        billingPayDate.getTime() + currentPlan.trialDays * 24 * 60 * 60 * 1000
-    )}
     <p class="text u-margin-block-start-16">
         Your payment method will be charged this amount plus usage fees every 30 days {!currentPlan.trialDays
             ? `starting ${toLocaleDate(billingPayDate.toString())}`
             : ` after your trial period ends on ${toLocaleDate(trialEndDate.toString())}`}.
     </p>
-    <FormList>
+    <FormList class="u-margin-block-start-24">
         <InputChoice
             type="switchbox"
             id="budget"
@@ -111,4 +110,4 @@
             {/if}
         </InputChoice>
     </FormList>
-</Box>
+</section>

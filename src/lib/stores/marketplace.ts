@@ -1763,6 +1763,46 @@ export const marketplace: MarketplaceTemplate[] = [
         ]
     },
     {
+        icon: 'icon-chip',
+        id: 'chat-with-anyscale',
+        name: 'Chat with AnyScale',
+        tagline: 'Create a chatbot using the AnyScale API.',
+        permissions: ['any'],
+        cron: '',
+        events: [],
+        timeout: 15,
+        usecases: ['AI'],
+        runtimes: [
+            ...getRuntimes(
+                TemplateRuntimes.NODE,
+                'npm install',
+                'src/main.js',
+                'node/chat-with-anyscale'
+            )
+        ],
+        instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/chat-with-anyscale">file</a>.`,
+        vcsProvider: 'github',
+        providerRepositoryId: 'templates',
+        providerOwner: 'appwrite',
+        providerBranch: 'main',
+        variables: [
+            {
+                name: 'ANYSCALE_API_KEY',
+                description: `A unique key used to authenticate with the AnyScale API. <a class="u-bold" target="_blank" href="https://app.endpoints.anyscale.com/credentials">Learn more</a>.`,
+                placeholder: 'd03xxxxxxxx26',
+                required: true,
+                type: 'password'
+            },
+            {
+                name: 'ANYSCALE_MAX_TOKENS',
+                description: `The maximum number of tokens that Anyscale responses should contain. <a class="u-bold" target="_blank" href="https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them">Learn more</a>.`,
+                placeholder: '',
+                required: false,
+                type: 'number'
+            }
+        ]
+    },
+    {
         icon: 'icon-music-note',
         id: 'music-generation-with-huggingface',
         name: 'Music generation',
@@ -1850,6 +1890,162 @@ export const marketplace: MarketplaceTemplate[] = [
                 placeholder: 'd1efb...aec35',
                 required: true,
                 type: 'password'
+            }
+        ]
+    },
+    {
+        icon: 'icon-currency-dollar',
+        id: 'subscriptions-with-lemon-squeezy',
+        name: 'Subscriptions with Lemon Squeezy',
+        tagline: 'Receive recurring card payments and grant subscribers extra permissions.',
+        permissions: ['any'],
+        events: [],
+        cron: '',
+        timeout: 15,
+        usecases: ['Utilities'],
+        runtimes: [
+            ...getRuntimes(
+                TemplateRuntimes.NODE,
+                'npm install',
+                'src/main.js',
+                'node/subscriptions-with-lemon-squeezy'
+            )
+        ],
+        instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/subscriptions-with-lemon-squeezy">file</a>.`,
+        vcsProvider: 'github',
+        providerRepositoryId: 'templates',
+        providerOwner: 'appwrite',
+        providerBranch: 'main',
+        variables: [
+            {
+                name: 'APPWRITE_API_KEY',
+                description: `The API Key to authenticate against Appwrite's Server APIs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/advanced/platform/api-keys">Learn more</a>.`,
+                value: '',
+                placeholder: 'd1efb...aec35',
+                required: true,
+                type: 'password'
+            },
+            {
+                name: 'APPWRITE_ENDPOINT',
+                description: `The URL endpoint of the Appwrite server. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/references#api">Learn more</a>.`,
+                value: 'https://cloud.appwrite.io/v1',
+                placeholder: 'https://cloud.appwrite.io/v1',
+                required: false,
+                type: 'url'
+            },
+            {
+                name: 'LEMON_SQUEEZY_API_KEY',
+                description: `API key for sending requests to the Lemon Squeezy API. <a class="u-bold" target="_blank" href="https://docs.lemonsqueezy.com/api#authentication">Learn more</a>.`,
+                placeholder: 'eyJ0eXAiOiJ...',
+                required: true,
+                type: 'password'
+            },
+            {
+                name: 'LEMON_SQUEEZY_WEBHOOK_SECRET',
+                description: `Secret used to validate the Lemon Squuezy Webhook signature. <a class="u-bold" target="_blank" href="https://docs.lemonsqueezy.com/guides/developer-guide/webhooks#from-the-dashboard">Learn more</a>.`,
+                placeholder: 'abcd...',
+                required: true,
+                type: 'password'
+            },
+            {
+                name: 'LEMON_SQUEEZY_STORE_ID',
+                description: `Store ID required to create a checkout using the Lemon Squeezy API. <a class="u-bold" target="_blank" href="https://docs.lemonsqueezy.com/guides/developer-guide/taking-payments#creating-checkouts-with-the-api">Learn more</a>.`,
+                placeholder: '123456',
+                required: true,
+                type: 'text'
+            },
+            {
+                name: 'LEMON_SQUEEZY_VARIANT_ID',
+                description: `Variant ID of a product required to create a checkout using the Lemon Squeezy API. <a class="u-bold" target="_blank" href="https://docs.lemonsqueezy.com/guides/developer-guide/taking-payments#creating-checkouts-with-the-api">Learn more</a>.`,
+                placeholder: 'abcd...',
+                required: true,
+                type: 'text'
+            }
+        ]
+    },
+    {
+        icon: 'icon-currency-dollar',
+        id: 'payments-with-lemon-squeezy',
+        name: 'Payments with Lemon Squeezy',
+        tagline: 'Receive card payments and store paid orders.',
+        permissions: ['any'],
+        events: [],
+        cron: '',
+        timeout: 15,
+        usecases: ['Utilities'],
+        runtimes: [
+            ...getRuntimes(
+                TemplateRuntimes.NODE,
+                'npm install',
+                'src/main.js',
+                'node/payments-with-lemon-squeezy'
+            )
+        ],
+        instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/payments-with-lemon-squeezy">file</a>.`,
+        vcsProvider: 'github',
+        providerRepositoryId: 'templates',
+        providerOwner: 'appwrite',
+        providerBranch: 'main',
+        variables: [
+            {
+                name: 'APPWRITE_API_KEY',
+                description: `The API Key to authenticate against Appwrite's Server APIs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/advanced/platform/api-keys">Learn more</a>.`,
+                value: '',
+                placeholder: 'd1efb...aec35',
+                required: true,
+                type: 'password'
+            },
+            {
+                name: 'APPWRITE_ENDPOINT',
+                description: `The URL endpoint of the Appwrite server. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/references#api">Learn more</a>.`,
+                value: 'https://cloud.appwrite.io/v1',
+                placeholder: 'https://cloud.appwrite.io/v1',
+                required: false,
+                type: 'url'
+            },
+            {
+                name: 'APPWRITE_DATABASE_ID',
+                description: `The ID of the database to store paid orders. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/products/databases/databases">Learn more</a>.`,
+                value: 'orders',
+                placeholder: 'orders',
+                required: false,
+                type: 'text'
+            },
+            {
+                name: 'APPWRITE_COLLECTION_ID',
+                description: `The ID of the collection to store paid orders. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/products/databases/collections">Learn more</a>.`,
+                value: 'orders',
+                placeholder: 'orders',
+                required: false,
+                type: 'text'
+            },
+            {
+                name: 'LEMON_SQUEEZY_API_KEY',
+                description: `API key for sending requests to the Lemon Squeezy API. <a class="u-bold" target="_blank" href="https://docs.lemonsqueezy.com/api#authentication">Learn more</a>.`,
+                placeholder: 'eyJ0eXAiOiJ...',
+                required: true,
+                type: 'password'
+            },
+            {
+                name: 'LEMON_SQUEEZY_WEBHOOK_SECRET',
+                description: `Secret used to validate the Lemon Squuezy Webhook signature. <a class="u-bold" target="_blank" href="https://docs.lemonsqueezy.com/guides/developer-guide/webhooks#from-the-dashboard">Learn more</a>.`,
+                placeholder: 'abcd...',
+                required: true,
+                type: 'password'
+            },
+            {
+                name: 'LEMON_SQUEEZY_STORE_ID',
+                description: `Store ID required to create a checkout using the Lemon Squeezy API. <a class="u-bold" target="_blank" href="https://docs.lemonsqueezy.com/guides/developer-guide/taking-payments#creating-checkouts-with-the-api">Learn more</a>.`,
+                placeholder: '123456',
+                required: true,
+                type: 'text'
+            },
+            {
+                name: 'LEMON_SQUEEZY_VARIANT_ID',
+                description: `Variant ID of a product required to create a checkout using the Lemon Squeezy API. <a class="u-bold" target="_blank" href="https://docs.lemonsqueezy.com/guides/developer-guide/taking-payments#creating-checkouts-with-the-api">Learn more</a>.`,
+                placeholder: 'abcd...',
+                required: true,
+                type: 'text'
             }
         ]
     }

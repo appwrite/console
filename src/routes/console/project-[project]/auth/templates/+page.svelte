@@ -32,7 +32,6 @@
 </script>
 
 <script lang="ts">
-    import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Alert, CardGrid, Collapsible, CollapsibleItem, Heading } from '$lib/components';
@@ -108,10 +107,8 @@
                 type="info"
                 buttons={[
                     {
-                        name: 'SMTP settings',
-                        method: () => {
-                            goto(`${base}/console/project-${$project.$id}/settings/smtp`);
-                        }
+                        slot: 'SMTP settings',
+                        href: `${base}/console/project-${$project.$id}/settings/smtp`
                     }
                 ]}>
                 <svelte:fragment slot="title">
@@ -138,9 +135,8 @@
                 <Alert
                     buttons={[
                         {
-                            name: 'Upgrade plan',
-                            method: () =>
-                                goto(`${base}/console/organization-${$organization.$id}/billing`)
+                            slot: 'Upgrade plan',
+                            href: `${base}/console/organization-${$organization.$id}/billing`
                         }
                     ]}>
                     All emails sent using the Starter plan will include attribution to Appwrite in

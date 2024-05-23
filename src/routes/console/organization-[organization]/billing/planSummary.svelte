@@ -1,7 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { Box, CardGrid, EyebrowHeading, Heading } from '$lib/components';
-    import { Pill } from '$lib/elements';
+    import { CardGrid, Collapsible, CollapsibleItem, Heading } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
     import { plansInfo, tierToPlan, upgradeURL } from '$lib/stores/billing';
@@ -14,11 +13,9 @@
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { BillingPlan } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
-    import { TableCell, TableCellText, TableList } from '$lib/elements/table';
-    import { clickOnEnter } from '$lib/helpers/a11y';
+    import { tooltip } from '$lib/actions/tooltip';
 
     let currentInvoice: Invoice;
-    let showAddons = false;
     let extraMembers = 0;
     const today = new Date();
     onMount(async () => {
@@ -32,7 +29,8 @@
     });
 
     $: currentPlan = $plansInfo?.get($organization?.billingPlan);
-    $: extraUsage = currentInvoice?.amount - currentPlan?.price || 0;
+    $: extraUsage = (currentInvoice?.amount ?? 0) - (currentPlan?.price ?? 0);
+    $: extraAddons = currentInvoice?.usage?.length ?? 0;
     $: isTrial =
         new Date($organization?.billingStartDate).getTime() - today.getTime() > 0 &&
         $plansInfo.get($organization.billingPlan)?.trialDays;
@@ -52,188 +50,107 @@
                     $organization?.billingNextInvoiceDate
                 )}
             </p>
-            <TableList>
-                <li class="table-row">
-                    <TableCellText>
-                        {tierToPlan($organization?.billingPlan)?.name} plan
-                    </TableCellText>
-                    <TableCellText style="text-align: right;">
+            <Collapsible>
+                <CollapsibleItem noContent>
+                    <span class="body-text-2">
+                        {tierToPlan($organization?.billingPlan)?.name} plan</span>
+                    <div class="body-text-2 u-margin-inline-start-auto">
                         {isTrial ? formatCurrency(0) : formatCurrency(currentPlan?.price)}
-                    </TableCellText>
-                </li>
-
-                <!-- svelte-ignore a11y-no-noninteractive-element-to-interactive-role -->
-                <li
-                    class="table-row"
-                    role="button"
-                    on:click={() => (showAddons = !showAddons)}
-                    on:keyup={clickOnEnter}>
-                    <TableCell>
-                        Add-ons <span class="inline-tag"
-                            >{extraMembers
-                                ? currentInvoice?.usage?.length + 1
-                                : currentInvoice?.usage?.length}</span>
-                        <span class="icon-cheveron-down"></span>
-                    </TableCell>
-                    <TableCellText style="text-align: right;">
-                        {formatCurrency(extraUsage)}
-                    </TableCellText>
-                </li>
-                <!-- {#if currentInvoice?.usage?.length && $organization?.billingPlan !== BillingPlan.STARTER && !isTrial && showAddons} -->
-                {#if extraUsage && showAddons && $organization?.billingPlan !== BillingPlan.STARTER && !isTrial}
-                    <li class="table-row">
-                        <td class="table-col" width="100%" colspan="2">
-                            <Box>
-                                <TableList>
-                                    {#if extraMembers}
-                                        <li class="table-row">
-                                            <TableCell>
-                                                <div class="u-flex u-flex-vertical">
-                                                    <span>Additional members</span>
-                                                    <span>
-                                                        {extraMembers}
-                                                    </span>
-                                                </div>
-                                            </TableCell>
-                                            <TableCellText style="text-align: right;">
-                                                <!-- TODO: fetch the price from the backend -->
-                                                {formatCurrency(extraMembers * 15)}
-                                            </TableCellText>
-                                        </li>
-                                    {/if}
-                                    {#if currentInvoice?.usage}
-                                        {#each currentInvoice.usage as excess}
-                                            <li class="table-row">
-                                                {#if ['storage', 'bandwidth'].includes(excess.name)}
-                                                    {@const excessValue = humanFileSize(
-                                                        excess.value
-                                                    )}
-                                                    <TableCell>
-                                                        <div class="u-flex u-flex-vertical">
-                                                            <p>{excess.name}</p>
-                                                            <span
-                                                                title={formatNumberWithCommas(
-                                                                    excess.value ?? 0
-                                                                ) + 'bytes'}>
-                                                                {excessValue.value ??
-                                                                    0}{excessValue.unit}
-                                                            </span>
-                                                        </div>
-                                                    </TableCell>
-                                                    <TableCellText style="text-align: right;">
-                                                        {formatCurrency(excess.amount)}
-                                                    </TableCellText>
-                                                {/if}
-                                                {#if ['users', 'executions'].includes(excess.name)}
-                                                    <TableCell>
-                                                        <div class="u-flex u-flex-vertical">
-                                                            <p>
-                                                                {excess.name}
-                                                            </p>
-                                                            <span
-                                                                title={formatNumberWithCommas(
-                                                                    excess.value
-                                                                )}
-                                                                >{abbreviateNumber(
-                                                                    excess.value
-                                                                )}</span>
-                                                        </div>
-                                                    </TableCell>
-                                                    <TableCellText style="text-align: right;">
-                                                        {formatCurrency(excess.amount)}
-                                                    </TableCellText>
-                                                {/if}
-                                            </li>
-                                        {/each}
-                                    {/if}
-                                </TableList>
-                            </Box>
-                        </td>
-                    </li>
-                {/if}
-
-                <li class="table-row">
-                    <TableCellText>Current total (USD)</TableCellText>
-                    <TableCellText style="text-align: right;">
-                        {formatCurrency(currentInvoice?.amount ?? 0)}
-                    </TableCellText>
-                </li>
-            </TableList>
-            <Box class="u-flex-vertical u-gap-8">
-                <div class="u-flex u-main-space-between u-cross-center">
-                    <div class="u-flex u-gap-8 u-cross-center">
-                        <h6 class="body-text-1 u-bold u-trim-1">
-                            {tierToPlan($organization?.billingPlan)?.name} plan
-                        </h6>
-                        {#if $organization?.billingPlan !== BillingPlan.STARTER && isTrial}
-                            <Pill>TRIAL</Pill>
-                        {/if}
                     </div>
+                </CollapsibleItem>
+                {#if $organization?.billingPlan !== BillingPlan.STARTER && extraUsage}
+                    <CollapsibleItem isInfo gap={8}>
+                        <svelte:fragment slot="beforetitle">
+                            <span class="body-text-2"><b>Add-ons</b></span><span class="inline-tag"
+                                >{extraMembers ? extraAddons + 1 : extraAddons}</span>
+                            <div class="icon">
+                                <span class="icon-cheveron-down" aria-hidden="true"></span>
+                            </div>
+                        </svelte:fragment>
+                        <svelte:fragment slot="end">
+                            <div class="body-text-2 u-margin-inline-start-auto">
+                                <b>
+                                    {formatCurrency(extraUsage >= 0 ? extraUsage : 0)}
+                                </b>
+                            </div>
+                        </svelte:fragment>
 
-                    <p class="text">
-                        {#if !extraUsage}
-                            <span class="text u-color-text-gray">Total to-date:</span>
-                        {/if}
-                        <span class="body-text-1">
-                            {isTrial ? formatCurrency(0) : formatCurrency(currentPlan?.price)}
-                        </span>
-                    </p>
-                </div>
-                {#if currentInvoice?.usage?.length && $organization?.billingPlan !== BillingPlan.STARTER && !isTrial}
-                    {@const extraMembers = currentInvoice.usage.find((u) => u.name === 'members')}
-                    {#if extraMembers}
-                        <div class="u-margin-block-start-24">
-                            <EyebrowHeading tag="h6" size={3}>Additional members</EyebrowHeading>
-                            <ul>
-                                <li class="u-flex u-main-space-between u-margin-block-start-8">
-                                    <p class="text u-color-text-gray">
-                                        <span> {extraMembers.value}</span>
-                                        {extraMembers.name}
-                                    </p>
-                                    <p class="text">{formatCurrency(extraMembers.amount)}</p>
-                                </li>
-                            </ul>
-                        </div>
-                    {/if}
-                    <div class="u-margin-block-start-24">
-                        <EyebrowHeading tag="h6" size={3}>Addons</EyebrowHeading>
                         <ul>
-                            {#each currentInvoice.usage as excess}
-                                {#if ['storage', 'bandwidth'].includes(excess.name)}
-                                    {@const excessValue = humanFileSize(excess.value)}
-                                    <li class="u-flex u-main-space-between u-margin-block-start-8">
-                                        <p class="text u-color-text-gray">
-                                            <span
-                                                title={formatNumberWithCommas(excess.value) +
+                            {#if extraMembers}
+                                <li class="u-flex-vertical u-gap-4 u-padding-block-8">
+                                    <div class="u-flex u-gap-4">
+                                        <h5 class="body-text-2 u-stretch">Additional members</h5>
+                                        <div>
+                                            {formatCurrency(
+                                                extraMembers * currentPlan.addons.member.price
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div class="u-flex u-gap-4">
+                                        <h5 class="body-text-2 u-stretch u-color-text-offline">
+                                            {extraMembers}
+                                        </h5>
+                                    </div>
+                                </li>
+                            {/if}
+                            {#if currentInvoice?.usage}
+                                {#each currentInvoice.usage as excess, i}
+                                    <li
+                                        class="u-flex-vertical u-gap-4 {extraMembers
+                                            ? 'u-padding-block-8'
+                                            : 'u-padding-block-start-8'}"
+                                        class:u-sep-block-start={i > 0 || extraMembers}>
+                                        {#if ['storage', 'bandwidth'].includes(excess.name)}
+                                            {@const excessValue = humanFileSize(excess.value)}
+                                            <div class="u-flex u-main-space-between">
+                                                <h5 class="body-text-2 u-stretch u-capitalize">
+                                                    {excess.name}
+                                                </h5>
+                                                {formatCurrency(excess.amount)}
+                                            </div>
+                                            <h5
+                                                class="body-text-2 u-stretch u-color-text-offline"
+                                                title={formatNumberWithCommas(excess.value ?? 0) +
                                                     'bytes'}>
-                                                {excessValue.value}{excessValue.unit}
-                                            </span>
-                                            {excess.name}
-                                        </p>
-                                        <p class="text">{formatCurrency(excess.amount)}</p>
+                                                {excessValue.value ?? 0}{excessValue.unit}
+                                            </h5>
+                                        {/if}
+                                        {#if ['users', 'executions'].includes(excess.name)}
+                                            <div class="u-flex u-main-space-between">
+                                                <h5 class="body-text-2 u-stretch u-capitalize">
+                                                    {excess.name}
+                                                </h5>
+                                                {formatCurrency(excess.amount)}
+                                            </div>
+                                            <h5
+                                                class="body-text-2 u-stretch u-color-text-offline"
+                                                title={formatNumberWithCommas(excess.value)}>
+                                                {abbreviateNumber(excess.value)}
+                                            </h5>
+                                        {/if}
                                     </li>
-                                {/if}
-                                {#if ['users', 'executions'].includes(excess.name)}
-                                    <li class="u-flex u-main-space-between u-margin-block-start-8">
-                                        <p class="text u-color-text-gray">
-                                            <span title={formatNumberWithCommas(excess.value)}
-                                                >{abbreviateNumber(excess.value)}</span>
-                                            {excess.name}
-                                        </p>
-                                        <p class="text">{formatCurrency(excess.amount)}</p>
-                                    </li>
-                                {/if}
-                            {/each}
-                            <li class="u-flex u-main-space-between u-margin-block-start-16">
-                                <p class="body-text-1 u-bold">Total to-date:</p>
-                                <p class="body-text-1 u-bold">
-                                    {formatCurrency(currentInvoice?.amount ?? 0)}
-                                </p>
-                            </li>
+                                {/each}
+                            {/if}
                         </ul>
-                    </div>
+                    </CollapsibleItem>
                 {/if}
-            </Box>
+
+                <CollapsibleItem noContent gap={4}>
+                    <span class="body-text-2">Current total (USD)</span>
+                    <span class="tooltip u-cross-center" aria-label="total info">
+                        <span
+                            class="icon-info"
+                            aria-hidden="true"
+                            use:tooltip={{
+                                content:
+                                    'Totals displayed are estimates updated every 24 hours and may not accurately reflect your invoice.'
+                            }}></span>
+                    </span>
+                    <div class="body-text-2 u-margin-inline-start-auto">
+                        {formatCurrency(currentInvoice?.amount ?? 0)}
+                    </div>
+                </CollapsibleItem>
+            </Collapsible>
         </svelte:fragment>
         <svelte:fragment slot="actions">
             {#if $organization?.billingPlan === BillingPlan.STARTER}

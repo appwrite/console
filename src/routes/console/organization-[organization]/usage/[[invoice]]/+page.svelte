@@ -17,6 +17,7 @@
     import type { OrganizationUsage } from '$lib/sdk/billing';
     import { BillingPlan } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
+    import TotalMembers from './totalMembers.svelte';
 
     export let data;
 
@@ -297,6 +298,7 @@
             {/if}
         </svelte:fragment>
     </CardGrid>
+    <TotalMembers members={data?.organizationMembers} />
 
     <p class="text common-section u-color-text-gray">
         Metrics are estimates updated every 24 hours and may not accurately reflect your invoice.

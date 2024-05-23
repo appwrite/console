@@ -158,7 +158,7 @@
                                 <span class="text">Storage</span>
                             </a>
                         </li>
-                        <li class="drop-list-item is-only-mobile">
+                        <li class="drop-list-item is-not-desktop">
                             <a
                                 class="drop-button"
                                 href={`${projectPath}/settings`}
@@ -197,7 +197,7 @@
                         <span class="text">Settings</span>
                     </a>
 
-                    <ul class="drop-list is-only-mobile">
+                    <ul class="drop-list is-not-desktop">
                         {#if isCloud && $organization?.billingPlan !== BillingPlan.SCALE}
                             <li class="drop-list-item">
                                 <a class="drop-button" href={$upgradeURL}>
