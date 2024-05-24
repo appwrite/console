@@ -62,7 +62,7 @@
                     {abbreviateNumber(limit)} function executions
                 </li>
                 <li>
-                    ${hoursToDays(logs)} of logs
+                    {hoursToDays(logs)} of logs
                 </li>
             </ul>
             {#if $organization?.billingPlan === BillingPlan.STARTER}
