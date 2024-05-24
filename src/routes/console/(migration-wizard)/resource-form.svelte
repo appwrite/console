@@ -193,8 +193,8 @@
             isStandalone
             buttons={[
                 {
-                    name: 'Learn more',
-                    method() {
+                    slot: 'Learn more',
+                    onClick() {
                         wizard.updateStep((p) => p - 1);
                     }
                 }
@@ -213,8 +213,8 @@
             isStandalone
             buttons={[
                 {
-                    name: 'Edit credentials',
-                    method() {
+                    slot: 'Edit credentials',
+                    onClick() {
                         wizard.updateStep((p) => p - 1);
                     }
                 }

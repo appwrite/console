@@ -32,7 +32,6 @@
 </script>
 
 <script lang="ts">
-    import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Alert, CardGrid, Collapsible, CollapsibleItem, Heading } from '$lib/components';
@@ -51,8 +50,6 @@
     import { baseEmailTemplate, emailTemplate } from './store';
     import { Button } from '$lib/elements/forms';
     import { organization } from '$lib/stores/organization';
-    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
-    import { wizard } from '$lib/stores/wizard';
     import { BillingPlan } from '$lib/constants';
     import EmailSignature from './emailSignature.svelte';
     import { isCloud } from '$lib/system';
@@ -112,10 +109,8 @@
                 type="info"
                 buttons={[
                     {
-                        name: 'SMTP settings',
-                        method: () => {
-                            goto(`${base}/console/project-${$project.$id}/settings/smtp`);
-                        }
+                        slot: 'SMTP settings',
+                        href: `${base}/console/project-${$project.$id}/settings/smtp`
                     }
                 ]}>
                 <svelte:fragment slot="title">
@@ -142,8 +137,8 @@
                 <Alert
                     buttons={[
                         {
-                            name: 'Upgrade plan',
-                            method: () => wizard.start(ChangeOrganizationTierCloud)
+                            slot: 'Upgrade plan',
+                            href: `${base}/console/organization-${$organization.$id}/billing`
                         }
                     ]}>
                     All emails sent using the Starter plan will include attribution to Appwrite in

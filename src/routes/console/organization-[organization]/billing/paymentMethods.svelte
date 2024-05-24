@@ -14,7 +14,6 @@
     import { addNotification } from '$lib/stores/notifications';
     import { organization } from '$lib/stores/organization';
     import { Button } from '$lib/elements/forms';
-    import PaymentModal from '$routes/console/account/payments/paymentModal.svelte';
     import { hasStripePublicKey, isCloud } from '$lib/system';
     import { paymentMethods } from '$lib/stores/billing';
     import type { PaymentMethodData } from '$lib/sdk/billing';
@@ -22,6 +21,7 @@
     import ReplaceCard from './replaceCard.svelte';
     import EditPaymentModal from '$routes/console/account/payments/editPaymentModal.svelte';
     import { tooltip } from '$lib/actions/tooltip';
+    import PaymentModal from '$lib/components/billing/paymentModal.svelte';
 
     let showDropdown = false;
     let showDropdownBackup = false;

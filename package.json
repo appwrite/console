@@ -15,16 +15,17 @@
         "test": "TZ=EST vitest run",
         "test:ui": "TZ=EST vitest --ui",
         "test:watch": "TZ=EST vitest watch",
-        "e2e": "playwright test tests/e2e"
+        "e2e": "playwright test tests/e2e",
+        "e2e:ui": "playwright test tests/e2e --ui"
     },
     "dependencies": {
-        "@appwrite.io/pink": "0.14.0",
-        "@appwrite.io/pink-icons": "0.14.0",
-        "@appwrite.io/console": "^0.6.1",
+        "@appwrite.io/console": "^0.6.2",
+        "@appwrite.io/pink": "0.23.0",
+        "@appwrite.io/pink-icons": "0.23.0",
         "@popperjs/core": "^2.11.8",
         "@sentry/svelte": "^7.66.0",
         "@sentry/tracing": "^7.66.0",
-        "@stripe/stripe-js": "^2.2.0",
+        "@stripe/stripe-js": "^3.4.0",
         "ai": "^2.2.11",
         "analytics": "^0.8.9",
         "dayjs": "^1.11.9",
@@ -41,7 +42,7 @@
     "devDependencies": {
         "@melt-ui/pp": "^0.1.4",
         "@melt-ui/svelte": "^0.61.2",
-        "@playwright/test": "^1.37.1",
+        "@playwright/test": "^1.44.0",
         "@sveltejs/adapter-static": "^3.0.1",
         "@sveltejs/kit": "^2.3.4",
         "@sveltejs/vite-plugin-svelte": "^3.0.1",

@@ -11,14 +11,12 @@
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { wizard } from '$lib/stores/wizard';
     import { isCloud } from '$lib/system';
     import { ID } from '@appwrite.io/console';
     import { onMount } from 'svelte';
-    import CreateOrganizationCloud from '../createOrganizationCloud.svelte';
     import { tierToPlan, type Tier, plansInfo } from '$lib/stores/billing';
-    import { createOrganization } from '../wizard/cloudOrganization/store';
     import { formatCurrency } from '$lib/helpers/numbers';
+    import { base } from '$app/paths';
 
     let name: string;
     let id: string;
@@ -43,7 +41,7 @@
             if ($page.url.searchParams.has('type')) {
                 const paramType = $page.url.searchParams.get('type');
                 if (paramType === 'createPro') {
-                    wizard.start(CreateOrganizationCloud);
+                    goto(`${base}/console/create-organization`);
                 }
             }
         }
@@ -79,10 +77,7 @@
                     trackError(error, Submit.OrganizationCreate);
                 }
             } else {
-                wizard.start(CreateOrganizationCloud, null, 2);
-                $createOrganization.name = orgName;
-                $createOrganization.billingPlan = plan;
-                $createOrganization.id = id;
+                goto(`${base}/console/create-organization?name=${orgName}&plan=${plan}`);
             }
         } else {
             try {

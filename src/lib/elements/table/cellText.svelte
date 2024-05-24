@@ -1,18 +1,16 @@
 <script lang="ts">
     import { Trim } from '$lib/components';
-    export let title: string;
+    import Cell from './cell.svelte';
+    export let title = '';
     export let showOverflow = false;
     export let onlyDesktop = false;
     export let width: number = null;
+    export let right = false;
+    let className = '';
+    export { className as class };
+    export let style = '';
 </script>
 
-<div
-    class="table-col"
-    style:--p-col-width={width?.toString()}
-    class:is-only-desktop={onlyDesktop}
-    class:u-overflow-visible={showOverflow}
-    data-title={title}
-    role="cell"
-    data-private>
+<Cell {title} {showOverflow} {onlyDesktop} {width} {right} class={className} {style}>
     <Trim><slot /></Trim>
-</div>
+</Cell>

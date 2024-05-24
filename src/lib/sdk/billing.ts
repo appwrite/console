@@ -299,7 +299,7 @@ export class Billing {
         name: string,
         billingPlan: string,
         paymentMethodId: string,
-        billingAddressId: string
+        billingAddressId: string = undefined
     ): Promise<Organization> {
         const path = `/organizations`;
         const params = {
@@ -356,7 +356,7 @@ export class Billing {
         organizationId: string,
         billingPlan: string,
         paymentMethodId: string,
-        billingAddressId: string
+        billingAddressId: string = undefined
     ): Promise<Organization> {
         const path = `/organizations/${organizationId}/plan`;
         const params = {

@@ -5,6 +5,8 @@
         isTile?: boolean;
         isDashed?: boolean;
         danger?: boolean;
+        style?: string;
+        class?: string;
     };
 
     type ButtonProps = {
@@ -47,6 +49,7 @@
     class:is-border-dashed={isDashed}
     class:is-danger={danger}
     class:is-allowed-focus={href}
+    {...$$restProps}
     {style}
     on:click
     on:keyup={clickOnEnter}

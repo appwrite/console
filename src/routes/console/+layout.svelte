@@ -38,10 +38,9 @@
     import { stripe } from '$lib/stores/stripe';
     import MobileSupportModal from './wizard/support/mobileSupportModal.svelte';
     import { showSupportModal } from './wizard/support/store';
-
-    import UsageRates from './wizard/cloudOrganization/usageRates.svelte';
     import { activeHeaderAlert, consoleVariables } from './store';
     import { headerAlert } from '$lib/stores/headerAlert';
+    import { UsageRates } from '$lib/components/billing';
 
     function kebabToSentenceCase(str: string) {
         return str
@@ -320,5 +319,5 @@
 {/if}
 
 {#if isCloud && $showUsageRatesModal}
-    <UsageRates bind:show={$showUsageRatesModal} tier={$organization?.billingPlan} />
+    <UsageRates bind:show={$showUsageRatesModal} org={$organization} />
 {/if}

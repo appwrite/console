@@ -24,8 +24,6 @@ import { BillingPlan } from '$lib/constants';
 import PaymentMandate from '$lib/components/billing/alerts/paymentMandate.svelte';
 import MissingPaymentMethod from '$lib/components/billing/alerts/missingPaymentMethod.svelte';
 import LimitReached from '$lib/components/billing/alerts/limitReached.svelte';
-import { wizard } from './wizard';
-import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
 import { trackEvent } from '$lib/actions/analytics';
 
 export type Tier = 'tier-0' | 'tier-1' | 'tier-2';
@@ -136,7 +134,7 @@ export type TierData = {
 
 export const tierFree: TierData = {
     name: 'Starter',
-    description: 'For personal, passion projects.'
+    description: 'For personal hobby projects of small scale and students.'
 };
 
 export const tierPro: TierData = {
@@ -261,7 +259,7 @@ export async function checkForUsageLimit(org: Organization) {
                 {
                     name: 'Upgrade plan',
                     method: () => {
-                        wizard.start(ChangeOrganizationTierCloud);
+                        goto(`${base}/console/organization-${org.$id}/change-plan`);
                         trackEvent('click_organization_upgrade', {
                             from: 'button',
                             source: 'limit_reached_notification'
@@ -386,3 +384,10 @@ export async function checkForMissingPaymentMethod() {
         });
     }
 }
+
+export const upgradeURL = derived(
+    page,
+    ($page) => `${base}/console/organization-${$page.data?.organization?.$id}/change-plan`
+);
+
+export const hideBillingHeaderRoutes = ['/console/create-organization', '/console/account'];

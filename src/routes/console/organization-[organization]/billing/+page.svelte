@@ -10,19 +10,18 @@
     import PaymentHistory from './paymentHistory.svelte';
     import TaxId from './taxId.svelte';
     import { Alert, Heading } from '$lib/components';
-    import { failedInvoice, paymentMethods } from '$lib/stores/billing';
+    import { failedInvoice, paymentMethods, upgradeURL } from '$lib/stores/billing';
     import type { PaymentMethodData } from '$lib/sdk/billing';
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
     import { confirmPayment } from '$lib/stores/stripe';
     import { sdk } from '$lib/stores/sdk';
     import { toLocaleDate } from '$lib/helpers/date';
-    import { wizard } from '$lib/stores/wizard';
-    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
     import { BillingPlan } from '$lib/constants';
     import RetryPaymentModal from './retryPaymentModal.svelte';
     import { selectedInvoice, showRetryModal } from './store';
     import { Button } from '$lib/elements/forms';
+    import { goto } from '$app/navigation';
 
     export let data;
 
@@ -37,7 +36,7 @@
     onMount(async () => {
         if ($page.url.searchParams.has('type')) {
             if ($page.url.searchParams.get('type') === 'upgrade') {
-                wizard.start(ChangeOrganizationTierCloud);
+                goto($upgradeURL);
             }
 
             if (

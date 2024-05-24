@@ -2,14 +2,15 @@
     import { page } from '$app/stores';
     import { Alert, CopyInput, Modal } from '$lib/components';
     import { Button, FormList, InputPassword, InputSwitch, InputText } from '$lib/elements/forms';
-    import type { Provider } from '$lib/stores/oauth-providers';
+    import { oAuthProviders, type Provider } from '$lib/stores/oauth-providers';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { updateOAuth } from '../updateOAuth';
+    import type { Models } from '@appwrite.io/console';
 
     const projectId = $page.params.project;
 
-    export let provider: Provider;
+    export let provider: Models.AuthProvider;
     export let show = false;
 
     let appId: string = null;
@@ -18,6 +19,7 @@
     let oktaDomain: string = null;
     let authorizationServerId: string = null;
     let error: string;
+    let oAuthProvider: Provider;
 
     onMount(() => {
         appId ??= provider.appId;
@@ -25,6 +27,7 @@
         if (provider.secret) {
             ({ clientSecret, oktaDomain, authorizationServerId } = JSON.parse(provider.secret));
         }
+        oAuthProvider = oAuthProviders[provider.key];
     });
 
     const update = async () => {
@@ -49,7 +52,7 @@
         <p>
             To use {provider.name} authentication in your application, first fill in this form. For more
             info you can
-            <a class="link" href={provider.docs} target="_blank" rel="noopener noreferrer"
+            <a class="link" href={oAuthProvider?.docs} target="_blank" rel="noopener noreferrer"
                 >visit the docs.</a>
         </p>
         <InputSwitch id="state" bind:value={enabled} label={enabled ? 'Enabled' : 'Disabled'} />

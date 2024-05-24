@@ -68,8 +68,14 @@
     }
 </script>
 
-<FakeModal bind:show title="Add payment method" bind:error onSubmit={handleSubmit}>
+<FakeModal
+    bind:show
+    title="Add payment method"
+    bind:error
+    onSubmit={handleSubmit}
+    headerDivider={false}>
     <FormList gap={16}>
+        <slot />
         <InputText
             id="name"
             label="Cardholder name"
@@ -86,10 +92,11 @@
                 <!-- Stripe will create form elements here -->
             </div>
         </div>
+        <slot name="end"></slot>
     </FormList>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (show = false)}>Cancel</Button>
-        <Button submit disabled={!name}>Save</Button>
+        <Button submit disabled={!name}>Add</Button>
     </svelte:fragment>
 </FakeModal>
 

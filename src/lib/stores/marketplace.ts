@@ -78,6 +78,244 @@ export const marketplace: MarketplaceTemplate[] = [
         ]
     },
     {
+        icon: 'icon-upstash',
+        id: 'query-upstash-vector',
+        name: 'Query Upstash Vector',
+        tagline: 'Vector database that stores text embeddings and context retrieval for LLMs',
+        permissions: ['any'],
+        events: [],
+        cron: '',
+        timeout: 15,
+        usecases: ['Databases'],
+        runtimes: [
+            ...getRuntimes(
+                TemplateRuntimes.NODE,
+                'npm install',
+                'src/main.js',
+                'node/query-upstash-vector'
+            )
+        ],
+        instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/query-upstash-vector">file</a>.`,
+        vcsProvider: 'github',
+        providerRepositoryId: 'templates',
+        providerOwner: 'appwrite',
+        providerBranch: 'main',
+        variables: [
+            {
+                name: 'UPSTASH_URL',
+                description: `The endpoint to connect to your Upstash Vector database. <a class="u-bold" target="_blank" href="https://upstash.com/docs/vector/overall/getstarted">Learn more</a>.`,
+                value: '',
+                placeholder: 'https://resolved-mallard-84564-eu1-vector.upstash.io',
+                required: true,
+                type: 'text'
+            },
+            {
+                name: 'UPSTASH_TOKEN',
+                description: `Authentication token to access your Upstash Vector database. <a class="u-bold" target="_blank" href="https://upstash.com/docs/vector/overall/getstarted">Learn more</a>.`,
+                value: '',
+                placeholder:
+                    'oe4wNTbwHVLcDNa6oceZfhBEABsCNYh43ii6Xdq4bKBH7mq7qJkUmc4cs3ABbYyuVKWZTxVQjiNjYgydn2dkhABNes4NAuDpj7qxUAmZYqGJT78',
+                required: true,
+                type: 'password'
+            }
+        ]
+    },
+    {
+        icon: 'icon-redis',
+        id: 'query-redis-labs',
+        name: 'Query Redis Labs',
+        tagline: 'Key-value database with advanced caching capabilities.',
+        permissions: ['any'],
+        events: [],
+        cron: '',
+        timeout: 15,
+        usecases: ['Databases'],
+        runtimes: [
+            ...getRuntimes(
+                TemplateRuntimes.NODE,
+                'npm install',
+                'src/main.js',
+                'node/query-redis-labs'
+            )
+        ],
+        instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/query-redis-labs">file</a>.`,
+        vcsProvider: 'github',
+        providerRepositoryId: 'templates',
+        providerOwner: 'appwrite',
+        providerBranch: 'main',
+        variables: [
+            {
+                name: 'REDIS_HOST',
+                description: `The endpoint to connect to your Redis database. <a class="u-bold" target="_blank" href="https://redis.io/docs/latest/operate/rc/rc-quickstart/">Learn more</a>.`,
+                value: '',
+                placeholder: 'redis-13258.c35.eu-central-1-1.ec2.redns.redis-cloud.com',
+                required: true,
+                type: 'text'
+            },
+            {
+                name: 'REDIS_PASSWORD',
+                description: `Authentication password to access your Redis database. <a class="u-bold" target="_blank" href="https://redis.io/docs/latest/operate/rc/rc-quickstart/">Learn more</a>.`,
+                value: '',
+                placeholder: 'efNNehiACfcZiwsTAjcK6xiwPyu6Dpdq',
+                required: true,
+                type: 'password'
+            }
+        ]
+    },
+    {
+        icon: 'icon-neo4j',
+        id: 'query-neo4j-auradb',
+        name: 'Query Neo4j AuraDB',
+        tagline: 'Graph database with focus on relations between data.',
+        permissions: ['any'],
+        events: [],
+        cron: '',
+        timeout: 15,
+        usecases: ['Databases'],
+        runtimes: [
+            ...getRuntimes(
+                TemplateRuntimes.NODE,
+                'npm install',
+                'src/main.js',
+                'node/query-neo4j-auradb'
+            )
+        ],
+        instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/query-neo4j-auradb">file</a>.`,
+        vcsProvider: 'github',
+        providerRepositoryId: 'templates',
+        providerOwner: 'appwrite',
+        providerBranch: 'main',
+        variables: [
+            {
+                name: 'NEO4J_URI',
+                description: `The endpoint to connect to your Neo4j database. <a class="u-bold" target="_blank" href="https://neo4j.com/docs/aura/auradb/getting-started/connect-database/">Learn more</a>.`,
+                value: '',
+                placeholder: 'neo4j+s://4tg4mddo.databases.neo4j.io',
+                required: true,
+                type: 'text'
+            },
+            {
+                name: 'NEO4J_USER',
+                description: `Authentication user to access your Neo4j database. <a class="u-bold" target="_blank" href="https://neo4j.com/docs/aura/auradb/getting-started/connect-database/">Learn more</a>.`,
+                value: '',
+                placeholder: 'neo4j',
+                required: true,
+                type: 'text'
+            },
+            {
+                name: 'NEO4J_PASSWORD',
+                description: `Authentication password to access your Neo4j database. <a class="u-bold" target="_blank" href="https://neo4j.com/docs/aura/auradb/getting-started/connect-database/">Learn more</a>.`,
+                value: '',
+                placeholder: 'mCUc4PbVUQN-_NkTLJLisb6ccnwzQKKhrkF77YMctzx',
+                required: true,
+                type: 'password'
+            }
+        ]
+    },
+    {
+        icon: 'icon-mongodb',
+        id: 'query-mongo-atlas',
+        name: 'Query MongoDB Atlas',
+        tagline:
+            'Realtime NoSQL document database with geospecial, graph, search, and vector suport.',
+        permissions: ['any'],
+        events: [],
+        cron: '',
+        timeout: 15,
+        usecases: ['Databases'],
+        runtimes: [
+            ...getRuntimes(
+                TemplateRuntimes.NODE,
+                'npm install',
+                'src/main.js',
+                'node/query-mongo-atlas'
+            )
+        ],
+        instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/query-mongo-atlas">file</a>.`,
+        vcsProvider: 'github',
+        providerRepositoryId: 'templates',
+        providerOwner: 'appwrite',
+        providerBranch: 'main',
+        variables: [
+            {
+                name: 'MONGO_URI',
+                description: `The endpoint to connect to your Mongo database. <a class="u-bold" target="_blank" href="https://www.mongodb.com/docs/atlas/getting-started/">Learn more</a>.`,
+                value: '',
+                placeholder:
+                    'mongodb+srv://appwrite:Yx42hafg7Q4fgkxe@cluster0.7mslfog.mongodb.net/?retryWrites=true&w=majority&appName=Appwrite',
+                required: true,
+                type: 'password'
+            }
+        ]
+    },
+    {
+        icon: 'icon-neon',
+        id: 'query-neon-postgres',
+        name: 'Query Neon Postgres',
+        tagline:
+            'Reliable SQL database with replication, point-in-time recovery, and pgvector support.',
+        permissions: ['any'],
+        events: [],
+        cron: '',
+        timeout: 15,
+        usecases: ['Databases'],
+        runtimes: [
+            ...getRuntimes(
+                TemplateRuntimes.NODE,
+                'npm install',
+                'src/main.js',
+                'node/query-neon-postgres'
+            )
+        ],
+        instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/query-neon-postgres">file</a>.`,
+        vcsProvider: 'github',
+        providerRepositoryId: 'templates',
+        providerOwner: 'appwrite',
+        providerBranch: 'main',
+        variables: [
+            {
+                name: 'PGHOST',
+                description: `The endpoint to connect to your Postgres database. <a class="u-bold" target="_blank" href="https://neon.tech/docs/get-started-with-neon/signing-up/">Learn more</a>.`,
+                value: '',
+                placeholder: 'ep-still-sea-a792sh84.eu-central-1.aws.neon.tech',
+                required: true,
+                type: 'text'
+            },
+            {
+                name: 'PGDATABASE',
+                description: `Name of our Postgres database. <a class="u-bold" target="_blank" href="https://neon.tech/docs/get-started-with-neon/signing-up/">Learn more</a>.`,
+                value: '',
+                placeholder: 'main',
+                required: true,
+                type: 'text'
+            },
+            {
+                name: 'PGUSER',
+                description: `Name of our Postgres user for authentication. <a class="u-bold" target="_blank" href="https://neon.tech/docs/get-started-with-neon/signing-up/">Learn more</a>.`,
+                value: '',
+                placeholder: 'main_owner',
+                required: true,
+                type: 'text'
+            },
+            {
+                name: 'PGPASSWORD',
+                description: `Password of our Postgres user for authentication. <a class="u-bold" target="_blank" href="https://neon.tech/docs/get-started-with-neon/signing-up/">Learn more</a>.`,
+                value: '',
+                placeholder: 'iQCfaUaaWB3B',
+                required: true,
+                type: 'password'
+            },
+            {
+                name: 'ENDPOINT_ID',
+                description: `Endpoint ID provided for your Postgres database. <a class="u-bold" target="_blank" href="https://neon.tech/docs/get-started-with-neon/signing-up/">Learn more</a>.`,
+                value: '',
+                placeholder: 'ep-still-sea-a792sh84',
+                required: true,
+                type: 'text'
+            }
+        ]
+    },
+    {
         icon: 'icon-open-ai',
         id: 'prompt-chatgpt',
         name: 'Prompt ChatGPT',
@@ -958,7 +1196,7 @@ export const marketplace: MarketplaceTemplate[] = [
         ]
     },
     {
-        icon: 'icon-chip',
+        icon: 'icon-chat',
         id: 'text-generation-with-huggingface',
         name: 'Text generation',
         tagline: 'Generate text using the Hugging Face inference API.',
@@ -991,7 +1229,7 @@ export const marketplace: MarketplaceTemplate[] = [
         ]
     },
     {
-        icon: 'icon-chip',
+        icon: 'icon-translate',
         id: 'language-translation-with-huggingface',
         name: 'Language translation',
         tagline: 'Translate text using the Hugging Face inference API.',
@@ -1024,7 +1262,7 @@ export const marketplace: MarketplaceTemplate[] = [
         ]
     },
     {
-        icon: 'icon-chip',
+        icon: 'icon-eye',
         id: 'image-classification-with-huggingface',
         name: 'Image classification',
         tagline: 'Classify images using the Hugging Face inference API.',
@@ -1097,7 +1335,7 @@ export const marketplace: MarketplaceTemplate[] = [
         ]
     },
     {
-        icon: 'icon-chip',
+        icon: 'icon-eye',
         id: 'object-detection-with-huggingface',
         name: 'Object detection',
         tagline: 'Detect objects in images using the Hugging Face inference API.',
@@ -1170,7 +1408,7 @@ export const marketplace: MarketplaceTemplate[] = [
         ]
     },
     {
-        icon: 'icon-chip',
+        icon: 'icon-text',
         id: 'speech-recognition-with-huggingface',
         name: 'Speech recognition',
         tagline: 'Transcribe audio to text using the Hugging Face inference API.',
@@ -1243,7 +1481,7 @@ export const marketplace: MarketplaceTemplate[] = [
         ]
     },
     {
-        icon: 'icon-chip',
+        icon: 'icon-chat',
         id: 'text-to-speech-with-huggingface',
         name: 'Text to speech',
         tagline: 'Convert text to speech using the Hugging Face inference API.',
@@ -1351,6 +1589,63 @@ export const marketplace: MarketplaceTemplate[] = [
     },
     {
         icon: 'icon-chip',
+        id: 'generate-with-together-ai',
+        name: 'Generate with Together AI',
+        tagline: "Generate text and images using Together AI's API.",
+        permissions: ['any'],
+        events: [],
+        cron: '',
+        timeout: 300,
+        usecases: ['AI'],
+        runtimes: [
+            ...getRuntimes(
+                TemplateRuntimes.NODE,
+                'npm install',
+                'src/main.js',
+                'node/generate-with-together-ai'
+            )
+        ],
+        instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/generate-with-together-ai">file</a>.`,
+        vcsProvider: 'github',
+        providerRepositoryId: 'templates',
+        providerOwner: 'appwrite',
+        providerBranch: 'main',
+        variables: [
+            {
+                name: 'TOGETHER_API_KEY',
+                description: `A unique key used to authenticate with the Together AI API. <a class="u-bold" target="_blank" href="https://docs.together.ai/reference/authentication-1">Learn more</a>.`,
+                value: '',
+                placeholder: 'd1efb...aec35',
+                required: true,
+                type: 'password'
+            },
+            {
+                name: 'APPWRITE_API_KEY',
+                description: `The API Key to authenticate against Appwrite's server APIs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/advanced/platform/api-keys">Learn more</a>.`,
+                value: '',
+                placeholder: 'd1efb...aec35',
+                required: true,
+                type: 'password'
+            },
+            {
+                name: 'APPWRITE_ENDPOINT',
+                description: `The URL endpoint of the Appwrite server. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/references#api">Learn more</a>.`,
+                value: 'https://cloud.appwrite.io/v1',
+                placeholder: 'https://cloud.appwrite.io/v1',
+                required: false,
+                type: 'url'
+            },
+            {
+                name: 'APPWRITE_BUCKET_ID',
+                description: `The ID of the bucket where audio is stored. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/products/storage/buckets">Learn more</a>.`,
+                placeholder: 'generated_speech',
+                required: true,
+                type: 'text'
+            }
+        ]
+    },
+    {
+        icon: 'icon-chip',
         id: 'chat-with-perplexity-ai',
         name: 'Chat with Perplexity AI',
         tagline: 'Create a chatbot using the Perplexity AI API.',
@@ -1424,7 +1719,7 @@ export const marketplace: MarketplaceTemplate[] = [
         ]
     },
     {
-        icon: 'icon-chip',
+        icon: 'icon-document-search',
         id: 'sync-with-pinecone',
         name: 'Sync with Pinecone',
         tagline: "Sync your Appwrite database with Pinecone's vector database.",
@@ -1580,7 +1875,7 @@ export const marketplace: MarketplaceTemplate[] = [
         ]
     },
     {
-        icon: 'icon-chip',
+        icon: 'icon-chat',
         id: 'speak-with-elevenlabs',
         name: 'Speak with ElevenLabs',
         tagline: 'Convert text to speech using the ElevenLabs API.',
@@ -1648,6 +1943,349 @@ export const marketplace: MarketplaceTemplate[] = [
                 type: 'text'
             }
         ]
+    },
+    {
+        icon: 'icon-chip',
+        id: 'speak-with-lmnt',
+        name: 'Speak with LMNT',
+        tagline: 'Convert text to speech using the LMNT API.',
+        permissions: ['any'],
+        cron: '',
+        events: [],
+        timeout: 15,
+        usecases: ['AI'],
+        runtimes: [
+            ...getRuntimes(
+                TemplateRuntimes.NODE,
+                'npm install',
+                'src/main.js',
+                'node/speak-with-lmnt'
+            )
+        ],
+        instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/speak-with-lmnt">file</a>.`,
+        vcsProvider: 'github',
+        providerRepositoryId: 'templates',
+        providerOwner: 'appwrite',
+        providerBranch: 'main',
+        variables: [
+            {
+                name: 'LMNT_API_KEY',
+                description: `A unique key used to authenticate with the LMNT API. <a class="u-bold" target="_blank" href="https://app.lmnt.com/account">Learn more</a>.`,
+                placeholder: 'd03xxxxxxxx26',
+                required: true,
+                type: 'password'
+            },
+            {
+                name: 'APPWRITE_API_KEY',
+                description: `The API Key to authenticate against Appwrite's server APIs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/advanced/platform/api-keys">Learn more</a>.`,
+                value: '',
+                placeholder: 'd1efb...aec35',
+                required: true,
+                type: 'password'
+            },
+            {
+                name: 'APPWRITE_ENDPOINT',
+                description: `The URL endpoint of the Appwrite server. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/references#api">Learn more</a>.`,
+                value: 'https://cloud.appwrite.io/v1',
+                placeholder: 'https://cloud.appwrite.io/v1',
+                required: false,
+                type: 'url'
+            },
+            {
+                name: 'APPWRITE_BUCKET_ID',
+                description: `The ID of the bucket where audio is stored. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/products/storage/buckets">Learn more</a>.`,
+                placeholder: 'generated_speech',
+                required: true,
+                type: 'text'
+            }
+        ]
+    },
+    {
+        icon: 'icon-chip',
+        id: 'chat-with-anyscale',
+        name: 'Chat with AnyScale',
+        tagline: 'Create a chatbot using the AnyScale API.',
+        permissions: ['any'],
+        cron: '',
+        events: [],
+        timeout: 15,
+        usecases: ['AI'],
+        runtimes: [
+            ...getRuntimes(
+                TemplateRuntimes.NODE,
+                'npm install',
+                'src/main.js',
+                'node/chat-with-anyscale'
+            )
+        ],
+        instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/chat-with-anyscale">file</a>.`,
+        vcsProvider: 'github',
+        providerRepositoryId: 'templates',
+        providerOwner: 'appwrite',
+        providerBranch: 'main',
+        variables: [
+            {
+                name: 'ANYSCALE_API_KEY',
+                description: `A unique key used to authenticate with the AnyScale API. <a class="u-bold" target="_blank" href="https://app.endpoints.anyscale.com/credentials">Learn more</a>.`,
+                placeholder: 'd03xxxxxxxx26',
+                required: true,
+                type: 'password'
+            },
+            {
+                name: 'ANYSCALE_MAX_TOKENS',
+                description: `The maximum number of tokens that Anyscale responses should contain. <a class="u-bold" target="_blank" href="https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them">Learn more</a>.`,
+                placeholder: '',
+                required: false,
+                type: 'number'
+            }
+        ]
+    },
+    {
+        icon: 'icon-music-note',
+        id: 'music-generation-with-huggingface',
+        name: 'Music generation',
+        tagline: 'Generate music from a text prompt using the Hugging Face inference API.',
+        permissions: ['any'],
+        events: [],
+        cron: '',
+        timeout: 15,
+        usecases: ['AI'],
+        runtimes: [
+            ...getRuntimes(
+                TemplateRuntimes.NODE,
+                'npm install && npm run setup',
+                'src/main.js',
+                'node/music-generation-with-huggingface'
+            )
+        ],
+        instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/music-generation-with-huggingface">file</a>.`,
+        vcsProvider: 'github',
+        providerRepositoryId: 'templates',
+        providerOwner: 'appwrite',
+        providerBranch: 'main',
+        variables: [
+            {
+                name: 'APPWRITE_API_KEY',
+                description: `The API Key to authenticate against Appwrite's server APIs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/advanced/platform/api-keys">Learn more</a>.`,
+                value: '',
+                placeholder: 'd1efb...aec35',
+                required: true,
+                type: 'password'
+            },
+            {
+                name: 'APPWRITE_ENDPOINT',
+                description: `The URL endpoint of the Appwrite server. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/references#api">Learn more</a>.`,
+                value: 'https://cloud.appwrite.io/v1',
+                placeholder: 'https://cloud.appwrite.io/v1',
+                required: false,
+                type: 'url'
+            },
+            {
+                name: 'APPWRITE_BUCKET_ID',
+                description: `The ID of the bucket where generated music is stored. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/products/storage/buckets">Learn more</a>.`,
+                value: 'generated_music',
+                placeholder: 'generated_music',
+                required: false,
+                type: 'text'
+            },
+            {
+                name: 'HUGGINGFACE_ACCESS_TOKEN',
+                description: `Secret for sending requests to the Hugging Face API. <a class="u-bold" target="_blank" href="https://huggingface.co/docs/api-inference/en/quicktour#get-your-api-token">Learn more</a>.`,
+                placeholder: 'hf_MUvn...',
+                required: true,
+                type: 'password'
+            }
+        ]
+    },
+    {
+        icon: 'icon-chip',
+        id: 'generate-with-fal-ai',
+        name: 'Generate with fal.ai',
+        tagline: "Generate images using fal.ai's API.",
+        permissions: ['any'],
+        events: [],
+        cron: '',
+        timeout: 300,
+        usecases: ['AI'],
+        runtimes: [
+            ...getRuntimes(
+                TemplateRuntimes.NODE,
+                'npm install',
+                'src/main.js',
+                'node/generate-with-fal-ai'
+            )
+        ],
+        instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/generate-with-fal-ai">file</a>.`,
+        vcsProvider: 'github',
+        providerRepositoryId: 'templates',
+        providerOwner: 'appwrite',
+        providerBranch: 'main',
+        variables: [
+            {
+                name: 'FAL_API_KEY',
+                description: `A unique key used to authenticate with the fal.ai API. <a class="u-bold" target="_blank" href="https://fal.ai/docs/authentication/key-based">Learn more</a>.`,
+                value: '',
+                placeholder: 'd1efb...aec35',
+                required: true,
+                type: 'password'
+            }
+        ]
+    },
+    {
+        icon: 'icon-currency-dollar',
+        id: 'subscriptions-with-lemon-squeezy',
+        name: 'Subscriptions with Lemon Squeezy',
+        tagline: 'Receive recurring card payments and grant subscribers extra permissions.',
+        permissions: ['any'],
+        events: [],
+        cron: '',
+        timeout: 15,
+        usecases: ['Utilities'],
+        runtimes: [
+            ...getRuntimes(
+                TemplateRuntimes.NODE,
+                'npm install',
+                'src/main.js',
+                'node/subscriptions-with-lemon-squeezy'
+            )
+        ],
+        instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/subscriptions-with-lemon-squeezy">file</a>.`,
+        vcsProvider: 'github',
+        providerRepositoryId: 'templates',
+        providerOwner: 'appwrite',
+        providerBranch: 'main',
+        variables: [
+            {
+                name: 'APPWRITE_API_KEY',
+                description: `The API Key to authenticate against Appwrite's Server APIs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/advanced/platform/api-keys">Learn more</a>.`,
+                value: '',
+                placeholder: 'd1efb...aec35',
+                required: true,
+                type: 'password'
+            },
+            {
+                name: 'APPWRITE_ENDPOINT',
+                description: `The URL endpoint of the Appwrite server. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/references#api">Learn more</a>.`,
+                value: 'https://cloud.appwrite.io/v1',
+                placeholder: 'https://cloud.appwrite.io/v1',
+                required: false,
+                type: 'url'
+            },
+            {
+                name: 'LEMON_SQUEEZY_API_KEY',
+                description: `API key for sending requests to the Lemon Squeezy API. <a class="u-bold" target="_blank" href="https://docs.lemonsqueezy.com/api#authentication">Learn more</a>.`,
+                placeholder: 'eyJ0eXAiOiJ...',
+                required: true,
+                type: 'password'
+            },
+            {
+                name: 'LEMON_SQUEEZY_WEBHOOK_SECRET',
+                description: `Secret used to validate the Lemon Squuezy Webhook signature. <a class="u-bold" target="_blank" href="https://docs.lemonsqueezy.com/guides/developer-guide/webhooks#from-the-dashboard">Learn more</a>.`,
+                placeholder: 'abcd...',
+                required: true,
+                type: 'password'
+            },
+            {
+                name: 'LEMON_SQUEEZY_STORE_ID',
+                description: `Store ID required to create a checkout using the Lemon Squeezy API. <a class="u-bold" target="_blank" href="https://docs.lemonsqueezy.com/guides/developer-guide/taking-payments#creating-checkouts-with-the-api">Learn more</a>.`,
+                placeholder: '123456',
+                required: true,
+                type: 'text'
+            },
+            {
+                name: 'LEMON_SQUEEZY_VARIANT_ID',
+                description: `Variant ID of a product required to create a checkout using the Lemon Squeezy API. <a class="u-bold" target="_blank" href="https://docs.lemonsqueezy.com/guides/developer-guide/taking-payments#creating-checkouts-with-the-api">Learn more</a>.`,
+                placeholder: 'abcd...',
+                required: true,
+                type: 'text'
+            }
+        ]
+    },
+    {
+        icon: 'icon-currency-dollar',
+        id: 'payments-with-lemon-squeezy',
+        name: 'Payments with Lemon Squeezy',
+        tagline: 'Receive card payments and store paid orders.',
+        permissions: ['any'],
+        events: [],
+        cron: '',
+        timeout: 15,
+        usecases: ['Utilities'],
+        runtimes: [
+            ...getRuntimes(
+                TemplateRuntimes.NODE,
+                'npm install',
+                'src/main.js',
+                'node/payments-with-lemon-squeezy'
+            )
+        ],
+        instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/payments-with-lemon-squeezy">file</a>.`,
+        vcsProvider: 'github',
+        providerRepositoryId: 'templates',
+        providerOwner: 'appwrite',
+        providerBranch: 'main',
+        variables: [
+            {
+                name: 'APPWRITE_API_KEY',
+                description: `The API Key to authenticate against Appwrite's Server APIs. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/advanced/platform/api-keys">Learn more</a>.`,
+                value: '',
+                placeholder: 'd1efb...aec35',
+                required: true,
+                type: 'password'
+            },
+            {
+                name: 'APPWRITE_ENDPOINT',
+                description: `The URL endpoint of the Appwrite server. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/references#api">Learn more</a>.`,
+                value: 'https://cloud.appwrite.io/v1',
+                placeholder: 'https://cloud.appwrite.io/v1',
+                required: false,
+                type: 'url'
+            },
+            {
+                name: 'APPWRITE_DATABASE_ID',
+                description: `The ID of the database to store paid orders. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/products/databases/databases">Learn more</a>.`,
+                value: 'orders',
+                placeholder: 'orders',
+                required: false,
+                type: 'text'
+            },
+            {
+                name: 'APPWRITE_COLLECTION_ID',
+                description: `The ID of the collection to store paid orders. <a class="u-bold" target="_blank" href="https://appwrite.io/docs/products/databases/collections">Learn more</a>.`,
+                value: 'orders',
+                placeholder: 'orders',
+                required: false,
+                type: 'text'
+            },
+            {
+                name: 'LEMON_SQUEEZY_API_KEY',
+                description: `API key for sending requests to the Lemon Squeezy API. <a class="u-bold" target="_blank" href="https://docs.lemonsqueezy.com/api#authentication">Learn more</a>.`,
+                placeholder: 'eyJ0eXAiOiJ...',
+                required: true,
+                type: 'password'
+            },
+            {
+                name: 'LEMON_SQUEEZY_WEBHOOK_SECRET',
+                description: `Secret used to validate the Lemon Squuezy Webhook signature. <a class="u-bold" target="_blank" href="https://docs.lemonsqueezy.com/guides/developer-guide/webhooks#from-the-dashboard">Learn more</a>.`,
+                placeholder: 'abcd...',
+                required: true,
+                type: 'password'
+            },
+            {
+                name: 'LEMON_SQUEEZY_STORE_ID',
+                description: `Store ID required to create a checkout using the Lemon Squeezy API. <a class="u-bold" target="_blank" href="https://docs.lemonsqueezy.com/guides/developer-guide/taking-payments#creating-checkouts-with-the-api">Learn more</a>.`,
+                placeholder: '123456',
+                required: true,
+                type: 'text'
+            },
+            {
+                name: 'LEMON_SQUEEZY_VARIANT_ID',
+                description: `Variant ID of a product required to create a checkout using the Lemon Squeezy API. <a class="u-bold" target="_blank" href="https://docs.lemonsqueezy.com/guides/developer-guide/taking-payments#creating-checkouts-with-the-api">Learn more</a>.`,
+                placeholder: 'abcd...',
+                required: true,
+                type: 'text'
+            }
+        ]
     }
 ];
 
@@ -1685,38 +2323,3 @@ export type MarketplaceTemplate = {
     providerBranch: string;
     variables: Variable[];
 };
-
-/*
-Template:
-    {
-        "icon": "algolia",
-        "id": "sync-with-algolia",
-        "name": "Sync with Algolia",
-        "tagline": "Search your Appwrite Database with Algolia.",
-        "permissions": ["any"],
-        "events": [ "users.*.create" ],
-        "cron": "0 * * * *",
-        "timeout": 15,
-        "runtimes": [
-            {
-                "name": "node-18",
-                "entrypoint": "src/main.js",
-                "commands": "npm install"
-            }
-        ],
-        "instructions": "# Some markdown stuff",
-        "vcsProvider": "github",
-        "vcsRepositoryName": "templates-for-node",
-        "vcsOwnerName": "loks0n",
-        "vcsRootDirectory": "sync-with-algolia",
-        "variables": [
-            {
-                "name": "ALGOLIA_API_KEY",
-                "description": "Algolia read-write API key.",
-                "value": "",
-                "placeholder": "sk_1df...h9jef",
-                "required": true
-            }
-        ]
-    }
-*/
