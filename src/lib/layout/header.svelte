@@ -90,8 +90,8 @@
     </a>
     {#if isCloud}
         <div
-            class="tag eyebrow-heading-3"
-            style="--p-tag-height: 1.785rem; --p-tag-content-height: 1.15rem; padding-block: 0.25rem;">
+            class="tag eyebrow-heading-3 u-padding-block-4"
+            style="--p-tag-height: 1.785rem; --p-tag-content-height: 1.2rem;">
             <span class="text u-x-small" style="font-weight: 500">Beta</span>
         </div>
     {/if}

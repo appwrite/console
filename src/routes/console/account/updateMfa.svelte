@@ -13,6 +13,7 @@
     import MfaRecoveryCodes from './mfaRecoveryCodes.svelte';
     import type { Models } from '@appwrite.io/console';
     import MfaRegenerateCodes from './mfaRegenerateCodes.svelte';
+    import { Pill } from '$lib/elements';
 
     let showSetup: boolean = false;
     let showDelete: boolean = false;
@@ -144,8 +145,11 @@
                                 <div class="avatar is-size-x-small">
                                     <span class="icon-mail" aria-hidden="true" />
                                 </div>
-                                <div class="u-flex-vertical u-gap-4 body-text-2">
-                                    <span class="u-bold">Email verification</span>
+                                <div class="u-flex-vertical u-gap-4">
+                                    <div class="u-flex u-gap-4 u-cross-center">
+                                        <span class="body-text-2 u-bold">Email</span>
+                                        <Pill>verified</Pill>
+                                    </div>
                                     <span>One-time codes will be sent to: {$user.email}</span>
                                 </div>
                             </div>
@@ -160,8 +164,11 @@
                                 <div class="avatar is-size-x-small">
                                     <span class="icon-send" aria-hidden="true" />
                                 </div>
-                                <div class="u-flex-vertical u-gap-4 body-text-2">
-                                    <span class="u-bold">SMS verification</span>
+                                <div class="u-flex-vertical u-gap-4">
+                                    <div class="u-flex u-gap-4 u-cross-center">
+                                        <span class="body-text-2 u-bold">SMS</span>
+                                        <Pill>verified</Pill>
+                                    </div>
                                     <span>One-time codes will be sent to: {$user.phone}</span>
                                 </div>
                             </div>
