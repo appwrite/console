@@ -81,7 +81,7 @@ export const marketplace: MarketplaceTemplate[] = [
         icon: 'icon-upstash',
         id: 'query-upstash-vector',
         name: 'Query Upstash Vector',
-        tagline: 'Vector database to store embeddings powering tailored LLM answers.',
+        tagline: 'Vector database, to store text embeddings and context retrieval for LLMs',
         permissions: ['any'],
         events: [],
         cron: '',
