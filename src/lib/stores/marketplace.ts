@@ -78,6 +78,244 @@ export const marketplace: MarketplaceTemplate[] = [
         ]
     },
     {
+        icon: 'icon-upstash',
+        id: 'query-upstash-vector',
+        name: 'Query Upstash Vector',
+        tagline: 'Vector database that stores text embeddings and context retrieval for LLMs',
+        permissions: ['any'],
+        events: [],
+        cron: '',
+        timeout: 15,
+        usecases: ['Databases'],
+        runtimes: [
+            ...getRuntimes(
+                TemplateRuntimes.NODE,
+                'npm install',
+                'src/main.js',
+                'node/query-upstash-vector'
+            )
+        ],
+        instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/query-upstash-vector">file</a>.`,
+        vcsProvider: 'github',
+        providerRepositoryId: 'templates',
+        providerOwner: 'appwrite',
+        providerBranch: 'main',
+        variables: [
+            {
+                name: 'UPSTASH_URL',
+                description: `The endpoint to connect to your Upstash Vector database. <a class="u-bold" target="_blank" href="https://upstash.com/docs/vector/overall/getstarted">Learn more</a>.`,
+                value: '',
+                placeholder: 'https://resolved-mallard-84564-eu1-vector.upstash.io',
+                required: true,
+                type: 'text'
+            },
+            {
+                name: 'UPSTASH_TOKEN',
+                description: `Authentication token to access your Upstash Vector database. <a class="u-bold" target="_blank" href="https://upstash.com/docs/vector/overall/getstarted">Learn more</a>.`,
+                value: '',
+                placeholder:
+                    'oe4wNTbwHVLcDNa6oceZfhBEABsCNYh43ii6Xdq4bKBH7mq7qJkUmc4cs3ABbYyuVKWZTxVQjiNjYgydn2dkhABNes4NAuDpj7qxUAmZYqGJT78',
+                required: true,
+                type: 'password'
+            }
+        ]
+    },
+    {
+        icon: 'icon-redis',
+        id: 'query-redis-labs',
+        name: 'Query Redis Labs',
+        tagline: 'Key-value database with advanced caching capabilities.',
+        permissions: ['any'],
+        events: [],
+        cron: '',
+        timeout: 15,
+        usecases: ['Databases'],
+        runtimes: [
+            ...getRuntimes(
+                TemplateRuntimes.NODE,
+                'npm install',
+                'src/main.js',
+                'node/query-redis-labs'
+            )
+        ],
+        instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/query-redis-labs">file</a>.`,
+        vcsProvider: 'github',
+        providerRepositoryId: 'templates',
+        providerOwner: 'appwrite',
+        providerBranch: 'main',
+        variables: [
+            {
+                name: 'REDIS_HOST',
+                description: `The endpoint to connect to your Redis database. <a class="u-bold" target="_blank" href="https://redis.io/docs/latest/operate/rc/rc-quickstart/">Learn more</a>.`,
+                value: '',
+                placeholder: 'redis-13258.c35.eu-central-1-1.ec2.redns.redis-cloud.com',
+                required: true,
+                type: 'text'
+            },
+            {
+                name: 'REDIS_PASSWORD',
+                description: `Authentication password to access your Redis database. <a class="u-bold" target="_blank" href="https://redis.io/docs/latest/operate/rc/rc-quickstart/">Learn more</a>.`,
+                value: '',
+                placeholder: 'efNNehiACfcZiwsTAjcK6xiwPyu6Dpdq',
+                required: true,
+                type: 'password'
+            }
+        ]
+    },
+    {
+        icon: 'icon-neo4j',
+        id: 'query-neo4j-auradb',
+        name: 'Query Neo4j AuraDB',
+        tagline: 'Graph database with focus on relations between data.',
+        permissions: ['any'],
+        events: [],
+        cron: '',
+        timeout: 15,
+        usecases: ['Databases'],
+        runtimes: [
+            ...getRuntimes(
+                TemplateRuntimes.NODE,
+                'npm install',
+                'src/main.js',
+                'node/query-neo4j-auradb'
+            )
+        ],
+        instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/query-neo4j-auradb">file</a>.`,
+        vcsProvider: 'github',
+        providerRepositoryId: 'templates',
+        providerOwner: 'appwrite',
+        providerBranch: 'main',
+        variables: [
+            {
+                name: 'NEO4J_URI',
+                description: `The endpoint to connect to your Neo4j database. <a class="u-bold" target="_blank" href="https://neo4j.com/docs/aura/auradb/getting-started/connect-database/">Learn more</a>.`,
+                value: '',
+                placeholder: 'neo4j+s://4tg4mddo.databases.neo4j.io',
+                required: true,
+                type: 'text'
+            },
+            {
+                name: 'NEO4J_USER',
+                description: `Authentication user to access your Neo4j database. <a class="u-bold" target="_blank" href="https://neo4j.com/docs/aura/auradb/getting-started/connect-database/">Learn more</a>.`,
+                value: '',
+                placeholder: 'neo4j',
+                required: true,
+                type: 'text'
+            },
+            {
+                name: 'NEO4J_PASSWORD',
+                description: `Authentication password to access your Neo4j database. <a class="u-bold" target="_blank" href="https://neo4j.com/docs/aura/auradb/getting-started/connect-database/">Learn more</a>.`,
+                value: '',
+                placeholder: 'mCUc4PbVUQN-_NkTLJLisb6ccnwzQKKhrkF77YMctzx',
+                required: true,
+                type: 'password'
+            }
+        ]
+    },
+    {
+        icon: 'icon-mongodb',
+        id: 'query-mongo-atlas',
+        name: 'Query MongoDB Atlas',
+        tagline:
+            'Realtime NoSQL document database with geospecial, graph, search, and vector suport.',
+        permissions: ['any'],
+        events: [],
+        cron: '',
+        timeout: 15,
+        usecases: ['Databases'],
+        runtimes: [
+            ...getRuntimes(
+                TemplateRuntimes.NODE,
+                'npm install',
+                'src/main.js',
+                'node/query-mongo-atlas'
+            )
+        ],
+        instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/query-mongo-atlas">file</a>.`,
+        vcsProvider: 'github',
+        providerRepositoryId: 'templates',
+        providerOwner: 'appwrite',
+        providerBranch: 'main',
+        variables: [
+            {
+                name: 'MONGO_URI',
+                description: `The endpoint to connect to your Mongo database. <a class="u-bold" target="_blank" href="https://www.mongodb.com/docs/atlas/getting-started/">Learn more</a>.`,
+                value: '',
+                placeholder:
+                    'mongodb+srv://appwrite:Yx42hafg7Q4fgkxe@cluster0.7mslfog.mongodb.net/?retryWrites=true&w=majority&appName=Appwrite',
+                required: true,
+                type: 'password'
+            }
+        ]
+    },
+    {
+        icon: 'icon-neon',
+        id: 'query-neon-postgres',
+        name: 'Query Neon Postgres',
+        tagline:
+            'Reliable SQL database with replication, point-in-time recovery, and pgvector support.',
+        permissions: ['any'],
+        events: [],
+        cron: '',
+        timeout: 15,
+        usecases: ['Databases'],
+        runtimes: [
+            ...getRuntimes(
+                TemplateRuntimes.NODE,
+                'npm install',
+                'src/main.js',
+                'node/query-neon-postgres'
+            )
+        ],
+        instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/query-neon-postgres">file</a>.`,
+        vcsProvider: 'github',
+        providerRepositoryId: 'templates',
+        providerOwner: 'appwrite',
+        providerBranch: 'main',
+        variables: [
+            {
+                name: 'PGHOST',
+                description: `The endpoint to connect to your Postgres database. <a class="u-bold" target="_blank" href="https://neon.tech/docs/get-started-with-neon/signing-up/">Learn more</a>.`,
+                value: '',
+                placeholder: 'ep-still-sea-a792sh84.eu-central-1.aws.neon.tech',
+                required: true,
+                type: 'text'
+            },
+            {
+                name: 'PGDATABASE',
+                description: `Name of our Postgres database. <a class="u-bold" target="_blank" href="https://neon.tech/docs/get-started-with-neon/signing-up/">Learn more</a>.`,
+                value: '',
+                placeholder: 'main',
+                required: true,
+                type: 'text'
+            },
+            {
+                name: 'PGUSER',
+                description: `Name of our Postgres user for authentication. <a class="u-bold" target="_blank" href="https://neon.tech/docs/get-started-with-neon/signing-up/">Learn more</a>.`,
+                value: '',
+                placeholder: 'main_owner',
+                required: true,
+                type: 'text'
+            },
+            {
+                name: 'PGPASSWORD',
+                description: `Password of our Postgres user for authentication. <a class="u-bold" target="_blank" href="https://neon.tech/docs/get-started-with-neon/signing-up/">Learn more</a>.`,
+                value: '',
+                placeholder: 'iQCfaUaaWB3B',
+                required: true,
+                type: 'password'
+            },
+            {
+                name: 'ENDPOINT_ID',
+                description: `Endpoint ID provided for your Postgres database. <a class="u-bold" target="_blank" href="https://neon.tech/docs/get-started-with-neon/signing-up/">Learn more</a>.`,
+                value: '',
+                placeholder: 'ep-still-sea-a792sh84',
+                required: true,
+                type: 'text'
+            }
+        ]
+    },
+    {
         icon: 'icon-open-ai',
         id: 'prompt-chatgpt',
         name: 'Prompt ChatGPT',
