@@ -12,7 +12,9 @@
     <div class="u-flex u-gap-24 u-flex-vertical-mobile">
         {#if $$slots?.image}
             <div class="u-stretch">
-                <div class="file-preview u-width-full-line u-height-100-percent">
+                <div
+                    style:--p-file-preview-border-color="transparent"
+                    class="file-preview is-full-cover-image u-width-full-line u-height-100-percent">
                     <slot name="image" />
                 </div>
             </div>

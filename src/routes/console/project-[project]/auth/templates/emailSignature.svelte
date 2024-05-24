@@ -18,12 +18,12 @@
                     {#if $app.themeInUse === 'dark'}
                         <img
                             src={EmailMobileDark}
-                            class="u-image-object-fit-cover u-only-dark"
+                            class="u-image-object-fit-cover u-only-dark u-width-full-line u-height-100-percent"
                             alt="Email Signature Example" />
                     {:else}
                         <img
                             src={EmailMobileLight}
-                            class="u-image-object-fit-cover u-only-light"
+                            class="u-image-object-fit-cover u-only-light u-width-full-line u-height-100-percent"
                             alt="Email Signature Example" />
                     {/if}
                 </div>
@@ -33,14 +33,14 @@
                             src={EmailDark}
                             width="266"
                             height="171"
-                            class="u-image-object-fit-cover u-block u-only-dark"
+                            class="u-image-object-fit-cover u-block u-only-dark u-width-full-line u-height-100-percent"
                             alt="Email Signature Example" />
                     {:else}
                         <img
                             src={EmailLight}
                             width="266"
                             height="171"
-                            class="u-image-object-fit-cover u-only-light"
+                            class="u-image-object-fit-cover u-only-light u-width-full-line u-height-100-percent"
                             alt="Email Signature Example" />
                     {/if}
                 </div>
