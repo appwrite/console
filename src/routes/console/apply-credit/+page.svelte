@@ -40,10 +40,10 @@
     let taxId: string;
     let billingBudget: number;
     let options = [
-        ...$organizationList?.teams?.map((team) => ({
+        ...($organizationList?.teams?.map((team) => ({
             value: team.$id,
             label: team.name
-        })),
+        })) ?? []),
         {
             value: null,
             label: 'Create new organization'
