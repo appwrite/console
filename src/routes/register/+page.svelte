@@ -21,6 +21,8 @@
     import { page } from '$app/stores';
     import { redirectTo } from '$routes/store';
 
+    export let data;
+
     let name: string, mail: string, pass: string, disabled: boolean;
     let terms = false;
 
@@ -73,7 +75,7 @@
     <title>Sign up - Appwrite</title>
 </svelte:head>
 
-<Unauthenticated>
+<Unauthenticated coupon={data?.couponData}>
     <svelte:fragment slot="title">Sign up</svelte:fragment>
     <svelte:fragment>
         <Form onSubmit={register}>
