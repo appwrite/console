@@ -6,6 +6,7 @@
     import { EstimatedTotalBox, SelectPaymentMethod } from '$lib/components/billing';
     import { BillingPlan, Dependencies } from '$lib/constants';
     import { Button, Form, FormList, InputSelect, InputTags, InputText } from '$lib/elements/forms';
+    import { toLocaleDate } from '$lib/helpers/date';
     import {
         WizardSecondaryContainer,
         WizardSecondaryContent,
@@ -38,10 +39,16 @@
     let collaborators: string[];
     let taxId: string;
     let billingBudget: number;
-    let options = $organizationList?.teams?.map((team) => ({
-        value: team.$id,
-        label: team.name
-    }));
+    let options = [
+        ...$organizationList?.teams?.map((team) => ({
+            value: team.$id,
+            label: team.name
+        })),
+        {
+            value: null,
+            label: 'Create new organization'
+        }
+    ];
     let name: string;
 
     onMount(async () => {
@@ -65,6 +72,7 @@
     async function handleSubmit() {
         try {
             let org: Organization;
+            // Create new org
             if (!selectedOrgId) {
                 org = await sdk.forConsole.billing.createOrganization(
                     ID.unique(),
@@ -72,28 +80,32 @@
                     BillingPlan.PRO,
                     paymentMethodId
                 );
-            } else if (selectedOrg?.billingPlan !== BillingPlan.PRO) {
+            }
+            // Upgrade existing org
+            else if (selectedOrg?.billingPlan !== BillingPlan.PRO) {
                 org = await sdk.forConsole.billing.updatePlan(
                     selectedOrg.$id,
                     BillingPlan.PRO,
                     paymentMethodId,
                     null
                 );
-            } else {
+            }
+            // Existing pro org
+            else {
                 org = selectedOrg;
             }
 
-            //Add coupon
+            // Add coupon
             if (data.couponData?.code) {
                 await sdk.forConsole.billing.addCredit(org.$id, data.couponData.code);
             }
 
-            //Add budget
+            // Add budget
             if (billingBudget) {
                 await sdk.forConsole.billing.updateBudget(org.$id, billingBudget, [75]);
             }
 
-            //Add collaborators
+            // Add collaborators
             if (collaborators?.length) {
                 collaborators.forEach(async (collaborator) => {
                     await sdk.forConsole.teams.createMembership(
@@ -107,7 +119,7 @@
                 });
             }
 
-            //Add tax ID
+            // Add tax ID
             if (taxId) {
                 await sdk.forConsole.billing.updateTaxId(org.$id, taxId);
             }
@@ -135,8 +147,9 @@
         (team) => team.$id === selectedOrgId
     ) as Organization;
 
-    $: isButtonDisabled =
-        selectedOrg?.paymentMethodId && selectedOrg?.billingPlan === BillingPlan.PRO;
+    $: isButtonDisabled = selectedOrgId
+        ? !selectedOrg?.paymentMethodId && !paymentMethodId
+        : !name || !paymentMethodId;
 </script>
 
 <svelte:head>
@@ -181,23 +194,26 @@
             </Form>
         {/if}
         <svelte:fragment slot="aside">
-            <div class="card">
-                <!-- <img
-                    src={`/images/campaigns/${data?.couponData?.campaign}/${$app.themeInUse}.png`}
-                    class="u-block"
-                    width="401"
-                    height="243"
-                    alt="promo" /> -->
+            <div class="card card-bg">
                 <img
-                    src={`/images/campaigns/startup/${$app.themeInUse}.png`}
+                    src={`/images/campaigns/${data.couponData.campaign}/${$app.themeInUse}.png`}
                     class="u-block u-image-object-fit-cover"
                     alt="promo" />
             </div>
-            <EstimatedTotalBox
-                billingPlan={BillingPlan.PRO}
-                {collaborators}
-                bind:couponData={data.couponData}
-                bind:billingBudget />
+            {#if selectedOrg?.billingPlan === BillingPlan.PRO}
+                <section class="card u-margin-block-start-32">
+                    <p class="text">
+                        Credits will automatically be applied to your next invoice on <b
+                            >{toLocaleDate(selectedOrg.billingNextInvoiceDate)}.</b>
+                    </p>
+                </section>
+            {:else if selectedOrg?.$id}
+                <EstimatedTotalBox
+                    billingPlan={BillingPlan.PRO}
+                    {collaborators}
+                    bind:couponData={data.couponData}
+                    bind:billingBudget />
+            {/if}
         </svelte:fragment>
     </WizardSecondaryContent>
 
@@ -211,3 +227,36 @@
         </Button>
     </WizardSecondaryFooter>
 </WizardSecondaryContainer>
+
+<style lang="scss">
+    .card-bg {
+        position: relative;
+        overflow: hidden;
+        & > img {
+            z-index: 10;
+        }
+    }
+    .card-bg::before {
+        position: absolute;
+        inset-block-start: -30px;
+        inset-inline-end: -30px;
+        content: '';
+        display: block;
+        inline-size: 30%;
+        block-size: 30%;
+        background: radial-gradient(49.55% 43.54% at 47% 50.69%, #e7f8f7 0%, #85dbd8 100%);
+        filter: blur(50px);
+        z-index: 1;
+    }
+    .card-bg::after {
+        position: absolute;
+        inset-block-end: -30px;
+        inset-inline-start: -30px;
+        content: '';
+        display: block;
+        inline-size: 30%;
+        block-size: 30%;
+        background: radial-gradient(50% 46.73% at 50% 53.27%, #fe9567 28.17%, #fd366e 59.38%);
+        filter: blur(50px);
+    }
+</style>
