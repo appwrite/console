@@ -42,8 +42,8 @@
             }
 
             await invalidate(Dependencies.ACCOUNT);
-            trackEvent(Submit.AccountCreate, { campaign_name: data?.couponData?.code });
             if (data?.couponData?.code) {
+                trackEvent(Submit.AccountCreate, { campaign_name: data?.couponData?.code });
                 await goto(`${base}/console/apply-credit?code=${data?.couponData?.code}`);
                 return;
             }

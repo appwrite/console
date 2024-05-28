@@ -6,6 +6,7 @@
     import LoginLight from '$lib/images/login/login-light-mode.png';
     import type { Coupon } from '$lib/sdk/billing';
     import { app } from '$lib/stores/app';
+    import { campaigns } from '$lib/stores/campaigns';
     import { user } from '$lib/stores/user';
 
     export const imgLight = LoginLight;
@@ -14,6 +15,7 @@
     export let coupon: Coupon = null;
 
     $: variation = coupon?.code ? 'card' : 'default';
+    $: campaign = campaigns.get(coupon.campaign);
 </script>
 
 <main class="grid-1-1 is-full-page" id="main">
@@ -60,11 +62,10 @@
 
                 <div class="u-text-center">
                     <Heading size="3" tag="h3" class="u-margin-block-start-56" trimmed={false}>
-                        You've received ${coupon.credits} in credits
+                        {campaign.title.replace('VALUE', coupon.credits)}
                     </Heading>
                     <p class="body-text-1 u-margin-block-start-8">
-                        Get ${coupon.credits} in credits when you upgrade or create an organization with
-                        a Pro plan.
+                        {campaign.description.replace('VALUE', coupon.credits)}
                     </p>
                 </div>
             </div>

@@ -1,5 +1,6 @@
 import { base } from '$app/paths';
 import type { Coupon } from '$lib/sdk/billing.js';
+import { campaigns } from '$lib/stores/campaigns.js';
 import { sdk } from '$lib/stores/sdk.js';
 import { redirect } from '@sveltejs/kit';
 
@@ -13,11 +14,12 @@ export const load = async ({ url }) => {
             redirect(303, `${base}/console`);
         }
     }
-    if (!couponData?.campaign) {
+    if (!couponData?.campaign || !campaigns.has(couponData.campaign)) {
         redirect(303, `${base}/console`);
     }
 
     return {
-        couponData
+        couponData,
+        campaign: campaigns.get(couponData.campaign)
     };
 };

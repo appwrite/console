@@ -39,13 +39,14 @@
     let collaborators: string[];
     let taxId: string;
     let billingBudget: number;
+    let newOrgId = ID.unique();
     let options = [
         ...($organizationList?.teams?.map((team) => ({
             value: team.$id,
             label: team.name
         })) ?? []),
         {
-            value: null,
+            value: newOrgId,
             label: 'Create new organization'
         }
     ];
@@ -54,9 +55,7 @@
     onMount(async () => {
         await loadPaymentMethods();
         if (!$organizationList?.total) {
-            selectedOrgId = null;
-        } else {
-            selectedOrgId = $organizationList?.teams[0]?.$id;
+            selectedOrgId = newOrgId;
         }
     });
 
@@ -75,7 +74,7 @@
             // Create new org
             if (!selectedOrgId) {
                 org = await sdk.forConsole.billing.createOrganization(
-                    ID.unique(),
+                    newOrgId,
                     name,
                     BillingPlan.PRO,
                     paymentMethodId
@@ -166,14 +165,14 @@
                     label="Select organization"
                     {options}
                     required
-                    placeholder="Create new organization"
+                    placeholder="Select organization"
                     id="organization" />
             </FormList>
         {/if}
-        {#if selectedOrg?.billingPlan !== BillingPlan.PRO || !selectedOrg?.paymentMethodId}
+        {#if selectedOrgId && (selectedOrg?.billingPlan !== BillingPlan.PRO || !selectedOrg?.paymentMethodId)}
             <Form bind:this={formComponent} onSubmit={handleSubmit} bind:isSubmitting>
                 <FormList>
-                    {#if !selectedOrgId}
+                    {#if selectedOrgId === newOrgId}
                         <InputText
                             label="Name"
                             id="name"
@@ -194,11 +193,19 @@
             </Form>
         {/if}
         <svelte:fragment slot="aside">
-            <div class="card card-bg">
-                <img
-                    src={`/images/campaigns/${data.couponData.campaign}/${$app.themeInUse}.png`}
-                    class="u-block u-image-object-fit-cover"
-                    alt="promo" />
+            <div class="card card-container u-position-relative">
+                <div class="card-bg"></div>
+                <div
+                    class="u-flex u-flex-vertical u-gap-24 u-cross-center u-position-relative"
+                    style:z-index={10}>
+                    <img
+                        src={`/images/campaigns/${data.couponData.campaign}/${$app.themeInUse}.png`}
+                        class="u-block u-image-object-fit-cover"
+                        alt="promo" />
+                    <p class="body-text-1">
+                        {data.campaign.title.replace('VALUE', data.couponData.credits)}
+                    </p>
+                </div>
             </div>
             {#if selectedOrg?.billingPlan === BillingPlan.PRO}
                 <section class="card u-margin-block-start-32">
@@ -207,7 +214,7 @@
                             >{toLocaleDate(selectedOrg.billingNextInvoiceDate)}.</b>
                     </p>
                 </section>
-            {:else if selectedOrg?.$id}
+            {:else if selectedOrgId}
                 <EstimatedTotalBox
                     billingPlan={BillingPlan.PRO}
                     {collaborators}
@@ -229,12 +236,15 @@
 </WizardSecondaryContainer>
 
 <style lang="scss">
-    .card-bg {
-        position: relative;
+    .card-container {
         overflow: hidden;
-        & > img {
-            z-index: 10;
-        }
+    }
+    .card-bg {
+        position: absolute;
+        overflow: hidden;
+        height: 100%;
+        width: 100%;
+        inset: 0;
     }
     .card-bg::before {
         position: absolute;
@@ -245,8 +255,7 @@
         inline-size: 30%;
         block-size: 30%;
         background: radial-gradient(49.55% 43.54% at 47% 50.69%, #e7f8f7 0%, #85dbd8 100%);
-        filter: blur(50px);
-        z-index: 1;
+        filter: blur(70px);
     }
     .card-bg::after {
         position: absolute;
@@ -257,6 +266,6 @@
         inline-size: 30%;
         block-size: 30%;
         background: radial-gradient(50% 46.73% at 50% 53.27%, #fe9567 28.17%, #fd366e 59.38%);
-        filter: blur(50px);
+        filter: blur(70px);
     }
 </style>
