@@ -59,7 +59,7 @@
                     alt="promo" />
 
                 <div class="u-text-center">
-                    <Heading size="4" tag="h3" class="u-margin-block-start-56">
+                    <Heading size="3" tag="h3" class="u-margin-block-start-56" trimmed={false}>
                         You've received ${coupon.credits} in credits
                     </Heading>
                     <p class="body-text-1 u-margin-block-start-8">
@@ -77,7 +77,9 @@
                 <h1 class="heading-level-4 u-margin-block-start-auto is-not-mobile">
                     <slot name="title" />
                 </h1>
-                <h1 class="heading-level-5 u-margin-block-start-auto is-only-mobile">
+                <h1
+                    class="heading-level-5 u-margin-block-start-auto is-only-mobile"
+                    class:u-padding-block-start-24={variation === 'card'}>
                     <slot name="title" />
                 </h1>
                 <div class="u-margin-block-start-24">
