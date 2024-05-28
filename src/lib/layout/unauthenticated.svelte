@@ -23,6 +23,7 @@
         style:--url={variation === 'card'
             ? ''
             : `url(${$app.themeInUse === 'dark' ? imgDark : imgLight})`}>
+        <div class="side-bg-container" />
         <div
             class="logo u-flex u-gap-16 is-not-mobile"
             class:u-margin-inline-auto={variation === 'card'}
@@ -51,12 +52,10 @@
                 <p>Build like a team of hundreds<span class="underscore">_</span></p>
             </div>
         {:else if variation === 'card'}
-            <div class="u-flex u-flex-vertical u-main-center u-cross-center" style=" height: 100%">
+            <div class="u-flex u-flex-vertical u-main-center u-cross-center u-height-100-percent">
                 <img
                     src={`/images/campaigns/${coupon.campaign}/${$app.themeInUse}.png`}
                     class="u-block u-image-object-fit-cover"
-                    width="401"
-                    height="243"
                     alt="promo" />
 
                 <div class="u-text-center">
@@ -119,48 +118,46 @@
 
     .side-bg {
         position: relative;
-        background-color: #ededf0;
         overflow: hidden;
+        z-index: 1;
+        height: 100%;
+        width: 100%;
     }
-    .side-bg::before {
+    .side-bg-container {
         position: absolute;
-        // inset-block-start: -950px;
-        inset-block-start: -1450px;
-        inset-inline-end: -650px;
+        inset: 0;
+        block-size: 100%;
+        inline-size: 100%;
+        z-index: -1;
+    }
+    .side-bg-container::before {
+        position: absolute;
+        inset-block-start: -10px;
+        inset-inline-end: -10px;
         content: '';
         display: block;
-        inline-size: 100%;
-        block-size: 100%;
+        inline-size: 30%;
+        block-size: 30%;
         background: radial-gradient(49.55% 43.54% at 47% 50.69%, #e7f8f7 0%, #85dbd8 100%);
         filter: blur(250px);
         @media #{$break1} {
-            // inset-block-start: -200px;
-            inset-block-start: -500px;
-            inset-inline-end: -400px;
             filter: blur(100px);
         }
     }
-    .side-bg::after {
+    .side-bg-container::after {
         position: absolute;
-        // inset-block-end: -850px;
-        inset-block-end: -1250px;
-        inset-inline-start: -600px;
+        inset-block-end: -10px;
+        inset-inline-start: -10px;
         content: '';
         display: block;
-        inline-size: 100%;
-        block-size: 100%;
+        inline-size: 30%;
+        block-size: 30%;
         background: radial-gradient(50% 46.73% at 50% 53.27%, #fe9567 28.17%, #fd366e 59.38%);
         filter: blur(250px);
 
         @media #{$break1} {
-            // inset-block-end: -200px;
-            inset-block-end: -400px;
-            inset-inline-start: -400px;
             filter: blur(100px);
         }
-    }
-    :global(.theme-dark) .side-bg {
-        background-color: #19191d;
     }
 
     /* Default (including mobile) */
