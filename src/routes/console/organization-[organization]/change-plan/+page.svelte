@@ -255,7 +255,7 @@
 </svelte:head>
 
 <WizardSecondaryContainer>
-    <WizardSecondaryHeader href={previousPage}>Change plan</WizardSecondaryHeader>
+    <WizardSecondaryHeader href={previousPage} showExitModal>Change plan</WizardSecondaryHeader>
     <WizardSecondaryContent>
         <Form bind:this={formComponent} onSubmit={handleSubmit} bind:isSubmitting>
             <Label class="label u-margin-block-start-16">Select plan</Label>

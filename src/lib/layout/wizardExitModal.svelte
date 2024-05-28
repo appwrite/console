@@ -4,6 +4,7 @@
     import { createEventDispatcher } from 'svelte';
 
     export let show = false;
+    export let href: string = null;
     const dispatch = createEventDispatcher();
 
     function handleSubmit() {
@@ -25,6 +26,10 @@
     </p>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (show = false)}>Cancel</Button>
-        <Button secondary submit>Exit</Button>
+        {#if href}
+            <Button secondary {href}>Exit</Button>
+        {:else}
+            <Button secondary submit>Exit</Button>
+        {/if}
     </svelte:fragment>
 </Modal>
