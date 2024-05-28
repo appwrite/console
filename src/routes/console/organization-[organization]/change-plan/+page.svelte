@@ -372,7 +372,7 @@
                     bind:couponData
                     bind:billingBudget />
             {:else}
-                <PlanComparisonBox downgrade={isDowngrade} />
+                <PlanComparisonBox />
             {/if}
         </svelte:fragment>
     </WizardSecondaryContent>
