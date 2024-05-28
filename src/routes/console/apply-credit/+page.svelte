@@ -156,7 +156,13 @@
 </svelte:head>
 
 <WizardSecondaryContainer>
-    <WizardSecondaryHeader href={previousPage}>Apply credits</WizardSecondaryHeader>
+    <WizardSecondaryHeader showExitModal href={previousPage}
+        >Apply credits
+        <svelte:fragment slot="exit">
+            You can apply your credits to an organization at a later date. All other data entered
+            will be lost. Credits expire {toLocaleDate(data.couponData.expiration)}.
+        </svelte:fragment>
+    </WizardSecondaryHeader>
     <WizardSecondaryContent>
         {#if $organizationList?.total}
             <FormList>
@@ -208,7 +214,7 @@
                 </div>
             </div>
             {#if selectedOrg?.billingPlan === BillingPlan.PRO}
-                <section class="card u-margin-block-start-32">
+                <section class="card u-margin-block-start-32" style:--p-card-padding="1.5rem">
                     <p class="text">
                         Credits will automatically be applied to your next invoice on <b
                             >{toLocaleDate(selectedOrg.billingNextInvoiceDate)}.</b>
@@ -216,6 +222,7 @@
                 </section>
             {:else if selectedOrgId}
                 <EstimatedTotalBox
+                    fixedCoupon
                     billingPlan={BillingPlan.PRO}
                     {collaborators}
                     bind:couponData={data.couponData}

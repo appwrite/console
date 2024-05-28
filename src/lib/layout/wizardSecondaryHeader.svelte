@@ -44,6 +44,9 @@
                 from: 'prompt'
             });
         }}>
-        <slot name="exit">this process</slot>
+        <slot name="exit">
+            Are you sure you want to exit from this process? All data will be deleted. This action
+            is irreversible.
+        </slot>
     </WizardExitModal>
 {/if}
