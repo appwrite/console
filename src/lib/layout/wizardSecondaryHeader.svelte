@@ -4,8 +4,8 @@
     import { Button } from '$lib/elements/forms';
     import WizardExitModal from './wizardExitModal.svelte';
 
-    let show = false;
     export let showExitModal = false;
+    export let confirmExit = false;
     export let href: string;
 </script>
 
@@ -17,10 +17,10 @@
             round
             class="u-margin-block-start-8"
             ariaLabel="close modal"
-            href={showExitModal ? null : href}
+            href={confirmExit ? null : href}
             on:click={() => {
-                if (showExitModal) {
-                    show = true;
+                if (confirmExit) {
+                    showExitModal = true;
                 } else {
                     trackEvent('wizard_exit', {
                         from: 'button'
@@ -35,10 +35,10 @@
     {/if}
 </header>
 
-{#if show}
+{#if showExitModal}
     <WizardExitModal
         {href}
-        bind:show
+        bind:show={showExitModal}
         on:exit={() => {
             trackEvent('wizard_exit', {
                 from: 'prompt'

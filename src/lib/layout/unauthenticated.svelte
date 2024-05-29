@@ -15,21 +15,19 @@
     export let coupon: Coupon = null;
 
     $: variation = coupon?.code ? 'card' : 'default';
-    $: campaign = campaigns.get(coupon.campaign);
+    $: campaign = campaigns.get(coupon?.campaign);
 </script>
 
 <main class="grid-1-1 is-full-page" id="main">
     <section
-        class="u-flex u-flex-vertical"
-        class:side-bg={variation === 'card'}
+        class={`u-flex u-flex-vertical ${variation === 'card' ? 'u-cross-center u-main-center u-height-100-percent u-width-full-line side-bg' : 'side-default'}`}
         style:--url={variation === 'card'
             ? ''
             : `url(${$app.themeInUse === 'dark' ? imgDark : imgLight})`}>
-        <div class="side-bg-container" />
-        <div
-            class="logo u-flex u-gap-16 is-not-mobile"
-            class:u-margin-inline-auto={variation === 'card'}
-            style="z-index: 10">
+        {#if variation === 'card'}
+            <div class="side-bg-container" />
+        {/if}
+        <div class="logo u-flex u-gap-16 is-not-mobile">
             <a href={user ? '/console' : '/'}>
                 {#if $app.themeInUse === 'dark'}
                     <img
@@ -54,17 +52,35 @@
                 <p>Build like a team of hundreds<span class="underscore">_</span></p>
             </div>
         {:else if variation === 'card'}
-            <div class="u-flex u-flex-vertical u-main-center u-cross-center u-height-100-percent">
+            <div
+                class="u-flex u-flex-vertical u-main-center u-cross-center u-height-100-percent u-width-full-line">
                 <img
                     src={`/images/campaigns/${coupon.campaign}/${$app.themeInUse}.png`}
-                    class="u-block u-image-object-fit-cover"
+                    class="u-block u-image-object-fit-cover side-bg-img"
                     alt="promo" />
 
                 <div class="u-text-center">
-                    <Heading size="3" tag="h3" class="u-margin-block-start-56" trimmed={false}>
-                        {campaign.title.replace('VALUE', coupon.credits)}
-                    </Heading>
-                    <p class="body-text-1 u-margin-block-start-8">
+                    <div class="is-only-mobile u-width-full-line">
+                        <Heading
+                            size="5"
+                            tag="h3"
+                            class="u-margin-block-start-56"
+                            trimmed={false}
+                            style="font-weight:normal">
+                            {campaign.title.replace('VALUE', coupon.credits)}
+                        </Heading>
+                    </div>
+                    <div class="is-not-mobile u-width-full-line">
+                        <Heading
+                            size="4"
+                            tag="h3"
+                            class="u-margin-block-start-56"
+                            trimmed={false}
+                            style="font-weight:normal">
+                            {campaign.title.replace('VALUE', coupon.credits)}
+                        </Heading>
+                    </div>
+                    <p class="u-margin-block-start-16 auth-container">
                         {campaign.description.replace('VALUE', coupon.credits)}
                     </p>
                 </div>
@@ -74,7 +90,7 @@
     <section class="grid-1-1-col-2 u-flex u-flex-vertical u-cross-center u-main-center">
         <slot name="top" />
         <div class="container u-flex u-flex-vertical u-cross-center u-main-center">
-            <div class="form-container u-width-full-line">
+            <div class="auth-container u-width-full-line">
                 <h1 class="heading-level-4 u-margin-block-start-auto is-not-mobile">
                     <slot name="title" />
                 </h1>
@@ -125,46 +141,63 @@
         z-index: 1;
         height: 100%;
         width: 100%;
-    }
-    .side-bg-container {
-        position: absolute;
-        inset: 0;
-        block-size: 100%;
-        inline-size: 100%;
-        z-index: -1;
-    }
-    .side-bg-container::before {
-        position: absolute;
-        inset-block-start: -10px;
-        inset-inline-end: -10px;
-        content: '';
-        display: block;
-        inline-size: 30%;
-        block-size: 30%;
-        background: radial-gradient(49.55% 43.54% at 47% 50.69%, #e7f8f7 0%, #85dbd8 100%);
-        filter: blur(250px);
-        @media #{$break1} {
-            filter: blur(100px);
-        }
-    }
-    .side-bg-container::after {
-        position: absolute;
-        inset-block-end: -10px;
-        inset-inline-start: -10px;
-        content: '';
-        display: block;
-        inline-size: 30%;
-        block-size: 30%;
-        background: radial-gradient(50% 46.73% at 50% 53.27%, #fe9567 28.17%, #fd366e 59.38%);
-        filter: blur(250px);
+        padding-block: 2rem;
+        padding-inline: 1rem;
+        background-color: #ededf0 !important;
 
-        @media #{$break1} {
-            filter: blur(100px);
+        &-container {
+            position: absolute;
+            inset: 0;
+            block-size: 100%;
+            inline-size: 100%;
+            z-index: -1;
+            &::before {
+                position: absolute;
+                inset-block-start: -10px;
+                inset-inline-end: -10px;
+                content: '';
+                display: block;
+                inline-size: 38%;
+                block-size: 38%;
+                background: radial-gradient(49.55% 43.54% at 47% 50.69%, #e7f8f7 0%, #85dbd8 100%);
+                filter: blur(250px);
+                @media #{$break1} {
+                    filter: blur(100px);
+                }
+            }
+            &::after {
+                position: absolute;
+                inset-block-end: -10px;
+                inset-inline-start: -10px;
+                content: '';
+                display: block;
+                inline-size: 38%;
+                block-size: 38%;
+                background: radial-gradient(
+                    50% 46.73% at 50% 53.27%,
+                    #fe9567 28.17%,
+                    #fd366e 59.38%
+                );
+                filter: blur(250px);
+
+                @media #{$break1} {
+                    filter: blur(100px);
+                }
+            }
         }
+        &-img {
+            padding-inline: 6.25rem;
+            @media #{$break1} {
+                padding-inline: 4rem;
+            }
+        }
+    }
+    :global(.theme-dark) .side-bg {
+        background-color: #131315 !important;
     }
 
     /* Default (including mobile) */
-    #main section:first-child {
+    .side-default {
         padding-block-start: 2.25rem;
         padding-block-end: 2rem;
 
@@ -189,7 +222,7 @@
 
     /* for smaller screens */
     @media #{$break2open} {
-        #main section:first-child {
+        .side-default {
             background: var(--url);
             background-repeat: no-repeat;
             background-position: top;
@@ -207,7 +240,7 @@
 
     /* for larger screens */
     @media #{$break3open} {
-        #main section:first-child {
+        .side-default {
             div {
                 padding-inline-start: 5.625rem;
                 padding-inline-end: 5rem;
@@ -232,7 +265,7 @@
         -webkit-text-fill-color: transparent;
     }
 
-    .form-container {
+    .auth-container {
         max-inline-size: 27.5rem;
     }
 </style>

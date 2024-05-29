@@ -43,6 +43,7 @@
     {/if}
     <InputSelectSearch
         id="method"
+        required
         label="Payment method"
         placeholder="Select payment method"
         bind:value

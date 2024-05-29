@@ -156,7 +156,7 @@
 </svelte:head>
 
 <WizardSecondaryContainer>
-    <WizardSecondaryHeader showExitModal href={previousPage}
+    <WizardSecondaryHeader confirmExit href={previousPage}
         >Apply credits
         <svelte:fragment slot="exit">
             You can apply your credits to an organization at a later date. All other data entered
@@ -199,22 +199,24 @@
             </Form>
         {/if}
         <svelte:fragment slot="aside">
-            <div class="card card-container u-position-relative">
+            <div
+                class="box card-container u-position-relative"
+                style:--box-border-radius="var(--border-radius-large)">
                 <div class="card-bg"></div>
                 <div
                     class="u-flex u-flex-vertical u-gap-24 u-cross-center u-position-relative"
                     style:z-index={10}>
                     <img
                         src={`/images/campaigns/${data.couponData.campaign}/${$app.themeInUse}.png`}
-                        class="u-block u-image-object-fit-cover"
+                        class="u-block u-image-object-fit-cover card-img"
                         alt="promo" />
-                    <p class="body-text-1">
+                    <p class="text">
                         {data.campaign.title.replace('VALUE', data.couponData.credits)}
                     </p>
                 </div>
             </div>
             {#if selectedOrg?.billingPlan === BillingPlan.PRO}
-                <section class="card u-margin-block-start-32" style:--p-card-padding="1.5rem">
+                <section class="card u-margin-block-start-24" style:--p-card-padding="1.5rem">
                     <p class="text">
                         Credits will automatically be applied to your next invoice on <b
                             >{toLocaleDate(selectedOrg.billingNextInvoiceDate)}.</b>
@@ -232,7 +234,7 @@
     </WizardSecondaryContent>
 
     <WizardSecondaryFooter>
-        <Button fullWidthMobile href={`${base}/console`} secondary>Cancel</Button>
+        <Button fullWidthMobile href={previousPage} secondary>Cancel</Button>
         <Button
             fullWidthMobile
             on:click={() => formComponent.triggerSubmit()}
@@ -274,5 +276,8 @@
         block-size: 30%;
         background: radial-gradient(50% 46.73% at 50% 53.27%, #fe9567 28.17%, #fd366e 59.38%);
         filter: blur(70px);
+    }
+    .card-img {
+        max-width: 12.5rem;
     }
 </style>

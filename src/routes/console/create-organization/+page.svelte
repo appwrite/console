@@ -186,7 +186,7 @@
 </svelte:head>
 
 <WizardSecondaryContainer>
-    <WizardSecondaryHeader href={previousPage} showExitModal>
+    <WizardSecondaryHeader href={previousPage} confirmExit>
         Create organization
     </WizardSecondaryHeader>
     <WizardSecondaryContent>
