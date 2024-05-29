@@ -2,11 +2,12 @@
     import { trackEvent } from '$lib/actions/analytics';
     import { Heading } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import WizardExitModal from './wizardExitModal.svelte';
+    import { createEventDispatcher } from 'svelte';
 
-    export let showExitModal = false;
     export let confirmExit = false;
-    export let href: string;
+    export let href = '';
+
+    const dispatch = createEventDispatcher();
 </script>
 
 <header class="wizard-secondary-header">
@@ -20,7 +21,7 @@
             href={confirmExit ? null : href}
             on:click={() => {
                 if (confirmExit) {
-                    showExitModal = true;
+                    dispatch('exit');
                 } else {
                     trackEvent('wizard_exit', {
                         from: 'button'
@@ -34,19 +35,3 @@
         <p class="body-text-2"><slot name="description" /></p>
     {/if}
 </header>
-
-{#if showExitModal}
-    <WizardExitModal
-        {href}
-        bind:show={showExitModal}
-        on:exit={() => {
-            trackEvent('wizard_exit', {
-                from: 'prompt'
-            });
-        }}>
-        <slot name="exit">
-            Are you sure you want to exit from this process? All data will be deleted. This action
-            is irreversible.
-        </slot>
-    </WizardExitModal>
-{/if}

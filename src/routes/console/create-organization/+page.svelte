@@ -33,6 +33,7 @@
     );
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$/i;
     let previousPage: string = `${base}/console`;
+    let showExitModal = false;
 
     afterNavigate(({ from }) => {
         previousPage = from?.url?.pathname || previousPage;
@@ -185,8 +186,8 @@
     <title>Create organization - Appwrite</title>
 </svelte:head>
 
-<WizardSecondaryContainer>
-    <WizardSecondaryHeader href={previousPage} confirmExit>
+<WizardSecondaryContainer bind:showExitModal href={previousPage}>
+    <WizardSecondaryHeader confirmExit on:exit={() => (showExitModal = true)}>
         Create organization
     </WizardSecondaryHeader>
     <WizardSecondaryContent>
@@ -287,7 +288,7 @@
     </WizardSecondaryContent>
 
     <WizardSecondaryFooter>
-        <Button fullWidthMobile href={`${base}/console`} secondary>Cancel</Button>
+        <Button fullWidthMobile secondary on:click={() => (showExitModal = true)}>Cancel</Button>
         <Button
             fullWidthMobile
             on:click={() => formComponent.triggerSubmit()}

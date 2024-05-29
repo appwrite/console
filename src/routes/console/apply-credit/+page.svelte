@@ -26,6 +26,7 @@
 
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$/i;
     let previousPage: string = `${base}/console`;
+    let showExitModal = false;
 
     afterNavigate(({ from }) => {
         previousPage = from?.url?.pathname || previousPage;
@@ -155,13 +156,9 @@
     <title>Apply credits - Appwrite</title>
 </svelte:head>
 
-<WizardSecondaryContainer>
-    <WizardSecondaryHeader confirmExit href={previousPage}
-        >Apply credits
-        <svelte:fragment slot="exit">
-            You can apply your credits to an organization at a later date. All other data entered
-            will be lost. Credits expire {toLocaleDate(data.couponData.expiration)}.
-        </svelte:fragment>
+<WizardSecondaryContainer href={previousPage} bind:showExitModal>
+    <WizardSecondaryHeader confirmExit on:exit={() => (showExitModal = true)}>
+        Apply credits
     </WizardSecondaryHeader>
     <WizardSecondaryContent>
         {#if $organizationList?.total}
@@ -234,7 +231,7 @@
     </WizardSecondaryContent>
 
     <WizardSecondaryFooter>
-        <Button fullWidthMobile href={previousPage} secondary>Cancel</Button>
+        <Button fullWidthMobile secondary on:click={() => (showExitModal = true)}>Cancel</Button>
         <Button
             fullWidthMobile
             on:click={() => formComponent.triggerSubmit()}
@@ -242,6 +239,10 @@
             Apply credits
         </Button>
     </WizardSecondaryFooter>
+    <svelte:fragment slot="exit">
+        You can apply your credits to an organization at a later date. All other data entered will
+        be lost. Credits expire {toLocaleDate(data.couponData.expiration)}.
+    </svelte:fragment>
 </WizardSecondaryContainer>
 
 <style lang="scss">
