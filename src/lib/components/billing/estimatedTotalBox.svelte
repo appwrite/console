@@ -33,7 +33,8 @@
 
 <section
     class="card u-margin-block-start-32 u-flex u-flex-vertical u-gap-8"
-    style:--p-card-padding="1.5rem">
+    style:--p-card-padding="1.5rem"
+    style:--p-card-border-radius="var(--border-radius-small)">
     <span class="u-flex u-main-space-between">
         <p class="text">{currentPlan.name} plan</p>
         <p class="text">{formatCurrency(currentPlan.price)}</p>

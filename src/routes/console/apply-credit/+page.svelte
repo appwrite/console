@@ -124,10 +124,9 @@
                 await sdk.forConsole.billing.updateTaxId(org.$id, taxId);
             }
 
+            await goto(`/console/organization-${org.$id}`);
             await invalidate(Dependencies.ACCOUNT);
             await invalidate(Dependencies.ORGANIZATION);
-
-            await goto(`/console/organization-${org.$id}`);
 
             addNotification({
                 type: 'success',
@@ -198,7 +197,7 @@
         <svelte:fragment slot="aside">
             <div
                 class="box card-container u-position-relative"
-                style:--box-border-radius="var(--border-radius-large)">
+                style:--box-border-radius="var(--border-radius-small)">
                 <div class="card-bg"></div>
                 <div
                     class="u-flex u-flex-vertical u-gap-24 u-cross-center u-position-relative"
@@ -213,7 +212,10 @@
                 </div>
             </div>
             {#if selectedOrg?.billingPlan === BillingPlan.PRO}
-                <section class="card u-margin-block-start-24" style:--p-card-padding="1.5rem">
+                <section
+                    class="card u-margin-block-start-24"
+                    style:--p-card-padding="1.5rem"
+                    style:--p-card-border-radius="var(--border-radius-small)">
                     <p class="text">
                         Credits will automatically be applied to your next invoice on <b
                             >{toLocaleDate(selectedOrg.billingNextInvoiceDate)}.</b>
