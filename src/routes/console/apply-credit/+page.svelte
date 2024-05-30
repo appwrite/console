@@ -160,20 +160,18 @@
         Apply credits
     </WizardSecondaryHeader>
     <WizardSecondaryContent>
-        {#if $organizationList?.total}
+        <Form bind:this={formComponent} onSubmit={handleSubmit} bind:isSubmitting>
             <FormList>
-                <InputSelect
-                    bind:value={selectedOrgId}
-                    label="Select organization"
-                    {options}
-                    required
-                    placeholder="Select organization"
-                    id="organization" />
-            </FormList>
-        {/if}
-        {#if selectedOrgId && (selectedOrg?.billingPlan !== BillingPlan.PRO || !selectedOrg?.paymentMethodId)}
-            <Form bind:this={formComponent} onSubmit={handleSubmit} bind:isSubmitting>
-                <FormList>
+                {#if $organizationList?.total}
+                    <InputSelect
+                        bind:value={selectedOrgId}
+                        label="Select organization"
+                        {options}
+                        required
+                        placeholder="Select organization"
+                        id="organization" />
+                {/if}
+                {#if selectedOrgId && (selectedOrg?.billingPlan !== BillingPlan.PRO || !selectedOrg?.paymentMethodId)}
                     {#if selectedOrgId === newOrgId}
                         <InputText
                             label="Name"
@@ -191,9 +189,10 @@
                         validityMessage="Invalid email address"
                         id="members" />
                     <SelectPaymentMethod bind:methods bind:value={paymentMethodId} bind:taxId />
-                </FormList>
-            </Form>
-        {/if}
+                {/if}
+            </FormList>
+        </Form>
+
         <svelte:fragment slot="aside">
             <div
                 class="box card-container u-position-relative"
