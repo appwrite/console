@@ -42,8 +42,8 @@
 
     {#if excess?.members > 0}
         {#if currentTier === BillingPlan.STARTER}
-            The Starter plan has a limit of one organization member. By proceeding, all but the
-            creator of the organization admin will be removed.
+            The {plan.name} plan has a limit of one organization member. By proceeding, all but the creator
+            of the organization admin will be removed.
         {:else if currentTier === BillingPlan.PRO}
             Additional organization members on the Pro plan cost {collaboratorPrice} per member per billing
             period. By proceeding, you acknowledge your fees may increase in your next billing period.

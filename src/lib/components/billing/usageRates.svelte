@@ -54,9 +54,8 @@
 
 <Modal bind:show size="big" headerDivider={false} title="Usage rates">
     {#if isFree}
-        Usage on the Starter plan is limited for the following resources. Next billing period: {toLocaleDate(
-            nextDate
-        )}.
+        Usage on the {$plansInfo?.get(BillingPlan.STARTER)} plan is limited for the following resources.
+        Next billing period: {toLocaleDate(nextDate)}.
     {:else if org.billingPlan === BillingPlan.PRO}
         <p>
             Usage on the Pro plan will be charged at the end of each billing period at the following

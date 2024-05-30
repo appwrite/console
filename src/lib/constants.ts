@@ -367,7 +367,7 @@ export const feedbackDowngradeOptions = [
     },
     {
         value: 'starter',
-        label: 'The Starter plan is enough for my projects'
+        label: 'The Free plan is enough for my projects'
     },
     {
         value: 'budget',

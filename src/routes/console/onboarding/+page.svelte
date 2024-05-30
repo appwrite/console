@@ -27,11 +27,11 @@
         ? [
               {
                   value: BillingPlan.STARTER,
-                  label: `Starter - ${formatCurrency($plansInfo.get(BillingPlan.STARTER).price)}/month`
+                  label: `${tierToPlan(BillingPlan.STARTER).name} - ${formatCurrency($plansInfo.get(BillingPlan.STARTER).price)}/month`
               },
               {
                   value: BillingPlan.PRO,
-                  label: `Pro - ${formatCurrency($plansInfo.get(BillingPlan.PRO).price)}/month + add-ons`
+                  label: `${tierToPlan(BillingPlan.PRO).name} - ${formatCurrency($plansInfo.get(BillingPlan.PRO).price)}/month + add-ons`
               }
           ]
         : [];

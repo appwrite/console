@@ -112,7 +112,7 @@
             </SearchQuery>
         </svelte:fragment>
         <svelte:fragment slot="tooltip" let:limit let:tier let:upgradeMethod>
-            {#if tier === 'Starter'}
+            {#if tier === 'Free'}
                 <p class="u-bold">The {tier} plan has limits</p>
                 <ul>
                     <li>{limit}GB total file storage</li>
