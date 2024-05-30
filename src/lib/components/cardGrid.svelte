@@ -6,7 +6,7 @@
     export let hideFooter = false;
 </script>
 
-<Card {danger} class="u-padding-inline-start-32">
+<Card {danger} class={danger ? 'u-padding-inline-start-32' : ''}>
     <div class="common-section grid-1-2" class:hideOverflow>
         <div class="grid-1-2-col-1 u-flex u-flex-vertical u-gap-16">
             <slot />
