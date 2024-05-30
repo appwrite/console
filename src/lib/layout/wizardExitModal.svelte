@@ -19,6 +19,7 @@
     onSubmit={handleSubmit}
     icon="exclamation"
     state="warning"
+    size="small"
     headerDivider={false}>
     <p class="text">
         <slot />
