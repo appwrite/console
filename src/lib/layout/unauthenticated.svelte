@@ -27,7 +27,10 @@
         {#if variation === 'card'}
             <div class="side-bg-container" />
         {/if}
-        <div class="logo u-flex u-gap-16 is-not-mobile">
+        <div
+            class="logo u-flex u-gap-16"
+            class:is-not-mobile={variation === 'default'}
+            class:logo-variation={variation === 'card'}>
             <a href={user ? '/console' : '/'}>
                 {#if $app.themeInUse === 'dark'}
                     <img
@@ -64,7 +67,7 @@
                         <Heading
                             size="5"
                             tag="h3"
-                            class="u-margin-block-start-56"
+                            class="u-margin-block-start-16"
                             trimmed={false}
                             style="font-weight:normal">
                             {campaign.title.replace('VALUE', coupon.credits)}
@@ -187,7 +190,10 @@
         }
         &-img {
             padding-inline: 6.25rem;
+            max-width: 40rem;
             @media #{$break1} {
+                margin-block-start: 3rem;
+                max-inline-size: 27.5rem;
                 padding-inline: 4rem;
             }
         }
@@ -276,5 +282,12 @@
 
     .auth-container {
         max-inline-size: 27.5rem;
+    }
+    .logo-variation {
+        padding-block-start: 2rem;
+
+        @media #{$break1} {
+            padding-block-start: 0rem;
+        }
     }
 </style>

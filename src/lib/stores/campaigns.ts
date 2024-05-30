@@ -12,4 +12,9 @@ campaigns
         title: "You've received $VALUE in credits",
         description:
             'Get $VALUE in credits when you upgrade or create an organization with a Pro plan.'
+    })
+    .set('RenderATL2024', {
+        title: "You've received $VALUE in credits",
+        description:
+            'Get $VALUE in credits when you upgrade or create an organization with a Pro plan.'
     });
