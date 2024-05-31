@@ -16,7 +16,6 @@
         <Button
             text
             round
-            class="u-margin-block-start-8"
             ariaLabel="close modal"
             href={confirmExit ? null : href}
             on:click={() => {

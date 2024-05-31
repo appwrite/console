@@ -77,7 +77,7 @@
                         <Heading
                             size="4"
                             tag="h3"
-                            class="u-margin-block-start-56"
+                            class="u-margin-block-start-32"
                             trimmed={false}
                             style="font-weight:normal">
                             {campaign.title.replace('VALUE', coupon.credits)}
@@ -193,7 +193,7 @@
             max-width: 40rem;
             @media #{$break1} {
                 margin-block-start: 3rem;
-                max-inline-size: 27.5rem;
+                max-inline-size: 23rem;
                 padding-inline: 4rem;
             }
         }

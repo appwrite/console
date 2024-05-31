@@ -50,7 +50,7 @@
             <div class="u-flex u-cross-center u-gap-4">
                 <p class="text">
                     <span class="icon-tag u-color-text-success" aria-hidden="true" />
-                    {#if couponData.credits > 100}
+                    {#if couponData.credits >= 100}
                         {couponData.code.toUpperCase()}
                     {:else}
                         <span use:tooltip={{ content: couponData.code.toUpperCase() }}
