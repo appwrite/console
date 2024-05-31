@@ -53,8 +53,9 @@
                     {#if couponData.credits >= 100}
                         {couponData.code.toUpperCase()}
                     {:else}
-                        <span use:tooltip={{ content: couponData.code.toUpperCase() }}
-                            >Credits applied</span>
+                        <span use:tooltip={{ content: couponData.code.toUpperCase() }}>
+                            Credits applied
+                        </span>
                     {/if}
                 </p>
                 {#if !fixedCoupon}
@@ -74,7 +75,7 @@
                     </button>
                 {/if}
             </div>
-            {#if couponData.credits > 100}
+            {#if couponData.credits >= 100}
                 <p class="inline-tag" use:tooltip={{ content: formatCurrency(couponData.credits) }}>
                     Credits applied
                 </p>

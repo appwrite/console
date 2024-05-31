@@ -73,7 +73,7 @@
         try {
             let org: Organization;
             // Create new org
-            if (!selectedOrgId) {
+            if (selectedOrgId === newOrgId) {
                 org = await sdk.forConsole.billing.createOrganization(
                     newOrgId,
                     name,
@@ -123,15 +123,13 @@
             if (taxId) {
                 await sdk.forConsole.billing.updateTaxId(org.$id, taxId);
             }
-
-            await goto(`/console/organization-${org.$id}`);
-            await invalidate(Dependencies.ACCOUNT);
             await invalidate(Dependencies.ORGANIZATION);
-
+            await goto(`/console/organization-${org.$id}`);
             addNotification({
                 type: 'success',
                 message: 'Credits applied successfully'
             });
+
             trackEvent(Submit.CreditRedeem);
         } catch (e) {
             trackError(e, Submit.CreditRedeem);
