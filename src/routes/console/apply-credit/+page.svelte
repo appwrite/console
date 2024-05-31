@@ -123,14 +123,16 @@
             if (taxId) {
                 await sdk.forConsole.billing.updateTaxId(org.$id, taxId);
             }
+            trackEvent(Submit.CreditRedeem, {
+                coupon: data.couponData.code
+            });
             await invalidate(Dependencies.ORGANIZATION);
             await goto(`/console/organization-${org.$id}`);
             addNotification({
                 type: 'success',
                 message: 'Credits applied successfully'
             });
-
-            trackEvent(Submit.CreditRedeem);
+            await invalidate(Dependencies.ACCOUNT);
         } catch (e) {
             trackError(e, Submit.CreditRedeem);
             addNotification({
