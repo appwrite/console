@@ -288,6 +288,9 @@
 
         @media #{$break1} {
             padding-block-start: 0rem;
+            & img {
+                scale: 0.7;
+            }
         }
     }
 </style>
