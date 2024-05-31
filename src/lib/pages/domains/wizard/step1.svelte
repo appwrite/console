@@ -29,6 +29,7 @@
         } catch (e) {
             error = true;
             trackError(e.message, Submit.DomainCreate);
+            throw new Error(e.message);
         }
     }
 </script>
