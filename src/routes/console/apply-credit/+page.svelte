@@ -198,9 +198,7 @@
                 class="box card-container u-position-relative"
                 style:--box-border-radius="var(--border-radius-small)">
                 <div class="card-bg"></div>
-                <div
-                    class="u-flex u-flex-vertical u-gap-24 u-cross-center u-position-relative"
-                    style:z-index={10}>
+                <div class="u-flex u-flex-vertical u-gap-24 u-cross-center u-position-relative">
                     <img
                         src={`/images/campaigns/${data.couponData.campaign}/${$app.themeInUse}.png`}
                         class="u-block u-image-object-fit-cover card-img"
