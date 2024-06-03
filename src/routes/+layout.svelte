@@ -15,6 +15,7 @@
     import Consent from '$lib/components/consent.svelte';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
+    import { campaigns } from '$lib/stores/campaigns';
 
     onMount(async () => {
         // handle sources
@@ -74,6 +75,21 @@
 
         const pathname = $page.url.pathname;
         const user = $page.data.account as Models.User<Record<string, string>>;
+
+        const code = $page.url.searchParams.get('code');
+        if (code) {
+            try {
+                const couponData = await sdk.forConsole.billing.getCoupon(code);
+                if (couponData?.campaign && campaigns.has(couponData.campaign)) {
+                    if (user) {
+                        goto(`${base}/console/apply-credit?code=${code}`);
+                        return;
+                    }
+                }
+            } catch (error) {
+                // Do nothing
+            }
+        }
 
         if (shouldRedirect(pathname, authenticationRoutes)) {
             if (user?.$id) {
