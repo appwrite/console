@@ -74,7 +74,7 @@ function createFeedbackStore() {
         elapsed: browser ? parseInt(localStorage.getItem('feedbackElapsed')) ?? 0 : 0,
         visualized: browser ? parseInt(localStorage.getItem('feedbackVisualized')) ?? 0 : 0,
         notification: false,
-        type: 'nps', //TODO: change to general before release
+        type: 'general',
         show: false
     });
     return {
