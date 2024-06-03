@@ -191,6 +191,9 @@
         &-img {
             padding-inline: 6.25rem;
             max-width: 40rem;
+            @media #{$break2} {
+                max-width: 28rem;
+            }
             @media #{$break1} {
                 margin-block-start: 3rem;
                 max-inline-size: 23rem;
