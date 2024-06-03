@@ -21,9 +21,9 @@
     import deepEqual from 'deep-equal';
     import { onMount } from 'svelte';
     import { organization } from '$lib/stores/organization';
-    import { wizard } from '$lib/stores/wizard';
-    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
+    import { SMTPSecure } from '@appwrite.io/console';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
+    import { upgradeURL } from '$lib/stores/billing';
 
     let enabled = false;
     let senderName: string;
@@ -65,7 +65,7 @@
                 username = undefined;
                 password = undefined;
             }
-            await sdk.forConsole.projects.updateSmtpConfiguration(
+            await sdk.forConsole.projects.updateSmtp(
                 $project.$id,
                 enabled,
                 senderName ? senderName : undefined,
@@ -75,7 +75,7 @@
                 port ? port : undefined,
                 username ? username : undefined,
                 password ? password : undefined,
-                secure ? secure : undefined
+                secure ? SMTPSecure.Tls : undefined
             );
 
             invalidate(Dependencies.PROJECT);
@@ -136,11 +136,7 @@
                         Custom SMTP is a Pro plan feature. Upgrade to enable custom SMTP sever.
                         <svelte:fragment slot="action">
                             <div class="alert-buttons u-flex">
-                                <Button
-                                    text
-                                    on:click={() => wizard.start(ChangeOrganizationTierCloud)}>
-                                    Upgrade plan
-                                </Button>
+                                <Button text href={$upgradeURL}>Upgrade plan</Button>
                             </div>
                         </svelte:fragment>
                     </Alert>

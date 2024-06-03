@@ -1,7 +1,12 @@
 <script context="module" lang="ts">
     export async function loadEmailTemplate(projectId: string, type: string, locale: string) {
         try {
-            return await sdk.forConsole.projects.getEmailTemplate(projectId, type, locale);
+            // TODO: fix TemplateType and TemplateLocale typing once SDK is updated
+            return await sdk.forConsole.projects.getEmailTemplate(
+                projectId,
+                type as EmailTemplateType,
+                locale as EmailTemplateLocale
+            );
         } catch (e) {
             addNotification({
                 type: 'error',
@@ -11,7 +16,12 @@
     }
     export async function loadSmsTemplate(projectId: string, type: string, locale: string) {
         try {
-            return await sdk.forConsole.projects.getSmsTemplate(projectId, type, locale);
+            // TODO: fix TemplateType and TemplateLocale typing once SDK is updated
+            return await sdk.forConsole.projects.getSmsTemplate(
+                projectId,
+                type as SmsTemplateType,
+                locale as SmsTemplateLocale
+            );
         } catch (e) {
             addNotification({
                 type: 'error',
@@ -22,7 +32,6 @@
 </script>
 
 <script lang="ts">
-    import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Alert, CardGrid, Collapsible, CollapsibleItem, Heading } from '$lib/components';
@@ -41,9 +50,14 @@
     import { baseEmailTemplate, emailTemplate } from './store';
     import { Button } from '$lib/elements/forms';
     import { organization } from '$lib/stores/organization';
-    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
-    import { wizard } from '$lib/stores/wizard';
     import { BillingPlan } from '$lib/constants';
+    import type {
+        SmsTemplateLocale,
+        SmsTemplateType,
+        EmailTemplateType,
+        EmailTemplateLocale
+    } from '@appwrite.io/console';
+    import Email2FaTemplate from './email2FATemplate.svelte';
 
     const projectId = $page.params.project;
 
@@ -52,6 +66,7 @@
     $: emailMagicSessionOpen = emailOpen === 'magicSession';
     $: emailResetPassword = emailOpen === 'recovery';
     $: emailInviteUser = emailOpen === 'invitation';
+    $: email2FAVerificationOpen = emailOpen === 'mfaChallenge';
 
     // let smsOpen = 'verification';
     // $: smsVerificationOpen = smsOpen === 'verification';
@@ -92,10 +107,8 @@
                 type="info"
                 buttons={[
                     {
-                        name: 'SMTP settings',
-                        method: () => {
-                            goto(`${base}/console/project-${$project.$id}/settings/smtp`);
-                        }
+                        slot: 'SMTP settings',
+                        href: `${base}/console/project-${$project.$id}/settings/smtp`
                     }
                 ]}>
                 <svelte:fragment slot="title">
@@ -122,8 +135,8 @@
                 <Alert
                     buttons={[
                         {
-                            name: 'Upgrade plan',
-                            method: () => wizard.start(ChangeOrganizationTierCloud)
+                            slot: 'Upgrade plan',
+                            href: `${base}/console/organization-${$organization.$id}/billing`
                         }
                     ]}>
                     All emails sent using the Starter plan will include attribution to Appwrite in
@@ -175,6 +188,16 @@
                     <svelte:fragment slot="title">Invite user</svelte:fragment>
                     <p class="text">Send an invitation email to become a member of your project.</p>
                     <EmailInviteTemplate />
+                </CollapsibleItem>
+                <CollapsibleItem
+                    bind:open={email2FAVerificationOpen}
+                    on:click={(e) => {
+                        e.preventDefault();
+                        openEmail('mfaChallenge');
+                    }}>
+                    <svelte:fragment slot="title">2FA verification</svelte:fragment>
+                    <p class="text">Send a two-factor authentication email to a user.</p>
+                    <Email2FaTemplate />
                 </CollapsibleItem>
             </Collapsible>
         </svelte:fragment>

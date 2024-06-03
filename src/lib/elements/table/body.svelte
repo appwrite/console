@@ -1,9 +1,8 @@
 <script lang="ts">
+    import { goto } from '$app/navigation';
     import { trackEvent } from '$lib/actions/analytics';
-    import { getServiceLimit, type PlanServices } from '$lib/stores/billing';
-    import { wizard } from '$lib/stores/wizard';
+    import { getServiceLimit, upgradeURL, type PlanServices } from '$lib/stores/billing';
     import { isCloud } from '$lib/system';
-    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
     import { Button } from '../forms';
 
     let tableBody: HTMLDivElement;
@@ -16,8 +15,10 @@
     let columns = 0;
 
     const limit = getServiceLimit(service) || Infinity;
+
+    // TODO: refactor this to be a string
     const upgradeMethod = () => {
-        wizard.start(ChangeOrganizationTierCloud);
+        goto($upgradeURL);
     };
 
     $: limitReached = limit !== 0 && limit < Infinity && total >= limit;
@@ -38,7 +39,7 @@
                     <span class="text">Upgrade your plan to add {name} to your organization</span>
                     <Button
                         secondary
-                        on:click={upgradeMethod}
+                        href={$upgradeURL}
                         on:click={() =>
                             trackEvent('click_organization_upgrade', {
                                 from: 'button',

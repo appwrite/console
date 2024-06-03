@@ -16,25 +16,28 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { isCloud } from '$lib/system';
     import { page } from '$app/stores';
+    import { OAuthProvider } from '@appwrite.io/console';
     import { redirectTo } from '$routes/store';
+    import { user } from '$lib/stores/user';
 
     let mail: string, pass: string, disabled: boolean;
 
     async function login() {
         try {
             disabled = true;
-            await sdk.forConsole.account.createEmailSession(mail, pass);
-            addNotification({
-                type: 'success',
-                message: 'Successfully logged in.'
-            });
+            await sdk.forConsole.account.createEmailPasswordSession(mail, pass);
+            await invalidate(Dependencies.ACCOUNT);
+            trackEvent(Submit.AccountLogin);
+            if ($user) {
+                addNotification({
+                    type: 'success',
+                    message: 'Successfully logged in.'
+                });
+            }
             if ($redirectTo) {
                 window.location.href = $redirectTo;
                 return;
             }
-
-            await invalidate(Dependencies.ACCOUNT);
-            trackEvent(Submit.AccountCreate);
 
             if ($page.url.searchParams) {
                 const redirect = $page.url.searchParams.get('redirect');
@@ -53,7 +56,7 @@
                 type: 'error',
                 message: error.message
             });
-            trackError(error, Submit.AccountCreate);
+            trackError(error, Submit.AccountLogin);
         }
     }
 
@@ -70,7 +73,7 @@
             }
         }
         sdk.forConsole.account.createOAuth2Session(
-            'github',
+            OAuthProvider.Github,
             window.location.origin + url,
             window.location.origin,
             ['read:user', 'user:email']

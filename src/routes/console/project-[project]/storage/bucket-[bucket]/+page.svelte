@@ -59,9 +59,12 @@
 
     const projectId = $page.params.project;
     const bucketId = $page.params.bucket;
-    const usedStorage = bytesToSize(data.organizationUsage.storageTotal, 'GB');
+    const usedStorage =
+        isCloud && data?.organizationUsage?.storageTotal
+            ? bytesToSize(data.organizationUsage.storageTotal, 'GB')
+            : null;
     const getPreview = (fileId: string) =>
-        sdk.forProject.storage.getFilePreview(bucketId, fileId, 32, 32).toString() + '&mode=admin';
+        sdk.forProject.storage.getFilePreview(bucketId, fileId, 64, 64).toString() + '&mode=admin';
 
     async function fileDeleted(event: CustomEvent<Models.File>) {
         showDelete = false;
@@ -110,13 +113,18 @@
         </svelte:fragment>
         <svelte:fragment slot="tooltip" let:limit let:tier let:upgradeMethod>
             {#if tier === 'Starter'}
+                <p class="u-bold">The {tier} plan has limits</p>
+                <ul>
+                    <li>{limit}GB total file storage</li>
+                    <li>
+                        {Math.floor(parseInt(maxFileSize.value))}{maxFileSize.unit} file upload size
+                        limit
+                    </li>
+                </ul>
                 <p class="text">
-                    You are limited to {limit} GB of total storage and {Math.floor(
-                        parseInt(maxFileSize.value)
-                    )}{maxFileSize.unit} on the {tier} plan.
                     <button class="link" type="button" on:click|preventDefault={upgradeMethod}
                         >Upgrade</button>
-                    for additional storage.
+                    for additional storage resources.
                 </p>
             {:else}
                 <p class="text">

@@ -1,16 +1,22 @@
 import '@testing-library/jest-dom';
+import type { WeekDay } from '$lib/helpers/date';
 import {
     toLocaleDate,
     toLocaleDateTime,
     isSameDay,
     isValidDate,
-    diffDays
+    diffDays,
+    toLocaleDateISO,
+    toLocaleTimeISO,
+    utcHourToLocaleHour,
+    utcWeekDayToLocaleWeekDay
 } from '$lib/helpers/date';
 
 describe('local date', () => {
     [
         ['2022-11-15 08:26:28', 'Nov 15, 2022'],
-        ['2022-11-15 00:26:28', 'Nov 15, 2022']
+        ['2022-11-15 00:26:28', 'Nov 15, 2022'],
+        ['2022-11-15 00:26:28Z', 'Nov 14, 2022']
     ].forEach(([value, expected]) => {
         it(value, () => {
             expect(toLocaleDate(value)).toBe(expected);
@@ -25,7 +31,8 @@ describe('local date', () => {
 describe('local date time', () => {
     [
         ['2022-11-15 08:26:28', 'Nov 15, 2022, 08:26'],
-        ['2022-11-15 00:26:28', 'Nov 15, 2022, 00:26']
+        ['2022-11-15 00:26:28', 'Nov 15, 2022, 00:26'],
+        ['2022-11-15 00:26:28Z', 'Nov 14, 2022, 19:26']
     ].forEach(([value, expected]) => {
         it(value, () => {
             expect(toLocaleDateTime(value)).toBe(expected);
@@ -34,6 +41,38 @@ describe('local date time', () => {
 
     it('invalid date', () => {
         expect(toLocaleDateTime('')).toBe('n/a');
+    });
+});
+
+describe('local date ISO', () => {
+    [
+        ['2022-11-15 20:26:28Z', '2022-11-15'],
+        ['2022-11-15 08:26:28Z', '2022-11-15'],
+        ['2022-11-16 00:26:28Z', '2022-11-15']
+    ].forEach(([value, expected]) => {
+        it(value, () => {
+            expect(toLocaleDateISO(value)).toBe(expected);
+        });
+    });
+
+    it('invalid date', () => {
+        expect(toLocaleDateISO('')).toBe('n/a');
+    });
+});
+
+describe('local time ISO', () => {
+    [
+        ['2022-11-15 20:26:28Z', '15:26:28'],
+        ['2022-11-15 08:26:28Z', '03:26:28'],
+        ['2022-11-16 00:26:28Z', '19:26:28']
+    ].forEach(([value, expected]) => {
+        it(value, () => {
+            expect(toLocaleTimeISO(value)).toBe(expected);
+        });
+    });
+
+    it('invalid date', () => {
+        expect(toLocaleTimeISO('')).toBe('n/a');
     });
 });
 
@@ -82,6 +121,38 @@ describe('diff days', () => {
     entries.forEach(([value1, value2, expected]) => {
         it(`${value1} ${value2}`, () => {
             expect(diffDays(new Date(value1), new Date(value2))).toBe(expected);
+        });
+    });
+});
+
+describe('utc hour to local hour', () => {
+    const entries: Array<[string, string]> = [
+        ['09:00', '04:00'],
+        ['10:45', '05:45'],
+        ['11:59', '06:59'],
+        ['17:00', '12:00'],
+        ['22:36', '17:36']
+    ];
+
+    entries.forEach(([value, expected]) => {
+        it(value, () => {
+            expect(utcHourToLocaleHour(value)).toBe(expected);
+        });
+    });
+});
+
+describe('utc week day to local week day', () => {
+    const entries: Array<[WeekDay, string, string]> = [
+        ['Sunday', '00:00', 'Sat'],
+        ['Sunday', '22:00', 'Sun'],
+        ['Wednesday', '13:00', 'Wed'],
+        ['Friday', '23:59', 'Fri'],
+        ['Saturday', '10:00', 'Sat']
+    ];
+
+    entries.forEach(([weekDay, utcTimeString, expected]) => {
+        it(`${weekDay} ${utcTimeString}`, () => {
+            expect(utcWeekDayToLocaleWeekDay(weekDay, utcTimeString)).toBe(expected);
         });
     });
 });

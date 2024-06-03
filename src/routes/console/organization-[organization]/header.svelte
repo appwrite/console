@@ -1,15 +1,30 @@
 <script lang="ts">
+    import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { tooltip } from '$lib/actions/tooltip';
-    import { AvatarGroup, DropList, DropListItem, DropListLink, Tab, Tabs } from '$lib/components';
+    import {
+        AvatarGroup,
+        DropList,
+        DropListItem,
+        DropListLink,
+        Heading,
+        Tab,
+        Tabs
+    } from '$lib/components';
     import { BillingPlan } from '$lib/constants';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover } from '$lib/layout';
-    import { daysLeftInTrial, getServiceLimit, readOnly, tierToPlan } from '$lib/stores/billing';
+    import {
+        daysLeftInTrial,
+        getServiceLimit,
+        plansInfo,
+        readOnly,
+        tierToPlan
+    } from '$lib/stores/billing';
     import {
         members,
         newMemberModal,
@@ -17,9 +32,7 @@
         organization,
         organizationList
     } from '$lib/stores/organization';
-    import { wizard } from '$lib/stores/wizard';
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
-    import CreateOrganizationCloud from '../createOrganizationCloud.svelte';
 
     let areMembersLimited: boolean;
     $: organization.subscribe(() => {
@@ -34,13 +47,20 @@
     function createOrg() {
         showDropdown = false;
         if (isCloud) {
-            wizard.start(CreateOrganizationCloud);
+            goto(`${base}/console/create-organization`);
         } else newOrgModal.set(true);
     }
 
     $: avatars = $members.memberships?.map((m) => m.userName) ?? [];
     $: organizationId = $page.params.organization;
     $: path = `/console/organization-${organizationId}`;
+    $: permanentTabSettings = [
+        {
+            href: `${path}/settings`,
+            event: 'settings',
+            title: 'Settings'
+        }
+    ];
     $: permanentTabs = [
         {
             href: path,
@@ -55,13 +75,7 @@
             hasChildren: true
         }
     ];
-    $: permanentTabSettings = [
-        {
-            href: `${path}/settings`,
-            event: 'settings',
-            title: 'Settings'
-        }
-    ];
+
     $: tabs = isCloud
         ? [
               ...permanentTabs,
@@ -78,23 +92,25 @@
               },
               ...permanentTabSettings
           ]
-        : permanentTabs;
+        : [...permanentTabs, ...permanentTabSettings];
 </script>
 
 {#if $organization?.$id}
     <Cover>
         <svelte:fragment slot="header">
-            <DropList bind:show={showDropdown} placement="bottom-start" noArrow scrollable>
+            <DropList bind:show={showDropdown} placement="bottom-end" noArrow scrollable>
                 <button
-                    class="button is-text u-padding-inline-0"
+                    class="button is-text u-padding-inline-0 u-max-width-100-percent"
                     on:click={() => (showDropdown = !showDropdown)}>
-                    <h1 class="heading-level-4 u-flex u-cross-center u-gap-8">
-                        <span class="u-flex u-cross-center u-gap-8">
-                            {$organization.name}
+                    <Heading tag="h1" size="4" class="u-flex u-cross-center u-gap-8">
+                        <span class="u-flex u-cross-center u-gap-8 u-min-width-0">
+                            <span class="u-trim">
+                                {$organization.name}
+                            </span>
                             {#if isCloud && $organization?.billingPlan === BillingPlan.STARTER}
                                 <Pill>FREE</Pill>
                             {/if}
-                            {#if isCloud && $organization?.billingTrialStartDate && $daysLeftInTrial > 0 && $organization.billingPlan !== BillingPlan.STARTER}
+                            {#if isCloud && $organization?.billingTrialStartDate && $daysLeftInTrial > 0 && $organization.billingPlan !== BillingPlan.STARTER && $plansInfo.get($organization.billingPlan)?.trialDays}
                                 <div
                                     class="u-flex u-cross-center"
                                     use:tooltip={{
@@ -109,7 +125,7 @@
                         <span
                             class={`icon-cheveron-${showDropdown ? 'up' : 'down'}`}
                             aria-hidden="true" />
-                    </h1>
+                    </Heading>
                 </button>
                 <svelte:fragment slot="list">
                     {#each $organizationList.teams as org}

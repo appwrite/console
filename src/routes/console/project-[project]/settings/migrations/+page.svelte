@@ -24,16 +24,20 @@
     import Status from '$lib/components/status.svelte';
     import { capitalize } from '$lib/helpers/string';
     import { readOnly } from '$lib/stores/billing';
+    import type { Models } from '@appwrite.io/console';
 
     export let data;
-    let details: string | null = null;
+    let migration: Models.Migration = null;
     let showExport = false;
+    let showMigration = false;
 
     const getStatus = (status: string) => {
         if (status === 'failed') {
             return 'failed';
         } else if (status === 'completed') {
             return 'completed';
+        } else if (status === 'processing') {
+            return 'processing';
         }
 
         return 'pending';
@@ -129,6 +133,11 @@
         //     JSON.stringify(migrationData)
         // )}`;
     };
+
+    function showDetails(m: Models.Migration) {
+        showMigration = true;
+        migration = m;
+    }
 </script>
 
 <Container>
@@ -182,7 +191,7 @@
                                 </TableCell>
                                 <TableCell title="">
                                     <div class="u-flex u-main-end">
-                                        <Button secondary on:click={() => (details = entry.$id)}
+                                        <Button secondary on:click={() => showDetails(entry)}
                                             >Details</Button>
                                     </div>
                                 </TableCell>
@@ -296,7 +305,7 @@
 
 <ExportModal bind:show={showExport} />
 
-<Details bind:migrationId={details} migrations={data.migrations} />
+<Details {migration} bind:show={showMigration} />
 
 <style lang="scss">
     .import-box {

@@ -13,6 +13,8 @@
     export let readonly = false;
     export let required = false;
     export let tooltip: string = null;
+    export let validityRegex: RegExp = null;
+    export let validityMessage: string = null;
 
     let value = '';
     let element: HTMLInputElement;
@@ -32,8 +34,13 @@
         if (value === '' && ['Enter', 'Tab'].includes(e.key)) {
             return;
         }
+
         if (['Enter', 'Tab', ' '].includes(e.key)) {
             e.preventDefault();
+            if (validityRegex && !validityRegex.test(value)) {
+                error = validityMessage ? validityMessage : 'Invalid value';
+                return;
+            }
             addValue();
         }
         if (['Backspace', 'Delete'].includes(e.key)) {

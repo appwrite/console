@@ -103,25 +103,23 @@
             </div>
         {:then installations}
             {#if hasInstallations}
-                <div class="u-flex u-gap-16">
-                    <div class="u-width-full-line">
-                        <InputSelect
-                            id="installation"
-                            label="Git organization"
-                            options={installations.map((entry) => {
-                                return {
-                                    label: entry.organization,
-                                    value: entry.$id
-                                };
-                            })}
-                            on:change={() => {
-                                $installation = installations.find(
-                                    (entry) => entry.$id === selectedInstallationId
-                                );
-                            }}
-                            bind:value={selectedInstallationId} />
-                    </div>
-                </div>
+                <FormList>
+                    <InputSelect
+                        id="installation"
+                        label="Git organization"
+                        options={installations.map((entry) => {
+                            return {
+                                label: entry.organization,
+                                value: entry.$id
+                            };
+                        })}
+                        on:change={() => {
+                            $installation = installations.find(
+                                (entry) => entry.$id === selectedInstallationId
+                            );
+                        }}
+                        bind:value={selectedInstallationId} />
+                </FormList>
             {:else}
                 <div class="u-flex u-cross-center u-flex-vertical u-gap-16">
                     <Button href={connectGitHub().toString()} fullWidth secondary>

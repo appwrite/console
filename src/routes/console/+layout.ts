@@ -5,7 +5,9 @@ import { sdk } from '$lib/stores/sdk';
 import { isCloud } from '$lib/system';
 import type { LayoutLoad } from './$types';
 
-export const load: LayoutLoad = async ({ fetch, depends }) => {
+export const load: LayoutLoad = async ({ fetch, depends, parent }) => {
+    await parent(); // ensure user is authenticated before proceeding
+
     depends(Dependencies.RUNTIMES);
     depends(Dependencies.CONSOLE_VARIABLES);
 
