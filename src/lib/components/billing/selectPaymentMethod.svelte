@@ -87,12 +87,14 @@
 {:else}
     <Card
         isDashed
-        style="--p-card-padding:1rem; --p-card-bg-color: transparent; --p-card-border-radius: 0.5rem"
+        style="--p-card-padding:0.75rem; --p-card-bg-color: transparent; --p-card-border-radius: 0.5rem"
         isTile>
         <div class="u-flex u-main-space-between u-cross-center">
-            <p>
-                <span class="icon-exclamation-circle"></span>
-                <span class="text">No saved payment methods</span>
+            <p class="u-flex u-gap-8 u-cross-center">
+                <span
+                    class="icon-exclamation u-color-text-warning"
+                    style:font-size="var(--icon-size-medium)"></span>
+                <span class="text">A payment method is required</span>
             </p>
             <Button secondary on:click={() => (showPaymentModal = true)}>
                 <span class="icon-plus"></span> <span class="text">Add</span>
