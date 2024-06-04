@@ -191,7 +191,10 @@
             background-position: top right;
         }
     }
-
+    .onboard-cover img {
+        max-inline-size: none;
+        max-block-size: none;
+    }
     .onboard-cover > div {
         background-color: transparent;
         z-index: 1;
