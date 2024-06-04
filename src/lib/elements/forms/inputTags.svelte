@@ -51,6 +51,10 @@
     };
 
     const addValue = () => {
+        if (validityRegex && !validityRegex.test(value)) {
+            error = validityMessage ? validityMessage : 'Invalid value';
+            return;
+        }
         let tag = value.trim();
         if (tag.length === 0 || tags.includes(tag)) return;
 
