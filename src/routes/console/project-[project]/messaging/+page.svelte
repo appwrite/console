@@ -176,7 +176,7 @@
                                         <ProviderType type={message.providerType} size="s" />
                                     </TableCellText>
                                 {:else if column.id === 'status'}
-                                    <TableCellText onlyDesktop title="Status">
+                                    <TableCellText title="Status">
                                         <span class="u-inline-flex u-gap-12 u-cross-center">
                                             <MessageStatusPill status={message.status} />
                                             {#if message.status === 'failed'}

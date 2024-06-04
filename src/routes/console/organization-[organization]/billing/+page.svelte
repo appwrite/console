@@ -10,18 +10,20 @@
     import PaymentHistory from './paymentHistory.svelte';
     import TaxId from './taxId.svelte';
     import { Alert, Heading } from '$lib/components';
-    import { failedInvoice, paymentMethods } from '$lib/stores/billing';
+    import { failedInvoice, paymentMethods, upgradeURL } from '$lib/stores/billing';
     import type { PaymentMethodData } from '$lib/sdk/billing';
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
     import { confirmPayment } from '$lib/stores/stripe';
     import { sdk } from '$lib/stores/sdk';
     import { toLocaleDate } from '$lib/helpers/date';
-    import { wizard } from '$lib/stores/wizard';
-    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
     import { BillingPlan } from '$lib/constants';
     import RetryPaymentModal from './retryPaymentModal.svelte';
     import { selectedInvoice, showRetryModal } from './store';
+    import { Button } from '$lib/elements/forms';
+    import { goto } from '$app/navigation';
+
+    export let data;
 
     $: defaultPaymentMethod = $paymentMethods?.paymentMethods?.find(
         (method: PaymentMethodData) => method.$id === $organization?.paymentMethodId
@@ -34,7 +36,7 @@
     onMount(async () => {
         if ($page.url.searchParams.has('type')) {
             if ($page.url.searchParams.get('type') === 'upgrade') {
-                wizard.start(ChangeOrganizationTierCloud);
+                goto($upgradeURL);
             }
 
             if (
@@ -76,13 +78,27 @@
 
 <Container>
     {#if $failedInvoice}
-        <Alert type="error" class="common-section">
-            <svelte:fragment slot="title">
-                The scheduled payment for {$organization.name} failed
-            </svelte:fragment>
-            To avoid service disruptions in organization's your projects, please verify your payment
-            details and update them if necessary.
-        </Alert>
+        {#if $failedInvoice?.lastError}
+            <Alert type="error" class="common-section">
+                The scheduled payment for {$organization.name} failed due to following error: {$failedInvoice.lastError}
+                <svelte:fragment slot="buttons">
+                    <Button
+                        text
+                        on:click={() => {
+                            $selectedInvoice = $failedInvoice;
+                            $showRetryModal = true;
+                        }}>Try again</Button>
+                </svelte:fragment>
+            </Alert>
+        {:else}
+            <Alert type="error" class="common-section">
+                <svelte:fragment slot="title">
+                    The scheduled payment for {$organization.name} failed
+                </svelte:fragment>
+                To avoid service disruptions in organization's your projects, please verify your payment
+                details and update them if necessary.
+            </Alert>
+        {/if}
     {/if}
     {#if defaultPaymentMethod?.failed && !backupPaymentMethod}
         <Alert type="error" class="common-section">
@@ -95,9 +111,8 @@
     {/if}
     {#if $organization?.billingPlanDowngrade}
         <Alert type="info" class="common-section">
-            Your organization will change to a Starter plan once your current billing cycle ends on {toLocaleDate(
-                $organization.billingNextInvoiceDate
-            )}.
+            Your organization will change to a Starter plan once your current billing cycle ends and
+            your invoice is paid on {toLocaleDate($organization.billingNextInvoiceDate)}.
         </Alert>
     {/if}
     <div class="common-section">
@@ -106,7 +121,7 @@
     <PlanSummary />
     <PaymentHistory />
     <PaymentMethods />
-    <BillingAddress />
+    <BillingAddress billingAddress={data.billingAddress} />
     <TaxId />
     <BudgetCap />
     {#if $organization?.billingPlan !== BillingPlan.STARTER && !!$organization?.billingBudget}

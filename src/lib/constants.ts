@@ -4,6 +4,7 @@ export const INTERVAL = 5 * 60000; // default interval to check for feedback
 
 export enum Dependencies {
     FACTORS = 'dependency:factors',
+    IDENTITIES = 'dependency:identities',
     CREDIT = 'dependency:credit',
     INVOICES = 'dependency:invoices',
     ADDRESS = 'dependency:address',
@@ -18,6 +19,7 @@ export enum Dependencies {
     ACCOUNT_SESSIONS = 'dependency:account_sessions',
     USER = 'dependency:user',
     USERS = 'dependency:users',
+    USER_IDENTITIES = 'dependency:user_identities',
     USER_TARGETS = 'dependency:user_targets',
     SESSIONS = 'dependency:sessions',
     TEAM = 'dependency:team',
@@ -341,6 +343,26 @@ export const eventServices: Array<EventService> = [
             { name: 'update', attributes: ['email', 'name', 'password', 'status', 'prefs'] },
             { name: 'delete' }
         ]
+    },
+    {
+        name: 'providers',
+        resources: [],
+        actions: [{ name: 'create' }, { name: 'update' }, { name: 'delete' }]
+    },
+    {
+        name: 'topics',
+        resources: [
+            {
+                name: 'subscribers',
+                actions: [{ name: 'create' }, { name: 'delete' }]
+            }
+        ],
+        actions: [{ name: 'create' }, { name: 'update' }, { name: 'delete' }]
+    },
+    {
+        name: 'messages',
+        resources: [],
+        actions: [{ name: 'create' }, { name: 'update' }, { name: 'delete' }]
     }
 ];
 
@@ -349,3 +371,38 @@ export enum BillingPlan {
     PRO = 'tier-1',
     SCALE = 'tier-2'
 }
+
+export const feedbackDowngradeOptions = [
+    {
+        value: 'availableFeatures',
+        label: "The available features don't meet my needs"
+    },
+    {
+        value: 'traction',
+        label: "My project isn't getting traction"
+    },
+    {
+        value: 'bugs',
+        label: 'I experienced bugs or unexpected outages while using the console'
+    },
+    {
+        value: 'starter',
+        label: 'The Starter plan is enough for my projects'
+    },
+    {
+        value: 'budget',
+        label: "I don't have the budget"
+    },
+    {
+        value: 'tryOut',
+        label: 'I just wanted to try it out'
+    },
+    {
+        value: 'alternative',
+        label: 'I found an alternative/competitor to meet my needs'
+    },
+    {
+        value: 'other',
+        label: 'Other'
+    }
+];

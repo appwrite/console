@@ -25,7 +25,7 @@
     import EditPaymentModal from './editPaymentModal.svelte';
     import DeletePaymentModal from './deletePaymentModal.svelte';
     import { hasStripePublicKey, isCloud } from '$lib/system';
-    import PaymentModal from './paymentModal.svelte';
+    import PaymentModal from '$lib/components/billing/paymentModal.svelte';
 
     export let showPayment = false;
     let showDropdown = [];

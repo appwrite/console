@@ -8,7 +8,7 @@
     type Option = $$Generic<{
         value: string | boolean | number;
         label: string;
-        data?: string[];
+        data?: unknown[];
     }>;
     type OptionArray = Option[];
 
@@ -192,6 +192,17 @@
                     <span class="text">There are no {name} that match your search</span>
                 </li>
             {/each}
+        </svelte:fragment>
+        <svelte:fragment slot="other">
+            {#if $$slots.listEnd}
+                <section class="drop-section">
+                    <ul class="drop-list">
+                        <li class="drop-list-item">
+                            <slot name="listEnd" />
+                        </li>
+                    </ul>
+                </section>
+            {/if}
         </svelte:fragment>
     </DropList>
 </li>

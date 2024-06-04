@@ -19,3 +19,7 @@ export { default as GridHeader } from './gridHeader.svelte';
 export { default as ContainerHeader } from './containerHeader.svelte';
 export { default as HeaderAlert } from './headerAlert.svelte';
 export { default as ContainerButton } from './containerButton.svelte';
+export { default as WizardSecondaryContainer } from './wizardSecondaryContainer.svelte';
+export { default as WizardSecondaryContent } from './wizardSecondaryContent.svelte';
+export { default as WizardSecondaryHeader } from './wizardSecondaryHeader.svelte';
+export { default as WizardSecondaryFooter } from './wizardSecondaryFooter.svelte';

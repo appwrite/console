@@ -8,7 +8,9 @@ import type {
     Invoice,
     PaymentList,
     PlansMap,
-    PaymentMethodData
+    PaymentMethodData,
+    OrganizationUsage,
+    Plan
 } from '$lib/sdk/billing';
 import { isCloud } from '$lib/system';
 import { cachedStore } from '$lib/helpers/cache';
@@ -23,6 +25,10 @@ import MarkedForDeletion from '$lib/components/billing/alerts/markedForDeletion.
 import { BillingPlan } from '$lib/constants';
 import PaymentMandate from '$lib/components/billing/alerts/paymentMandate.svelte';
 import MissingPaymentMethod from '$lib/components/billing/alerts/missingPaymentMethod.svelte';
+import LimitReached from '$lib/components/billing/alerts/limitReached.svelte';
+import { trackEvent } from '$lib/actions/analytics';
+import { last } from '$lib/helpers/array';
+import { sizeToBytes, type Size } from '$lib/helpers/sizeConvertion';
 
 export type Tier = 'tier-0' | 'tier-1' | 'tier-2';
 
@@ -77,18 +83,18 @@ export function getServiceLimit(serviceId: PlanServices, tier: Tier = null): num
 }
 
 export const failedInvoice = cachedStore<
-    false | Invoice,
+    Invoice,
     {
         load: (orgId: string) => Promise<void>;
     }
 >('failedInvoice', function ({ set }) {
     return {
         load: async (orgId) => {
-            if (!isCloud) set(false);
+            if (!isCloud) set(null);
             const invoices = await sdk.forConsole.billing.listInvoices(orgId);
             const failedInvoices = invoices.invoices.filter((i) => i.status === 'failed');
             // const failedInvoices = invoices.invoices;
-            if (failedInvoices.length > 0) {
+            if (failedInvoices?.length > 0) {
                 const firstFailed = failedInvoices[0];
                 const today = new Date();
                 const thirtyDaysAgo = new Date(today.setDate(today.getDate() - 30));
@@ -96,7 +102,7 @@ export const failedInvoice = cachedStore<
                 if (failedDate < thirtyDaysAgo) {
                     readOnly.set(true);
                 }
-            } else set(false);
+            } else set(null);
         }
     };
 });
@@ -110,7 +116,7 @@ export type TierData = {
 
 export const tierFree: TierData = {
     name: 'Starter',
-    description: 'For personal, passion projects.'
+    description: 'For personal hobby projects of small scale and students.'
 };
 
 export const tierPro: TierData = {
@@ -179,26 +185,73 @@ export function calculateTrialDay(org: Organization) {
 }
 
 export async function checkForUsageLimit(org: Organization) {
+    if (org?.billingPlan !== BillingPlan.STARTER) {
+        readOnly.set(false);
+        return;
+    }
     if (!org?.billingLimits) {
         readOnly.set(false);
         return;
     }
     const { bandwidth, documents, executions, storage, users } = org?.billingLimits ?? {};
-    const members = await sdk.forConsole.teams.listMemberships(org.$id);
-    const plan = get(plansInfo)?.get(org.billingPlan);
-    const membersOverflow =
-        members?.total > plan.members ? members.total - (plan.members || members.total) : 0;
+    const resources = [
+        { value: bandwidth, name: 'bandwidth' },
+        { value: documents, name: 'documents' },
+        { value: executions, name: 'executions' },
+        { value: storage, name: 'storage' },
+        { value: users, name: 'users' }
+    ];
 
-    if (
-        bandwidth >= 100 ||
-        documents >= 100 ||
-        executions >= 100 ||
-        storage >= 100 ||
-        users >= 100 ||
-        membersOverflow > 0
-    ) {
+    const members = org.total;
+    const plan = get(plansInfo)?.get(org.billingPlan);
+    const membersOverflow = members > plan.members ? members - (plan.members || members) : 0;
+
+    if (resources.some((r) => r.value >= 100) || membersOverflow > 0) {
         readOnly.set(true);
-    } else readOnly.set(false);
+        headerAlert.add({
+            id: 'limitReached',
+            component: LimitReached,
+            show: true,
+            importance: 7
+        });
+    } else if (resources.some((r) => r.value >= 75)) {
+        readOnly.set(false);
+        const lastNotification = parseInt(localStorage.getItem('limitReachedNotification')) ?? 0;
+        const now = new Date().getTime();
+        if (now - lastNotification < 1000 * 60 * 60 * 24) return;
+
+        localStorage.setItem('limitReachedNotification', now.toString());
+        let message = `<b>${org.name}</b> has reached <b>75%</b> of the Starter plan's ${resources.find((r) => r.value >= 75).name} limit. Upgrade to ensure there are no service disruptions.`;
+        if (resources.filter((r) => r.value >= 75)?.length > 1) {
+            message = `Usage for <b>${org.name}</b> has reached 75% of the Starter plan limit. Upgrade to ensure there are no service disruptions.`;
+        }
+        addNotification({
+            type: 'warning',
+            isHtml: true,
+            timeout: 0,
+            message,
+            buttons: [
+                {
+                    name: 'View usage',
+                    method: () => {
+                        goto(`${base}/console/organization-${org.$id}/usage`);
+                    }
+                },
+                {
+                    name: 'Upgrade plan',
+                    method: () => {
+                        goto(`${base}/console/organization-${org.$id}/change-plan`);
+                        trackEvent('click_organization_upgrade', {
+                            from: 'button',
+                            source: 'limit_reached_notification'
+                        });
+                    }
+                }
+            ]
+        });
+    } else {
+        readOnly.set(false);
+    }
 }
 
 export async function checkPaymentAuthorizationRequired(org: Organization) {
@@ -223,7 +276,10 @@ export async function checkPaymentAuthorizationRequired(org: Organization) {
 
 export async function paymentExpired(org: Organization) {
     if (!org?.paymentMethodId) return;
-    const payment = await sdk.forConsole.billing.getPaymentMethod(org.paymentMethodId);
+    const payment = await sdk.forConsole.billing.getOrganizationPaymentMethod(
+        org.$id,
+        org.paymentMethodId
+    );
     if (!payment?.expiryYear) return;
     const year = new Date().getFullYear();
     const month = new Date().getMonth();
@@ -308,4 +364,28 @@ export async function checkForMissingPaymentMethod() {
             importance: 8
         });
     }
+}
+
+export const upgradeURL = derived(
+    page,
+    ($page) => `${base}/console/organization-${$page.data?.organization?.$id}/change-plan`
+);
+
+export const hideBillingHeaderRoutes = ['/console/create-organization', '/console/account'];
+
+export function calculateExcess(usage: OrganizationUsage, plan: Plan, org: Organization) {
+    const totBandwidth = usage?.bandwidth?.length > 0 ? last(usage.bandwidth).value : 0;
+    return {
+        bandwidth: calculateResourceSurplus(totBandwidth, plan.bandwidth),
+        storage: calculateResourceSurplus(usage?.storageTotal, plan.storage, 'GB'),
+        users: calculateResourceSurplus(usage?.usersTotal, plan.users),
+        executions: calculateResourceSurplus(usage?.executionsTotal, plan.executions, 'GB'),
+        members: calculateResourceSurplus(org.total, plan.members)
+    };
+}
+
+export function calculateResourceSurplus(total: number, limit: number, limitUnit: Size = null) {
+    if (total === undefined || limit === undefined) return 0;
+    const realLimit = (limitUnit ? sizeToBytes(limit, limitUnit) : limit) || Infinity;
+    return total > realLimit ? total - realLimit : 0;
 }

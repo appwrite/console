@@ -7,10 +7,6 @@
             variables[variable.name] = variable.value ?? '';
         });
 
-        if (!runtime) {
-            runtime = template.runtimes[0].name;
-        }
-
         templateStore.set(template);
         templateConfig.set({
             $id: null,

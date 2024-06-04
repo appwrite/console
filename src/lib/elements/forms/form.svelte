@@ -17,9 +17,18 @@
     let classes = '';
     export { classes as class };
 
-    const { isSubmitting } = setContext<FormContext>('form', {
+    let form: HTMLFormElement;
+
+    export let { isSubmitting } = setContext<FormContext>('form', {
         isSubmitting: writable(false)
     });
+
+    export function checkValidity() {
+        return form.checkValidity();
+    }
+    export function triggerSubmit() {
+        form.requestSubmit();
+    }
 
     async function submit(e: SubmitEvent) {
         isSubmitting.set(true);
@@ -29,6 +38,7 @@
 </script>
 
 <form
+    bind:this={form}
     class={classes}
     class:form={!noStyle}
     class:common-section={!noMargin}

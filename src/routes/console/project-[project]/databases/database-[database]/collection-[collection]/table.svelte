@@ -219,6 +219,7 @@
                             {@const formatted = formatColumn(document[column.id])}
                             <TableCell>
                                 <div
+                                    class="u-width-fit-content"
                                     use:tooltip={{
                                         content: formatted.whole,
                                         disabled: !formatted.truncated

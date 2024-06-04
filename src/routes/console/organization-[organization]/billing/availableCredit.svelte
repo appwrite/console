@@ -20,8 +20,8 @@
     import AddCreditModal from './addCreditModal.svelte';
     import { formatCurrency } from '$lib/helpers/numbers';
     import { BillingPlan } from '$lib/constants';
-    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
     import { trackEvent } from '$lib/actions/analytics';
+    import { upgradeURL } from '$lib/stores/billing';
 
     let offset = 0;
     let creditList: CreditList = {
@@ -56,10 +56,8 @@
         request();
     }
 
-    $: balance = creditList?.credits?.reduce(
-        (acc: number, curr: Credit) => acc + curr.creditsRemaining,
-        0
-    );
+    $: balance =
+        creditList?.credits?.reduce((acc: number, curr: Credit) => acc + curr.credits, 0) ?? 0;
 
     $: {
         if (reloadOnWizardClose && !$wizard.show) {
@@ -115,7 +113,7 @@
                                     {toLocaleDate(credit.expiration)}
                                 </TableCellText>
                                 <TableCellText title="amount">
-                                    {formatCurrency(credit.credits)}
+                                    {formatCurrency(credit.total)}
                                 </TableCellText>
                             </TableRow>
                         {/each}
@@ -134,8 +132,8 @@
         {#if $organization?.billingPlan === BillingPlan.STARTER}
             <Button
                 secondary
+                href={$upgradeURL}
                 on:click={() => {
-                    wizard.start(ChangeOrganizationTierCloud);
                     trackEvent('click_organization_upgrade', {
                         from: 'button',
                         source: 'billing_add_credits'

@@ -29,7 +29,7 @@
 
     async function create() {
         try {
-            await uploader.uploadFile(
+            uploader.uploadFile(
                 bucketId,
                 $createFile.id ?? ID.unique(),
                 $createFile.files[0],
@@ -42,7 +42,7 @@
 
             addNotification({
                 type: 'success',
-                message: `File has been uploaded`
+                message: `File upload in progress`
             });
             trackEvent(Submit.FileCreate, {
                 customId: !!$createFile.id

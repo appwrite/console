@@ -10,6 +10,7 @@
     export let readonly = false;
     export let autofocus = false;
     export let fullWidth = false;
+    export let autoSubmit = true;
 
     let element: HTMLOListElement;
 
@@ -23,7 +24,11 @@
         onValueChange: ({ next }) => {
             value = next.join('');
 
-            if (value.length === 6 && !autoSubmitted) {
+            if (value.length < length) {
+                autoSubmitted = false;
+            }
+
+            if (element && autoSubmit && value.length === length && !autoSubmitted) {
                 autoSubmitted = true;
                 const firstInputElement = element.querySelector('input');
                 firstInputElement?.form.requestSubmit();
@@ -47,15 +52,15 @@
 </script>
 
 <FormItem {fullWidth}>
-    <ol class="u-flex u-main-center u-gap-16" use:melt={$root} bind:this={element}>
+    <ol class="u-flex u-main-center" use:melt={$root} bind:this={element}>
         {#each Array.from({ length }) as _}
             <li>
                 <input
                     type="number"
-                    class="verification-code-input u-remove-input-number-buttons"
+                    class="verification-code-input u-bold u-remove-input-number-buttons"
+                    inputmode="numeric"
                     maxlength="1"
-                    style:--p-input-size="3.75rem"
-                    style:font-size="2rem"
+                    style:border-radius="var(--border-radius-small)"
                     use:melt={$input()}
                     {required}
                     {readonly}
@@ -64,3 +69,29 @@
         {/each}
     </ol>
 </FormItem>
+
+<style lang="scss">
+    @import '@appwrite.io/pink/src/abstract/variables/_devices.scss';
+
+    /* Default (including mobile) */
+    ol {
+        gap: 0.5rem;
+
+        input {
+            --p-input-size: 2.5rem;
+            font-size: 1rem;
+        }
+    }
+
+    /* for smaller screens */
+    @media #{$break2open} {
+        ol {
+            gap: 1rem;
+
+            input {
+                --p-input-size: 3.75rem;
+                font-size: 2rem;
+            }
+        }
+    }
+</style>
