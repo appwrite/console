@@ -29,7 +29,15 @@
     let showExitModal = false;
 
     afterNavigate(({ from }) => {
-        previousPage = from?.url?.pathname || previousPage;
+        if (from?.url?.pathname) {
+            if (from.url.pathname.includes('/login') || from.url.pathname.includes('/register')) {
+                previousPage = `${base}/console`;
+            } else {
+                previousPage = from?.url?.pathname || previousPage;
+            }
+        } else {
+            previousPage = `${base}/console`;
+        }
     });
 
     let selectedOrgId: string = null;
