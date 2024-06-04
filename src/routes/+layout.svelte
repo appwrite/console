@@ -12,7 +12,6 @@
     import Loading from './loading.svelte';
     import { loading, requestedMigration } from './store';
     import { parseIfString } from '$lib/helpers/object';
-    import Consent from '$lib/components/consent.svelte';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
     import { campaigns } from '$lib/stores/campaigns';
@@ -138,9 +137,9 @@
 </script>
 
 <Notifications />
-{#if isCloud}
+<!-- {#if isCloud}
     <Consent />
-{/if}
+{/if} -->
 
 <slot />
 
