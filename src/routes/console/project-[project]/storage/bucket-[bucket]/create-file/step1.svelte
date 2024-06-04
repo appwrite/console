@@ -5,11 +5,9 @@
     import { Button, FormList, InputFile } from '$lib/elements/forms';
     import { humanFileSize, sizeToBytes } from '$lib/helpers/sizeConvertion';
     import WizardStep from '$lib/layout/wizardStep.svelte';
-    import { getServiceLimit, tierToPlan } from '$lib/stores/billing';
+    import { getServiceLimit, tierToPlan, upgradeURL } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
-    import { wizard } from '$lib/stores/wizard';
     import { isCloud } from '$lib/system';
-    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
     import { bucket } from '../store';
     import { createFile } from './store';
 
@@ -36,9 +34,7 @@
             <svelte:fragment slot="action">
                 {#if $organization?.billingPlan === BillingPlan.STARTER}
                     <div class="alert-buttons u-flex">
-                        <Button text on:click={() => wizard.start(ChangeOrganizationTierCloud)}>
-                            Upgrade plan
-                        </Button>
+                        <Button text href={$upgradeURL}>Upgrade plan</Button>
                     </div>
                 {/if}
             </svelte:fragment>

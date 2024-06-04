@@ -147,11 +147,15 @@
                                 <span class="icon-dots-horizontal" aria-hidden="true" />
                             </Button>
                             <svelte:fragment slot="list">
-                                <DropListItem icon="refresh" on:click={() => openRetry(domain, i)}>
-                                    {domain.status === 'unverfied'
-                                        ? 'Retry generation'
-                                        : 'Retry verification'}
-                                </DropListItem>
+                                {#if domain.status !== 'verified'}
+                                    <DropListItem
+                                        icon="refresh"
+                                        on:click={() => openRetry(domain, i)}>
+                                        {domain.status === 'unverified'
+                                            ? 'Retry generation'
+                                            : 'Retry verification'}
+                                    </DropListItem>
+                                {/if}
                                 <DropListItem
                                     icon="trash"
                                     on:click={() => {
@@ -179,7 +183,7 @@
 <Delete bind:showDelete bind:selectedDomain {dependency} />
 <Modal bind:show={showRetry} headerDivider={false} bind:error={retryError} size="big">
     <svelte:fragment slot="title">
-        Retry {$domain.status === 'unverfied' ? 'certificate generation' : 'verification'}
+        Retry {$domain.status === 'unverified' ? 'certificate generation' : 'verification'}
     </svelte:fragment>
     <Retry on:error={(e) => (retryError = e.detail)} />
     <svelte:fragment slot="footer">

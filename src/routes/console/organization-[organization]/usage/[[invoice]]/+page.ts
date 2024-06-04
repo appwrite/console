@@ -36,9 +36,10 @@ export const load: PageLoad = async ({ params, parent }) => {
         endDate = currentInvoice.to;
     }
 
-    const [invoices, usage] = await Promise.all([
+    const [invoices, usage, organizationMembers] = await Promise.all([
         sdk.forConsole.billing.listInvoices(org.$id, [Query.orderDesc('from')]),
-        sdk.forConsole.billing.listUsage(params.organization, startDate, endDate)
+        sdk.forConsole.billing.listUsage(params.organization, startDate, endDate),
+        sdk.forConsole.teams.listMemberships(params.organization)
     ]);
 
     const queries: string[] = [];
@@ -58,6 +59,7 @@ export const load: PageLoad = async ({ params, parent }) => {
         organizationUsage: usage,
         projectNames: projectNames.projects,
         invoices,
-        currentInvoice
+        currentInvoice,
+        organizationMembers
     };
 };

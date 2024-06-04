@@ -50,7 +50,7 @@
 <Form onSubmit={updateMfa}>
     <CardGrid>
         <Heading tag="h6" size="7">Multi-factor authentication</Heading>
-        <p class="text">MFA allow users to enhance the security of their account in you app.</p>
+        <p class="text">MFA allows users to enhance the security of their accounts in your app.</p>
         <svelte:fragment slot="aside">
             <FormList>
                 <InputChoice
@@ -88,8 +88,8 @@
             {:else}
                 <EmptySearch hidePagination hidePages>
                     <p class="text u-text-center">
-                        No authenticators have been enabled. Once the user adds an authenticator,
-                        you’ll see it here.
+                        No authenticators have been enabled.<br />Once the user adds an
+                        authenticator, you'll see it here.
                     </p>
                 </EmptySearch>
             {/if}

@@ -58,11 +58,10 @@
         headerDivider={false}
         title="Unable to delete payment method">
         <p data-private>
-            The {isBackup ? 'backup' : 'default'} payment method cannot be deleted as
+            The {isBackup ? 'backup' : 'default'} payment method cannot be removed as
             <b>{$organization?.name}</b>
-            has an upcoming invoice. To proceed with deletion, set a {isBackup
-                ? 'default'
-                : 'backup'} or add a new {isBackup ? 'backup' : 'default'} payment method.
+            has an upcoming invoice. To proceed, set a {isBackup ? 'default' : 'backup'} or add a new
+            {isBackup ? 'backup' : 'default'} payment method.
         </p>
         <svelte:fragment slot="footer">
             <Button text on:click={() => (showDelete = false)}>Cancel</Button>
@@ -76,13 +75,13 @@
         icon="exclamation"
         state="warning"
         headerDivider={false}
-        title="Delete payment method">
+        title="Remove payment method">
         <p data-private>
-            Are you sure you want to delete the payment method from <b>{$organization?.name}</b>?
+            Are you sure you want to remove the payment method from <b>{$organization?.name}</b>?
         </p>
         <svelte:fragment slot="footer">
             <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-            <Button secondary submit>Delete</Button>
+            <Button secondary submit>Remove</Button>
         </svelte:fragment>
     </Modal>
 {/if}

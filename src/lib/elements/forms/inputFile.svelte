@@ -23,17 +23,6 @@
     function setFiles(value: FileList) {
         if (!value) return;
 
-        const hasInvalidExt = Array.from(value).some((file) => {
-            const fileExtension = file.name.split('.').pop();
-            return allowedFileExtensions?.length
-                ? !allowedFileExtensions.includes(fileExtension)
-                : false;
-        });
-        if (hasInvalidExt) {
-            error = 'Invalid file extension';
-            return;
-        }
-
         files = value;
         input.files = value;
     }
@@ -42,11 +31,22 @@
         setFiles(new DataTransfer().files);
     }
 
+    function isFileExtensionAllowed(fileExtension: string) {
+        if (allowedFileExtensions.length && !allowedFileExtensions.includes(fileExtension)) {
+            return false;
+        }
+        return true;
+    }
     function dropHandler(ev: DragEvent) {
         ev.dataTransfer.dropEffect = 'move';
         hovering = false;
         if (!ev.dataTransfer.items) return;
         for (let i = 0; i < ev.dataTransfer.items.length; i++) {
+            const fileExtension = ev.dataTransfer.items[i].getAsFile().name.split('.')[1];
+            if (!isFileExtensionAllowed(fileExtension)) {
+                error = 'Invalid file extension';
+                return;
+            }
             if (ev.dataTransfer.items[i].kind === 'file') {
                 const dataTransfer = new DataTransfer();
                 dataTransfer.items.add(ev.dataTransfer.items[i].getAsFile());
@@ -81,6 +81,18 @@
 
     const handleChange = (event: Event) => {
         const target = event.currentTarget as HTMLInputElement;
+
+        const isValidFiles = Array.from(target.files).every((file) => {
+            const fileExtension = file.name.split('.').pop();
+            return isFileExtensionAllowed(fileExtension);
+        });
+
+        if (!isValidFiles) {
+            error = 'Invalid file extension';
+            target.value = '';
+            return;
+        }
+
         setFiles(target.files);
     };
 </script>

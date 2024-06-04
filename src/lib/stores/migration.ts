@@ -91,12 +91,11 @@ export const migrationFormToResources = (
     }
     if (formData.databases.root) {
         addResource('database');
-    }
-    if (formData.databases.documents) {
         addResource('collection');
         addResource('attribute');
-
         addResource('index');
+    }
+    if (formData.databases.documents) {
         addResource('document');
     }
     if (formData.functions.root) {

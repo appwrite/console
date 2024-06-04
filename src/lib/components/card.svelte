@@ -5,6 +5,8 @@
         isTile?: boolean;
         isDashed?: boolean;
         danger?: boolean;
+        style?: string;
+        class?: string;
     };
 
     type ButtonProps = {
@@ -26,6 +28,7 @@
     export let href: string = null;
     let classes = '';
     export { classes as class };
+    export let style: string = '';
 
     function getElement() {
         switch (true) {
@@ -46,6 +49,8 @@
     class:is-border-dashed={isDashed}
     class:is-danger={danger}
     class:is-allowed-focus={href}
+    {...$$restProps}
+    {style}
     on:click
     on:keyup={clickOnEnter}
     role={href || isButton ? 'button' : 'generic'}

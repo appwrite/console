@@ -22,7 +22,8 @@
             label="Entrypoint"
             id="entrypoint"
             placeholder="Entrypoint"
-            bind:value={$createFunction.entrypoint} />
+            bind:value={$createFunction.entrypoint}
+            required />
         <Collapsible>
             <CollapsibleItem>
                 <svelte:fragment slot="title">Build commands</svelte:fragment>

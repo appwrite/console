@@ -3,13 +3,13 @@
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import {
-        TableScroll,
         TableBody,
         TableCell,
         TableCellHead,
         TableCellText,
         TableHeader,
-        TableRow
+        TableRow,
+        TableScroll
     } from '$lib/elements/table';
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { Container, ContainerHeader } from '$lib/layout';
@@ -61,11 +61,12 @@
                                             height="20"
                                             width="20"
                                             src={getBrowser(session.clientCode).toString()}
+                                            style="--p-text-size: 1.25rem"
                                             alt={session.clientName} />
                                     {:else}
                                         <span
                                             class="icon-globe-alt"
-                                            style="font-size: 20px"
+                                            style="--p-text-size: 1.25rem"
                                             aria-hidden="true" />
                                     {/if}
                                 </div>

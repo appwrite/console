@@ -2,14 +2,14 @@
     import { page } from '$app/stores';
     import { Button } from '$lib/elements/forms';
     import { HeaderAlert } from '$lib/layout';
-    import { actionRequiredInvoices } from '$lib/stores/billing';
+    import { actionRequiredInvoices, hideBillingHeaderRoutes } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { VARS } from '$lib/system';
 
     const endpoint = VARS.APPWRITE_ENDPOINT ?? `${$page.url.origin}/v1`;
 </script>
 
-{#if $actionRequiredInvoices && $actionRequiredInvoices?.invoices?.length && !$page.url.pathname.includes('/console/account')}
+{#if $actionRequiredInvoices && $actionRequiredInvoices?.invoices?.length && !hideBillingHeaderRoutes.includes($page.url.pathname)}
     <HeaderAlert title="Authorization required" type="error">
         Please authorize your upcoming payment for {$organization.name}. Your bank requires this
         security measure to proceed with payment.
