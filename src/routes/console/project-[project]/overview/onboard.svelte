@@ -192,8 +192,8 @@
         }
     }
     .onboard-cover img {
-      max-inline-size: none;
-      max-block-size: none;
+        max-inline-size: none;
+        max-block-size: none;
     }
     .onboard-cover > div {
         background-color: transparent;
