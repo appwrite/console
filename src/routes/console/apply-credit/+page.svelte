@@ -69,8 +69,9 @@
     });
 
     async function loadPaymentMethods() {
-        methods = await sdk.forConsole.billing.listPaymentMethods();
-
+        const methodList = await sdk.forConsole.billing.listPaymentMethods();
+        const filteredMethods = methodList.paymentMethods.filter((method) => !!method?.last4);
+        methods = { paymentMethods: filteredMethods, total: filteredMethods.length };
         paymentMethodId =
             selectedOrg?.paymentMethodId ??
             methods.paymentMethods.find((method) => !!method?.last4)?.$id ??
@@ -154,9 +155,17 @@
         (team) => team.$id === selectedOrgId
     ) as Organization;
 
-    $: isButtonDisabled = selectedOrgId
-        ? !selectedOrg?.paymentMethodId && !paymentMethodId
-        : !name || !paymentMethodId;
+    $: isButtonDisabled = checkButtonDisabled(selectedOrgId, name, paymentMethodId);
+
+    function checkButtonDisabled(id: string | null, name: string | null, method: string | null) {
+        if (id === newOrgId) {
+            return !name || !method;
+        } else if (id && selectedOrg?.billingPlan === BillingPlan.PRO) {
+            return !selectedOrg?.paymentMethodId;
+        } else if (id) {
+            return !method;
+        } else return true;
+    }
 </script>
 
 <svelte:head>
