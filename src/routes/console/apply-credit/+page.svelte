@@ -174,9 +174,9 @@
                 {#if selectedOrgId && (selectedOrg?.billingPlan !== BillingPlan.PRO || !selectedOrg?.paymentMethodId)}
                     {#if selectedOrgId === newOrgId}
                         <InputText
-                            label="Name"
+                            label="Organization name"
+                            placeholder="Enter organization name"
                             id="name"
-                            placeholder="Organization name"
                             required
                             bind:value={name} />
                     {/if}

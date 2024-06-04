@@ -195,8 +195,8 @@
             <FormList>
                 <InputText
                     bind:value={name}
-                    label="Name"
-                    placeholder="Enter name"
+                    label="Organization name"
+                    placeholder="Enter organization name"
                     id="name"
                     required />
             </FormList>
