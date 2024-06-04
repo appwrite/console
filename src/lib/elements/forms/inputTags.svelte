@@ -31,11 +31,11 @@
         /**
          * Allow form submit and tab input switch
          */
-        if (value === '' && ['Enter', 'Tab'].includes(e.key)) {
+        if (value === '' && ['Enter', 'Tab', ','].includes(e.key)) {
             return;
         }
 
-        if (['Enter', 'Tab', ' '].includes(e.key)) {
+        if (['Enter', 'Tab', ' ', ','].includes(e.key)) {
             e.preventDefault();
             if (validityRegex && !validityRegex.test(value)) {
                 error = validityMessage ? validityMessage : 'Invalid value';
