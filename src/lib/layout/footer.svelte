@@ -9,7 +9,7 @@
 
 <footer class="main-footer u-cross-center">
     <div class="main-footer-start">
-        <ul class="inline-links is-no-padding-first-and-last u-x-small">
+        <ul class="inline-links is-no-padding-first-and-last u-x-small custom-flex-wrap">
             <li class="inline-links-item" style="line-height: 1.02;">
                 <div class="u-flex u-cross-center u-gap-8">
                     {#if isCloud}
@@ -82,5 +82,11 @@
 
     [class^='icon-']:not(.icon-cloud):not(:hover) {
         color: hsl(var(--color-neutral-50));
+    }
+
+    .custom-flex-wrap {
+        display: flex;
+        flex-wrap: wrap;
+        row-gap: 8px;
     }
 </style>
