@@ -243,6 +243,9 @@
             fullWidthMobile
             on:click={() => formComponent.triggerSubmit()}
             disabled={$isSubmitting || isButtonDisabled}>
+            {#if $isSubmitting}
+                <span class="loader is-small is-transparent u-line-height-1-5" aria-hidden="true" />
+            {/if}
             Apply credits
         </Button>
     </WizardSecondaryFooter>
