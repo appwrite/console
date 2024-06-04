@@ -343,6 +343,26 @@ export const eventServices: Array<EventService> = [
             { name: 'update', attributes: ['email', 'name', 'password', 'status', 'prefs'] },
             { name: 'delete' }
         ]
+    },
+    {
+        name: 'providers',
+        resources: [],
+        actions: [{ name: 'create' }, { name: 'update' }, { name: 'delete' }]
+    },
+    {
+        name: 'topics',
+        resources: [
+            {
+                name: 'subscribers',
+                actions: [{ name: 'create' }, { name: 'delete' }]
+            }
+        ],
+        actions: [{ name: 'create' }, { name: 'update' }, { name: 'delete' }]
+    },
+    {
+        name: 'messages',
+        resources: [],
+        actions: [{ name: 'create' }, { name: 'update' }, { name: 'delete' }]
     }
 ];
 
