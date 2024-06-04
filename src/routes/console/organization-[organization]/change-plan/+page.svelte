@@ -9,6 +9,7 @@
         PlanComparisonBox,
         SelectPaymentMethod
     } from '$lib/components/billing';
+    import PlanExcess from '$lib/components/billing/planExcess.svelte';
     import ValidateCreditModal from '$lib/components/billing/validateCreditModal.svelte';
     import { BillingPlan, Dependencies, feedbackDowngradeOptions } from '$lib/constants';
     import {
@@ -235,6 +236,7 @@
     }
 
     $: isUpgrade = billingPlan > $organization.billingPlan;
+    $: isDowngrade = billingPlan < $organization.billingPlan;
     $: freePlan = $plansInfo.get(BillingPlan.STARTER);
     $: proPlan = $plansInfo.get(BillingPlan.PRO);
     $: if (billingPlan === BillingPlan.PRO) {
@@ -276,8 +278,8 @@
                     <LabelCard
                         name="plan"
                         bind:group={billingPlan}
-                        value="tier-0"
                         disabled={!!anyOrgFree}
+                        value="tier-0"
                         tooltipShow={!!anyOrgFree}
                         tooltipText="You are limited to 1 Free organization per account.">
                         <svelte:fragment slot="custom" let:disabled>
@@ -320,6 +322,9 @@
                     </LabelCard>
                 </li>
             </ul>
+            {#if isDowngrade}
+                <PlanExcess tier={BillingPlan.STARTER} class="u-margin-block-start-24" />
+            {/if}
             {#if billingPlan === BillingPlan.PRO && $organization.billingPlan !== BillingPlan.PRO}
                 <FormList class="u-margin-block-start-16">
                     <InputTags
