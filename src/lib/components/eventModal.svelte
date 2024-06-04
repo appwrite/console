@@ -249,7 +249,7 @@
     <slot />
     <div>
         <p class="u-text">Choose a service</p>
-        <div class="u-flex u-gap-8 u-margin-block-start-8">
+        <div class="u-flex u-gap-8 u-margin-block-start-8 u-flex-wrap">
             {#each available.services as service}
                 <Pill
                     disabled={showInput}

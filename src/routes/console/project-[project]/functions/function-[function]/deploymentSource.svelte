@@ -33,4 +33,6 @@
     </DropList>
 {:else if deployment.type === 'manual'}
     <span class="icon-code" aria-hidden="true" /> <span>Manual</span>
+{:else if deployment.type === 'cli'}
+    <span class="icon-terminal" aria-hidden="true" /> <span>CLI</span>
 {/if}
