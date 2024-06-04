@@ -3,7 +3,7 @@
     import { CardGrid, Heading } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import {
-        Table,
+        TableScroll,
         TableBody,
         TableCell,
         TableCellHead,
@@ -54,12 +54,12 @@
                 </div>
             </EmptySearch>
         {:else}
-            <Table noMargin noStyles>
+            <TableScroll noMargin noStyles>
                 <TableHeader>
                     <TableCellHead width={100}>Provider</TableCellHead>
-                    <TableCellHead>Email</TableCellHead>
-                    <TableCellHead>Created At</TableCellHead>
-                    <TableCellHead>Expiry Date</TableCellHead>
+                    <TableCellHead width={140}>Email</TableCellHead>
+                    <TableCellHead width={140}>Created At</TableCellHead>
+                    <TableCellHead width={140}>Expiry Date</TableCellHead>
                     <TableCellHead width={40} />
                 </TableHeader>
                 <TableBody>
@@ -95,7 +95,7 @@
                         </TableRow>
                     {/each}
                 </TableBody>
-            </Table>
+            </TableScroll>
         {/if}
     </svelte:fragment>
 </CardGrid>
