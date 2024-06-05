@@ -88,7 +88,7 @@
             {/if}
         {:else if selectedTab === 'tier-1'}
             <h3 class="u-bold body-text-1">{plan.name} plan</h3>
-            <ul class="un-order-list u-margin-block-start-8" style:gap="0.5rem">
+            <ul class="un-order-list u-margin-block-start-8">
                 <li>Everything in the Starter plan, plus:</li>
                 <li>Unlimited databases, buckets, functions</li>
                 <li>{plan.bandwidth}GB bandwidth</li>
