@@ -130,7 +130,9 @@
     <svelte:fragment slot="links">
         <li class="inline-links-item">
             <span class="text">
-                Already got an account? <a class="link" href={`${base}/login`}>Sign in</a>
+                Already got an account? <a
+                    class="link"
+                    href={`${base}/login${$page?.url?.search ?? ''}`}>Sign in</a>
             </span>
         </li>
     </svelte:fragment>
