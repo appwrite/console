@@ -19,7 +19,7 @@
         PaginationWithLimit,
         SearchQuery
     } from '$lib/components';
-    import { Dependencies } from '$lib/constants';
+    import { BillingPlan, Dependencies } from '$lib/constants';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import {
@@ -45,7 +45,12 @@
     import { uploader } from '$lib/stores/uploader';
     import { wizard } from '$lib/stores/wizard';
     import { tooltip } from '$lib/actions/tooltip';
-    import { getServiceLimit, showUsageRatesModal } from '$lib/stores/billing';
+    import {
+        getServiceLimit,
+        plansInfo,
+        showUsageRatesModal,
+        tierToPlan
+    } from '$lib/stores/billing';
     import { sdk } from '$lib/stores/sdk.js';
     import Create from './create-file/create.svelte';
     import DeleteFile from './deleteFile.svelte';
@@ -112,7 +117,7 @@
             </SearchQuery>
         </svelte:fragment>
         <svelte:fragment slot="tooltip" let:limit let:tier let:upgradeMethod>
-            {#if tier === 'Free'}
+            {#if tier === tierToPlan(BillingPlan.FREE).name}
                 <p class="u-bold">The {tier} plan has limits</p>
                 <ul>
                     <li>{limit}GB total file storage</li>
