@@ -45,7 +45,7 @@
     );
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$/i;
     let previousPage: string = `${base}/console`;
-
+    let showExitModal = false;
     afterNavigate(({ from }) => {
         previousPage = from?.url?.pathname || previousPage;
     });
@@ -74,8 +74,8 @@
     let feedbackMessage: string;
 
     onMount(async () => {
-        if ($page.url.searchParams.has('coupon')) {
-            const coupon = $page.url.searchParams.get('coupon');
+        if ($page.url.searchParams.has('code')) {
+            const coupon = $page.url.searchParams.get('code');
             try {
                 const response = await sdk.forConsole.billing.getCoupon(coupon);
                 couponData = response;
@@ -254,8 +254,9 @@
     <title>Change plan - Appwrite</title>
 </svelte:head>
 
-<WizardSecondaryContainer>
-    <WizardSecondaryHeader href={previousPage} showExitModal>Change plan</WizardSecondaryHeader>
+<WizardSecondaryContainer bind:showExitModal href={previousPage}>
+    <WizardSecondaryHeader confirmExit on:exit={() => (showExitModal = true)}
+        >Change plan</WizardSecondaryHeader>
     <WizardSecondaryContent>
         <Form bind:this={formComponent} onSubmit={handleSubmit} bind:isSubmitting>
             <Label class="label u-margin-block-start-16">Select plan</Label>
@@ -378,7 +379,7 @@
     </WizardSecondaryContent>
 
     <WizardSecondaryFooter>
-        <Button fullWidthMobile href={`${base}/console`} secondary>Cancel</Button>
+        <Button fullWidthMobile secondary on:click={() => (showExitModal = true)}>Cancel</Button>
         <Button
             fullWidthMobile
             on:click={() => formComponent.triggerSubmit()}

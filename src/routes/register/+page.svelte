@@ -21,6 +21,8 @@
     import { page } from '$app/stores';
     import { redirectTo } from '$routes/store';
 
+    export let data;
+
     let name: string, mail: string, pass: string, disabled: boolean;
     let terms = false;
 
@@ -36,7 +38,11 @@
             }
 
             await invalidate(Dependencies.ACCOUNT);
-
+            trackEvent(Submit.AccountCreate, { campaign_name: data?.couponData?.code });
+            if (data?.couponData?.code) {
+                await goto(`${base}/console/apply-credit?code=${data?.couponData?.code}`);
+                return;
+            }
             if ($page.url.searchParams) {
                 const redirect = $page.url.searchParams.get('redirect');
                 $page.url.searchParams.delete('redirect');
@@ -73,7 +79,7 @@
     <title>Sign up - Appwrite</title>
 </svelte:head>
 
-<Unauthenticated>
+<Unauthenticated coupon={data?.couponData}>
     <svelte:fragment slot="title">Sign up</svelte:fragment>
     <svelte:fragment>
         <Form onSubmit={register}>
@@ -130,7 +136,9 @@
     <svelte:fragment slot="links">
         <li class="inline-links-item">
             <span class="text">
-                Already got an account? <a class="link" href={`${base}/login`}>Sign in</a>
+                Already got an account? <a
+                    class="link"
+                    href={`${base}/login${$page?.url?.search ?? ''}`}>Sign in</a>
             </span>
         </li>
     </svelte:fragment>

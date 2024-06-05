@@ -22,6 +22,8 @@
 
     let mail: string, pass: string, disabled: boolean;
 
+    export let data;
+
     async function login() {
         try {
             disabled = true;
@@ -39,6 +41,12 @@
                 return;
             }
 
+            await invalidate(Dependencies.ACCOUNT);
+            if (data?.couponData?.code) {
+                trackEvent(Submit.AccountCreate, { campaign_name: data?.couponData?.code });
+                await goto(`${base}/console/apply-credit?code=${data?.couponData?.code}`);
+                return;
+            }
             if ($page.url.searchParams) {
                 const redirect = $page.url.searchParams.get('redirect');
                 $page.url.searchParams.delete('redirect');
@@ -85,7 +93,7 @@
     <title>Sign in - Appwrite</title>
 </svelte:head>
 
-<Unauthenticated>
+<Unauthenticated coupon={data?.couponData}>
     <svelte:fragment slot="title">Sign in</svelte:fragment>
     <svelte:fragment>
         <Form onSubmit={login}>

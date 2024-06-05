@@ -19,10 +19,10 @@
     onSubmit={handleSubmit}
     icon="exclamation"
     state="warning"
+    size="small"
     headerDivider={false}>
-    <p>
-        Are you sure you want to exit from <slot />? All data will be deleted. This action is
-        irreversible.
+    <p class="text">
+        <slot />
     </p>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (show = false)}>Cancel</Button>
