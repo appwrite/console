@@ -51,7 +51,7 @@
     };
 
     const addValue = () => {
-        if (validityRegex && !validityRegex.test(value)) {
+        if (validityRegex && !validityRegex.test(value) && !!value) {
             error = validityMessage ? validityMessage : 'Invalid value';
             return;
         }
