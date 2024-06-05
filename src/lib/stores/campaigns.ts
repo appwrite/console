@@ -11,7 +11,7 @@ campaigns
     .set('startup', {
         title: 'Welcome to the Startups program!',
         description:
-            'We’re excited to have you on board. Add your credit code to your Appwrite Pro account to join.'
+            "We're excited to have you on board. Add your credit code to your Appwrite Pro account to join."
     })
     .set('RenderATL2024', {
         title: 'Claim your RenderATL $100 credits',
