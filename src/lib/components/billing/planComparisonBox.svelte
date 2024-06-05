@@ -26,51 +26,66 @@
     <div class="u-margin-block-start-24">
         {#if selectedTab === 'tier-0'}
             <h3 class="u-bold body-text-1">{plan.name} plan</h3>
-            <ul
-                class:un-order-list={!downgrade}
-                class:list={downgrade}
-                class="u-margin-block-start-8"
-                style:gap="0.5rem">
-                <li class:list-item={downgrade}>
-                    {#if downgrade}
+            {#if downgrade}
+                <ul class="u-margin-block-start-8 list u-gap-4 u-color-text-offline u-small">
+                    <li class="list-item u-gap-4">
                         <span class="icon-arrow-down u-color-text-danger" aria-hidden="true"></span>
-                    {/if}
-                    <span class="text">
-                        Limited to {plan.databases} Database, {plan.buckets} Buckets, {plan.functions}
-                        Functions per project
-                    </span>
-                </li>
-                <li class:list-item={downgrade}>
-                    {#if downgrade}
+                        <span class="text">
+                            Limited to {plan.databases} Database, {plan.buckets} Buckets, {plan.functions}
+                            Functions per project
+                        </span>
+                    </li>
+                    <li class="list-item u-gap-4">
                         <span class="icon-arrow-down u-color-text-danger" aria-hidden="true"></span>
-                    {/if}
-                    <span class="text"> Limited to 1 organization member </span>
-                </li>
-                <li class:list-item={downgrade}>
-                    {#if downgrade}
+                        <span class="text"> Limited to 1 organization member </span>
+                    </li>
+                    <li class="list-item u-gap-4">
                         <span class="icon-arrow-down u-color-text-danger" aria-hidden="true"></span>
-                    {/if}
-                    <span class="text">
-                        {plan.bandwidth}GB bandwidth
-                    </span>
-                </li>
-                <li class:list-item={downgrade}>
-                    {#if downgrade}
+                        <span class="text">
+                            {plan.bandwidth}GB bandwidth
+                        </span>
+                    </li>
+                    <li class="list-item u-gap-4">
                         <span class="icon-arrow-down u-color-text-danger" aria-hidden="true"></span>
-                    {/if}
-                    <span class="text">
-                        {plan.storage}GB storage
-                    </span>
-                </li>
-                <li class:list-item={downgrade}>
-                    {#if downgrade}
+                        <span class="text">
+                            {plan.storage}GB storage
+                        </span>
+                    </li>
+                    <li class="list-item u-gap-4">
                         <span class="icon-arrow-down u-color-text-danger" aria-hidden="true"></span>
-                    {/if}
-                    <span class="text">
-                        {formatNum(plan.executions)} executions
-                    </span>
-                </li>
-            </ul>
+                        <span class="text">
+                            {formatNum(plan.executions)} executions
+                        </span>
+                    </li>
+                </ul>
+            {:else}
+                <ul class="u-margin-block-start-8 un-order-list">
+                    <li>
+                        <span class="text">
+                            Limited to {plan.databases} Database, {plan.buckets} Buckets, {plan.functions}
+                            Functions per project
+                        </span>
+                    </li>
+                    <li>
+                        <span class="text"> Limited to 1 organization member </span>
+                    </li>
+                    <li>
+                        <span class="text">
+                            {plan.bandwidth}GB bandwidth
+                        </span>
+                    </li>
+                    <li>
+                        <span class="text">
+                            {plan.storage}GB storage
+                        </span>
+                    </li>
+                    <li>
+                        <span class="text">
+                            {formatNum(plan.executions)} executions
+                        </span>
+                    </li>
+                </ul>
+            {/if}
         {:else if selectedTab === 'tier-1'}
             <h3 class="u-bold body-text-1">{plan.name} plan</h3>
             <ul class="un-order-list u-margin-block-start-8" style:gap="0.5rem">
