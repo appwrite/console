@@ -71,7 +71,7 @@
                     </svelte:fragment>
                     <svelte:fragment slot="status">
                         {#if isCloudOrg(organization)}
-                            {#if organization?.billingPlan === BillingPlan.STARTER}
+                            {#if organization?.billingPlan === BillingPlan.FREE}
                                 <div
                                     class="u-flex u-cross-center"
                                     use:tooltip={{
@@ -81,7 +81,7 @@
                                     <Pill>FREE</Pill>
                                 </div>
                             {/if}
-                            {#if organization?.billingTrialStartDate && $daysLeftInTrial > 0 && organization.billingPlan !== BillingPlan.STARTER && $plansInfo.get(organization.billingPlan)?.trialDays}
+                            {#if organization?.billingTrialStartDate && $daysLeftInTrial > 0 && organization.billingPlan !== BillingPlan.FREE && $plansInfo.get(organization.billingPlan)?.trialDays}
                                 <div
                                     class="u-flex u-cross-center"
                                     use:tooltip={{

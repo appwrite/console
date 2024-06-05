@@ -63,7 +63,7 @@
 
     $: tier = tierToPlan($organization?.billingPlan)?.name;
     $: hasProjectLimitation =
-        checkForProjectLimitation(serviceId) && $organization?.billingPlan === BillingPlan.STARTER;
+        checkForProjectLimitation(serviceId) && $organization?.billingPlan === BillingPlan.FREE;
     $: hasUsageFees = hasProjectLimitation
         ? checkForUsageFees($organization?.billingPlan, serviceId)
         : false;
@@ -88,7 +88,7 @@
             })
             .join(', ')}
         <slot name="alert" {limit} {tier} {title} {upgradeMethod} {hasUsageFees} {services}>
-            {#if $organization?.billingPlan !== BillingPlan.STARTER && hasUsageFees}
+            {#if $organization?.billingPlan !== BillingPlan.FREE && hasUsageFees}
                 <Alert type="info" isStandalone>
                     <span class="text">
                         You've reached the {services} limit for the {tier} plan.
@@ -135,7 +135,7 @@
                             <p class="text">
                                 You are limited to {limit}
                                 {title.toLocaleLowerCase()} per project on the {tier} plan.
-                                {#if $organization?.billingPlan === BillingPlan.STARTER}<Button
+                                {#if $organization?.billingPlan === BillingPlan.FREE}<Button
                                         link
                                         href={$upgradeURL}
                                         on:click={() =>
@@ -158,7 +158,7 @@
                             <p class="text">
                                 You are limited to {limit}
                                 {title.toLocaleLowerCase()} per organization on the {tier} plan.
-                                {#if $organization?.billingPlan === BillingPlan.STARTER}
+                                {#if $organization?.billingPlan === BillingPlan.FREE}
                                     <Button link href={$upgradeURL}>Upgrade</Button>
                                     for additional {title.toLocaleLowerCase()}.
                                 {/if}

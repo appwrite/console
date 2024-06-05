@@ -260,7 +260,7 @@
         if (isCloud) {
             await checkForUsageLimit(org);
             checkForMarkedForDeletion(org);
-            if (org?.billingPlan !== BillingPlan.STARTER) {
+            if (org?.billingPlan !== BillingPlan.FREE) {
                 await paymentExpired(org);
                 await checkPaymentAuthorizationRequired(org);
                 await checkForMandate(org);

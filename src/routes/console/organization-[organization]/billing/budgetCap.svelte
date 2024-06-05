@@ -59,7 +59,7 @@
                 class="link">Learn more about usage rates.</button>
         </p>
         <svelte:fragment slot="aside">
-            {#if $organization?.billingPlan === BillingPlan.STARTER}
+            {#if $organization?.billingPlan === BillingPlan.FREE}
                 <Alert type="info">
                     <svelte:fragment slot="title">
                         Budget caps are a Pro plan feature
@@ -92,7 +92,7 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            {#if $organization?.billingPlan === BillingPlan.STARTER}
+            {#if $organization?.billingPlan === BillingPlan.FREE}
                 <Button
                     secondary
                     href={$upgradeURL}

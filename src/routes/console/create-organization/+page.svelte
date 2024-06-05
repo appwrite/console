@@ -29,7 +29,7 @@
     import { writable } from 'svelte/store';
 
     $: anyOrgFree = $organizationList.teams?.find(
-        (org) => (org as Organization)?.billingPlan === BillingPlan.STARTER
+        (org) => (org as Organization)?.billingPlan === BillingPlan.FREE
     );
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$/i;
     let previousPage: string = `${base}/console`;
@@ -43,7 +43,7 @@
 
     let methods: PaymentList;
     let name: string;
-    let billingPlan: BillingPlan = BillingPlan.STARTER;
+    let billingPlan: BillingPlan = BillingPlan.FREE;
     let paymentMethodId: string;
     let collaborators: string[] = [];
     let couponData: Partial<Coupon> = {
@@ -93,11 +93,11 @@
         try {
             let org: Organization;
 
-            if (billingPlan === BillingPlan.STARTER) {
+            if (billingPlan === BillingPlan.FREE) {
                 org = await sdk.forConsole.billing.createOrganization(
                     ID.unique(),
                     name,
-                    BillingPlan.STARTER,
+                    BillingPlan.FREE,
                     null,
                     null
                 );
@@ -107,7 +107,7 @@
                     await sdk.forConsole.billing.createOrganization(
                         ID.unique(),
                         'Personal Projects',
-                        BillingPlan.STARTER,
+                        BillingPlan.FREE,
                         null,
                         null
                     );
@@ -174,7 +174,7 @@
         }
     }
 
-    $: freePlan = $plansInfo.get(BillingPlan.STARTER);
+    $: freePlan = $plansInfo.get(BillingPlan.FREE);
     $: proPlan = $plansInfo.get(BillingPlan.PRO);
     $: if (billingPlan === BillingPlan.PRO) {
         loadPaymentMethods();
@@ -274,7 +274,7 @@
             {/if}
         </Form>
         <svelte:fragment slot="aside">
-            {#if billingPlan !== BillingPlan.STARTER}
+            {#if billingPlan !== BillingPlan.FREE}
                 <EstimatedTotalBox
                     {billingPlan}
                     {collaborators}

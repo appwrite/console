@@ -111,8 +111,8 @@
     {/if}
     {#if $organization?.billingPlanDowngrade}
         <Alert type="info" class="common-section">
-            Your organization will change to a {tierToPlan(BillingPlan.STARTER).name} plan once your
-            current billing cycle ends and your invoice is paid on {toLocaleDate(
+            Your organization will change to a {tierToPlan(BillingPlan.FREE).name} plan once your current
+            billing cycle ends and your invoice is paid on {toLocaleDate(
                 $organization.billingNextInvoiceDate
             )}.
         </Alert>
@@ -126,7 +126,7 @@
     <BillingAddress billingAddress={data?.billingAddress} />
     <TaxId />
     <BudgetCap />
-    {#if $organization?.billingPlan !== BillingPlan.STARTER && !!$organization?.billingBudget}
+    {#if $organization?.billingPlan !== BillingPlan.FREE && !!$organization?.billingBudget}
         <BudgetAlert />
     {/if}
     <AvailableCredit />

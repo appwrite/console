@@ -132,7 +132,7 @@
         </p>
 
         <svelte:fragment slot="aside">
-            {#if $organization.billingPlan === BillingPlan.STARTER}
+            {#if $organization.billingPlan === BillingPlan.FREE}
                 <Alert
                     buttons={[
                         {
@@ -140,9 +140,8 @@
                             href: `${base}/console/organization-${$organization.$id}/billing`
                         }
                     ]}>
-                    All emails sent using the {tierToPlan(BillingPlan.STARTER).name} plan will include
-                    attribution to Appwrite in the signature. To send attribution-free emails, upgrade
-                    your plan.
+                    All emails sent using the {tierToPlan(BillingPlan.FREE).name} plan will include attribution
+                    to Appwrite in the signature. To send attribution-free emails, upgrade your plan.
                 </Alert>
             {/if}
             <Collapsible>

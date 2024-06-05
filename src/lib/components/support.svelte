@@ -30,7 +30,7 @@
                 </p>
             {/if}
         </div>
-        {#if $organization?.billingPlan === BillingPlan.STARTER}
+        {#if $organization?.billingPlan === BillingPlan.FREE}
             <Button
                 fullWidth
                 href={$upgradeURL}

@@ -53,7 +53,7 @@
             )}
         </svelte:fragment>
         Following payment of your final invoice, your organization will switch to the {tierToPlan(
-            BillingPlan.STARTER
+            BillingPlan.FREE
         ).name} plan. {#if excess?.members > 0}All team members except the owner will be removed on
             that date.{/if} Service disruptions may occur unless resource usage is reduced.
         <!-- Any executions, bandwidth, or messaging usage will be reset at that time. -->
