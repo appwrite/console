@@ -45,12 +45,7 @@
     import { uploader } from '$lib/stores/uploader';
     import { wizard } from '$lib/stores/wizard';
     import { tooltip } from '$lib/actions/tooltip';
-    import {
-        getServiceLimit,
-        plansInfo,
-        showUsageRatesModal,
-        tierToPlan
-    } from '$lib/stores/billing';
+    import { getServiceLimit, showUsageRatesModal, tierToPlan } from '$lib/stores/billing';
     import { sdk } from '$lib/stores/sdk.js';
     import Create from './create-file/create.svelte';
     import DeleteFile from './deleteFile.svelte';
