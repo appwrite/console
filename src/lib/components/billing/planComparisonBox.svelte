@@ -27,7 +27,7 @@
         {#if selectedTab === 'tier-0'}
             <h3 class="u-bold body-text-1">{plan.name} plan</h3>
             {#if downgrade}
-                <ul class="u-margin-block-start-8 list u-gap-4 u-color-text-offline u-small">
+                <ul class="u-margin-block-start-8 list u-gap-4 u-small">
                     <li class="list-item u-gap-4">
                         <span class="icon-arrow-down u-color-text-danger" aria-hidden="true"></span>
                         <span class="text">
