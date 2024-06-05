@@ -121,7 +121,7 @@
     <PlanSummary />
     <PaymentHistory />
     <PaymentMethods />
-    <BillingAddress billingAddress={data.billingAddress} />
+    <BillingAddress billingAddress={data?.billingAddress} />
     <TaxId />
     <BudgetCap />
     {#if $organization?.billingPlan !== BillingPlan.STARTER && !!$organization?.billingBudget}
