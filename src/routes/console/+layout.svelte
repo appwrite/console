@@ -34,7 +34,6 @@
     import { project } from './project-[project]/store';
     import { feedback } from '$lib/stores/feedback';
     import { VARS, hasStripePublicKey, isCloud } from '$lib/system';
-    import { loadStripe } from '@stripe/stripe-js';
     import { stripe } from '$lib/stores/stripe';
     import MobileSupportModal from './wizard/support/mobileSupportModal.svelte';
     import { showSupportModal } from './wizard/support/store';
@@ -236,6 +235,8 @@
         }, INTERVAL);
 
         if (isCloud && hasStripePublicKey) {
+            const loadStripe = (await import('@stripe/stripe-js')).loadStripe;
+
             $stripe = await loadStripe(VARS.STRIPE_PUBLIC_KEY);
             await checkForMissingPaymentMethod();
         }

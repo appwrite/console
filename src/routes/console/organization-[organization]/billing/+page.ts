@@ -15,10 +15,14 @@ export const load: PageLoad = async ({ parent, depends }) => {
     let billingAddress: Address = null;
     const billingAddressId = (organization as Organization)?.billingAddressId;
     if (billingAddressId) {
-        billingAddress = await sdk.forConsole.billing.getOrganizationBillingAddress(
-            organization.$id,
-            billingAddressId
-        );
+        try {
+            billingAddress = await sdk.forConsole.billing.getOrganizationBillingAddress(
+                organization.$id,
+                billingAddressId
+            );
+        } catch {
+            billingAddress = null;
+        }
     }
 
     return {
