@@ -7,6 +7,8 @@
     export let transparent = false;
     export let noStyles = false;
     export let dense = false;
+    let classes: string = undefined;
+    export { classes as class };
 
     let isOverflowing = false;
 
@@ -43,7 +45,7 @@
     };
 </script>
 
-<div class="table-with-scroll" class:u-margin-block-start-32={!noMargin} data-private>
+<div class="table-with-scroll {classes}" class:u-margin-block-start-32={!noMargin} data-private>
     <div class="table-wrapper" use:hasOverflow={(v) => (isOverflowing = v)}>
         <table
             class="table"

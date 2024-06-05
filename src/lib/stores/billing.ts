@@ -8,7 +8,9 @@ import type {
     Invoice,
     PaymentList,
     PlansMap,
-    PaymentMethodData
+    PaymentMethodData,
+    OrganizationUsage,
+    Plan
 } from '$lib/sdk/billing';
 import { isCloud } from '$lib/system';
 import { cachedStore } from '$lib/helpers/cache';
@@ -25,6 +27,8 @@ import PaymentMandate from '$lib/components/billing/alerts/paymentMandate.svelte
 import MissingPaymentMethod from '$lib/components/billing/alerts/missingPaymentMethod.svelte';
 import LimitReached from '$lib/components/billing/alerts/limitReached.svelte';
 import { trackEvent } from '$lib/actions/analytics';
+import { last } from '$lib/helpers/array';
+import { sizeToBytes, type Size } from '$lib/helpers/sizeConvertion';
 
 export type Tier = 'tier-0' | 'tier-1' | 'tier-2';
 
@@ -198,10 +202,9 @@ export async function checkForUsageLimit(org: Organization) {
         { value: users, name: 'users' }
     ];
 
-    const members = await sdk.forConsole.teams.listMemberships(org.$id);
+    const members = org.total;
     const plan = get(plansInfo)?.get(org.billingPlan);
-    const membersOverflow =
-        members?.total > plan.members ? members.total - (plan.members || members.total) : 0;
+    const membersOverflow = members > plan.members ? members - (plan.members || members) : 0;
 
     if (resources.some((r) => r.value >= 100) || membersOverflow > 0) {
         readOnly.set(true);
@@ -369,3 +372,20 @@ export const upgradeURL = derived(
 );
 
 export const hideBillingHeaderRoutes = ['/console/create-organization', '/console/account'];
+
+export function calculateExcess(usage: OrganizationUsage, plan: Plan, org: Organization) {
+    const totBandwidth = usage?.bandwidth?.length > 0 ? last(usage.bandwidth).value : 0;
+    return {
+        bandwidth: calculateResourceSurplus(totBandwidth, plan.bandwidth),
+        storage: calculateResourceSurplus(usage?.storageTotal, plan.storage, 'GB'),
+        users: calculateResourceSurplus(usage?.usersTotal, plan.users),
+        executions: calculateResourceSurplus(usage?.executionsTotal, plan.executions, 'GB'),
+        members: calculateResourceSurplus(org.total, plan.members)
+    };
+}
+
+export function calculateResourceSurplus(total: number, limit: number, limitUnit: Size = null) {
+    if (total === undefined || limit === undefined) return 0;
+    const realLimit = (limitUnit ? sizeToBytes(limit, limitUnit) : limit) || Infinity;
+    return total > realLimit ? total - realLimit : 0;
+}
