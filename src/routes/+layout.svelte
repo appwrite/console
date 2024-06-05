@@ -82,6 +82,7 @@
                 if (couponData?.campaign && campaigns.has(couponData.campaign)) {
                     if (user) {
                         goto(`${base}/console/apply-credit?code=${code}`);
+                        loading.set(false);
                         return;
                     }
                 }
