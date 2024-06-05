@@ -16,13 +16,13 @@
     import { tooltip } from '$lib/actions/tooltip';
 
     export let columns: Writable<Column[]>;
+    export let columnId: string | null = null;
 
     const dispatch = createEventDispatcher<{
         clear: void;
         apply: { applied: number };
     }>();
 
-    let columnId: string | null = null;
     $: column = $columns.find((c) => c.id === columnId) as Column;
     let arrayValues: string[] = [];
 
@@ -124,9 +124,11 @@
         if (!column || !operator) return;
         if (column.array) {
             queries.addFilter({ column, operator, value: arrayValues });
+            columnId = null;
             arrayValues = [];
         } else {
             queries.addFilter({ column, operator, value: value ?? '' });
+            columnId = null;
             value = null;
         }
     }
