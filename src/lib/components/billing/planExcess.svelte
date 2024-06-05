@@ -61,7 +61,7 @@
             <Button
                 text
                 external
-                href="https://appwrite.io/docs/advanced/platform/starter#reaching-resource-limits">
+                href="https://appwrite.io/docs/advanced/platform/free#reaching-resource-limits">
                 Learn more
             </Button>
         </svelte:fragment>
