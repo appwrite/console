@@ -63,6 +63,7 @@
         <div class="u-margin-block-start-8 u-width-full-line">
             {#key $app.themeInUse}
                 <iframe
+                    style="color-scheme: none"
                     title="Appwrite Status"
                     src={`https://status.appwrite.online/badge?theme=${
                         $app.themeInUse === 'dark' ? 'dark' : 'light'
