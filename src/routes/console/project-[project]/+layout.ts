@@ -6,13 +6,12 @@ import { preferences } from '$lib/stores/preferences';
 import { failedInvoice } from '$lib/stores/billing';
 import { isCloud } from '$lib/system';
 import type { Organization } from '$lib/stores/organization';
-import { errorHandler } from '$lib/helpers/load';
 
 export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.PROJECT);
 
     try {
-        const project = await sdk.forConsole.projects.get(undefined);
+        const project = await sdk.forConsole.projects.get(params.project);
         const prefs = await sdk.forConsole.account.getPrefs();
         const newPrefs = { ...prefs, organization: project.teamId };
         sdk.forConsole.account.updatePrefs(newPrefs);
@@ -27,6 +26,6 @@ export const load: LayoutLoad = async ({ params, depends }) => {
             organization: await (sdk.forConsole.teams.get(project.teamId) as Promise<Organization>)
         };
     } catch (e) {
-        errorHandler(e)
+        error(e.code, e.message);
     }
 };
