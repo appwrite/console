@@ -20,6 +20,5 @@ campaigns
     })
     .set('dealsfordevs', {
         title: 'TODO',
-        description:
-            'TODO'
+        description: 'TODO'
     });
