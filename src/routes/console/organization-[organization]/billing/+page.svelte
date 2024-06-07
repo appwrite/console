@@ -10,7 +10,7 @@
     import PaymentHistory from './paymentHistory.svelte';
     import TaxId from './taxId.svelte';
     import { Alert, Heading } from '$lib/components';
-    import { failedInvoice, paymentMethods, upgradeURL } from '$lib/stores/billing';
+    import { failedInvoice, paymentMethods, tierToPlan, upgradeURL } from '$lib/stores/billing';
     import type { PaymentMethodData } from '$lib/sdk/billing';
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
@@ -111,8 +111,10 @@
     {/if}
     {#if $organization?.billingPlanDowngrade}
         <Alert type="info" class="common-section">
-            Your organization will change to a Starter plan once your current billing cycle ends and
-            your invoice is paid on {toLocaleDate($organization.billingNextInvoiceDate)}.
+            Your organization will change to a {tierToPlan(BillingPlan.FREE).name} plan once your current
+            billing cycle ends and your invoice is paid on {toLocaleDate(
+                $organization.billingNextInvoiceDate
+            )}.
         </Alert>
     {/if}
     <div class="common-section">
@@ -124,7 +126,7 @@
     <BillingAddress billingAddress={data?.billingAddress} />
     <TaxId />
     <BudgetCap />
-    {#if $organization?.billingPlan !== BillingPlan.STARTER && !!$organization?.billingBudget}
+    {#if $organization?.billingPlan !== BillingPlan.FREE && !!$organization?.billingBudget}
         <BudgetAlert />
     {/if}
     <AvailableCredit />

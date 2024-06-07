@@ -310,7 +310,7 @@
                                         <Alert>
                                             Logs are retained in rolling {hoursToDays(limit)} intervals
                                             with the {tier} plan.
-                                            {#if $organization.billingPlan === BillingPlan.STARTER}
+                                            {#if $organization.billingPlan === BillingPlan.FREE}
                                                 <Button link href={$upgradeURL}>Upgrade</Button> to increase
                                                 your log retention for a longer period.
                                             {/if}

@@ -131,7 +131,7 @@
                     class="link">here</a>
             </p>
             <svelte:fragment slot="aside">
-                {#if $organization.billingPlan === BillingPlan.STARTER}
+                {#if $organization.billingPlan === BillingPlan.FREE}
                     <Alert type="info">
                         Custom SMTP is a Pro plan feature. Upgrade to enable custom SMTP sever.
                         <svelte:fragment slot="action">
@@ -205,8 +205,7 @@
             <svelte:fragment slot="actions">
                 <Button
                     submit
-                    disabled={isButtonDisabled ||
-                        $organization.billingPlan === BillingPlan.STARTER}>
+                    disabled={isButtonDisabled || $organization.billingPlan === BillingPlan.FREE}>
                     Update
                 </Button>
             </svelte:fragment>

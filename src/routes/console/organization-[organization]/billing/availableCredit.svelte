@@ -67,12 +67,12 @@
     }
 </script>
 
-<CardGrid hideFooter={$organization?.billingPlan !== BillingPlan.STARTER}>
+<CardGrid hideFooter={$organization?.billingPlan !== BillingPlan.FREE}>
     <Heading tag="h2" size="6">Available credit</Heading>
 
     <p class="text">Appwrite credit will automatically be applied to your next invoice.</p>
     <svelte:fragment slot="aside">
-        {#if $organization?.billingPlan === BillingPlan.STARTER}
+        {#if $organization?.billingPlan === BillingPlan.FREE}
             <Alert type="info">
                 <svelte:fragment slot="title">Upgrade to Pro to add credits</svelte:fragment>
                 Upgrade to a Pro plan to add credits to your organization. For more information on what
@@ -129,7 +129,7 @@
         {/if}
     </svelte:fragment>
     <svelte:fragment slot="actions">
-        {#if $organization?.billingPlan === BillingPlan.STARTER}
+        {#if $organization?.billingPlan === BillingPlan.FREE}
             <Button
                 secondary
                 href={$upgradeURL}

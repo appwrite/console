@@ -30,7 +30,7 @@
 
     <p class="text">The number of members in your organization.</p>
     <svelte:fragment slot="aside">
-        {#if $organization.billingPlan !== BillingPlan.STARTER}
+        {#if $organization.billingPlan !== BillingPlan.FREE}
             <div class="u-flex u-flex-vertical">
                 <div class="u-flex u-main-space-between">
                     <p>

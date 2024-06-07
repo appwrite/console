@@ -26,12 +26,12 @@
     const options = isCloud
         ? [
               {
-                  value: BillingPlan.STARTER,
-                  label: `Starter - ${formatCurrency($plansInfo.get(BillingPlan.STARTER).price)}/month`
+                  value: BillingPlan.FREE,
+                  label: `${tierToPlan(BillingPlan.FREE).name} - ${formatCurrency($plansInfo.get(BillingPlan.FREE).price)}/month`
               },
               {
                   value: BillingPlan.PRO,
-                  label: `Pro - ${formatCurrency($plansInfo.get(BillingPlan.PRO).price)}/month + add-ons`
+                  label: `${tierToPlan(BillingPlan.PRO).name} - ${formatCurrency($plansInfo.get(BillingPlan.PRO).price)}/month + add-ons`
               }
           ]
         : [];
@@ -50,7 +50,7 @@
     async function handleSubmit() {
         const orgName = name?.length ? name : 'Personal Projects';
         if (isCloud) {
-            if (plan === BillingPlan.STARTER) {
+            if (plan === BillingPlan.FREE) {
                 try {
                     const org = await sdk.forConsole.billing.createOrganization(
                         id ?? ID.unique(),

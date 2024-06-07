@@ -58,7 +58,7 @@
                         {isTrial ? formatCurrency(0) : formatCurrency(currentPlan?.price)}
                     </div>
                 </CollapsibleItem>
-                {#if $organization?.billingPlan !== BillingPlan.STARTER && extraUsage}
+                {#if $organization?.billingPlan !== BillingPlan.FREE && extraUsage}
                     <CollapsibleItem isInfo gap={8}>
                         <svelte:fragment slot="beforetitle">
                             <span class="body-text-2"><b>Add-ons</b></span><span class="inline-tag"
@@ -147,7 +147,7 @@
                             }}></span>
                     </span>
                     <div class="body-text-2 u-margin-inline-start-auto">
-                        {$organization?.billingPlan === BillingPlan.STARTER
+                        {$organization?.billingPlan === BillingPlan.FREE
                             ? formatCurrency(0)
                             : formatCurrency(currentInvoice?.amount ?? 0)}
                     </div>
@@ -155,7 +155,7 @@
             </Collapsible>
         </svelte:fragment>
         <svelte:fragment slot="actions">
-            {#if $organization?.billingPlan === BillingPlan.STARTER}
+            {#if $organization?.billingPlan === BillingPlan.FREE}
                 <div class="u-flex u-gap-16 u-flex-wrap">
                     <Button text href={`${base}/console/organization-${$organization?.$id}/usage`}>
                         View estimated usage
