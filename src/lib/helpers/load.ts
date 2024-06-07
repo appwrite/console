@@ -1,5 +1,6 @@
 import { preferences } from '$lib/stores/preferences';
-import type { Page } from '@sveltejs/kit';
+import { AppwriteException } from '@appwrite.io/console';
+import { error, type Page } from '@sveltejs/kit';
 
 export function pageToOffset(page: number, limit: number): number {
     return page ? page * limit - limit : 0;
@@ -57,4 +58,16 @@ export function isTabSelected(
             return pathname.includes(tab.href);
         }
     }
+}
+
+export function errorHandler(e: Error): never {
+    if (!(e instanceof AppwriteException)) {
+        console.log('unknown');
+        throw e;
+    }
+    error(e.code, {
+        code: e.code,
+        message: e.message,
+        type: e.type
+    });
 }

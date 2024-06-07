@@ -17,4 +17,9 @@ campaigns
         title: 'Claim your RenderATL $100 credits',
         description:
             'Get $100 in Cloud credits when you upgrade or create an organization with a Pro plan.'
+    })
+    .set('dealsfordevs', {
+        title: 'TODO',
+        description:
+            'TODO'
     });
