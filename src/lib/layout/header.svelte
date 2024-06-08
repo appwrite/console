@@ -103,7 +103,7 @@
 
 <div class="main-header-end">
     <nav class="u-flex is-only-desktop u-cross-center">
-        {#if isCloud && $organization?.billingPlan === BillingPlan.STARTER && !$page.url.pathname.startsWith('/console/account')}
+        {#if isCloud && $organization?.billingPlan === BillingPlan.FREE && !$page.url.pathname.startsWith('/console/account')}
             <Button
                 disabled={$organization?.markedForDeletion}
                 href={$upgradeURL}

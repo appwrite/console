@@ -149,6 +149,7 @@
                         await goto(`/console/project-${$project.$id}/auth/security#${heading}`);
                         scrollBy({ top: -100 });
                     },
+                    disabled: !$project?.$id,
                     group: 'security',
                     icon: 'pencil'
                 }) as const
@@ -161,7 +162,8 @@
             callback: () => {
                 goto(`/console/project-${$project.$id}/settings`);
             },
-            disabled: isOnSettingsLayout && $page.url.pathname.endsWith('settings'),
+            disabled:
+                !$project?.$id || (isOnSettingsLayout && $page.url.pathname.endsWith('settings')),
             group: isOnSettingsLayout ? 'navigation' : 'settings',
             rank: isOnSettingsLayout ? 40 : -1
         },
@@ -172,7 +174,8 @@
             callback: () => {
                 goto(`/console/project-${$project.$id}/settings/domains`);
             },
-            disabled: isOnSettingsLayout && $page.url.pathname.includes('domains'),
+            disabled:
+                !$project?.$id || (isOnSettingsLayout && $page.url.pathname.includes('domains')),
             group: isOnSettingsLayout ? 'navigation' : 'settings',
             rank: isOnSettingsLayout ? 30 : -1
         },
@@ -182,7 +185,8 @@
             callback: () => {
                 goto(`/console/project-${$project.$id}/settings/webhooks`);
             },
-            disabled: isOnSettingsLayout && $page.url.pathname.includes('webhooks'),
+            disabled:
+                !$project?.$id || (isOnSettingsLayout && $page.url.pathname.includes('webhooks')),
             group: isOnSettingsLayout ? 'navigation' : 'settings',
 
             rank: isOnSettingsLayout ? 20 : -1
@@ -193,7 +197,8 @@
             callback: () => {
                 goto(`/console/project-${$project.$id}/settings/migrations`);
             },
-            disabled: isOnSettingsLayout && $page.url.pathname.includes('migrations'),
+            disabled:
+                !$project?.$id || (isOnSettingsLayout && $page.url.pathname.includes('migrations')),
             group: isOnSettingsLayout ? 'navigation' : 'settings',
 
             rank: isOnSettingsLayout ? 10 : -1
@@ -202,9 +207,10 @@
             label: 'Go to SMTP settings',
             keys: isOnSettingsLayout ? ['g', 's'] : undefined,
             callback: () => {
+                console.log('withing callback of go to smtp');
                 goto(`/console/project-${$project.$id}/settings/smtp`);
             },
-            disabled: isOnSettingsLayout && $page.url.pathname.includes('smtp'),
+            disabled: !$project?.$id || (isOnSettingsLayout && $page.url.pathname.includes('smtp')),
             group: isOnSettingsLayout ? 'navigation' : 'settings',
             rank: -1
         },
@@ -260,7 +266,7 @@
         if (isCloud) {
             await checkForUsageLimit(org);
             checkForMarkedForDeletion(org);
-            if (org?.billingPlan !== BillingPlan.STARTER) {
+            if (org?.billingPlan !== BillingPlan.FREE) {
                 await paymentExpired(org);
                 await checkPaymentAuthorizationRequired(org);
                 await checkForMandate(org);

@@ -40,7 +40,7 @@ export const readOnly = writable<boolean>(false);
 
 export function tierToPlan(tier: Tier) {
     switch (tier) {
-        case BillingPlan.STARTER:
+        case BillingPlan.FREE:
             return tierFree;
         case BillingPlan.PRO:
             return tierPro;
@@ -115,7 +115,7 @@ export type TierData = {
 };
 
 export const tierFree: TierData = {
-    name: 'Starter',
+    name: 'Free',
     description: 'For personal hobby projects of small scale and students.'
 };
 
@@ -171,7 +171,7 @@ export function isServiceLimited(serviceId: PlanServices, plan: Tier, total: num
 }
 
 export function calculateTrialDay(org: Organization) {
-    if (org?.billingPlan === BillingPlan.STARTER) return false;
+    if (org?.billingPlan === BillingPlan.FREE) return false;
     const endDate = new Date(org?.billingStartDate);
     const today = new Date();
 
@@ -185,7 +185,7 @@ export function calculateTrialDay(org: Organization) {
 }
 
 export async function checkForUsageLimit(org: Organization) {
-    if (org?.billingPlan !== BillingPlan.STARTER) {
+    if (org?.billingPlan !== BillingPlan.FREE) {
         readOnly.set(false);
         return;
     }
@@ -221,9 +221,9 @@ export async function checkForUsageLimit(org: Organization) {
         if (now - lastNotification < 1000 * 60 * 60 * 24) return;
 
         localStorage.setItem('limitReachedNotification', now.toString());
-        let message = `<b>${org.name}</b> has reached <b>75%</b> of the Starter plan's ${resources.find((r) => r.value >= 75).name} limit. Upgrade to ensure there are no service disruptions.`;
+        let message = `<b>${org.name}</b> has reached <b>75%</b> of the ${tierToPlan(BillingPlan.FREE).name} plan's ${resources.find((r) => r.value >= 75).name} limit. Upgrade to ensure there are no service disruptions.`;
         if (resources.filter((r) => r.value >= 75)?.length > 1) {
-            message = `Usage for <b>${org.name}</b> has reached 75% of the Starter plan limit. Upgrade to ensure there are no service disruptions.`;
+            message = `Usage for <b>${org.name}</b> has reached 75% of the ${tierToPlan(BillingPlan.FREE).name} plan limit. Upgrade to ensure there are no service disruptions.`;
         }
         addNotification({
             type: 'warning',
@@ -255,7 +255,7 @@ export async function checkForUsageLimit(org: Organization) {
 }
 
 export async function checkPaymentAuthorizationRequired(org: Organization) {
-    if (org.billingPlan === BillingPlan.STARTER) return;
+    if (org.billingPlan === BillingPlan.FREE) return;
 
     const invoices = await sdk.forConsole.billing.listInvoices(org.$id, [
         Query.equal('status', 'requires_authentication')
@@ -351,7 +351,7 @@ export async function checkForMandate(org: Organization) {
 
 export async function checkForMissingPaymentMethod() {
     const orgs = await sdk.forConsole.billing.listOrganization([
-        Query.notEqual('billingPlan', BillingPlan.STARTER),
+        Query.notEqual('billingPlan', BillingPlan.FREE),
         Query.isNull('paymentMethodId'),
         Query.isNull('backupPaymentMethodId')
     ]);

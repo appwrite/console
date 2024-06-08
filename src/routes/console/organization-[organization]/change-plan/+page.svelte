@@ -41,7 +41,7 @@
     export let data;
 
     $: anyOrgFree = $organizationList.teams?.find(
-        (org) => (org as Organization)?.billingPlan === BillingPlan.STARTER
+        (org) => (org as Organization)?.billingPlan === BillingPlan.FREE
     );
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$/i;
     let previousPage: string = `${base}/console`;
@@ -106,7 +106,7 @@
     }
 
     async function handleSubmit() {
-        if (billingPlan === BillingPlan.STARTER) {
+        if (billingPlan === BillingPlan.FREE) {
             await downgrade();
         } else {
             await upgrade();
@@ -237,7 +237,7 @@
 
     $: isUpgrade = billingPlan > $organization.billingPlan;
     $: isDowngrade = billingPlan < $organization.billingPlan;
-    $: freePlan = $plansInfo.get(BillingPlan.STARTER);
+    $: freePlan = $plansInfo.get(BillingPlan.FREE);
     $: proPlan = $plansInfo.get(BillingPlan.PRO);
     $: if (billingPlan === BillingPlan.PRO) {
         loadPaymentMethods();
@@ -266,8 +266,10 @@
             </p>
             {#if anyOrgFree && billingPlan === BillingPlan.PRO}
                 <Alert type="warning" class="u-margin-block-16">
-                    You are limited to one Starter organization per account. Consider upgrading or
-                    deleting <Button link href={`${base}/console/organization-${anyOrgFree.$id}`}
+                    You are limited to one {tierToPlan(BillingPlan.FREE).name} organization per account.
+                    Consider upgrading or deleting <Button
+                        link
+                        href={`${base}/console/organization-${anyOrgFree.$id}`}
                         >{anyOrgFree.name}</Button
                     >.
                 </Alert>
@@ -289,7 +291,7 @@
                                 class:u-opacity-50={disabled}>
                                 <h4 class="body-text-2 u-bold">
                                     {tierFree.name}
-                                    {#if $organization.billingPlan === BillingPlan.STARTER}
+                                    {#if $organization.billingPlan === BillingPlan.FREE}
                                         <span class="inline-tag">Current plan</span>
                                     {/if}
                                 </h4>
@@ -324,7 +326,7 @@
                 </li>
             </ul>
             {#if isDowngrade}
-                <PlanExcess tier={BillingPlan.STARTER} class="u-margin-block-start-24" />
+                <PlanExcess tier={BillingPlan.FREE} class="u-margin-block-start-24" />
             {/if}
             {#if billingPlan === BillingPlan.PRO && $organization.billingPlan !== BillingPlan.PRO}
                 <FormList class="u-margin-block-start-16">
@@ -348,7 +350,7 @@
                     </Button>
                 {/if}
             {/if}
-            {#if !isUpgrade && billingPlan === BillingPlan.STARTER && $organization.billingPlan !== BillingPlan.STARTER}
+            {#if !isUpgrade && billingPlan === BillingPlan.FREE && $organization.billingPlan !== BillingPlan.FREE}
                 <FormList class="u-margin-block-start-16">
                     <InputSelect
                         id="reason"
@@ -366,7 +368,7 @@
             {/if}
         </Form>
         <svelte:fragment slot="aside">
-            {#if billingPlan !== BillingPlan.STARTER && $organization.billingPlan !== BillingPlan.PRO}
+            {#if billingPlan !== BillingPlan.FREE && $organization.billingPlan !== BillingPlan.PRO}
                 <EstimatedTotalBox
                     {billingPlan}
                     {collaborators}

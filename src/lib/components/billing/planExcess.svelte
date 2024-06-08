@@ -19,6 +19,7 @@
     import { onMount } from 'svelte';
     import type { OrganizationUsage } from '$lib/sdk/billing';
     import { sdk } from '$lib/stores/sdk';
+    import { BillingPlan } from '$lib/constants';
 
     export let tier: Tier;
 
@@ -51,15 +52,16 @@
                 $organization.billingNextInvoiceDate
             )}
         </svelte:fragment>
-        Following payment of your final invoice, your organization will switch to the Starter plan. {#if excess?.members > 0}All
-            team members except the owner will be removed on that date.{/if} Service disruptions may
-        occur unless resource usage is reduced.
+        Following payment of your final invoice, your organization will switch to the {tierToPlan(
+            BillingPlan.FREE
+        ).name} plan. {#if excess?.members > 0}All team members except the owner will be removed on
+            that date.{/if} Service disruptions may occur unless resource usage is reduced.
         <!-- Any executions, bandwidth, or messaging usage will be reset at that time. -->
         <svelte:fragment slot="buttons">
             <Button
                 text
                 external
-                href="https://appwrite.io/docs/advanced/platform/starter#reaching-resource-limits">
+                href="https://appwrite.io/docs/advanced/platform/free#reaching-resource-limits">
                 Learn more
             </Button>
         </svelte:fragment>

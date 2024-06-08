@@ -49,9 +49,9 @@
         <Alert type="info">
             <svelte:fragment slot="title">Get ready for Appwrite Pro</svelte:fragment>
             We will soon introduce the much-anticipated Pro plan. Your account will continue to have
-            access to <b>one free Starter organization</b>. If you manage more than one
-            organization, you will need to either upgrade to the Pro plan, transfer your projects to
-            a Pro organization, or migrate to self-hosting.
+            access to <b>one free organization</b>. If you manage more than one organization, you
+            will need to either upgrade to the Pro plan, transfer your projects to a Pro
+            organization, or migrate to self-hosting.
             <svelte:fragment slot="buttons">
                 <Button href="https://appwrite.io/pricing" external text>Learn more</Button>
             </svelte:fragment>
