@@ -16,11 +16,61 @@
 
     const functionId = $page.params.function;
     let runtime: string = null;
+    let memory: number = null;
+    let cpus: number = null;
 
     let options = [];
 
+    let cpuOptions = [
+        {
+            value: 1,
+            label: '1 CPU Core'
+        },
+        {
+            value: 2,
+            label: '2 CPU Cores'
+        },
+        {
+            value: 4,
+            label: '4 CPU Cores'
+        },
+        {
+            value: 8,
+            label: '8 CPU Cores'
+        }
+    ];
+
+    let memoryOptions = [
+        {
+            value: 512,
+            label: '512 MB'
+        },
+        {
+            value: 1024,
+            label: '1 GB'
+        },
+        {
+            value: 2048,
+            label: '2 GB'
+        },
+        {
+            value: 4096,
+            label: '4 GB'
+        },
+        {
+            value: 8192,
+            label: '8 GB'
+        },
+        {
+            value: 16384,
+            label: '16 GB'
+        }
+    ];
+
     onMount(async () => {
         runtime ??= $func.runtime;
+        memory ??= $func.memory;
+        cpus ??= $func.cpus;
 
         let runtimes = await $runtimesList;
         options = runtimes.runtimes.map((runtime) => ({
@@ -50,11 +100,13 @@
                 $func.providerRepositoryId || undefined,
                 $func.providerBranch || undefined,
                 $func.providerSilentMode || undefined,
-                $func.providerRootDirectory || undefined
+                $func.providerRootDirectory || undefined,
+                memory,
+                cpus
             );
             await invalidate(Dependencies.FUNCTION);
             addNotification({
-                message: 'Runtime has been updated',
+                message: 'Runtime settings have been updated',
                 type: 'success'
             });
             trackEvent(Submit.FunctionUpdateName);
@@ -66,6 +118,11 @@
             trackError(error, Submit.FunctionUpdateName);
         }
     }
+
+    $: isUpdateButtonEnabled =
+        runtime !== $func?.runtime ||
+        cpus !== $func?.cpus ||
+        memory !== $func?.memory;
 </script>
 
 <Form onSubmit={updateRuntime}>
@@ -82,11 +139,27 @@
                     {options}
                     required
                     hideRequired />
+                <InputSelect
+                    label="Memory Limit"
+                    id="memory"
+                    placeholder="Select memory"
+                    bind:value={memory}
+                    options={memoryOptions}
+                    required
+                    hideRequired />
+                <InputSelect
+                    label="CPU Limit"
+                    id="cpus"
+                    placeholder="Select cpu cores"
+                    bind:value={cpus}
+                    options={cpuOptions}
+                    required
+                    hideRequired />
             </FormList>
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={runtime === $func.runtime} submit>Update</Button>
+            <Button disabled={!isUpdateButtonEnabled} submit>Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>
