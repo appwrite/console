@@ -287,7 +287,10 @@
     </WizardSecondaryFooter>
     <svelte:fragment slot="exit">
         You can apply your credits to an organization at a later date. All other data entered will
-        be lost. Credits expire {toLocaleDate(data.couponData.expiration)}.
+        be lost.
+        {#if couponData?.expiration}
+            Credits expire {toLocaleDate(couponData.expiration)}.
+        {/if}
     </svelte:fragment>
 </WizardSecondaryContainer>
 
