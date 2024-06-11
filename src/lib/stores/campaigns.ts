@@ -1,6 +1,11 @@
 //campaign welcome and startup
 
-export const campaigns = new Map();
+type CampaignData = {
+    title: string;
+    description: string;
+};
+
+export const campaigns: Map<string, CampaignData> = new Map();
 
 campaigns
     .set('welcome', {

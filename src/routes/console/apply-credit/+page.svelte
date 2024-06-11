@@ -3,7 +3,12 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { EstimatedTotalBox, SelectPaymentMethod } from '$lib/components/billing';
+    import {
+        CreditsApplied,
+        EstimatedTotalBox,
+        SelectPaymentMethod
+    } from '$lib/components/billing';
+    import ValidateCreditModal from '$lib/components/billing/validateCreditModal.svelte';
     import { BillingPlan, Dependencies } from '$lib/constants';
     import { Button, Form, FormList, InputSelect, InputTags, InputText } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
@@ -15,6 +20,7 @@
     } from '$lib/layout';
     import { type PaymentList } from '$lib/sdk/billing';
     import { app } from '$lib/stores/app';
+    import { campaigns } from '$lib/stores/campaigns';
     import { addNotification } from '$lib/stores/notifications';
     import { organizationList, type Organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
@@ -60,6 +66,8 @@
         }
     ];
     let name: string;
+    let showCreditModal = false;
+    let couponData = data?.couponData;
 
     onMount(async () => {
         await loadPaymentMethods();
@@ -156,6 +164,7 @@
     ) as Organization;
 
     $: isButtonDisabled = checkButtonDisabled(selectedOrgId, name, paymentMethodId);
+    $: campaign = campaigns.get(data?.couponData?.campaign ?? data?.campaign);
 
     function checkButtonDisabled(id: string | null, name: string | null, method: string | null) {
         if (id === newOrgId) {
@@ -207,6 +216,15 @@
                         id="members" />
                     <SelectPaymentMethod bind:methods bind:value={paymentMethodId} bind:taxId />
                 {/if}
+                {#if !data?.couponData?.code && selectedOrgId}
+                    <Button
+                        text
+                        noMargin
+                        disabled={!!couponData?.credits}
+                        on:click={() => (showCreditModal = true)}>
+                        <span class="icon-plus"></span> <span class="text">Add credits</span>
+                    </Button>
+                {/if}
             </FormList>
         </Form>
 
@@ -217,11 +235,15 @@
                 <div class="card-bg"></div>
                 <div class="u-flex u-flex-vertical u-gap-24 u-cross-center u-position-relative">
                     <img
-                        src={`/images/campaigns/${data.couponData.campaign}/${$app.themeInUse}.png`}
+                        src={`/images/campaigns/${data?.couponData?.campaign ?? data?.campaign}/${$app.themeInUse}.png`}
                         class="u-block u-image-object-fit-cover card-img"
                         alt="promo" />
                     <p class="text">
-                        {data.campaign.title.replace('VALUE', data.couponData.credits)}
+                        {#if couponData?.credits}
+                            {campaign.title.replace('VALUE', couponData.credits.toString())}
+                        {:else}
+                            {campaign.title}
+                        {/if}
                     </p>
                 </div>
             </div>
@@ -230,17 +252,22 @@
                     class="card u-margin-block-start-24"
                     style:--p-card-padding="1.5rem"
                     style:--p-card-border-radius="var(--border-radius-small)">
-                    <p class="text">
-                        Credits will automatically be applied to your next invoice on <b
-                            >{toLocaleDate(selectedOrg.billingNextInvoiceDate)}.</b>
-                    </p>
+                    {#if couponData?.code && couponData?.status === 'active'}
+                        <CreditsApplied bind:couponData fixedCoupon={!!data?.couponData?.code} />
+                        <p class="text u-margin-block-start-12">
+                            Credits will automatically be applied to your next invoice on <b
+                                >{toLocaleDate(selectedOrg.billingNextInvoiceDate)}.</b>
+                        </p>
+                    {:else}
+                        <p class="text">Add a coupon code to apply credits to your organization.</p>
+                    {/if}
                 </section>
             {:else if selectedOrgId}
                 <EstimatedTotalBox
-                    fixedCoupon
+                    fixedCoupon={!!data?.couponData?.code}
                     billingPlan={BillingPlan.PRO}
                     {collaborators}
-                    bind:couponData={data.couponData}
+                    bind:couponData
                     bind:billingBudget />
             {/if}
         </svelte:fragment>
@@ -263,6 +290,8 @@
         be lost. Credits expire {toLocaleDate(data.couponData.expiration)}.
     </svelte:fragment>
 </WizardSecondaryContainer>
+
+<ValidateCreditModal bind:show={showCreditModal} bind:couponData />
 
 <style lang="scss">
     .card-container {

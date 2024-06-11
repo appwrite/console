@@ -47,6 +47,10 @@
                 await goto(`${base}/console/apply-credit?code=${data?.couponData?.code}`);
                 return;
             }
+            if (data?.campaign) {
+                await goto(`${base}/console/apply-credit?campaign=${data.campaign}`);
+                return;
+            }
             if ($page.url.searchParams) {
                 const redirect = $page.url.searchParams.get('redirect');
                 $page.url.searchParams.delete('redirect');
@@ -93,7 +97,7 @@
     <title>Sign in - Appwrite</title>
 </svelte:head>
 
-<Unauthenticated coupon={data?.couponData}>
+<Unauthenticated coupon={data?.couponData} campaign={data?.campaign}>
     <svelte:fragment slot="title">Sign in</svelte:fragment>
     <svelte:fragment>
         <Form onSubmit={login}>
