@@ -8,7 +8,6 @@
         EstimatedTotalBox,
         SelectPaymentMethod
     } from '$lib/components/billing';
-    import ValidateCreditModal from '$lib/components/billing/validateCreditModal.svelte';
     import { BillingPlan, Dependencies } from '$lib/constants';
     import { Button, Form, FormList, InputSelect, InputTags, InputText } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
@@ -66,7 +65,7 @@
         }
     ];
     let name: string;
-    let showCreditModal = false;
+    let coupon: string;
     let couponData = data?.couponData;
 
     onMount(async () => {
@@ -159,6 +158,23 @@
         }
     }
 
+    async function addCoupon() {
+        try {
+            const response = await sdk.forConsole.billing.getCoupon(coupon);
+            couponData = response;
+            coupon = null;
+            addNotification({
+                type: 'success',
+                message: 'Credits applied successfully'
+            });
+        } catch (e) {
+            addNotification({
+                type: 'error',
+                message: e.message
+            });
+        }
+    }
+
     $: selectedOrg = $organizationList?.teams?.find(
         (team) => team.$id === selectedOrgId
     ) as Organization;
@@ -219,13 +235,16 @@
                     <SelectPaymentMethod bind:methods bind:value={paymentMethodId} bind:taxId />
                 {/if}
                 {#if !data?.couponData?.code && selectedOrgId}
-                    <Button
-                        text
-                        noMargin
+                    <InputText
                         disabled={!!couponData?.credits}
-                        on:click={() => (showCreditModal = true)}>
-                        <span class="icon-plus"></span> <span class="text">Apply coupon code</span>
-                    </Button>
+                        bind:value={coupon}
+                        placeholder="Enter coupon code"
+                        id="code"
+                        label="Coupon code">
+                        <Button secondary disabled={!!couponData?.credits} on:click={addCoupon}>
+                            <span class="text">Apply</span>
+                        </Button>
+                    </InputText>
                 {/if}
             </FormList>
         </Form>
@@ -295,8 +314,6 @@
         {/if}
     </svelte:fragment>
 </WizardSecondaryContainer>
-
-<ValidateCreditModal bind:show={showCreditModal} bind:couponData />
 
 <style lang="scss">
     .card-container {
