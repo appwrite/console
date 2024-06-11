@@ -163,7 +163,9 @@
         (team) => team.$id === selectedOrgId
     ) as Organization;
 
-    $: isButtonDisabled = checkButtonDisabled(selectedOrgId, name, paymentMethodId);
+    $: isButtonDisabled =
+        checkButtonDisabled(selectedOrgId, name, paymentMethodId) ||
+        couponData?.status !== 'active';
     $: campaign = campaigns.get(data?.couponData?.campaign ?? data?.campaign);
 
     function checkButtonDisabled(id: string | null, name: string | null, method: string | null) {
@@ -222,7 +224,7 @@
                         noMargin
                         disabled={!!couponData?.credits}
                         on:click={() => (showCreditModal = true)}>
-                        <span class="icon-plus"></span> <span class="text">Add credits</span>
+                        <span class="icon-plus"></span> <span class="text">Apply coupon code</span>
                     </Button>
                 {/if}
             </FormList>
