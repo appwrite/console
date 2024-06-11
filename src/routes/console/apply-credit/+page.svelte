@@ -169,12 +169,12 @@
 </script>
 
 <svelte:head>
-    <title>Apply credits - Appwrite</title>
+    <title>Get started - Appwrite</title>
 </svelte:head>
 
 <WizardSecondaryContainer href={previousPage} bind:showExitModal>
     <WizardSecondaryHeader confirmExit on:exit={() => (showExitModal = true)}>
-        Apply credits
+        Get started
     </WizardSecondaryHeader>
     <WizardSecondaryContent>
         <Form bind:this={formComponent} onSubmit={handleSubmit} bind:isSubmitting>
@@ -255,7 +255,7 @@
             {#if $isSubmitting}
                 <span class="loader is-small is-transparent u-line-height-1-5" aria-hidden="true" />
             {/if}
-            Apply credits
+            Create Organization
         </Button>
     </WizardSecondaryFooter>
     <svelte:fragment slot="exit">
