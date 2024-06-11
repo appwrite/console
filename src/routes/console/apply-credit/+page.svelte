@@ -112,8 +112,8 @@
             }
 
             // Add coupon
-            if (data.couponData?.code) {
-                await sdk.forConsole.billing.addCredit(org.$id, data.couponData.code);
+            if (couponData?.code) {
+                await sdk.forConsole.billing.addCredit(org.$id, couponData.code);
             }
 
             // Add budget
