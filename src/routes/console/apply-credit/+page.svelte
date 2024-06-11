@@ -140,7 +140,7 @@
                 await sdk.forConsole.billing.updateTaxId(org.$id, taxId);
             }
             trackEvent(Submit.CreditRedeem, {
-                coupon: data.couponData.code
+                coupon: couponData.code
             });
             await invalidate(Dependencies.ORGANIZATION);
             await goto(`/console/organization-${org.$id}`);
