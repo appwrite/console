@@ -234,6 +234,10 @@
                         id="members" />
                     <SelectPaymentMethod bind:methods bind:value={paymentMethodId} bind:taxId />
                 {/if}
+            </FormList>
+        </Form>
+        <Form onSubmit={addCoupon}>
+            <FormList>
                 {#if !data?.couponData?.code && selectedOrgId}
                     <InputText
                         disabled={!!couponData?.credits}
@@ -241,14 +245,13 @@
                         placeholder="Enter coupon code"
                         id="code"
                         label="Coupon code">
-                        <Button secondary disabled={!!couponData?.credits} on:click={addCoupon}>
+                        <Button submit secondary disabled={!!couponData?.credits}>
                             <span class="text">Apply</span>
                         </Button>
                     </InputText>
                 {/if}
             </FormList>
         </Form>
-
         <svelte:fragment slot="aside">
             <div
                 class="box card-container u-position-relative"
