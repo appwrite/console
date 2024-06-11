@@ -17,5 +17,13 @@ export const load = async ({ url }) => {
             redirect(303, `${base}/login`);
         }
     }
+    if (url.searchParams.has('campaign')) {
+        const campaign = url.searchParams.get('campaign');
+        if (campaigns.has(campaign)) {
+            return {
+                campaign
+            };
+        } else redirect(303, `${base}/login`);
+    }
     return;
 };

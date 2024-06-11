@@ -75,8 +75,8 @@
         const pathname = $page.url.pathname;
         const user = $page.data.account as Models.User<Record<string, string>>;
 
-        const code = $page.url.searchParams.get('code');
-        if (code) {
+        if ($page.url.searchParams.has('code')) {
+            const code = $page.url.searchParams.get('code');
             try {
                 const couponData = await sdk.forConsole.billing.getCoupon(code);
                 if (couponData?.campaign && campaigns.has(couponData.campaign)) {
@@ -88,6 +88,16 @@
                 }
             } catch (error) {
                 // Do nothing
+            }
+        }
+        if ($page.url.searchParams.has('campaign')) {
+            const campaign = $page.url.searchParams.get('campaign');
+            if (campaigns.has(campaign)) {
+                if (user) {
+                    goto(`${base}/console/apply-credit?campaign=${campaign}`);
+                    loading.set(false);
+                    return;
+                }
             }
         }
 

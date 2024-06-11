@@ -5,3 +5,4 @@ export { default as UsageRates } from './usageRates.svelte';
 export { default as EstimatedTotalBox } from './estimatedTotalBox.svelte';
 export { default as PlanComparisonBox } from './planComparisonBox.svelte';
 export { default as EmptyCardCloud } from './emptyCardCloud.svelte';
+export { default as CreditsApplied } from './creditsApplied.svelte';

@@ -3,7 +3,11 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { EstimatedTotalBox, SelectPaymentMethod } from '$lib/components/billing';
+    import {
+        CreditsApplied,
+        EstimatedTotalBox,
+        SelectPaymentMethod
+    } from '$lib/components/billing';
     import { BillingPlan, Dependencies } from '$lib/constants';
     import { Button, Form, FormList, InputSelect, InputTags, InputText } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
@@ -15,6 +19,7 @@
     } from '$lib/layout';
     import { type PaymentList } from '$lib/sdk/billing';
     import { app } from '$lib/stores/app';
+    import { campaigns } from '$lib/stores/campaigns';
     import { addNotification } from '$lib/stores/notifications';
     import { organizationList, type Organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
@@ -60,6 +65,8 @@
         }
     ];
     let name: string;
+    let coupon: string;
+    let couponData = data?.couponData;
 
     onMount(async () => {
         await loadPaymentMethods();
@@ -105,8 +112,8 @@
             }
 
             // Add coupon
-            if (data.couponData?.code) {
-                await sdk.forConsole.billing.addCredit(org.$id, data.couponData.code);
+            if (couponData?.code) {
+                await sdk.forConsole.billing.addCredit(org.$id, couponData.code);
             }
 
             // Add budget
@@ -151,11 +158,31 @@
         }
     }
 
+    async function addCoupon() {
+        try {
+            const response = await sdk.forConsole.billing.getCoupon(coupon);
+            couponData = response;
+            coupon = null;
+            addNotification({
+                type: 'success',
+                message: 'Credits applied successfully'
+            });
+        } catch (e) {
+            addNotification({
+                type: 'error',
+                message: e.message
+            });
+        }
+    }
+
     $: selectedOrg = $organizationList?.teams?.find(
         (team) => team.$id === selectedOrgId
     ) as Organization;
 
-    $: isButtonDisabled = checkButtonDisabled(selectedOrgId, name, paymentMethodId);
+    $: isButtonDisabled =
+        checkButtonDisabled(selectedOrgId, name, paymentMethodId) ||
+        couponData?.status !== 'active';
+    $: campaign = campaigns.get(data?.couponData?.campaign ?? data?.campaign);
 
     function checkButtonDisabled(id: string | null, name: string | null, method: string | null) {
         if (id === newOrgId) {
@@ -209,7 +236,22 @@
                 {/if}
             </FormList>
         </Form>
-
+        <Form onSubmit={addCoupon}>
+            <FormList>
+                {#if !data?.couponData?.code && selectedOrgId}
+                    <InputText
+                        disabled={!!couponData?.credits}
+                        bind:value={coupon}
+                        placeholder="Enter coupon code"
+                        id="code"
+                        label="Coupon code">
+                        <Button submit secondary disabled={!!couponData?.credits}>
+                            <span class="text">Apply</span>
+                        </Button>
+                    </InputText>
+                {/if}
+            </FormList>
+        </Form>
         <svelte:fragment slot="aside">
             <div
                 class="box card-container u-position-relative"
@@ -217,11 +259,15 @@
                 <div class="card-bg"></div>
                 <div class="u-flex u-flex-vertical u-gap-24 u-cross-center u-position-relative">
                     <img
-                        src={`/images/campaigns/${data.couponData.campaign}/${$app.themeInUse}.png`}
+                        src={`/images/campaigns/${data?.couponData?.campaign ?? data?.campaign}/${$app.themeInUse}.png`}
                         class="u-block u-image-object-fit-cover card-img"
                         alt="promo" />
                     <p class="text">
-                        {data.campaign.title.replace('VALUE', data.couponData.credits)}
+                        {#if couponData?.credits}
+                            {campaign.title.replace('VALUE', couponData.credits.toString())}
+                        {:else}
+                            {campaign.title}
+                        {/if}
                     </p>
                 </div>
             </div>
@@ -230,17 +276,22 @@
                     class="card u-margin-block-start-24"
                     style:--p-card-padding="1.5rem"
                     style:--p-card-border-radius="var(--border-radius-small)">
-                    <p class="text">
-                        Credits will automatically be applied to your next invoice on <b
-                            >{toLocaleDate(selectedOrg.billingNextInvoiceDate)}.</b>
-                    </p>
+                    {#if couponData?.code && couponData?.status === 'active'}
+                        <CreditsApplied bind:couponData fixedCoupon={!!data?.couponData?.code} />
+                        <p class="text u-margin-block-start-12">
+                            Credits will automatically be applied to your next invoice on <b
+                                >{toLocaleDate(selectedOrg.billingNextInvoiceDate)}.</b>
+                        </p>
+                    {:else}
+                        <p class="text">Add a coupon code to apply credits to your organization.</p>
+                    {/if}
                 </section>
             {:else if selectedOrgId}
                 <EstimatedTotalBox
-                    fixedCoupon
+                    fixedCoupon={!!data?.couponData?.code}
                     billingPlan={BillingPlan.PRO}
                     {collaborators}
-                    bind:couponData={data.couponData}
+                    bind:couponData
                     bind:billingBudget />
             {/if}
         </svelte:fragment>
@@ -260,7 +311,10 @@
     </WizardSecondaryFooter>
     <svelte:fragment slot="exit">
         You can apply your credits to an organization at a later date. All other data entered will
-        be lost. Credits expire {toLocaleDate(data.couponData.expiration)}.
+        be lost.
+        {#if couponData?.expiration}
+            Credits expire {toLocaleDate(couponData.expiration)}.
+        {/if}
     </svelte:fragment>
 </WizardSecondaryContainer>
 

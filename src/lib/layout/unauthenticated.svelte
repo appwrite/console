@@ -12,10 +12,27 @@
     export const imgLight = LoginLight;
     export const imgDark = LoginDark;
 
+    export let campaign: string = null;
     export let coupon: Coupon = null;
 
-    $: variation = coupon?.code ? 'card' : 'default';
-    $: campaign = campaigns.get(coupon?.campaign);
+    $: variation = coupon?.campaign ?? campaign ? 'card' : 'default';
+    $: selectedCampaign = campaigns.get(coupon?.campaign ?? campaign);
+
+    function generateTitle() {
+        if (coupon?.credits) {
+            return selectedCampaign.title.replace('VALUE', coupon.credits.toString());
+        } else {
+            return selectedCampaign.title;
+        }
+    }
+
+    function generateDesc() {
+        if (coupon?.credits) {
+            return selectedCampaign.description.replace('VALUE', coupon.credits.toString());
+        } else {
+            return selectedCampaign.description;
+        }
+    }
 </script>
 
 <main class="grid-1-1 is-full-page" id="main">
@@ -58,7 +75,7 @@
             <div
                 class="u-flex u-flex-vertical u-main-center u-cross-center u-height-100-percent u-width-full-line">
                 <img
-                    src={`/images/campaigns/${coupon.campaign}/${$app.themeInUse}.png`}
+                    src={`/images/campaigns/${coupon?.campaign ?? campaign}/${$app.themeInUse}.png`}
                     class="u-block u-image-object-fit-cover side-bg-img"
                     alt="promo" />
 
@@ -70,7 +87,7 @@
                             class="u-margin-block-start-16"
                             trimmed={false}
                             style="font-weight:normal">
-                            {campaign.title.replace('VALUE', coupon.credits)}
+                            {generateTitle()}
                         </Heading>
                     </div>
                     <div class="is-not-mobile u-width-full-line">
@@ -80,11 +97,11 @@
                             class="u-margin-block-start-32"
                             trimmed={false}
                             style="font-weight:normal">
-                            {campaign.title.replace('VALUE', coupon.credits)}
+                            {generateTitle()}
                         </Heading>
                     </div>
                     <p class="u-margin-block-start-16 auth-container">
-                        {campaign.description.replace('VALUE', coupon.credits)}
+                        {generateDesc()}
                     </p>
                 </div>
             </div>
