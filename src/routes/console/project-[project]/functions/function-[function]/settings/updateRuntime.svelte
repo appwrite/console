@@ -10,7 +10,7 @@
     import { onMount } from 'svelte';
     import { func } from '../store';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
-    import { runtimesList } from '../../store';
+    import { runtimesList, specs } from '../../store';
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { Runtime } from '@appwrite.io/console';
 
@@ -20,52 +20,8 @@
     let cpus: number = null;
 
     let options = [];
-
-    let cpuOptions = [
-        {
-            value: 1,
-            label: '1 CPU Core'
-        },
-        {
-            value: 2,
-            label: '2 CPU Cores'
-        },
-        {
-            value: 4,
-            label: '4 CPU Cores'
-        },
-        {
-            value: 8,
-            label: '8 CPU Cores'
-        }
-    ];
-
-    let memoryOptions = [
-        {
-            value: 512,
-            label: '512 MB'
-        },
-        {
-            value: 1024,
-            label: '1 GB'
-        },
-        {
-            value: 2048,
-            label: '2 GB'
-        },
-        {
-            value: 4096,
-            label: '4 GB'
-        },
-        {
-            value: 8192,
-            label: '8 GB'
-        },
-        {
-            value: 16384,
-            label: '16 GB'
-        }
-    ];
+    let cpuOptions = [];
+    let memoryOptions = [];
 
     onMount(async () => {
         runtime ??= $func.runtime;
@@ -73,9 +29,27 @@
         cpus ??= $func.cpus;
 
         let runtimes = await $runtimesList;
+        let specs = await $specs;
         options = runtimes.runtimes.map((runtime) => ({
             label: `${runtime.name} - ${runtime.version}`,
             value: runtime.$id
+        }));
+
+        memoryOptions = specs.memory.map((memory) =>
+            memory > 1024
+                ? {
+                      label: `${memory / 1024} GB`,
+                      value: memory
+                  }
+                : {
+                      label: `${memory} MB`,
+                      value: memory
+                  }
+        );
+
+        cpuOptions = specs.cpus.map((cpu) => ({
+            label: cpu === 1 ? `${cpu} CPU Cores` : `${cpu} CPU Core`,
+            value: cpu
         }));
     });
 
@@ -120,9 +94,7 @@
     }
 
     $: isUpdateButtonEnabled =
-        runtime !== $func?.runtime ||
-        cpus !== $func?.cpus ||
-        memory !== $func?.memory;
+        runtime !== $func?.runtime || cpus !== $func?.cpus || memory !== $func?.memory;
 </script>
 
 <Form onSubmit={updateRuntime}>
