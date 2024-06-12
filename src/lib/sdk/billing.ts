@@ -64,6 +64,7 @@ export type Coupon = {
     expiration: string;
     status: string; // 'active' | 'disabled' | 'expired'
     validity: number;
+    campaign?: string;
 };
 
 export type Credit = {

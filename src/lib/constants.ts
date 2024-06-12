@@ -367,7 +367,7 @@ export const eventServices: Array<EventService> = [
 ];
 
 export enum BillingPlan {
-    STARTER = 'tier-0',
+    FREE = 'tier-0',
     PRO = 'tier-1',
     SCALE = 'tier-2'
 }
@@ -387,7 +387,7 @@ export const feedbackDowngradeOptions = [
     },
     {
         value: 'starter',
-        label: 'The Starter plan is enough for my projects'
+        label: 'The Free plan is enough for my projects'
     },
     {
         value: 'budget',

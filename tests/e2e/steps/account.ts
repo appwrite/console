@@ -10,7 +10,7 @@ export function registerUserStep(page: Page): Promise<Metadata> {
     return test.step('register user', async () => {
         const seed = crypto.randomUUID();
         await page.goto('/register');
-        await page.getByRole('button', { name: 'only required' }).click();
+        // await page.getByRole('button', { name: 'only required' }).click();
         const inputs = {
             name: page.locator('id=name'),
             email: page.locator('id=email'),

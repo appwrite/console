@@ -9,12 +9,14 @@
     import { organization } from '$lib/stores/organization';
 </script>
 
-{#if $organization?.$id && $organization?.billingPlan === BillingPlan.STARTER && $readOnly && !hideBillingHeaderRoutes.includes($page.url.pathname)}
+{#if $organization?.$id && $organization?.billingPlan === BillingPlan.FREE && $readOnly && !hideBillingHeaderRoutes.includes($page.url.pathname)}
     <HeaderAlert
         type="error"
         title={`${$organization.name} usage has reached the ${tierToPlan($organization.billingPlan).name} plan limit`}>
         <svelte:fragment>
-            Usage for the <b>{$organization.name}</b> organization has reached the limits of the Starter
+            Usage for the <b>{$organization.name}</b> organization has reached the limits of the {tierToPlan(
+                $organization.billingPlan
+            ).name}
             plan. Consider upgrading to increase your resource usage.
         </svelte:fragment>
         <svelte:fragment slot="buttons">

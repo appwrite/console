@@ -13,6 +13,7 @@
     export let fullWidth = false;
     export let wrapperFullWidth = false;
     export let position: 'relative' | 'static' = 'relative';
+    export let noMaxWidthList = false;
 </script>
 
 <Drop
@@ -35,6 +36,7 @@
             }`}>
             {#if $$slots.list}
                 <section
+                    class:u-max-width-none={noMaxWidthList}
                     class:u-overflow-y-auto={scrollable}
                     class:u-max-height-200={scrollable}
                     class="drop-section">

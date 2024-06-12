@@ -2,11 +2,12 @@
     import { trackEvent } from '$lib/actions/analytics';
     import { Heading } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import WizardExitModal from './wizardExitModal.svelte';
+    import { createEventDispatcher } from 'svelte';
 
-    let show = false;
-    export let showExitModal = false;
-    export let href: string;
+    export let confirmExit = false;
+    export let href = '';
+
+    const dispatch = createEventDispatcher();
 </script>
 
 <header class="wizard-secondary-header">
@@ -15,12 +16,11 @@
         <Button
             text
             round
-            class="u-margin-block-start-8"
             ariaLabel="close modal"
-            href={showExitModal ? null : href}
+            href={confirmExit ? null : href}
             on:click={() => {
-                if (showExitModal) {
-                    show = true;
+                if (confirmExit) {
+                    dispatch('exit');
                 } else {
                     trackEvent('wizard_exit', {
                         from: 'button'
@@ -34,16 +34,3 @@
         <p class="body-text-2"><slot name="description" /></p>
     {/if}
 </header>
-
-{#if show}
-    <WizardExitModal
-        {href}
-        bind:show
-        on:exit={() => {
-            trackEvent('wizard_exit', {
-                from: 'prompt'
-            });
-        }}>
-        <slot name="exit">this process</slot>
-    </WizardExitModal>
-{/if}

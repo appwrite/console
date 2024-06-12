@@ -46,7 +46,7 @@
     <div class="u-flex u-cross-center u-main-space-between">
         <Heading tag="h2" size="5">Usage</Heading>
 
-        {#if $organization?.billingPlan === BillingPlan.STARTER}
+        {#if $organization?.billingPlan === BillingPlan.FREE}
             <Button
                 href={$upgradeURL}
                 on:click={() => {
@@ -76,7 +76,7 @@
                     class="link"
                     type="button">Learn more about plan usage limits.</button>
             </p>
-        {:else if $organization.billingPlan === BillingPlan.STARTER}
+        {:else if $organization.billingPlan === BillingPlan.FREE}
             <p class="text">
                 If you exceed the limits of the {plan} plan, services for your organization's projects
                 may be disrupted.

@@ -14,7 +14,7 @@
         <SecondaryTabsItem
             disabled={selectedTab === 'tier-0'}
             on:click={() => (selectedTab = 'tier-0')}>
-            Starter
+            Free
         </SecondaryTabsItem>
         <SecondaryTabsItem
             disabled={selectedTab === 'tier-1'}
@@ -89,7 +89,7 @@
         {:else if selectedTab === 'tier-1'}
             <h3 class="u-bold body-text-1">{plan.name} plan</h3>
             <ul class="un-order-list u-margin-block-start-8">
-                <li>Everything in the Starter plan, plus:</li>
+                <li>Everything in the Free plan, plus:</li>
                 <li>Unlimited databases, buckets, functions</li>
                 <li>{plan.bandwidth}GB bandwidth</li>
                 <li>{plan.storage}GB storage</li>
