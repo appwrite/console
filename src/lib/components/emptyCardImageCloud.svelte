@@ -6,6 +6,7 @@
     import Card from './card.svelte';
 
     export let source = 'empty_state_card';
+    export let noAspectRatio = false;
 </script>
 
 <Card style="--card-padding:1.5rem; --card-padding-mobile: 2rem">
@@ -14,7 +15,8 @@
             <div class="u-stretch">
                 <div
                     style:--p-file-preview-border-color="transparent"
-                    class="file-preview is-full-cover-image u-width-full-line u-height-100-percent">
+                    class="file-preview is-full-cover-image u-width-full-line u-height-100-percent"
+                    style={noAspectRatio ? 'aspect-ratio: auto' : ''}>
                     <slot name="image" />
                 </div>
             </div>

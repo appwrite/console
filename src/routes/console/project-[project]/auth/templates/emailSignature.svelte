@@ -12,7 +12,7 @@
     <p class="text">Enable or disable Appwrite branding in your email template signature.</p>
 
     <svelte:fragment slot="aside">
-        <EmptyCardImageCloud source="email_signature_card" let:nextTier>
+        <EmptyCardImageCloud source="email_signature_card" let:nextTier noAspectRatio>
             <svelte:fragment slot="image">
                 <div class=" is-only-mobile u-width-full-line u-height-100-percent">
                     {#if $app.themeInUse === 'dark'}
@@ -33,14 +33,14 @@
                             src={EmailDark}
                             width="266"
                             height="171"
-                            class="u-image-object-fit-cover u-block u-only-dark u-width-full-line u-height-100-percent"
+                            class="u-image-object-fit-contain u-block u-only-dark u-width-full-line u-height-100-percent"
                             alt="Email Signature Example" />
                     {:else}
                         <img
                             src={EmailLight}
                             width="266"
                             height="171"
-                            class="u-image-object-fit-cover u-only-light u-width-full-line u-height-100-percent"
+                            class="u-image-object-fit-contain u-only-light u-width-full-line u-height-100-percent"
                             alt="Email Signature Example" />
                     {/if}
                 </div>
