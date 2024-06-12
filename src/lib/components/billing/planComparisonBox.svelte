@@ -28,30 +28,30 @@
             <h3 class="u-bold body-text-1">{plan.name} plan</h3>
             {#if downgrade}
                 <ul class="u-margin-block-start-8 list u-gap-4 u-small">
-                    <li class="list-item u-gap-4">
+                    <li class="list-item u-gap-4 u-cross-center">
                         <span class="icon-arrow-down u-color-text-danger" aria-hidden="true"></span>
                         <span class="text">
                             Limited to {plan.databases} Database, {plan.buckets} Buckets, {plan.functions}
                             Functions per project
                         </span>
                     </li>
-                    <li class="list-item u-gap-4">
+                    <li class="list-item u-gap-4 u-cross-center">
                         <span class="icon-arrow-down u-color-text-danger" aria-hidden="true"></span>
                         <span class="text"> Limited to 1 organization member </span>
                     </li>
-                    <li class="list-item u-gap-4">
+                    <li class="list-item u-gap-4 u-cross-center">
                         <span class="icon-arrow-down u-color-text-danger" aria-hidden="true"></span>
                         <span class="text">
                             {plan.bandwidth}GB bandwidth
                         </span>
                     </li>
-                    <li class="list-item u-gap-4">
+                    <li class="list-item u-gap-4 u-cross-center">
                         <span class="icon-arrow-down u-color-text-danger" aria-hidden="true"></span>
                         <span class="text">
                             {plan.storage}GB storage
                         </span>
                     </li>
-                    <li class="list-item u-gap-4">
+                    <li class="list-item u-gap-4 u-cross-center">
                         <span class="icon-arrow-down u-color-text-danger" aria-hidden="true"></span>
                         <span class="text">
                             {formatNum(plan.executions)} executions
