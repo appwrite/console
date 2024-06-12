@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Button, InputChoice, InputSelectSearch, InputText } from '$lib/elements/forms';
+    import { Button, Helper, InputChoice, InputSelectSearch, InputText } from '$lib/elements/forms';
     import type { PaymentList, PaymentMethodData } from '$lib/sdk/billing';
     import { sdk } from '$lib/stores/sdk';
     import { hasStripePublicKey, isCloud } from '$lib/system';
@@ -14,6 +14,18 @@
 
     let showTaxId = false;
     let showPaymentModal = false;
+    let input: HTMLInputElement;
+    let error: string;
+
+    const handleInvalid = (event: Event) => {
+        event.preventDefault();
+
+        if (input.validity.valueMissing) {
+            error = 'This field is required';
+            return;
+        }
+        error = input.validationMessage;
+    };
 
     async function cardSaved(event: CustomEvent<PaymentMethodData>) {
         value = event.detail.$id;
@@ -85,22 +97,33 @@
         </svelte:fragment>
     </InputSelectSearch>
 {:else}
-    <Card
-        isDashed
-        style="--p-card-padding:0.75rem; --p-card-bg-color: transparent; --p-card-border-radius: 0.5rem"
-        isTile>
-        <div class="u-flex u-main-space-between u-cross-center">
-            <p class="u-flex u-gap-8 u-cross-center">
-                <span
-                    class="icon-exclamation u-color-text-warning"
-                    style:font-size="var(--icon-size-medium)"></span>
-                <span class="text">A payment method is required</span>
-            </p>
-            <Button secondary on:click={() => (showPaymentModal = true)}>
-                <span class="icon-plus"></span> <span class="text">Add</span>
-            </Button>
-        </div>
-    </Card>
+    <div>
+        <input
+            bind:this={input}
+            on:invalid={handleInvalid}
+            required
+            class="u-hide"
+            type="text"
+            name="method"
+            id="method" />
+        <Card
+            isDashed
+            style="--p-card-padding:0.75rem; --p-card-bg-color: transparent; --p-card-border-radius: 0.5rem"
+            isTile>
+            <div class="u-flex u-main-space-between u-cross-center">
+                <p>
+                    <span class="icon-exclamation-circle"></span>
+                    <span class="text">No saved payment methods</span>
+                </p>
+                <Button secondary on:click={() => (showPaymentModal = true)}>
+                    <span class="icon-plus"></span> <span class="text">Add</span>
+                </Button>
+            </div>
+        </Card>
+        {#if error}
+            <Helper class="u-position-relative" type="warning">{error}</Helper>
+        {/if}
+    </div>
 {/if}
 
 {#if showPaymentModal && isCloud && hasStripePublicKey}
