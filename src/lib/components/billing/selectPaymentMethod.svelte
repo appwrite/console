@@ -17,7 +17,7 @@
     let input: HTMLInputElement;
     let error: string;
 
-    const handleInvalid = (event: Event) => {
+    function handleInvalid(event: Event) {
         event.preventDefault();
 
         if (input.validity.valueMissing) {
@@ -25,7 +25,7 @@
             return;
         }
         error = input.validationMessage;
-    };
+    }
 
     async function cardSaved(event: CustomEvent<PaymentMethodData>) {
         value = event.detail.$id;
