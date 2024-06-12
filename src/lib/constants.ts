@@ -343,11 +343,31 @@ export const eventServices: Array<EventService> = [
             { name: 'update', attributes: ['email', 'name', 'password', 'status', 'prefs'] },
             { name: 'delete' }
         ]
+    },
+    {
+        name: 'providers',
+        resources: [],
+        actions: [{ name: 'create' }, { name: 'update' }, { name: 'delete' }]
+    },
+    {
+        name: 'topics',
+        resources: [
+            {
+                name: 'subscribers',
+                actions: [{ name: 'create' }, { name: 'delete' }]
+            }
+        ],
+        actions: [{ name: 'create' }, { name: 'update' }, { name: 'delete' }]
+    },
+    {
+        name: 'messages',
+        resources: [],
+        actions: [{ name: 'create' }, { name: 'update' }, { name: 'delete' }]
     }
 ];
 
 export enum BillingPlan {
-    STARTER = 'tier-0',
+    FREE = 'tier-0',
     PRO = 'tier-1',
     SCALE = 'tier-2'
 }
@@ -367,7 +387,7 @@ export const feedbackDowngradeOptions = [
     },
     {
         value: 'starter',
-        label: 'The Starter plan is enough for my projects'
+        label: 'The Free plan is enough for my projects'
     },
     {
         value: 'budget',

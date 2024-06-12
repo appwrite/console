@@ -9,6 +9,7 @@
         PlanComparisonBox,
         SelectPaymentMethod
     } from '$lib/components/billing';
+    import PlanExcess from '$lib/components/billing/planExcess.svelte';
     import ValidateCreditModal from '$lib/components/billing/validateCreditModal.svelte';
     import { BillingPlan, Dependencies, feedbackDowngradeOptions } from '$lib/constants';
     import {
@@ -40,11 +41,11 @@
     export let data;
 
     $: anyOrgFree = $organizationList.teams?.find(
-        (org) => (org as Organization)?.billingPlan === BillingPlan.STARTER
+        (org) => (org as Organization)?.billingPlan === BillingPlan.FREE
     );
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$/i;
     let previousPage: string = `${base}/console`;
-
+    let showExitModal = false;
     afterNavigate(({ from }) => {
         previousPage = from?.url?.pathname || previousPage;
     });
@@ -73,8 +74,8 @@
     let feedbackMessage: string;
 
     onMount(async () => {
-        if ($page.url.searchParams.has('coupon')) {
-            const coupon = $page.url.searchParams.get('coupon');
+        if ($page.url.searchParams.has('code')) {
+            const coupon = $page.url.searchParams.get('code');
             try {
                 const response = await sdk.forConsole.billing.getCoupon(coupon);
                 couponData = response;
@@ -105,7 +106,7 @@
     }
 
     async function handleSubmit() {
-        if (billingPlan === BillingPlan.STARTER) {
+        if (billingPlan === BillingPlan.FREE) {
             await downgrade();
         } else {
             await upgrade();
@@ -235,7 +236,8 @@
     }
 
     $: isUpgrade = billingPlan > $organization.billingPlan;
-    $: freePlan = $plansInfo.get(BillingPlan.STARTER);
+    $: isDowngrade = billingPlan < $organization.billingPlan;
+    $: freePlan = $plansInfo.get(BillingPlan.FREE);
     $: proPlan = $plansInfo.get(BillingPlan.PRO);
     $: if (billingPlan === BillingPlan.PRO) {
         loadPaymentMethods();
@@ -252,8 +254,9 @@
     <title>Change plan - Appwrite</title>
 </svelte:head>
 
-<WizardSecondaryContainer>
-    <WizardSecondaryHeader href={previousPage} showExitModal>Change plan</WizardSecondaryHeader>
+<WizardSecondaryContainer bind:showExitModal href={previousPage}>
+    <WizardSecondaryHeader confirmExit on:exit={() => (showExitModal = true)}
+        >Change plan</WizardSecondaryHeader>
     <WizardSecondaryContent>
         <Form bind:this={formComponent} onSubmit={handleSubmit} bind:isSubmitting>
             <Label class="label u-margin-block-start-16">Select plan</Label>
@@ -263,8 +266,10 @@
             </p>
             {#if anyOrgFree && billingPlan === BillingPlan.PRO}
                 <Alert type="warning" class="u-margin-block-16">
-                    You are limited to one Starter organization per account. Consider upgrading or
-                    deleting <Button link href={`${base}/console/organization-${anyOrgFree.$id}`}
+                    You are limited to one {tierToPlan(BillingPlan.FREE).name} organization per account.
+                    Consider upgrading or deleting <Button
+                        link
+                        href={`${base}/console/organization-${anyOrgFree.$id}`}
                         >{anyOrgFree.name}</Button
                     >.
                 </Alert>
@@ -276,8 +281,8 @@
                     <LabelCard
                         name="plan"
                         bind:group={billingPlan}
-                        value="tier-0"
                         disabled={!!anyOrgFree}
+                        value="tier-0"
                         tooltipShow={!!anyOrgFree}
                         tooltipText="You are limited to 1 Free organization per account.">
                         <svelte:fragment slot="custom" let:disabled>
@@ -286,7 +291,7 @@
                                 class:u-opacity-50={disabled}>
                                 <h4 class="body-text-2 u-bold">
                                     {tierFree.name}
-                                    {#if $organization.billingPlan === BillingPlan.STARTER}
+                                    {#if $organization.billingPlan === BillingPlan.FREE}
                                         <span class="inline-tag">Current plan</span>
                                     {/if}
                                 </h4>
@@ -320,6 +325,9 @@
                     </LabelCard>
                 </li>
             </ul>
+            {#if isDowngrade}
+                <PlanExcess tier={BillingPlan.FREE} class="u-margin-block-start-24" />
+            {/if}
             {#if billingPlan === BillingPlan.PRO && $organization.billingPlan !== BillingPlan.PRO}
                 <FormList class="u-margin-block-start-16">
                     <InputTags
@@ -342,7 +350,7 @@
                     </Button>
                 {/if}
             {/if}
-            {#if !isUpgrade && billingPlan === BillingPlan.STARTER && $organization.billingPlan !== BillingPlan.STARTER}
+            {#if !isUpgrade && billingPlan === BillingPlan.FREE && $organization.billingPlan !== BillingPlan.FREE}
                 <FormList class="u-margin-block-start-16">
                     <InputSelect
                         id="reason"
@@ -360,7 +368,7 @@
             {/if}
         </Form>
         <svelte:fragment slot="aside">
-            {#if billingPlan !== BillingPlan.STARTER && $organization.billingPlan !== BillingPlan.PRO}
+            {#if billingPlan !== BillingPlan.FREE && $organization.billingPlan !== BillingPlan.PRO}
                 <EstimatedTotalBox
                     {billingPlan}
                     {collaborators}
@@ -373,7 +381,7 @@
     </WizardSecondaryContent>
 
     <WizardSecondaryFooter>
-        <Button fullWidthMobile href={`${base}/console`} secondary>Cancel</Button>
+        <Button fullWidthMobile secondary on:click={() => (showExitModal = true)}>Cancel</Button>
         <Button
             fullWidthMobile
             on:click={() => formComponent.triggerSubmit()}

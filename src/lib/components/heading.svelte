@@ -8,12 +8,14 @@
     export let id: string = null;
     let classes = '';
     export { classes as class };
+    export let style = '';
 </script>
 
 <svelte:element
     this={tag}
     class={`heading-level-${size} u-min-width-0 ${classes}`}
     class:u-trim-1={trimmed}
+    {style}
     {id}>
     <slot />
 </svelte:element>

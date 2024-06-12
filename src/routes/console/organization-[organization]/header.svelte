@@ -107,10 +107,10 @@
                             <span class="u-trim">
                                 {$organization.name}
                             </span>
-                            {#if isCloud && $organization?.billingPlan === BillingPlan.STARTER}
+                            {#if isCloud && $organization?.billingPlan === BillingPlan.FREE}
                                 <Pill>FREE</Pill>
                             {/if}
-                            {#if isCloud && $organization?.billingTrialStartDate && $daysLeftInTrial > 0 && $organization.billingPlan !== BillingPlan.STARTER && $plansInfo.get($organization.billingPlan)?.trialDays}
+                            {#if isCloud && $organization?.billingTrialStartDate && $daysLeftInTrial > 0 && $organization.billingPlan !== BillingPlan.FREE && $plansInfo.get($organization.billingPlan)?.trialDays}
                                 <div
                                     class="u-flex u-cross-center"
                                     use:tooltip={{
@@ -153,7 +153,7 @@
                     <div
                         use:tooltip={{
                             content:
-                                $organization?.billingPlan === BillingPlan.STARTER
+                                $organization?.billingPlan === BillingPlan.FREE
                                     ? `Upgrade to add more members`
                                     : `You've reached the members limit for the ${
                                           tierToPlan($organization?.billingPlan)?.name

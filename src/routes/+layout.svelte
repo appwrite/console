@@ -12,9 +12,9 @@
     import Loading from './loading.svelte';
     import { loading, requestedMigration } from './store';
     import { parseIfString } from '$lib/helpers/object';
-    import Consent from '$lib/components/consent.svelte';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
+    import { campaigns } from '$lib/stores/campaigns';
 
     onMount(async () => {
         // handle sources
@@ -75,6 +75,32 @@
         const pathname = $page.url.pathname;
         const user = $page.data.account as Models.User<Record<string, string>>;
 
+        if ($page.url.searchParams.has('code')) {
+            const code = $page.url.searchParams.get('code');
+            try {
+                const couponData = await sdk.forConsole.billing.getCoupon(code);
+                if (couponData?.campaign && campaigns.has(couponData.campaign)) {
+                    if (user) {
+                        goto(`${base}/console/apply-credit?code=${code}`);
+                        loading.set(false);
+                        return;
+                    }
+                }
+            } catch (error) {
+                // Do nothing
+            }
+        }
+        if ($page.url.searchParams.has('campaign')) {
+            const campaign = $page.url.searchParams.get('campaign');
+            if (campaigns.has(campaign)) {
+                if (user) {
+                    goto(`${base}/console/apply-credit?campaign=${campaign}`);
+                    loading.set(false);
+                    return;
+                }
+            }
+        }
+
         if (shouldRedirect(pathname, authenticationRoutes)) {
             if (user?.$id) {
                 if (shouldRedirect(pathname, acceptedAuthenticatedRoutes)) {
@@ -122,9 +148,9 @@
 </script>
 
 <Notifications />
-{#if isCloud}
+<!-- {#if isCloud}
     <Consent />
-{/if}
+{/if} -->
 
 <slot />
 

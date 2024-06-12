@@ -1,20 +1,53 @@
 <script lang="ts">
+    import { Heading } from '$lib/components';
     import AppwriteLogoDark from '$lib/images/appwrite-logo-dark.svg';
     import AppwriteLogoLight from '$lib/images/appwrite-logo-light.svg';
     import LoginDark from '$lib/images/login/login-dark-mode.png';
     import LoginLight from '$lib/images/login/login-light-mode.png';
+    import type { Coupon } from '$lib/sdk/billing';
     import { app } from '$lib/stores/app';
+    import { campaigns } from '$lib/stores/campaigns';
     import { user } from '$lib/stores/user';
 
     export const imgLight = LoginLight;
     export const imgDark = LoginDark;
+
+    export let campaign: string = null;
+    export let coupon: Coupon = null;
+
+    $: variation = coupon?.campaign ?? campaign ? 'card' : 'default';
+    $: selectedCampaign = campaigns.get(coupon?.campaign ?? campaign);
+
+    function generateTitle() {
+        if (coupon?.credits) {
+            return selectedCampaign.title.replace('VALUE', coupon.credits.toString());
+        } else {
+            return selectedCampaign.title;
+        }
+    }
+
+    function generateDesc() {
+        if (coupon?.credits) {
+            return selectedCampaign.description.replace('VALUE', coupon.credits.toString());
+        } else {
+            return selectedCampaign.description;
+        }
+    }
 </script>
 
 <main class="grid-1-1 is-full-page" id="main">
     <section
-        class="u-flex u-flex-vertical"
-        style:--url={`url(${$app.themeInUse === 'dark' ? imgDark : imgLight})`}>
-        <div class="logo u-flex u-gap-16 is-not-mobile">
+        class={`u-flex u-flex-vertical ${variation === 'card' ? 'u-cross-center u-main-center u-height-100-percent u-width-full-line side-bg' : 'side-default'}`}
+        style:--url={variation === 'card'
+            ? ''
+            : `url(${$app.themeInUse === 'dark' ? imgDark : imgLight})`}>
+        {#if variation === 'card'}
+            <div class="side-bg-container" />
+        {/if}
+        <div
+            class="logo u-flex u-gap-16"
+            class:is-not-mobile={variation === 'default'}
+            class:logo-variation={variation === 'card'}>
             <a href={user ? '/console' : '/'}>
                 {#if $app.themeInUse === 'dark'}
                     <img
@@ -32,20 +65,58 @@
             </a>
         </div>
 
-        <div class="u-flex u-stretch" />
+        {#if variation === 'default'}
+            <div class="u-flex u-stretch" />
 
-        <div class="tag-line is-not-mobile">
-            <p>Build like a team of hundreds<span class="underscore">_</span></p>
-        </div>
+            <div class="tag-line is-not-mobile">
+                <p>Build like a team of hundreds<span class="underscore">_</span></p>
+            </div>
+        {:else if variation === 'card'}
+            <div
+                class="u-flex u-flex-vertical u-main-center u-cross-center u-height-100-percent u-width-full-line">
+                <img
+                    src={`/images/campaigns/${coupon?.campaign ?? campaign}/${$app.themeInUse}.png`}
+                    class="u-block u-image-object-fit-cover side-bg-img"
+                    alt="promo" />
+
+                <div class="u-text-center">
+                    <div class="is-only-mobile u-width-full-line">
+                        <Heading
+                            size="5"
+                            tag="h3"
+                            class="u-margin-block-start-16"
+                            trimmed={false}
+                            style="font-weight:normal">
+                            {generateTitle()}
+                        </Heading>
+                    </div>
+                    <div class="is-not-mobile u-width-full-line">
+                        <Heading
+                            size="4"
+                            tag="h3"
+                            class="u-margin-block-start-32"
+                            trimmed={false}
+                            style="font-weight:normal">
+                            {generateTitle()}
+                        </Heading>
+                    </div>
+                    <p class="u-margin-block-start-16 auth-container">
+                        {generateDesc()}
+                    </p>
+                </div>
+            </div>
+        {/if}
     </section>
     <section class="grid-1-1-col-2 u-flex u-flex-vertical u-cross-center u-main-center">
         <slot name="top" />
         <div class="container u-flex u-flex-vertical u-cross-center u-main-center">
-            <div class="form-container u-width-full-line">
+            <div class="auth-container u-width-full-line">
                 <h1 class="heading-level-4 u-margin-block-start-auto is-not-mobile">
                     <slot name="title" />
                 </h1>
-                <h1 class="heading-level-5 u-margin-block-start-auto is-only-mobile">
+                <h1
+                    class="heading-level-5 u-margin-block-start-auto is-only-mobile"
+                    class:u-padding-block-start-24={variation === 'card'}>
                     <slot name="title" />
                 </h1>
                 <div class="u-margin-block-start-24">
@@ -82,9 +153,86 @@
 
 <style lang="scss">
     @import '@appwrite.io/pink/src/abstract/variables/_devices.scss';
+    @import '@appwrite.io/pink/src/abstract/variables/_common.scss';
+
+    .side-bg {
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+        height: 100%;
+        width: 100%;
+        padding-block: 2rem;
+        padding-inline: 1rem;
+        background-color: #ededf0 !important;
+
+        &-container {
+            position: absolute;
+            inset: 0;
+            block-size: 100%;
+            inline-size: 100%;
+            z-index: -1;
+            &::before {
+                position: absolute;
+                inset-block-start: -200px;
+                inset-inline-end: -50px;
+                content: '';
+                display: block;
+                inline-size: 32%;
+                block-size: 32%;
+                background: radial-gradient(49.55% 43.54% at 47% 50.69%, #e7f8f7 0%, #85dbd8 100%);
+                filter: blur(150px);
+                @media #{$break1} {
+                    filter: blur(100px);
+                }
+            }
+            &::after {
+                position: absolute;
+                inset-block-end: -50px;
+                inset-inline-start: -50px;
+                content: '';
+                display: block;
+                inline-size: 30%;
+                block-size: 30%;
+                background: radial-gradient(
+                    50% 46.73% at 50% 53.27%,
+                    #fe9567 28.17%,
+                    #fd366e 59.38%
+                );
+                filter: blur(200px);
+
+                @media #{$break1} {
+                    filter: blur(100px);
+                }
+            }
+        }
+        &-img {
+            padding-inline: 6.25rem;
+            max-width: 40rem;
+            @media #{$break2} {
+                max-width: 28rem;
+            }
+            @media #{$break1} {
+                margin-block-start: 3rem;
+                max-inline-size: 23rem;
+                padding-inline: 4rem;
+            }
+        }
+    }
+    :global(.theme-dark) .side-bg {
+        background-color: #131315 !important;
+    }
+
+    :global(.theme-dark) .side-bg-container::before {
+        inline-size: 20%;
+        block-size: 20%;
+        filter: blur(180px);
+    }
+    :global(.theme-dark) .side-bg-container::after {
+        filter: blur(250px);
+    }
 
     /* Default (including mobile) */
-    #main section:first-child {
+    .side-default {
         padding-block-start: 2.25rem;
         padding-block-end: 2rem;
 
@@ -109,7 +257,7 @@
 
     /* for smaller screens */
     @media #{$break2open} {
-        #main section:first-child {
+        .side-default {
             background: var(--url);
             background-repeat: no-repeat;
             background-position: top;
@@ -127,7 +275,7 @@
 
     /* for larger screens */
     @media #{$break3open} {
-        #main section:first-child {
+        .side-default {
             div {
                 padding-inline-start: 5.625rem;
                 padding-inline-end: 5rem;
@@ -152,7 +300,17 @@
         -webkit-text-fill-color: transparent;
     }
 
-    .form-container {
+    .auth-container {
         max-inline-size: 27.5rem;
+    }
+    .logo-variation {
+        padding-block-start: 2rem;
+
+        @media #{$break1} {
+            padding-block-start: 0rem;
+            & img {
+                scale: 0.7;
+            }
+        }
     }
 </style>
