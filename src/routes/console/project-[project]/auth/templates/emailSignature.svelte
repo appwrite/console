@@ -34,6 +34,7 @@
                             width="266"
                             height="171"
                             class="u-image-object-fit-contain u-block u-only-dark u-width-full-line u-height-100-percent"
+                            style:object-position="top"
                             alt="Email Signature Example" />
                     {:else}
                         <img
@@ -41,6 +42,7 @@
                             width="266"
                             height="171"
                             class="u-image-object-fit-contain u-only-light u-width-full-line u-height-100-percent"
+                            style:object-position="top"
                             alt="Email Signature Example" />
                     {/if}
                 </div>

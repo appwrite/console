@@ -60,7 +60,6 @@
         EmailTemplateLocale
     } from '@appwrite.io/console';
     import Email2FaTemplate from './email2FATemplate.svelte';
-    import { tierToPlan } from '$lib/stores/billing';
 
     const projectId = $page.params.project;
 
@@ -134,18 +133,6 @@
         </p>
 
         <svelte:fragment slot="aside">
-            {#if $organization.billingPlan === BillingPlan.FREE}
-                <Alert
-                    buttons={[
-                        {
-                            slot: 'Upgrade plan',
-                            href: `${base}/console/organization-${$organization.$id}/billing`
-                        }
-                    ]}>
-                    All emails sent using the {tierToPlan(BillingPlan.FREE).name} plan will include attribution
-                    to Appwrite in the signature. To send attribution-free emails, upgrade your plan.
-                </Alert>
-            {/if}
             <Collapsible>
                 <CollapsibleItem
                     bind:open={emailVerificationOpen}
@@ -259,7 +246,7 @@
             </Collapsible>
         </svelte:fragment>
     </CardGrid>-->
-    {#if isCloud && $organization?.billingPlan === BillingPlan.FREE}
+    {#if isCloud && $organization?.billingPlan !== BillingPlan.FREE}
         <EmailSignature />
     {/if}
 </Container>
