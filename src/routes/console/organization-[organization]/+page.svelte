@@ -31,6 +31,7 @@
     import type { RegionList } from '$lib/sdk/billing';
     import { onMount } from 'svelte';
     import { organization } from '$lib/stores/organization';
+    import StartupsProgram from './startupsProgram.svelte';
 
     export let data;
 
@@ -224,6 +225,8 @@
             limit={data.limit}
             offset={data.offset}
             total={data.projects.total} />
+
+        <StartupsProgram />
     </Container>
 
     <CreateOrganization bind:show={addOrganization} />
