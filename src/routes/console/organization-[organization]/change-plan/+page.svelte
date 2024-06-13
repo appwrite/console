@@ -351,17 +351,17 @@
                 {/if}
             {/if}
             {#if !isUpgrade && billingPlan === BillingPlan.FREE && $organization.billingPlan !== BillingPlan.FREE}
-                <FormList class="u-margin-block-start-16">
+                <FormList class="u-margin-block-start-24">
                     <InputSelect
                         id="reason"
-                        label="What made you decide to change your plan?"
+                        label="Reason for plan change"
                         placeholder="Select one"
                         required
                         options={feedbackDowngradeOptions}
                         bind:value={feedbackDowngradeReason} />
                     <InputTextarea
                         id="comment"
-                        label="Your feedback here"
+                        label="If you need to elaborate, please do so here"
                         placeholder="Enter feedback"
                         bind:value={feedbackMessage} />
                 </FormList>
