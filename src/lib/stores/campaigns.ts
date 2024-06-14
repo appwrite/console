@@ -27,4 +27,9 @@ campaigns
         title: 'Claim your $50 Deals For Devs credits',
         description:
             'Get $50 in Cloud credits when you upgrade or create an organization with a Pro plan.'
+    })
+    .set('welcome50', {
+        title: 'Here is your $VALUE welcome credit!',
+        description:
+            'Upgrade to Appwrite Pro and add the credits to enjoy the full capabilities of Cloud.'
     });
