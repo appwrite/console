@@ -46,6 +46,11 @@
     $: if (element) {
         observer.observe(element, { childList: true });
     }
+
+    //Set setAsDefault as false when group changes
+    $: if (group || group === null) {
+        setAsDefault = false;
+    }
 </script>
 
 <RadioBoxes

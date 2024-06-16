@@ -33,4 +33,9 @@
             <svelte:fragment slot="title">This payment method has expired</svelte:fragment>
         </Alert>
     {/if}
+    {#if paymentMethod?.lastError}
+        <Alert type="error" class="u-margin-block-start-16 u-width-full-line">
+            {paymentMethod.lastError}
+        </Alert>
+    {/if}
 </div>

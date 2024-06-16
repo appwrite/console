@@ -11,10 +11,21 @@
     export let noStyle = false;
     export let width: string = null;
     export let fullWidth = false;
+    export let wrapperFullWidth = false;
     export let position: 'relative' | 'static' = 'relative';
+    export let noMaxWidthList = false;
 </script>
 
-<Drop bind:show {placement} {childStart} {noArrow} {noStyle} {fullWidth} {fixed} on:blur>
+<Drop
+    bind:show
+    {placement}
+    {childStart}
+    {noArrow}
+    {noStyle}
+    {fullWidth}
+    {wrapperFullWidth}
+    {fixed}
+    on:blur>
     <slot />
     <svelte:fragment slot="list">
         <div
@@ -25,6 +36,7 @@
             }`}>
             {#if $$slots.list}
                 <section
+                    class:u-max-width-none={noMaxWidthList}
                     class:u-overflow-y-auto={scrollable}
                     class:u-max-height-200={scrollable}
                     class="drop-section">

@@ -6,14 +6,14 @@
     export let label: string | undefined = undefined;
     export let optionalText: string | undefined = undefined;
     export let showLabel = true;
-    export let value: string | number | boolean;
+    export let value: string | number | boolean | null;
     export let placeholder = '';
     export let required = false;
     export let hideRequired = false;
     export let disabled = false;
     export let wrapperTag: FormItemTag = 'li';
     export let options: {
-        value: string | boolean | number;
+        value: string | boolean | number | null;
         label: string;
     }[];
     export let isMultiple = false;

@@ -18,8 +18,10 @@
     let name = '';
     let id: string = null;
     let showCustomId = true;
+    let error: string;
 
     const create = async () => {
+        error = null;
         try {
             const collection = await sdk.forProject.databases.createCollection(
                 databaseId,
@@ -36,17 +38,21 @@
             trackEvent(Submit.CollectionCreate, {
                 customId: !!id
             });
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
-            trackError(error, Submit.CollectionCreate);
+        } catch (e) {
+            error = e.message;
+            trackError(e, Submit.CollectionCreate);
         }
     };
+
+    $: if (!showCreate) {
+        error = null;
+        showCustomId = false;
+        id = null;
+        name = '';
+    }
 </script>
 
-<Modal title="Create collection" size="big" bind:show={showCreate} onSubmit={create}>
+<Modal title="Create collection" size="big" bind:show={showCreate} onSubmit={create} bind:error>
     <FormList>
         <InputText
             id="name"

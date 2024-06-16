@@ -1,13 +1,8 @@
 name: Tests
 
 on:
-    push:
-        branches: [main]
-        paths-ignore:
-            - '**/*.md'
-            - 'static/**/*'
     pull_request:
-        branches: [main]
+        branches: ['**']
         paths-ignore:
             - '**/*.md'
             - 'static/**/*'
@@ -23,9 +18,9 @@ jobs:
             - name: Use Node.js
               uses: actions/setup-node@v3
               with:
-                  node-version: 18
-            # - name: Audit dependencies
-            #   run: npm audit --audit-level low
+                  node-version: 20
+            - name: Audit dependencies
+              run: npm audit --audit-level critical
             - name: Install dependencies
               run: npm ci
             - name: Svelte Diagnostics
@@ -33,6 +28,6 @@ jobs:
             - name: Linter
               run: npm run lint
             - name: Unit Tests
-              run: npm test
+              run: npm run test
             - name: Build Console
               run: npm run build

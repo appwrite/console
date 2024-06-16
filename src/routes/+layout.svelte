@@ -3,40 +3,42 @@
     import { afterNavigate, goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { isTrackingAllowed, trackPageView } from '$lib/actions/analytics';
-    import { reportWebVitals } from '$lib/helpers/vitals';
+    import { trackPageView } from '$lib/actions/analytics';
     import { Notifications, Progress } from '$lib/layout';
     import { app } from '$lib/stores/app';
-    import { user } from '$lib/stores/user';
     import { ENV, isCloud } from '$lib/system';
     import * as Sentry from '@sentry/svelte';
-    import LogRocket from 'logrocket';
     import { onMount } from 'svelte';
-    import { onCLS, onFCP, onFID, onINP, onLCP, onTTFB } from 'web-vitals';
     import Loading from './loading.svelte';
     import { loading, requestedMigration } from './store';
     import { parseIfString } from '$lib/helpers/object';
-    import Consent, { consent } from '$lib/components/consent.svelte';
-
-    if (browser) {
-        window.VERCEL_ANALYTICS_ID = import.meta.env.VERCEL_ANALYTICS_ID?.toString() ?? false;
-    }
+    import { sdk } from '$lib/stores/sdk';
+    import type { Models } from '@appwrite.io/console';
+    import { campaigns } from '$lib/stores/campaigns';
 
     onMount(async () => {
+        // handle sources
+        if (isCloud) {
+            const urlParams = $page.url.searchParams;
+            const ref = urlParams.get('ref');
+            const utmSource = urlParams.get('utm_source');
+            const utmMedium = urlParams.get('utm_medium');
+            const utmCampaign = urlParams.get('utm_campaign');
+            let referrer = document.referrer.length ? document.referrer : null;
+
+            // Skip our own
+            if (referrer?.includes('//appwrite.io')) {
+                referrer = null;
+            }
+
+            if (ref || referrer || utmSource || utmCampaign || utmMedium) {
+                sdk.forConsole.sources.create(ref, referrer, utmSource, utmCampaign, utmMedium);
+            }
+        }
+
         if ($page.url.searchParams.has('migrate')) {
             const migrateData = $page.url.searchParams.get('migrate');
             requestedMigration.set(parseIfString(migrateData) as Record<string, string>);
-        }
-        /**
-         * Reporting Web Vitals.
-         */
-        if (ENV.PROD && window.VERCEL_ANALYTICS_ID) {
-            onCLS(reportWebVitals);
-            onFID(reportWebVitals);
-            onLCP(reportWebVitals);
-            onFCP(reportWebVitals);
-            onINP(reportWebVitals);
-            onTTFB(reportWebVitals);
         }
 
         if (ENV.PROD) {
@@ -48,53 +50,74 @@
                 integrations: [new Sentry.BrowserTracing()],
                 tracesSampleRate: 1.0
             });
-
-            /**
-             * LogRocket
-             */
-            if ($consent?.accepted?.analytics && isCloud && isTrackingAllowed()) {
-                LogRocket.init('rgthvf/appwrite', {
-                    dom: {
-                        inputSanitizer: true
-                    }
-                });
-            }
         }
 
         /**
          * Handle initial load.
          */
-        if (!$page.url.pathname.startsWith('/auth') && !$page.url.pathname.startsWith('/git')) {
-            const acceptedRoutes = [
-                '/login',
-                '/register',
-                '/recover',
-                '/invite',
-                '/card',
-                '/hackathon'
-            ];
-            if ($user) {
-                if (
-                    !$page.url.pathname.startsWith('/console') &&
-                    !$page.url.pathname.startsWith('/invite') &&
-                    !$page.url.pathname.startsWith('/card') &&
-                    !$page.url.pathname.startsWith('/hackathon')
-                ) {
+
+        function shouldRedirect(route: string, routes: string[]) {
+            return !routes.some((n) => route.startsWith(n));
+        }
+
+        const authenticationRoutes = ['/auth', '/git'];
+        const acceptedUnauthenticatedRoutes = [
+            '/login',
+            '/register',
+            '/recover',
+            '/invite',
+            '/card',
+            '/hackathon',
+            '/mfa'
+        ];
+        const acceptedAuthenticatedRoutes = ['/console', '/invite', '/card', '/hackathon'];
+
+        const pathname = $page.url.pathname;
+        const user = $page.data.account as Models.User<Record<string, string>>;
+
+        if ($page.url.searchParams.has('code')) {
+            const code = $page.url.searchParams.get('code');
+            try {
+                const couponData = await sdk.forConsole.billing.getCoupon(code);
+                if (couponData?.campaign && campaigns.has(couponData.campaign)) {
+                    if (user) {
+                        goto(`${base}/console/apply-credit?code=${code}`);
+                        loading.set(false);
+                        return;
+                    }
+                }
+            } catch (error) {
+                // Do nothing
+            }
+        }
+        if ($page.url.searchParams.has('campaign')) {
+            const campaign = $page.url.searchParams.get('campaign');
+            if (campaigns.has(campaign)) {
+                if (user) {
+                    goto(`${base}/console/apply-credit?campaign=${campaign}`);
+                    loading.set(false);
+                    return;
+                }
+            }
+        }
+
+        if (shouldRedirect(pathname, authenticationRoutes)) {
+            if (user?.$id) {
+                if (shouldRedirect(pathname, acceptedAuthenticatedRoutes)) {
                     await goto(`${base}/console`, {
                         replaceState: true
                     });
                 }
-                loading.set(false);
             } else {
-                if (acceptedRoutes.some((n) => $page.url.pathname.startsWith(n))) {
-                    await goto(`${base}${$page.url.pathname}${$page.url.search}`);
+                if (acceptedUnauthenticatedRoutes.some((n) => pathname.startsWith(n))) {
+                    await goto(`${base}${pathname}${$page.url.search}`);
                 } else {
                     await goto(`${base}/login`, {
                         replaceState: true
                     });
                 }
-                loading.set(false);
             }
+            loading.set(false);
         }
     });
 
@@ -125,9 +148,9 @@
 </script>
 
 <Notifications />
-{#if isCloud}
+<!-- {#if isCloud}
     <Consent />
-{/if}
+{/if} -->
 
 <slot />
 

@@ -10,6 +10,7 @@ import {
     Functions,
     Health,
     Locale,
+    Messaging,
     Migrations,
     Project,
     Project as ProjectApi,
@@ -22,6 +23,7 @@ import {
 } from '@appwrite.io/console';
 import { Billing } from '../sdk/billing';
 import { Auth } from '$lib/sdk/auth';
+import { Sources } from '$lib/sdk/sources';
 
 const endpoint = VARS.APPWRITE_ENDPOINT ?? `${globalThis?.location?.origin}/v1`;
 
@@ -39,6 +41,7 @@ const sdkForProject = {
     functions: new Functions(clientProject),
     health: new Health(clientProject),
     locale: new Locale(clientProject),
+    messaging: new Messaging(clientProject),
     project: new Project(clientProject),
     projectApi: new ProjectApi(clientProject),
     storage: new Storage(clientProject),
@@ -72,7 +75,8 @@ export const sdk = {
         migrations: new Migrations(clientConsole),
         console: new Console(clientConsole),
         assistant: new Assistant(clientConsole),
-        billing: new Billing(clientConsole)
+        billing: new Billing(clientConsole),
+        sources: new Sources(clientConsole)
     },
     get forProject() {
         const projectId = getProjectId();

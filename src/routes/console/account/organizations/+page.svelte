@@ -17,12 +17,11 @@
     import { Pill } from '$lib/elements';
     import type { Models } from '@appwrite.io/console';
     import type { Organization } from '$lib/stores/organization';
-    import { daysLeftInTrial } from '$lib/stores/billing';
+    import { daysLeftInTrial, plansInfo } from '$lib/stores/billing';
     import { tooltip } from '$lib/actions/tooltip';
     import { toLocaleDate } from '$lib/helpers/date';
-    import { wizard } from '$lib/stores/wizard';
-    import CreateOrganizationCloud from '$routes/console/createOrganizationCloud.svelte';
     import { BillingPlan } from '$lib/constants';
+    import { goto } from '$app/navigation';
 
     export let data: PageData;
     let addOrganization = false;
@@ -40,7 +39,7 @@
 
     function createOrg() {
         if (isCloud) {
-            wizard.start(CreateOrganizationCloud);
+            goto(`${base}/console/create-organization`);
         } else addOrganization = true;
     }
 </script>
@@ -72,7 +71,7 @@
                     </svelte:fragment>
                     <svelte:fragment slot="status">
                         {#if isCloudOrg(organization)}
-                            {#if organization?.billingPlan === BillingPlan.STARTER}
+                            {#if organization?.billingPlan === BillingPlan.FREE}
                                 <div
                                     class="u-flex u-cross-center"
                                     use:tooltip={{
@@ -82,7 +81,7 @@
                                     <Pill>FREE</Pill>
                                 </div>
                             {/if}
-                            {#if organization?.billingTrialStartDate && $daysLeftInTrial > 0}
+                            {#if organization?.billingTrialStartDate && $daysLeftInTrial > 0 && organization.billingPlan !== BillingPlan.FREE && $plansInfo.get(organization.billingPlan)?.trialDays}
                                 <div
                                     class="u-flex u-cross-center"
                                     use:tooltip={{

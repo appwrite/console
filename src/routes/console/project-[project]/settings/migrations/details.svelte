@@ -6,13 +6,10 @@
     import { parseIfString } from '$lib/helpers/object';
     import { formatNum } from '$lib/helpers/string';
     import type { Models } from '@appwrite.io/console';
+    import { ResourcesFriendly } from '$lib/stores/migration';
 
-    export let migrations: Models.Migration[] = [];
-    export let migrationId: string = null;
-
-    $: details = migrations.find((migration) => migration.$id === migrationId);
-
-    $: show = !!details;
+    export let migration: Models.Migration = null;
+    export let show = false;
 
     type StatusCounters = {
         [resource in 'Database' | 'Collection' | 'Function' | 'Users']?: StatusCounter;
@@ -22,7 +19,7 @@
     };
 
     $: statusCounters = parseIfString(
-        (details?.statusCounters as unknown as string) || '{}'
+        (migration?.statusCounters as unknown as string) || '{}'
     ) as StatusCounters;
 
     const hasError = (counter: StatusCounter) => {
@@ -48,9 +45,9 @@
     let tab = 'details' as 'details' | 'logs';
 </script>
 
-<Modal bind:show on:close={() => (migrationId = null)} size="big">
+<Modal bind:show size="big">
     <svelte:fragment slot="title">
-        {#if details.status === 'failed'}
+        {#if migration.status === 'failed'}
             Resolve migration issues
         {:else}
             Migration details
@@ -62,13 +59,13 @@
     </Tabs>
 
     {#if tab === 'logs'}
-        <Code code={JSON.stringify(details, null, 2)} language="json" allowScroll />
+        <Code code={JSON.stringify(migration, null, 2)} language="json" allowScroll />
     {:else if tab === 'details'}
         <div class="box meta">
             <span>Date</span>
-            <span>{toLocaleDateTime(details.$createdAt)}</span>
+            <span>{toLocaleDateTime(migration.$createdAt)}</span>
             <span>Source</span>
-            <span>{details.source}</span>
+            <span>{migration.source}</span>
         </div>
 
         {#if Object.values(statusCounters).some(hasError)}
@@ -76,8 +73,8 @@
                 type="error"
                 buttons={[
                     {
-                        name: 'View logs',
-                        method() {
+                        slot: 'View logs',
+                        onClick() {
                             tab = 'logs';
                         }
                     }
@@ -106,7 +103,10 @@
                         </div>
 
                         <div>
-                            <span class="u-capitalize">{entity + 's'}</span>
+                            <span class="u-capitalize"
+                                >{total(Object.values(entityCounter)) > 1
+                                    ? ResourcesFriendly[entity].plural
+                                    : ResourcesFriendly[entity].singular}</span>
                             <span class="inline-tag">{totalItems(entityCounter)}</span>
                         </div>
                     </div>

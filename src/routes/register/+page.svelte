@@ -16,10 +16,12 @@
     import FormList from '$lib/elements/forms/formList.svelte';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { ID } from '@appwrite.io/console';
+    import { ID, OAuthProvider } from '@appwrite.io/console';
     import { isCloud } from '$lib/system';
     import { page } from '$app/stores';
     import { redirectTo } from '$routes/store';
+
+    export let data;
 
     let name: string, mail: string, pass: string, disabled: boolean;
     let terms = false;
@@ -28,7 +30,7 @@
         try {
             disabled = true;
             await sdk.forConsole.account.create(ID.unique(), mail, pass, name ?? '');
-            await sdk.forConsole.account.createEmailSession(mail, pass);
+            await sdk.forConsole.account.createEmailPasswordSession(mail, pass);
 
             if ($redirectTo) {
                 window.location.href = $redirectTo;
@@ -36,7 +38,15 @@
             }
 
             await invalidate(Dependencies.ACCOUNT);
-
+            trackEvent(Submit.AccountCreate, { campaign_name: data?.couponData?.code });
+            if (data?.couponData?.code) {
+                await goto(`${base}/console/apply-credit?code=${data?.couponData?.code}`);
+                return;
+            }
+            if (data?.campaign) {
+                await goto(`${base}/console/apply-credit?campaign=${data.campaign}`);
+                return;
+            }
             if ($page.url.searchParams) {
                 const redirect = $page.url.searchParams.get('redirect');
                 $page.url.searchParams.delete('redirect');
@@ -61,7 +71,7 @@
 
     function onGithubLogin() {
         sdk.forConsole.account.createOAuth2Session(
-            'github',
+            OAuthProvider.Github,
             window.location.origin,
             window.location.origin,
             ['read:user', 'user:email']
@@ -73,7 +83,7 @@
     <title>Sign up - Appwrite</title>
 </svelte:head>
 
-<Unauthenticated>
+<Unauthenticated coupon={data?.couponData} campaign={data?.campaign}>
     <svelte:fragment slot="title">Sign up</svelte:fragment>
     <svelte:fragment>
         <Form onSubmit={register}>
@@ -130,7 +140,9 @@
     <svelte:fragment slot="links">
         <li class="inline-links-item">
             <span class="text">
-                Already got an account? <a class="link" href={`${base}/login`}>Sign in</a>
+                Already got an account? <a
+                    class="link"
+                    href={`${base}/login${$page?.url?.search ?? ''}`}>Sign in</a>
             </span>
         </li>
     </svelte:fragment>

@@ -4,6 +4,7 @@
     import { createEventDispatcher } from 'svelte';
 
     export let show = false;
+    export let href: string = null;
     const dispatch = createEventDispatcher();
 
     function handleSubmit() {
@@ -18,13 +19,17 @@
     onSubmit={handleSubmit}
     icon="exclamation"
     state="warning"
+    size="small"
     headerDivider={false}>
-    <p>
-        Are you sure you want to exit from <slot />? All data will be deleted. This action is
-        irreversible.
+    <p class="text">
+        <slot />
     </p>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (show = false)}>Cancel</Button>
-        <Button secondary submit>Exit</Button>
+        {#if href}
+            <Button secondary {href}>Exit</Button>
+        {:else}
+            <Button secondary submit>Exit</Button>
+        {/if}
     </svelte:fragment>
 </Modal>

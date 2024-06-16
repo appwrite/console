@@ -9,6 +9,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { PaymentBoxes } from '$lib/components/billing';
     import { addCreditWizardStore } from '../store';
+    import { organization } from '$lib/stores/organization';
 
     let methods: PaymentList;
     let name: string;
@@ -21,7 +22,7 @@
 
     async function handleSubmit() {
         try {
-            const method = await submitStripeCard(name);
+            const method = await submitStripeCard(name, $organization.$id);
             $addCreditWizardStore.paymentMethodId = method.$id;
             invalidate(Dependencies.PAYMENT_METHODS);
         } catch (e) {
@@ -41,7 +42,7 @@
 </script>
 
 <WizardStep beforeSubmit={handleSubmit}>
-    <svelte:fragment slot="title">Payment details</svelte:fragment>
+    <svelte:fragment slot="title">Details</svelte:fragment>
     <svelte:fragment slot="subtitle">
         Add a payment method to your organization. You will not be charged until you upgrade to a
         Pro or Scale plan.

@@ -8,16 +8,16 @@ const config = defineConfig({
     },
     ssr: {
         noExternal: [
-            'echarts',
-            'prismjs',
             '@analytics/google-analytics',
+            '@sentry/browser',
+            '@sentry-internal/tracing',
             'analytics',
             'dayjs',
-            'dotenv'
+            'dotenv',
+            'echarts',
+            'prismjs',
+            'zrender'
         ]
-    },
-    define: {
-        'import.meta.env.VERCEL_ANALYTICS_ID': JSON.stringify(process.env.VERCEL_ANALYTICS_ID)
     },
     server: {
         port: 3000
@@ -35,8 +35,10 @@ const testConfig = defineConfig({
         globals: true,
         pool: 'threads',
         setupFiles: ['./tests/unit/setup.ts'],
-        deps: {
-            inline: ['@analytics/type-utils']
+        server: {
+            deps: {
+                inline: ['@analytics/type-utils']
+            }
         }
     }
 });
