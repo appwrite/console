@@ -86,6 +86,7 @@ export const hasPageQueries = derived(page, ($page) => {
 
 export const tags = derived(queries, ($queries) => Array.from($queries.keys()));
 
+/* eslint  @typescript-eslint/no-explicit-any: 'off' */
 export function addFilter(
     columns: Column[],
     columnId: string,
