@@ -28,8 +28,13 @@ campaigns
         description:
             'Get $50 in Cloud credits when you upgrade or create an organization with a Pro plan.'
     })
-    .set('welcome50', {
+    .set('WelcomeManual', {
         title: 'Here is your $VALUE welcome credit!',
         description:
             'Upgrade to Appwrite Pro and add the credits to enjoy the full capabilities of Cloud.'
+    })
+    .set('InactiveAccounts', {
+        title: 'Get everything out of Cloud. Claim your $50 credits.',
+        description:
+            'Get $50 in Cloud credits when you upgrade or create an organization with a Pro plan.'
     });
