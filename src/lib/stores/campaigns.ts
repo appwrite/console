@@ -34,7 +34,7 @@ campaigns
             'Upgrade to Appwrite Pro and add the credits to enjoy the full capabilities of Cloud.'
     })
     .set('InactiveAccounts', {
-        title: 'Get everything out of Cloud. Claim your $50 credits.',
+        title: 'Get everything out of Cloud. Claim your $VALUE credits.',
         description:
-            'Get $50 in Cloud credits when you upgrade or create an organization with a Pro plan.'
+            'Get $VALUE in Cloud credits when you upgrade or create an organization with a Pro plan.'
     });
