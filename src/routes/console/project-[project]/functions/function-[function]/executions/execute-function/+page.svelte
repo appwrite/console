@@ -1,0 +1,249 @@
+<script lang="ts">
+    import { afterNavigate, goto, invalidate } from '$app/navigation';
+    import { base } from '$app/paths';
+    import { page } from '$app/stores';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { tooltip } from '$lib/actions/tooltip';
+    import { Alert } from '$lib/components';
+
+    import { Dependencies } from '$lib/constants';
+    import {
+        Button,
+        Form,
+        FormItem,
+        FormItemPart,
+        FormList,
+        InputSelect,
+        InputText,
+        InputTextarea
+    } from '$lib/elements/forms';
+    import {
+        WizardSecondaryContainer,
+        WizardSecondaryContent,
+        WizardSecondaryFooter,
+        WizardSecondaryHeader
+    } from '$lib/layout';
+    import { addNotification } from '$lib/stores/notifications';
+    import { sdk } from '$lib/stores/sdk';
+    import { ExecutionMethod } from '@appwrite.io/console';
+    import { writable } from 'svelte/store';
+
+    let previousPage: string = `${base}/console`;
+    let showExitModal = false;
+
+    afterNavigate(({ from }) => {
+        previousPage = from?.url?.pathname || previousPage;
+    });
+
+    let formComponent: Form;
+    let isSubmitting = writable(false);
+
+    let path = '/';
+    let method = ExecutionMethod.GET;
+    let body = '';
+    let headers: [string, string][] = [['', '']];
+
+    const func = $page.data.function;
+
+    const keyList = [
+        { label: 'Authorization', value: 'Authorization' },
+        { label: 'Cache-Control', value: 'Cache-Control' },
+        { label: 'Content-Length', value: 'Content-Length' },
+        { label: 'Content-Type', value: 'Content-Type' },
+        { label: 'User-Agent', value: 'User-Agent' },
+        { label: 'X-Appwrite-Project', value: 'X-Appwrite-Project' },
+        { label: 'X-Appwrite-Key', value: 'X-Appwrite-Key' },
+        { label: 'X-Appwrite-JWT', value: 'X-Appwrite-JWT' },
+        { label: 'X-Appwrite-Response-Format', value: 'X-Appwrite-Response-Format' },
+        { label: 'X-Fallback-Cookies', value: 'X-Fallback-Cookies' }
+    ];
+
+    const methodOptions = [
+        { label: 'GET', value: ExecutionMethod.GET },
+        { label: 'POST', value: ExecutionMethod.POST },
+        { label: 'PUT', value: ExecutionMethod.PUT },
+        { label: 'PATCH', value: ExecutionMethod.PATCH },
+        { label: 'DELETE', value: ExecutionMethod.DELETE },
+        { label: 'OPTIONS', value: ExecutionMethod.OPTIONS }
+    ];
+
+    async function handleSubmit() {
+        try {
+            const headersObject = {};
+
+            for (const [name, value] of headers) {
+                headersObject[name] = value;
+            }
+
+            await sdk.forProject.functions.createExecution(
+                func.$id,
+                body,
+                true,
+                path,
+                method,
+                headersObject
+            );
+            if (!$page.url?.toString()?.includes('/executions')) {
+                await goto(
+                    `${base}/console/project-${$page.params.project}/functions/function-${func.$id}/executions`
+                );
+            }
+            invalidate(Dependencies.EXECUTIONS);
+            close();
+            addNotification({
+                type: 'success',
+                message: `Function has been executed`
+            });
+            trackEvent(Submit.ExecutionCreate);
+        } catch (e) {
+            trackError(e, Submit.ExecutionCreate);
+            addNotification({
+                type: 'error',
+                message: e.message
+            });
+        }
+    }
+</script>
+
+<svelte:head>
+    <title>Execute function - Appwrite</title>
+</svelte:head>
+
+<WizardSecondaryContainer bind:showExitModal href={previousPage}>
+    <WizardSecondaryHeader confirmExit on:exit={() => (showExitModal = true)}>
+        Execute function
+    </WizardSecondaryHeader>
+    <WizardSecondaryContent>
+        <Form bind:this={formComponent} onSubmit={handleSubmit} bind:isSubmitting>
+            <FormList>
+                {#if func?.version !== 'v3'}
+                    <Alert type="info">
+                        <svelte:fragment slot="title">
+                            Customizable execution data now available for functions v3.0
+                        </svelte:fragment>
+                        Update your function version to make use of new features including customizable
+                        HTTP data in your executions.
+                        <svelte:fragment slot="buttons">
+                            <Button
+                                href="https://appwrite.io/docs/products/functions/development"
+                                external
+                                text>
+                                Learn more
+                            </Button>
+                        </svelte:fragment>
+                    </Alert>
+                    <InputTextarea
+                        label="Body"
+                        placeholder={`Hello, World!`}
+                        id="body"
+                        bind:value={body} />
+                {:else}
+                    <FormItem isMultiple>
+                        <InputSelect
+                            required
+                            id="method"
+                            label="Method"
+                            options={methodOptions}
+                            bind:value={method} />
+                        <InputText
+                            label="Path"
+                            id="path"
+                            fullWidth
+                            placeholder="/"
+                            bind:value={path}
+                            required />
+                    </FormItem>
+                    <div>
+                        <h3>
+                            <span class="body-text-2 u-bold">Headers</span>
+                            <span class="optional">(optional)</span>
+                            <span
+                                use:tooltip={{
+                                    content:
+                                        'Headers should contain alphanumeric characters (a-z, A-Z, and 0-9) and hyphens only (- and _).'
+                                }}
+                                class="icon-info"></span>
+                        </h3>
+
+                        <FormList class="u-gap-8 u-margin-block-start-8">
+                            {#if headers}
+                                {#each headers as [name, value], index}
+                                    <FormItem isMultiple>
+                                        <InputSelect
+                                            isMultiple
+                                            fullWidth
+                                            label="Key"
+                                            placeholder="Select key"
+                                            options={keyList}
+                                            id={`key-${index}`}
+                                            bind:value={name} />
+                                        <InputText
+                                            isMultiple
+                                            fullWidth
+                                            label="Value"
+                                            placeholder="Enter value"
+                                            id={`value-${index}`}
+                                            bind:value />
+                                        <FormItemPart alignEnd>
+                                            <Button
+                                                text
+                                                noMargin
+                                                disabled={(!name || !value) && index === 0}
+                                                on:click={() => {
+                                                    if (index === 0) {
+                                                        headers = [['', '']];
+                                                    } else {
+                                                        headers.splice(index, 1);
+                                                        headers = headers;
+                                                    }
+                                                }}>
+                                                <span class="icon-x" aria-hidden="true" />
+                                            </Button>
+                                        </FormItemPart>
+                                    </FormItem>
+                                {/each}
+                            {/if}
+                        </FormList>
+                        <Button
+                            noMargin
+                            text
+                            disabled={headers?.length &&
+                            headers[headers.length - 1][0] &&
+                            headers[headers.length - 1][1]
+                                ? false
+                                : true}
+                            on:click={() => {
+                                if (
+                                    headers[headers.length - 1][0] &&
+                                    headers[headers.length - 1][1]
+                                ) {
+                                    headers.push(['', '']);
+                                    headers = headers;
+                                }
+                            }}>
+                            <span class="icon-plus" aria-hidden="true" />
+                            <span class="text">Add Header</span>
+                        </Button>
+                    </div>
+
+                    <InputTextarea
+                        label="Body"
+                        placeholder={`Hello, World!`}
+                        id="body"
+                        bind:value={body} />
+                {/if}
+            </FormList>
+        </Form>
+        <svelte:fragment slot="aside">test</svelte:fragment>
+    </WizardSecondaryContent>
+
+    <WizardSecondaryFooter>
+        <Button fullWidthMobile secondary on:click={() => (showExitModal = true)}>Cancel</Button>
+        <Button
+            fullWidthMobile
+            on:click={() => formComponent.triggerSubmit()}
+            disabled={$isSubmitting}>
+            Execute
+        </Button>
+    </WizardSecondaryFooter>
+</WizardSecondaryContainer>

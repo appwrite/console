@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { invalidate } from '$app/navigation';
+    import { goto, invalidate } from '$app/navigation';
     import { Alert, EmptySearch, Id, PaginationWithLimit } from '$lib/components';
     import { BillingPlan, Dependencies } from '$lib/constants';
     import { Pill } from '$lib/elements';
@@ -53,7 +53,10 @@
         buttonEvent="execute_function"
         buttonMethod={() => {
             $execute = $func;
-            $showFunctionExecute = true;
+            // $showFunctionExecute = true;
+            goto(
+                `/console/project-${$project.$id}/functions/function-${$func.$id}/executions/execute-function`
+            );
         }}>
         <svelte:fragment slot="tooltip" let:tier let:limit let:upgradeMethod>
             <p class="u-bold">The {tier} plan has limits</p>
