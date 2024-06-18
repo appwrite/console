@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { goto, invalidate } from '$app/navigation';
+    import { invalidate } from '$app/navigation';
     import { Alert, EmptySearch, Id, PaginationWithLimit } from '$lib/components';
     import { BillingPlan, Dependencies } from '$lib/constants';
     import { Pill } from '$lib/elements';
@@ -19,13 +19,14 @@
     import { log } from '$lib/stores/logs';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import { func, execute } from '../store';
+    import { func } from '../store';
     import type { Models } from '@appwrite.io/console';
     import { organization } from '$lib/stores/organization';
     import { getServiceLimit, showUsageRatesModal } from '$lib/stores/billing';
     import { project } from '$routes/console/project-[project]/store';
     import Create from '../create.svelte';
     import { abbreviateNumber } from '$lib/helpers/numbers';
+    import { base } from '$app/paths';
 
     export let data;
 
@@ -51,13 +52,7 @@
         title="Executions"
         buttonText="Execute now"
         buttonEvent="execute_function"
-        buttonMethod={() => {
-            $execute = $func;
-            // $showFunctionExecute = true;
-            goto(
-                `/console/project-${$project.$id}/functions/function-${$func.$id}/executions/execute-function`
-            );
-        }}>
+        buttonHref={`${base}/console/project-${$project.$id}/functions/function-${$func.$id}/executions/execute-function`}>
         <svelte:fragment slot="tooltip" let:tier let:limit let:upgradeMethod>
             <p class="u-bold">The {tier} plan has limits</p>
             <ul>
@@ -125,6 +120,9 @@
                                 warning={status === 'waiting' || status === 'building'}
                                 danger={status === 'failed'}
                                 info={status === 'completed' || status === 'ready'}>
+                                {#if status === 'scheduled'}
+                                    <span class="icon-clock" aria-hidden="true" />
+                                {/if}
                                 {status}
                             </Pill>
                         </TableCell>

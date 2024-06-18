@@ -25,7 +25,7 @@
         TableRow,
         TableScroll
     } from '$lib/elements/table';
-    import { deploymentList, execute, func, proxyRuleList, showFunctionExecute } from './store';
+    import { deploymentList, func, proxyRuleList } from './store';
     import { Container, ContainerHeader } from '$lib/layout';
     import { app } from '$lib/stores/app';
     import { calculateSize, humanFileSize } from '$lib/helpers/sizeConvertion';
@@ -41,6 +41,7 @@
     import DeploymentDomains from './deploymentDomains.svelte';
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
     import { readOnly } from '$lib/stores/billing';
+    import { project } from '../../store';
 
     export let data;
 
@@ -151,10 +152,7 @@
 
                         <Button
                             secondary
-                            on:click={() => {
-                                $execute = $func;
-                                $showFunctionExecute = true;
-                            }}
+                            href={`${base}/console/project-${$project.$id}/functions/function-${$func.$id}/executions/execute-function`}
                             disabled={isCloud && $readOnly && !GRACE_PERIOD_OVERRIDE}>
                             Execute now
                         </Button>

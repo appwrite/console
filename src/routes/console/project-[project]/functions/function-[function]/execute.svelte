@@ -1,4 +1,5 @@
 <script lang="ts">
+    //TODO remove
     import { afterNavigate, goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
