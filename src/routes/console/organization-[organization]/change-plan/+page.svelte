@@ -276,6 +276,7 @@
             {/if}
             <ul
                 class="u-flex u-gap-16 u-margin-block-start-8"
+                class:u-margin-block-start-16={anyOrgFree && billingPlan === BillingPlan.PRO}
                 style="--p-grid-item-size:16em; --p-grid-item-size-small-screens:16rem; --grid-gap: 1rem;">
                 <li class="u-flex-basis-50-percent">
                     <LabelCard
