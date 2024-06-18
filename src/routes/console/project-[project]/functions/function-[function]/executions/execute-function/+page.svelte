@@ -3,20 +3,27 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { timer } from '$lib/actions/timer';
     import { tooltip } from '$lib/actions/tooltip';
-    import { Alert } from '$lib/components';
+    import { Alert, Card } from '$lib/components';
 
     import { Dependencies } from '$lib/constants';
+    import { Pill } from '$lib/elements';
     import {
         Button,
         Form,
         FormItem,
         FormItemPart,
         FormList,
+        Helper,
+        InputDate,
         InputSelect,
         InputText,
-        InputTextarea
+        InputTextarea,
+        InputTime
     } from '$lib/elements/forms';
+    import { humanFileSize } from '$lib/helpers/sizeConvertion';
+    import { calculateTime } from '$lib/helpers/timeConversion';
     import {
         WizardSecondaryContainer,
         WizardSecondaryContent,
@@ -25,8 +32,19 @@
     } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { ExecutionMethod } from '@appwrite.io/console';
+    import { ExecutionMethod, type Models } from '@appwrite.io/console';
     import { writable } from 'svelte/store';
+    import DeploymentSource from '../../deploymentSource.svelte';
+    import DeploymentDomains from '../../deploymentDomains.svelte';
+    import { proxyRuleList } from '../../store';
+    import DeploymentCreatedBy from '../../deploymentCreatedBy.svelte';
+    import {
+        isSameDay,
+        toLocaleDate,
+        toLocaleDateISO,
+        toLocaleDateTime,
+        toLocaleTimeISO
+    } from '$lib/helpers/date';
 
     let previousPage: string = `${base}/console`;
     let showExitModal = false;
@@ -35,15 +53,10 @@
         previousPage = from?.url?.pathname || previousPage;
     });
 
-    let formComponent: Form;
-    let isSubmitting = writable(false);
+    export let data;
 
-    let path = '/';
-    let method = ExecutionMethod.GET;
-    let body = '';
-    let headers: [string, string][] = [['', '']];
-
-    const func = $page.data.function;
+    const func = data.function as Models.Function;
+    const deployment = data.activeDeployment as Models.Deployment;
 
     const keyList = [
         { label: 'Authorization', value: 'Authorization' },
@@ -67,6 +80,14 @@
         { label: 'OPTIONS', value: ExecutionMethod.OPTIONS }
     ];
 
+    let formComponent: Form;
+    let isSubmitting = writable(false);
+
+    let path = '/';
+    let method = ExecutionMethod.GET;
+    let body = '';
+    let headers: [string, string][] = [['', '']];
+
     async function handleSubmit() {
         try {
             const headersObject = {};
@@ -81,7 +102,8 @@
                 true,
                 path,
                 method,
-                headersObject
+                headersObject,
+                isScheduled ? dateTime : null
             );
             if (!$page.url?.toString()?.includes('/executions')) {
                 await goto(
@@ -103,6 +125,16 @@
             });
         }
     }
+    let isScheduled: boolean = null;
+    let now = new Date();
+    let minDate: string;
+    let date: string = toLocaleDateISO(now.getTime());
+    let time: string = toLocaleTimeISO(now.getTime());
+    $: minDate = toLocaleDateISO(now.getTime());
+    $: minTime = isSameDay(new Date(date), new Date(minDate))
+        ? toLocaleTimeISO(now.getTime())
+        : '00:00';
+    $: dateTime = new Date(`${date}T${time}`);
 </script>
 
 <svelte:head>
@@ -231,10 +263,115 @@
                         placeholder={`Hello, World!`}
                         id="body"
                         bind:value={body} />
+
+                    <li>
+                        <InputSelect
+                            bind:value={isScheduled}
+                            id="schedule"
+                            label="Schedule"
+                            options={[
+                                {
+                                    label: 'Now',
+                                    value: null
+                                },
+                                {
+                                    label: 'Schedule',
+                                    value: true
+                                }
+                            ]} />
+                        {#if isScheduled}
+                            <FormItem isMultiple>
+                                <InputDate
+                                    id="date"
+                                    label="Date"
+                                    required={true}
+                                    min={minDate}
+                                    bind:value={date}
+                                    isMultiple
+                                    fullWidth />
+                                <InputTime
+                                    id="time"
+                                    label="Time"
+                                    required={true}
+                                    min={minTime}
+                                    bind:value={time}
+                                    isMultiple
+                                    fullWidth />
+                            </FormItem>
+                        {/if}
+                        <Helper type="neutral">
+                            {isScheduled
+                                ? `Your function will be executed on ${toLocaleDateTime(dateTime?.toString())}`
+                                : 'Your function will be executed immediately'}
+                        </Helper>
+                    </li>
                 {/if}
             </FormList>
         </Form>
-        <svelte:fragment slot="aside">test</svelte:fragment>
+        <svelte:fragment slot="aside">
+            <Card class="u-flex-vertical u-gap-24">
+                <div class="u-flex-vertical u-gap-8">
+                    <p class="u-color-text-offline">Deployment ID</p>
+                    <span>
+                        <Pill>{func.deployment}</Pill>
+                    </span>
+                </div>
+                <ul class="u-flex u-main-space-between">
+                    <li class="u-flex-vertical u-gap-8">
+                        <p class="u-color-text-offline">Status</p>
+                        <p>
+                            <Pill success>
+                                <span class="icon-lightning-bolt"></span><span>active</span>
+                            </Pill>
+                            <!-- {#if deployment?.$id === func.deployment && deployment?.status === 'active'} 
+                             {:else}
+                                <Pill
+                                    danger={deployment?.status === 'failed'}
+                                    warning={deployment?.status === 'building'}
+                                    info={deployment?.status === 'ready'}>
+                                    {deployment?.status}
+                                </Pill>
+                            {/if} -->
+                        </p>
+                    </li>
+                    <li class="u-flex-vertical u-gap-8">
+                        <p class="u-color-text-offline">Build time</p>
+                        <p>
+                            {#if ['processing', 'building'].includes(deployment.status)}
+                                <span use:timer={{ start: deployment.$createdAt }} />
+                            {:else}
+                                {calculateTime(deployment.buildTime)}
+                            {/if}
+                        </p>
+                    </li>
+                    <li class="u-flex-vertical u-gap-8">
+                        <p class="u-color-text-offline">Size</p>
+                        <p>
+                            {humanFileSize(deployment.size).value +
+                                humanFileSize(deployment.size).unit}
+                        </p>
+                    </li>
+                </ul>
+                <div class="u-flex-vertical u-gap-8">
+                    <p class="u-color-text-offline">Source</p>
+                    <span>
+                        <DeploymentSource {deployment} />
+                    </span>
+                </div>
+                <div class="u-flex-vertical u-gap-8">
+                    <p class="u-color-text-offline">Domains</p>
+                    <span>
+                        <DeploymentDomains domain={$proxyRuleList} />
+                    </span>
+                </div>
+                <div class="u-flex-vertical u-gap-8">
+                    <p class="u-color-text-offline">Updated</p>
+                    <span>
+                        <DeploymentCreatedBy {deployment} />
+                    </span>
+                </div>
+            </Card>
+        </svelte:fragment>
     </WizardSecondaryContent>
 
     <WizardSecondaryFooter>

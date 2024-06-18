@@ -19,7 +19,7 @@
     import { log } from '$lib/stores/logs';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import { func, execute, showFunctionExecute } from '../store';
+    import { func, execute } from '../store';
     import type { Models } from '@appwrite.io/console';
     import { organization } from '$lib/stores/organization';
     import { getServiceLimit, showUsageRatesModal } from '$lib/stores/billing';
