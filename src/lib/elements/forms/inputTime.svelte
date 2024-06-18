@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount } from 'svelte';
-    import { FormItem, Helper, Label } from '.';
+    import { FormItem, FormItemPart, Helper, Label } from '.';
 
     export let label: string;
     export let showLabel = true;
@@ -14,6 +14,8 @@
     export let readonly = false;
     export let autofocus = false;
     export let autocomplete = false;
+    export let fullWidth = false;
+    export let isMultiple = false;
 
     let element: HTMLInputElement;
     let error: string;
@@ -38,9 +40,10 @@
     $: if (value) {
         error = null;
     }
+    $: wrapper = isMultiple ? FormItemPart : FormItem;
 </script>
 
-<FormItem>
+<svelte:component this={wrapper} {fullWidth}>
     <Label {required} {optionalText} hide={!showLabel} for={id}>
         {label}
     </Label>
@@ -68,4 +71,4 @@
     {#if error}
         <Helper type="warning">{error}</Helper>
     {/if}
-</FormItem>
+</svelte:component>
