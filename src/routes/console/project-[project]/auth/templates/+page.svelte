@@ -246,7 +246,7 @@
             </Collapsible>
         </svelte:fragment>
     </CardGrid>-->
-    {#if isCloud && $organization?.billingPlan !== BillingPlan.FREE}
+    {#if isCloud && $organization?.billingPlan === BillingPlan.FREE}
         <EmailSignature />
     {/if}
 </Container>
