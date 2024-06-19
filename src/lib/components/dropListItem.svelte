@@ -4,6 +4,7 @@
     export let disabled = false;
     export let icon: string = null;
     export let event: string = null;
+    export let eventParams: Record<string, unknown> = {};
     export let loading = false;
 
     function track() {
@@ -12,7 +13,8 @@
         }
 
         trackEvent(`click_${event}`, {
-            from: 'button'
+            from: 'button',
+            ...eventParams
         });
     }
 </script>

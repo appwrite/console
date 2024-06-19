@@ -21,6 +21,7 @@
     export let ariaLabel: string = null;
     export let noMargin = false;
     export let event: string = null;
+    export let eventParams: Record<string, unknown> = {};
     let classes: string = undefined;
     export { classes as class };
     export let actions: MultiActionArray = [];
@@ -38,7 +39,8 @@
         }
 
         trackEvent(`click_${event}`, {
-            from: 'button'
+            from: 'button',
+            ...eventParams
         });
     }
 

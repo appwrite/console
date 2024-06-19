@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Avatar, Card, Heading } from '$lib/components';
+    import { Avatar, Card, DropList, DropListItem, Heading } from '$lib/components';
     import { Button } from '$lib/elements/forms';
 
     let events = [
@@ -12,6 +12,8 @@
             date: 'Friday, 03 May at 14:00'
         }
     ];
+
+    let showAddToCalendarDropdown = [];
 </script>
 
 <Heading size="5" tag="h2" class="u-margin-block-start-48">Startups Program</Heading>
@@ -28,7 +30,12 @@
                     </p>
                 </div>
             </div>
-            <Button secondary fullWidth class="u-margin-block-start-auto">
+            <Button
+                secondary
+                fullWidth
+                class="u-margin-block-start-auto"
+                event="schedule_program_manager_call"
+                eventParams={{ source: 'startup_program_card' }}>
                 <span class="text">Schedule a call</span>
                 <span class="icon-external-link"></span>
             </Button>
@@ -46,7 +53,12 @@
                     </p>
                 </div>
             </div>
-            <Button secondary fullWidth class="u-margin-block-start-auto">
+            <Button
+                secondary
+                fullWidth
+                class="u-margin-block-start-auto"
+                event="open_private_channel"
+                eventParams={{ source: 'startup_program_card' }}>
                 <span class="text">Message us on Discord</span>
                 <span class="icon-external-link"></span>
             </Button>
@@ -65,7 +77,56 @@
                             <h4 class="body-text-2 u-bold">{event.title}</h4>
                             <time class="u-block">{event.date}</time>
                         </div>
-                        <Button text noMargin>Add to calendar</Button>
+                        <DropList bind:show={showAddToCalendarDropdown[i]}>
+                            <Button
+                                text
+                                noMargin
+                                on:click={() => (showAddToCalendarDropdown[i] = true)}>
+                                Add to calendar
+                            </Button>
+                            <svelte:fragment slot="list">
+                                <DropListItem
+                                    event="add_event_to_calendar"
+                                    eventParams={{
+                                        source: 'startup_program_card',
+                                        provider: 'apple'
+                                    }}>
+                                    Apple
+                                </DropListItem>
+                                <DropListItem
+                                    event="add_event_to_calendar"
+                                    eventParams={{
+                                        source: 'startup_program_card',
+                                        provider: 'google'
+                                    }}>
+                                    Google
+                                </DropListItem>
+                                <DropListItem
+                                    event="add_event_to_calendar"
+                                    eventParams={{
+                                        source: 'startup_program_card',
+                                        provider: 'outlook'
+                                    }}>
+                                    Outlook
+                                </DropListItem>
+                                <DropListItem
+                                    event="add_event_to_calendar"
+                                    eventParams={{
+                                        source: 'startup_program_card',
+                                        provider: 'yahoo'
+                                    }}>
+                                    Yahoo
+                                </DropListItem>
+                                <DropListItem
+                                    event="add_event_to_calendar"
+                                    eventParams={{
+                                        source: 'startup_program_card',
+                                        provider: 'local'
+                                    }}>
+                                    Download invite (.ics)
+                                </DropListItem>
+                            </svelte:fragment>
+                        </DropList>
                     </div>
                 {/each}
             </div>
