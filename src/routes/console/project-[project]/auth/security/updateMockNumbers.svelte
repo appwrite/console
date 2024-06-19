@@ -17,7 +17,7 @@
     import FormItemPart from '$lib/elements/forms/formItemPart.svelte';
 
     let projectId: string = $project.$id;
-    let numbers = writable<MockNumber[]>([]);
+    let numbers = writable<MockNumber[]>($project.authMockNumbers);
 
     let isMockNumbersDisabled = true;
     let phoneNumber: string = null;
@@ -57,22 +57,23 @@
         // }
     }
 
-    const addPhoneNumber = (number: MockNumber) => {
+    const addPhoneNumber = (number?: MockNumber) => {
         numbers.update((n) => [
             ...n,
             {
-                phone: number.phone,
-                otp: number.otp
+                phone: number?.phone,
+                otp: number?.otp
             }
         ]);
         phoneNumber = null;
         otp = null;
     };
 
-    const deletePhoneNumber = (number: MockNumber) => {
-        numbers.update((n) => n.filter((num) => num.phone !== number.phone));
-
-        console.log($numbers);
+    const deletePhoneNumber = (index: number) => {
+        numbers.update((n) => {
+            n.splice(index, 1);
+            return n;
+        });
     };
 
     $: if (numbers && symmetricDifference($numbers, $project.authMockNumbers).length) {
@@ -103,25 +104,38 @@
                                 fullWidth
                                 placeholder="Enter Phone Number"
                                 label="Phone Number"
+                                showLabel={index === 0 ? true : false}
                                 required />
                             <InputText
                                 id={`value-${index}`}
                                 fullWidth
                                 placeholder="Enter value"
                                 label="Verification Code"
+                                showLabel={index === 0 ? true : false}
                                 required />
                             <FormItemPart alignEnd>
-                                <Button text>
+                                <Button
+                                    text
+                                    disabled={$numbers.length === 1}
+                                    on:click={() => {
+                                        deletePhoneNumber(index);
+                                    }}>
                                     <span class="icon-x" aria-hidden="true" />
                                 </Button>
                             </FormItemPart>
                         </FormItem>
                     {/each}
                 </ul>
-                <Button noMargin text>
-                    <span class="icon-plus" aria-hidden="true" />
-                    <span class="text">Add preference</span>
-                </Button>
+                {#if $numbers.length < 10}
+                    <Button
+                        noMargin
+                        text
+                        on:click={() => addPhoneNumber()}
+                        disabled={$numbers.length >= 10}>
+                        <span class="icon-plus" aria-hidden="true" />
+                        <span class="text">Add number</span>
+                    </Button>
+                {/if}
             </form>
         {:else}
             <Empty
@@ -135,6 +149,6 @@
     </svelte:fragment>
 
     <svelte:fragment slot="actions">
-        <Button disabled={false} on:click={updateMockNumbers}>Update</Button>
+        <Button disabled={isMockNumbersDisabled} on:click={updateMockNumbers}>Update</Button>
     </svelte:fragment>
 </CardGrid>
