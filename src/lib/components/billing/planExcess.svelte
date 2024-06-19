@@ -68,7 +68,7 @@
         </svelte:fragment>
     </Alert>
 
-    <TableScroll dense class="u-margin-block-start-16">
+    <TableScroll noMargin dense class="u-margin-block-start-16">
         <TableHeader>
             <TableCellHead>Resource</TableCellHead>
             <TableCellHead>Free limit</TableCellHead>
