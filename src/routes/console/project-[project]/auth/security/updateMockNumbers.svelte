@@ -38,12 +38,12 @@
         }
     }
 
-    function addPhoneNumber(number?: MockNumber) {
+    function addPhoneNumber(number: MockNumber) {
         numbers.update((n) => [
             ...n,
             {
-                phone: number?.phone,
-                otp: number?.otp
+                phone: number.phone,
+                otp: number.otp
             }
         ]);
     };
@@ -104,7 +104,10 @@
                     <Button
                         noMargin
                         text
-                        on:click={() => addPhoneNumber()}
+                        on:click={() => addPhoneNumber({
+                            phone: '',
+                            otp: ''
+                        })}
                         disabled={$numbers.length >= 10}>
                         <span class="icon-plus" aria-hidden="true" />
                         <span class="text">Add number</span>
