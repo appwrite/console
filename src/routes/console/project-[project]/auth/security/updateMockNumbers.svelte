@@ -46,14 +46,14 @@
                 otp: number.otp
             }
         ]);
-    };
+    }
 
     function deletePhoneNumber(index: number) {
         numbers.update((n) => {
             n.splice(index, 1);
             return n;
         });
-    };
+    }
 </script>
 
 <Form onSubmit={updateMockNumbers}>
@@ -104,10 +104,11 @@
                     <Button
                         noMargin
                         text
-                        on:click={() => addPhoneNumber({
-                            phone: '',
-                            otp: ''
-                        })}
+                        on:click={() =>
+                            addPhoneNumber({
+                                phone: '',
+                                otp: ''
+                            })}
                         disabled={$numbers.length >= 10}>
                         <span class="icon-plus" aria-hidden="true" />
                         <span class="text">Add number</span>
