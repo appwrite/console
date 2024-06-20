@@ -21,7 +21,7 @@
         | CampaignData['template'];
 
     let currentReviewNumber = 0;
-    $: currentReview = selectedCampaign.data.reviews[currentReviewNumber];
+    $: currentReview = selectedCampaign?.data?.reviews?.[currentReviewNumber];
 
     function generateTitle() {
         if (coupon?.credits) {
