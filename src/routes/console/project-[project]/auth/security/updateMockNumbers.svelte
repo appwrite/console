@@ -1,9 +1,8 @@
 <script lang="ts">
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid, Heading } from '$lib/components';
-    import { FormList, InputPhone, InputText } from '$lib/elements/forms';
+    import { InputPhone, InputText } from '$lib/elements/forms';
     import Button from '$lib/elements/forms/button.svelte';
-    import { symmetricDifference } from '$lib/helpers/array';
     import type { MockNumber } from '$lib/sdk/auth';
     import { sdk } from '$lib/stores/sdk';
     import { project } from '../../store';
@@ -16,45 +15,31 @@
     import FormItem from '$lib/elements/forms/formItem.svelte';
     import FormItemPart from '$lib/elements/forms/formItemPart.svelte';
 
-    let projectId: string = $project.$id;
     let numbers = writable<MockNumber[]>($project.authMockNumbers);
-
+    let initialNumbers = $project.authMockNumbers.map((num) => ({ ...num }));
+    let projectId: string = $project.$id;
     let isMockNumbersDisabled = true;
-    let phoneNumber: string = null;
-    let otp: string = null;
 
-    onMount(async () => {
-        console.log('Project', $project);
-        console.log('Numbers', $numbers);
-    });
+    const onInputChanged = () => {
+        isMockNumbersDisabled = JSON.stringify($numbers) === JSON.stringify(initialNumbers);
+    };
 
     async function updateMockNumbers() {
-        numbers.update((n) => [
-            ...n,
-            {
-                phone: phoneNumber,
-                otp: otp
-            }
-        ]);
-        phoneNumber = null;
-        otp = null;
-
-        console.log($numbers);
-        // try {
-        //     await sdk.forConsole.auth.updateMockNumbers(projectId, $numbers);
-        //     await invalidate(Dependencies.PROJECT);
-        //     addNotification({
-        //         type: 'success',
-        //         message: 'Updated mock phone numbers successfully'
-        //     });
-        //     trackEvent(Submit.AuthMockNumbersUpdate);
-        // } catch (error) {
-        //     addNotification({
-        //         type: 'error',
-        //         message: error.message
-        //     });
-        //     trackError(error, Submit.AuthMockNumbersUpdate);
-        // }
+        try {
+            await sdk.forConsole.auth.updateMockNumbers(projectId, $numbers);
+            await invalidate(Dependencies.PROJECT);
+            addNotification({
+                type: 'success',
+                message: 'Updated mock phone numbers successfully'
+            });
+            trackEvent(Submit.AuthMockNumbersUpdate);
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+            trackError(error, Submit.AuthMockNumbersUpdate);
+        }
     }
 
     const addPhoneNumber = (number?: MockNumber) => {
@@ -65,8 +50,6 @@
                 otp: number?.otp
             }
         ]);
-        phoneNumber = null;
-        otp = null;
     };
 
     const deletePhoneNumber = (index: number) => {
@@ -75,14 +58,6 @@
             return n;
         });
     };
-
-    $: if (numbers && symmetricDifference($numbers, $project.authMockNumbers).length) {
-        isMockNumbersDisabled = false;
-    } else isMockNumbersDisabled = true;
-
-    $: if (phoneNumber && otp) {
-        isMockNumbersDisabled = false;
-    } else isMockNumbersDisabled = true;
 </script>
 
 <CardGrid>
@@ -105,13 +80,17 @@
                                 placeholder="Enter Phone Number"
                                 label="Phone Number"
                                 showLabel={index === 0 ? true : false}
+                                on:input={onInputChanged}
                                 required />
                             <InputText
                                 id={`value-${index}`}
+                                bind:value={number.otp}
                                 fullWidth
                                 placeholder="Enter value"
                                 label="Verification Code"
                                 showLabel={index === 0 ? true : false}
+                                on:input={onInputChanged}
+                                maxlength={6}
                                 required />
                             <FormItemPart alignEnd>
                                 <Button

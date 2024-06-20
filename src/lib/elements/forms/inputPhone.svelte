@@ -90,7 +90,8 @@
             autocomplete={autocomplete ? 'on' : 'off'}
             bind:value
             bind:this={element}
-            on:invalid={handleInvalid} />
+            on:invalid={handleInvalid}
+            on:input />
     </div>
     {#if error}
         <Helper type="warning">{error}</Helper>
