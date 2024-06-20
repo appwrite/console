@@ -11,20 +11,11 @@
     import { Dependencies } from '$lib/constants';
     import { writable } from 'svelte/store';
     import Empty from '$lib/components/empty.svelte';
-    import { onMount } from 'svelte';
 
     let numbers = writable<MockNumber[]>($project.authMockNumbers);
     let initialNumbers = [];
     let projectId: string = $project.$id;
     let submitDisabled = true;
-
-    // onMount(() => {
-    //     initialNumbers = $project.authMockNumbers.map((num) => ({ ...num }));
-    // });
-
-    const onInputChanged = () => {
-        // submitDisabled = JSON.stringify($numbers) === JSON.stringify(initialNumbers);
-    };
 
     $: initialNumbers = $project.authMockNumbers.map((num) => ({ ...num }));
     $: submitDisabled = JSON.stringify($numbers) === JSON.stringify(initialNumbers);
@@ -85,7 +76,6 @@
                                 placeholder="Enter Phone Number"
                                 label="Phone Number"
                                 showLabel={index === 0 ? true : false}
-                                on:input={onInputChanged}
                                 maxlength={16}
                                 required />
                             <InputText
@@ -95,7 +85,6 @@
                                 placeholder="Enter value"
                                 label="Verification Code"
                                 showLabel={index === 0 ? true : false}
-                                on:input={onInputChanged}
                                 maxlength={6}
                                 required />
                             <FormItemPart alignEnd>
