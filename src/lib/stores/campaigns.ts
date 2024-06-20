@@ -56,8 +56,8 @@ campaigns
         data: {
             reviews: [
                 {
-                    name: 'John Doe',
-                    desc: 'Acme Inc.',
+                    name: 'David Foster',
+                    desc: 'Managing director',
                     review: 'We really loved working with Appwrite for launching our bootstrapped "Open Mind" App. It was saving us a lot of money in comparison to Firebase since the amount of users grew quite fast and we needed a quick switch.'
                 }
             ]
