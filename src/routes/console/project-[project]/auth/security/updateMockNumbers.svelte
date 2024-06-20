@@ -12,7 +12,7 @@
     import { writable } from 'svelte/store';
     import Empty from '$lib/components/empty.svelte';
 
-    let numbers = writable<MockNumber[]>($project.authMockNumbers);
+    const numbers = writable<MockNumber[]>($project.authMockNumbers);
     let initialNumbers = [];
     let projectId: string = $project.$id;
     let submitDisabled = true;
@@ -38,7 +38,7 @@
         }
     }
 
-    const addPhoneNumber = (number?: MockNumber) => {
+    function addPhoneNumber(number?: MockNumber) {
         numbers.update((n) => [
             ...n,
             {
