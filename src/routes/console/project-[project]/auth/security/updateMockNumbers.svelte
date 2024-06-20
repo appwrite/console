@@ -2,7 +2,7 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid, Heading } from '$lib/components';
     import { InputPhone, InputText } from '$lib/elements/forms';
-    import Button from '$lib/elements/forms/button.svelte';
+    import { Button, Form, FormItem, FormItemPart } from '$lib/elements/forms';
     import type { MockNumber } from '$lib/sdk/auth';
     import { sdk } from '$lib/stores/sdk';
     import { project } from '../../store';
@@ -11,17 +11,23 @@
     import { Dependencies } from '$lib/constants';
     import { writable } from 'svelte/store';
     import Empty from '$lib/components/empty.svelte';
-    import FormItem from '$lib/elements/forms/formItem.svelte';
-    import FormItemPart from '$lib/elements/forms/formItemPart.svelte';
+    import { onMount } from 'svelte';
 
     let numbers = writable<MockNumber[]>($project.authMockNumbers);
-    let initialNumbers = $project.authMockNumbers.map((num) => ({ ...num }));
+    let initialNumbers = [];
     let projectId: string = $project.$id;
-    let isMockNumbersDisabled = true;
+    let submitDisabled = true;
+
+    // onMount(() => {
+    //     initialNumbers = $project.authMockNumbers.map((num) => ({ ...num }));
+    // });
 
     const onInputChanged = () => {
-        isMockNumbersDisabled = JSON.stringify($numbers) === JSON.stringify(initialNumbers);
+        // submitDisabled = JSON.stringify($numbers) === JSON.stringify(initialNumbers);
     };
+
+    $: initialNumbers = $project.authMockNumbers.map((num) => ({ ...num }));
+    $: submitDisabled = JSON.stringify($numbers) === JSON.stringify(initialNumbers);
 
     async function updateMockNumbers() {
         try {
@@ -59,16 +65,16 @@
     };
 </script>
 
-<CardGrid>
-    <Heading tag="h6" size="7" id="variables">Mock Phone Numbers</Heading>
-    <p>
-        Generate <b>fictional</b> numbers to simulate phone verification while testing demo accounts.
-        A maximum of 10 phone numbers can be generated.
-    </p>
+<Form onSubmit={updateMockNumbers}>
+    <CardGrid>
+        <Heading tag="h6" size="7" id="variables">Mock Phone Numbers</Heading>
+        <p>
+            Generate <b>fictional</b> numbers to simulate phone verification while testing demo accounts.
+            A maximum of 10 phone numbers can be generated.
+        </p>
 
-    <svelte:fragment slot="aside">
-        {#if $numbers.length > 0}
-            <form class="form u-grid u-gap-16">
+        <svelte:fragment slot="aside">
+            {#if $numbers.length > 0}
                 <ul class="form-list">
                     {#each $numbers as number, index}
                         <FormItem isMultiple>
@@ -80,6 +86,7 @@
                                 label="Phone Number"
                                 showLabel={index === 0 ? true : false}
                                 on:input={onInputChanged}
+                                maxlength={16}
                                 required />
                             <InputText
                                 id={`value-${index}`}
@@ -94,7 +101,7 @@
                             <FormItemPart alignEnd>
                                 <Button
                                     text
-                                    disabled={$numbers.length === 1}
+                                    disabled={$numbers.length === 0}
                                     on:click={() => {
                                         deletePhoneNumber(index);
                                     }}>
@@ -114,19 +121,19 @@
                         <span class="text">Add number</span>
                     </Button>
                 {/if}
-            </form>
-        {:else}
-            <Empty
-                on:click={() => {
-                    addPhoneNumber({
-                        phone: '',
-                        otp: ''
-                    });
-                }}>Create a mock phone number</Empty>
-        {/if}
-    </svelte:fragment>
+            {:else}
+                <Empty
+                    on:click={() => {
+                        addPhoneNumber({
+                            phone: '',
+                            otp: ''
+                        });
+                    }}>Create a mock phone number</Empty>
+            {/if}
+        </svelte:fragment>
 
-    <svelte:fragment slot="actions">
-        <Button disabled={isMockNumbersDisabled} on:click={updateMockNumbers}>Update</Button>
-    </svelte:fragment>
-</CardGrid>
+        <svelte:fragment slot="actions">
+            <Button disabled={submitDisabled} submit>Update</Button>
+        </svelte:fragment>
+    </CardGrid>
+</Form>

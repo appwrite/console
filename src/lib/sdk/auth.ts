@@ -1,4 +1,4 @@
-import type { Client, Models } from '@appwrite.io/console';
+import { type Client, type Models } from '@appwrite.io/console';
 
 export type MockNumber = {
     phone: string;
