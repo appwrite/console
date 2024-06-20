@@ -80,7 +80,7 @@
                     alt="promo" />
 
                 <div class="u-text-center">
-                    <div class="is-only-mobile u-width-full-line">
+                    <div class="is-only-mobile u-width-full-line auth-container">
                         <Heading
                             size="5"
                             tag="h3"
@@ -90,7 +90,7 @@
                             {generateTitle()}
                         </Heading>
                     </div>
-                    <div class="is-not-mobile u-width-full-line">
+                    <div class="is-not-mobile u-width-full-line auth-container">
                         <Heading
                             size="4"
                             tag="h3"
