@@ -48,7 +48,7 @@
         ]);
     };
 
-    const deletePhoneNumber = (index: number) => {
+    function deletePhoneNumber(index: number) {
         numbers.update((n) => {
             n.splice(index, 1);
             return n;
