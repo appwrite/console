@@ -40,14 +40,12 @@
     import DeploymentCreatedBy from '../../deploymentCreatedBy.svelte';
     import {
         isSameDay,
-        toLocaleDate,
         toLocaleDateISO,
         toLocaleDateTime,
         toLocaleTimeISO
     } from '$lib/helpers/date';
 
     let previousPage: string = `${base}/console`;
-    let showExitModal = false;
 
     afterNavigate(({ from }) => {
         previousPage = from?.url?.pathname || previousPage;
@@ -105,11 +103,9 @@
                 headersObject,
                 isScheduled ? dateTime : null
             );
-            if (!$page.url?.toString()?.includes('/executions')) {
-                await goto(
-                    `${base}/console/project-${$page.params.project}/functions/function-${func.$id}/executions`
-                );
-            }
+            await goto(
+                `${base}/console/project-${$page.params.project}/functions/function-${func.$id}/executions`
+            );
             invalidate(Dependencies.EXECUTIONS);
             close();
             addNotification({
@@ -141,10 +137,8 @@
     <title>Execute function - Appwrite</title>
 </svelte:head>
 
-<WizardSecondaryContainer bind:showExitModal href={previousPage}>
-    <WizardSecondaryHeader confirmExit on:exit={() => (showExitModal = true)}>
-        Execute function
-    </WizardSecondaryHeader>
+<WizardSecondaryContainer href={previousPage}>
+    <WizardSecondaryHeader>Execute function</WizardSecondaryHeader>
     <WizardSecondaryContent>
         <Form bind:this={formComponent} onSubmit={handleSubmit} bind:isSubmitting>
             <FormList>

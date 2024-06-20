@@ -13,7 +13,7 @@
         TableRowButton,
         TableScroll
     } from '$lib/elements/table';
-    import { hoursToDays, timeFromNow } from '$lib/helpers/date';
+    import { hoursToDays, timeFromNow, toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
     import { calculateTime } from '$lib/helpers/timeConversion';
     import { Container, ContainerHeader } from '$lib/layout';
     import { log } from '$lib/stores/logs';
@@ -27,6 +27,7 @@
     import Create from '../create.svelte';
     import { abbreviateNumber } from '$lib/helpers/numbers';
     import { base } from '$app/paths';
+    import { tooltip } from '$lib/actions/tooltip';
 
     export let data;
 
@@ -115,16 +116,21 @@
                         </TableCell>
                         <TableCell width={110} title="Status">
                             {@const status = execution.status}
-
-                            <Pill
-                                warning={status === 'waiting' || status === 'building'}
-                                danger={status === 'failed'}
-                                info={status === 'completed' || status === 'ready'}>
-                                {#if status === 'scheduled'}
-                                    <span class="icon-clock" aria-hidden="true" />
-                                {/if}
-                                {status}
-                            </Pill>
+                            <div
+                                use:tooltip={{
+                                    content: `Scheduled to execute on ${toLocaleDateTime(execution?.schedule)}`,
+                                    disabled: !execution?.schedule
+                                }}>
+                                <Pill
+                                    warning={status === 'waiting' || status === 'building'}
+                                    danger={status === 'failed'}
+                                    info={status === 'completed' || status === 'ready'}>
+                                    {#if status === 'scheduled'}
+                                        <span class="icon-clock" aria-hidden="true" />
+                                    {/if}
+                                    {status}
+                                </Pill>
+                            </div>
                         </TableCell>
                         <TableCellText width={140} title="Created">
                             {timeFromNow(execution.$createdAt)}
