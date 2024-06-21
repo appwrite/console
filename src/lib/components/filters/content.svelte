@@ -24,14 +24,14 @@
 
     $: column = $columns.find((c) => c.id === columnId) as Column;
 
-    $: operatorsForColumn = Object.entries(operators)
+    $: operatorsForColumn = Object.entries($operators)
         .filter(([, v]) => v.types.includes(column?.type))
         .map(([k]) => ({
             label: k,
             value: k
         }));
 
-    $: operator = operatorKey ? operators[operatorKey] : null;
+    $: operator = operatorKey ? $operators[operatorKey] : null;
     $: {
         columnId;
         operatorKey = null;

@@ -1,6 +1,6 @@
 import { goto } from '$app/navigation';
 
-import { derived, get, writable } from 'svelte/store';
+import { derived, get, writable, type Writable } from 'svelte/store';
 import { page } from '$app/stores';
 import deepEqual from 'deep-equal';
 import type { Column, ColumnType } from '$lib/helpers/types';
@@ -105,7 +105,7 @@ export function addFilter(
     }
 }
 
-export const operators: Record<string, Operator> = {
+export const operators: Writable<Record<string, Operator>> = writable({
     'starts with': {
         toQuery: Query.startsWith,
         toTag: (attribute, input) => `**${attribute}** starts with **${input}**`,
@@ -172,7 +172,7 @@ export const operators: Record<string, Operator> = {
         },
         types: ['string', 'integer', 'double', 'boolean', 'datetime', 'enum']
     }
-};
+});
 
 function formatArray(array: string[]) {
     if (!array?.length) return;
