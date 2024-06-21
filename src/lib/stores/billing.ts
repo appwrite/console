@@ -53,7 +53,7 @@ export function tierToPlan(tier: Tier) {
 
 export function getNextTier(tier: Tier) {
     switch (tier) {
-        case BillingPlan.STARTER:
+        case BillingPlan.FREE:
             return BillingPlan.PRO;
         case BillingPlan.PRO:
             return BillingPlan.SCALE;
@@ -65,11 +65,11 @@ export function getNextTier(tier: Tier) {
 export function getPreviousTier(tier: Tier) {
     switch (tier) {
         case BillingPlan.PRO:
-            return BillingPlan.STARTER;
+            return BillingPlan.FREE;
         case BillingPlan.SCALE:
             return BillingPlan.PRO;
         default:
-            return BillingPlan.STARTER;
+            return BillingPlan.FREE;
     }
 }
 
