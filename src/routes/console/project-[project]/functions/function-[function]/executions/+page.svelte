@@ -1,35 +1,36 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { Alert, EmptySearch, Id, PaginationWithLimit } from '$lib/components';
+    import { Alert, EmptySearch, PaginationWithLimit, ViewSelector } from '$lib/components';
     import { BillingPlan, Dependencies } from '$lib/constants';
-    import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
-    import {
-        TableBody,
-        TableCell,
-        TableCellHead,
-        TableCellText,
-        TableHeader,
-        TableRowButton,
-        TableScroll
-    } from '$lib/elements/table';
-    import { hoursToDays, timeFromNow, toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
-    import { calculateTime } from '$lib/helpers/timeConversion';
+    import { hoursToDays } from '$lib/helpers/date';
     import { Container, ContainerHeader } from '$lib/layout';
-    import { log } from '$lib/stores/logs';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { func } from '../store';
-    import type { Models } from '@appwrite.io/console';
     import { organization } from '$lib/stores/organization';
     import { getServiceLimit, showUsageRatesModal } from '$lib/stores/billing';
     import { project } from '$routes/console/project-[project]/store';
     import Create from '../create.svelte';
     import { abbreviateNumber } from '$lib/helpers/numbers';
     import { base } from '$app/paths';
-    import { tooltip } from '$lib/actions/tooltip';
+    import { Filters } from '$lib/components/filters';
+    import { writable } from 'svelte/store';
+    import type { Column } from '$lib/helpers/types';
+    import { View } from '$lib/helpers/load';
+    import Table from './table.svelte';
 
     export let data;
+
+    const columns = writable<Column[]>([
+        { id: '$id', title: 'Execution ID', type: 'string', show: true, width: 150 },
+        { id: 'status', title: 'Status', type: 'string', show: true, width: 110 },
+        { id: '$createdAt', title: 'Created', type: 'datetime', show: true, width: 140 },
+        { id: 'trigger', title: 'Trigger', type: 'string', show: true, filter: false, width: 90 },
+        { id: 'requestMethod', title: 'Method', type: 'string', show: true, width: 70 },
+        { id: 'requestPath', title: 'Path', type: 'string', show: true, width: 90 },
+        { id: 'duration', title: 'Duration', type: 'string', show: true, width: 80 }
+    ]);
 
     onMount(() => {
         return sdk.forConsole.client.subscribe('console', (response) => {
@@ -39,21 +40,11 @@
         });
     });
 
-    function showLogs(execution: Models.Execution) {
-        $log.show = true;
-        $log.func = $func;
-        $log.data = execution;
-    }
-
     const logs = getServiceLimit('logs');
 </script>
 
 <Container>
-    <ContainerHeader
-        title="Executions"
-        buttonText="Execute now"
-        buttonEvent="execute_function"
-        buttonHref={`${base}/console/project-${$project.$id}/functions/function-${$func.$id}/executions/execute-function`}>
+    <ContainerHeader title="Executions">
         <svelte:fragment slot="tooltip" let:tier let:limit let:upgradeMethod>
             <p class="u-bold">The {tier} plan has limits</p>
             <ul>
@@ -82,6 +73,42 @@
             {/if}
         </svelte:fragment>
     </ContainerHeader>
+    <div class="u-flex u-main-space-between is-not-mobile u-margin-block-start-16">
+        <Filters query={data.query} {columns} />
+        <div class="u-flex u-gap-16">
+            <ViewSelector view={View.Table} {columns} hideView allowNoColumns showColsTextMobile />
+            <Button
+                event="execute_function"
+                href={`${base}/console/project-${$project.$id}/functions/function-${$func.$id}/executions/execute-function`}>
+                <span class="icon-plus" aria-hidden="true" />
+                <span class="text">Execute now</span>
+            </Button>
+        </div>
+    </div>
+
+    <div class="u-flex u-flex-vertical u-gap-16 u-margin-block-start-16 is-only-mobile">
+        <div class=" u-flex u-gap-16">
+            <div class="u-flex-basis-50-percent">
+                <ViewSelector
+                    view={View.Table}
+                    {columns}
+                    hideView
+                    allowNoColumns
+                    showColsTextMobile
+                    fullWidthMobile />
+            </div>
+            <div class="u-flex-basis-50-percent">
+                <Filters query={data.query} {columns} fullWidthMobile />
+            </div>
+        </div>
+        <Button
+            event="execute_function"
+            href={`${base}/console/project-${$project.$id}/functions/function-${$func.$id}/executions/execute-function`}
+            fullWidthMobile>
+            <span class="icon-plus" aria-hidden="true" />
+            <span class="text">Execute now</span>
+        </Button>
+    </div>
 
     {#if !$func.logging}
         <div class="common-section">
@@ -97,62 +124,8 @@
             </Alert>
         </div>
     {/if}
-    {#if data.executions.total}
-        <TableScroll>
-            <TableHeader>
-                <TableCellHead width={150}>Execution ID</TableCellHead>
-                <TableCellHead width={110}>Status</TableCellHead>
-                <TableCellHead width={140}>Created</TableCellHead>
-                <TableCellHead width={90}>Trigger</TableCellHead>
-                <TableCellHead width={70}>Method</TableCellHead>
-                <TableCellHead width={90}>Path</TableCellHead>
-                <TableCellHead width={80}>Duration</TableCellHead>
-            </TableHeader>
-            <TableBody>
-                {#each data.executions.executions as execution}
-                    <TableRowButton on:click={() => showLogs(execution)}>
-                        <TableCell width={150} title="Execution ID">
-                            <Id value={execution.$id}>{execution.$id}</Id>
-                        </TableCell>
-                        <TableCell width={110} title="Status">
-                            {@const status = execution.status}
-                            <div
-                                use:tooltip={{
-                                    content: `Scheduled to execute on ${toLocaleDateTime(execution?.schedule)}`,
-                                    disabled: !execution?.schedule
-                                }}>
-                                <Pill
-                                    warning={status === 'waiting' || status === 'building'}
-                                    danger={status === 'failed'}
-                                    info={status === 'completed' || status === 'ready'}>
-                                    {#if status === 'scheduled'}
-                                        <span class="icon-clock" aria-hidden="true" />
-                                    {/if}
-                                    {status}
-                                </Pill>
-                            </div>
-                        </TableCell>
-                        <TableCellText width={140} title="Created">
-                            {timeFromNow(execution.$createdAt)}
-                        </TableCellText>
-                        <TableCell width={90} title="Trigger">
-                            <Pill>
-                                <span class="text u-trim">{execution.trigger}</span>
-                            </Pill>
-                        </TableCell>
-                        <TableCellText width={70} title="Method">
-                            {execution.requestMethod}
-                        </TableCellText>
-                        <TableCellText width={90} title="Path">
-                            {execution.requestPath}
-                        </TableCellText>
-                        <TableCellText width={80} title="Duration">
-                            {calculateTime(execution.duration)}
-                        </TableCellText>
-                    </TableRowButton>
-                {/each}
-            </TableBody>
-        </TableScroll>
+    {#if data?.executions?.total}
+        <Table columns={$columns} {data} />
 
         <PaginationWithLimit
             name="Executions"
