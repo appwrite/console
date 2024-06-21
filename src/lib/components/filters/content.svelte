@@ -8,94 +8,21 @@
         FormList,
         InputSelectCheckbox
     } from '$lib/elements/forms';
-    import { Query } from '@appwrite.io/console';
     import { createEventDispatcher, onMount } from 'svelte';
-    import { tags, type Operator, queries, type TagValue } from './store';
+    import { tags, queries, type TagValue, operators, addFilter } from './store';
     import type { Column } from '$lib/helpers/types';
     import type { Writable } from 'svelte/store';
     import { tooltip } from '$lib/actions/tooltip';
 
+    // We cast to any to not cause type errors in the input components
+    /* eslint  @typescript-eslint/no-explicit-any: 'off' */
+    export let value: any = null;
     export let columns: Writable<Column[]>;
     export let columnId: string | null = null;
-
-    const dispatch = createEventDispatcher<{
-        clear: void;
-        apply: { applied: number };
-    }>();
+    export let arrayValues: string[] = [];
+    export let operatorKey: string | null = null;
 
     $: column = $columns.find((c) => c.id === columnId) as Column;
-    let arrayValues: string[] = [];
-
-    dispatch('apply', { applied: $tags.length });
-
-    const operators: Record<string, Operator> = {
-        'starts with': {
-            toQuery: Query.startsWith,
-            toTag: (attribute, input) => `**${attribute}** starts with **${input}**`,
-            types: ['string']
-        },
-        'ends with': {
-            toQuery: Query.endsWith,
-            toTag: (attribute, input) => `**${attribute}** ends with **${input}**`,
-            types: ['string']
-        },
-        'greater than': {
-            toQuery: (attr, input) => Query.greaterThan(attr, Number(input)),
-            toTag: (attribute, input) => `**${attribute}** greater than **${input}**`,
-            types: ['integer', 'double', 'datetime']
-        },
-        'greater than or equal': {
-            toQuery: (attr, input) => Query.greaterThanEqual(attr, Number(input)),
-            toTag: (attribute, input) => `**${attribute}** greater than or equal to **${input}**`,
-            types: ['integer', 'double', 'datetime']
-        },
-        'less than': {
-            toQuery: Query.lessThan,
-            toTag: (attribute, input) => `**${attribute}** less than **${input}**`,
-            types: ['integer', 'double', 'datetime']
-        },
-        'less than or equal': {
-            toQuery: Query.lessThanEqual,
-            toTag: (attribute, input) => `**${attribute}** less than or equal to **${input}**`,
-            types: ['integer', 'double', 'datetime']
-        },
-        equal: {
-            toQuery: Query.equal,
-            toTag: (attribute, input) => `**${attribute}** equal to **${input}**`,
-            types: ['string', 'integer', 'double', 'boolean']
-        },
-        'not equal': {
-            toQuery: Query.notEqual,
-            toTag: (attribute, input) => `**${attribute}** not equal to **${input}**`,
-            types: ['string', 'integer', 'double', 'boolean']
-        },
-        'is not null': {
-            toQuery: Query.isNotNull,
-            toTag: (attribute) => `**${attribute}** is not null`,
-            types: ['string', 'integer', 'double', 'boolean', 'datetime', 'relationship'],
-            hideInput: true
-        },
-        'is null': {
-            toQuery: Query.isNull,
-            toTag: (attribute) => `**${attribute}** is null`,
-            types: ['string', 'integer', 'double', 'boolean', 'datetime', 'relationship'],
-            hideInput: true
-        },
-        contains: {
-            toQuery: Query.contains,
-            toTag: (attribute, input) => {
-                if (Array.isArray(input) && input.length > 2) {
-                    return {
-                        value: input,
-                        tag: `**${attribute}** contains **${formatArray(input)}** `
-                    };
-                } else {
-                    return `**${attribute}** contains **${input}**`;
-                }
-            },
-            types: ['string', 'integer', 'double', 'boolean', 'datetime', 'enum']
-        }
-    };
 
     $: operatorsForColumn = Object.entries(operators)
         .filter(([, v]) => v.types.includes(column?.type))
@@ -104,46 +31,28 @@
             value: k
         }));
 
-    let operatorKey: string | null = null;
     $: operator = operatorKey ? operators[operatorKey] : null;
     $: {
         columnId;
         operatorKey = null;
     }
 
-    // We cast to any to not cause type errors in the input components
-    /* eslint  @typescript-eslint/no-explicit-any: 'off' */
-    let value: any = null;
+    $: isDisabled = !operator;
 
     onMount(() => {
         value = column?.array ? [] : null;
     });
 
-    // This Map is keyed by tags, and has a query as the value
-    function addFilter() {
-        if (!column || !operator) return;
-        if (column.array) {
-            queries.addFilter({ column, operator, value: arrayValues });
-            columnId = null;
-            arrayValues = [];
-        } else {
-            queries.addFilter({ column, operator, value: value ?? '' });
-            columnId = null;
-            value = null;
-        }
+    function addFilterAndReset() {
+        addFilter($columns, columnId, operatorKey, value, arrayValues);
+        columnId = null;
+        operatorKey = null;
+        value = null;
+        arrayValues = [];
     }
 
     function tagFormat(node: HTMLElement) {
         node.innerHTML = node.innerHTML.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
-    }
-
-    function formatArray(array: string[]) {
-        if (!array?.length) return;
-        if (array.length > 2) {
-            return `${array[0]} or ${array.length - 1} others`;
-        } else {
-            return array.join(' or ');
-        }
     }
 
     function isTypeTagValue(obj: any): obj is TagValue {
@@ -157,11 +66,15 @@
         );
     }
 
-    $: isDisabled = !operator;
+    const dispatch = createEventDispatcher<{
+        clear: void;
+        apply: { applied: number };
+    }>();
+    dispatch('apply', { applied: $tags.length });
 </script>
 
 <div>
-    <form on:submit|preventDefault={addFilter}>
+    <form on:submit|preventDefault={addFilterAndReset}>
         <ul class="selects u-flex u-gap-8 u-margin-block-start-16">
             <InputSelect
                 id="column"
