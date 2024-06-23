@@ -187,7 +187,7 @@
                     <svelte:component this={component} />
                 {/if}
             {/each}
-            <div class="form-footer">
+            <div class="u-z-index-20 form-footer">
                 <div class="u-flex u-main-end u-gap-12">
                     {#if !isLastStep && currentStep?.optional}
                         <Button text on:click={() => dispatch('finish')}>
