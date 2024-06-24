@@ -104,74 +104,212 @@ export function addFilter(
     }
 }
 
-export const operators: Writable<Record<string, Operator>> = writable({
-    'starts with': {
-        toQuery: Query.startsWith,
-        toTag: (attribute, input) => `**${attribute}** starts with **${input}**`,
-        types: ['string']
-    },
-    'ends with': {
-        toQuery: Query.endsWith,
-        toTag: (attribute, input) => `**${attribute}** ends with **${input}**`,
-        types: ['string']
-    },
-    'greater than': {
-        toQuery: (attr, input) => Query.greaterThan(attr, Number(input)),
-        toTag: (attribute, input) => `**${attribute}** greater than **${input}**`,
-        types: ['integer', 'double', 'datetime']
-    },
-    'greater than or equal': {
-        toQuery: (attr, input) => Query.greaterThanEqual(attr, Number(input)),
-        toTag: (attribute, input) => `**${attribute}** greater than or equal to **${input}**`,
-        types: ['integer', 'double', 'datetime']
-    },
-    'less than': {
-        toQuery: Query.lessThan,
-        toTag: (attribute, input) => `**${attribute}** less than **${input}**`,
-        types: ['integer', 'double', 'datetime']
-    },
-    'less than or equal': {
-        toQuery: Query.lessThanEqual,
-        toTag: (attribute, input) => `**${attribute}** less than or equal to **${input}**`,
-        types: ['integer', 'double', 'datetime']
-    },
-    equal: {
-        toQuery: Query.equal,
-        toTag: (attribute, input) => `**${attribute}** equal to **${input}**`,
-        types: ['string', 'integer', 'double', 'boolean']
-    },
-    'not equal': {
-        toQuery: Query.notEqual,
-        toTag: (attribute, input) => `**${attribute}** not equal to **${input}**`,
-        types: ['string', 'integer', 'double', 'boolean']
-    },
-    'is not null': {
-        toQuery: Query.isNotNull,
-        toTag: (attribute) => `**${attribute}** is not null`,
-        types: ['string', 'integer', 'double', 'boolean', 'datetime', 'relationship'],
-        hideInput: true
-    },
-    'is null': {
-        toQuery: Query.isNull,
-        toTag: (attribute) => `**${attribute}** is null`,
-        types: ['string', 'integer', 'double', 'boolean', 'datetime', 'relationship'],
-        hideInput: true
-    },
-    contains: {
-        toQuery: Query.contains,
-        toTag: (attribute, input) => {
-            if (Array.isArray(input) && input.length > 2) {
-                return {
-                    value: input,
-                    tag: `**${attribute}** contains **${formatArray(input)}** `
-                };
-            } else {
-                return `**${attribute}** contains **${input}**`;
-            }
-        },
-        types: ['string', 'integer', 'double', 'boolean', 'datetime', 'enum']
+// const defaultOperators: Record<string, Operator> = {
+//     'starts with': {
+//         toQuery: Query.startsWith,
+//         toTag: (attribute, input) => `**${attribute}** starts with **${input}**`,
+//         types: ['string']
+//     },
+//     'ends with': {
+//         toQuery: Query.endsWith,
+//         toTag: (attribute, input) => `**${attribute}** ends with **${input}**`,
+//         types: ['string']
+//     },
+//     'greater than': {
+//         toQuery: (attr, input) => Query.greaterThan(attr, Number(input)),
+//         toTag: (attribute, input) => `**${attribute}** greater than **${input}**`,
+//         types: ['integer', 'double', 'datetime']
+//     },
+//     'greater than or equal': {
+//         toQuery: (attr, input) => Query.greaterThanEqual(attr, Number(input)),
+//         toTag: (attribute, input) => `**${attribute}** greater than or equal to **${input}**`,
+//         types: ['integer', 'double', 'datetime']
+//     },
+//     'less than': {
+//         toQuery: Query.lessThan,
+//         toTag: (attribute, input) => `**${attribute}** less than **${input}**`,
+//         types: ['integer', 'double', 'datetime']
+//     },
+//     'less than or equal': {
+//         toQuery: Query.lessThanEqual,
+//         toTag: (attribute, input) => `**${attribute}** less than or equal to **${input}**`,
+//         types: ['integer', 'double', 'datetime']
+//     },
+//     equal: {
+//         toQuery: Query.equal,
+//         toTag: (attribute, input) => `**${attribute}** equal to **${input}**`,
+//         types: ['string', 'integer', 'double', 'boolean']
+//     },
+//     'not equal': {
+//         toQuery: Query.notEqual,
+//         toTag: (attribute, input) => `**${attribute}** not equal to **${input}**`,
+//         types: ['string', 'integer', 'double', 'boolean']
+//     },
+//     'is not null': {
+//         toQuery: Query.isNotNull,
+//         toTag: (attribute) => `**${attribute}** is not null`,
+//         types: ['string', 'integer', 'double', 'boolean', 'datetime', 'relationship'],
+//         hideInput: true
+//     },
+//     'is null': {
+//         toQuery: Query.isNull,
+//         toTag: (attribute) => `**${attribute}** is null`,
+//         types: ['string', 'integer', 'double', 'boolean', 'datetime', 'relationship'],
+//         hideInput: true
+//     },
+//     contains: {
+//         toQuery: Query.contains,
+//         toTag: (attribute, input) => {
+//             if (Array.isArray(input) && input.length > 2) {
+//                 return {
+//                     value: input,
+//                     tag: `**${attribute}** contains **${formatArray(input)}** `
+//                 };
+//             } else {
+//                 return `**${attribute}** contains **${input}**`;
+//             }
+//         },
+//         types: ['string', 'integer', 'double', 'boolean', 'datetime', 'enum']
+//     }
+// };
+
+enum ValidOperators {
+    startsWith = 'starts with',
+    endsWith = 'ends with',
+    greaterThan = 'greater than',
+    greaterThanOrEqual = 'greater than or equal',
+    lessThan = 'less than',
+    lessThanOrEqual = 'less than or equal',
+    equal = 'equal',
+    notEqual = 'not equal',
+    isNotNull = 'is not null',
+    isNull = 'is null',
+    contains = 'contains'
+}
+
+enum ValidTypes {
+    string = 'string',
+    integer = 'integer',
+    double = 'double',
+    boolean = 'boolean',
+    datetime = 'datetime',
+    relationship = 'relationship',
+    enum = 'enum'
+}
+
+const operatorsMap = new Map<
+    ValidOperators,
+    {
+        name: ValidOperators;
+        query: (attr: string, input: string | number | string[]) => string;
+        types: ColumnType[];
+        hideInput?: boolean;
     }
-});
+>([
+    [
+        ValidOperators.startsWith,
+        { name: ValidOperators.startsWith, query: Query.startsWith, types: [ValidTypes.string] }
+    ],
+    [
+        ValidOperators.endsWith,
+        { name: ValidOperators.endsWith, query: Query.endsWith, types: [ValidTypes.string] }
+    ],
+    [
+        ValidOperators.greaterThan,
+        {
+            name: ValidOperators.greaterThan,
+            query: Query.greaterThan,
+            types: [ValidTypes.integer, ValidTypes.double, ValidTypes.datetime]
+        }
+    ],
+    [
+        ValidOperators.greaterThanOrEqual,
+        {
+            name: ValidOperators.greaterThanOrEqual,
+            query: Query.greaterThanEqual,
+            types: [ValidTypes.integer, ValidTypes.double, ValidTypes.datetime]
+        }
+    ],
+    [
+        ValidOperators.lessThan,
+        {
+            name: ValidOperators.lessThan,
+            query: Query.lessThan,
+            types: [ValidTypes.integer, ValidTypes.double, ValidTypes.datetime]
+        }
+    ],
+    [
+        ValidOperators.lessThanOrEqual,
+        {
+            name: ValidOperators.lessThanOrEqual,
+            query: Query.lessThanEqual,
+            types: [ValidTypes.integer, ValidTypes.double, ValidTypes.datetime]
+        }
+    ],
+    [
+        ValidOperators.equal,
+        {
+            name: ValidOperators.equal,
+            query: Query.equal,
+            types: [ValidTypes.string, ValidTypes.integer, ValidTypes.double, ValidTypes.boolean]
+        }
+    ],
+    [
+        ValidOperators.notEqual,
+        {
+            name: ValidOperators.notEqual,
+            query: Query.notEqual,
+            types: [ValidTypes.string, ValidTypes.integer, ValidTypes.double, ValidTypes.boolean]
+        }
+    ],
+    [
+        ValidOperators.isNotNull,
+        {
+            name: ValidOperators.isNotNull,
+            query: Query.isNotNull,
+            types: [
+                ValidTypes.string,
+                ValidTypes.integer,
+                ValidTypes.double,
+                ValidTypes.boolean,
+                ValidTypes.datetime,
+                ValidTypes.relationship
+            ],
+            hideInput: true
+        }
+    ],
+    [
+        ValidOperators.isNull,
+        {
+            name: ValidOperators.isNull,
+            query: Query.isNull,
+            types: [
+                ValidTypes.string,
+                ValidTypes.integer,
+                ValidTypes.double,
+                ValidTypes.boolean,
+                ValidTypes.datetime,
+                ValidTypes.relationship
+            ],
+            hideInput: true
+        }
+    ],
+    [
+        ValidOperators.contains,
+        {
+            name: ValidOperators.contains,
+            query: Query.contains,
+            types: [
+                ValidTypes.string,
+                ValidTypes.integer,
+                ValidTypes.double,
+                ValidTypes.boolean,
+                ValidTypes.datetime,
+                ValidTypes.enum
+            ]
+        }
+    ]
+]);
 
 function formatArray(array: string[]) {
     if (!array?.length) return;
@@ -181,3 +319,48 @@ function formatArray(array: string[]) {
         return array.join(' or ');
     }
 }
+
+function createOperatorStore() {
+    const generateDefaultOperators = () => {
+        const operators: Record<string, Operator> = {};
+        operatorsMap.forEach((value, key) => {
+            operators[key] = {
+                toQuery: value.query,
+                toTag: (attribute, input = null) => {
+                    if (input === null) {
+                        return `**${attribute}** ${value.name}`;
+                    } else if (Array.isArray(input) && input.length > 2) {
+                        return {
+                            value: input,
+                            tag: `**${attribute}** ${value.name} **${formatArray(input)}** `
+                        };
+                    } else {
+                        return `**${attribute}** ${value.name} **${input}**`;
+                    }
+                },
+                types: value.types,
+                hideInput: value.hideInput
+            };
+        });
+        return operators;
+    };
+
+    const { subscribe, set, update } = writable<Record<string, Operator>>({
+        ...generateDefaultOperators()
+    });
+
+    return {
+        subscribe,
+        set,
+        update,
+        setOperatorType: (operator: ValidOperators, type: ColumnType[]) => {
+            if (!operatorsMap.has(operator)) return;
+            update((operators) => {
+                operators[operator].types = type;
+                return operators;
+            });
+        }
+    };
+}
+
+export const operators = createOperatorStore();
