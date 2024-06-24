@@ -24,12 +24,69 @@
 
     const columns = writable<Column[]>([
         { id: '$id', title: 'Execution ID', type: 'string', show: true, width: 150 },
-        { id: 'status', title: 'Status', type: 'string', show: true, width: 110 },
-        { id: '$createdAt', title: 'Created', type: 'datetime', show: true, width: 140 },
-        { id: 'trigger', title: 'Trigger', type: 'string', show: true, filter: false, width: 90 },
-        { id: 'requestMethod', title: 'Method', type: 'string', show: true, width: 70 },
-        { id: 'requestPath', title: 'Path', type: 'string', show: true, width: 90 },
-        { id: 'duration', title: 'Duration', type: 'string', show: true, width: 80 }
+        {
+            id: 'status',
+            title: 'Status',
+            type: 'string',
+            show: true,
+            width: 110,
+            array: true,
+            format: 'enum',
+            elements: ['completed', 'scheduled', 'waiting', 'processing', 'cancelled', 'failed']
+        },
+        {
+            id: '$createdAt',
+            title: 'Created',
+            type: 'datetime',
+            show: true,
+            width: 140,
+            format: 'datetime'
+        },
+        {
+            id: 'trigger',
+            title: 'Trigger',
+            type: 'string',
+            show: true,
+            width: 90,
+            array: true,
+            format: 'enum',
+            elements: ['http', 'scheduled', 'event']
+        },
+        {
+            id: 'requestMethod',
+            title: 'Method',
+            type: 'string',
+            show: true,
+            width: 70,
+            array: true,
+            format: 'enum',
+            elements: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']
+        },
+        {
+            id: 'responseStatusCode',
+            title: 'Status code',
+            type: 'string',
+            show: true,
+            width: 100,
+            array: true,
+            format: 'integer'
+        },
+        {
+            id: 'requestPath',
+            title: 'Path',
+            type: 'string',
+            show: true,
+            width: 90,
+            format: 'string'
+        },
+        {
+            id: 'duration',
+            title: 'Duration',
+            type: 'string',
+            show: true,
+            width: 80,
+            format: 'integer'
+        }
     ]);
 
     onMount(() => {

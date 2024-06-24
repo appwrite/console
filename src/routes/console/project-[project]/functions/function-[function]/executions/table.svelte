@@ -87,6 +87,10 @@
                             <TableCellText width={column.width} title={column.title}>
                                 {execution.requestMethod}
                             </TableCellText>
+                        {:else if column.id === 'responseStatusCode'}
+                            <TableCellText width={column.width} title={column.title}>
+                                {execution.responseStatusCode}
+                            </TableCellText>
                         {:else if column.id === 'requestPath'}
                             <TableCellText width={column.width} title={column.title}>
                                 {execution.requestPath}

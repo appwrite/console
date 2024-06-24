@@ -96,7 +96,7 @@ export function addFilter(
 ) {
     const operator = operatorKey ? operators[operatorKey] : null;
     const column = columns.find((c) => c.id === columnId) as Column;
-
+    console.log(column, operator);
     if (!column || !operator) return;
     if (column.array) {
         queries.addFilter({ column, operator, value: arrayValues });
