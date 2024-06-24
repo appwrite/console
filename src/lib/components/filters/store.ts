@@ -94,9 +94,8 @@ export function addFilter(
     value: any, // We cast to any to not cause type errors in the input components
     arrayValues: string[] = []
 ) {
-    const operator = operatorKey ? operators[operatorKey] : null;
+    const operator = operatorKey ? get(operators)[operatorKey] : null;
     const column = columns.find((c) => c.id === columnId) as Column;
-    console.log(column, operator);
     if (!column || !operator) return;
     if (column.array) {
         queries.addFilter({ column, operator, value: arrayValues });
