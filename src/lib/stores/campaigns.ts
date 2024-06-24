@@ -47,7 +47,7 @@ campaigns
         description:
             'Get $VALUE in Cloud credits when you upgrade or create an organization with a Pro plan.'
     })
-    .set('Startups', {
+    .set('StartupsProgram', {
         template: 'review',
         title: 'Welcome to the Appwrite Startups program.',
         description:
