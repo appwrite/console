@@ -144,9 +144,9 @@
                 </ul>
             {/if}
         {/if}
-        <Button text disabled={isDisabled} class="u-margin-block-start-4" submit>
+        <Button text disabled={isDisabled} class="u-margin-block-start-4" noMargin submit>
             <i class="icon-plus" />
-            Add filter
+            Add condition
         </Button>
     </form>
 
