@@ -29,13 +29,13 @@
         cpus ??= $func.cpus;
 
         let runtimes = await $runtimesList;
-        let specs = await $specs;
+        let allowedSpecs = await $specs;
         options = runtimes.runtimes.map((runtime) => ({
             label: `${runtime.name} - ${runtime.version}`,
             value: runtime.$id
-        }));
+        })); 
 
-        memoryOptions = specs.memory.map((memory) =>
+        memoryOptions = allowedSpecs.memory.map((memory) =>
             memory > 1024
                 ? {
                       label: `${memory / 1024} GB`,
@@ -47,7 +47,7 @@
                   }
         );
 
-        cpuOptions = specs.cpus.map((cpu) => ({
+        cpuOptions = allowedSpecs.cpus.map((cpu) => ({
             label: cpu === 1 ? `${cpu} CPU Cores` : `${cpu} CPU Core`,
             value: cpu
         }));
