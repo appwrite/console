@@ -14,9 +14,12 @@
     import type { Models } from '@appwrite.io/console';
     import MfaRegenerateCodes from './mfaRegenerateCodes.svelte';
     import { Pill } from '$lib/elements';
+    import WebauthnMfa from './webauthnMfa.svelte';
 
     let showSetup: boolean = false;
     let showDelete: boolean = false;
+    let showWebauthnSetup: boolean = false;
+    let showWebauthnDelete: boolean = false;
     let showRecoveryCodes = false;
     let showRegenerateRecoveryCodes = false;
     let codes: Models.MfaRecoveryCodes = null;
@@ -136,6 +139,35 @@
                             {/if}
                         </div>
                     </div>
+                    <div
+                    class="method u-flex u-flex-vertical-mobile u-gap-16 u-main-space-between u-sep-block-end"
+                    style="padding-block-end: 16px">
+                    <div class="u-flex u-gap-8">
+                        <div class="avatar is-size-x-small">
+                            <span class="icon-key" aria-hidden="true" />
+                        </div>
+                        <div class="u-flex-vertical u-gap-4 body-text-2">
+                            <span class="u-bold">Security Key</span>
+                            <span
+                                >Use a security key to provide two-factor for your account.</span>
+                        </div>
+                    </div>
+                    <div class="method-button">
+                        {#if $factors.totp}
+                            <Button
+                                text
+                                class="is-not-mobile"
+                                on:click={() => (showWebauthnDelete = true)}>Delete</Button>
+                            <Button
+                                text
+                                class="is-only-mobile"
+                                noMargin
+                                on:click={() => (showWebauthnDelete = true)}>Delete</Button>
+                        {:else}
+                            <Button secondary on:click={() => (showWebauthnSetup = true)}>Add</Button>
+                        {/if}
+                    </div>
+                </div>
 
                     {#if $factors.email}
                         <div
@@ -226,6 +258,9 @@
 
 {#if showSetup}
     <Mfa bind:showSetup />
+{/if}
+{#if showWebauthnSetup}
+    <WebauthnMfa bind:showWebauthnSetup />
 {/if}
 <DeleteMfa bind:showDelete />
 

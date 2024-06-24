@@ -25,6 +25,7 @@
         "@popperjs/core": "^2.11.8",
         "@sentry/svelte": "^7.66.0",
         "@sentry/tracing": "^7.66.0",
+        "@simplewebauthn/browser": "^10.0.0",
         "@stripe/stripe-js": "^3.4.0",
         "ai": "^2.2.11",
         "analytics": "^0.8.9",

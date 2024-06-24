@@ -23,6 +23,7 @@ import {
 } from '@appwrite.io/console';
 import { Billing } from '../sdk/billing';
 import { Sources } from '$lib/sdk/sources';
+import { Account as WebauthnAccount } from '$lib/sdk/account'
 
 const endpoint = VARS.APPWRITE_ENDPOINT ?? `${globalThis?.location?.origin}/v1`;
 
@@ -35,6 +36,7 @@ clientProject.setEndpoint(endpoint).setMode('admin');
 const sdkForProject = {
     client: clientProject,
     account: new Account(clientProject),
+    webauthnAccount: new WebauthnAccount(clientProject),
     avatars: new Avatars(clientProject),
     databases: new Databases(clientProject),
     functions: new Functions(clientProject),
@@ -63,6 +65,7 @@ export const sdk = {
     forConsole: {
         client: clientConsole,
         account: new Account(clientConsole),
+        webauthnAccount: new WebauthnAccount(clientConsole),
         avatars: new Avatars(clientConsole),
         functions: new Functions(clientConsole),
         health: new Health(clientConsole),
