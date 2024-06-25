@@ -94,7 +94,7 @@ export function addFilter(
     value: any, // We cast to any to not cause type errors in the input components
     arrayValues: string[] = []
 ) {
-    const operator = operatorKey ? get(operators)[operatorKey] : null;
+    const operator = operatorKey ? operators[operatorKey] : null;
     const column = columns.find((c) => c.id === columnId) as Column;
     if (!column || !operator) return;
     if (column.array) {
@@ -259,29 +259,4 @@ function generateDefaultOperators() {
     return operators;
 }
 
-function createOperatorStore() {
-    const { subscribe, set, update } = writable<Record<string, Operator>>({
-        ...generateDefaultOperators()
-    });
-
-    return {
-        subscribe,
-        set,
-        update,
-        reset: () => {
-            update(() => {
-                return { ...generateDefaultOperators() };
-            });
-        },
-        setActiveOperators: (activeOperators: ValidOperators[]) => {
-            update((operators) => {
-                operatorsDefault.forEach((value, key) => {
-                    operators[key].types = activeOperators.includes(key) ? value.types : [];
-                });
-                return operators;
-            });
-        }
-    };
-}
-
-export const operators = createOperatorStore();
+export const operators = generateDefaultOperators();
