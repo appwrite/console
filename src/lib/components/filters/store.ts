@@ -39,7 +39,7 @@ function initQueries(initialValue = new Map<string | TagValue, string>()) {
 
     function addFilter({ column, operator, value }: AddFilterArgs) {
         queries.update((map) => {
-            map.set(operator.toTag(column.id, value), operator.toQuery(column.id, value));
+            map.set(operator.toTag(column.title, value), operator.toQuery(column.id, value));
             return map;
         });
     }
