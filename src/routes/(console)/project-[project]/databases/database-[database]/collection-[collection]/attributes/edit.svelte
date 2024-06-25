@@ -71,7 +71,7 @@
             {option?.name}
             {#if option?.type === 'relationship'}
                 <div class="tag eyebrow-heading-3">
-                    <span class="text u-x-small">Beta</span>
+                    <span class="text u-x-small">Experimental</span>
                 </div>
             {/if}
         </div>
