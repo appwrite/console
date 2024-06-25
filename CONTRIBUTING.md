@@ -1,4 +1,4 @@
-# Contributing
+# Contributings
 
 We would ❤️ for you to contribute to Appwrite and help make it better! We want your experience while contributing to Appwrite to be fun, enjoyable, and educational for anyone and everyone. All contributions are welcome, including issues, and new docs, as well as updates and tweaks, blog posts, workshops, and more.
 
