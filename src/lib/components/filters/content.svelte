@@ -6,7 +6,8 @@
         InputText,
         InputTags,
         FormList,
-        InputSelectCheckbox
+        InputSelectCheckbox,
+        InputDateTime
     } from '$lib/elements/forms';
     import { createEventDispatcher, onMount } from 'svelte';
     import { tags, queries, type TagValue, operators, addFilter } from './store';
@@ -138,6 +139,8 @@
                                 { label: 'False', value: false }
                             ].filter(Boolean)}
                             bind:value />
+                    {:else if column.type === 'datetime'}
+                        <InputDateTime id="value" bind:value label="value" showLabel={false} />
                     {:else}
                         <InputText id="value" bind:value placeholder="Enter value" />
                     {/if}
