@@ -22,6 +22,8 @@
 
     export let data;
 
+    const logs = getServiceLimit('logs');
+
     const columns = writable<Column[]>([
         { id: '$id', title: 'Execution ID', type: 'string', show: true, width: 150 },
         {
@@ -96,8 +98,6 @@
             }
         });
     });
-
-    const logs = getServiceLimit('logs');
 </script>
 
 <Container>
