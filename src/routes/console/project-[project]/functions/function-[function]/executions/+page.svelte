@@ -14,7 +14,7 @@
     import Create from '../create.svelte';
     import { abbreviateNumber } from '$lib/helpers/numbers';
     import { base } from '$app/paths';
-    import { Filters } from '$lib/components/filters';
+    import { Filters, TagList } from '$lib/components/filters';
     import { writable } from 'svelte/store';
     import type { Column } from '$lib/helpers/types';
     import { View } from '$lib/helpers/load';
@@ -29,7 +29,7 @@
         {
             id: 'status',
             title: 'Status',
-            type: 'string',
+            type: 'enum',
             show: true,
             width: 110,
             array: true,
@@ -101,6 +101,7 @@
 </script>
 
 <Container>
+    <TagList />
     <ContainerHeader title="Executions">
         <svelte:fragment slot="tooltip" let:tier let:limit let:upgradeMethod>
             <p class="u-bold">The {tier} plan has limits</p>

@@ -10,10 +10,10 @@
         InputDateTime
     } from '$lib/elements/forms';
     import { createEventDispatcher, onMount } from 'svelte';
-    import { tags, queries, type TagValue, operators, addFilter } from './store';
+    import { tags, operators, addFilter } from './store';
     import type { Column } from '$lib/helpers/types';
     import type { Writable } from 'svelte/store';
-    import { tooltip } from '$lib/actions/tooltip';
+    import { TagList } from '.';
 
     // We cast to any to not cause type errors in the input components
     /* eslint  @typescript-eslint/no-explicit-any: 'off' */
@@ -50,21 +50,6 @@
         operatorKey = null;
         value = null;
         arrayValues = [];
-    }
-
-    function tagFormat(node: HTMLElement) {
-        node.innerHTML = node.innerHTML.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
-    }
-
-    function isTypeTagValue(obj: any): obj is TagValue {
-        if (typeof obj === 'string') return false;
-        return (
-            obj &&
-            typeof obj.tag === 'string' &&
-            (typeof obj.value === 'string' ||
-                typeof obj.value === 'number' ||
-                Array.isArray(obj.value))
-        );
     }
 
     const dispatch = createEventDispatcher<{
@@ -154,34 +139,7 @@
     </form>
 
     <ul class="u-flex u-flex-wrap u-cross-center u-gap-8 u-margin-block-start-16 tags">
-        {#each $tags as tag (tag)}
-            {#if isTypeTagValue(tag)}
-                <button
-                    use:tooltip={{
-                        content: tag?.value?.toString()
-                    }}
-                    class="tag"
-                    on:click={() => {
-                        queries.removeFilter(tag);
-                    }}>
-                    <span class="text" use:tagFormat>
-                        {tag.tag}
-                    </span>
-                    <i class="icon-x" />
-                </button>
-            {:else}
-                <button
-                    class="tag"
-                    on:click={() => {
-                        queries.removeFilter(tag);
-                    }}>
-                    <span class="text" use:tagFormat>
-                        {tag}
-                    </span>
-                    <i class="icon-x" />
-                </button>
-            {/if}
-        {/each}
+        <TagList />
     </ul>
 </div>
 

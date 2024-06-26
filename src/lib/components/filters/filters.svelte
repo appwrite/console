@@ -39,7 +39,7 @@
     }
 
     function apply() {
-        if (selectedColumn && operatorKey && value) {
+        if (selectedColumn && operatorKey && (value || arrayValues.length)) {
             addFilter($columns, selectedColumn, operatorKey, value, arrayValues);
             selectedColumn = null;
             value = null;
@@ -53,7 +53,9 @@
         selectedColumn = null;
     }
 
-    $: isButtonDisabled = $queriesAreDirty ? false : !selectedColumn || !operatorKey || !value;
+    $: isButtonDisabled = $queriesAreDirty
+        ? false
+        : !selectedColumn || !operatorKey || (!value && !arrayValues.length);
 </script>
 
 <div class="is-not-mobile">
