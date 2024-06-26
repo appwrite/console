@@ -65,4 +65,24 @@ campaigns
                 }
             ]
         }
+    })
+    .set('JSMastery', {
+        template: 'review',
+        title: 'Claim your JavaScript Mastery $50 credits.',
+        description:
+            'Get $50 in Cloud credits when you upgrade or create an organization with a Pro plan',
+        onlyNewOrgs: true,
+        data: {
+            cta: 'Get everything out of Cloud with Pro',
+            claimed: 'Your credits will be valid for 12 months.',
+            unclaimed: 'Apply your code to join the Startups program.',
+            reviews: [
+                {
+                    name: 'Marius Bloki',
+                    desc: 'CTO // mySHOEFITTER',
+                    img: 'js_mastery_reviewer_1.png',
+                    review: 'Appwrite has been a tremendous asset in implementing our IT infrastructure. Not only is the software an absolute game-changer, but the team is always there when you need them.'
+                }
+            ]
+        }
     });
