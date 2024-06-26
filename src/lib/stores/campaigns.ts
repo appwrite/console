@@ -54,6 +54,9 @@ campaigns
             "We're excited to have you on board. Add your credit code to your Appwrite Pro account to join.",
         onlyNewOrgs: true,
         data: {
+            cta: 'Get everything out of Cloud with Pro',
+            claimed: 'Your credits will be valid for 12 months.',
+            unclaimed: 'Apply your code to join the Startups program.',
             reviews: [
                 {
                     name: 'David Foster',

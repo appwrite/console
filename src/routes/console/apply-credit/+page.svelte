@@ -254,15 +254,7 @@
             </FormList>
         </Form>
         <svelte:fragment slot="aside">
-            {#if campaign?.template === 'review'}
-                <div
-                    class="box card-container u-position-relative"
-                    style:--box-border-radius="var(--border-radius-small)">
-                    <p>
-                        {campaign.description}
-                    </p>
-                </div>
-            {:else if campaign?.template === 'card'}
+            {#if campaign?.template === 'card'}
                 <div
                     class="box card-container u-position-relative"
                     style:--box-border-radius="var(--border-radius-small)">
@@ -303,7 +295,20 @@
                     billingPlan={BillingPlan.PRO}
                     {collaborators}
                     bind:couponData
-                    bind:billingBudget />
+                    bind:billingBudget>
+                    {#if campaign?.template === 'review' && (campaign?.data?.cta || campaign?.data?.claimed || campaign?.data?.unclaimed)}
+                        <div class="u-margin-block-end-24">
+                            <p class="body-text-1 u-bold">{campaign?.data?.cta}</p>
+                            <p class="text u-margin-block-start-8">
+                                {#if couponData?.code && couponData?.status === 'active' && campaign?.data?.claimed}
+                                    {campaign?.data?.claimed}
+                                {:else if campaign?.data?.unclaimed}
+                                    {campaign?.data?.unclaimed}
+                                {/if}
+                            </p>
+                        </div>
+                    {/if}
+                </EstimatedTotalBox>
             {/if}
         </svelte:fragment>
     </WizardSecondaryContent>

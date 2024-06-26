@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Avatar, Card, Heading } from '$lib/components';
+    import { Avatar, AvatarInitials, Card, Heading } from '$lib/components';
     import AppwriteLogoDark from '$lib/images/appwrite-logo-dark.svg';
     import AppwriteLogoLight from '$lib/images/appwrite-logo-light.svg';
     import LoginDark from '$lib/images/login/login-dark-mode.png';
@@ -112,13 +112,13 @@
             </section>
         {:else if variation === 'review'}
             <section
-                class="u-flex u-flex-vertical u-main-center u-cross-center u-height-100-percent u-width-full-line">
-                <div class="u-text-center auth-container">
-                    <div class="is-only-mobile u-width-full-line u-margin-block-start">
+                class="u-flex u-flex-vertical u-main-center u-cross-center u-height-100-percent u-width-full-line auth-container">
+                <div class="u-text-center">
+                    <div class="is-only-mobile u-width-full-line">
                         <Heading
                             size="5"
                             tag="h3"
-                            class="u-margin-block-start-16"
+                            class="u-margin-block-start-48"
                             trimmed={false}
                             style="font-weight:normal">
                             {generateTitle()}
@@ -135,16 +135,22 @@
                         </Heading>
                     </div>
                 </div>
-                <div class="auth-container u-margin-block-start-48">
+
+                <p class="body-text-1 u-margin-block-start-16 u-text-center">{generateDesc()}</p>
+                <div class="auth-container u-margin-block-start-64">
                     <Card style="--p-card-padding: 1.25rem">
-                        <p>
+                        <p class="body-text-1">
                             {currentReview.review}
                         </p>
                         <div class="u-margin-block-start-16 u-flex u-gap-16">
-                            <Avatar
-                                src="https://unsplash.it/200"
-                                name={currentReview.name}
-                                size={40} />
+                            {#if currentReview?.img}
+                                <Avatar
+                                    src={currentReview.img}
+                                    name={currentReview.name}
+                                    size={40} />
+                            {:else}
+                                <AvatarInitials size={40} name={currentReview.name} />
+                            {/if}
                             <div>
                                 <p class="body-text-2 u-bold">{currentReview.name}</p>
                                 <p class="body-text-2">{currentReview.desc}</p>
