@@ -145,7 +145,7 @@
                         <div class="u-margin-block-start-16 u-flex u-gap-16">
                             {#if currentReview?.img}
                                 <Avatar
-                                    src={currentReview.img}
+                                    src={`/images/campaigns/${coupon?.campaign ?? campaign}/reviewers/${currentReview.img}`}
                                     name={currentReview.name}
                                     size={40} />
                             {:else}
