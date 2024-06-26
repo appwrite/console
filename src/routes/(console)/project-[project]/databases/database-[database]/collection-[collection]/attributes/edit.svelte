@@ -65,7 +65,13 @@
     }
 </script>
 
-<Modal {error} size="big" bind:show={showEdit} onSubmit={submit} icon={option?.icon}>
+<Modal
+    {error}
+    size="big"
+    bind:show={showEdit}
+    onSubmit={submit}
+    icon={option?.icon}
+    iconNotMobile={option?.type === 'relationship'}>
     <svelte:fragment slot="title">
         <div class="u-flex u-cross-center u-gap-8">
             {option?.name}
