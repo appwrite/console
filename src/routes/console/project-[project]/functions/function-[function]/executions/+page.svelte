@@ -137,11 +137,14 @@
                             <Pill
                                 warning={status === 'scheduled' ||
                                     status === 'processing' ||
-                                    status === 'pending'}
-                                danger={status === 'failed' || status === 'cancelled'}
+                                    status === 'pending' ||
+                                    status === 'cancelled'}
+                                danger={status === 'failed'}
                                 info={status === 'completed'}>
                                 {#if status === 'scheduled'}
                                     <span class="icon-clock" aria-hidden="true" />
+                                {:else if status === 'cancelled'}
+                                    <span class="icon-x-circle" aria-hidden="true" />
                                 {/if}
                                 {status}
                             </Pill>
