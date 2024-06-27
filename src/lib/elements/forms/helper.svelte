@@ -1,9 +1,11 @@
 <script lang="ts">
     export let type: 'success' | 'warning' | 'error' | 'info' | 'neutral' = 'warning';
+    let classes = '';
+    export { classes as class };
 </script>
 
 <p
-    class="helper u-margin-block-start-8"
+    class="helper u-margin-block-start-8 {classes}"
     class:u-color-text-info={type === 'info'}
     class:u-color-text-danger={type === 'error'}
     class:u-color-text-success={type === 'success'}

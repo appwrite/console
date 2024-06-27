@@ -2,7 +2,7 @@
     import { DropList } from '$lib/components';
     import { clickOnEnter } from '$lib/helpers/a11y';
     import { createEventDispatcher, onMount } from 'svelte';
-    import { Label } from '.';
+    import { Helper, Label } from '.';
 
     /* eslint no-undef: "off" */
     type Option = $$Generic<{
@@ -36,6 +36,7 @@
     let element: HTMLInputElement;
     let hasFocus = false;
     let selected: number = null;
+    let error: string;
 
     $: if (!hasFocus) {
         selected = null;
@@ -105,7 +106,18 @@
         dispatch('reset');
     }
 
+    function handleInvalid(event: Event) {
+        event.preventDefault();
+
+        if (element.validity.valueMissing) {
+            error = 'This field is required';
+            return;
+        }
+        error = element.validationMessage;
+    }
+
     $: showClearBtn = (hasFocus && search) || value;
+    $: if (value || search) error = null;
 </script>
 
 <li
@@ -147,6 +159,7 @@
                         bind:this={element}
                         on:focus={() => (hasFocus = true)}
                         on:click={() => (hasFocus = true)}
+                        on:invalid={handleInvalid}
                         on:input={handleInput}
                         on:keydown={handleKeydown} />
                 {/if}
@@ -205,6 +218,9 @@
             {/if}
         </svelte:fragment>
     </DropList>
+    {#if error}
+        <Helper class="u-position-relative" type="warning">{error}</Helper>
+    {/if}
 </li>
 
 <style>

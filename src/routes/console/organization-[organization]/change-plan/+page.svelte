@@ -242,12 +242,7 @@
     $: if (billingPlan === BillingPlan.PRO) {
         loadPaymentMethods();
     }
-    $: isButtonDisabled =
-        $organization.billingPlan === billingPlan
-            ? true
-            : isUpgrade
-              ? !paymentMethodId
-              : !feedbackDowngradeReason;
+    $: isButtonDisabled = $organization.billingPlan === billingPlan;
 </script>
 
 <svelte:head>
@@ -255,8 +250,9 @@
 </svelte:head>
 
 <WizardSecondaryContainer bind:showExitModal href={previousPage}>
-    <WizardSecondaryHeader confirmExit on:exit={() => (showExitModal = true)}
-        >Change plan</WizardSecondaryHeader>
+    <WizardSecondaryHeader confirmExit on:exit={() => (showExitModal = true)}>
+        Change plan
+    </WizardSecondaryHeader>
     <WizardSecondaryContent>
         <Form bind:this={formComponent} onSubmit={handleSubmit} bind:isSubmitting>
             <Label class="label u-margin-block-start-16">Select plan</Label>
