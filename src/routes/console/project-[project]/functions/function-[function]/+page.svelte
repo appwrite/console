@@ -93,7 +93,7 @@
     <ContainerHeader title="Deployments">
         <Create main />
     </ContainerHeader>
-    {#if $deploymentList?.total}
+    {#if data?.activeDeployment}
         {@const activeDeployment = data.activeDeployment}
         <div class="common-section">
             <Heading tag="h3" size="7">Active</Heading>
@@ -268,6 +268,20 @@
                         allowNoColumns
                         showColsTextMobile />
                 </div>
+            </div>
+            <div class="u-flex u-main-space-between u-margin-block-start-16 is-only-mobile">
+                <Filters query={data.query} {columns}>
+                    <svelte:fragment slot="mobile" let:disabled let:toggle>
+                        <Button text on:click={toggle} {disabled} ariaLabel="open filter" noMargin>
+                            <span class="icon-filter-line" />
+                            <span class="text">Filters</span>
+                            {#if $tags?.length}
+                                <span class="inline-tag">{$tags?.length}</span>
+                            {/if}
+                        </Button>
+                    </svelte:fragment>
+                </Filters>
+                <ViewSelector view={View.Table} {columns} hideView allowNoColumns />
             </div>
         </div>
         {#if $deploymentList.total}
