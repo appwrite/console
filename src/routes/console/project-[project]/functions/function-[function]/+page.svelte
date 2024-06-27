@@ -1,61 +1,92 @@
 <script lang="ts">
-    import { invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { timer } from '$lib/actions/timer';
     import {
         CardGrid,
-        DropList,
-        DropListItem,
-        DropListLink,
         Empty,
         Heading,
         Id,
         PaginationWithLimit,
-        Alert
+        Alert,
+        ViewSelector
     } from '$lib/components';
-    import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
-    import {
-        TableBody,
-        TableCell,
-        TableCellHead,
-        TableCellText,
-        TableHeader,
-        TableRow,
-        TableScroll
-    } from '$lib/elements/table';
     import { deploymentList, func, proxyRuleList } from './store';
     import { Container, ContainerHeader } from '$lib/layout';
     import { app } from '$lib/stores/app';
-    import { calculateSize, humanFileSize } from '$lib/helpers/sizeConvertion';
+    import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import type { Models } from '@appwrite.io/console';
-    import Delete from './delete.svelte';
     import Create from './create.svelte';
-    import Activate from './activate.svelte';
     import { calculateTime } from '$lib/helpers/timeConversion';
     import { Pill } from '$lib/elements';
-    import RedeployModal from './redeployModal.svelte';
     import DeploymentSource from './deploymentSource.svelte';
     import DeploymentCreatedBy from './deploymentCreatedBy.svelte';
     import DeploymentDomains from './deploymentDomains.svelte';
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
     import { readOnly } from '$lib/stores/billing';
     import { project } from '../../store';
+    import { writable } from 'svelte/store';
+    import type { Column } from '$lib/helpers/types';
+    import Table from './table.svelte';
+    import { Filters, TagList } from '$lib/components/filters';
+    import { queries, tags } from '$lib/components/filters/store';
+    import { View } from '$lib/helpers/load';
 
     export let data;
 
-    let showDropdown = [];
-    let showDelete = false;
-    let showActivate = false;
     let showRedeploy = false;
     let showAlert = true;
 
     let selectedDeployment: Models.Deployment = null;
 
-    function handleActivate() {
-        invalidate(Dependencies.DEPLOYMENTS);
-    }
+    const columns = writable<Column[]>([
+        { id: '$id', title: 'Deployment ID', type: 'string', show: true, width: 150 },
+        {
+            id: 'status',
+            title: 'Status',
+            type: 'enum',
+            show: true,
+            width: 110,
+            array: true,
+            format: 'enum',
+            elements: ['completed', 'scheduled', 'waiting', 'processing', 'cancelled', 'failed']
+        },
+        {
+            id: 'source',
+            title: 'source',
+            type: 'string',
+            show: true,
+            width: 90,
+            array: true,
+            format: 'enum',
+            elements: ['manual', 'cli', 'vcs']
+        },
+        {
+            id: '$updatedAt',
+            title: 'Updated',
+            type: 'datetime',
+            show: true,
+            width: 150,
+            format: 'datetime'
+        },
+
+        {
+            id: 'buildTime',
+            title: 'Build time',
+            type: 'string',
+            show: true,
+            width: 80,
+            format: 'string'
+        },
+        {
+            id: 'size',
+            title: 'Size',
+            type: 'integer',
+            show: true,
+            width: 80,
+            format: 'integer'
+        }
+    ]);
 </script>
 
 <Container>
@@ -201,111 +232,47 @@
         {/if}
         <div class="common-section">
             <Heading tag="h3" size="7">All</Heading>
+            <div class="u-flex u-main-space-between is-not-mobile u-margin-block-start-16">
+                <div class="u-flex u-gap-8 u-cross-center u-flex-wrap">
+                    <TagList />
+
+                    <Filters query={data.query} {columns} let:disabled let:toggle singleCondition>
+                        <div class="u-flex u-gap-4">
+                            <Button text on:click={toggle} {disabled} ariaLabel="open filter">
+                                <span class="icon-filter-line" />
+                                {#if !$tags?.length}
+                                    <span class="text">Filters</span>
+                                {/if}
+                            </Button>
+                            {#if $tags?.length}
+                                <div
+                                    style="flex-basis:1px; background-color:hsl(var(--color-border)); width: 1px">
+                                </div>
+                                <Button
+                                    text
+                                    on:click={() => {
+                                        queries.clearAll();
+                                        queries.apply();
+                                    }}>
+                                    Clear all
+                                </Button>
+                            {/if}
+                        </div>
+                    </Filters>
+                </div>
+                <div class="u-flex u-gap-16">
+                    <ViewSelector
+                        view={View.Table}
+                        {columns}
+                        hideView
+                        allowNoColumns
+                        showColsTextMobile />
+                </div>
+            </div>
         </div>
         {#if $deploymentList.total}
             <div class="u-margin-block-start-24">
-                <TableScroll noMargin>
-                    <TableHeader>
-                        <TableCellHead width={150}>Deployment ID</TableCellHead>
-                        <TableCellHead width={100}>Status</TableCellHead>
-                        <TableCellHead width={80}>Source</TableCellHead>
-                        <TableCellHead width={180}>Updated</TableCellHead>
-                        <TableCellHead width={80}>Build Time</TableCellHead>
-                        <TableCellHead width={80}>Size</TableCellHead>
-                        <TableCellHead width={40} />
-                    </TableHeader>
-                    <TableBody>
-                        {#each $deploymentList.deployments as deployment, index (deployment.$id)}
-                            {@const status = deployment.status}
-                            <TableRow>
-                                <TableCell width={150} title="Deployment ID">
-                                    <Id value={deployment.$id}>{deployment.$id}</Id>
-                                </TableCell>
-                                <TableCell title="Status">
-                                    {#if activeDeployment?.$id === deployment?.$id}
-                                        <Pill success>active</Pill>
-                                    {:else}
-                                        <Pill
-                                            danger={status === 'failed'}
-                                            warning={status === 'building'}
-                                            info={status === 'ready'}>
-                                            {status}
-                                        </Pill>
-                                    {/if}
-                                </TableCell>
-                                <TableCellText title="Source">
-                                    <DeploymentSource {deployment} /></TableCellText>
-                                <TableCellText width={180} title="Updated">
-                                    <DeploymentCreatedBy {deployment} />
-                                </TableCellText>
-
-                                <TableCellText title="Build Time">
-                                    {#if ['processing', 'building'].includes(deployment.status)}
-                                        <span use:timer={{ start: deployment.$createdAt }} />
-                                    {:else}
-                                        {calculateTime(deployment.buildTime)}
-                                    {/if}
-                                </TableCellText>
-
-                                <TableCellText title="Size">
-                                    {calculateSize(deployment.size)}
-                                </TableCellText>
-
-                                <TableCell width={40} showOverflow>
-                                    <DropList
-                                        bind:show={showDropdown[index]}
-                                        placement="bottom-start"
-                                        noArrow>
-                                        <button
-                                            class="button is-only-icon is-text"
-                                            aria-label="More options"
-                                            on:click|preventDefault={() => {
-                                                showDropdown[index] = !showDropdown[index];
-                                            }}>
-                                            <span class="icon-dots-horizontal" aria-hidden="true" />
-                                        </button>
-                                        <svelte:fragment slot="list">
-                                            <DropListItem
-                                                icon="refresh"
-                                                on:click={() => {
-                                                    selectedDeployment = deployment;
-                                                    showRedeploy = true;
-                                                    showDropdown = [];
-                                                }}>
-                                                Redeploy
-                                            </DropListItem>
-                                            {#if deployment.status === 'ready' && deployment.$id !== $func.deployment}
-                                                <DropListItem
-                                                    icon="lightning-bolt"
-                                                    on:click={() => {
-                                                        selectedDeployment = deployment;
-                                                        showActivate = true;
-                                                        showDropdown = [];
-                                                    }}>
-                                                    Activate
-                                                </DropListItem>
-                                            {/if}
-                                            <DropListLink
-                                                icon="terminal"
-                                                href={`/console/project-${$page.params.project}/functions/function-${$page.params.function}/deployment-${deployment.$id}`}>
-                                                Logs
-                                            </DropListLink>
-                                            <DropListItem
-                                                icon="trash"
-                                                on:click={() => {
-                                                    selectedDeployment = deployment;
-                                                    showDropdown = [];
-                                                    showDelete = true;
-                                                }}>
-                                                Delete
-                                            </DropListItem>
-                                        </svelte:fragment>
-                                    </DropList>
-                                </TableCell>
-                            </TableRow>
-                        {/each}
-                    </TableBody>
-                </TableScroll>
+                <Table columns={$columns} {data} />
             </div>
         {:else}
             <Empty single target="deployment" on:click>
@@ -354,9 +321,3 @@
         offset={data.offset}
         total={$deploymentList?.total} />
 </Container>
-
-{#if selectedDeployment}
-    <Delete {selectedDeployment} bind:showDelete />
-    <Activate {selectedDeployment} bind:showActivate on:activated={handleActivate} />
-    <RedeployModal {selectedDeployment} bind:show={showRedeploy} />
-{/if}
