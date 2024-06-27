@@ -11,6 +11,7 @@
     export let columns: Writable<Column[]>;
     export let disabled = false;
     export let fullWidthMobile = false;
+    export let singleCondition = false;
 
     const parsedQueries = queryParamToMap(query);
     queries.set(parsedQueries);
@@ -56,19 +57,25 @@
     $: isButtonDisabled = $queriesAreDirty
         ? false
         : !selectedColumn || !operatorKey || (!value && !arrayValues.length);
+
+    function toggleDropdown() {
+        showFiltersDesktop = !showFiltersDesktop;
+    }
 </script>
 
 <div class="is-not-mobile">
     <Drop bind:show={showFiltersDesktop} noArrow>
-        <Button secondary on:click={() => (showFiltersDesktop = !showFiltersDesktop)} {disabled}>
-            <i class="icon-filter u-opacity-50" />
-            Filters
-            {#if applied > 0}
-                <span class="inline-tag">
-                    {applied}
-                </span>
-            {/if}
-        </Button>
+        <slot {disabled} toggle={toggleDropdown}>
+            <Button secondary on:click={toggleDropdown} {disabled}>
+                <i class="icon-filter u-opacity-50" />
+                Filters
+                {#if applied > 0}
+                    <span class="inline-tag">
+                        {applied}
+                    </span>
+                {/if}
+            </Button>
+        </slot>
         <svelte:fragment slot="list">
             <div class="dropped card">
                 <p>Apply filter rules to refine the table view</p>
@@ -78,11 +85,16 @@
                     bind:value
                     bind:arrayValues
                     {columns}
+                    {singleCondition}
                     on:apply={(e) => (applied = e.detail.applied)}
                     on:clear={() => (applied = 0)} />
                 <hr />
                 <div class="u-flex u-margin-block-start-16 u-main-end u-gap-8">
-                    <Button text on:click={clearAll}>Clear all</Button>
+                    {#if singleCondition}
+                        <Button text on:click={toggleDropdown}>Cancel</Button>
+                    {:else}
+                        <Button text on:click={clearAll}>Clear all</Button>
+                    {/if}
                     <Button on:click={apply} disabled={isButtonDisabled}>Apply</Button>
                 </div>
             </div>
@@ -112,10 +124,15 @@
             bind:operatorKey
             bind:value
             bind:arrayValues
+            {singleCondition}
             on:apply={(e) => (applied = e.detail.applied)}
             on:clear={() => (applied = 0)} />
         <svelte:fragment slot="footer">
-            <Button text on:click={clearAll}>Clear all</Button>
+            {#if singleCondition}
+                <Button text on:click={() => (showFiltersMobile = false)}>Cancel</Button>
+            {:else}
+                <Button text on:click={clearAll}>Clear all</Button>
+            {/if}
             <Button on:click={apply} disabled={isButtonDisabled}>Apply</Button>
         </svelte:fragment>
     </Modal>

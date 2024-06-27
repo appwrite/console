@@ -5,6 +5,7 @@ import { page } from '$app/stores';
 import deepEqual from 'deep-equal';
 import type { Column, ColumnType } from '$lib/helpers/types';
 import { Query } from '@appwrite.io/console';
+import { toLocaleDateTime } from '$lib/helpers/date';
 
 export type TagValue = {
     tag: string;
@@ -12,7 +13,11 @@ export type TagValue = {
 };
 
 export type Operator = {
-    toTag: (attribute: string, input?: string | number | string[]) => string | TagValue;
+    toTag: (
+        attribute: string,
+        input?: string | number | string[],
+        type?: string
+    ) => string | TagValue;
     toQuery: (attribute: string, input?: string | number | string[]) => string;
     types: ColumnType[];
     hideInput?: boolean;
@@ -39,7 +44,10 @@ function initQueries(initialValue = new Map<string | TagValue, string>()) {
 
     function addFilter({ column, operator, value }: AddFilterArgs) {
         queries.update((map) => {
-            map.set(operator.toTag(column.title, value), operator.toQuery(column.id, value));
+            map.set(
+                operator.toTag(column.title, value, column?.type),
+                operator.toQuery(column.id, value)
+            );
             return map;
         });
     }
@@ -183,13 +191,7 @@ const operatorsDefault = new Map<
         ValidOperators.NotEqual,
         {
             query: Query.notEqual,
-            types: [
-                ValidTypes.String,
-                ValidTypes.Integer,
-                ValidTypes.Double,
-                ValidTypes.Boolean,
-                ValidTypes.Enum
-            ]
+            types: [ValidTypes.String, ValidTypes.Integer, ValidTypes.Double, ValidTypes.Boolean]
         }
     ],
     [
@@ -252,7 +254,7 @@ function generateDefaultOperators() {
     operatorsDefault.forEach((operator, operatorName) => {
         operators[operatorName] = {
             toQuery: operator.query,
-            toTag: (attribute, input = null) => {
+            toTag: (attribute, input = null, type = null) => {
                 if (input === null) {
                     return `**${attribute}** ${operatorName}`;
                 } else if (Array.isArray(input) && input.length > 2) {
@@ -260,6 +262,8 @@ function generateDefaultOperators() {
                         value: input,
                         tag: `**${attribute}** ${operatorName} **${formatArray(input)}** `
                     };
+                } else if (type === ValidTypes.Datetime) {
+                    return `**${attribute}** ${operatorName} **${toLocaleDateTime(input.toString())}**`;
                 } else {
                     return `**${attribute}** ${operatorName} **${input}**`;
                 }

@@ -14,11 +14,12 @@
     import Create from '../create.svelte';
     import { abbreviateNumber } from '$lib/helpers/numbers';
     import { base } from '$app/paths';
-    import { Filters, TagList } from '$lib/components/filters';
+    import { Filters, queries, TagList } from '$lib/components/filters';
     import { writable } from 'svelte/store';
     import type { Column } from '$lib/helpers/types';
     import { View } from '$lib/helpers/load';
     import Table from './table.svelte';
+    import { tags } from '$lib/components/filters/store';
 
     export let data;
 
@@ -101,7 +102,6 @@
 </script>
 
 <Container>
-    <TagList />
     <ContainerHeader title="Executions">
         <svelte:fragment slot="tooltip" let:tier let:limit let:upgradeMethod>
             <p class="u-bold">The {tier} plan has limits</p>
@@ -132,7 +132,33 @@
         </svelte:fragment>
     </ContainerHeader>
     <div class="u-flex u-main-space-between is-not-mobile u-margin-block-start-16">
-        <Filters query={data.query} {columns} />
+        <div class="u-flex u-gap-8 u-cross-center u-flex-wrap">
+            <TagList />
+
+            <Filters query={data.query} {columns} let:disabled let:toggle singleCondition>
+                <div class="u-flex u-gap-4">
+                    <Button text on:click={toggle} {disabled} ariaLabel="open filter">
+                        <span class="icon-filter-line" />
+                        {#if !$tags?.length}
+                            <span class="text">Filters</span>
+                        {/if}
+                    </Button>
+                    {#if $tags?.length}
+                        <div
+                            style="flex-basis:1px; background-color:hsl(var(--color-border)); width: 1px">
+                        </div>
+                        <Button
+                            text
+                            on:click={() => {
+                                queries.clearAll();
+                                queries.apply();
+                            }}>
+                            Clear all
+                        </Button>
+                    {/if}
+                </div>
+            </Filters>
+        </div>
         <div class="u-flex u-gap-16">
             <ViewSelector view={View.Table} {columns} hideView allowNoColumns showColsTextMobile />
             <Button
@@ -156,7 +182,7 @@
                     fullWidthMobile />
             </div>
             <div class="u-flex-basis-50-percent">
-                <Filters query={data.query} {columns} fullWidthMobile />
+                <Filters query={data.query} {columns} fullWidthMobile singleCondition />
             </div>
         </div>
         <Button

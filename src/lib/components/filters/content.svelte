@@ -22,6 +22,7 @@
     export let columnId: string | null = null;
     export let arrayValues: string[] = [];
     export let operatorKey: string | null = null;
+    export let singleCondition = false;
 
     $: column = $columns.find((c) => c.id === columnId) as Column;
 
@@ -42,6 +43,12 @@
 
     onMount(() => {
         value = column?.array ? [] : null;
+        if (column?.type === 'datetime') {
+            const today = new Date();
+            console.log(today.toISOString());
+            value = today.toISOString();
+            console.log(value);
+        }
     });
 
     function addFilterAndReset() {
@@ -57,6 +64,13 @@
         apply: { applied: number };
     }>();
     dispatch('apply', { applied: $tags.length });
+
+    // $: if (column?.type === 'datetime' && !value) {
+    //     const today = new Date();
+    //     console.log(today.toISOString());
+    //     value = today.toISOString();
+    //     console.log('value', value);
+    // }
 </script>
 
 <div>
@@ -125,22 +139,28 @@
                             ].filter(Boolean)}
                             bind:value />
                     {:else if column.type === 'datetime'}
-                        <InputDateTime id="value" bind:value label="value" showLabel={false} />
+                        {#key value}
+                            <InputDateTime id="value" bind:value label="value" showLabel={false} />
+                        {/key}
                     {:else}
                         <InputText id="value" bind:value placeholder="Enter value" />
                     {/if}
                 </ul>
             {/if}
         {/if}
-        <Button text disabled={isDisabled} class="u-margin-block-start-4" noMargin submit>
-            <i class="icon-plus" />
-            Add condition
-        </Button>
+        {#if !singleCondition}
+            <Button text disabled={isDisabled} class="u-margin-block-start-4" noMargin submit>
+                <i class="icon-plus" />
+                Add condition
+            </Button>
+        {/if}
     </form>
 
-    <ul class="u-flex u-flex-wrap u-cross-center u-gap-8 u-margin-block-start-16 tags">
-        <TagList />
-    </ul>
+    {#if !singleCondition}
+        <ul class="u-flex u-flex-wrap u-cross-center u-gap-8 u-margin-block-start-16 tags">
+            <TagList />
+        </ul>
+    {/if}
 </div>
 
 <style lang="scss">
