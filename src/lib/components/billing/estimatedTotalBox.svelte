@@ -32,7 +32,7 @@
 </script>
 
 <section
-    class="card u-margin-block-start-32 u-flex u-flex-vertical u-gap-8"
+    class="card u-flex u-flex-vertical u-gap-8"
     style:--p-card-padding="1.5rem"
     style:--p-card-border-radius="var(--border-radius-small)">
     <slot />

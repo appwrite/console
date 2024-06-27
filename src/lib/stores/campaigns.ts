@@ -49,7 +49,7 @@ campaigns
     })
     .set('StartupsProgram', {
         template: 'review',
-        title: 'Welcome to the Appwrite Startups program.',
+        title: 'Welcome to the Startups program',
         description:
             "We're excited to have you on board. Add your credit code to your Appwrite Pro account to join.",
         onlyNewOrgs: true,
@@ -60,6 +60,7 @@ campaigns
             reviews: [
                 {
                     name: 'David Foster',
+                    img: '1.jpeg',
                     desc: 'Managing director',
                     review: 'We really loved working with Appwrite for launching our bootstrapped "Open Mind" App. It was saving us a lot of money in comparison to Firebase since the amount of users grew quite fast and we needed a quick switch.'
                 }
