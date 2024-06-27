@@ -112,7 +112,7 @@
             </section>
         {:else if variation === 'review'}
             <section
-                class="u-flex u-flex-vertical u-main-center u-cross-center u-height-100-percent u-width-full-line auth-container">
+                class="u-flex u-flex-vertical u-main-center u-cross-center u-height-100-percent u-width-full-line review-container">
                 <div class="u-text-center">
                     <div class="is-only-mobile u-width-full-line">
                         <Heading
@@ -137,7 +137,7 @@
                 </div>
 
                 <p class="body-text-1 u-margin-block-start-16 u-text-center">{generateDesc()}</p>
-                <div class="auth-container u-margin-block-start-64">
+                <div class="review-container u-margin-block-start-64">
                     <Card style="--p-card-padding: 1.25rem">
                         <p class="body-text-1">
                             {currentReview.review}
@@ -356,6 +356,9 @@
 
     .auth-container {
         max-inline-size: 27.5rem;
+    }
+    .review-container {
+        max-inline-size: 30rem;
     }
     .logo-variation {
         padding-block-start: 2rem;
