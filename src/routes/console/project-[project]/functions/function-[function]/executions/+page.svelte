@@ -34,13 +34,11 @@
     import Create from '../create.svelte';
     import { abbreviateNumber } from '$lib/helpers/numbers';
     import Delete from './delete.svelte';
-    import Cancel from './cancel.svelte';
 
     export let data;
 
     let showDropdown = [];
     let showDelete = false;
-    let showCancel = false;
 
     let selectedExecution: Models.Execution = null;
 
@@ -137,14 +135,11 @@
                             <Pill
                                 warning={status === 'scheduled' ||
                                     status === 'processing' ||
-                                    status === 'pending' ||
-                                    status === 'cancelled'}
+                                    status === 'pending'}
                                 danger={status === 'failed'}
                                 info={status === 'completed'}>
                                 {#if status === 'scheduled'}
                                     <span class="icon-clock" aria-hidden="true" />
-                                {:else if status === 'cancelled'}
-                                    <span class="icon-x-circle" aria-hidden="true" />
                                 {/if}
                                 {status}
                             </Pill>
@@ -180,18 +175,6 @@
                                     <span class="icon-dots-horizontal" aria-hidden="true" />
                                 </button>
                                 <svelte:fragment slot="list">
-                                    {#if execution.status === 'scheduled' || execution.status === 'processing' || execution.status === 'pending'}
-                                        <DropListItem
-                                            icon="x-circle"
-                                            on:click={() => {
-                                                selectedExecution = execution;
-                                                showCancel = true;
-                                                showDropdown = [];
-                                            }}>
-                                            Cancel
-                                        </DropListItem>
-                                    {/if}
-
                                     <DropListItem
                                         icon="terminal"
                                         on:click={() => {
@@ -242,5 +225,4 @@
 
 {#if selectedExecution}
     <Delete {selectedExecution} bind:showDelete />
-    <Cancel {selectedExecution} bind:showCancel />
 {/if}
