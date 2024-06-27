@@ -290,25 +290,27 @@
                     {/if}
                 </section>
             {:else if selectedOrgId}
-                <EstimatedTotalBox
-                    fixedCoupon={!!data?.couponData?.code}
-                    billingPlan={BillingPlan.PRO}
-                    {collaborators}
-                    bind:couponData
-                    bind:billingBudget>
-                    {#if campaign?.template === 'review' && (campaign?.data?.cta || campaign?.data?.claimed || campaign?.data?.unclaimed)}
-                        <div class="u-margin-block-end-24">
-                            <p class="body-text-1 u-bold">{campaign?.data?.cta}</p>
-                            <p class="text u-margin-block-start-8">
-                                {#if couponData?.code && couponData?.status === 'active' && campaign?.data?.claimed}
-                                    {campaign?.data?.claimed}
-                                {:else if campaign?.data?.unclaimed}
-                                    {campaign?.data?.unclaimed}
-                                {/if}
-                            </p>
-                        </div>
-                    {/if}
-                </EstimatedTotalBox>
+                <div class:u-margin-block-start={campaign?.template === 'card'}>
+                    <EstimatedTotalBox
+                        fixedCoupon={!!data?.couponData?.code}
+                        billingPlan={BillingPlan.PRO}
+                        {collaborators}
+                        bind:couponData
+                        bind:billingBudget>
+                        {#if campaign?.template === 'review' && (campaign?.data?.cta || campaign?.data?.claimed || campaign?.data?.unclaimed)}
+                            <div class="u-margin-block-end-24">
+                                <p class="body-text-1 u-bold">{campaign?.data?.cta}</p>
+                                <p class="text u-margin-block-start-8">
+                                    {#if couponData?.code && couponData?.status === 'active' && campaign?.data?.claimed}
+                                        {campaign?.data?.claimed}
+                                    {:else if campaign?.data?.unclaimed}
+                                        {campaign?.data?.unclaimed}
+                                    {/if}
+                                </p>
+                            </div>
+                        {/if}
+                    </EstimatedTotalBox>
+                </div>
             {/if}
         </svelte:fragment>
     </WizardSecondaryContent>

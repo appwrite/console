@@ -49,7 +49,7 @@ campaigns
     })
     .set('StartupsProgram', {
         template: 'review',
-        title: 'Welcome to the Appwrite Startups program.',
+        title: 'Welcome to the Appwrite Startups program',
         description:
             "We're excited to have you on board. Add your credit code to your Appwrite Pro account to join.",
         onlyNewOrgs: true,
