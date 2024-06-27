@@ -170,42 +170,25 @@
         </div>
     </div>
 
-    <div class="u-flex u-flex-vertical u-gap-16 u-margin-block-start-16 is-only-mobile">
-        <div class=" u-flex u-gap-16">
-            <div class="u-flex-basis-50-percent">
-                <ViewSelector
-                    view={View.Table}
-                    {columns}
-                    hideView
-                    allowNoColumns
-                    showColsTextMobile
-                    fullWidthMobile />
-            </div>
-            <div class="u-flex-basis-50-percent">
-                <Filters query={data.query} {columns} fullWidthMobile singleCondition />
-            </div>
-        </div>
-        <Button
-            event="execute_function"
-            href={`${base}/console/project-${$project.$id}/functions/function-${$func.$id}/executions/execute-function`}
-            fullWidthMobile>
-            <span class="icon-plus" aria-hidden="true" />
-            <span class="text">Execute now</span>
-        </Button>
-        <div>
-            <TagList />
-            {#if $tags?.length}
-                <div style="flex-basis:1px; background-color:hsl(var(--color-border)); width: 1px">
-                </div>
-                <Button
-                    text
-                    on:click={() => {
-                        queries.clearAll();
-                        queries.apply();
-                    }}>
-                    Clear all
+    <div class="u-flex u-main-space-between u-margin-block-start-16 is-only-mobile">
+        <Filters query={data.query} {columns}>
+            <svelte:fragment slot="mobile" let:disabled let:toggle>
+                <Button text on:click={toggle} {disabled} ariaLabel="open filter" noMargin>
+                    <span class="icon-filter-line" />
+                    <span class="text">Filters</span>
+                    {#if $tags?.length}
+                        <span class="inline-tag">{$tags?.length}</span>
+                    {/if}
                 </Button>
-            {/if}
+            </svelte:fragment>
+        </Filters>
+        <div class=" u-flex u-gap-16">
+            <ViewSelector view={View.Table} {columns} hideView allowNoColumns />
+            <Button
+                event="execute_function"
+                href={`${base}/console/project-${$project.$id}/functions/function-${$func.$id}/executions/execute-function`}>
+                <span class="text">Execute</span>
+            </Button>
         </div>
     </div>
 

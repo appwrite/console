@@ -61,6 +61,9 @@
     function toggleDropdown() {
         showFiltersDesktop = !showFiltersDesktop;
     }
+    function toggleMobileModal() {
+        showFiltersMobile = !showFiltersMobile;
+    }
 </script>
 
 <div class="is-not-mobile">
@@ -103,15 +106,20 @@
 </div>
 
 <div class="is-only-mobile">
-    <Button secondary on:click={() => (showFiltersMobile = !showFiltersMobile)} {fullWidthMobile}>
-        <i class="icon-filter u-opacity-50" />
-        Filters
-        {#if applied > 0}
-            <span class="inline-tag">
-                {applied}
-            </span>
-        {/if}
-    </Button>
+    <slot name="mobile" {disabled} toggle={toggleMobileModal}>
+        <Button
+            secondary
+            on:click={() => (showFiltersMobile = !showFiltersMobile)}
+            {fullWidthMobile}>
+            <i class="icon-filter u-opacity-50" />
+            Filters
+            {#if applied > 0}
+                <span class="inline-tag">
+                    {applied}
+                </span>
+            {/if}
+        </Button>
+    </slot>
 
     <Modal
         title="Filters"
