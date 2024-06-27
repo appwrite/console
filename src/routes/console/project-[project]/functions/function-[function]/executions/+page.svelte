@@ -192,6 +192,21 @@
             <span class="icon-plus" aria-hidden="true" />
             <span class="text">Execute now</span>
         </Button>
+        <div>
+            <TagList />
+            {#if $tags?.length}
+                <div style="flex-basis:1px; background-color:hsl(var(--color-border)); width: 1px">
+                </div>
+                <Button
+                    text
+                    on:click={() => {
+                        queries.clearAll();
+                        queries.apply();
+                    }}>
+                    Clear all
+                </Button>
+            {/if}
+        </div>
     </div>
 
     {#if !$func.logging}
