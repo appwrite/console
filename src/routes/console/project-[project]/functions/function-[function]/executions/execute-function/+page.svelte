@@ -137,8 +137,8 @@
     <title>Execute function - Appwrite</title>
 </svelte:head>
 
-<WizardSecondaryContainer href={previousPage}>
-    <WizardSecondaryHeader>Execute function</WizardSecondaryHeader>
+<WizardSecondaryContainer>
+    <WizardSecondaryHeader href={previousPage}>Execute function</WizardSecondaryHeader>
     <WizardSecondaryContent>
         <Form bind:this={formComponent} onSubmit={handleSubmit} bind:isSubmitting>
             <FormList>
@@ -369,7 +369,7 @@
     </WizardSecondaryContent>
 
     <WizardSecondaryFooter>
-        <Button fullWidthMobile secondary on:click={() => (showExitModal = true)}>Cancel</Button>
+        <Button fullWidthMobile secondary href={previousPage}>Cancel</Button>
         <Button
             fullWidthMobile
             on:click={() => formComponent.triggerSubmit()}
