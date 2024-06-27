@@ -166,14 +166,15 @@
                                 bind:show={showDropdown[index]}
                                 placement="bottom-start"
                                 noArrow>
-                                <button
-                                    class="button is-only-icon is-text"
-                                    aria-label="More options"
-                                    on:click|preventDefault={() => {
+                                <Button
+                                    round
+                                    text
+                                    ariaLabel="More options"
+                                    on:click={() => {
                                         showDropdown[index] = !showDropdown[index];
                                     }}>
                                     <span class="icon-dots-horizontal" aria-hidden="true" />
-                                </button>
+                                </Button>
                                 <svelte:fragment slot="list">
                                     <DropListItem
                                         icon="terminal"
