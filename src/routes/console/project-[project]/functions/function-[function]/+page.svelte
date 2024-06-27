@@ -52,8 +52,8 @@
             elements: ['active', 'ready', 'processing', 'building', 'cancelled', 'failed']
         },
         {
-            id: 'Source',
-            title: 'source',
+            id: 'source',
+            title: 'Source',
             type: 'string',
             show: true,
             width: 90,
