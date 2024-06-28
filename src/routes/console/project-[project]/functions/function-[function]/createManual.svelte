@@ -11,10 +11,10 @@
 
     export let show = false;
 
-    let active = false;
+    let active = true;
     let files: FileList;
-    let entrypoint: string = null;
-    let buildCommand: string = null;
+    let entrypoint: string = $func.entrypoint;
+    let buildCommand: string = $func.commands;
     let error: string = null;
 
     const functionId = $page.params.function;
@@ -31,7 +31,9 @@
             );
             await invalidate(Dependencies.DEPLOYMENTS);
             files = undefined;
-            active = false;
+            active = true;
+            entrypoint = $func.entrypoint;
+            buildCommand = $func.commands;
             show = false;
             dispatch('created');
             trackEvent(Submit.DeploymentCreate);
@@ -43,7 +45,10 @@
 
     $: if (!show) {
         files = undefined;
-        active = false;
+        active = true;
+        entrypoint = $func.entrypoint;
+        buildCommand = $func.commands;
+        show = false;
         error = null;
     }
 </script>
@@ -71,12 +76,7 @@
             allowedFileExtensions={['gz']}
             bind:files
             required={true} />
-        <InputText
-            label="Entrypoint"
-            id="entrypoint"
-            placeholder="Entrypoint"
-            bind:value={entrypoint}
-            required />
+
         {#if $func.version !== 'v3'}
             <Alert type="info">
                 <svelte:fragment slot="title">
@@ -93,26 +93,35 @@
         {:else}
             <Collapsible>
                 <CollapsibleItem>
-                    <svelte:fragment slot="title">Build settings</svelte:fragment>
+                    <svelte:fragment slot="title">Overwrite settings</svelte:fragment>
                     <svelte:fragment slot="subtitle">(optional)</svelte:fragment>
+
                     <FormList gap={16}>
                         <p class="text">
-                            Overwrite your function configuration for a single deployment or save
-                            commands for future use.
+                            Overwrite your function entrypoint or build commands for a single
+                            deployment or save commands for future use.
                         </p>
+                        <InputText
+                            label="Entrypoint"
+                            id="entrypoint"
+                            placeholder="Entrypoint"
+                            bind:value={entrypoint} />
                         <InputText
                             label="Commands"
                             placeholder="Enter a build commad (e.g. 'npm install')"
                             tooltip="Enter a single command or chain multiple commands with the && operator"
                             id="build"
                             bind:value={buildCommand} />
+                        <InputChoice
+                            label="Activate deployment after build"
+                            id="activate"
+                            bind:value={active}>
+                            This deployment will be activated after the build is completed.
+                        </InputChoice>
                     </FormList>
                 </CollapsibleItem>
             </Collapsible>
         {/if}
-        <InputChoice label="Activate deployment after build" id="activate" bind:value={active}>
-            This deployment will be activated after the build is completed.
-        </InputChoice>
     </FormList>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (show = false)}>Close</Button>
