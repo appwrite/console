@@ -75,9 +75,6 @@ campaigns
             'Get $50 in Cloud credits when you upgrade or create an organization with a Pro plan',
         onlyNewOrgs: true,
         data: {
-            cta: 'Get everything out of Cloud with Pro',
-            claimed: 'Your credits will be valid for 12 months.',
-            unclaimed: 'Apply your code to join the Startups program.',
             reviews: [
                 {
                     name: 'Marius Bloki',
