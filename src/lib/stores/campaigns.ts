@@ -73,7 +73,6 @@ campaigns
         title: 'Claim your JavaScript Mastery $50 credits.',
         description:
             'Get $50 in Cloud credits when you upgrade or create an organization with a Pro plan',
-        onlyNewOrgs: true,
         data: {
             reviews: [
                 {
@@ -90,7 +89,6 @@ campaigns
         title: 'Welcome to Appwrite!',
         description:
             'Upgrade to Appwrite Pro and add the credits to enjoy the full capabilities of Cloud. Provided to you by Fusion VC.',
-        onlyNewOrgs: true,
         footer: true,
         data: {
             reviews: [
