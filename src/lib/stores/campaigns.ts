@@ -73,11 +73,7 @@ campaigns
         title: 'Claim your JavaScript Mastery $50 credits.',
         description:
             'Get $50 in Cloud credits when you upgrade or create an organization with a Pro plan',
-        onlyNewOrgs: true,
         data: {
-            cta: 'Get everything out of Cloud with Pro',
-            claimed: 'Your credits will be valid for 12 months.',
-            unclaimed: 'Apply your code to join the Startups program.',
             reviews: [
                 {
                     name: 'Marius Bloki',
@@ -93,7 +89,6 @@ campaigns
         title: 'Welcome to Appwrite!',
         description:
             'Upgrade to Appwrite Pro and add the credits to enjoy the full capabilities of Cloud. Provided to you by Fusion VC.',
-        onlyNewOrgs: true,
         footer: true,
         data: {
             reviews: [

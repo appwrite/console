@@ -158,7 +158,7 @@
                         </div>
                     </Card>
                 </div>
-                {#if selectedCampaign.footer}
+                {#if selectedCampaign?.footer}
                     <div
                         class="u-flex u-gap-16 u-cross-center u-main-center review-footer-container">
                         <p class="u-bold" style:text-transform="uppercase">provided to you by</p>
