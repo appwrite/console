@@ -241,7 +241,10 @@
                                 </TableCell>
                                 <TableCell title="Status">
                                     {#if activeDeployment?.$id === deployment?.$id}
-                                        <Pill success>active</Pill>
+                                        <Pill success
+                                            ><span class="icon-lightning-bolt" aria-hidden="true" />
+                                            <span class="text u-trim">active</span>
+                                        </Pill>
                                     {:else}
                                         <Pill
                                             danger={status === 'failed'}
