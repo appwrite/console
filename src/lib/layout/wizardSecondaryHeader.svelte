@@ -4,8 +4,18 @@
     import { Button } from '$lib/elements/forms';
     import { createEventDispatcher } from 'svelte';
 
-    export let confirmExit = false;
-    export let href = '';
+    type $$Props =
+        | {
+              confirmExit: boolean;
+              href?: string;
+          }
+        | {
+              confirmExit?: boolean;
+              href: string;
+          };
+
+    export let confirmExit: $$Props['confirmExit'] = false;
+    export let href: $$Props['href'] = '';
 
     const dispatch = createEventDispatcher();
 </script>
