@@ -232,6 +232,7 @@ export enum Submit {
     DeploymentCreate = 'submit_deployment_create',
     DeploymentDelete = 'submit_deployment_delete',
     DeploymentUpdate = 'submit_deployment_update',
+    DeploymentCancel = 'submit_deployment_cancel',
     ExecutionCreate = 'submit_execution_create',
     VariableCreate = 'submit_variable_create',
     VariableDelete = 'submit_variable_delete',
