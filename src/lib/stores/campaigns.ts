@@ -6,6 +6,7 @@ export type CampaignData = {
     template: 'card' | 'review';
     data?: Record<string, unknown>;
     onlyNewOrgs?: boolean;
+    footer?: boolean;
 };
 
 export const campaigns: Map<string, CampaignData> = new Map();
@@ -83,6 +84,24 @@ campaigns
                     desc: 'CTO // mySHOEFITTER',
                     img: 'js_mastery_reviewer_1.png',
                     review: 'Appwrite has been a tremendous asset in implementing our IT infrastructure. Not only is the software an absolute game-changer, but the team is always there when you need them.'
+                }
+            ]
+        }
+    })
+    .set('FusionVC', {
+        template: 'review',
+        title: 'Welcome to Appwrite!',
+        description:
+            'Upgrade to Appwrite Pro and add the credits to enjoy the full capabilities of Cloud. Provided to you by Fusion VC.',
+        onlyNewOrgs: true,
+        footer: true,
+        data: {
+            reviews: [
+                {
+                    name: 'David Foster',
+                    img: '1.jpeg',
+                    desc: 'Managing director',
+                    review: 'We really loved working with Appwrite for launching our bootstrapped "Open Mind" App. It was saving us a lot of money in comparison to Firebase since the amount of users grew quite fast and we needed a quick switch.'
                 }
             ]
         }

@@ -158,6 +158,16 @@
                         </div>
                     </Card>
                 </div>
+                {#if selectedCampaign.footer}
+                    <div
+                        class="u-flex u-gap-16 u-cross-center u-main-center review-footer-container">
+                        <p class="u-bold" style:text-transform="uppercase">provided to you by</p>
+                        <img
+                            style:max-block-size="2.5rem"
+                            src={`/images/campaigns/${coupon?.campaign ?? campaign}/footer/${$app.themeInUse}.png`}
+                            alt={coupon?.campaign ?? campaign} />
+                    </div>
+                {/if}
             </section>
         {/if}
     </section>
@@ -368,6 +378,13 @@
             & img {
                 scale: 0.7;
             }
+        }
+    }
+
+    .review-footer-container {
+        padding-block-start: 10rem;
+        @media #{$break1} {
+            padding-block-start: 5rem;
         }
     }
 </style>
