@@ -28,6 +28,7 @@
     $: executions = data.usage.executions;
     $: executionsTotal = data.usage.executionsTotal;
     $: storage = data.usage.filesStorageTotal;
+    $: deployments = data.usage.deploymentsStorageTotal;
 
     const tier = data?.currentInvoice?.tier ?? $organization?.billingPlan;
     const plan = tierToPlan(tier).name;
@@ -264,7 +265,7 @@
 
         <p class="text">
             Calculated for all your files, deployments, builds and databases. While in beta, only
-            file storage is counted against your plan limits.
+            file storage and deployments are counted against your plan limits.
         </p>
 
         <svelte:fragment slot="aside">
@@ -273,7 +274,7 @@
                 <div class="u-flex u-flex-vertical">
                     <div class="u-flex u-main-space-between">
                         <p>
-                            <span class="heading-level-4">{humanized.value}</span>
+                            <span class="heading-level-4">Files - {humanized.value}</span>
                             <span class="body-text-1 u-bold">{humanized.unit}</span>
                         </p>
                     </div>
@@ -312,7 +313,55 @@
                             class="icon-chart-square-bar text-large"
                             aria-hidden="true"
                             style="font-size: 32px;" />
-                        <p class="u-bold">No data to show</p>
+                        <p class="u-bold">No data to show for files</p>
+                    </div>
+                </Card>
+            {/if}
+            {#if deployments}
+                {@const humanized = humanFileSize(deployments)}
+                <div class="u-flex u-flex-vertical">
+                    <div class="u-flex u-main-space-between">
+                        <p>
+                            <span class="heading-level-4">Deployments - {humanized.value}</span>
+                            <span class="body-text-1 u-bold">{humanized.unit}</span>
+                        </p>
+                    </div>
+                </div>
+                {#if data.usage.bucketsBreakdown.length > 0}
+                <Table noMargin noStyles>
+                    <TableHeader>
+                        <TableCellHead width={285}>Function</TableCellHead>
+                        <TableCellHead>Usage</TableCellHead>
+                        <TableCellHead width={140} />
+                    </TableHeader>
+                    <TableBody>
+                        {#each data.usage.deploymentsStorageBreakdown.sort((a, b) => b.value - a.value) as func}
+                            {@const humanized = humanFileSize(func.value)}
+                            <TableRow>
+                                <TableCell title="Function">
+                                    {func.name ?? func.resourceId}
+                                </TableCell>
+                                <TableCell title="Usage">
+                                    {humanized.value}{humanized.unit}
+                                </TableCell>
+                                <TableCellLink
+                                    href={`${base}/functions/function-${func.resourceId}`}
+                                    title="View function">
+                                    View function
+                                </TableCellLink>
+                            </TableRow>
+                        {/each}
+                    </TableBody>
+                </Table>
+            {/if}
+                {:else}
+                <Card isDashed>
+                    <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
+                        <span
+                            class="icon-chart-square-bar text-large"
+                            aria-hidden="true"
+                            style="font-size: 32px;" />
+                        <p class="u-bold">No data to show for deployments</p>
                     </div>
                 </Card>
             {/if}
