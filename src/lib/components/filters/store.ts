@@ -191,7 +191,13 @@ const operatorsDefault = new Map<
         ValidOperators.NotEqual,
         {
             query: Query.notEqual,
-            types: [ValidTypes.String, ValidTypes.Integer, ValidTypes.Double, ValidTypes.Boolean]
+            types: [
+                ValidTypes.String,
+                ValidTypes.Integer,
+                ValidTypes.Double,
+                ValidTypes.Boolean,
+                ValidTypes.Enum
+            ]
         }
     ],
     [

@@ -68,10 +68,9 @@
         {
             id: 'responseStatusCode',
             title: 'Status code',
-            type: 'string',
+            type: 'integer',
             show: true,
             width: 100,
-            array: true,
             format: 'integer'
         },
         {
@@ -85,7 +84,7 @@
         {
             id: 'duration',
             title: 'Duration',
-            type: 'string',
+            type: 'integer',
             show: true,
             width: 80,
             format: 'integer'
