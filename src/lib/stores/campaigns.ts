@@ -100,4 +100,20 @@ campaigns
                 }
             ]
         }
+    })
+    .set('carbon', {
+        template: 'review',
+        title: 'Build your entire backend within minutes.',
+        description:
+            'Get $50 in Cloud credits when you upgrade or create an organization with a Pro plan.',
+        data: {
+            reviews: [
+                {
+                    name: 'David Foster',
+                    img: '1.jpeg',
+                    desc: 'Managing director',
+                    review: 'We really loved working with Appwrite for launching our bootstrapped "Open Mind" App. It was saving us a lot of money in comparison to Firebase since the amount of users grew quite fast and we needed a quick switch.'
+                }
+            ]
+        }
     });
