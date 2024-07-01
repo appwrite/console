@@ -49,8 +49,7 @@
             width: 110,
             array: true,
             format: 'enum',
-            elements: ['ready', 'processing', 'building', 'cancelled', 'failed']
-            // processing", "building", "waiting", "ready","failed
+            elements: ['ready', 'processing', 'building', 'waiting', 'cancelled', 'failed']
         },
         {
             id: 'type',
@@ -60,7 +59,11 @@
             width: 90,
             array: true,
             format: 'enum',
-            elements: ['manual', 'cli', 'vcs']
+            elements: [
+                { value: 'manual', label: 'Manual' },
+                { value: 'cli', label: 'CLI' },
+                { value: 'vcs', label: 'Git' }
+            ]
         },
         {
             id: '$updatedAt',
@@ -74,18 +77,16 @@
         {
             id: 'buildTime',
             title: 'Build time',
-            type: 'string',
+            type: 'integer',
             show: true,
-            width: 80,
-            format: 'string'
+            width: 80
         },
         {
             id: 'size',
             title: 'Size',
             type: 'integer',
             show: true,
-            width: 80,
-            format: 'integer'
+            width: 80
         }
     ]);
 </script>

@@ -64,13 +64,6 @@
         apply: { applied: number };
     }>();
     dispatch('apply', { applied: $tags.length });
-
-    // $: if (column?.type === 'datetime' && !value) {
-    //     const today = new Date();
-    //     console.log(today.toISOString());
-    //     value = today.toISOString();
-    //     console.log('value', value);
-    // }
 </script>
 
 <div>
@@ -101,10 +94,10 @@
                             name="value"
                             bind:tags={arrayValues}
                             placeholder="Select value"
-                            options={column?.elements?.map((value) => ({
-                                label: value,
-                                value,
-                                checked: arrayValues.includes(value)
+                            options={column?.elements?.map((e) => ({
+                                label: e?.label ?? e,
+                                value: e?.value ?? e,
+                                checked: arrayValues.includes(e?.value ?? e)
                             }))}>
                         </InputSelectCheckbox>
                     {:else}
@@ -123,7 +116,10 @@
                             id="value"
                             bind:value
                             placeholder="Select value"
-                            options={column?.elements?.map((value) => ({ label: value, value }))}
+                            options={column?.elements?.map((e) => ({
+                                label: e?.label ?? e,
+                                value: e?.value ?? e
+                            }))}
                             label="Value"
                             showLabel={false} />
                     {:else if column.type === 'integer' || column.type === 'double'}

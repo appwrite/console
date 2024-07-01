@@ -99,7 +99,7 @@
     </p>
 
     <FormList>
-        {#if $execute?.version !== 'v3'}
+        {#if $execute?.version === 'v2'}
             <Alert type="info">
                 <svelte:fragment slot="title">
                     Customizable execution data now available for functions v3.0
