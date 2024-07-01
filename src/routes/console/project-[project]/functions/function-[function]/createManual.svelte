@@ -77,7 +77,7 @@
             placeholder="Entrypoint"
             bind:value={entrypoint}
             required />
-        {#if $func.version !== 'v3'}
+        {#if $func.version === 'v2'}
             <Alert type="info">
                 <svelte:fragment slot="title">
                     Build commands now available for functions v3.0
