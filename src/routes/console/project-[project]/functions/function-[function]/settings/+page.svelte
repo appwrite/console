@@ -42,7 +42,7 @@
 
 <Container>
     <Heading tag="h2" size="5">Settings</Heading>
-    {#if $func.version !== 'v3' && showAlert}
+    {#if $func.version === 'v2' && showAlert}
         <Alert
             type="warning"
             dismissible

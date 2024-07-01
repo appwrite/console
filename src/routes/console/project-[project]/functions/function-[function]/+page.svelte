@@ -49,10 +49,11 @@
             width: 110,
             array: true,
             format: 'enum',
-            elements: ['active', 'ready', 'processing', 'building', 'cancelled', 'failed']
+            elements: ['ready', 'processing', 'building', 'cancelled', 'failed']
+            // processing", "building", "waiting", "ready","failed
         },
         {
-            id: 'source',
+            id: 'type',
             title: 'Source',
             type: 'string',
             show: true,
