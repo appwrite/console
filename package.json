@@ -28,6 +28,7 @@
         "@stripe/stripe-js": "^3.4.0",
         "ai": "^2.2.11",
         "analytics": "^0.8.9",
+        "cron-parser": "^4.9.0",
         "dayjs": "^1.11.9",
         "deep-equal": "^2.2.2",
         "dotenv": "^16.3.1",
