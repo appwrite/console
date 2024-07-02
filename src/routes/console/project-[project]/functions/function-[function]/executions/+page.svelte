@@ -1,6 +1,13 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { Alert, EmptySearch, Id, PaginationWithLimit } from '$lib/components';
+    import {
+        Alert,
+        DropList,
+        DropListItem,
+        EmptySearch,
+        Id,
+        PaginationWithLimit
+    } from '$lib/components';
     import { BillingPlan, Dependencies } from '$lib/constants';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
@@ -26,8 +33,14 @@
     import { project } from '$routes/console/project-[project]/store';
     import Create from '../create.svelte';
     import { abbreviateNumber } from '$lib/helpers/numbers';
+    import Delete from './delete.svelte';
 
     export let data;
+
+    let showDropdown = [];
+    let showDelete = false;
+
+    let selectedExecution: Models.Execution = null;
 
     onMount(() => {
         return sdk.forConsole.client.subscribe('console', (response) => {
@@ -108,10 +121,11 @@
                 <TableCellHead width={70}>Method</TableCellHead>
                 <TableCellHead width={90}>Path</TableCellHead>
                 <TableCellHead width={80}>Duration</TableCellHead>
+                <TableCellHead width={40} />
             </TableHeader>
             <TableBody>
-                {#each data.executions.executions as execution}
-                    <TableRowButton on:click={() => showLogs(execution)}>
+                {#each data.executions.executions as execution, index (execution.$id)}
+                    <TableRowButton>
                         <TableCell width={150} title="Execution ID">
                             <Id value={execution.$id}>{execution.$id}</Id>
                         </TableCell>
@@ -119,9 +133,14 @@
                             {@const status = execution.status}
 
                             <Pill
-                                warning={status === 'waiting' || status === 'building'}
+                                warning={status === 'scheduled' ||
+                                    status === 'processing' ||
+                                    status === 'pending'}
                                 danger={status === 'failed'}
-                                info={status === 'completed' || status === 'ready'}>
+                                info={status === 'completed'}>
+                                {#if status === 'scheduled'}
+                                    <span class="icon-clock" aria-hidden="true" />
+                                {/if}
                                 {status}
                             </Pill>
                         </TableCell>
@@ -142,6 +161,41 @@
                         <TableCellText width={80} title="Duration">
                             {calculateTime(execution.duration)}
                         </TableCellText>
+                        <TableCell width={40} showOverflow>
+                            <DropList
+                                bind:show={showDropdown[index]}
+                                placement="bottom-start"
+                                noArrow>
+                                <Button
+                                    round
+                                    text
+                                    ariaLabel="More options"
+                                    on:click={() => {
+                                        showDropdown[index] = !showDropdown[index];
+                                    }}>
+                                    <span class="icon-dots-horizontal" aria-hidden="true" />
+                                </Button>
+                                <svelte:fragment slot="list">
+                                    <DropListItem
+                                        icon="terminal"
+                                        on:click={() => {
+                                            showDropdown = [];
+                                            showLogs(execution);
+                                        }}>
+                                        Logs
+                                    </DropListItem>
+                                    <DropListItem
+                                        icon="trash"
+                                        on:click={() => {
+                                            selectedExecution = execution;
+                                            showDropdown = [];
+                                            showDelete = true;
+                                        }}>
+                                        Delete
+                                    </DropListItem>
+                                </svelte:fragment>
+                            </DropList>
+                        </TableCell>
                     </TableRowButton>
                 {/each}
             </TableBody>
@@ -169,3 +223,7 @@
         </EmptySearch>
     {/if}
 </Container>
+
+{#if selectedExecution}
+    <Delete {selectedExecution} bind:showDelete />
+{/if}
