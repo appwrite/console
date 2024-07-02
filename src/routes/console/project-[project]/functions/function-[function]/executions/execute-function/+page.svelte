@@ -5,7 +5,7 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { timer } from '$lib/actions/timer';
     import { tooltip } from '$lib/actions/tooltip';
-    import { Alert, Card } from '$lib/components';
+    import { Alert, Card, Id } from '$lib/components';
 
     import { Dependencies } from '$lib/constants';
     import { Pill } from '$lib/elements';
@@ -304,14 +304,15 @@
         </Form>
         <svelte:fragment slot="aside">
             <Card class="u-flex-vertical u-gap-24">
-                <div class="u-flex-vertical u-gap-8">
+                <div class="u-flex-vertical u-gap-4">
                     <p class="u-color-text-offline">Deployment ID</p>
-                    <span>
-                        <Pill>{func.deployment}</Pill>
-                    </span>
+
+                    <Id value={func.deployment}>
+                        {func.deployment}
+                    </Id>
                 </div>
                 <ul class="u-flex u-main-space-between">
-                    <li class="u-flex-vertical u-gap-8">
+                    <li class="u-flex-vertical u-gap-4">
                         <p class="u-color-text-offline">Status</p>
                         <p>
                             <Pill success>
@@ -328,7 +329,7 @@
                             {/if} -->
                         </p>
                     </li>
-                    <li class="u-flex-vertical u-gap-8">
+                    <li class="u-flex-vertical u-gap-4">
                         <p class="u-color-text-offline">Build time</p>
                         <p>
                             {#if ['processing', 'building'].includes(deployment.status)}
@@ -338,7 +339,7 @@
                             {/if}
                         </p>
                     </li>
-                    <li class="u-flex-vertical u-gap-8">
+                    <li class="u-flex-vertical u-gap-4">
                         <p class="u-color-text-offline">Size</p>
                         <p>
                             {humanFileSize(deployment.size).value +
@@ -346,19 +347,19 @@
                         </p>
                     </li>
                 </ul>
-                <div class="u-flex-vertical u-gap-8">
+                <div class="u-flex-vertical u-gap-4">
                     <p class="u-color-text-offline">Source</p>
                     <span>
                         <DeploymentSource {deployment} />
                     </span>
                 </div>
-                <div class="u-flex-vertical u-gap-8">
+                <div class="u-flex-vertical u-gap-4">
                     <p class="u-color-text-offline">Domains</p>
                     <span>
                         <DeploymentDomains domain={$proxyRuleList} />
                     </span>
                 </div>
-                <div class="u-flex-vertical u-gap-8">
+                <div class="u-flex-vertical u-gap-4">
                     <p class="u-color-text-offline">Updated</p>
                     <span>
                         <DeploymentCreatedBy {deployment} />

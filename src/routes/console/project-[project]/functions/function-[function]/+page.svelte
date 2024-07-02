@@ -2,26 +2,19 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import {
-        CardGrid,
         Empty,
         Heading,
-        Id,
         PaginationWithLimit,
         Alert,
-        ViewSelector
+        ViewSelector,
+        EmptySearch
     } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import { deploymentList, func, proxyRuleList } from './store';
+    import { deploymentList, func } from './store';
     import { Container, ContainerHeader } from '$lib/layout';
-    import { app } from '$lib/stores/app';
-    import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import type { Models } from '@appwrite.io/console';
     import Create from './create.svelte';
-    import { calculateTime } from '$lib/helpers/timeConversion';
-    import { Pill } from '$lib/elements';
-    import DeploymentSource from './deploymentSource.svelte';
-    import DeploymentCreatedBy from './deploymentCreatedBy.svelte';
-    import DeploymentDomains from './deploymentDomains.svelte';
+
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
     import { readOnly } from '$lib/stores/billing';
     import { project } from '../../store';
@@ -31,6 +24,7 @@
     import { Filters, TagList } from '$lib/components/filters';
     import { queries, tags } from '$lib/components/filters/store';
     import { View } from '$lib/helpers/load';
+    import DeploymentCard from './deploymentCard.svelte';
 
     export let data;
 
@@ -112,76 +106,7 @@
             </Alert>
         {/if}
         {#if activeDeployment}
-            <CardGrid>
-                <div class="u-flex u-cross-start u-gap-16">
-                    <div class="avatar is-medium" aria-hidden="true">
-                        <img
-                            src={`${base}/icons/${$app.themeInUse}/color/${
-                                $func.runtime.split('-')[0]
-                            }.svg`}
-                            alt="technology" />
-                    </div>
-                    <div class="u-grid-equal-row-size u-gap-4 u-line-height-1">
-                        <p><b>Deployment ID</b></p>
-
-                        <Id value={activeDeployment.$id}>
-                            {activeDeployment.$id}
-                        </Id>
-                    </div>
-                </div>
-                <svelte:fragment slot="aside">
-                    {@const status = activeDeployment.status}
-                    {@const fileSize = humanFileSize(activeDeployment.size)}
-                    <div class="stats-grid-box">
-                        <div>
-                            <p class="u-color-text-offline">Status</p>
-                            <Pill
-                                danger={status === 'failed'}
-                                warning={status === 'building'}
-                                success={status === 'ready'}>
-                                <span class="icon-lightning-bolt" aria-hidden="true" />
-                                <span class="text u-trim">
-                                    {activeDeployment.status === 'ready'
-                                        ? 'active'
-                                        : activeDeployment.status}
-                                </span>
-                            </Pill>
-                        </div>
-                        <div>
-                            <p class="u-color-text-offline">Build time</p>
-                            <p class="u-line-height-2">
-                                {calculateTime(activeDeployment.buildTime)}
-                            </p>
-                        </div>
-                        <div>
-                            <p class="u-color-text-offline">Build size</p>
-                            <p class="u-line-height-2">
-                                {fileSize.value + fileSize.unit}
-                            </p>
-                        </div>
-                        <div>
-                            <p class="u-color-text-offline">Updated</p>
-                            <p class="u-line-height-2">
-                                <DeploymentCreatedBy deployment={activeDeployment} />
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="u-flex u-flex-vertical u-gap-4">
-                        <p class="u-color-text-offline">Source</p>
-                        <div>
-                            <DeploymentSource deployment={activeDeployment} />
-                        </div>
-                    </div>
-
-                    {#if $proxyRuleList?.rules?.length}
-                        <div class="u-flex u-flex-vertical u-gap-4">
-                            <p class="u-color-text-offline">Domains</p>
-                            <DeploymentDomains domain={$proxyRuleList} />
-                        </div>
-                    {/if}
-                </svelte:fragment>
-
+            <DeploymentCard deployment={activeDeployment}>
                 <svelte:fragment slot="actions">
                     <div class="u-flex u-flex-wrap">
                         <Button
@@ -206,7 +131,7 @@
                         </Button>
                     </div>
                 </svelte:fragment>
-            </CardGrid>
+            </DeploymentCard>
         {:else if $deploymentList.total}
             <Empty noMedia single>
                 <Create secondary round>
@@ -247,15 +172,20 @@
                 </div>
             </Empty>
         {/if}
-        <div class="common-section">
-            <Heading tag="h3" size="7">All</Heading>
-            <div class="u-flex u-main-space-between is-not-mobile u-margin-block-start-16">
+        <div class="u-margin-block-start-40">
+            <Heading tag="h3" size="7">All deployments</Heading>
+            <div class="u-flex u-main-space-between is-not-mobile u-margin-block-start-24">
                 <div class="u-flex u-gap-8 u-cross-center u-flex-wrap">
                     <TagList />
 
                     <Filters query={data.query} {columns} let:disabled let:toggle singleCondition>
                         <div class="u-flex u-gap-4">
-                            <Button text on:click={toggle} {disabled} ariaLabel="open filter">
+                            <Button
+                                text
+                                on:click={toggle}
+                                {disabled}
+                                ariaLabel="open filter"
+                                noMargin={!$tags?.length}>
                                 <span class="icon-filter-line" />
                                 {#if !$tags?.length}
                                     <span class="text">Filters</span>
@@ -278,12 +208,7 @@
                     </Filters>
                 </div>
                 <div class="u-flex u-gap-16">
-                    <ViewSelector
-                        view={View.Table}
-                        {columns}
-                        hideView
-                        allowNoColumns
-                        showColsTextMobile />
+                    <ViewSelector view={View.Table} {columns} hideView allowNoColumns hideText />
                 </div>
             </div>
             <div class="u-flex u-main-space-between u-margin-block-start-16 is-only-mobile">
@@ -302,9 +227,26 @@
             </div>
         </div>
         {#if $deploymentList.total}
-            <div class="u-margin-block-start-24">
+            <div class="u-margin-block-start-16">
                 <Table columns={$columns} {data} />
             </div>
+        {:else if data?.query}
+            <EmptySearch hidePages>
+                <div class="common-section">
+                    <div class="u-text-center common-section">
+                        <b class="body-text-2 u-bold">Sorry we couldn't find any deployments</b>
+                        <p>There are no deployments that match your filters.</p>
+                    </div>
+                    <div class="u-flex u-gap-16 common-section u-main-center">
+                        <Button
+                            secondary
+                            on:click={() => {
+                                queries.clearAll();
+                                queries.apply();
+                            }}>Clear filters</Button>
+                    </div>
+                </div>
+            </EmptySearch>
         {:else}
             <Empty single target="deployment" on:click>
                 <div class="u-text-center">
@@ -352,19 +294,3 @@
         offset={data.offset}
         total={$deploymentList?.total} />
 </Container>
-
-<style lang="scss">
-    @import '@appwrite.io/pink/src/abstract/variables/_devices.scss';
-
-    .stats-grid-box {
-        display: grid;
-        gap: px2rem(16);
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    @media #{$break3open} {
-        .stats-grid-box {
-            grid-template-columns: repeat(4, 1fr);
-        }
-    }
-</style>

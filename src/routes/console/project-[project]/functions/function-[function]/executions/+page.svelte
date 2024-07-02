@@ -136,7 +136,12 @@
 
             <Filters query={data.query} {columns} let:disabled let:toggle singleCondition>
                 <div class="u-flex u-gap-4">
-                    <Button text on:click={toggle} {disabled} ariaLabel="open filter">
+                    <Button
+                        text
+                        on:click={toggle}
+                        {disabled}
+                        noMargin={!$tags?.length}
+                        ariaLabel="open filter">
                         <span class="icon-filter-line" />
                         {#if !$tags?.length}
                             <span class="text">Filters</span>
@@ -213,6 +218,23 @@
             limit={data.limit}
             offset={data.offset}
             total={data.executions.total} />
+    {:else if data?.query}
+        <EmptySearch hidePages>
+            <div class="common-section">
+                <div class="u-text-center common-section">
+                    <b class="body-text-2 u-bold">Sorry we couldn't find any executions</b>
+                    <p>There are no executions that match your filters.</p>
+                </div>
+                <div class="u-flex u-gap-16 common-section u-main-center">
+                    <Button
+                        secondary
+                        on:click={() => {
+                            queries.clearAll();
+                            queries.apply();
+                        }}>Clear filters</Button>
+                </div>
+            </div>
+        </EmptySearch>
     {:else}
         <EmptySearch>
             <div class="u-text-center">

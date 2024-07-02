@@ -1,29 +1,22 @@
 <script lang="ts">
-    import { base } from '$app/paths';
-    import { CardGrid, Id } from '$lib/components';
-    import { Pill } from '$lib/elements';
+    import { CardGrid } from '$lib/components';
     import { Button } from '$lib/elements/forms';
-    import { humanFileSize } from '$lib/helpers/sizeConvertion';
-    import { calculateTime } from '$lib/helpers/timeConversion';
     import { Container } from '$lib/layout';
-    import { app } from '$lib/stores/app';
-    import { func, proxyRuleList } from '../store';
+    import { func } from '../store';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import type { Models } from '@appwrite.io/console';
     import { page } from '$app/stores';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import DeploymentSource from '../deploymentSource.svelte';
     import { deployment } from './store';
-    import DeploymentCreatedBy from '../deploymentCreatedBy.svelte';
-    import DeploymentDomains from '../deploymentDomains.svelte';
     import Heading from '$lib/components/heading.svelte';
     import BoxAvatar from '$lib/components/boxAvatar.svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import Delete from '../delete.svelte';
     import Activate from '../activate.svelte';
     import Cancel from '../cancel.svelte';
+    import DeploymentCard from '../deploymentCard.svelte';
 
     export let data;
 
@@ -57,79 +50,7 @@
 </script>
 
 <Container>
-    <CardGrid>
-        <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16">
-            <div class="avatar is-medium" aria-hidden="true">
-                <img
-                    src={`${base}/icons/${$app.themeInUse}/color/${
-                        $func.runtime.split('-')[0]
-                    }.svg`}
-                    alt="technology" />
-            </div>
-            <div class="u-grid-equal-row-size u-gap-4 u-line-height-1">
-                <p><b>Deployment ID</b></p>
-
-                <Id value={$deployment.$id}>
-                    {$deployment.$id}
-                </Id>
-            </div>
-        </div>
-        <svelte:fragment slot="aside">
-            {@const status = $deployment.status}
-            {@const fileSize = humanFileSize($deployment.size)}
-            <div class="stats-grid-box">
-                <div>
-                    <p class="u-color-text-offline">Status</p>
-                    <Pill
-                        danger={status === 'failed'}
-                        warning={status === 'processing'}
-                        success={status === 'ready'}
-                        info={status === 'building'}>
-                        {#if data.activeDeployment}
-                            <span class="icon-lightning-bolt" aria-hidden="true" />
-                        {:else if $deployment.status === 'canceled'}
-                            <span class="icon-x-circle" aria-hidden="true" />
-                        {/if}
-                        <span class="text u-trim">
-                            {data.activeDeployment ? 'active' : $deployment.status}
-                        </span>
-                    </Pill>
-                </div>
-                <div>
-                    <p class="u-color-text-offline">Build time</p>
-                    <p class="u-line-height-2">
-                        {calculateTime($deployment.buildTime)}
-                    </p>
-                </div>
-                <div>
-                    <p class="u-color-text-offline">Build size</p>
-                    <p class="u-line-height-2">
-                        {fileSize.value + fileSize.unit}
-                    </p>
-                </div>
-                <div>
-                    <p class="u-color-text-offline">Updated</p>
-                    <p class="u-line-height-2">
-                        <DeploymentCreatedBy deployment={$deployment} />
-                    </p>
-                </div>
-            </div>
-
-            <div class="u-flex u-flex-vertical u-gap-4">
-                <p class="u-color-text-offline">Source</p>
-                <div>
-                    <DeploymentSource deployment={$deployment} />
-                </div>
-            </div>
-
-            {#if $proxyRuleList?.rules?.length}
-                <div class="u-flex u-flex-vertical u-gap-4">
-                    <p class="u-color-text-offline">Domains</p>
-                    <DeploymentDomains domain={$proxyRuleList} />
-                </div>
-            {/if}
-        </svelte:fragment>
-
+    <DeploymentCard deployment={$deployment}>
         <svelte:fragment slot="actions">
             <div class="u-flex u-flex-wrap">
                 {#if $deployment.status === 'processing'}
@@ -148,7 +69,7 @@
                     }}>Activate</Button>
             </div>
         </svelte:fragment>
-    </CardGrid>
+    </DeploymentCard>
 
     <div class="u-stretch u-overflow-hidden u-padding-block-start-24">
         <section class="code-panel" style="border-radius: var(--border-radius-medium);">
@@ -201,17 +122,3 @@
 <Delete selectedDeployment={$deployment} bind:showDelete />
 <Cancel selectedDeployment={$deployment} bind:showCancel />
 <Activate selectedDeployment={$deployment} bind:showActivate on:activated={handleActivate} />
-
-<style lang="scss">
-    @import '@appwrite.io/pink/src/abstract/variables/_devices.scss';
-    .stats-grid-box {
-        display: grid;
-        gap: px2rem(16);
-        grid-template-columns: repeat(2, 1fr);
-    }
-    @media #{$break3open} {
-        .stats-grid-box {
-            grid-template-columns: repeat(4, 1fr);
-        }
-    }
-</style>
