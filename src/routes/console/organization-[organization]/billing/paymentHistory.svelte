@@ -48,7 +48,8 @@
         invoiceList = await sdk.forConsole.billing.listInvoices($page.params.organization, [
             Query.limit(limit),
             Query.offset(offset),
-            Query.orderDesc('$createdAt')
+            Query.orderDesc('$createdAt'),
+            Query.notEqual('status', 'pending')
         ]);
     }
 
@@ -70,7 +71,7 @@
         payments.
     </p>
     <svelte:fragment slot="aside">
-        {#if invoiceList.total - 1 > 0}
+        {#if invoiceList?.invoices?.length > 0}
             <TableScroll noMargin transparent noStyles>
                 <TableHeader>
                     <TableCellHead width={100}>Due Date</TableCellHead>
@@ -81,109 +82,104 @@
                 <TableBody>
                     {#each invoiceList?.invoices as invoice, i}
                         {@const status = invoice.status}
-                        {#if i !== 0}
-                            <TableRow>
-                                <TableCellText title="date">
-                                    {toLocaleDate(invoice.dueAt)}
-                                </TableCellText>
 
-                                <TableCell title="status">
-                                    {#if invoice?.lastError}
-                                        <DropList bind:show={showFailedError}>
-                                            <Pill
-                                                danger={status === 'overdue' ||
-                                                    status === 'failed' ||
-                                                    status === 'requires_authentication'}
-                                                success={status === 'paid' ||
-                                                    status === 'succeeded'}
-                                                warning={status === 'pending'}
-                                                on:click={() => (showFailedError = true)}
-                                                button>
-                                                {status === 'requires_authentication'
-                                                    ? 'failed'
-                                                    : status}
-                                            </Pill>
-                                            <svelte:fragment slot="list">
-                                                <li>
-                                                    The scheduled payment has failed. <Button
-                                                        link
-                                                        on:click={() => {
-                                                            retryPayment(invoice);
-                                                            showFailedError = false;
-                                                        }}>Try again</Button
-                                                    >.
-                                                </li>
-                                            </svelte:fragment>
-                                        </DropList>
-                                    {:else}
+                        <TableRow>
+                            <TableCellText title="date">
+                                {toLocaleDate(invoice.dueAt)}
+                            </TableCellText>
+
+                            <TableCell title="status">
+                                {#if invoice?.lastError}
+                                    <DropList bind:show={showFailedError}>
                                         <Pill
                                             danger={status === 'overdue' ||
                                                 status === 'failed' ||
                                                 status === 'requires_authentication'}
                                             success={status === 'paid' || status === 'succeeded'}
-                                            warning={status === 'pending'}>
+                                            warning={status === 'pending'}
+                                            on:click={() => (showFailedError = true)}
+                                            button>
                                             {status === 'requires_authentication'
                                                 ? 'failed'
                                                 : status}
                                         </Pill>
-                                    {/if}
-                                </TableCell>
-                                <TableCellText title="due">
-                                    {formatCurrency(invoice.amount)}
-                                </TableCellText>
-                                <TableCell showOverflow right>
-                                    <DropList
-                                        bind:show={showDropdown[i]}
-                                        placement="bottom-start"
-                                        noArrow>
-                                        <Button
-                                            round
-                                            text
-                                            noMargin
-                                            ariaLabel="More options"
-                                            on:click={() => {
-                                                showDropdown[i] = !showDropdown[i];
-                                            }}>
-                                            <span class="icon-dots-horizontal" aria-hidden="true" />
-                                        </Button>
                                         <svelte:fragment slot="list">
-                                            <DropListLink
-                                                icon="external-link"
-                                                external
-                                                href={`${endpoint}/organizations/${$page.params.organization}/invoices/${invoice.$id}/view`}
-                                                on:click={() =>
-                                                    (showDropdown[i] = !showDropdown[i])}
-                                                event="view_invoice">
-                                                View invoice
-                                            </DropListLink>
-                                            <DropListLink
-                                                icon="download"
-                                                href={`${endpoint}/organizations/${$page.params.organization}/invoices/${invoice.$id}/download`}
-                                                on:click={() => {
-                                                    showDropdown[i] = !showDropdown[i];
-                                                }}
-                                                event="download_invoice">
-                                                Download PDF
-                                            </DropListLink>
-                                            {#if status === 'overdue' || status === 'failed'}
-                                                <DropListItem
-                                                    icon="refresh"
+                                            <li>
+                                                The scheduled payment has failed. <Button
+                                                    link
                                                     on:click={() => {
                                                         retryPayment(invoice);
-                                                        showDropdown[i] = !showDropdown[i];
-                                                        trackEvent(`click_retry_payment`, {
-                                                            from: 'button',
-                                                            source: 'billing_invoice_menu'
-                                                        });
-                                                    }}>
-                                                    Retry payment
-                                                </DropListItem>
-                                            {/if}
+                                                        showFailedError = false;
+                                                    }}>Try again</Button
+                                                >.
+                                            </li>
                                         </svelte:fragment>
                                     </DropList>
-                                </TableCell>
-                            </TableRow>
-                        {/if}
+                                {:else}
+                                    <Pill
+                                        danger={status === 'overdue' ||
+                                            status === 'failed' ||
+                                            status === 'requires_authentication'}
+                                        success={status === 'paid' || status === 'succeeded'}
+                                        warning={status === 'pending'}>
+                                        {status === 'requires_authentication' ? 'failed' : status}
+                                    </Pill>
+                                {/if}
+                            </TableCell>
+                            <TableCellText title="due">
+                                {formatCurrency(invoice.amount)}
+                            </TableCellText>
+                            <TableCell showOverflow right>
+                                <DropList
+                                    bind:show={showDropdown[i]}
+                                    placement="bottom-start"
+                                    noArrow>
+                                    <Button
+                                        round
+                                        text
+                                        noMargin
+                                        ariaLabel="More options"
+                                        on:click={() => {
+                                            showDropdown[i] = !showDropdown[i];
+                                        }}>
+                                        <span class="icon-dots-horizontal" aria-hidden="true" />
+                                    </Button>
+                                    <svelte:fragment slot="list">
+                                        <DropListLink
+                                            icon="external-link"
+                                            external
+                                            href={`${endpoint}/organizations/${$page.params.organization}/invoices/${invoice.$id}/view`}
+                                            on:click={() => (showDropdown[i] = !showDropdown[i])}
+                                            event="view_invoice">
+                                            View invoice
+                                        </DropListLink>
+                                        <DropListLink
+                                            icon="download"
+                                            href={`${endpoint}/organizations/${$page.params.organization}/invoices/${invoice.$id}/download`}
+                                            on:click={() => {
+                                                showDropdown[i] = !showDropdown[i];
+                                            }}
+                                            event="download_invoice">
+                                            Download PDF
+                                        </DropListLink>
+                                        {#if status === 'overdue' || status === 'failed'}
+                                            <DropListItem
+                                                icon="refresh"
+                                                on:click={() => {
+                                                    retryPayment(invoice);
+                                                    showDropdown[i] = !showDropdown[i];
+                                                    trackEvent(`click_retry_payment`, {
+                                                        from: 'button',
+                                                        source: 'billing_invoice_menu'
+                                                    });
+                                                }}>
+                                                Retry payment
+                                            </DropListItem>
+                                        {/if}
+                                    </svelte:fragment>
+                                </DropList>
+                            </TableCell>
+                        </TableRow>
                     {/each}
                 </TableBody>
             </TableScroll>
