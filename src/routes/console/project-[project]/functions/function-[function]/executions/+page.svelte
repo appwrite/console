@@ -42,7 +42,7 @@
             title: 'Created',
             type: 'datetime',
             show: true,
-            width: 140,
+            width: 120,
             format: 'datetime'
         },
         {
