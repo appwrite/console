@@ -28,7 +28,7 @@
     export let href: string = null;
     let classes = '';
     export { classes as class };
-    export let style: string = '';
+    export let style = '';
 
     function getElement() {
         switch (true) {
