@@ -5,7 +5,7 @@
     import type { Column } from '$lib/helpers/types';
     import type { Writable } from 'svelte/store';
     import Content from './content.svelte';
-    import { queries, queriesAreDirty, queryParamToMap, tags } from './store';
+    import { addFilter, queries, queriesAreDirty, queryParamToMap, tags } from './store';
 
     export let query = '[]';
     export let columns: Writable<Column[]>;
@@ -15,7 +15,12 @@
     const parsedQueries = queryParamToMap(query);
     queries.set(parsedQueries);
 
+    /* eslint  @typescript-eslint/no-explicit-any: 'off' */
+    let value: any = null;
     let selectedColumn: string | null = null;
+    let operatorKey: string | null = null;
+    let arrayValues: string[] = [];
+
     // We need to separate them so we don't trigger Drop's handlers
     let showFiltersDesktop = false;
     let showFiltersMobile = false;
@@ -33,9 +38,22 @@
         queries.clearAll();
     }
 
+    function apply() {
+        if (selectedColumn && operatorKey && value) {
+            addFilter($columns, selectedColumn, operatorKey, value, arrayValues);
+            selectedColumn = null;
+            value = null;
+            operatorKey = null;
+            arrayValues = [];
+        }
+        queries.apply();
+    }
+
     $: if (!showFiltersDesktop && !showFiltersMobile) {
         selectedColumn = null;
     }
+
+    $: isButtonDisabled = $queriesAreDirty ? false : !selectedColumn || !operatorKey || !value;
 </script>
 
 <div class="is-not-mobile">
@@ -54,13 +72,16 @@
                 <p>Apply filter rules to refine the table view</p>
                 <Content
                     bind:columnId={selectedColumn}
+                    bind:operatorKey
+                    bind:value
+                    bind:arrayValues
                     {columns}
                     on:apply={(e) => (applied = e.detail.applied)}
                     on:clear={() => (applied = 0)} />
                 <hr />
                 <div class="u-flex u-margin-block-start-16 u-main-end u-gap-8">
                     <Button text on:click={clearAll}>Clear all</Button>
-                    <Button on:click={queries.apply} disabled={!$queriesAreDirty}>Apply</Button>
+                    <Button on:click={apply} disabled={isButtonDisabled}>Apply</Button>
                 </div>
             </div>
         </svelte:fragment>
@@ -85,12 +106,16 @@
         size="big">
         <Content
             {columns}
+            bind:columnId={selectedColumn}
+            bind:operatorKey
+            bind:value
+            bind:arrayValues
             on:apply={(e) => (applied = e.detail.applied)}
             on:clear={() => (applied = 0)} />
         <svelte:fragment slot="footer">
             <Button text on:click={clearAll}>Clear all</Button>
-            <Button on:click={queries.apply} disabled={!$queriesAreDirty}>Apply</Button
-            ></svelte:fragment>
+            <Button on:click={apply} disabled={isButtonDisabled}>Apply</Button>
+        </svelte:fragment>
     </Modal>
 </div>
 
