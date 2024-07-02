@@ -84,7 +84,7 @@
     let path = '/';
     let method = ExecutionMethod.GET;
     let body = '';
-    let headers: [string, string][] = [['', '']];
+    let headers: [string, string][] = [[null, '']];
 
     async function handleSubmit() {
         try {
@@ -164,7 +164,7 @@
                         id="body"
                         bind:value={body} />
                 {:else}
-                    <FormItem isMultiple>
+                    <FormItem isMultiple stackOnMobile style="gap: 1rem">
                         <InputSelect
                             required
                             id="method"
@@ -194,7 +194,7 @@
                         <FormList class="u-gap-8 u-margin-block-start-8">
                             {#if headers}
                                 {#each headers as [name, value], index}
-                                    <FormItem isMultiple>
+                                    <FormItem isMultiple style="gap: 1rem">
                                         <InputSelect
                                             isMultiple
                                             fullWidth
@@ -274,7 +274,7 @@
                                 }
                             ]} />
                         {#if isScheduled}
-                            <FormItem isMultiple>
+                            <FormItem isMultiple tag="div" class="u-margin-block-start-16">
                                 <InputDate
                                     id="date"
                                     label="Date"
@@ -303,8 +303,8 @@
             </FormList>
         </Form>
         <svelte:fragment slot="aside">
-            <Card class="u-flex-vertical u-gap-24">
-                <div class="u-flex-vertical u-gap-4">
+            <Card class="u-flex-vertical u-gap-24" style="--p-card-padding: 1.5rem">
+                <div class="u-flex-vertical u-gap-8">
                     <p class="u-color-text-offline">Deployment ID</p>
 
                     <Id value={func.deployment}>
@@ -312,7 +312,7 @@
                     </Id>
                 </div>
                 <ul class="u-flex u-main-space-between">
-                    <li class="u-flex-vertical u-gap-4">
+                    <li class="u-flex-vertical u-gap-8">
                         <p class="u-color-text-offline">Status</p>
                         <p>
                             <Pill success>
@@ -329,7 +329,7 @@
                             {/if} -->
                         </p>
                     </li>
-                    <li class="u-flex-vertical u-gap-4">
+                    <li class="u-flex-vertical u-gap-8">
                         <p class="u-color-text-offline">Build time</p>
                         <p>
                             {#if ['processing', 'building'].includes(deployment.status)}
@@ -339,7 +339,7 @@
                             {/if}
                         </p>
                     </li>
-                    <li class="u-flex-vertical u-gap-4">
+                    <li class="u-flex-vertical u-gap-8">
                         <p class="u-color-text-offline">Size</p>
                         <p>
                             {humanFileSize(deployment.size).value +
@@ -347,19 +347,19 @@
                         </p>
                     </li>
                 </ul>
-                <div class="u-flex-vertical u-gap-4">
+                <div class="u-flex-vertical u-gap-8">
                     <p class="u-color-text-offline">Source</p>
                     <span>
                         <DeploymentSource {deployment} />
                     </span>
                 </div>
-                <div class="u-flex-vertical u-gap-4">
+                <div class="u-flex-vertical u-gap-8">
                     <p class="u-color-text-offline">Domains</p>
                     <span>
                         <DeploymentDomains domain={$proxyRuleList} />
                     </span>
                 </div>
-                <div class="u-flex-vertical u-gap-4">
+                <div class="u-flex-vertical u-gap-8">
                     <p class="u-color-text-offline">Updated</p>
                     <span>
                         <DeploymentCreatedBy {deployment} />
