@@ -3,7 +3,7 @@ import { Dependencies } from '$lib/constants';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ params, depends, parent }) => {
-    const data = await parent();
+    const { function: func } = await parent();
     depends(Dependencies.DEPLOYMENT);
 
     const deployment = await sdk.forProject.functions.getDeployment(
@@ -13,6 +13,6 @@ export const load: PageLoad = async ({ params, depends, parent }) => {
 
     return {
         deployment,
-        activeDeployment: data.function.deployment === params.deployment ? true : false
+        activeDeployment: func.deployment === params.deployment
     };
 };
