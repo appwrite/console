@@ -26,7 +26,7 @@
         }
         const { offsetWidth, scrollLeft, scrollWidth } = tabsList;
         showLeft = scrollLeft > 10;
-        showRight = scrollLeft < scrollWidth - offsetWidth - 10;
+        showRight = scrollLeft < scrollWidth - offsetWidth - 30;
     }
 </script>
 
