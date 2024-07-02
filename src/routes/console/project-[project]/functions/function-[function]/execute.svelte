@@ -1,4 +1,5 @@
 <script lang="ts">
+    //TODO remove
     import { afterNavigate, goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
@@ -98,7 +99,7 @@
     </p>
 
     <FormList>
-        {#if $execute?.version !== 'v3'}
+        {#if $execute?.version === 'v2'}
             <Alert type="info">
                 <svelte:fragment slot="title">
                     Customizable execution data now available for functions v3.0

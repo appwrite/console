@@ -1,33 +1,95 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { Alert, EmptySearch, Id, PaginationWithLimit } from '$lib/components';
+    import { Alert, EmptySearch, PaginationWithLimit, ViewSelector } from '$lib/components';
     import { BillingPlan, Dependencies } from '$lib/constants';
-    import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
-    import {
-        TableBody,
-        TableCell,
-        TableCellHead,
-        TableCellText,
-        TableHeader,
-        TableRowButton,
-        TableScroll
-    } from '$lib/elements/table';
-    import { hoursToDays, timeFromNow } from '$lib/helpers/date';
-    import { calculateTime } from '$lib/helpers/timeConversion';
+    import { hoursToDays } from '$lib/helpers/date';
     import { Container, ContainerHeader } from '$lib/layout';
-    import { log } from '$lib/stores/logs';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import { func, execute, showFunctionExecute } from '../store';
-    import type { Models } from '@appwrite.io/console';
+    import { func } from '../store';
     import { organization } from '$lib/stores/organization';
     import { getServiceLimit, showUsageRatesModal } from '$lib/stores/billing';
     import { project } from '$routes/console/project-[project]/store';
     import Create from '../create.svelte';
     import { abbreviateNumber } from '$lib/helpers/numbers';
+    import { base } from '$app/paths';
+    import { Filters, queries, TagList } from '$lib/components/filters';
+    import { writable } from 'svelte/store';
+    import type { Column } from '$lib/helpers/types';
+    import { View } from '$lib/helpers/load';
+    import Table from './table.svelte';
+    import { tags } from '$lib/components/filters/store';
 
     export let data;
+
+    const logs = getServiceLimit('logs');
+
+    const columns = writable<Column[]>([
+        { id: '$id', title: 'Execution ID', type: 'string', show: true, width: 150 },
+        {
+            id: 'status',
+            title: 'Status',
+            type: 'enum',
+            show: true,
+            width: 110,
+            array: true,
+            format: 'enum',
+            elements: ['completed', 'scheduled', 'waiting', 'processing', 'cancelled', 'failed']
+        },
+        {
+            id: '$createdAt',
+            title: 'Created',
+            type: 'datetime',
+            show: true,
+            width: 120,
+            format: 'datetime'
+        },
+        {
+            id: 'trigger',
+            title: 'Trigger',
+            type: 'string',
+            show: true,
+            width: 90,
+            array: true,
+            format: 'enum',
+            elements: ['http', 'scheduled', 'event']
+        },
+        {
+            id: 'requestMethod',
+            title: 'Method',
+            type: 'string',
+            show: true,
+            width: 70,
+            array: true,
+            format: 'enum',
+            elements: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']
+        },
+        {
+            id: 'responseStatusCode',
+            title: 'Status code',
+            type: 'integer',
+            show: true,
+            width: 100,
+            format: 'integer'
+        },
+        {
+            id: 'requestPath',
+            title: 'Path',
+            type: 'string',
+            show: true,
+            width: 90,
+            format: 'string'
+        },
+        {
+            id: 'duration',
+            title: 'Duration',
+            type: 'integer',
+            show: true,
+            width: 80,
+            format: 'integer'
+        }
+    ]);
 
     onMount(() => {
         return sdk.forConsole.client.subscribe('console', (response) => {
@@ -36,25 +98,10 @@
             }
         });
     });
-
-    function showLogs(execution: Models.Execution) {
-        $log.show = true;
-        $log.func = $func;
-        $log.data = execution;
-    }
-
-    const logs = getServiceLimit('logs');
 </script>
 
 <Container>
-    <ContainerHeader
-        title="Executions"
-        buttonText="Execute now"
-        buttonEvent="execute_function"
-        buttonMethod={() => {
-            $execute = $func;
-            $showFunctionExecute = true;
-        }}>
+    <ContainerHeader title="Executions">
         <svelte:fragment slot="tooltip" let:tier let:limit let:upgradeMethod>
             <p class="u-bold">The {tier} plan has limits</p>
             <ul>
@@ -83,6 +130,71 @@
             {/if}
         </svelte:fragment>
     </ContainerHeader>
+    <div class="u-flex u-main-space-between is-not-mobile u-margin-block-start-16">
+        <div class="u-flex u-gap-8 u-cross-center u-flex-wrap">
+            <TagList />
+
+            <Filters query={data.query} {columns} let:disabled let:toggle singleCondition>
+                <div class="u-flex u-gap-4">
+                    <Button
+                        text
+                        on:click={toggle}
+                        {disabled}
+                        noMargin={!$tags?.length}
+                        ariaLabel="open filter">
+                        <span class="icon-filter-line" />
+                        {#if !$tags?.length}
+                            <span class="text">Filters</span>
+                        {/if}
+                    </Button>
+                    {#if $tags?.length}
+                        <div
+                            style="flex-basis:1px; background-color:hsl(var(--color-border)); width: 1px">
+                        </div>
+                        <Button
+                            text
+                            on:click={() => {
+                                queries.clearAll();
+                                queries.apply();
+                            }}>
+                            Clear all
+                        </Button>
+                    {/if}
+                </div>
+            </Filters>
+        </div>
+        <div class="u-flex u-gap-16">
+            <ViewSelector view={View.Table} {columns} hideView allowNoColumns hideText />
+            <Button
+                event="execute_function"
+                href={`${base}/console/project-${$project.$id}/functions/function-${$func.$id}/executions/execute-function`}>
+                <span class="icon-plus" aria-hidden="true" />
+                <span class="text">Execute now</span>
+            </Button>
+        </div>
+    </div>
+
+    <div class="u-flex u-main-space-between u-margin-block-start-16 is-only-mobile">
+        <Filters query={data.query} {columns}>
+            <svelte:fragment slot="mobile" let:disabled let:toggle>
+                <Button text on:click={toggle} {disabled} ariaLabel="open filter" noMargin>
+                    <span class="icon-filter-line" />
+                    <span class="text">Filters</span>
+                    {#if $tags?.length}
+                        <span class="inline-tag">{$tags?.length}</span>
+                    {/if}
+                </Button>
+            </svelte:fragment>
+        </Filters>
+        <div class=" u-flex u-gap-16">
+            <ViewSelector view={View.Table} {columns} hideView allowNoColumns />
+            <Button
+                event="execute_function"
+                href={`${base}/console/project-${$project.$id}/functions/function-${$func.$id}/executions/execute-function`}>
+                <span class="text">Execute</span>
+            </Button>
+        </div>
+    </div>
 
     {#if !$func.logging}
         <div class="common-section">
@@ -98,60 +210,31 @@
             </Alert>
         </div>
     {/if}
-    {#if data.executions.total}
-        <TableScroll>
-            <TableHeader>
-                <TableCellHead width={150}>Execution ID</TableCellHead>
-                <TableCellHead width={110}>Status</TableCellHead>
-                <TableCellHead width={140}>Created</TableCellHead>
-                <TableCellHead width={90}>Trigger</TableCellHead>
-                <TableCellHead width={70}>Method</TableCellHead>
-                <TableCellHead width={90}>Path</TableCellHead>
-                <TableCellHead width={80}>Duration</TableCellHead>
-            </TableHeader>
-            <TableBody>
-                {#each data.executions.executions as execution}
-                    <TableRowButton on:click={() => showLogs(execution)}>
-                        <TableCell width={150} title="Execution ID">
-                            <Id value={execution.$id}>{execution.$id}</Id>
-                        </TableCell>
-                        <TableCell width={110} title="Status">
-                            {@const status = execution.status}
-
-                            <Pill
-                                warning={status === 'waiting' || status === 'building'}
-                                danger={status === 'failed'}
-                                info={status === 'completed' || status === 'ready'}>
-                                {status}
-                            </Pill>
-                        </TableCell>
-                        <TableCellText width={140} title="Created">
-                            {timeFromNow(execution.$createdAt)}
-                        </TableCellText>
-                        <TableCell width={90} title="Trigger">
-                            <Pill>
-                                <span class="text u-trim">{execution.trigger}</span>
-                            </Pill>
-                        </TableCell>
-                        <TableCellText width={70} title="Method">
-                            {execution.requestMethod}
-                        </TableCellText>
-                        <TableCellText width={90} title="Path">
-                            {execution.requestPath}
-                        </TableCellText>
-                        <TableCellText width={80} title="Duration">
-                            {calculateTime(execution.duration)}
-                        </TableCellText>
-                    </TableRowButton>
-                {/each}
-            </TableBody>
-        </TableScroll>
+    {#if data?.executions?.total}
+        <Table columns={$columns} {data} />
 
         <PaginationWithLimit
             name="Executions"
             limit={data.limit}
             offset={data.offset}
             total={data.executions.total} />
+    {:else if data?.query}
+        <EmptySearch hidePages>
+            <div class="common-section">
+                <div class="u-text-center common-section">
+                    <b class="body-text-2 u-bold">Sorry we couldn't find any executions</b>
+                    <p>There are no executions that match your filters.</p>
+                </div>
+                <div class="u-flex u-gap-16 common-section u-main-center">
+                    <Button
+                        secondary
+                        on:click={() => {
+                            queries.clearAll();
+                            queries.apply();
+                        }}>Clear filters</Button>
+                </div>
+            </div>
+        </EmptySearch>
     {:else}
         <EmptySearch>
             <div class="u-text-center">

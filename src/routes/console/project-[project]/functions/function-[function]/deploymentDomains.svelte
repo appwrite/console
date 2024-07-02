@@ -12,9 +12,10 @@
         <a href={`http://${domain.rules[0].domain}`} target="_blank">
             <span class="link">
                 {domain.rules[0].domain}
-            </span> <span class="icon-external-link" aria-hidden="true" />
+            </span>
         </a>
     </Trim>
+    <span class="icon-external-link" aria-hidden="true" />
     {#if domain.rules.length > 1}
         <DropList bind:show={showDropdown} scrollable>
             <Pill button on:click={() => (showDropdown = !showDropdown)}>

@@ -1,8 +1,10 @@
 <script lang="ts">
+    import { base } from '$app/paths';
     import { CardGrid, Heading, SvgIcon } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import { execute, func, showFunctionExecute } from '../store';
+    import { project } from '$routes/console/project-[project]/store';
+    import { func } from '../store';
 </script>
 
 <CardGrid>
@@ -28,9 +30,8 @@
     <svelte:fragment slot="actions">
         <Button
             secondary
-            on:click={() => {
-                $execute = $func;
-                $showFunctionExecute = true;
-            }}>Execute now</Button>
+            href={`${base}/console/project-${$project.$id}/functions/function-${$func.$id}/executions/execute-function`}>
+            Execute now
+        </Button>
     </svelte:fragment>
 </CardGrid>
