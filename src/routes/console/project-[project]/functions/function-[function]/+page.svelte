@@ -33,6 +33,7 @@
     import Delete from './delete.svelte';
     import Create from './create.svelte';
     import Activate from './activate.svelte';
+    import Cancel from './cancel.svelte';
     import { calculateTime } from '$lib/helpers/timeConversion';
     import { Pill } from '$lib/elements';
     import RedeployModal from './redeployModal.svelte';
@@ -47,6 +48,7 @@
 
     let showDropdown = [];
     let showDelete = false;
+    let showCancel = false;
     let showActivate = false;
     let showRedeploy = false;
     let showAlert = true;
@@ -99,30 +101,14 @@
                 <svelte:fragment slot="aside">
                     {@const status = activeDeployment.status}
                     {@const fileSize = humanFileSize(activeDeployment.size)}
-                    <div class="u-flex u-main-space-between">
-                        <div class="u-grid-equal-row-size u-gap-4 u-line-height-1">
-                            <p><b>Build time:</b> {calculateTime(activeDeployment.buildTime)}</p>
-                            <p>
-                                <b>Updated:</b>
-                                <DeploymentCreatedBy deployment={activeDeployment} />
-                            </p>
-                            <p><b>Size:</b> {fileSize.value + fileSize.unit}</p>
-                            <p class="u-flex u-gap-4 u-cross-center">
-                                <b>Source:</b>
-                                <DeploymentSource deployment={activeDeployment} />
-                            </p>
-                            {#if $proxyRuleList?.rules?.length}
-                                <p class="u-flex u-gap-4 u-cross-center">
-                                    <b>Domains:</b>
-                                    <DeploymentDomains domain={$proxyRuleList} />
-                                </p>
-                            {/if}
-                        </div>
-                        <div class="u-flex u-flex-vertical u-cross-end">
+                    <div class="stats-grid-box">
+                        <div>
+                            <p class="u-color-text-offline">Status</p>
                             <Pill
                                 danger={status === 'failed'}
                                 warning={status === 'building'}
                                 success={status === 'ready'}>
+                                <span class="icon-lightning-bolt" aria-hidden="true" />
                                 <span class="text u-trim">
                                     {activeDeployment.status === 'ready'
                                         ? 'active'
@@ -130,7 +116,39 @@
                                 </span>
                             </Pill>
                         </div>
+                        <div>
+                            <p class="u-color-text-offline">Build time</p>
+                            <p class="u-line-height-2">
+                                {calculateTime(activeDeployment.buildTime)}
+                            </p>
+                        </div>
+                        <div>
+                            <p class="u-color-text-offline">Build size</p>
+                            <p class="u-line-height-2">
+                                {fileSize.value + fileSize.unit}
+                            </p>
+                        </div>
+                        <div>
+                            <p class="u-color-text-offline">Updated</p>
+                            <p class="u-line-height-2">
+                                <DeploymentCreatedBy deployment={activeDeployment} />
+                            </p>
+                        </div>
                     </div>
+
+                    <div class="u-flex u-flex-vertical u-gap-4">
+                        <p class="u-color-text-offline">Source</p>
+                        <div>
+                            <DeploymentSource deployment={activeDeployment} />
+                        </div>
+                    </div>
+
+                    {#if $proxyRuleList?.rules?.length}
+                        <div class="u-flex u-flex-vertical u-gap-4">
+                            <p class="u-color-text-offline">Domains</p>
+                            <DeploymentDomains domain={$proxyRuleList} />
+                        </div>
+                    {/if}
                 </svelte:fragment>
 
                 <svelte:fragment slot="actions">
@@ -149,12 +167,11 @@
                             }}>
                             Redeploy
                         </Button>
-
                         <Button
                             secondary
                             href={`${base}/console/project-${$project.$id}/functions/function-${$func.$id}/executions/execute-function`}
                             disabled={isCloud && $readOnly && !GRACE_PERIOD_OVERRIDE}>
-                            Execute now
+                            Execute
                         </Button>
                     </div>
                 </svelte:fragment>
@@ -223,7 +240,10 @@
                                 </TableCell>
                                 <TableCell title="Status">
                                     {#if activeDeployment?.$id === deployment?.$id}
-                                        <Pill success>active</Pill>
+                                        <Pill success>
+                                            <span class="icon-lightning-bolt" aria-hidden="true" />
+                                            <span class="text u-trim">active</span>
+                                        </Pill>
                                     {:else}
                                         <Pill
                                             danger={status === 'failed'}
@@ -290,6 +310,17 @@
                                                 href={`/console/project-${$page.params.project}/functions/function-${$page.params.function}/deployment-${deployment.$id}`}>
                                                 Logs
                                             </DropListLink>
+                                            {#if deployment.status === 'processing'}
+                                                <DropListItem
+                                                    icon="x-circle"
+                                                    on:click={() => {
+                                                        selectedDeployment = deployment;
+                                                        showDropdown = [];
+                                                        showCancel = true;
+                                                    }}>
+                                                    Cancel
+                                                </DropListItem>
+                                            {/if}
                                             <DropListItem
                                                 icon="trash"
                                                 on:click={() => {
@@ -357,6 +388,23 @@
 
 {#if selectedDeployment}
     <Delete {selectedDeployment} bind:showDelete />
+    <Cancel {selectedDeployment} bind:showCancel />
     <Activate {selectedDeployment} bind:showActivate on:activated={handleActivate} />
     <RedeployModal {selectedDeployment} bind:show={showRedeploy} />
 {/if}
+
+<style lang="scss">
+    @import '@appwrite.io/pink/src/abstract/variables/_devices.scss';
+
+    .stats-grid-box {
+        display: grid;
+        gap: px2rem(16);
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media #{$break3open} {
+        .stats-grid-box {
+            grid-template-columns: repeat(4, 1fr);
+        }
+    }
+</style>
