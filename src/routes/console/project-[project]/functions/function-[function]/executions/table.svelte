@@ -1,15 +1,14 @@
 <script lang="ts">
-    import { Id } from '$lib/components';
+    import { DropList, DropListItem, Id } from '$lib/components';
     import {
         TableBody,
         TableCell,
         TableCellHead,
         TableCellText,
         TableHeader,
-        TableRowButton,
+        TableRow,
         TableScroll
     } from '$lib/elements/table';
-    import type { PageData } from './$types';
     import { timeFromNow, toLocaleDateTime } from '$lib/helpers/date';
     import { type Models } from '@appwrite.io/console';
     import type { Column } from '$lib/helpers/types';
@@ -18,9 +17,16 @@
     import { calculateTime } from '$lib/helpers/timeConversion';
     import { log } from '$lib/stores/logs';
     import { func } from '../store';
+    import Delete from './delete.svelte';
+    import { Button } from '$lib/elements/forms';
+
+    let showDropdown = [];
+    let showDelete = false;
+
+    let selectedExecution: Models.Execution = null;
 
     export let columns: Column[];
-    export let data: PageData;
+    export let data;
 
     let execution: Record<string, Models.Execution> = {};
 
@@ -42,10 +48,11 @@
                 <TableCellHead width={column.width}>{column.title}</TableCellHead>
             {/if}
         {/each}
+        <TableCellHead width={40} />
     </TableHeader>
     <TableBody>
-        {#each data.executions.executions as execution (execution.$id)}
-            <TableRowButton on:click={() => showLogs(execution)}>
+        {#each data.executions.executions as execution, index (execution.$id)}
+            <TableRow>
                 {#each columns as column}
                     {#if column.show}
                         {#if column.id === '$id'}
@@ -102,7 +109,43 @@
                         {/if}
                     {/if}
                 {/each}
-            </TableRowButton>
+                <TableCell width={40} showOverflow>
+                    <DropList bind:show={showDropdown[index]} placement="bottom-start" noArrow>
+                        <Button
+                            round
+                            text
+                            ariaLabel="More options"
+                            on:click={() => {
+                                showDropdown[index] = !showDropdown[index];
+                            }}>
+                            <span class="icon-dots-horizontal" aria-hidden="true" />
+                        </Button>
+                        <svelte:fragment slot="list">
+                            <DropListItem
+                                icon="terminal"
+                                on:click={() => {
+                                    showDropdown = [];
+                                    showLogs(execution);
+                                }}>
+                                Logs
+                            </DropListItem>
+                            <DropListItem
+                                icon="trash"
+                                on:click={() => {
+                                    selectedExecution = execution;
+                                    showDropdown = [];
+                                    showDelete = true;
+                                }}>
+                                Delete
+                            </DropListItem>
+                        </svelte:fragment>
+                    </DropList>
+                </TableCell>
+            </TableRow>
         {/each}
     </TableBody>
 </TableScroll>
+
+{#if selectedExecution}
+    <Delete {selectedExecution} bind:showDelete />
+{/if}
