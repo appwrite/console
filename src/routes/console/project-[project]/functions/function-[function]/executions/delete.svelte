@@ -9,7 +9,7 @@
     import type { Models } from '@appwrite.io/console';
 
     export let showDelete = false;
-    export let selectedExecution: Models.Execution = null;
+    export let selectedExecution: Models.Execution;
 
     async function handleSubmit() {
         try {
