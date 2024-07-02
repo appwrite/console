@@ -33,6 +33,7 @@
     import Delete from './delete.svelte';
     import Create from './create.svelte';
     import Activate from './activate.svelte';
+    import Cancel from './cancel.svelte';
     import { calculateTime } from '$lib/helpers/timeConversion';
     import { Pill } from '$lib/elements';
     import RedeployModal from './redeployModal.svelte';
@@ -46,6 +47,7 @@
 
     let showDropdown = [];
     let showDelete = false;
+    let showCancel = false;
     let showActivate = false;
     let showRedeploy = false;
     let showAlert = true;
@@ -164,7 +166,6 @@
                             }}>
                             Redeploy
                         </Button>
-
                         <Button
                             secondary
                             on:click={() => {
@@ -311,6 +312,17 @@
                                                 href={`/console/project-${$page.params.project}/functions/function-${$page.params.function}/deployment-${deployment.$id}`}>
                                                 Logs
                                             </DropListLink>
+                                            {#if deployment.status === 'processing'}
+                                                <DropListItem
+                                                    icon="x-circle"
+                                                    on:click={() => {
+                                                        selectedDeployment = deployment;
+                                                        showDropdown = [];
+                                                        showCancel = true;
+                                                    }}>
+                                                    Cancel
+                                                </DropListItem>
+                                            {/if}
                                             <DropListItem
                                                 icon="trash"
                                                 on:click={() => {
@@ -378,6 +390,7 @@
 
 {#if selectedDeployment}
     <Delete {selectedDeployment} bind:showDelete />
+    <Cancel {selectedDeployment} bind:showCancel />
     <Activate {selectedDeployment} bind:showActivate on:activated={handleActivate} />
     <RedeployModal {selectedDeployment} bind:show={showRedeploy} />
 {/if}
