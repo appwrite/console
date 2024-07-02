@@ -227,9 +227,7 @@
             </div>
         </div>
         {#if $deploymentList.total}
-            <div class="u-margin-block-start-16">
-                <Table columns={$columns} {data} />
-            </div>
+            <Table columns={$columns} {data} />
         {:else if data?.query}
             <EmptySearch hidePages>
                 <div class="common-section">

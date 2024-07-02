@@ -164,7 +164,7 @@
             </Filters>
         </div>
         <div class="u-flex u-gap-16">
-            <ViewSelector view={View.Table} {columns} hideView allowNoColumns showColsTextMobile />
+            <ViewSelector view={View.Table} {columns} hideView allowNoColumns hideText />
             <Button
                 event="execute_function"
                 href={`${base}/console/project-${$project.$id}/functions/function-${$func.$id}/executions/execute-function`}>

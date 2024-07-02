@@ -43,7 +43,7 @@
     }
 </script>
 
-<TableScroll noMargin>
+<TableScroll>
     <TableHeader>
         {#each columns as column}
             {#if column.show}
