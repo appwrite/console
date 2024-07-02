@@ -1,21 +1,23 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
 
-    import UpdateEvents from './updateEvents.svelte';
-    import ExecuteFunction from './executeFunction.svelte';
-    import UpdateName from './updateName.svelte';
-    import UpdateRuntime from './updateRuntime.svelte';
-    import UpdatePermissions from './updatePermissions.svelte';
-    import UpdateSchedule from './updateSchedule.svelte';
-    import UpdateTimeout from './updateTimeout.svelte';
     import DangerZone from './dangerZone.svelte';
+    import ExecuteFunction from './executeFunction.svelte';
+    import UpdateConfiguration from './updateConfiguration.svelte';
+    import UpdateEvents from './updateEvents.svelte';
+    import UpdateLogging from './updateLogging.svelte';
+    import UpdateName from './updateName.svelte';
+    import UpdatePermissions from './updatePermissions.svelte';
+    import UpdateRuntime from './updateRuntime.svelte';
+    import UpdateSchedule from './updateSchedule.svelte';
+    import UpdateScopes from './updateScopes.svelte';
+    import UpdateTimeout from './updateTimeout.svelte';
     import UpdateVariables from '../../../updateVariables.svelte';
+
     import { func } from '../store';
     import { sdk } from '$lib/stores/sdk';
     import { Dependencies } from '$lib/constants';
     import { invalidate } from '$app/navigation';
-    import UpdateLogging from './updateLogging.svelte';
-    import UpdateConfiguration from './updateConfiguration.svelte';
     import { Alert, Heading } from '$lib/components';
     import { Button } from '$lib/elements/forms';
 
@@ -81,5 +83,6 @@
         globalVariableList={data.globalVariables}
         variableList={data.variables} />
     <UpdateTimeout />
+    <UpdateScopes />
     <DangerZone />
 </Container>
