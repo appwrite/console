@@ -1,12 +1,12 @@
 <script lang="ts">
-    import { Heading } from '$lib/components';
+    import { Avatar, AvatarInitials, Card, Heading } from '$lib/components';
     import AppwriteLogoDark from '$lib/images/appwrite-logo-dark.svg';
     import AppwriteLogoLight from '$lib/images/appwrite-logo-light.svg';
     import LoginDark from '$lib/images/login/login-dark-mode.png';
     import LoginLight from '$lib/images/login/login-light-mode.png';
     import type { Coupon } from '$lib/sdk/billing';
     import { app } from '$lib/stores/app';
-    import { campaigns } from '$lib/stores/campaigns';
+    import { campaigns, type CampaignData } from '$lib/stores/campaigns';
     import { user } from '$lib/stores/user';
 
     export const imgLight = LoginLight;
@@ -15,8 +15,13 @@
     export let campaign: string = null;
     export let coupon: Coupon = null;
 
-    $: variation = coupon?.campaign ?? campaign ? 'card' : 'default';
     $: selectedCampaign = campaigns.get(coupon?.campaign ?? campaign);
+    $: variation = (coupon?.campaign ?? campaign ? selectedCampaign?.template : 'default') as
+        | 'default'
+        | CampaignData['template'];
+
+    let currentReviewNumber = 0;
+    $: currentReview = selectedCampaign?.data?.reviews?.[currentReviewNumber];
 
     function generateTitle() {
         if (coupon?.credits) {
@@ -37,17 +42,17 @@
 
 <main class="grid-1-1 is-full-page" id="main">
     <section
-        class={`u-flex u-flex-vertical ${variation === 'card' ? 'u-cross-center u-main-center u-height-100-percent u-width-full-line side-bg' : 'side-default'}`}
-        style:--url={variation === 'card'
+        class={`u-flex u-flex-vertical ${variation !== 'default' ? 'u-cross-center u-main-center u-height-100-percent u-width-full-line side-bg' : 'side-default'}`}
+        style:--url={variation !== 'default'
             ? ''
             : `url(${$app.themeInUse === 'dark' ? imgDark : imgLight})`}>
-        {#if variation === 'card'}
+        {#if variation !== 'default'}
             <div class="side-bg-container" />
         {/if}
         <div
             class="logo u-flex u-gap-16"
             class:is-not-mobile={variation === 'default'}
-            class:logo-variation={variation === 'card'}>
+            class:logo-variation={variation !== 'default'}>
             <a href={user ? '/console' : '/'}>
                 {#if $app.themeInUse === 'dark'}
                     <img
@@ -72,15 +77,15 @@
                 <p>Build like a team of hundreds<span class="underscore">_</span></p>
             </div>
         {:else if variation === 'card'}
-            <div
+            <section
                 class="u-flex u-flex-vertical u-main-center u-cross-center u-height-100-percent u-width-full-line">
                 <img
                     src={`/images/campaigns/${coupon?.campaign ?? campaign}/${$app.themeInUse}.png`}
                     class="u-block u-image-object-fit-cover side-bg-img"
                     alt="promo" />
 
-                <div class="u-text-center">
-                    <div class="is-only-mobile u-width-full-line auth-container">
+                <div class="u-text-center auth-container">
+                    <div class="is-only-mobile u-width-full-line">
                         <Heading
                             size="5"
                             tag="h3"
@@ -90,7 +95,7 @@
                             {generateTitle()}
                         </Heading>
                     </div>
-                    <div class="is-not-mobile u-width-full-line auth-container">
+                    <div class="is-not-mobile u-width-full-line">
                         <Heading
                             size="4"
                             tag="h3"
@@ -100,11 +105,70 @@
                             {generateTitle()}
                         </Heading>
                     </div>
-                    <p class="u-margin-block-start-16 auth-container">
+                    <p class="u-margin-block-start-16">
                         {generateDesc()}
                     </p>
                 </div>
-            </div>
+            </section>
+        {:else if variation === 'review'}
+            <section
+                class="u-flex u-flex-vertical u-main-center u-cross-center u-height-100-percent u-width-full-line review-container">
+                <div class="u-text-center">
+                    <div class="is-only-mobile u-width-full-line">
+                        <Heading
+                            size="5"
+                            tag="h3"
+                            class="u-margin-block-start-48"
+                            trimmed={false}
+                            style="font-weight:normal">
+                            {generateTitle()}
+                        </Heading>
+                    </div>
+                    <div class="is-not-mobile u-width-full-line">
+                        <Heading
+                            size="3"
+                            tag="h3"
+                            class="u-margin-block-start-32"
+                            trimmed={false}
+                            style="font-weight:normal">
+                            {generateTitle()}
+                        </Heading>
+                    </div>
+                </div>
+
+                <p class="body-text-1 u-margin-block-start-16 u-text-center">{generateDesc()}</p>
+                <div class="review-container u-margin-block-start-64">
+                    <Card style="--p-card-padding: 1.25rem">
+                        <p class="body-text-1">
+                            {currentReview.review}
+                        </p>
+                        <div class="u-margin-block-start-16 u-flex u-gap-16">
+                            {#if currentReview?.img}
+                                <Avatar
+                                    src={`/images/campaigns/${coupon?.campaign ?? campaign}/reviewers/${currentReview.img}`}
+                                    name={currentReview.name}
+                                    size={40} />
+                            {:else}
+                                <AvatarInitials size={40} name={currentReview.name} />
+                            {/if}
+                            <div>
+                                <p class="body-text-2 u-bold">{currentReview.name}</p>
+                                <p class="body-text-2">{currentReview.desc}</p>
+                            </div>
+                        </div>
+                    </Card>
+                </div>
+                {#if selectedCampaign?.footer}
+                    <div
+                        class="u-flex u-gap-16 u-cross-center u-main-center review-footer-container">
+                        <p class="u-bold" style:text-transform="uppercase">provided to you by</p>
+                        <img
+                            style:max-block-size="2.5rem"
+                            src={`/images/campaigns/${coupon?.campaign ?? campaign}/footer/${$app.themeInUse}.png`}
+                            alt={coupon?.campaign ?? campaign} />
+                    </div>
+                {/if}
+            </section>
         {/if}
     </section>
     <section class="grid-1-1-col-2 u-flex u-flex-vertical u-cross-center u-main-center">
@@ -116,7 +180,7 @@
                 </h1>
                 <h1
                     class="heading-level-5 u-margin-block-start-auto is-only-mobile"
-                    class:u-padding-block-start-24={variation === 'card'}>
+                    class:u-padding-block-start-24={variation !== 'default'}>
                     <slot name="title" />
                 </h1>
                 <div class="u-margin-block-start-24">
@@ -303,6 +367,9 @@
     .auth-container {
         max-inline-size: 27.5rem;
     }
+    .review-container {
+        max-inline-size: 30rem;
+    }
     .logo-variation {
         padding-block-start: 2rem;
 
@@ -311,6 +378,13 @@
             & img {
                 scale: 0.7;
             }
+        }
+    }
+
+    .review-footer-container {
+        padding-block-start: 10rem;
+        @media #{$break1} {
+            padding-block-start: 5rem;
         }
     }
 </style>
