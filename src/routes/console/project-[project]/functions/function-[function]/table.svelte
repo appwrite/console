@@ -25,6 +25,7 @@
     import RedeployModal from './redeployModal.svelte';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
+    import Cancel from './cancel.svelte';
 
     export let columns: Column[];
     export let data: PageData;
@@ -33,6 +34,7 @@
     let showDelete = false;
     let showActivate = false;
     let showRedeploy = false;
+    let showCancel = false;
 
     let selectedDeployment: Models.Deployment = null;
 
@@ -57,7 +59,7 @@
                     {#if column.show}
                         {#if column.id === '$id'}
                             {#key column.id}
-                                <TableCell width={column.width} title="Execution ID">
+                                <TableCell width={column.width} title="Deployment ID">
                                     <Id value={deployment.$id}>{deployment.$id}</Id>
                                 </TableCell>
                             {/key}
@@ -65,7 +67,10 @@
                             <TableCell width={column.width} title={column.title}>
                                 {@const status = deployment.status}
                                 {#if data?.activeDeployment?.$id === deployment?.$id}
-                                    <Pill success>active</Pill>
+                                    <Pill success>
+                                        <span class="icon-lightning-bolt" aria-hidden="true" />
+                                        <span class="text u-trim">active</span>
+                                    </Pill>
                                 {:else}
                                     <Pill
                                         danger={status === 'failed'}
@@ -133,6 +138,17 @@
                                 href={`/console/project-${$page.params.project}/functions/function-${$page.params.function}/deployment-${deployment.$id}`}>
                                 Logs
                             </DropListLink>
+                            {#if deployment.status === 'processing'}
+                                <DropListItem
+                                    icon="x-circle"
+                                    on:click={() => {
+                                        selectedDeployment = deployment;
+                                        showDropdown = [];
+                                        showCancel = true;
+                                    }}>
+                                    Cancel
+                                </DropListItem>
+                            {/if}
                             <DropListItem
                                 icon="trash"
                                 on:click={() => {
@@ -153,5 +169,7 @@
 {#if selectedDeployment}
     <Delete {selectedDeployment} bind:showDelete />
     <Activate {selectedDeployment} bind:showActivate on:activated={handleActivate} />
+    <Cancel {selectedDeployment} bind:showCancel />
+
     <RedeployModal {selectedDeployment} bind:show={showRedeploy} />
 {/if}
