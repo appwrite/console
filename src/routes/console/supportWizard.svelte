@@ -1,21 +1,21 @@
 <script lang="ts">
-    import { Wizard } from '$lib/layout';
-    import { onDestroy } from 'svelte';
-    import { isSupportOnline, supportData } from './wizard/support/store';
-    import Step1 from './wizard/support/step1.svelte';
-    import type { WizardStepsType } from '$lib/layout/wizard.svelte';
-    import { user } from '$lib/stores/user';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { addNotification } from '$lib/stores/notifications';
-    import { wizard } from '$lib/stores/wizard';
-    import { VARS } from '$lib/system';
-    import { organization } from '$lib/stores/organization';
     import {
         localeTimezoneName,
         utcHourToLocaleHour,
         utcWeekDayToLocaleWeekDay,
         type WeekDay
     } from '$lib/helpers/date';
+    import { Wizard } from '$lib/layout';
+    import type { WizardStepsType } from '$lib/layout/wizard.svelte';
+    import { addNotification } from '$lib/stores/notifications';
+    import { organization } from '$lib/stores/organization';
+    import { user } from '$lib/stores/user';
+    import { wizard } from '$lib/stores/wizard';
+    import { VARS } from '$lib/system';
+    import { onDestroy } from 'svelte';
+    import Step1 from './wizard/support/step1.svelte';
+    import { isSupportOnline, supportData } from './wizard/support/store';
 
     onDestroy(() => {
         $supportData = {
@@ -47,7 +47,7 @@
                 customFields: [
                     { id: '41612', value: $supportData.category },
                     { id: '48493', value: $user?.name ?? '' },
-                    { id: '48492', value: $organization.$id ?? '' },
+                    { id: '48492', value: $organization?.$id ?? '' },
                     { id: '48491', value: $supportData?.project ?? '' },
                     { id: '48490', value: $user?.$id ?? '' }
                 ]
