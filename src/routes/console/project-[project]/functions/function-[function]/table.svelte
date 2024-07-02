@@ -80,9 +80,10 @@
                                     </Pill>
                                 {/if}
                             </TableCell>
-                        {:else if column.id === 'source'}
-                            <TableCellText width={column.width} title={column.title}>
-                                <DeploymentSource {deployment} /></TableCellText>
+                        {:else if column.id === 'type'}
+                            <TableCell width={column.width} title={column.title}>
+                                <DeploymentSource {deployment} />
+                            </TableCell>
                         {:else if column.id === '$updatedAt'}
                             <TableCellText width={column.width} title={column.title}>
                                 <DeploymentCreatedBy {deployment} />
@@ -170,6 +171,5 @@
     <Delete {selectedDeployment} bind:showDelete />
     <Activate {selectedDeployment} bind:showActivate on:activated={handleActivate} />
     <Cancel {selectedDeployment} bind:showCancel />
-
     <RedeployModal {selectedDeployment} bind:show={showRedeploy} />
 {/if}
