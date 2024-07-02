@@ -9,7 +9,7 @@
     import type { Models } from '@appwrite.io/console';
 
     export let showCancel = false;
-    export let selectedDeployment: Models.Deployment = null;
+    export let selectedDeployment: Models.Deployment;
 
     async function handleSubmit() {
         try {

@@ -142,7 +142,7 @@
     <WizardSecondaryContent>
         <Form bind:this={formComponent} onSubmit={handleSubmit} bind:isSubmitting>
             <FormList>
-                {#if func?.version !== 'v3'}
+                {#if func?.version === 'v2'}
                     <Alert type="info">
                         <svelte:fragment slot="title">
                             Customizable execution data now available for functions v3.0
