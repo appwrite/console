@@ -14,7 +14,6 @@
     import { Container, ContainerHeader } from '$lib/layout';
     import type { Models } from '@appwrite.io/console';
     import Create from './create.svelte';
-
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
     import { readOnly } from '$lib/stores/billing';
     import { project } from '../../store';
@@ -25,6 +24,7 @@
     import { queries, tags } from '$lib/components/filters/store';
     import { View } from '$lib/helpers/load';
     import DeploymentCard from './deploymentCard.svelte';
+    import RedeployModal from './redeployModal.svelte';
 
     export let data;
 
@@ -292,3 +292,7 @@
         offset={data.offset}
         total={$deploymentList?.total} />
 </Container>
+
+{#if selectedDeployment}
+    <RedeployModal {selectedDeployment} bind:show={showRedeploy} />
+{/if}

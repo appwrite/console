@@ -46,6 +46,7 @@
                 $func.logging || undefined,
                 $func.entrypoint || undefined,
                 $func.commands || undefined,
+                $func.scopes || undefined,
                 $func.installationId || undefined,
                 $func.providerRepositoryId || undefined,
                 $func.providerBranch || undefined,

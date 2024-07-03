@@ -49,6 +49,7 @@
                 undefined,
                 runtimeDetail.entrypoint,
                 runtimeDetail.commands || undefined,
+                undefined, //TODO: scopes
                 $installation.$id,
                 $repository.id,
                 $choices.branch,
