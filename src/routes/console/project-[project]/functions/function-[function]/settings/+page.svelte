@@ -20,6 +20,7 @@
     import { invalidate } from '$app/navigation';
     import { Alert, Heading } from '$lib/components';
     import { Button } from '$lib/elements/forms';
+    import { trackEvent } from '$lib/actions/analytics';
 
     export let data;
     let showAlert = true;
@@ -59,6 +60,12 @@
             >.
             <svelte:fragment slot="buttons">
                 <Button
+                    on:click={() =>
+                        trackEvent('click_open_website', {
+                            from: 'button',
+                            source: 'function_keys_card',
+                            destination: 'docs'
+                        })}
                     href="https://appwrite.io/docs/products/functions/development"
                     external
                     text>

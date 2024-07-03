@@ -131,6 +131,7 @@
                             </DropListItem>
                             <DropListItem
                                 icon="trash"
+                                event="execution_delete"
                                 on:click={() => {
                                     selectedExecution = execution;
                                     showDropdown = [];

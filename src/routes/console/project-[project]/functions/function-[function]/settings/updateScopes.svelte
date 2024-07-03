@@ -50,7 +50,9 @@
                 type: 'success',
                 message: 'Function scopes have been updated'
             });
-            trackEvent(Submit.FunctionUpdateScopes);
+            trackEvent(Submit.FunctionUpdateScopes, {
+                scopes: functionScopes
+            });
         } catch (error) {
             addNotification({
                 type: 'error',

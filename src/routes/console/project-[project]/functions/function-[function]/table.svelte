@@ -142,6 +142,7 @@
                             {#if deployment.status === 'processing'}
                                 <DropListItem
                                     icon="x-circle"
+                                    event="deployment_cancel"
                                     on:click={() => {
                                         selectedDeployment = deployment;
                                         showDropdown = [];
