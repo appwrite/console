@@ -104,7 +104,7 @@
         </Alert>
     {/if}
     {#if data?.activeDeployment}
-        {@const activeDeployment = data?.activeDeployment}
+        {@const activeDeployment = data.activeDeployment}
         <DeploymentCard deployment={activeDeployment}>
             <svelte:fragment slot="actions">
                 <div class="u-flex u-flex-wrap">

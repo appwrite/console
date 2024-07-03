@@ -8,7 +8,7 @@
     }
 
     // We cast to any to not cause type errors in the input components
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    /* eslint  @typescript-eslint/no-explicit-any: 'off' */
     function isTypeTagValue(obj: any): obj is TagValue {
         if (typeof obj === 'string') return false;
         return (
