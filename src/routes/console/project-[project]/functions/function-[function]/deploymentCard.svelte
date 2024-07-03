@@ -1,8 +1,5 @@
 <script lang="ts">
-    import { base } from '$app/paths';
-
-    import { CardGrid, Id } from '$lib/components';
-    import { app } from '$lib/stores/app';
+    import { CardGrid, Id, SvgIcon } from '$lib/components';
     import type { Models } from '@appwrite.io/console';
     import { func, proxyRuleList } from './store';
     import { Pill } from '$lib/elements';
@@ -19,9 +16,7 @@
 <CardGrid>
     <div class="u-flex u-cross-start u-gap-16">
         <div class="avatar is-medium" aria-hidden="true">
-            <img
-                src={`${base}/icons/${$app.themeInUse}/color/${$func.runtime.split('-')[0]}.svg`}
-                alt="technology" />
+            <SvgIcon name={$func.runtime.split('-')[0]}></SvgIcon>
         </div>
         <div class="u-grid-equal-row-size u-gap-4 u-line-height-1">
             <p><b>Deployment ID</b></p>
