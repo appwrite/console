@@ -172,9 +172,9 @@
                 </div>
             </Empty>
         {/if}
-        <div class="u-margin-block-start-40">
+        <div class="u-margin-block-start-48">
             <Heading tag="h3" size="7">All deployments</Heading>
-            <div class="u-flex u-main-space-between is-not-mobile u-margin-block-start-24">
+            <div class="u-flex u-main-space-between is-not-mobile u-margin-block-start-16">
                 <div class="u-flex u-gap-8 u-cross-center u-flex-wrap">
                     <TagList />
 
