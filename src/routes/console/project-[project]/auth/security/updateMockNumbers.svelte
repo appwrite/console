@@ -11,12 +11,10 @@
     import Empty from '$lib/components/empty.svelte';
     import type { Models } from '@appwrite.io/console';
 
-    // @ts-expect-error wrong SDK type
     let numbers: Models.MockNumber[] = $project?.authMockNumbers ?? [];
     let initialNumbers = [];
     let projectId: string = $project.$id;
 
-    // @ts-expect-error wrong SDK type
     $: initialNumbers = $project?.authMockNumbers?.map((num) => ({ ...num })) ?? [];
     $: submitDisabled = JSON.stringify(numbers) === JSON.stringify(initialNumbers);
 
