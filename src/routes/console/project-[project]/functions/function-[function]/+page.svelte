@@ -89,8 +89,8 @@
     <ContainerHeader title="Deployments">
         <Create main />
     </ContainerHeader>
-    {#if data?.activeDeployment}
-        {@const activeDeployment = data.activeDeployment}
+    {#if data?.deploymentList?.total}
+        {@const activeDeployment = data?.activeDeployment}
         <div class="common-section">
             <Heading tag="h3" size="7">Active</Heading>
         </div>
