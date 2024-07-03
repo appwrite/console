@@ -167,7 +167,8 @@
             <ViewSelector view={View.Table} {columns} hideView allowNoColumns hideText />
             <Button
                 event="execute_function"
-                href={`${base}/console/project-${$project.$id}/functions/function-${$func.$id}/executions/execute-function`}>
+                href={`${base}/console/project-${$project.$id}/functions/function-${$func.$id}/executions/execute-function`}
+                disabled={!$func.$id || !$func?.deployment}>
                 <span class="icon-plus" aria-hidden="true" />
                 <span class="text">Execute now</span>
             </Button>
@@ -190,7 +191,8 @@
             <ViewSelector view={View.Table} {columns} hideView allowNoColumns />
             <Button
                 event="execute_function"
-                href={`${base}/console/project-${$project.$id}/functions/function-${$func.$id}/executions/execute-function`}>
+                href={`${base}/console/project-${$project.$id}/functions/function-${$func.$id}/executions/execute-function`}
+                disabled={!$func.$id || !$func?.deployment}>
                 <span class="text">Execute</span>
             </Button>
         </div>
