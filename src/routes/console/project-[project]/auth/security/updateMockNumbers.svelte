@@ -11,17 +11,17 @@
     import Empty from '$lib/components/empty.svelte';
     import type { Models } from '@appwrite.io/console';
 
-    let numbers: Models.MockNumber[] = $project?.authMockNumbers?.numbers ?? [];
+    // @ts-expect-error wrong SDK type
+    let numbers: Models.MockNumber[] = $project?.authMockNumbers ?? [];
     let initialNumbers = [];
     let projectId: string = $project.$id;
 
-    $: initialNumbers = $project?.authMockNumbers?.numbers?.map((num) => ({ ...num })) ?? [];
+    // @ts-expect-error wrong SDK type
+    $: initialNumbers = $project?.authMockNumbers?.map((num) => ({ ...num })) ?? [];
     $: submitDisabled = JSON.stringify(numbers) === JSON.stringify(initialNumbers);
 
     async function updateMockNumbers() {
         try {
-            // TODO: fix once SDK is updated
-            //@ts-expect-error numbers is the wrong type in the SDK
             await sdk.forConsole.projects.updateMockNumbers(projectId, numbers);
             await invalidate(Dependencies.PROJECT);
             addNotification({
@@ -50,6 +50,8 @@
         numbers.splice(index, 1);
         numbers = numbers;
     }
+
+    $: console.log(numbers, initialNumbers);
 </script>
 
 <Form onSubmit={updateMockNumbers}>
@@ -72,6 +74,7 @@
                                 placeholder="Enter Phone Number"
                                 label="Phone Number"
                                 showLabel={index === 0 ? true : false}
+                                minlength={8}
                                 maxlength={16}
                                 required />
                             <InputText
