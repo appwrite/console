@@ -5,7 +5,14 @@
     import type { Column } from '$lib/helpers/types';
     import type { Writable } from 'svelte/store';
     import Content from './content.svelte';
-    import { addFilter, queries, queriesAreDirty, queryParamToMap, tags } from './store';
+    import {
+        addFilter,
+        queries,
+        queriesAreDirty,
+        queryParamToMap,
+        tags,
+        ValidOperators
+    } from './store';
 
     export let query = '[]';
     export let columns: Writable<Column[]>;
@@ -40,7 +47,14 @@
     }
 
     function apply() {
-        if (selectedColumn && operatorKey && (value || arrayValues.length)) {
+        if (
+            selectedColumn &&
+            operatorKey &&
+            (operatorKey === ValidOperators.IsNotNull ||
+                operatorKey === ValidOperators.IsNull ||
+                value ||
+                arrayValues.length)
+        ) {
             addFilter($columns, selectedColumn, operatorKey, value, arrayValues);
             selectedColumn = null;
             value = null;
@@ -71,7 +85,12 @@
 
     $: isButtonDisabled = $queriesAreDirty
         ? false
-        : !selectedColumn || !operatorKey || (!value && !arrayValues.length);
+        : !selectedColumn ||
+          !operatorKey ||
+          (!value &&
+              !arrayValues.length &&
+              operatorKey !== ValidOperators.IsNotNull &&
+              operatorKey !== ValidOperators.IsNull);
 
     function toggleDropdown() {
         showFiltersDesktop = !showFiltersDesktop;
@@ -79,6 +98,8 @@
     function toggleMobileModal() {
         showFiltersMobile = !showFiltersMobile;
     }
+
+    $: console.log(selectedColumn, operatorKey, value, arrayValues);
 </script>
 
 <div class="is-not-mobile">
