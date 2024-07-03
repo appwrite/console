@@ -139,7 +139,7 @@
                                 href={`/console/project-${$page.params.project}/functions/function-${$page.params.function}/deployment-${deployment.$id}`}>
                                 Logs
                             </DropListLink>
-                            {#if deployment.status === 'processing'}
+                            {#if deployment.status === 'processing' || deployment.status === 'building'}
                                 <DropListItem
                                     icon="x-circle"
                                     event="deployment_cancel"
