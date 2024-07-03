@@ -31,6 +31,7 @@
                 $func.logging || undefined,
                 $func.entrypoint || undefined,
                 $func.commands || undefined,
+                $func.scopes || undefined,
                 $installation.$id,
                 $repository.id,
                 $choices.branch,

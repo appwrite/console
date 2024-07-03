@@ -5,16 +5,16 @@
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    // import { sdk } from '$lib/stores/sdk';
+    import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
+    import { func } from '../store';
 
     export let showDelete = false;
     export let selectedExecution: Models.Execution;
 
     async function handleSubmit() {
         try {
-            // TODO: update SDK to use the new function
-            /// await sdk.forProject.functions.deleteExecution(selectedExecution.$id);
+            await sdk.forProject.functions.deleteExecution($func.$id, selectedExecution.$id);
             await invalidate(Dependencies.FUNCTION);
             showDelete = false;
             addNotification({

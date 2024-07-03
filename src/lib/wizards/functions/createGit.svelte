@@ -32,6 +32,7 @@
                 undefined,
                 $createFunction.entrypoint,
                 $createFunction.commands || undefined,
+                undefined, //TODO: SCOPES!!!
                 $installation.$id,
                 $repository.id,
                 $choices.branch,

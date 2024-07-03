@@ -13,9 +13,7 @@
 
     async function handleSubmit() {
         try {
-            // TODO: update SDK
-            // @ts-expect-error
-            await sdk.forProject.functions.cancelDeployment(
+            await sdk.forProject.functions.updateDeploymentBuild(
                 selectedDeployment.resourceId,
                 selectedDeployment.$id
             );

@@ -101,7 +101,7 @@
                 path,
                 method,
                 headersObject,
-                isScheduled ? dateTime : null
+                isScheduled ? dateTime.toString() : undefined
             );
             await goto(
                 `${base}/console/project-${$page.params.project}/functions/function-${func.$id}/executions`

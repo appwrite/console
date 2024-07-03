@@ -130,6 +130,7 @@
                 $func.logging || undefined,
                 entrypoint,
                 commands,
+                $func.scopes || undefined,
                 $func.installationId || undefined,
                 $func.providerRepositoryId || undefined,
                 selectedBranch,

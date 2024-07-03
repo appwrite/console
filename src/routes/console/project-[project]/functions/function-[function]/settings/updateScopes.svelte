@@ -38,13 +38,12 @@
                 $func.logging || undefined,
                 $func.entrypoint || undefined,
                 $func.commands || undefined,
+                functionScopes,
                 $func.installationId || undefined,
                 $func.providerRepositoryId || undefined,
                 $func.providerBranch || undefined,
                 $func.providerSilentMode || undefined,
-                $func.providerRootDirectory || undefined,
-                // TODO: use updated SDK
-                functionScopes
+                $func.providerRootDirectory || undefined
             );
             await invalidate(Dependencies.FUNCTION);
             addNotification({
