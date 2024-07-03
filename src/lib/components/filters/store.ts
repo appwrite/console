@@ -4,6 +4,8 @@ import { derived, get, writable } from 'svelte/store';
 import { page } from '$app/stores';
 import deepEqual from 'deep-equal';
 import type { Column, ColumnType } from '$lib/helpers/types';
+import { Query } from '@appwrite.io/console';
+import { toLocaleDateTime } from '$lib/helpers/date';
 
 export type TagValue = {
     tag: string;
@@ -11,7 +13,11 @@ export type TagValue = {
 };
 
 export type Operator = {
-    toTag: (attribute: string, input?: string | number | string[]) => string | TagValue;
+    toTag: (
+        attribute: string,
+        input?: string | number | string[],
+        type?: string
+    ) => string | TagValue;
     toQuery: (attribute: string, input?: string | number | string[]) => string;
     types: ColumnType[];
     hideInput?: boolean;
@@ -38,7 +44,10 @@ function initQueries(initialValue = new Map<string | TagValue, string>()) {
 
     function addFilter({ column, operator, value }: AddFilterArgs) {
         queries.update((map) => {
-            map.set(operator.toTag(column.id, value), operator.toQuery(column.id, value));
+            map.set(
+                operator.toTag(column.title, value, column?.type),
+                operator.toQuery(column.id, value)
+            );
             return map;
         });
     }
@@ -84,3 +93,186 @@ export const hasPageQueries = derived(page, ($page) => {
 });
 
 export const tags = derived(queries, ($queries) => Array.from($queries.keys()));
+
+/* eslint  @typescript-eslint/no-explicit-any: 'off' */
+export function addFilter(
+    columns: Column[],
+    columnId: string,
+    operatorKey: string,
+    value: any, // We cast to any to not cause type errors in the input components
+    arrayValues: string[] = []
+) {
+    const operator = operatorKey ? operators[operatorKey] : null;
+    const column = columns.find((c) => c.id === columnId) as Column;
+    if (!column || !operator) return;
+    if (column.array) {
+        queries.addFilter({ column, operator, value: arrayValues });
+    } else {
+        queries.addFilter({ column, operator, value: value ?? '' });
+    }
+}
+
+export enum ValidOperators {
+    StartsWith = 'starts with',
+    EndsWith = 'ends with',
+    GreaterThan = 'greater than',
+    GreaterThanOrEqual = 'greater than or equal',
+    LessThan = 'less than',
+    LessThanOrEqual = 'less than or equal',
+    Equal = 'equal',
+    NotEqual = 'not equal',
+    IsNotNull = 'is not null',
+    IsNull = 'is null',
+    Contains = 'contains'
+}
+
+export enum ValidTypes {
+    String = 'string',
+    Integer = 'integer',
+    Double = 'double',
+    Boolean = 'boolean',
+    Datetime = 'datetime',
+    Relationship = 'relationship',
+    Enum = 'enum'
+}
+
+const operatorsDefault = new Map<
+    ValidOperators,
+    {
+        query: (attr: string, input: string | number | string[]) => string;
+        types: ColumnType[];
+        hideInput?: boolean;
+    }
+>([
+    [ValidOperators.StartsWith, { query: Query.startsWith, types: [ValidTypes.String] }],
+    [ValidOperators.EndsWith, { query: Query.endsWith, types: [ValidTypes.String] }],
+    [
+        ValidOperators.GreaterThan,
+        {
+            query: Query.greaterThan,
+            types: [ValidTypes.Integer, ValidTypes.Double, ValidTypes.Datetime]
+        }
+    ],
+    [
+        ValidOperators.GreaterThanOrEqual,
+        {
+            query: Query.greaterThanEqual,
+            types: [ValidTypes.Integer, ValidTypes.Double, ValidTypes.Datetime]
+        }
+    ],
+    [
+        ValidOperators.LessThan,
+        {
+            query: Query.lessThan,
+            types: [ValidTypes.Integer, ValidTypes.Double, ValidTypes.Datetime]
+        }
+    ],
+    [
+        ValidOperators.LessThanOrEqual,
+        {
+            query: Query.lessThanEqual,
+            types: [ValidTypes.Integer, ValidTypes.Double, ValidTypes.Datetime]
+        }
+    ],
+    [
+        ValidOperators.Equal,
+        {
+            query: Query.equal,
+            types: [
+                ValidTypes.String,
+                ValidTypes.Integer,
+                ValidTypes.Double,
+                ValidTypes.Boolean,
+                ValidTypes.Enum
+            ]
+        }
+    ],
+    [
+        ValidOperators.NotEqual,
+        {
+            query: Query.notEqual,
+            types: [ValidTypes.String, ValidTypes.Integer, ValidTypes.Double, ValidTypes.Boolean]
+        }
+    ],
+    [
+        ValidOperators.IsNotNull,
+        {
+            query: Query.isNotNull,
+            types: [
+                ValidTypes.String,
+                ValidTypes.Integer,
+                ValidTypes.Double,
+                ValidTypes.Boolean,
+                ValidTypes.Datetime,
+                ValidTypes.Relationship
+            ],
+            hideInput: true
+        }
+    ],
+    [
+        ValidOperators.IsNull,
+        {
+            query: Query.isNull,
+            types: [
+                ValidTypes.String,
+                ValidTypes.Integer,
+                ValidTypes.Double,
+                ValidTypes.Boolean,
+                ValidTypes.Datetime,
+                ValidTypes.Relationship
+            ],
+            hideInput: true
+        }
+    ],
+    [
+        ValidOperators.Contains,
+        {
+            query: Query.contains,
+            types: [
+                ValidTypes.String,
+                ValidTypes.Integer,
+                ValidTypes.Double,
+                ValidTypes.Boolean,
+                ValidTypes.Datetime,
+                ValidTypes.Enum
+            ]
+        }
+    ]
+]);
+
+function formatArray(array: string[]) {
+    if (!array?.length) return;
+    if (array.length > 2) {
+        return `${array[0]} or ${array.length - 1} others`;
+    } else {
+        return array.join(' or ');
+    }
+}
+
+function generateDefaultOperators() {
+    const operators: Record<string, Operator> = {};
+    operatorsDefault.forEach((operator, operatorName) => {
+        operators[operatorName] = {
+            toQuery: operator.query,
+            toTag: (attribute, input = null, type = null) => {
+                if (input === null) {
+                    return `**${attribute}** ${operatorName}`;
+                } else if (Array.isArray(input) && input.length > 2) {
+                    return {
+                        value: input,
+                        tag: `**${attribute}** ${operatorName} **${formatArray(input)}** `
+                    };
+                } else if (type === ValidTypes.Datetime) {
+                    return `**${attribute}** ${operatorName} **${toLocaleDateTime(input.toString())}**`;
+                } else {
+                    return `**${attribute}** ${operatorName} **${input}**`;
+                }
+            },
+            types: operator.types,
+            hideInput: operator.hideInput
+        };
+    });
+    return operators;
+}
+
+export const operators = generateDefaultOperators();

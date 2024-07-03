@@ -1,24 +1,31 @@
 <script lang="ts">
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { Container, ContainerHeader } from '$lib/layout';
     import { tooltip } from '$lib/actions/tooltip';
-    import { CardContainer, Empty, GridItem1, Id, PaginationWithLimit } from '$lib/components';
-    import { toLocaleDateTime } from '$lib/helpers/date';
-    import { app } from '$lib/stores/app';
-    import { wizard } from '$lib/stores/wizard';
-    import { onMount } from 'svelte';
-    import Initial from '$lib/wizards/functions/cover.svelte';
     import { registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
+    import {
+        CardContainer,
+        Empty,
+        GridItem1,
+        Id,
+        PaginationWithLimit,
+        SvgIcon
+    } from '$lib/components';
+    import { toLocaleDateTime } from '$lib/helpers/date';
+    import { Container, ContainerHeader } from '$lib/layout';
+    import { isServiceLimited } from '$lib/stores/billing';
+    import { marketplace } from '$lib/stores/marketplace.js';
+    import { organization } from '$lib/stores/organization';
+    import { wizard } from '$lib/stores/wizard';
+    import Initial from '$lib/wizards/functions/cover.svelte';
     import CreateTemplate from '$lib/wizards/functions/createTemplate.svelte';
     import {
         templateConfig as templateConfigStore,
         template as templateStore
     } from '$lib/wizards/functions/store.js';
-    import { marketplace } from '$lib/stores/marketplace.js';
+    import { parseExpression } from 'cron-parser';
+    import { onMount } from 'svelte';
     import { functionsList } from './store';
-    import { organization } from '$lib/stores/organization';
-    import { isServiceLimited } from '$lib/stores/billing';
 
     export let data;
 
@@ -89,11 +96,7 @@
                     <svelte:fragment slot="title">
                         <div class="u-flex u-gap-16 u-cross-center">
                             <div class="avatar is-medium">
-                                <img
-                                    src={`${base}/icons/${$app.themeInUse}/color/${
-                                        func.runtime.split('-')[0]
-                                    }.svg`}
-                                    alt="technology" />
+                                <SvgIcon name={func.runtime.split('-')[0]}></SvgIcon>
                             </div>
                             <span class="text">{func.name}</span>
                         </div>
@@ -106,7 +109,7 @@
                                     aria-hidden="true"
                                     use:tooltip={{
                                         content: `Next execution: 
-                                        ${toLocaleDateTime(func.schedule)}`
+                                        ${toLocaleDateTime(parseExpression(func.schedule, { utc: true }).next().toString())}`
                                     }} />
                             </li>
                         {/if}
