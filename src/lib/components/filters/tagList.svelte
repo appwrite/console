@@ -7,6 +7,7 @@
         node.innerHTML = node.innerHTML.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     function isTypeTagValue(obj: any): obj is TagValue {
         if (typeof obj === 'string') return false;
         return (
