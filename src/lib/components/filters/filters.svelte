@@ -52,6 +52,9 @@
 
     $: if (!showFiltersDesktop && !showFiltersMobile) {
         selectedColumn = null;
+        value = null;
+        operatorKey = null;
+        arrayValues = [];
     }
 
     $: isButtonDisabled = $queriesAreDirty
