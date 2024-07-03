@@ -89,89 +89,87 @@
     <ContainerHeader title="Deployments">
         <Create main />
     </ContainerHeader>
-    {#if data?.deploymentList?.total}
+    <div class="common-section">
+        <Heading tag="h3" size="7">Active</Heading>
+    </div>
+    {#if data?.activeDeployment && !$func.live && showAlert}
+        <Alert
+            type="warning"
+            class="u-margin-block-start-8"
+            isStandalone
+            dismissible
+            on:dismiss={() => (showAlert = false)}>
+            Some configuration options are not live yet. Redeploy your function to apply latest
+            changes.
+        </Alert>
+    {/if}
+    {#if data?.activeDeployment}
         {@const activeDeployment = data?.activeDeployment}
-        <div class="common-section">
-            <Heading tag="h3" size="7">Active</Heading>
-        </div>
-        {#if activeDeployment && !$func.live && showAlert}
-            <Alert
-                type="warning"
-                class="u-margin-block-start-8"
-                isStandalone
-                dismissible
-                on:dismiss={() => (showAlert = false)}>
-                Some configuration options are not live yet. Redeploy your function to apply latest
-                changes.
-            </Alert>
-        {/if}
-        {#if activeDeployment}
-            <DeploymentCard deployment={activeDeployment}>
-                <svelte:fragment slot="actions">
-                    <div class="u-flex u-flex-wrap">
-                        <Button
-                            text
-                            href={`/console/project-${$page.params.project}/functions/function-${$page.params.function}/deployment-${activeDeployment.$id}`}>
-                            Build logs
-                        </Button>
-                        <Button
-                            text
-                            class="u-margin-inline-end-16"
-                            on:click={() => {
-                                selectedDeployment = activeDeployment;
-                                showRedeploy = true;
-                            }}>
-                            Redeploy
-                        </Button>
-                        <Button
-                            secondary
-                            href={`${base}/console/project-${$project.$id}/functions/function-${$func.$id}/executions/execute-function`}
-                            disabled={isCloud && $readOnly && !GRACE_PERIOD_OVERRIDE}>
-                            Execute
-                        </Button>
-                    </div>
-                </svelte:fragment>
-            </DeploymentCard>
-        {:else if $deploymentList.total}
-            <Empty noMedia single>
-                <Create secondary round>
-                    <i class="icon-plus" />
-                </Create>
-                <div class="u-text-center">
-                    <p class="body-text-2 u-margin-block-start-4">
-                        Add a new deployment, or activate an existing one to see your function in
-                        action. <br />Learn more about deployments in our
-                        <a
-                            class="link"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            href="https://appwrite.io/docs/products/functions/deployment"
-                            >documentation</a
-                        >.
-                    </p>
-                </div>
-            </Empty>
-        {:else}
-            <Empty single target="deployment">
-                <div class="u-text-center">
-                    <Heading size="7" tag="h2">
-                        Create your first deployment to get started.
-                    </Heading>
-                    <p class="body-text-2 u-bold u-margin-block-start-4">
-                        Learn more about deployments in our Documentation.
-                    </p>
-                </div>
-                <div class="u-flex u-gap-16 u-main-center">
+        <DeploymentCard deployment={activeDeployment}>
+            <svelte:fragment slot="actions">
+                <div class="u-flex u-flex-wrap">
                     <Button
-                        external
-                        href="https://appwrite.io/docs/products/functions/deployment"
                         text
-                        event="empty_documentation"
-                        ariaLabel={`create {target}`}>Documentation</Button>
-                    <Create secondary />
+                        href={`/console/project-${$page.params.project}/functions/function-${$page.params.function}/deployment-${activeDeployment.$id}`}>
+                        Build logs
+                    </Button>
+                    <Button
+                        text
+                        class="u-margin-inline-end-16"
+                        on:click={() => {
+                            selectedDeployment = activeDeployment;
+                            showRedeploy = true;
+                        }}>
+                        Redeploy
+                    </Button>
+                    <Button
+                        secondary
+                        href={`${base}/console/project-${$project.$id}/functions/function-${$func.$id}/executions/execute-function`}
+                        disabled={isCloud && $readOnly && !GRACE_PERIOD_OVERRIDE}>
+                        Execute
+                    </Button>
                 </div>
-            </Empty>
-        {/if}
+            </svelte:fragment>
+        </DeploymentCard>
+    {:else if $deploymentList.total}
+        <Empty noMedia single>
+            <Create secondary round>
+                <i class="icon-plus" />
+            </Create>
+            <div class="u-text-center">
+                <p class="body-text-2 u-margin-block-start-4">
+                    Add a new deployment, or activate an existing one to see your function in
+                    action. <br />Learn more about deployments in our
+                    <a
+                        class="link"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        href="https://appwrite.io/docs/products/functions/deployment"
+                        >documentation</a
+                    >.
+                </p>
+            </div>
+        </Empty>
+    {:else}
+        <Empty single target="deployment">
+            <div class="u-text-center">
+                <Heading size="7" tag="h2">Create your first deployment to get started.</Heading>
+                <p class="body-text-2 u-bold u-margin-block-start-4">
+                    Learn more about deployments in our Documentation.
+                </p>
+            </div>
+            <div class="u-flex u-gap-16 u-main-center">
+                <Button
+                    external
+                    href="https://appwrite.io/docs/products/functions/deployment"
+                    text
+                    event="empty_documentation"
+                    ariaLabel={`create {target}`}>Documentation</Button>
+                <Create secondary />
+            </div>
+        </Empty>
+    {/if}
+    {#if data?.deploymentList?.total}
         <div class="u-margin-block-start-48">
             <Heading tag="h3" size="7">All deployments</Heading>
             <div class="u-flex u-main-space-between is-not-mobile u-margin-block-start-16">
