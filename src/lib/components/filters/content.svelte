@@ -45,9 +45,7 @@
         value = column?.array ? [] : null;
         if (column?.type === 'datetime') {
             const today = new Date();
-            console.log(today.toISOString());
             value = today.toISOString();
-            console.log(value);
         }
     });
 

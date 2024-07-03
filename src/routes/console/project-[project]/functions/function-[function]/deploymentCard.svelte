@@ -44,7 +44,7 @@
                         success={status === 'ready'}>
                         <span class="icon-lightning-bolt" aria-hidden="true" />
                         <span class="text u-trim">
-                            {deployment.status === 'ready' ? 'active' : deployment.status}
+                            {status === 'ready' ? 'active' : status}
                         </span>
                     </Pill>
                 </span>
