@@ -8,22 +8,21 @@
     import { addNotification } from '$lib/stores/notifications';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
-    import { writable } from 'svelte/store';
     import Empty from '$lib/components/empty.svelte';
     import type { Models } from '@appwrite.io/console';
 
-    const numbers = writable<Models.MockNumber[]>($project.authMockNumbers.numbers);
+    let numbers: Models.MockNumber[] = $project?.authMockNumbers?.numbers ?? [];
     let initialNumbers = [];
     let projectId: string = $project.$id;
 
-    $: initialNumbers = $project.authMockNumbers.numbers.map((num) => ({ ...num }));
-    $: submitDisabled = JSON.stringify($numbers) === JSON.stringify(initialNumbers);
+    $: initialNumbers = $project?.authMockNumbers?.numbers?.map((num) => ({ ...num })) ?? [];
+    $: submitDisabled = JSON.stringify(numbers) === JSON.stringify(initialNumbers);
 
     async function updateMockNumbers() {
         try {
             // TODO: fix once SDK is updated
-            //@ts-expect-error $numbers is the wrong type in the SDK
-            await sdk.forConsole.projects.updateMockNumbers(projectId, $numbers);
+            //@ts-expect-error numbers is the wrong type in the SDK
+            await sdk.forConsole.projects.updateMockNumbers(projectId, numbers);
             await invalidate(Dependencies.PROJECT);
             addNotification({
                 type: 'success',
@@ -40,20 +39,16 @@
     }
 
     function addPhoneNumber(number: Models.MockNumber) {
-        numbers.update((n) => [
-            ...n,
-            {
-                phone: number.phone,
-                otp: number.otp
-            }
-        ]);
+        numbers.push({
+            phone: number.phone,
+            otp: number.otp
+        });
+        numbers = numbers;
     }
 
     function deletePhoneNumber(index: number) {
-        numbers.update((n) => {
-            n.splice(index, 1);
-            return n;
-        });
+        numbers.splice(index, 1);
+        numbers = numbers;
     }
 </script>
 
@@ -66,9 +61,9 @@
         </p>
 
         <svelte:fragment slot="aside">
-            {#if $numbers.length > 0}
+            {#if numbers?.length > 0}
                 <ul class="form-list">
-                    {#each $numbers as number, index}
+                    {#each numbers as number, index}
                         <FormItem isMultiple>
                             <InputPhone
                                 id={`key-${index}`}
@@ -91,7 +86,7 @@
                             <FormItemPart alignEnd>
                                 <Button
                                     text
-                                    disabled={$numbers.length === 0}
+                                    disabled={numbers.length === 0}
                                     on:click={() => {
                                         deletePhoneNumber(index);
                                     }}>
@@ -101,7 +96,7 @@
                         </FormItem>
                     {/each}
                 </ul>
-                {#if $numbers.length < 10}
+                {#if numbers?.length < 10}
                     <Button
                         noMargin
                         text
@@ -110,7 +105,7 @@
                                 phone: '',
                                 otp: ''
                             })}
-                        disabled={$numbers.length >= 10}>
+                        disabled={numbers.length >= 10}>
                         <span class="icon-plus" aria-hidden="true" />
                         <span class="text">Add number</span>
                     </Button>
