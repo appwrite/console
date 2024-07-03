@@ -3,7 +3,6 @@
     import { CardGrid, Heading } from '$lib/components';
     import { InputPhone, InputText } from '$lib/elements/forms';
     import { Button, Form, FormItem, FormItemPart } from '$lib/elements/forms';
-    import type { MockNumber } from '$lib/sdk/auth';
     import { sdk } from '$lib/stores/sdk';
     import { project } from '../../store';
     import { addNotification } from '$lib/stores/notifications';
@@ -11,18 +10,20 @@
     import { Dependencies } from '$lib/constants';
     import { writable } from 'svelte/store';
     import Empty from '$lib/components/empty.svelte';
+    import type { Models } from '@appwrite.io/console';
 
-    const numbers = writable<MockNumber[]>($project.authMockNumbers);
+    const numbers = writable<Models.MockNumber[]>($project.authMockNumbers.numbers);
     let initialNumbers = [];
     let projectId: string = $project.$id;
-    let submitDisabled = true;
 
-    $: initialNumbers = $project.authMockNumbers.map((num) => ({ ...num }));
+    $: initialNumbers = $project.authMockNumbers.numbers.map((num) => ({ ...num }));
     $: submitDisabled = JSON.stringify($numbers) === JSON.stringify(initialNumbers);
 
     async function updateMockNumbers() {
         try {
-            await sdk.forConsole.auth.updateMockNumbers(projectId, $numbers);
+            // TODO: fix once SDK is updated
+            //@ts-expect-error $numbers is the wrong type in the SDK
+            await sdk.forConsole.projects.updateMockNumbers(projectId, $numbers);
             await invalidate(Dependencies.PROJECT);
             addNotification({
                 type: 'success',
@@ -38,7 +39,7 @@
         }
     }
 
-    function addPhoneNumber(number: MockNumber) {
+    function addPhoneNumber(number: Models.MockNumber) {
         numbers.update((n) => [
             ...n,
             {
