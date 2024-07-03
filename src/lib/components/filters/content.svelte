@@ -66,7 +66,7 @@
 
 <div>
     <form on:submit|preventDefault={addFilterAndReset}>
-        <ul class="selects u-flex u-gap-8 u-margin-block-start-16">
+        <ul class="selects u-flex u-gap-8 u-margin-block-start-16 u-flex-vertical-mobile">
             <InputSelect
                 id="column"
                 options={$columns
