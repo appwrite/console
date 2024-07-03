@@ -66,7 +66,7 @@ function initQueries(initialValue = new Map<string | TagValue, string>()) {
     function apply() {
         const queryParam = mapToQueryParams(get(queries));
         const currentLocation = window.location.pathname;
-        goto(`${currentLocation}?query=${queryParam}`);
+        goto(`${currentLocation}?query=${queryParam}`, { noScroll: true });
     }
 
     return {
