@@ -10,7 +10,7 @@
         InputDateTime
     } from '$lib/elements/forms';
     import { createEventDispatcher, onMount } from 'svelte';
-    import { tags, operators, addFilter } from './store';
+    import { tags, operators, addFilter, queries } from './store';
     import type { Column } from '$lib/helpers/types';
     import type { Writable } from 'svelte/store';
     import { TagList } from '.';
@@ -55,6 +55,9 @@
         operatorKey = null;
         value = null;
         arrayValues = [];
+        if (singleCondition) {
+            queries.apply();
+        }
     }
 
     const dispatch = createEventDispatcher<{

@@ -50,6 +50,18 @@
         queries.apply();
     }
 
+    function afterApply(
+        e: CustomEvent<{
+            applied: number;
+        }>
+    ) {
+        applied = e.detail.applied;
+        if (singleCondition) {
+            showFiltersDesktop = false;
+            showFiltersMobile = false;
+        }
+    }
+
     $: if (!showFiltersDesktop && !showFiltersMobile) {
         selectedColumn = null;
         value = null;
@@ -92,7 +104,7 @@
                     bind:arrayValues
                     {columns}
                     {singleCondition}
-                    on:apply={(e) => (applied = e.detail.applied)}
+                    on:apply={afterApply}
                     on:clear={() => (applied = 0)} />
                 <hr />
                 <div class="u-flex u-margin-block-start-16 u-main-end u-gap-8">
@@ -136,7 +148,7 @@
             bind:value
             bind:arrayValues
             {singleCondition}
-            on:apply={(e) => (applied = e.detail.applied)}
+            on:apply={afterApply}
             on:clear={() => (applied = 0)} />
         <svelte:fragment slot="footer">
             {#if singleCondition}
