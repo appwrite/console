@@ -1,5 +1,12 @@
 <script lang="ts">
-    import { InputChoice, Button, InputFile, FormList, InputText } from '$lib/elements/forms';
+    import {
+        InputChoice,
+        Button,
+        InputFile,
+        FormList,
+        InputText,
+        InputTextarea
+    } from '$lib/elements/forms';
     import { Alert, Collapsible, CollapsibleItem, Modal } from '$lib/components';
     import { sdk } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
@@ -106,7 +113,7 @@
                             id="entrypoint"
                             placeholder="Entrypoint"
                             bind:value={entrypoint} />
-                        <InputText
+                        <InputTextarea
                             label="Commands"
                             placeholder="Enter a build commad (e.g. 'npm install')"
                             tooltip="Enter a single command or chain multiple commands with the && operator"
