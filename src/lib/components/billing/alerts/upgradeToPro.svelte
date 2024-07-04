@@ -2,9 +2,8 @@
     import { page } from '$app/stores';
     import { trackEvent } from '$lib/actions/analytics';
     import { BillingPlan } from '$lib/constants';
+    import { upgradeURL } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
-    import { wizard } from '$lib/stores/wizard';
-    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
     import GradientBanner from '../gradientBanner.svelte';
 
     let show = true;
@@ -19,16 +18,16 @@
     }
 </script>
 
-{#if show && $organization?.$id && $organization?.billingPlan !== BillingPlan.PRO && !$page.url.pathname.includes('/console/account')}
+{#if show && $organization?.$id && $organization?.billingPlan === BillingPlan.FREE && !$page.url.pathname.includes('/console/account')}
     <GradientBanner
         on:close={handleClose}
         on:click={() => {
-            wizard.start(ChangeOrganizationTierCloud);
             trackEvent('click_organization_upgrade', {
                 from: 'button',
                 source: 'upgrade_banner'
             });
         }}
+        href={$upgradeURL}
         buttonText="Upgrade">
         Appwrite Pro is now available!
     </GradientBanner>
