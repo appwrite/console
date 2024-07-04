@@ -91,7 +91,11 @@
                 id: attribute.key,
                 title: attribute.key,
                 type: attribute.type as ColumnType,
-                show: selected?.includes(attribute.key) ?? true
+                show: selected?.includes(attribute.key) ?? true,
+                array: attribute?.array,
+                format:
+                    'format' in attribute && attribute?.format === 'enum' ? attribute.format : null,
+                elements: 'elements' in attribute ? attribute.elements : null
             }))
         );
     }
@@ -215,6 +219,7 @@
                             {@const formatted = formatColumn(document[column.id])}
                             <TableCell>
                                 <div
+                                    class="u-width-fit-content"
                                     use:tooltip={{
                                         content: formatted.whole,
                                         disabled: !formatted.truncated
@@ -301,9 +306,11 @@
             <div class="u-flex u-flex-vertical u-gap-16">
                 <Alert>To change the selection edit the relationship settings.</Alert>
 
-                <InputChoice id="delete" label="Delete" showLabel={false} bind:value={checked}>
-                    Delete document from <span data-private>{$collection.name}</span>
-                </InputChoice>
+                <ul>
+                    <InputChoice id="delete" label="Delete" showLabel={false} bind:value={checked}>
+                        Delete document from <span data-private>{$collection.name}</span>
+                    </InputChoice>
+                </ul>
             </div>
         {:else}
             <p class="u-bold">This action is irreversible.</p>

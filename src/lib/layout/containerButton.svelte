@@ -7,7 +7,7 @@
 
     export let title: string;
     export let tooltipContent =
-        $organization.billingPlan === BillingPlan.STARTER
+        $organization.billingPlan === BillingPlan.FREE
             ? `Upgrade to add more ${title.toLocaleLowerCase()}`
             : `You've reached the ${title.toLocaleLowerCase()} limit for the ${
                   tierToPlan($organization.billingPlan).name

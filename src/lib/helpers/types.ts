@@ -13,12 +13,37 @@ export function isHTMLInputElement(el: unknown): el is HTMLInputElement {
 // eslint-disable-next-line @typescript-eslint/ban-types
 export type Prettify<T> = T & {};
 
-const columnTypes = ['string', 'integer', 'double', 'boolean', 'datetime', 'relationship'] as const;
+const columnTypes = [
+    'string',
+    'integer',
+    'double',
+    'boolean',
+    'datetime',
+    'relationship',
+    'enum'
+] as const;
 export type ColumnType = (typeof columnTypes)[number];
 export type Column = {
     id: string;
     title: string;
     type: ColumnType;
+    /**
+     * Set to false to hide by default
+     */
     show: boolean;
     width?: number;
+    /**
+     * Set to false to disable filtering for this column
+     */
+    filter?: boolean;
+    array?: boolean;
+    format?: string;
+    elements?: string[];
 };
+
+export function isValueOfStringEnum<T extends Record<string, string>>(
+    enumType: T,
+    value: string
+): value is T[keyof T] {
+    return Object.values<string>(enumType).includes(value);
+}

@@ -1,10 +1,3 @@
-<script context="module" lang="ts">
-    export enum ProxyTypes {
-        API = 'api',
-        FUNCTION = 'function'
-    }
-</script>
-
 <script lang="ts">
     import { DropList, DropListItem, Empty, Heading, Modal, Trim } from '$lib/components';
     import {
@@ -22,14 +15,14 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { wizard } from '$lib/stores/wizard';
     import type { Dependencies } from '$lib/constants';
-    import type { Models } from '@appwrite.io/console';
+    import type { Models, ResourceType } from '@appwrite.io/console';
     import Create from './create.svelte';
     import Delete from './delete.svelte';
     import Retry from './wizard/retry.svelte';
     import { Pill } from '$lib/elements';
 
     export let rules: Models.ProxyRuleList;
-    export let type: ProxyTypes;
+    export let type: ResourceType;
     export let dependency: Dependencies;
 
     let showDomainsDropdown = [];
@@ -154,11 +147,15 @@
                                 <span class="icon-dots-horizontal" aria-hidden="true" />
                             </Button>
                             <svelte:fragment slot="list">
-                                <DropListItem icon="refresh" on:click={() => openRetry(domain, i)}>
-                                    {domain.status === 'unverfied'
-                                        ? 'Retry generation'
-                                        : 'Retry verification'}
-                                </DropListItem>
+                                {#if domain.status !== 'verified'}
+                                    <DropListItem
+                                        icon="refresh"
+                                        on:click={() => openRetry(domain, i)}>
+                                        {domain.status === 'unverified'
+                                            ? 'Retry generation'
+                                            : 'Retry verification'}
+                                    </DropListItem>
+                                {/if}
                                 <DropListItem
                                     icon="trash"
                                     on:click={() => {
@@ -186,7 +183,7 @@
 <Delete bind:showDelete bind:selectedDomain {dependency} />
 <Modal bind:show={showRetry} headerDivider={false} bind:error={retryError} size="big">
     <svelte:fragment slot="title">
-        Retry {$domain.status === 'unverfied' ? 'certificate generation' : 'verification'}
+        Retry {$domain.status === 'unverified' ? 'certificate generation' : 'verification'}
     </svelte:fragment>
     <Retry on:error={(e) => (retryError = e.detail)} />
     <svelte:fragment slot="footer">

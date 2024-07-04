@@ -11,14 +11,12 @@
     import { Container } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { wizard } from '$lib/stores/wizard';
     import { isCloud } from '$lib/system';
     import { ID } from '@appwrite.io/console';
     import { onMount } from 'svelte';
-    import CreateOrganizationCloud from '../createOrganizationCloud.svelte';
     import { tierToPlan, type Tier, plansInfo } from '$lib/stores/billing';
-    import { createOrganization } from '../wizard/cloudOrganization/store';
     import { formatCurrency } from '$lib/helpers/numbers';
+    import { base } from '$app/paths';
 
     let name: string;
     let id: string;
@@ -28,12 +26,12 @@
     const options = isCloud
         ? [
               {
-                  value: BillingPlan.STARTER,
-                  label: `Starter - ${formatCurrency($plansInfo.get(BillingPlan.STARTER).price)}/month`
+                  value: BillingPlan.FREE,
+                  label: `${tierToPlan(BillingPlan.FREE).name} - ${formatCurrency($plansInfo.get(BillingPlan.FREE).price)}/month`
               },
               {
                   value: BillingPlan.PRO,
-                  label: `Pro - ${formatCurrency($plansInfo.get(BillingPlan.PRO).price)}/month + add-ons`
+                  label: `${tierToPlan(BillingPlan.PRO).name} - ${formatCurrency($plansInfo.get(BillingPlan.PRO).price)}/month + add-ons`
               }
           ]
         : [];
@@ -43,7 +41,7 @@
             if ($page.url.searchParams.has('type')) {
                 const paramType = $page.url.searchParams.get('type');
                 if (paramType === 'createPro') {
-                    wizard.start(CreateOrganizationCloud);
+                    goto(`${base}/console/create-organization`);
                 }
             }
         }
@@ -52,7 +50,7 @@
     async function handleSubmit() {
         const orgName = name?.length ? name : 'Personal Projects';
         if (isCloud) {
-            if (plan === BillingPlan.STARTER) {
+            if (plan === BillingPlan.FREE) {
                 try {
                     const org = await sdk.forConsole.billing.createOrganization(
                         id ?? ID.unique(),
@@ -79,10 +77,7 @@
                     trackError(error, Submit.OrganizationCreate);
                 }
             } else {
-                wizard.start(CreateOrganizationCloud, null, 2);
-                $createOrganization.name = orgName;
-                $createOrganization.billingPlan = plan;
-                $createOrganization.id = id;
+                goto(`${base}/console/create-organization?name=${orgName}&plan=${plan}`);
             }
         } else {
             try {

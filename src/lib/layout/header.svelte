@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
+    import { goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { AvatarInitials, DropList, DropListItem, DropListLink, Support } from '$lib/components';
     import { app } from '$lib/stores/app';
@@ -20,11 +20,9 @@
     import { slide } from 'svelte/transition';
     import { sdk } from '$lib/stores/sdk';
     import { isCloud } from '$lib/system';
-    import { wizard } from '$lib/stores/wizard';
-    import CreateOrganizationCloud from '$routes/console/createOrganizationCloud.svelte';
     import { Feedback } from '$lib/components/feedback';
-    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
-    import { BillingPlan } from '$lib/constants';
+    import { BillingPlan, Dependencies } from '$lib/constants';
+    import { upgradeURL } from '$lib/stores/billing';
 
     let showDropdown = false;
     let showSupport = false;
@@ -40,6 +38,7 @@
 
     async function logout() {
         await sdk.forConsole.account.deleteSession('current');
+        await invalidate(Dependencies.ACCOUNT);
         trackEvent(Submit.AccountLogout);
         await goto(`${base}/login`);
     }
@@ -56,7 +55,7 @@
     function createOrg() {
         showDropdown = false;
         if (isCloud) {
-            wizard.start(CreateOrganizationCloud);
+            goto(`${base}/console/create-organization`);
         } else newOrgModal.set(true);
     }
 
@@ -91,8 +90,8 @@
     </a>
     {#if isCloud}
         <div
-            class="tag eyebrow-heading-3"
-            style="--p-tag-height: 1.785rem; --p-tag-content-height: 1.15rem; padding-block: 0.25rem;">
+            class="tag eyebrow-heading-3 u-padding-block-4"
+            style="--p-tag-height: 1.785rem; --p-tag-content-height: 1.2rem;">
             <span class="text u-x-small" style="font-weight: 500">Beta</span>
         </div>
     {/if}
@@ -104,11 +103,11 @@
 
 <div class="main-header-end">
     <nav class="u-flex is-only-desktop u-cross-center">
-        {#if isCloud && $organization?.billingPlan === BillingPlan.STARTER && !$page.url.pathname.startsWith('/console/account')}
+        {#if isCloud && $organization?.billingPlan === BillingPlan.FREE && !$page.url.pathname.startsWith('/console/account')}
             <Button
                 disabled={$organization?.markedForDeletion}
+                href={$upgradeURL}
                 on:click={() => {
-                    wizard.start(ChangeOrganizationTierCloud);
                     trackEvent('click_organization_upgrade', {
                         from: 'button',
                         source: 'top_nav'

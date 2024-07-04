@@ -6,6 +6,9 @@
     export let style = '';
     export let transparent = false;
     export let noStyles = false;
+    export let dense = false;
+    let classes: string = undefined;
+    export { classes as class };
 
     let isOverflowing = false;
 
@@ -42,12 +45,13 @@
     };
 </script>
 
-<div class="table-with-scroll" class:u-margin-block-start-32={!noMargin} data-private>
+<div class="table-with-scroll {classes}" class:u-margin-block-start-32={!noMargin} data-private>
     <div class="table-wrapper" use:hasOverflow={(v) => (isOverflowing = v)}>
         <table
             class="table"
             class:is-remove-outer-styles={noStyles}
             class:is-sticky-scroll={isSticky && isOverflowing}
+            class:is-table-row-medium-size={dense}
             {style}
             style:--p-table-bg-color={transparent ? 'var(--transparent)' : ''}>
             <slot />

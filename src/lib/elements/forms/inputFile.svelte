@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { Trim } from '$lib/components';
+    import { Drop, Trim } from '$lib/components';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
-    import { onMount } from 'svelte';
+    import { SvelteComponent, onMount } from 'svelte';
     import { Helper, Label } from '.';
 
     export let label: string = null;
@@ -13,23 +13,15 @@
     export let optionalText: string = null;
     export let tooltip: string = null;
     export let error: string = null;
+    export let popover: typeof SvelteComponent<unknown> = null;
+    export let popoverProps: Record<string, unknown> = {};
 
     let input: HTMLInputElement;
     let hovering = false;
+    let show = false;
 
     function setFiles(value: FileList) {
         if (!value) return;
-
-        const hasInvalidExt = Array.from(value).some((file) => {
-            const fileExtension = file.name.split('.').pop();
-            return allowedFileExtensions?.length
-                ? !allowedFileExtensions.includes(fileExtension)
-                : false;
-        });
-        if (hasInvalidExt) {
-            error = 'Invalid file extension';
-            return;
-        }
 
         files = value;
         input.files = value;
@@ -39,11 +31,22 @@
         setFiles(new DataTransfer().files);
     }
 
+    function isFileExtensionAllowed(fileExtension: string) {
+        if (allowedFileExtensions.length && !allowedFileExtensions.includes(fileExtension)) {
+            return false;
+        }
+        return true;
+    }
     function dropHandler(ev: DragEvent) {
         ev.dataTransfer.dropEffect = 'move';
         hovering = false;
         if (!ev.dataTransfer.items) return;
         for (let i = 0; i < ev.dataTransfer.items.length; i++) {
+            const fileExtension = ev.dataTransfer.items[i].getAsFile().name.split('.')[1];
+            if (!isFileExtensionAllowed(fileExtension)) {
+                error = 'Invalid file extension';
+                return;
+            }
             if (ev.dataTransfer.items[i].kind === 'file') {
                 const dataTransfer = new DataTransfer();
                 dataTransfer.items.add(ev.dataTransfer.items[i].getAsFile());
@@ -78,6 +81,18 @@
 
     const handleChange = (event: Event) => {
         const target = event.currentTarget as HTMLInputElement;
+
+        const isValidFiles = Array.from(target.files).every((file) => {
+            const fileExtension = file.name.split('.').pop();
+            return isFileExtensionAllowed(fileExtension);
+        });
+
+        if (!isValidFiles) {
+            error = 'Invalid file extension';
+            target.value = '';
+            return;
+        }
+
         setFiles(target.files);
     };
 </script>
@@ -94,7 +109,30 @@
 <div>
     {#if label}
         <Label {required} {optionalText} {tooltip} hide={!label}>
-            {label}
+            {label}{#if popover}
+                <Drop isPopover bind:show display="inline-block">
+                    <!-- TODO: make unclicked icon greyed out and hover and clicked filled -->
+                    &nbsp;<button
+                        type="button"
+                        on:click={() => (show = !show)}
+                        class="tooltip"
+                        aria-label="input tooltip">
+                        <span
+                            class="icon-info"
+                            aria-hidden="true"
+                            style="font-size: var(--icon-size-small)" />
+                    </button>
+                    <svelte:fragment slot="list">
+                        <div
+                            class="dropped card u-max-width-250"
+                            style:--card-border-radius="var(--border-radius-small)"
+                            style:--p-card-padding=".75rem"
+                            style:box-shadow="var(--shadow-large)">
+                            <svelte:component this={popover} {...popoverProps} />
+                        </div>
+                    </svelte:fragment>
+                </Drop>
+            {/if}
         </Label>
     {/if}
     <div

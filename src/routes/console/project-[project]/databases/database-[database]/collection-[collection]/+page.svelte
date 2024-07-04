@@ -1,8 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { Empty, EmptySearch, Heading, PaginationWithLimit } from '$lib/components';
-    import Filters from '$lib/components/filters/filters.svelte';
-    import { hasPageQueries, queries } from '$lib/components/filters/store';
+    import { Filters, hasPageQueries, queries } from '$lib/components/filters';
     import ViewSelector from '$lib/components/viewSelector.svelte';
     import { Button } from '$lib/elements/forms';
     import type { ColumnType } from '$lib/helpers/types';
@@ -29,7 +28,10 @@
             id: attribute.key,
             title: attribute.key,
             type: attribute.type as ColumnType,
-            show: selected?.includes(attribute.key) ?? true
+            show: selected?.includes(attribute.key) ?? true,
+            array: attribute?.array,
+            format: 'format' in attribute && attribute?.format === 'enum' ? attribute.format : null,
+            elements: 'elements' in attribute ? attribute.elements : null
         }))
     );
 
@@ -55,7 +57,7 @@
             </Button>
         </div>
 
-        <Filters query={data.query} {columns} />
+        <Filters query={data.query} {columns} disabled={!(hasAttributes && hasValidAttributes)} />
 
         <div class="u-flex u-main-end u-gap-16">
             <ViewSelector

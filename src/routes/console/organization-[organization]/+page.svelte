@@ -25,12 +25,11 @@
     import { sdk } from '$lib/stores/sdk';
     import { loading } from '$routes/store';
     import type { Models } from '@appwrite.io/console';
-    import { ID } from '@appwrite.io/console';
+    import { ID, Region } from '@appwrite.io/console';
     import { openImportWizard } from '../project-[project]/settings/migrations/(import)';
     import { readOnly } from '$lib/stores/billing';
     import type { RegionList } from '$lib/sdk/billing';
     import { onMount } from 'svelte';
-    import CreateOrganizationCloud from '../createOrganizationCloud.svelte';
     import { organization } from '$lib/stores/organization';
 
     export let data;
@@ -105,7 +104,7 @@
                 ID.unique(),
                 `Imported project ${new Date().toISOString()}`,
                 $page.params.organization,
-                'default'
+                Region.Default
             );
             trackEvent(Submit.ProjectCreate, {
                 teamId: $page.params.organization
@@ -125,7 +124,7 @@
             if ($page.url.searchParams.has('type')) {
                 const paramType = $page.url.searchParams.get('type');
                 if (paramType === 'createPro') {
-                    wizard.start(CreateOrganizationCloud);
+                    goto(`${base}/console/create-organization`);
                 }
             }
         }

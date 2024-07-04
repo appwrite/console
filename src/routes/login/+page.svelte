@@ -16,26 +16,41 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { isCloud } from '$lib/system';
     import { page } from '$app/stores';
+    import { OAuthProvider } from '@appwrite.io/console';
     import { redirectTo } from '$routes/store';
+    import { user } from '$lib/stores/user';
 
     let mail: string, pass: string, disabled: boolean;
+
+    export let data;
 
     async function login() {
         try {
             disabled = true;
-            await sdk.forConsole.account.createEmailSession(mail, pass);
-            addNotification({
-                type: 'success',
-                message: 'Successfully logged in.'
-            });
+            await sdk.forConsole.account.createEmailPasswordSession(mail, pass);
+            await invalidate(Dependencies.ACCOUNT);
+            trackEvent(Submit.AccountLogin);
+            if ($user) {
+                addNotification({
+                    type: 'success',
+                    message: 'Successfully logged in.'
+                });
+            }
             if ($redirectTo) {
                 window.location.href = $redirectTo;
                 return;
             }
 
             await invalidate(Dependencies.ACCOUNT);
-            trackEvent(Submit.AccountCreate);
-
+            if (data?.couponData?.code) {
+                trackEvent(Submit.AccountCreate, { campaign_name: data?.couponData?.code });
+                await goto(`${base}/console/apply-credit?code=${data?.couponData?.code}`);
+                return;
+            }
+            if (data?.campaign) {
+                await goto(`${base}/console/apply-credit?campaign=${data.campaign}`);
+                return;
+            }
             if ($page.url.searchParams) {
                 const redirect = $page.url.searchParams.get('redirect');
                 $page.url.searchParams.delete('redirect');
@@ -53,7 +68,7 @@
                 type: 'error',
                 message: error.message
             });
-            trackError(error, Submit.AccountCreate);
+            trackError(error, Submit.AccountLogin);
         }
     }
 
@@ -70,7 +85,7 @@
             }
         }
         sdk.forConsole.account.createOAuth2Session(
-            'github',
+            OAuthProvider.Github,
             window.location.origin + url,
             window.location.origin,
             ['read:user', 'user:email']
@@ -82,7 +97,7 @@
     <title>Sign in - Appwrite</title>
 </svelte:head>
 
-<Unauthenticated>
+<Unauthenticated coupon={data?.couponData} campaign={data?.campaign}>
     <svelte:fragment slot="title">Sign in</svelte:fragment>
     <svelte:fragment>
         <Form onSubmit={login}>

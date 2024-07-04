@@ -14,9 +14,7 @@
     import { beforeNavigate } from '$app/navigation';
     import { Pill } from '$lib/elements';
     import { isCloud } from '$lib/system';
-    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
-    import { wizard } from '$lib/stores/wizard';
-    import { getServiceLimit, tierToPlan } from '$lib/stores/billing';
+    import { getServiceLimit, tierToPlan, upgradeURL } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { app } from '$lib/stores/app';
     import { Button } from '$lib/elements/forms';
@@ -312,13 +310,9 @@
                                         <Alert>
                                             Logs are retained in rolling {hoursToDays(limit)} intervals
                                             with the {tier} plan.
-                                            {#if $organization.billingPlan === BillingPlan.STARTER}
-                                                <Button
-                                                    link
-                                                    on:click={() =>
-                                                        wizard.start(ChangeOrganizationTierCloud)}
-                                                    >Upgrade</Button> to increase your log retention
-                                                for a longer period.
+                                            {#if $organization.billingPlan === BillingPlan.FREE}
+                                                <Button link href={$upgradeURL}>Upgrade</Button> to increase
+                                                your log retention for a longer period.
                                             {/if}
                                         </Alert>
                                     {/if}

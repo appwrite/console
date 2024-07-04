@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { tooltip as tooltipAction } from '$lib/actions/tooltip';
     import { FormItem, Helper } from '.';
 
     export let type: 'checkbox' | 'switchbox' = 'checkbox';
@@ -39,6 +40,7 @@
             aria-checked={value}
             bind:this={element}
             bind:checked={value}
+            on:change
             on:invalid={handleInvalid} />
 
         <div class="choice-item-content" class:u-width-full-line={fullWidth}>
@@ -50,16 +52,15 @@
                         </h6>
                     {/if}
                     {#if tooltip}
-                        <button type="button" class="tooltip" aria-label="variables info">
+                        <button
+                            type="button"
+                            class="tooltip"
+                            aria-label="variables info"
+                            use:tooltipAction={{ content: tooltip }}>
                             <span
                                 class="icon-info"
                                 aria-hidden="true"
                                 style="font-size: var(--icon-size-small)" />
-                            <span class="tooltip-popup" role="tooltip">
-                                <p class="text">
-                                    {tooltip}
-                                </p>
-                            </span>
                         </button>
                     {/if}
                 </div>

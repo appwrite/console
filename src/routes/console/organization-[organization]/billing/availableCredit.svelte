@@ -20,8 +20,8 @@
     import AddCreditModal from './addCreditModal.svelte';
     import { formatCurrency } from '$lib/helpers/numbers';
     import { BillingPlan } from '$lib/constants';
-    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
     import { trackEvent } from '$lib/actions/analytics';
+    import { upgradeURL } from '$lib/stores/billing';
 
     let offset = 0;
     let creditList: CreditList = {
@@ -56,10 +56,8 @@
         request();
     }
 
-    $: balance = creditList?.credits?.reduce(
-        (acc: number, curr: Credit) => acc + curr.creditsRemaining,
-        0
-    );
+    $: balance =
+        creditList?.credits?.reduce((acc: number, curr: Credit) => acc + curr.credits, 0) ?? 0;
 
     $: {
         if (reloadOnWizardClose && !$wizard.show) {
@@ -69,12 +67,12 @@
     }
 </script>
 
-<CardGrid hideFooter={$organization?.billingPlan !== BillingPlan.STARTER}>
+<CardGrid hideFooter={$organization?.billingPlan !== BillingPlan.FREE}>
     <Heading tag="h2" size="6">Available credit</Heading>
 
     <p class="text">Appwrite credit will automatically be applied to your next invoice.</p>
     <svelte:fragment slot="aside">
-        {#if $organization?.billingPlan === BillingPlan.STARTER}
+        {#if $organization?.billingPlan === BillingPlan.FREE}
             <Alert type="info">
                 <svelte:fragment slot="title">Upgrade to Pro to add credits</svelte:fragment>
                 Upgrade to a Pro plan to add credits to your organization. For more information on what
@@ -115,7 +113,7 @@
                                     {toLocaleDate(credit.expiration)}
                                 </TableCellText>
                                 <TableCellText title="amount">
-                                    {formatCurrency(credit.credits)}
+                                    {formatCurrency(credit.total)}
                                 </TableCellText>
                             </TableRow>
                         {/each}
@@ -131,11 +129,11 @@
         {/if}
     </svelte:fragment>
     <svelte:fragment slot="actions">
-        {#if $organization?.billingPlan === BillingPlan.STARTER}
+        {#if $organization?.billingPlan === BillingPlan.FREE}
             <Button
                 secondary
+                href={$upgradeURL}
                 on:click={() => {
-                    wizard.start(ChangeOrganizationTierCloud);
                     trackEvent('click_organization_upgrade', {
                         from: 'button',
                         source: 'billing_add_credits'

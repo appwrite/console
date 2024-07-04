@@ -249,7 +249,7 @@
     <slot />
     <div>
         <p class="u-text">Choose a service</p>
-        <div class="u-flex u-gap-8 u-margin-block-start-8">
+        <div class="u-flex u-gap-8 u-margin-block-start-8 u-flex-wrap">
             {#each available.services as service}
                 <Pill
                     disabled={showInput}
@@ -332,7 +332,7 @@
         </div>
     {:else}
         <div class="input-text-wrapper" style="--amount-of-buttons:2" bind:this={copyParent}>
-            <!-- 
+            <!--
                 This object syntax avoids TS erroring because 'type' isn't a valid HTMLDivElement attribute
                 (we need to set it to 'text' to add styling)
              -->

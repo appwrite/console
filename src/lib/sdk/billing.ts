@@ -1,4 +1,4 @@
-import type { Client, Models, Query } from '@appwrite.io/console';
+import type { Client, Models } from '@appwrite.io/console';
 import type { Organization, OrganizationList } from '../stores/organization';
 import type { PaymentMethod } from '@stripe/stripe-js';
 import type { Tier } from '$lib/stores/billing';
@@ -64,6 +64,7 @@ export type Coupon = {
     expiration: string;
     status: string; // 'active' | 'disabled' | 'expired'
     validity: number;
+    campaign?: string;
 };
 
 export type Credit = {
@@ -94,11 +95,11 @@ export type Credit = {
     /**
      * Provided credit amount
      */
-    credits: number;
+    total: number;
     /**
-     * Remaining up credit amount
+     * Remaining credit amount
      */
-    creditsRemaining: number;
+    credits: number;
     /**
      * Credit expiration time in ISO 8601 format.
      */
@@ -261,6 +262,7 @@ export type Plan = {
         storage: AdditionalResource;
         users: AdditionalResource;
     };
+    trialDays: number;
 };
 
 export type PlansInfo = {
@@ -277,7 +279,7 @@ export class Billing {
         this.client = client;
     }
 
-    async listOrganization(queries: Query[] = []): Promise<OrganizationList> {
+    async listOrganization(queries: string[] = []): Promise<OrganizationList> {
         const path = `/organizations`;
         const params = {
             queries
@@ -298,7 +300,7 @@ export class Billing {
         name: string,
         billingPlan: string,
         paymentMethodId: string,
-        billingAddressId: string
+        billingAddressId: string = undefined
     ): Promise<Organization> {
         const path = `/organizations`;
         const params = {
@@ -355,7 +357,7 @@ export class Billing {
         organizationId: string,
         billingPlan: string,
         paymentMethodId: string,
-        billingAddressId: string
+        billingAddressId: string = undefined
     ): Promise<Organization> {
         const path = `/organizations/${organizationId}/plan`;
         const params = {
@@ -467,7 +469,7 @@ export class Billing {
         );
     }
 
-    async listInvoices(organizationId: string, queries: Query[] = []): Promise<InvoiceList> {
+    async listInvoices(organizationId: string, queries: string[] = []): Promise<InvoiceList> {
         const path = `/organizations/${organizationId}/invoices`;
         const params = {
             organizationId,
@@ -745,6 +747,46 @@ export class Billing {
         );
     }
 
+    async getOrganizationPaymentMethod(
+        organizationId: string,
+        paymentMethodId: string
+    ): Promise<PaymentMethodData> {
+        const path = `/organizations/${organizationId}/payment-methods/${paymentMethodId}`;
+        const params = {
+            organizationId,
+            paymentMethodId
+        };
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'GET',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            params
+        );
+    }
+
+    async getOrganizationBillingAddress(
+        organizationId: string,
+        billingAddressId: string
+    ): Promise<Address> {
+        const path = `/organizations/${organizationId}/billing-addresses/${billingAddressId}`;
+        const params = {
+            organizationId,
+            billingAddressId
+        };
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'GET',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            params
+        );
+    }
+
     //ACCOUNT
 
     async listPaymentMethods(queries: [] = []): Promise<PaymentList> {
@@ -888,7 +930,7 @@ export class Billing {
         );
     }
 
-    async listAddresses(queries: Query[] = []): Promise<AddressesList> {
+    async listAddresses(queries: string[] = []): Promise<AddressesList> {
         const path = `/account/billing-addresses`;
         const params = {
             queries

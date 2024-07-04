@@ -223,7 +223,7 @@
                         <Tab
                             href={`${path}/keys`}
                             selected={$page.url.pathname === `${path}/keys`}
-                            event="keys">API Keys</Tab>
+                            event="keys">API keys</Tab>
                     </ul>
                 </div>
 

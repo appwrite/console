@@ -13,6 +13,8 @@
     export let readonly = false;
     export let required = false;
     export let tooltip: string = null;
+    export let validityRegex: RegExp = null;
+    export let validityMessage: string = null;
 
     let value = '';
     let element: HTMLInputElement;
@@ -29,11 +31,16 @@
         /**
          * Allow form submit and tab input switch
          */
-        if (value === '' && ['Enter', 'Tab'].includes(e.key)) {
+        if (value === '' && ['Enter', 'Tab', ','].includes(e.key)) {
             return;
         }
-        if (['Enter', 'Tab', ' '].includes(e.key)) {
+
+        if (['Enter', 'Tab', ' ', ','].includes(e.key)) {
             e.preventDefault();
+            if (validityRegex && !validityRegex.test(value)) {
+                error = validityMessage ? validityMessage : 'Invalid value';
+                return;
+            }
             addValue();
         }
         if (['Backspace', 'Delete'].includes(e.key)) {
@@ -44,6 +51,10 @@
     };
 
     const addValue = () => {
+        if (validityRegex && !validityRegex.test(value) && !!value) {
+            error = validityMessage ? validityMessage : 'Invalid value';
+            return;
+        }
         let tag = value.trim();
         if (tag.length === 0 || tags.includes(tag)) return;
 

@@ -10,19 +10,20 @@
     import PaymentHistory from './paymentHistory.svelte';
     import TaxId from './taxId.svelte';
     import { Alert, Heading } from '$lib/components';
-    import { failedInvoice, paymentMethods } from '$lib/stores/billing';
+    import { failedInvoice, paymentMethods, tierToPlan, upgradeURL } from '$lib/stores/billing';
     import type { PaymentMethodData } from '$lib/sdk/billing';
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
     import { confirmPayment } from '$lib/stores/stripe';
     import { sdk } from '$lib/stores/sdk';
     import { toLocaleDate } from '$lib/helpers/date';
-    import { wizard } from '$lib/stores/wizard';
-    import ChangeOrganizationTierCloud from '$routes/console/changeOrganizationTierCloud.svelte';
     import { BillingPlan } from '$lib/constants';
     import RetryPaymentModal from './retryPaymentModal.svelte';
     import { selectedInvoice, showRetryModal } from './store';
     import { Button } from '$lib/elements/forms';
+    import { goto } from '$app/navigation';
+
+    export let data;
 
     $: defaultPaymentMethod = $paymentMethods?.paymentMethods?.find(
         (method: PaymentMethodData) => method.$id === $organization?.paymentMethodId
@@ -35,7 +36,7 @@
     onMount(async () => {
         if ($page.url.searchParams.has('type')) {
             if ($page.url.searchParams.get('type') === 'upgrade') {
-                wizard.start(ChangeOrganizationTierCloud);
+                goto($upgradeURL);
             }
 
             if (
@@ -110,8 +111,10 @@
     {/if}
     {#if $organization?.billingPlanDowngrade}
         <Alert type="info" class="common-section">
-            Your organization will change to a Starter plan once your current billing cycle ends and
-            your invoice is paid on {toLocaleDate($organization.billingNextInvoiceDate)}.
+            Your organization will change to a {tierToPlan(BillingPlan.FREE).name} plan once your current
+            billing cycle ends and your invoice is paid on {toLocaleDate(
+                $organization.billingNextInvoiceDate
+            )}.
         </Alert>
     {/if}
     <div class="common-section">
@@ -120,10 +123,10 @@
     <PlanSummary />
     <PaymentHistory />
     <PaymentMethods />
-    <BillingAddress />
+    <BillingAddress billingAddress={data?.billingAddress} />
     <TaxId />
     <BudgetCap />
-    {#if $organization?.billingPlan !== BillingPlan.STARTER && !!$organization?.billingBudget}
+    {#if $organization?.billingPlan !== BillingPlan.FREE && !!$organization?.billingBudget}
         <BudgetAlert />
     {/if}
     <AvailableCredit />

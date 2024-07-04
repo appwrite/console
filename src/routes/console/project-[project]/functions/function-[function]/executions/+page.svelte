@@ -13,7 +13,7 @@
         TableRowButton,
         TableScroll
     } from '$lib/elements/table';
-    import { timeFromNow } from '$lib/helpers/date';
+    import { hoursToDays, timeFromNow } from '$lib/helpers/date';
     import { calculateTime } from '$lib/helpers/timeConversion';
     import { Container, ContainerHeader } from '$lib/layout';
     import { log } from '$lib/stores/logs';
@@ -62,10 +62,10 @@
                     {abbreviateNumber(limit)} function executions
                 </li>
                 <li>
-                    {logs} hour of logs
+                    {hoursToDays(logs)} of logs
                 </li>
             </ul>
-            {#if $organization?.billingPlan === BillingPlan.STARTER}
+            {#if $organization?.billingPlan === BillingPlan.FREE}
                 <p class="text">
                     <button class="link" type="button" on:click|preventDefault={upgradeMethod}
                         >Upgrade</button>

@@ -3,13 +3,16 @@
     import { Pill } from '$lib/elements';
     import { InputText, FormList } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
-    import { createProject } from './store';
+    import { sdk } from '$lib/stores/sdk';
+    import { createProject, regions } from './store';
 
     let showCustomId = false;
+
+    sdk.forConsole.billing.listRegions().then(regions.set);
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">Project Details</svelte:fragment>
+    <svelte:fragment slot="title">Details</svelte:fragment>
     <FormList>
         <InputText
             label="Name"

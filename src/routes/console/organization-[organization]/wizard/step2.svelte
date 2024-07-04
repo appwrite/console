@@ -4,16 +4,16 @@
     import { WizardStep } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import { createProject } from './store';
-    import type { Region, RegionList } from '$lib/sdk/billing';
+    import { createProject, regions } from './store';
+    import type { Region } from '$lib/sdk/billing';
     import { addNotification } from '$lib/stores/notifications';
     import type { Models } from '@appwrite.io/console';
+    import { page } from '$app/stores';
 
-    let regions: RegionList;
     let prefs: Models.Preferences;
+
     onMount(async () => {
-        regions = await sdk.forConsole.billing.listRegions();
-        prefs = await sdk.forConsole.account.getPrefs();
+        prefs = $page.data.account.prefs;
     });
 
     async function notifyRegion(selectedRegion: Region) {
@@ -30,7 +30,7 @@
             });
         } catch (error) {
             addNotification({
-                type: 'success',
+                type: 'error',
                 message: 'Something went wrong, please try again later'
             });
         }
@@ -52,7 +52,7 @@
             });
         } catch (error) {
             addNotification({
-                type: 'success',
+                type: 'error',
                 message: 'Something went wrong, please try again later'
             });
         }
@@ -66,11 +66,11 @@
     <svelte:fragment slot="subtitle">
         Choose a deployment region for your project. This region cannot be changed.
     </svelte:fragment>
-    {#if regions?.total}
+    {#if $regions}
         <ul
             class="grid-box u-margin-block-start-16"
             style="--p-grid-item-size:12em; --p-grid-item-size-small-screens:12rem; --grid-gap: 1rem;">
-            {#each regions.regions.filter((r) => r.$id !== 'default') as region}
+            {#each $regions.regions.filter((r) => r.$id !== 'default') as region}
                 <li>
                     <RegionCard
                         name="region"
@@ -115,7 +115,6 @@
                                     height={30}
                                     flag={region.flag}
                                     name={region.name} />
-
                                 {region.name}
                             {/if}
                         </div>
