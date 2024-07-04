@@ -39,7 +39,7 @@ type Variable = {
     resourceId: string;
 };
 
-export type Function = {
+export type Func = {
     /**
      * Function ID.
      */
@@ -199,7 +199,7 @@ export class SpecsFunctions {
         providerRootDirectory?: string,
         cpus?: number,
         memory?: number
-    ): Promise<Function> {
+    ): Promise<Func> {
         if (typeof functionId === 'undefined') {
             throw new AppwriteException('Missing required parameter: "functionId"');
         }

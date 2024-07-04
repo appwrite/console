@@ -1,9 +1,9 @@
 import { page } from '$app/stores';
 import { derived, writable, type Writable } from 'svelte/store';
 import type { Models } from '@appwrite.io/console';
-import type { Function } from '$lib/sdk/functionsSpec';
+import type { Func } from '$lib/sdk/functionsSpec';
 
-export const func = derived(page, ($page) => $page.data.function as Function);
+export const func = derived(page, ($page) => $page.data.function as Func);
 export const deploymentList = derived(
     page,
     ($page) => $page.data.deploymentList as Models.DeploymentList
