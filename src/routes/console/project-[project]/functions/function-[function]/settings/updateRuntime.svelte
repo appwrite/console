@@ -33,7 +33,7 @@
         options = runtimes.runtimes.map((runtime) => ({
             label: `${runtime.name} - ${runtime.version}`,
             value: runtime.$id
-        })); 
+        }));
 
         memoryOptions = allowedSpecs.memory.map((memory) =>
             memory > 1024

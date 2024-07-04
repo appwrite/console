@@ -3,7 +3,7 @@ import { AppwriteException, Runtime, type Client, type Payload } from '@appwrite
 export type Specs = {
     cpus: number[];
     memory: number[];
-}
+};
 
 /**
  * Variable
@@ -136,7 +136,7 @@ export type Function = {
      * Memory limit
      */
     memory: number;
-}
+};
 
 export class SpecsFunctions {
     client: Client;
@@ -149,13 +149,9 @@ export class SpecsFunctions {
         const path = '/functions/specs';
 
         const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call(
-            'GET',
-            uri,
-            {
-                'content-type': 'application/json'
-            }
-        );
+        return await this.client.call('GET', uri, {
+            'content-type': 'application/json'
+        });
     }
 
     /**
@@ -183,90 +179,114 @@ export class SpecsFunctions {
      * @param {number} memory
      * @throws {AppwriteException}
      * @returns {Promise}
-    */
-        async update(functionId: string, name: string, runtime?: Runtime, execute?: string[], events?: string[], schedule?: string, timeout?: number, enabled?: boolean, logging?: boolean, entrypoint?: string, commands?: string, installationId?: string, providerRepositoryId?: string, providerBranch?: string, providerSilentMode?: boolean, providerRootDirectory?: string, cpus?: number, memory?: number): Promise<Function> {
-            if (typeof functionId === 'undefined') {
-                throw new AppwriteException('Missing required parameter: "functionId"');
-            }
-    
-            if (typeof name === 'undefined') {
-                throw new AppwriteException('Missing required parameter: "name"');
-            }
-    
-            const apiPath = '/functions/{functionId}'.replace('{functionId}', functionId);
-            const payload: Payload = {};
-    
-            if (typeof name !== 'undefined') {
-                payload['name'] = name;
-            }
-    
-            if (typeof runtime !== 'undefined') {
-                payload['runtime'] = runtime;
-            }
-    
-            if (typeof execute !== 'undefined') {
-                payload['execute'] = execute;
-            }
-    
-            if (typeof events !== 'undefined') {
-                payload['events'] = events;
-            }
-    
-            if (typeof schedule !== 'undefined') {
-                payload['schedule'] = schedule;
-            }
-    
-            if (typeof timeout !== 'undefined') {
-                payload['timeout'] = timeout;
-            }
-    
-            if (typeof enabled !== 'undefined') {
-                payload['enabled'] = enabled;
-            }
-    
-            if (typeof logging !== 'undefined') {
-                payload['logging'] = logging;
-            }
-    
-            if (typeof entrypoint !== 'undefined') {
-                payload['entrypoint'] = entrypoint;
-            }
-    
-            if (typeof commands !== 'undefined') {
-                payload['commands'] = commands;
-            }
-    
-            if (typeof installationId !== 'undefined') {
-                payload['installationId'] = installationId;
-            }
-    
-            if (typeof providerRepositoryId !== 'undefined') {
-                payload['providerRepositoryId'] = providerRepositoryId;
-            }
-    
-            if (typeof providerBranch !== 'undefined') {
-                payload['providerBranch'] = providerBranch;
-            }
-    
-            if (typeof providerSilentMode !== 'undefined') {
-                payload['providerSilentMode'] = providerSilentMode;
-            }
-    
-            if (typeof providerRootDirectory !== 'undefined') {
-                payload['providerRootDirectory'] = providerRootDirectory;
-            }
-
-            if (typeof cpus !== 'undefined') {
-                payload['cpus'] = cpus;
-            }
-
-            if (typeof memory !== 'undefined') {
-                payload['memory'] = memory;
-            }
-    
-            const uri = new URL(this.client.config.endpoint + apiPath);
-            return await this.client.call('put', uri, {
-                'content-type': 'application/json',
-            }, payload);
+     */
+    async update(
+        functionId: string,
+        name: string,
+        runtime?: Runtime,
+        execute?: string[],
+        events?: string[],
+        schedule?: string,
+        timeout?: number,
+        enabled?: boolean,
+        logging?: boolean,
+        entrypoint?: string,
+        commands?: string,
+        installationId?: string,
+        providerRepositoryId?: string,
+        providerBranch?: string,
+        providerSilentMode?: boolean,
+        providerRootDirectory?: string,
+        cpus?: number,
+        memory?: number
+    ): Promise<Function> {
+        if (typeof functionId === 'undefined') {
+            throw new AppwriteException('Missing required parameter: "functionId"');
         }
+
+        if (typeof name === 'undefined') {
+            throw new AppwriteException('Missing required parameter: "name"');
+        }
+
+        const apiPath = '/functions/{functionId}'.replace('{functionId}', functionId);
+        const payload: Payload = {};
+
+        if (typeof name !== 'undefined') {
+            payload['name'] = name;
+        }
+
+        if (typeof runtime !== 'undefined') {
+            payload['runtime'] = runtime;
+        }
+
+        if (typeof execute !== 'undefined') {
+            payload['execute'] = execute;
+        }
+
+        if (typeof events !== 'undefined') {
+            payload['events'] = events;
+        }
+
+        if (typeof schedule !== 'undefined') {
+            payload['schedule'] = schedule;
+        }
+
+        if (typeof timeout !== 'undefined') {
+            payload['timeout'] = timeout;
+        }
+
+        if (typeof enabled !== 'undefined') {
+            payload['enabled'] = enabled;
+        }
+
+        if (typeof logging !== 'undefined') {
+            payload['logging'] = logging;
+        }
+
+        if (typeof entrypoint !== 'undefined') {
+            payload['entrypoint'] = entrypoint;
+        }
+
+        if (typeof commands !== 'undefined') {
+            payload['commands'] = commands;
+        }
+
+        if (typeof installationId !== 'undefined') {
+            payload['installationId'] = installationId;
+        }
+
+        if (typeof providerRepositoryId !== 'undefined') {
+            payload['providerRepositoryId'] = providerRepositoryId;
+        }
+
+        if (typeof providerBranch !== 'undefined') {
+            payload['providerBranch'] = providerBranch;
+        }
+
+        if (typeof providerSilentMode !== 'undefined') {
+            payload['providerSilentMode'] = providerSilentMode;
+        }
+
+        if (typeof providerRootDirectory !== 'undefined') {
+            payload['providerRootDirectory'] = providerRootDirectory;
+        }
+
+        if (typeof cpus !== 'undefined') {
+            payload['cpus'] = cpus;
+        }
+
+        if (typeof memory !== 'undefined') {
+            payload['memory'] = memory;
+        }
+
+        const uri = new URL(this.client.config.endpoint + apiPath);
+        return await this.client.call(
+            'put',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            payload
+        );
+    }
 }
