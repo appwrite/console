@@ -15,6 +15,7 @@
     import MfaRegenerateCodes from './mfaRegenerateCodes.svelte';
     import { Pill } from '$lib/elements';
     import WebauthnMfa from './webauthnMfa.svelte';
+    import DeleteWebauthn from './deleteWebauthn.svelte';
 
     let showSetup: boolean = false;
     let showDelete: boolean = false;
@@ -147,13 +148,18 @@
                             <span class="icon-key" aria-hidden="true" />
                         </div>
                         <div class="u-flex-vertical u-gap-4 body-text-2">
-                            <span class="u-bold">Security Key</span>
+                            <span class="u-bold">Webauthn</span>
+                            {#if $factors.webauthn}
+                            <span
+                                >A webauthn key has been added to this account.</span>
+                            {:else}
                             <span
                                 >Use a security key to provide two-factor for your account.</span>
+                            {/if}
                         </div>
                     </div>
                     <div class="method-button">
-                        {#if $factors.totp}
+                        {#if $factors.webauthn}
                             <Button
                                 text
                                 class="is-not-mobile"
@@ -263,6 +269,7 @@
     <WebauthnMfa bind:showWebauthnSetup />
 {/if}
 <DeleteMfa bind:showDelete />
+<DeleteWebauthn bind:showWebauthnDelete />
 
 <MfaRecoveryCodes bind:showRecoveryCodes {codes} />
 <MfaRegenerateCodes

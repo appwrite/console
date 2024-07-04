@@ -1,5 +1,5 @@
 import type { Client, Models } from '@appwrite.io/console';
-import { startRegistration } from '@simplewebauthn/browser';
+import { startRegistration, startAuthentication } from '@simplewebauthn/browser';
 
 export type WebauthnRegisterChallenge = {
     $id: string;
@@ -61,8 +61,45 @@ export class Account {
         //TODO Replace with native navigator.credentials.create
         let credential = await startRegistration(challenge);
 
-        let session = await this.completeWebauthnMfaAuthenticator(credential);
-        console.log(session);
+        await this.completeWebauthnMfaAuthenticator(credential);
     }
 
+    async createMfaWebauthnChallenge() {
+        const path = '/account/mfa/challenge/webauthn';
+
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'POST',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+        );
+    }
+
+    async completeMfaWebauthnChallenge(challengeId: string, credential: Credential) {
+        const path = '/account/mfa/challenge/webauthn';
+
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'PUT',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            {
+                challengeId: challengeId,
+                challengeResponse: JSON.stringify(credential)
+            }
+        );
+    }
+
+    async createMfaWebauthnChallengeHelper() {
+        let challenge = await this.createMfaWebauthnChallenge();
+
+        //TODO Replace with native navigator.credentials.create
+        let credential = await startAuthentication(challenge);
+
+        await this.completeMfaWebauthnChallenge(challenge.$id, credential);
+    }
 } 
