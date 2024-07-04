@@ -76,10 +76,10 @@ campaigns
         data: {
             reviews: [
                 {
-                    name: 'Marius Bloki',
-                    desc: 'CTO // mySHOEFITTER',
-                    img: 'js_mastery_reviewer_1.png',
-                    review: 'Appwrite has been a tremendous asset in implementing our IT infrastructure. Not only is the software an absolute game-changer, but the team is always there when you need them.'
+                    name: 'Adrian Hajdin',
+                    desc: 'Founder & CEO at JavaScript Mastery',
+                    img: 'js_mastery_reviewer_2.webp',
+                    review: 'Appwrite is the fastest-to-implement open-source BaaS with a growing community and a practical suite of products and APIs'
                 }
             ]
         }
