@@ -289,6 +289,7 @@
                                     required={true}
                                     min={minTime}
                                     bind:value={time}
+                                    step={1}
                                     isMultiple
                                     fullWidth />
                             </FormItem>
