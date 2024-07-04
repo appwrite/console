@@ -98,8 +98,6 @@
     function toggleMobileModal() {
         showFiltersMobile = !showFiltersMobile;
     }
-
-    $: console.log(selectedColumn, operatorKey, value, arrayValues);
 </script>
 
 <div class="is-not-mobile">
