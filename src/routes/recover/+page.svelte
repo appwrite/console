@@ -47,6 +47,9 @@
 
     async function setPassword() {
         try {
+            if (!password || !confirmPassword) {
+            throw new Error('Please enter both password and confirm password');
+        }
             if (password !== confirmPassword) {
                 throw new Error('Passwords do not match');
             }
@@ -59,7 +62,7 @@
         } catch (error) {
             addNotification({
                 type: 'error',
-                message: error.message
+                message: error.message || 'Failed to update password'
             });
         }
     }
