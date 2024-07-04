@@ -58,7 +58,7 @@
             if (!isValueOfStringEnum(Runtime, runtime)) {
                 throw new Error(`Invalid runtime: ${runtime}`);
             }
-            await sdk.forProject.functions.update(
+            await sdk.forProject.specsFunctions.update(
                 functionId,
                 $func.name,
                 runtime,
@@ -75,8 +75,8 @@
                 $func.providerBranch || undefined,
                 $func.providerSilentMode || undefined,
                 $func.providerRootDirectory || undefined,
-                memory,
-                cpus
+                cpus,
+                memory
             );
             await invalidate(Dependencies.FUNCTION);
             addNotification({
@@ -94,7 +94,7 @@
     }
 
     $: isUpdateButtonEnabled =
-        runtime !== $func?.runtime || cpus !== $func?.cpus || memory !== $func?.memory;
+        runtime !== $func?.runtime || memory !== $func?.memory || cpus !== $func?.cpus;
 </script>
 
 <Form onSubmit={updateRuntime}>
