@@ -23,7 +23,7 @@ import {
 } from '@appwrite.io/console';
 import { Billing } from '../sdk/billing';
 import { Sources } from '$lib/sdk/sources';
-import { Account as WebauthnAccount } from '$lib/sdk/account'
+import { Account as WebauthnAccount } from '$lib/sdk/account';
 
 const endpoint = VARS.APPWRITE_ENDPOINT ?? `${globalThis?.location?.origin}/v1`;
 

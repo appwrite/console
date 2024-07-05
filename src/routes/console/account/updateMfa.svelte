@@ -141,39 +141,39 @@
                         </div>
                     </div>
                     <div
-                    class="method u-flex u-flex-vertical-mobile u-gap-16 u-main-space-between u-sep-block-end"
-                    style="padding-block-end: 16px">
-                    <div class="u-flex u-gap-8">
-                        <div class="avatar is-size-x-small">
-                            <span class="icon-key" aria-hidden="true" />
+                        class="method u-flex u-flex-vertical-mobile u-gap-16 u-main-space-between u-sep-block-end"
+                        style="padding-block-end: 16px">
+                        <div class="u-flex u-gap-8">
+                            <div class="avatar is-size-x-small">
+                                <span class="icon-key" aria-hidden="true" />
+                            </div>
+                            <div class="u-flex-vertical u-gap-4 body-text-2">
+                                <span class="u-bold">Webauthn</span>
+                                {#if $factors.webauthn}
+                                    <span>A webauthn key has been added to this account.</span>
+                                {:else}
+                                    <span
+                                        >Use a security key to provide two-factor for your account.</span>
+                                {/if}
+                            </div>
                         </div>
-                        <div class="u-flex-vertical u-gap-4 body-text-2">
-                            <span class="u-bold">Webauthn</span>
+                        <div class="method-button">
                             {#if $factors.webauthn}
-                            <span
-                                >A webauthn key has been added to this account.</span>
+                                <Button
+                                    text
+                                    class="is-not-mobile"
+                                    on:click={() => (showWebauthnDelete = true)}>Delete</Button>
+                                <Button
+                                    text
+                                    class="is-only-mobile"
+                                    noMargin
+                                    on:click={() => (showWebauthnDelete = true)}>Delete</Button>
                             {:else}
-                            <span
-                                >Use a security key to provide two-factor for your account.</span>
+                                <Button secondary on:click={() => (showWebauthnSetup = true)}
+                                    >Add</Button>
                             {/if}
                         </div>
                     </div>
-                    <div class="method-button">
-                        {#if $factors.webauthn}
-                            <Button
-                                text
-                                class="is-not-mobile"
-                                on:click={() => (showWebauthnDelete = true)}>Delete</Button>
-                            <Button
-                                text
-                                class="is-only-mobile"
-                                noMargin
-                                on:click={() => (showWebauthnDelete = true)}>Delete</Button>
-                        {:else}
-                            <Button secondary on:click={() => (showWebauthnSetup = true)}>Add</Button>
-                        {/if}
-                    </div>
-                </div>
 
                     {#if $factors.email}
                         <div

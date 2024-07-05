@@ -1,4 +1,4 @@
-import type { Client, Models } from '@appwrite.io/console';
+import type { Client } from '@appwrite.io/console';
 import { startRegistration, startAuthentication } from '@simplewebauthn/browser';
 
 export type WebauthnRegisterChallenge = {
@@ -8,16 +8,16 @@ export type WebauthnRegisterChallenge = {
         id: string;
         name: string;
         icon: string;
-    },
+    };
     user: {
         id: string;
         name: string;
         displayName: string;
-    },
+    };
     challenge: string;
     pubKeyCredParams: any;
     timeout: number;
-}
+};
 
 export class Account {
     client: Client;
@@ -30,13 +30,9 @@ export class Account {
         const path = '/account/mfa/authenticators/webauthn';
 
         const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call(
-            'POST',
-            uri,
-            {
-                'content-type': 'application/json'
-            },
-        );
+        return await this.client.call('POST', uri, {
+            'content-type': 'application/json'
+        });
     }
 
     async completeWebauthnMfaAuthenticator(credential: Credential) {
@@ -68,13 +64,9 @@ export class Account {
         const path = '/account/mfa/challenge/webauthn';
 
         const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call(
-            'POST',
-            uri,
-            {
-                'content-type': 'application/json'
-            },
-        );
+        return await this.client.call('POST', uri, {
+            'content-type': 'application/json'
+        });
     }
 
     async completeMfaWebauthnChallenge(challengeId: string, credential: Credential) {
@@ -103,7 +95,11 @@ export class Account {
         await this.completeMfaWebauthnChallenge(challenge.$id, credential);
     }
 
-    async deleteMfaWebauthnAuthenticator(challengeId?: string, credential?: Credential, recoveryKey?: string) {
+    async deleteMfaWebauthnAuthenticator(
+        challengeId?: string,
+        credential?: Credential,
+        recoveryKey?: string
+    ) {
         const path = '/account/mfa/authenticator/webauthn';
 
         const uri = new URL(this.client.config.endpoint + path);
@@ -132,7 +128,6 @@ export class Account {
         );
     }
 
-
     async deleteMfaWebauthnAuthenticatorHelper() {
         let challenge = await this.createMfaWebauthnChallenge();
 
@@ -140,4 +135,4 @@ export class Account {
 
         await this.deleteMfaWebauthnAuthenticator(challenge.$id, credential);
     }
-} 
+}

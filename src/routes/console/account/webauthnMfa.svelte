@@ -120,9 +120,9 @@
             </section>
             <p>Follow the instructions provided by your browser to register a new security key.</p>
             {#await addAuthenticator()}
-            <div class="u-margin-inline-auto">
-                <div class="loader" />
-            </div>
+                <div class="u-margin-inline-auto">
+                    <div class="loader" />
+                </div>
             {/await}
         {:else if step === 2}
             {#if !error}
