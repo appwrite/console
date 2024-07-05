@@ -135,7 +135,7 @@
                             {org.name}
                         </DropListLink>
                     {/each}
-                </div >
+                </div>
                 <svelte:fragment slot="other">
                     <section class="drop-section">
                         <ul class="drop-list">
