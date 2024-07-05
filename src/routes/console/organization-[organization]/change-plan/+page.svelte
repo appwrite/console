@@ -140,6 +140,7 @@
                 })
             });
 
+            await goto(`/console/organization-${$organization.$id}`);
             addNotification({
                 type: 'success',
                 isHtml: true,
