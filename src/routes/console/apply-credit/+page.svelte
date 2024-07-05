@@ -47,6 +47,7 @@
 
     let selectedOrgId: string = null;
     let formComponent: Form;
+    let couponForm: Form;
     let isSubmitting = writable(false);
     let methods: PaymentList;
     let paymentMethodId: string;
@@ -87,6 +88,7 @@
     }
 
     async function handleSubmit() {
+        if (!couponForm.checkValidity()) return;
         try {
             let org: Organization;
             // Create new org
@@ -181,19 +183,7 @@
         (team) => team.$id === selectedOrgId
     ) as Organization;
 
-    $: isButtonDisabled =
-        checkButtonDisabled(selectedOrgId, name, paymentMethodId) ||
-        couponData?.status !== 'active';
-
-    function checkButtonDisabled(id: string | null, name: string | null, method: string | null) {
-        if (id === newOrgId) {
-            return !name || !method;
-        } else if (id && selectedOrg?.billingPlan === BillingPlan.PRO) {
-            return !selectedOrg?.paymentMethodId;
-        } else if (id) {
-            return !method;
-        } else return true;
-    }
+    $: campaign = campaigns.get(data?.couponData?.campaign ?? data?.campaign);
 </script>
 
 <svelte:head>
@@ -237,10 +227,11 @@
                 {/if}
             </FormList>
         </Form>
-        <Form onSubmit={addCoupon}>
+        <Form bind:this={couponForm} onSubmit={addCoupon}>
             <FormList>
                 {#if !data?.couponData?.code && selectedOrgId}
                     <InputText
+                        required
                         disabled={!!couponData?.credits}
                         bind:value={coupon}
                         placeholder="Enter coupon code"
@@ -319,8 +310,12 @@
         <Button fullWidthMobile secondary on:click={() => (showExitModal = true)}>Cancel</Button>
         <Button
             fullWidthMobile
-            on:click={() => formComponent.triggerSubmit()}
-            disabled={$isSubmitting || isButtonDisabled}>
+            on:click={() => {
+                if (formComponent.checkValidity() && couponForm.checkValidity()) {
+                    handleSubmit();
+                }
+            }}
+            disabled={$isSubmitting}>
             {#if $isSubmitting}
                 <span class="loader is-small is-transparent u-line-height-1-5" aria-hidden="true" />
             {/if}
