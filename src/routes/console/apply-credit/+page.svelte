@@ -68,10 +68,11 @@
     let name: string;
     let coupon: string;
     let couponData = data?.couponData;
+    let campaign = campaigns.get(data?.couponData?.campaign ?? data?.campaign);
 
     onMount(async () => {
         await loadPaymentMethods();
-        if (!$organizationList?.total) {
+        if (!$organizationList?.total || campaign?.onlyNewOrgs) {
             selectedOrgId = newOrgId;
         }
     });
@@ -196,7 +197,7 @@
     <WizardSecondaryContent>
         <Form bind:this={formComponent} onSubmit={handleSubmit} bind:isSubmitting>
             <FormList>
-                {#if $organizationList?.total}
+                {#if $organizationList?.total && !campaign?.onlyNewOrgs}
                     <InputSelect
                         bind:value={selectedOrgId}
                         label="Select organization"
@@ -244,24 +245,26 @@
             </FormList>
         </Form>
         <svelte:fragment slot="aside">
-            <div
-                class="box card-container u-position-relative"
-                style:--box-border-radius="var(--border-radius-small)">
-                <div class="card-bg"></div>
-                <div class="u-flex u-flex-vertical u-gap-24 u-cross-center u-position-relative">
-                    <img
-                        src={`/images/campaigns/${data?.couponData?.campaign ?? data?.campaign}/${$app.themeInUse}.png`}
-                        class="u-block u-image-object-fit-cover card-img"
-                        alt="promo" />
-                    <p class="text">
-                        {#if couponData?.credits}
-                            {campaign.title.replace('VALUE', couponData.credits.toString())}
-                        {:else}
-                            {campaign.title}
-                        {/if}
-                    </p>
+            {#if campaign?.template === 'card'}
+                <div
+                    class="box card-container u-position-relative"
+                    style:--box-border-radius="var(--border-radius-small)">
+                    <div class="card-bg"></div>
+                    <div class="u-flex u-flex-vertical u-gap-24 u-cross-center u-position-relative">
+                        <img
+                            src={`/images/campaigns/${data?.couponData?.campaign ?? data?.campaign}/${$app.themeInUse}.png`}
+                            class="u-block u-image-object-fit-cover card-img"
+                            alt="promo" />
+                        <p class="text">
+                            {#if couponData?.credits}
+                                {campaign.title.replace('VALUE', couponData.credits.toString())}
+                            {:else}
+                                {campaign.title}
+                            {/if}
+                        </p>
+                    </div>
                 </div>
-            </div>
+            {/if}
             {#if selectedOrg?.billingPlan === BillingPlan.PRO}
                 <section
                     class="card u-margin-block-start-24"
@@ -278,12 +281,27 @@
                     {/if}
                 </section>
             {:else if selectedOrgId}
-                <EstimatedTotalBox
-                    fixedCoupon={!!data?.couponData?.code}
-                    billingPlan={BillingPlan.PRO}
-                    {collaborators}
-                    bind:couponData
-                    bind:billingBudget />
+                <div class:u-margin-block-start={campaign?.template === 'card'}>
+                    <EstimatedTotalBox
+                        fixedCoupon={!!data?.couponData?.code}
+                        billingPlan={BillingPlan.PRO}
+                        {collaborators}
+                        bind:couponData
+                        bind:billingBudget>
+                        {#if campaign?.template === 'review' && (campaign?.data?.cta || campaign?.data?.claimed || campaign?.data?.unclaimed)}
+                            <div class="u-margin-block-end-24">
+                                <p class="body-text-1 u-bold">{campaign?.data?.cta}</p>
+                                <p class="text u-margin-block-start-8">
+                                    {#if couponData?.code && couponData?.status === 'active' && campaign?.data?.claimed}
+                                        {campaign?.data?.claimed}
+                                    {:else if campaign?.data?.unclaimed}
+                                        {campaign?.data?.unclaimed}
+                                    {/if}
+                                </p>
+                            </div>
+                        {/if}
+                    </EstimatedTotalBox>
+                </div>
             {/if}
         </svelte:fragment>
     </WizardSecondaryContent>
