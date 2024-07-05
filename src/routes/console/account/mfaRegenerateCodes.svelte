@@ -2,11 +2,12 @@
     import { Modal } from '$lib/components';
     import MfaChallengeFormList, { verify } from '$lib/components/mfaChallengeFormList.svelte';
     import { Button } from '$lib/elements/forms';
+    import type { MfaFactors } from '$lib/sdk/account';
     import { type Models } from '@appwrite.io/console';
 
     export let show = false;
     export let regenerateRecoveryCodes: () => Promise<void>;
-    export let factors: Models.MfaFactors & { recoveryCode: boolean };
+    export let factors: MfaFactors & { recoveryCode: boolean };
 
     let error = '';
     let challenge: Models.MfaChallenge = null;

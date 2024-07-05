@@ -8,10 +8,11 @@
     import MfaChallengeFormList, { verify } from '$lib/components/mfaChallengeFormList.svelte';
     import { page } from '$app/stores';
     import { addNotification } from '$lib/stores/notifications.js';
+    import type { MfaFactors } from '$lib/sdk/account.js';
 
     export let data;
 
-    const factors = data.factors as Models.MfaFactors & { recoveryCode: boolean };
+    const factors = data.factors as MfaFactors & { recoveryCode: boolean };
 
     let disabled = false;
     let challenge: Models.MfaChallenge = null;

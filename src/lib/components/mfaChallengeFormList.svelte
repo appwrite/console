@@ -29,8 +29,9 @@
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { AuthenticationFactor, type Models } from '@appwrite.io/console';
+    import type { MfaFactors } from '$lib/sdk/account';
 
-    export let factors: Models.MfaFactors & { recoveryCode: boolean };
+    export let factors: MfaFactors & { recoveryCode: boolean };
     /** If true, the form will be submitted automatically when the code is entered. */
     export let autoSubmit: boolean = true;
     export let showVerifyButton: boolean = true;
