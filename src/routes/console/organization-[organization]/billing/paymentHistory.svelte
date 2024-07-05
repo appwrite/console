@@ -29,6 +29,7 @@
     import { onMount } from 'svelte';
     import { trackEvent } from '$lib/actions/analytics';
     import { selectedInvoice, showRetryModal } from './store';
+    import { organization } from '$lib/stores/organization';
 
     let showDropdown = [];
     let showFailedError = false;
@@ -48,8 +49,8 @@
         invoiceList = await sdk.forConsole.billing.listInvoices($page.params.organization, [
             Query.limit(limit),
             Query.offset(offset),
-            Query.orderDesc('$createdAt'),
-            Query.notEqual('status', 'pending')
+            Query.notEqual('from', $organization.billingCurrentInvoiceDate),
+            Query.orderDesc('$createdAt')
         ]);
     }
 
@@ -71,7 +72,11 @@
         payments.
     </p>
     <svelte:fragment slot="aside">
+<<<<<<< HEAD
         {#if invoiceList?.invoices?.length > 0}
+=======
+        {#if invoiceList.total > 0}
+>>>>>>> 69c4c7facb803504e1ff2cdf1afd835e56190157
             <TableScroll noMargin transparent noStyles>
                 <TableHeader>
                     <TableCellHead width={100}>Due Date</TableCellHead>
@@ -82,12 +87,20 @@
                 <TableBody>
                     {#each invoiceList?.invoices as invoice, i}
                         {@const status = invoice.status}
+<<<<<<< HEAD
 
                         <TableRow>
                             <TableCellText title="date">
                                 {toLocaleDate(invoice.dueAt)}
                             </TableCellText>
 
+=======
+                        <TableRow>
+                            <TableCellText title="date">
+                                {toLocaleDate(invoice.dueAt)}
+                            </TableCellText>
+
+>>>>>>> 69c4c7facb803504e1ff2cdf1afd835e56190157
                             <TableCell title="status">
                                 {#if invoice?.lastError}
                                     <DropList bind:show={showFailedError}>
@@ -184,8 +197,8 @@
                 </TableBody>
             </TableScroll>
             <div class="u-flex u-main-space-between">
-                <p class="text">Total results: {invoiceList?.total - 1 ?? 0}</p>
-                <PaginationInline {limit} bind:offset sum={invoiceList?.total - 1 ?? 0} hidePages />
+                <p class="text">Total results: {invoiceList?.total ?? 0}</p>
+                <PaginationInline {limit} bind:offset sum={invoiceList?.total ?? 0} hidePages />
             </div>
         {:else}
             <EmptySearch hidePagination>

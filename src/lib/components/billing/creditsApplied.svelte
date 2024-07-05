@@ -42,9 +42,7 @@
             {/if}
         </div>
         {#if couponData.credits >= 100}
-            <p class="inline-tag" use:tooltip={{ content: formatCurrency(couponData.credits) }}>
-                Credits applied
-            </p>
+            <p class="inline-tag">Credits applied</p>
         {:else}
             <span class="u-color-text-success">-{formatCurrency(couponData.credits)}</span>
         {/if}
