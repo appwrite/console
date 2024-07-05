@@ -272,6 +272,7 @@
             {/if}
             <ul
                 class="u-flex u-gap-16 u-margin-block-start-8"
+                class:u-margin-block-start-16={anyOrgFree && billingPlan === BillingPlan.PRO}
                 style="--p-grid-item-size:16em; --p-grid-item-size-small-screens:16rem; --grid-gap: 1rem;">
                 <li class="u-flex-basis-50-percent">
                     <LabelCard
@@ -347,17 +348,17 @@
                 {/if}
             {/if}
             {#if !isUpgrade && billingPlan === BillingPlan.FREE && $organization.billingPlan !== BillingPlan.FREE}
-                <FormList class="u-margin-block-start-16">
+                <FormList class="u-margin-block-start-24">
                     <InputSelect
                         id="reason"
-                        label="What made you decide to change your plan?"
+                        label="Reason for plan change"
                         placeholder="Select one"
                         required
                         options={feedbackDowngradeOptions}
                         bind:value={feedbackDowngradeReason} />
                     <InputTextarea
                         id="comment"
-                        label="Your feedback here"
+                        label="If you need to elaborate, please do so here"
                         placeholder="Enter feedback"
                         bind:value={feedbackMessage} />
                 </FormList>
@@ -371,7 +372,7 @@
                     bind:couponData
                     bind:billingBudget />
             {:else}
-                <PlanComparisonBox />
+                <PlanComparisonBox downgrade={isDowngrade} />
             {/if}
         </svelte:fragment>
     </WizardSecondaryContent>
