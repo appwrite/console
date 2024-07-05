@@ -1,7 +1,7 @@
 <script lang="ts">
     import { formatNum } from '$lib/helpers/string';
     import { plansInfo } from '$lib/stores/billing';
-    import { SecondaryTabs, SecondaryTabsItem } from '..';
+    import { Card, SecondaryTabs, SecondaryTabsItem } from '..';
 
     let selectedTab: 'tier-0' | 'tier-1' = 'tier-0';
     export let downgrade = false;
@@ -9,7 +9,7 @@
     $: plan = $plansInfo.get(selectedTab);
 </script>
 
-<div class="card">
+<Card>
     <SecondaryTabs stretch>
         <SecondaryTabsItem
             disabled={selectedTab === 'tier-0'}
@@ -98,4 +98,4 @@
             </ul>
         {/if}
     </div>
-</div>
+</Card>
