@@ -87,7 +87,6 @@
                             <TableCellText title="date">
                                 {toLocaleDate(invoice.dueAt)}
                             </TableCellText>
-
                             <TableCell title="status">
                                 {#if invoice?.lastError}
                                     <DropList bind:show={showFailedError}>
