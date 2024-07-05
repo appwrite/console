@@ -102,4 +102,30 @@ export class Account {
 
         await this.completeMfaWebauthnChallenge(challenge.$id, credential);
     }
+
+    async deleteMfaWebauthnAuthenticator(challengeId: string, credential: Credential) {
+        const path = '/account/mfa/authenticator/webauthn';
+
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'DELETE',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            {
+                challengeId: challengeId,
+                challengeResponse: JSON.stringify(credential)
+            }
+        );
+    }
+
+
+    async deleteMfaWebauthnAuthenticatorHelper() {
+        let challenge = await this.createMfaWebauthnChallenge();
+
+        let credential = await startAuthentication(challenge);
+
+        await this.deleteMfaWebauthnAuthenticator(challenge.$id, credential);
+    }
 } 
