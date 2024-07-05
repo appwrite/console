@@ -16,7 +16,7 @@
                 style="color:hsl(var(--color-danger-100));" />Message failed
         </p>
         <p>
-            The message has been sent with errors. Please refer to the logs below for more
+            The message has been processed with errors. Please refer to the logs below for more
             information.
         </p>
         <div style="max-inline-size: 524px">
