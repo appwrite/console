@@ -61,9 +61,12 @@
                 series={[
                     {
                         name: 'Count of gbHours over time',
-                        data: [...mbSecondsCount.map((e) => [e.date, 
-                        Math.ceil((e.value / 1000 / 3600) * 1000) / 1000
-                    ])]
+                        data: [
+                            ...mbSecondsCount.map((e) => [
+                                e.date,
+                                Math.ceil((e.value / 1000 / 3600) * 1000) / 1000
+                            ])
+                        ]
                     }
                 ]} />
         </Card>
