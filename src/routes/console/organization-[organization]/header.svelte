@@ -127,7 +127,7 @@
                             aria-hidden="true" />
                     </Heading>
                 </button>
-                <svelte:fragment slot="list">
+                <div data-sveltekit-preload-data="false" slot="list">
                     {#each $organizationList.teams as org}
                         <DropListLink
                             href={`${base}/console/organization-${org.$id}`}
@@ -135,7 +135,7 @@
                             {org.name}
                         </DropListLink>
                     {/each}
-                </svelte:fragment>
+                </div >
                 <svelte:fragment slot="other">
                     <section class="drop-section">
                         <ul class="drop-list">
