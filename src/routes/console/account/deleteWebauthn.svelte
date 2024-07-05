@@ -16,6 +16,24 @@
     let step = 1;
 
     async function deleteWebauthnAuthenticator() {
+        if (step === 2) {
+            try {
+                await sdk.forConsole.webauthnAccount.deleteMfaWebauthnAuthenticator(null, null, code);
+                await invalidate(Dependencies.ACCOUNT);
+                await invalidate(Dependencies.FACTORS);
+                showWebauthnDelete = false;
+                addNotification({
+                    type: 'success',
+                    message: 'The authenticator has been removed'
+                });
+                trackEvent(Submit.AccountAuthenticatorDelete);
+            } catch (e) {
+                error = e.message;
+                trackError(e, Submit.AccountAuthenticatorDelete);
+            }
+            return;
+        }
+
         try {
             await sdk.forConsole.webauthnAccount.deleteMfaWebauthnAuthenticatorHelper();
             await invalidate(Dependencies.ACCOUNT);
@@ -142,7 +160,11 @@
     {:else if step == 2}
     <p>Enter your recovery code to finish deletion.</p>
     <FormList>
-        <InputDigits autofocus required bind:value={code} autoSubmit={false} />
+        <input
+            type="text"
+            class="input-text"
+            placeholder="Enter your recovery code"
+            bind:value={code} />
     </FormList>
     {/if}
 
