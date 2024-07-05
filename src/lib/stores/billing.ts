@@ -54,6 +54,28 @@ export function tierToPlan(tier: Tier) {
     }
 }
 
+export function getNextTier(tier: Tier) {
+    switch (tier) {
+        case BillingPlan.FREE:
+            return BillingPlan.PRO;
+        case BillingPlan.PRO:
+            return BillingPlan.SCALE;
+        default:
+            return BillingPlan.PRO;
+    }
+}
+
+export function getPreviousTier(tier: Tier) {
+    switch (tier) {
+        case BillingPlan.PRO:
+            return BillingPlan.FREE;
+        case BillingPlan.SCALE:
+            return BillingPlan.PRO;
+        default:
+            return BillingPlan.FREE;
+    }
+}
+
 export type PlanServices =
     | 'bandwidth'
     | 'bandwidthAddon'

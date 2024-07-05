@@ -179,7 +179,11 @@
                         transition:slideFade|global={{ duration: 150 }}>
                         {#if $organizationList?.total}
                             <section class="drop-section u-overflow-y-auto u-max-height-200">
-                                <ul class="drop-list">
+                                <ul
+                                    class="drop-list"
+                                    data-sveltekit-preload-data={$page.params.organization
+                                        ? false
+                                        : 'hover'}>
                                     {#each $organizationList.teams as org}
                                         <DropListLink
                                             href={`${base}/console/organization-${org.$id}`}
