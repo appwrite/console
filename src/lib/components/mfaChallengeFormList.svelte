@@ -7,7 +7,7 @@
                 );
             }
 
-            if ((code = 'webauthn')) {
+            if (code == 'webauthn') {
                 await sdk.forConsole.webauthnAccount.createMfaWebauthnChallengeHelper();
             } else {
                 await sdk.forConsole.account.updateMfaChallenge(challenge.$id, code);

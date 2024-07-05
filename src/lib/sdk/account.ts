@@ -15,7 +15,7 @@ export type WebauthnRegisterChallenge = {
         displayName: string;
     };
     challenge: string;
-    pubKeyCredParams: any;
+    pubKeyCredParams: object;
     timeout: number;
 };
 
@@ -78,10 +78,10 @@ export class Account {
     }
 
     async createMfaWebauthnAuthenticatorHelper() {
-        let challenge = await this.createMfaWebauthnAuthenticator();
+        const challenge = await this.createMfaWebauthnAuthenticator();
 
         //TODO Replace with native navigator.credentials.create
-        let credential = await startRegistration(challenge);
+        const credential = await startRegistration(challenge);
 
         await this.completeWebauthnMfaAuthenticator(credential);
     }
@@ -113,10 +113,10 @@ export class Account {
     }
 
     async createMfaWebauthnChallengeHelper() {
-        let challenge = await this.createMfaWebauthnChallenge();
+        const challenge = await this.createMfaWebauthnChallenge();
 
         //TODO Replace with native navigator.credentials.create
-        let credential = await startAuthentication(challenge);
+        const credential = await startAuthentication(challenge);
 
         await this.completeMfaWebauthnChallenge(challenge.$id, credential);
     }
@@ -130,7 +130,7 @@ export class Account {
 
         const uri = new URL(this.client.config.endpoint + path);
 
-        let body = {};
+        const body = {};
 
         if (challengeId) {
             body['challengeId'] = challengeId;
@@ -155,9 +155,9 @@ export class Account {
     }
 
     async deleteMfaWebauthnAuthenticatorHelper() {
-        let challenge = await this.createMfaWebauthnChallenge();
+        const challenge = await this.createMfaWebauthnChallenge();
 
-        let credential = await startAuthentication(challenge);
+        const credential = await startAuthentication(challenge);
 
         await this.deleteMfaWebauthnAuthenticator(challenge.$id, credential);
     }
