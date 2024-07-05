@@ -52,7 +52,7 @@ export class Account {
         this.client = client;
     }
 
-    async createMfaWebauthnAuthenticator(): Promise<WebauthnRegisterChallenge> {
+    async createMfaWebauthnAuthenticator() {
         const path = '/account/mfa/authenticators/webauthn';
 
         const uri = new URL(this.client.config.endpoint + path);
