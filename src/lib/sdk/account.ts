@@ -19,6 +19,32 @@ export type WebauthnRegisterChallenge = {
     timeout: number;
 };
 
+/**
+ * MFAFactors
+ */
+export type MfaFactors = {
+    /**
+     * Can TOTP be used for MFA challenge for this account.
+     */
+    totp: boolean;
+    /**
+     * Can phone (SMS) be used for MFA challenge for this account.
+     */
+    phone: boolean;
+    /**
+     * Can email be used for MFA challenge for this account.
+     */
+    email: boolean;
+    /**
+     * Can recovery code be used for MFA challenge for this account.
+     */
+    recoveryCode: boolean;
+    /**
+     * Can WebAuthn be used for MFA challenge for this account.
+     */
+    webauthn: boolean;
+};
+
 export class Account {
     client: Client;
 
