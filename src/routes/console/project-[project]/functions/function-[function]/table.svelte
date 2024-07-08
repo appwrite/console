@@ -43,9 +43,9 @@
         invalidate(Dependencies.DEPLOYMENTS);
     }
 
-    async function getDownload(deploymentId: string) {
+    function getDownload(deploymentId: string) {
         return (
-            (await sdk.forConsole.func.downloadDeployment($func.$id, deploymentId)).toString() +
+            sdk.forProject.functions.getDeploymentDownload($func.$id, deploymentId).toString() +
             '&mode=admin'
         );
     }
@@ -148,13 +148,12 @@
                                 Logs
                             </DropListLink>
                             {#if deployment.status === 'ready'}
-                                {#await getDownload(deployment.$id)}
-                                    <DropListItem icon="terminal">Download</DropListItem>
-                                {:then href}
-                                    <DropListLink icon="terminal" external {href}>
-                                        Download
-                                    </DropListLink>
-                                {/await}
+                                <DropListLink
+                                    icon="download"
+                                    href={getDownload(deployment.$id)}
+                                    on:click={() => (showDropdown[index] = false)}>
+                                    Download
+                                </DropListLink>
                             {/if}
                             {#if deployment.status === 'processing' || deployment.status === 'building'}
                                 <DropListItem

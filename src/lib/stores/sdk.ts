@@ -23,7 +23,6 @@ import {
 } from '@appwrite.io/console';
 import { Billing } from '../sdk/billing';
 import { Sources } from '$lib/sdk/sources';
-import { Func } from '$lib/sdk/functions';
 
 const endpoint = VARS.APPWRITE_ENDPOINT ?? `${globalThis?.location?.origin}/v1`;
 
@@ -75,8 +74,7 @@ export const sdk = {
         console: new Console(clientConsole),
         assistant: new Assistant(clientConsole),
         billing: new Billing(clientConsole),
-        sources: new Sources(clientConsole),
-        func: new Func(clientConsole)
+        sources: new Sources(clientConsole)
     },
     get forProject() {
         const projectId = getProjectId();
