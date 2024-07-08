@@ -16,6 +16,7 @@
     export let autocomplete = false;
     export let fullWidth = false;
     export let isMultiple = false;
+    export let step: number | 'any' = 60;
 
     let element: HTMLInputElement;
     let error: string;
@@ -56,7 +57,7 @@
             {required}
             {min}
             {max}
-            step="60"
+            {step}
             autocomplete={autocomplete ? 'on' : 'off'}
             type="time"
             class="input-text"
