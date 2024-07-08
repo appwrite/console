@@ -35,8 +35,7 @@
                     class="link"
                     target="_blank"
                     rel="noopener noreferrer"
-                    href="https://appwrite.io/docs/advanced/security/gdpr#dpa"
-                    >Learn more</a
+                    href="https://appwrite.io/docs/advanced/security/gdpr#dpa">Learn more</a
                 >.
             </p>
             <Button
