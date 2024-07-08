@@ -10,22 +10,46 @@
     import { onMount } from 'svelte';
     import { func } from '../store';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
-    import { runtimesList } from '../../store';
+    import { runtimesList, specs } from '../../store';
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { Runtime } from '@appwrite.io/console';
 
     const functionId = $page.params.function;
     let runtime: string = null;
+    let memory: number = null;
+    let cpus: number = null;
 
     let options = [];
+    let cpuOptions = [];
+    let memoryOptions = [];
 
     onMount(async () => {
         runtime ??= $func.runtime;
+        memory ??= $func.memory;
+        cpus ??= $func.cpus;
 
         let runtimes = await $runtimesList;
+        let allowedSpecs = await $specs;
         options = runtimes.runtimes.map((runtime) => ({
             label: `${runtime.name} - ${runtime.version}`,
             value: runtime.$id
+        }));
+
+        memoryOptions = allowedSpecs.memory.map((memory) =>
+            memory > 1024
+                ? {
+                      label: `${memory / 1024} GB`,
+                      value: memory
+                  }
+                : {
+                      label: `${memory} MB`,
+                      value: memory
+                  }
+        );
+
+        cpuOptions = allowedSpecs.cpus.map((cpu) => ({
+            label: cpu === 1 ? `${cpu} CPU Cores` : `${cpu} CPU Core`,
+            value: cpu
         }));
     });
 
@@ -34,7 +58,7 @@
             if (!isValueOfStringEnum(Runtime, runtime)) {
                 throw new Error(`Invalid runtime: ${runtime}`);
             }
-            await sdk.forProject.functions.update(
+            await sdk.forProject.specsFunctions.update(
                 functionId,
                 $func.name,
                 runtime,
@@ -51,11 +75,13 @@
                 $func.providerRepositoryId || undefined,
                 $func.providerBranch || undefined,
                 $func.providerSilentMode || undefined,
-                $func.providerRootDirectory || undefined
+                $func.providerRootDirectory || undefined,
+                cpus,
+                memory
             );
             await invalidate(Dependencies.FUNCTION);
             addNotification({
-                message: 'Runtime has been updated',
+                message: 'Runtime settings have been updated',
                 type: 'success'
             });
             trackEvent(Submit.FunctionUpdateName);
@@ -67,6 +93,9 @@
             trackError(error, Submit.FunctionUpdateName);
         }
     }
+
+    $: isUpdateButtonEnabled =
+        runtime !== $func?.runtime || memory !== $func?.memory || cpus !== $func?.cpus;
 </script>
 
 <Form onSubmit={updateRuntime}>
@@ -83,11 +112,27 @@
                     {options}
                     required
                     hideRequired />
+                <InputSelect
+                    label="Memory Limit"
+                    id="memory"
+                    placeholder="Select memory"
+                    bind:value={memory}
+                    options={memoryOptions}
+                    required
+                    hideRequired />
+                <InputSelect
+                    label="CPU Limit"
+                    id="cpus"
+                    placeholder="Select cpu cores"
+                    bind:value={cpus}
+                    options={cpuOptions}
+                    required
+                    hideRequired />
             </FormList>
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={runtime === $func.runtime} submit>Update</Button>
+            <Button disabled={!isUpdateButtonEnabled} submit>Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>

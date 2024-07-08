@@ -8,15 +8,17 @@ import type { LayoutLoad } from './$types';
 export const load: LayoutLoad = async ({ depends }) => {
     depends(Dependencies.FUNCTION_INSTALLATIONS);
 
-    const [runtimesList, installations] = await Promise.all([
+    const [runtimesList, installations, specs] = await Promise.all([
         sdk.forProject.functions.listRuntimes(),
-        sdk.forProject.vcs.listInstallations([Query.limit(100)])
+        sdk.forProject.vcs.listInstallations([Query.limit(100)]),
+        sdk.forProject.specsFunctions.getSpecs()
     ]);
 
     return {
         header: Header,
         breadcrumbs: Breadcrumbs,
         runtimesList,
-        installations
+        installations,
+        specs
     };
 };
