@@ -29,6 +29,13 @@
         invalidate(Dependencies.DEPLOYMENTS);
     }
 
+    function getDownload(deploymentId: string) {
+        return (
+            sdk.forProject.functions.getDeploymentDownload($func.$id, deploymentId).toString() +
+            '&mode=admin'
+        );
+    }
+
     onMount(() => {
         logs = $deployment.buildLogs;
         if ($deployment.status === 'ready') {
@@ -60,6 +67,12 @@
                         on:click={() => {
                             showCancel = true;
                         }}>Cancel</Button>
+                {/if}
+
+                {#if $deployment.status === 'ready'}
+                    <Button text href={getDownload($deployment.$id)} class="u-margin-inline-end-16">
+                        Download code
+                    </Button>
                 {/if}
                 <Button
                     secondary

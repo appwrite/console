@@ -26,6 +26,7 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import Cancel from './cancel.svelte';
+    import { sdk } from '$lib/stores/sdk';
 
     export let columns: Column[];
     export let data: PageData;
@@ -40,6 +41,13 @@
 
     function handleActivate() {
         invalidate(Dependencies.DEPLOYMENTS);
+    }
+
+    function getDownload(deploymentId: string) {
+        return (
+            sdk.forProject.functions.getDeploymentDownload($func.$id, deploymentId).toString() +
+            '&mode=admin'
+        );
     }
 </script>
 
@@ -139,6 +147,14 @@
                                 href={`/console/project-${$page.params.project}/functions/function-${$page.params.function}/deployment-${deployment.$id}`}>
                                 Logs
                             </DropListLink>
+                            {#if deployment.status === 'ready'}
+                                <DropListLink
+                                    icon="download"
+                                    href={getDownload(deployment.$id)}
+                                    on:click={() => (showDropdown[index] = false)}>
+                                    Download
+                                </DropListLink>
+                            {/if}
                             {#if deployment.status === 'processing' || deployment.status === 'building'}
                                 <DropListItem
                                     icon="x-circle"

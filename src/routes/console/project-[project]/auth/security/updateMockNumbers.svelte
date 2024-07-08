@@ -48,8 +48,6 @@
         numbers.splice(index, 1);
         numbers = numbers;
     }
-
-    $: console.log(numbers, initialNumbers);
 </script>
 
 <Form onSubmit={updateMockNumbers}>
