@@ -391,6 +391,7 @@ export async function checkForMissingPaymentMethod() {
     }
 }
 
+//TODO: re-enable conditions
 // Display upgrade banner for new users after 1 week for 30 days
 export async function checkForNewDevUpgradePro(org: Organization) {
     if (org?.billingPlan !== BillingPlan.FREE || !browser) return;
@@ -403,7 +404,7 @@ export async function checkForNewDevUpgradePro(org: Organization) {
     const now = new Date().getTime();
     const account = get(user);
     const accountCreated = new Date(account.$createdAt).getTime();
-    if (now - accountCreated < 1000 * 60 * 60 * 24 * 7) return;
+    // if (now - accountCreated < 1000 * 60 * 60 * 24 * 7) return;
     const isDismissed = !!localStorage.getItem('newDevUpgradePro');
     if (isDismissed) return;
     if (now - accountCreated < 1000 * 60 * 60 * 24 * 37) {
