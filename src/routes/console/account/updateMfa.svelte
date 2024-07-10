@@ -15,7 +15,6 @@
     import MfaRegenerateCodes from './mfaRegenerateCodes.svelte';
     import { Pill } from '$lib/elements';
     import WebauthnMfa from './webauthnMfa.svelte';
-    import DeleteWebauthn from './deleteWebauthn.svelte';
 
     let showSetup: boolean = false;
     let showDelete: boolean = false;
@@ -75,6 +74,24 @@
                 message: error.message
             });
             trackError(error, Submit.AccountRecoveryCodesUpdate);
+        }
+    }
+
+    async function deleteWebauthnAuthenticator() {
+        try {
+            await sdk.forConsole.webauthnAccount.deleteMfaAuthenticator('webauthn');
+            Promise.all([invalidate(Dependencies.ACCOUNT), invalidate(Dependencies.FACTORS)]);
+            trackEvent(Submit.AccountAuthenticatorDelete);
+            addNotification({
+                type: 'success',
+                message: 'Webauthn authenticator has been deleted'
+            });
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+            trackError(error, Submit.AccountAuthenticatorDelete);
         }
     }
 
@@ -162,12 +179,12 @@
                                 <Button
                                     text
                                     class="is-not-mobile"
-                                    on:click={() => (showWebauthnDelete = true)}>Delete</Button>
+                                    on:click={deleteWebauthnAuthenticator}>Delete</Button>
                                 <Button
                                     text
                                     class="is-only-mobile"
                                     noMargin
-                                    on:click={() => (showWebauthnDelete = true)}>Delete</Button>
+                                    on:click={deleteWebauthnAuthenticator}>Delete</Button>
                             {:else}
                                 <Button secondary on:click={() => (showWebauthnSetup = true)}
                                     >Add</Button>
@@ -269,7 +286,6 @@
     <WebauthnMfa bind:showWebauthnSetup />
 {/if}
 <DeleteMfa bind:showDelete />
-<DeleteWebauthn bind:showWebauthnDelete />
 
 <MfaRecoveryCodes bind:showRecoveryCodes {codes} />
 <MfaRegenerateCodes
