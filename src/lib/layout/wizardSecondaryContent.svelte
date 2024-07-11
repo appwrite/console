@@ -4,8 +4,6 @@
     </div>
     <div class="wizard-secondary-content-sep"></div>
     <div class="wizard-secondary-content-2">
-        <div class="wizard-secondary-content-sticky">
-            <slot name="aside" />
-        </div>
+        <slot name="aside" />
     </div>
 </div>

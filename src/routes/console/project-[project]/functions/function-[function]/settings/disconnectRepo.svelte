@@ -35,6 +35,7 @@
                 $func.logging || undefined,
                 $func.entrypoint,
                 $func.commands || undefined,
+                $func.scopes || undefined,
                 '',
                 '',
                 '',

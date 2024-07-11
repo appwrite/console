@@ -3,10 +3,16 @@
     import { page } from '$app/stores';
     import { tooltip } from '$lib/actions/tooltip';
     import { registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
-    import { CardContainer, Empty, GridItem1, Id, PaginationWithLimit } from '$lib/components';
+    import {
+        CardContainer,
+        Empty,
+        GridItem1,
+        Id,
+        PaginationWithLimit,
+        SvgIcon
+    } from '$lib/components';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Container, ContainerHeader } from '$lib/layout';
-    import { app } from '$lib/stores/app';
     import { isServiceLimited } from '$lib/stores/billing';
     import { marketplace } from '$lib/stores/marketplace.js';
     import { organization } from '$lib/stores/organization';
@@ -90,11 +96,7 @@
                     <svelte:fragment slot="title">
                         <div class="u-flex u-gap-16 u-cross-center">
                             <div class="avatar is-medium">
-                                <img
-                                    src={`${base}/icons/${$app.themeInUse}/color/${
-                                        func.runtime.split('-')[0]
-                                    }.svg`}
-                                    alt="technology" />
+                                <SvgIcon name={func.runtime.split('-')[0]}></SvgIcon>
                             </div>
                             <span class="text">{func.name}</span>
                         </div>

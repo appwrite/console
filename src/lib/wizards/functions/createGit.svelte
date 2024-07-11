@@ -32,6 +32,7 @@
                 undefined,
                 $createFunction.entrypoint,
                 $createFunction.commands || undefined,
+                undefined,
                 $installation.$id,
                 $repository.id,
                 $choices.branch,

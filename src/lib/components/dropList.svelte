@@ -36,10 +36,10 @@
             }`}>
             {#if $$slots.list}
                 <section
-                    class:u-max-width-none={noMaxWidthList}
                     class:u-overflow-y-auto={scrollable}
                     class:u-max-height-200={scrollable}
-                    class="drop-section">
+                    class="drop-section"
+                    style={noMaxWidthList ? 'max-inline-size: 100%' : ''}>
                     <ul class="drop-list">
                         <slot name="list" />
                     </ul>

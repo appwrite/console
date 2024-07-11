@@ -13,6 +13,7 @@
     export let readonly = false;
     export let autofocus = false;
     export let autocomplete = false;
+    export let minlength: number = null;
     export let maxlength: number = null;
     export let popover: typeof SvelteComponent<unknown> = null;
     export let popoverProps: Record<string, unknown> = {};
@@ -83,6 +84,7 @@
             {placeholder}
             {disabled}
             {required}
+            {minlength}
             {maxlength}
             {pattern}
             {readonly}
