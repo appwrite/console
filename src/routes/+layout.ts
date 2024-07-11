@@ -17,6 +17,9 @@ export const load: LayoutLoad = async ({ depends, url }) => {
         url.searchParams.delete('forceRedirect');
     }
 
+    // logged-in user can recover-password!
+    if (url.pathname === '/recover') return {};
+
     try {
         const account = await sdk.forConsole.account.get<{ organization?: string }>();
 
