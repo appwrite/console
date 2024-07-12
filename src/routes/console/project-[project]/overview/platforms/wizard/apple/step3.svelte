@@ -10,8 +10,10 @@
 
 let client = Client()
     .setProject("${project}")${
-        isSelfHosted ? `
-    .setSelfSigned(true) // For self signed certificates, only use for development` : ''
+        isSelfHosted
+            ? `
+    .setSelfSigned(true) // For self signed certificates, only use for development`
+            : ''
     }`;
 
     let showAlert = true;

@@ -11,8 +11,10 @@ import io.appwrite.services.Account
 
 val client = Client(context)
     .setProject("${project}")${
-        isSelfHosted ? `
-    .setSelfSigned(status: true) // For self signed certificates, only use for development` : ''
+        isSelfHosted
+            ? `
+    .setSelfSigned(status: true) // For self signed certificates, only use for development`
+            : ''
     }`;
 </script>
 

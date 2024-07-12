@@ -11,8 +11,10 @@
 Client client = Client();
 client
     .setProject('${project}')${
-        isSelfHosted ? `
-    .setSelfSigned(status: true); // For self signed certificates, only use for development` : ';'
+        isSelfHosted
+            ? `
+    .setSelfSigned(status: true); // For self signed certificates, only use for development`
+            : ';'
     }`;
 
     let showAlert = true;
