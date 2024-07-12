@@ -6,6 +6,8 @@
     export let data: PageData;
     $: total = data.databasesTotal;
     $: count = data.databases;
+    $: totalStorage = data.databasesStorageTotal;
+    $: countStorage = data.databasesStorage;
 </script>
 
 <Usage
@@ -16,4 +18,14 @@
     countMetadata={{
         legend: 'Databases',
         title: 'Total databases'
+    }} />
+
+<Usage
+    title="Database storage"
+    path={`/console/project-${$page.params.project}/databases/usage`}
+    total={totalStorage}
+    count={countStorage}
+    countMetadata={{
+        legend: 'Databases',
+        title: 'Total database storage'
     }} />

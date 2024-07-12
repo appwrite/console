@@ -28,6 +28,7 @@
     $: executions = data.usage.executions;
     $: executionsTotal = data.usage.executionsTotal;
     $: storage = data.usage.filesStorageTotal;
+    $: databasesStorage = data.usage.databasesStorageTotal;
 
     const tier = data?.currentInvoice?.tier ?? $organization?.billingPlan;
     const plan = tierToPlan(tier).name;
@@ -264,7 +265,7 @@
 
         <p class="text">
             Calculated for all your files, deployments, builds and databases. While in beta, only
-            file storage is counted against your plan limits.
+            file and database storage is counted against your plan limits.
         </p>
 
         <svelte:fragment slot="aside">
@@ -273,6 +274,7 @@
                 <div class="u-flex u-flex-vertical">
                     <div class="u-flex u-main-space-between">
                         <p>
+                            <span class="heading-level-5">Files - </span>
                             <span class="heading-level-4">{humanized.value}</span>
                             <span class="body-text-1 u-bold">{humanized.unit}</span>
                         </p>
@@ -312,7 +314,56 @@
                             class="icon-chart-square-bar text-large"
                             aria-hidden="true"
                             style="font-size: 32px;" />
-                        <p class="u-bold">No data to show</p>
+                        <p class="u-bold">No data to show for files storage</p>
+                    </div>
+                </Card>
+            {/if}
+            {#if databasesStorage}
+                {@const humanized = humanFileSize(databasesStorage)}
+                <div class="u-flex u-flex-vertical">
+                    <div class="u-flex u-main-space-between">
+                        <p>
+                            <span class="heading-level-5">Databases - </span>
+                            <span class="heading-level-4">{humanized.value}</span>
+                            <span class="body-text-1 u-bold">{humanized.unit}</span>
+                        </p>
+                    </div>
+                </div>
+                {#if data.usage.databasesStorageBreakdown.length > 0}
+                    <Table noMargin noStyles>
+                        <TableHeader>
+                            <TableCellHead width={285}>Database</TableCellHead>
+                            <TableCellHead>Usage</TableCellHead>
+                            <TableCellHead width={140} />
+                        </TableHeader>
+                        <TableBody>
+                            {#each data.usage.databasesStorageBreakdown.sort((a, b) => b.value - a.value) as database}
+                                {@const humanized = humanFileSize(database.value)}
+                                <TableRow>
+                                    <TableCell title="Function">
+                                        {database.name ?? database.resourceId}
+                                    </TableCell>
+                                    <TableCell title="Usage">
+                                        {humanized.value}{humanized.unit}
+                                    </TableCell>
+                                    <TableCellLink
+                                        href={`${base}/databases/database-${database.resourceId}`}
+                                        title="View database">
+                                        View database
+                                    </TableCellLink>
+                                </TableRow>
+                            {/each}
+                        </TableBody>
+                    </Table>
+                 {/if}
+            {:else}
+                <Card isDashed>
+                    <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
+                        <span
+                            class="icon-chart-square-bar text-large"
+                            aria-hidden="true"
+                            style="font-size: 32px;" />
+                        <p class="u-bold">No data to show for databases storage</p>
                     </div>
                 </Card>
             {/if}
