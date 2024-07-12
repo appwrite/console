@@ -124,6 +124,11 @@
         {/if}
         <DropList show={$feedback.show} scrollable on:blur={toggleFeedback}>
             <button class="button is-small is-text" on:click={toggleFeedback}>
+                {#if $feedback.notification}
+                    <span
+                        class="notification u-position-absolute u-inset-block-start-8 u-inset-inline-end-8"
+                    ></span>
+                {/if}
                 <span class="text">Feedback</span>
             </button>
             <svelte:fragment slot="other">
