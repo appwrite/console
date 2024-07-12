@@ -5,14 +5,11 @@
     import { sdk } from '$lib/stores/sdk';
     import Id from '$lib/components/id.svelte';
 
-    const { endpoint, project } = sdk.forProject.client.config;
+    const { project } = sdk.forProject.client.config;
     const code = `import 'package:appwrite/appwrite.dart';
 
 Client client = Client();
-client
-    .setEndpoint('${endpoint}')
-    .setProject('${project}')
-    .setSelfSigned(status: true); // For self signed certificates, only use for development`;
+client.setProject('${project}')`;
 
     let showAlert = true;
 </script>

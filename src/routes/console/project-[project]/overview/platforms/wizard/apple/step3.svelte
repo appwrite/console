@@ -5,13 +5,10 @@
     import { sdk } from '$lib/stores/sdk';
     import Id from '$lib/components/id.svelte';
 
-    const { endpoint, project } = sdk.forProject.client.config;
+    const { project } = sdk.forProject.client.config;
     const code = `import Appwrite
 
-let client = Client()
-    .setEndpoint("${endpoint}")
-    .setProject("${project}")
-    .setSelfSigned(true) // For self signed certificates, only use for development`;
+let client = Client().setProject("${project}")`;
 
     let showAlert = true;
 </script>

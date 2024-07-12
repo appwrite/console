@@ -4,14 +4,11 @@
     import { WizardStep } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
 
-    const { endpoint, project } = sdk.forProject.client.config;
+    const { project } = sdk.forProject.client.config;
     const code = `import io.appwrite.Client
 import io.appwrite.services.Account
 
-val client = Client(context)
-    .setEndpoint("${endpoint}")
-    .setProject("${project}")
-    .setSelfSigned(status: true) // For self signed certificates, only use for development`;
+val client = Client(context).setProject("${project}")`;
 </script>
 
 <WizardStep>

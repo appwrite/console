@@ -4,12 +4,10 @@
     import { WizardStep } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
 
-    const { endpoint, project } = sdk.forProject.client.config;
+    const { project } = sdk.forProject.client.config;
     const code = `const client = new Client();
 
-client
-    .setEndpoint('${endpoint}')
-    .setProject('${project}');`;
+client.setProject('${project}');`;
 </script>
 
 <WizardStep>
