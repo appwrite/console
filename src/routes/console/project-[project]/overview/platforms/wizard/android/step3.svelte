@@ -3,12 +3,17 @@
     import Id from '$lib/components/id.svelte';
     import { WizardStep } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
+    import { isSelfHosted } from '$lib/system';
 
     const { project } = sdk.forProject.client.config;
     const code = `import io.appwrite.Client
 import io.appwrite.services.Account
 
-val client = Client(context).setProject("${project}")`;
+val client = Client(context)
+    .setProject("${project}")${
+        isSelfHosted ? `
+    .setSelfSigned(status: true) // For self signed certificates, only use for development` : ''
+    }`;
 </script>
 
 <WizardStep>

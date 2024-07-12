@@ -8,7 +8,11 @@
     const { project } = sdk.forProject.client.config;
     const code = `import Appwrite
 
-let client = Client().setProject("${project}")`;
+let client = Client()
+    .setProject("${project}")${
+        isSelfHosted ? `
+    .setSelfSigned(true) // For self signed certificates, only use for development` : ''
+    }`;
 
     let showAlert = true;
 </script>

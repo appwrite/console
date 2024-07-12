@@ -9,7 +9,11 @@
     const code = `import 'package:appwrite/appwrite.dart';
 
 Client client = Client();
-client.setProject('${project}')`;
+client
+    .setProject('${project}')${
+        isSelfHosted ? `
+    .setSelfSigned(status: true); // For self signed certificates, only use for development` : ';'
+    }`;
 
     let showAlert = true;
 </script>
