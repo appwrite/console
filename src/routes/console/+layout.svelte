@@ -22,7 +22,7 @@
         checkForMarkedForDeletion,
         checkForMandate,
         checkForMissingPaymentMethod,
-        checkForUpgradeBanner,
+        checkForNewDevUpgradePro,
         plansInfo
     } from '$lib/stores/billing';
     import { goto } from '$app/navigation';
@@ -267,11 +267,12 @@
         if (isCloud) {
             await checkForUsageLimit(org);
             checkForMarkedForDeletion(org);
+            await checkForNewDevUpgradePro(org);
+
             if (org?.billingPlan !== BillingPlan.FREE) {
                 await paymentExpired(org);
                 await checkPaymentAuthorizationRequired(org);
                 await checkForMandate(org);
-                await checkForUpgradeBanner(org);
 
                 if ($plansInfo.get(org.billingPlan)?.trialDays) {
                     calculateTrialDay(org);

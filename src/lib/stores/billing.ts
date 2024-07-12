@@ -27,9 +27,11 @@ import PaymentMandate from '$lib/components/billing/alerts/paymentMandate.svelte
 import MissingPaymentMethod from '$lib/components/billing/alerts/missingPaymentMethod.svelte';
 import LimitReached from '$lib/components/billing/alerts/limitReached.svelte';
 import { trackEvent } from '$lib/actions/analytics';
-import UpgradeToPro from '$lib/components/billing/alerts/upgradeToPro.svelte';
+import newDevUpgradePro from '$lib/components/billing/alerts/newDevUpgradePro.svelte';
 import { last } from '$lib/helpers/array';
 import { sizeToBytes, type Size } from '$lib/helpers/sizeConvertion';
+import { user } from './user';
+import { browser } from '$app/environment';
 
 export type Tier = 'tier-0' | 'tier-1' | 'tier-2';
 
@@ -389,19 +391,25 @@ export async function checkForMissingPaymentMethod() {
     }
 }
 
-export async function checkForUpgradeBanner(org: Organization) {
-    if (org?.billingPlan !== BillingPlan.FREE) return;
+// Display upgrade banner for new users after 1 week for 30 days
+export async function checkForNewDevUpgradePro(org: Organization) {
+    if (org?.billingPlan !== BillingPlan.FREE || !browser) return;
+
     const orgs = await sdk.forConsole.billing.listOrganization([
         Query.notEqual('billingPlan', BillingPlan.FREE)
     ]);
     if (orgs?.total) return;
-    const localData = localStorage.getItem('upgradeBanner');
-    const hideUpgradeBanner = localData ? parseInt(localData) : 0;
+
     const now = new Date().getTime();
-    if (now - hideUpgradeBanner >= 1000 * 60 * 60 * 24 * 14) {
+    const account = get(user);
+    const accountCreated = new Date(account.$createdAt).getTime();
+    if (now - accountCreated < 1000 * 60 * 60 * 24 * 7) return;
+    const isDismissed = !!localStorage.getItem('newDevUpgradePro');
+    if (isDismissed) return;
+    if (now - accountCreated < 1000 * 60 * 60 * 24 * 37) {
         headerAlert.add({
-            id: 'upgradeBanner',
-            component: UpgradeToPro,
+            id: 'newDevUpgradePro',
+            component: newDevUpgradePro,
             show: true,
             importance: 1
         });
