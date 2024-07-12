@@ -21,7 +21,7 @@
     onMount(async () => {
         const invoices = await sdk.forConsole.billing.listInvoices($organization.$id, [
             Query.limit(1),
-            Query.orderDesc('$createdAt')
+            Query.equal('from', $organization.billingCurrentInvoiceDate)
         ]);
         currentInvoice = invoices.invoices[0];
         const members = await sdk.forConsole.teams.listMemberships($organization.$id, []);
