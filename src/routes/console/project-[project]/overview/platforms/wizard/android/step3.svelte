@@ -5,17 +5,18 @@
     import { sdk } from '$lib/stores/sdk';
     import { isSelfHosted } from '$lib/system';
 
-    const { project } = sdk.forProject.client.config;
+    const { endpoint, project } = sdk.forProject.client.config;
     const code = `import io.appwrite.Client
 import io.appwrite.services.Account
 
-val client = Client(context)
-    .setProject("${project}")${
-        isSelfHosted
-            ? `
+${
+    !isSelfHosted
+        ? `val client = Client(context).setProject("${project}")`
+        : `val client = Client(context)
+    .setEndpoint("${endpoint}")
+    .setProject("${project}")
     .setSelfSigned(status: true) // For self signed certificates, only use for development`
-            : ''
-    }`;
+}`;
 </script>
 
 <WizardStep>

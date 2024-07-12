@@ -3,11 +3,18 @@
     import Id from '$lib/components/id.svelte';
     import { WizardStep } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
+    import { isSelfHosted } from '$lib/system';
 
-    const { project } = sdk.forProject.client.config;
+    const { endpoint, project } = sdk.forProject.client.config;
     const code = `const client = new Client();
 
-client.setProject('${project}');`;
+${
+    !isSelfHosted
+        ? `client.setProject('${project}');`
+        : `client
+    .setEndpoint('${endpoint}')
+    .setProject('${project}');`
+}`;
 </script>
 
 <WizardStep>

@@ -5,17 +5,18 @@
     import { sdk } from '$lib/stores/sdk';
     import Id from '$lib/components/id.svelte';
 
-    const { project } = sdk.forProject.client.config;
+    const { endpoint, project } = sdk.forProject.client.config;
     const code = `import 'package:appwrite/appwrite.dart';
 
 Client client = Client();
-client
-    .setProject('${project}')${
-        isSelfHosted
-            ? `
-    .setSelfSigned(status: true); // For self signed certificates, only use for development`
-            : ';'
-    }`;
+${
+    !isSelfHosted
+        ? `client.setProject('${project}');`
+        : `client
+    .setEndpoint('${endpoint}')
+    .setProject('${project}')
+    .setSelfSigned(status: true); // For self signed certificates, only use for development;`
+}`;
 
     let showAlert = true;
 </script>
@@ -25,8 +26,8 @@ client
 
     <h2 class="heading-level-7">Initialize your SDK</h2>
     <p data-private>
-        Initialize your SDK by pointing the client to your Appwrite project using your <Id
-            value={project}>Project ID</Id>
+        Initialize your SDK by pointing the client to your Appwrite project using your
+        <Id value={project}>Project ID</Id>
     </p>
     <div class="u-margin-block-start-16">
         <Code
