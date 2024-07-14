@@ -30,14 +30,14 @@ export type FeedbackOption = {
 export const feedbackOptions: FeedbackOption[] = [
     {
         type: 'general',
-        title: 'How can we improve?',
-        desc: 'Your feedback is important to us. Please be honest and tell us what you think.',
+        title: 'Help us improve Appwrite',
+        desc: 'Appwrite evolves with your input. Share your thoughts and help us improve Appwrite.',
         component: FeedbackGeneral
     },
     {
         type: 'nps',
-        title: 'How are we doing?',
-        desc: "At Appwrite, we value the feedback of our users. That means you! We'd love to hear what you think.",
+        title: 'Help us improve Appwrite',
+        desc: 'Appwrite evolves with your input. Share your thoughts and help us improve Appwrite. If you would like to be contacted regarding your feedback, please share your contact details below.',
         component: FeedbackNps
     }
 ];
@@ -49,7 +49,7 @@ function createFeedbackDataStore() {
         message: '',
         name: '',
         email: '',
-        value: 0
+        value: null
     });
     return {
         set,
@@ -60,7 +60,7 @@ function createFeedbackDataStore() {
                 feedbackData.message = '';
                 feedbackData.name = '';
                 feedbackData.email = '';
-                feedbackData.value = 0;
+                feedbackData.value = null;
                 return feedbackData;
             });
         }
@@ -71,8 +71,8 @@ export const feedbackData = createFeedbackDataStore();
 
 function createFeedbackStore() {
     const { subscribe, update } = writable<Feedback>({
-        elapsed: browser ? parseInt(localStorage.getItem('feedbackElapsed')) : 0,
-        visualized: browser ? parseInt(localStorage.getItem('feedbackVisualized')) : 0,
+        elapsed: browser ? parseInt(localStorage.getItem('feedbackElapsed')) ?? 0 : 0,
+        visualized: browser ? parseInt(localStorage.getItem('feedbackVisualized')) ?? 0 : 0,
         notification: false,
         type: 'general',
         show: false
