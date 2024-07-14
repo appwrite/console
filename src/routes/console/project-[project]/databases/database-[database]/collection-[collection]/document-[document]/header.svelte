@@ -37,7 +37,7 @@
             href={`/console/project-${projectId}/databases/database-${databaseId}/collection-${collectionId}`}>
             {$doc?.$id}
         </CoverTitle>
-        <Id value={$doc?.$id} event="document">Document ID</Id>
+        <Id value={$doc?.$id} event="document">Document</Id>
     </svelte:fragment>
 
     <Tabs>
