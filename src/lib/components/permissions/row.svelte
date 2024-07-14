@@ -121,11 +121,6 @@
         --p-drop-bg-color: var(--color-neutral-105);
         --p-drop-border-color: var(--color-neutral-85);
 
-        body.theme-light & {
-            --p-drop-bg-color: var(--color-neutral-0);
-            --p-drop-border-color: var(--color-neutral-10);
-        }
-
         inset-inline-start: -0.625rem;
         inset-block-end: calc(100% + 0.625rem);
         background-color: hsl(var(--p-drop-bg-color));
@@ -137,6 +132,11 @@
         max-inline-size: 32.5rem;
         margin-inline: auto;
         line-height: 1.5;
+
+        body.theme-light & {
+            --p-drop-bg-color: var(--color-neutral-0);
+            --p-drop-border-color: var(--color-neutral-10);
+        }
 
         .tippy-content {
             padding: 1rem;

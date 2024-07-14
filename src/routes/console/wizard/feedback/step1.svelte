@@ -20,7 +20,7 @@
             );
             addNotification({
                 type: 'success',
-                message: 'Feedback submitted successfully'
+                message: 'Thank you for your feedback'
             });
         } catch (error) {
             addNotification({

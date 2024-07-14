@@ -32,6 +32,7 @@
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$/i;
     let previousPage: string = `${base}/console`;
     let showExitModal = false;
+    let canSelectOrg = true;
 
     afterNavigate(({ from }) => {
         if (from?.url?.pathname) {
@@ -74,6 +75,10 @@
         await loadPaymentMethods();
         if (!$organizationList?.total || campaign?.onlyNewOrgs) {
             selectedOrgId = newOrgId;
+        }
+        if ($page.url.searchParams.has('org')) {
+            selectedOrgId = $page.url.searchParams.get('org');
+            canSelectOrg = false;
         }
     });
 
@@ -197,7 +202,7 @@
     <WizardSecondaryContent>
         <Form bind:this={formComponent} onSubmit={handleSubmit} bind:isSubmitting>
             <FormList>
-                {#if $organizationList?.total && !campaign?.onlyNewOrgs}
+                {#if $organizationList?.total && !campaign?.onlyNewOrgs && canSelectOrg}
                     <InputSelect
                         bind:value={selectedOrgId}
                         label="Select organization"

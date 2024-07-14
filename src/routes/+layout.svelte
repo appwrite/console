@@ -70,7 +70,13 @@
             '/hackathon',
             '/mfa'
         ];
-        const acceptedAuthenticatedRoutes = ['/console', '/invite', '/card', '/hackathon'];
+        const acceptedAuthenticatedRoutes = [
+            '/console',
+            '/invite',
+            '/card',
+            '/hackathon',
+            '/recover'
+        ];
 
         const pathname = $page.url.pathname;
         const user = $page.data.account as Models.User<Record<string, string>>;
