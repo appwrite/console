@@ -29,7 +29,7 @@
 
     async function create() {
         try {
-            uploader.uploadFile(
+            const uploadPromise = uploader.uploadFile(
                 bucketId,
                 $createFile.id ?? ID.unique(),
                 $createFile.files[0],
@@ -47,7 +47,11 @@
             trackEvent(Submit.FileCreate, {
                 customId: !!$createFile.id
             });
+
+            await uploadPromise;
         } catch (e) {
+            uploader.removeAtIndex(0);
+
             addNotification({
                 type: 'error',
                 message: e.message
