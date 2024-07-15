@@ -24,7 +24,8 @@ export async function createProProject(page: Page): Promise<Metadata> {
         await page.locator('id=plan').selectOption('tier-1');
         await page.getByRole('button', { name: 'get started' }).click();
         await page.waitForURL('/console/create-organization**');
-        await page.getByRole('button', { name: 'Add' }).first().click();
+        await new Promise((r) => setTimeout(r, 1000));
+        await page.getByRole('button', { name: 'add' }).first().click();
         await enterCreditCard(page);
         // skip members
         await page.getByRole('button', { name: 'create organization' }).click();
