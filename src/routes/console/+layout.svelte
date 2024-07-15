@@ -22,6 +22,7 @@
         checkForMarkedForDeletion,
         checkForMandate,
         checkForMissingPaymentMethod,
+        checkForNewDevUpgradePro,
         plansInfo
     } from '$lib/stores/billing';
     import { goto } from '$app/navigation';
@@ -235,7 +236,9 @@
     let isOpen = false;
     onMount(async () => {
         loading.set(false);
-
+        if (!localStorage.getItem('feedbackElapsed')) {
+            localStorage.setItem('feedbackElapsed', '0');
+        }
         setInterval(() => {
             checkForFeedback(INTERVAL);
         }, INTERVAL);
@@ -266,10 +269,13 @@
         if (isCloud) {
             await checkForUsageLimit(org);
             checkForMarkedForDeletion(org);
+            await checkForNewDevUpgradePro(org);
+
             if (org?.billingPlan !== BillingPlan.FREE) {
                 await paymentExpired(org);
                 await checkPaymentAuthorizationRequired(org);
                 await checkForMandate(org);
+
                 if ($plansInfo.get(org.billingPlan)?.trialDays) {
                     calculateTrialDay(org);
                 }

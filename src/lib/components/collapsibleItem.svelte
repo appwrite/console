@@ -58,11 +58,11 @@
     // TODO: remove once pink is updated
     .collapsible-item {
         .collapsible-wrapper.is-disabled {
+            cursor: not-allowed;
+
             &[open] .icon-cheveron-down {
                 rotate: unset;
             }
-
-            cursor: not-allowed;
             * {
                 cursor: not-allowed;
             }

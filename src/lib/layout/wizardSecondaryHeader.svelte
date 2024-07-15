@@ -18,7 +18,22 @@
     export let href: $$Props['href'] = '';
 
     const dispatch = createEventDispatcher();
+
+    function handleKeydown(event: KeyboardEvent) {
+        if (event.key === 'Escape') {
+            event.preventDefault();
+            if (confirmExit) {
+                dispatch('exit');
+            } else {
+                trackEvent('wizard_exit', {
+                    from: 'escape'
+                });
+            }
+        }
+    }
 </script>
+
+<svelte:window on:keydown={handleKeydown} />
 
 <header class="wizard-secondary-header">
     <div class="u-flex u-main-space-between u-gap-32 u-cross-center">
