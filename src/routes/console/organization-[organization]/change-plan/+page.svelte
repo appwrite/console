@@ -3,13 +3,14 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { Alert, LabelCard } from '$lib/components';
+    import { Alert } from '$lib/components';
     import {
         EstimatedTotalBox,
         PlanComparisonBox,
         SelectPaymentMethod
     } from '$lib/components/billing';
     import PlanExcess from '$lib/components/billing/planExcess.svelte';
+    import PlanSelection from '$lib/components/billing/planSelection.svelte';
     import ValidateCreditModal from '$lib/components/billing/validateCreditModal.svelte';
     import { BillingPlan, Dependencies, feedbackDowngradeOptions } from '$lib/constants';
     import {
@@ -21,7 +22,6 @@
         InputTextarea,
         Label
     } from '$lib/elements/forms';
-    import { formatCurrency } from '$lib/helpers/numbers';
     import {
         WizardSecondaryContainer,
         WizardSecondaryContent,
@@ -29,7 +29,7 @@
         WizardSecondaryHeader
     } from '$lib/layout';
     import { type Coupon, type PaymentList } from '$lib/sdk/billing';
-    import { plansInfo, tierFree, tierPro, tierToPlan, type Tier } from '$lib/stores/billing';
+    import { tierToPlan, type Tier } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { organization, organizationList, type Organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
@@ -93,7 +93,11 @@
                 billingPlan = plan as BillingPlan;
             }
         }
-        billingPlan = BillingPlan.PRO;
+        if ($organization?.billingPlan === BillingPlan.SCALE) {
+            billingPlan = BillingPlan.SCALE;
+        } else {
+            billingPlan = BillingPlan.PRO;
+        }
     });
 
     async function loadPaymentMethods() {
@@ -238,8 +242,6 @@
 
     $: isUpgrade = billingPlan > $organization.billingPlan;
     $: isDowngrade = billingPlan < $organization.billingPlan;
-    $: freePlan = $plansInfo.get(BillingPlan.FREE);
-    $: proPlan = $plansInfo.get(BillingPlan.PRO);
     $: if (billingPlan === BillingPlan.PRO) {
         loadPaymentMethods();
     }
@@ -261,7 +263,7 @@
                 For more details on our plans, visit our
                 <Button href="https://appwrite.io/pricing" external link>pricing page</Button>.
             </p>
-            {#if anyOrgFree && billingPlan === BillingPlan.PRO}
+            {#if anyOrgFree && billingPlan !== BillingPlan.FREE}
                 <Alert type="warning" class="u-margin-block-16">
                     You are limited to one {tierToPlan(BillingPlan.FREE).name} organization per account.
                     Consider upgrading or deleting <Button
@@ -271,62 +273,17 @@
                     >.
                 </Alert>
             {/if}
-            <ul
-                class="u-flex u-gap-16 u-margin-block-start-8"
-                class:u-margin-block-start-16={anyOrgFree && billingPlan === BillingPlan.PRO}
-                style="--p-grid-item-size:16em; --p-grid-item-size-small-screens:16rem; --grid-gap: 1rem;">
-                <li class="u-flex-basis-50-percent">
-                    <LabelCard
-                        name="plan"
-                        bind:group={billingPlan}
-                        disabled={!!anyOrgFree}
-                        value="tier-0"
-                        tooltipShow={!!anyOrgFree}
-                        tooltipText="You are limited to 1 Free organization per account.">
-                        <svelte:fragment slot="custom" let:disabled>
-                            <div
-                                class="u-flex u-flex-vertical u-gap-4 u-width-full-line"
-                                class:u-opacity-50={disabled}>
-                                <h4 class="body-text-2 u-bold">
-                                    {tierFree.name}
-                                    {#if $organization.billingPlan === BillingPlan.FREE}
-                                        <span class="inline-tag">Current plan</span>
-                                    {/if}
-                                </h4>
-                                <p class="u-color-text-gray u-small">{tierFree.description}</p>
-                                <p>
-                                    {formatCurrency(freePlan?.price ?? 0)}
-                                </p>
-                            </div>
-                        </svelte:fragment>
-                    </LabelCard>
-                </li>
+            <PlanSelection
+                bind:billingPlan
+                anyOrgFree={!!anyOrgFree}
+                class={anyOrgFree && billingPlan !== BillingPlan.FREE
+                    ? 'u-margin-block-start-16'
+                    : ''} />
 
-                <li class="u-flex-basis-50-percent">
-                    <LabelCard name="plan" bind:group={billingPlan} value="tier-1">
-                        <svelte:fragment slot="custom">
-                            <div class="u-flex u-flex-vertical u-gap-4 u-width-full-line">
-                                <h4 class="body-text-2 u-bold">
-                                    {tierPro.name}
-                                    {#if $organization.billingPlan === BillingPlan.PRO}
-                                        <span class="inline-tag">Current plan</span>
-                                    {/if}
-                                </h4>
-                                <p class="u-color-text-gray u-small">
-                                    {tierPro.description}
-                                </p>
-                                <p>
-                                    {formatCurrency(proPlan?.price ?? 0)} per member/month + usage
-                                </p>
-                            </div>
-                        </svelte:fragment>
-                    </LabelCard>
-                </li>
-            </ul>
             {#if isDowngrade}
                 <PlanExcess tier={BillingPlan.FREE} class="u-margin-block-start-24" />
             {/if}
-            {#if billingPlan === BillingPlan.PRO && $organization.billingPlan !== BillingPlan.PRO}
+            {#if billingPlan !== BillingPlan.FREE && $organization.billingPlan === BillingPlan.FREE}
                 <FormList class="u-margin-block-start-16">
                     <InputTags
                         bind:tags={collaborators}

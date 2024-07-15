@@ -150,7 +150,7 @@ export const tierPro: TierData = {
 };
 export const tierScale: TierData = {
     name: 'Scale',
-    description: 'For scaling teams that need dedicated support.'
+    description: 'For scaling teams and agencies that need dedicated support.'
 };
 
 export const showUsageRatesModal = writable<boolean>(false);
