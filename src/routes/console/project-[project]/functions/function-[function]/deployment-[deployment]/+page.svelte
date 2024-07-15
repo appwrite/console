@@ -78,7 +78,7 @@
                     secondary
                     disabled={data.activeDeployment}
                     on:click={() => {
-                        showDelete = true;
+                        showActivate = true;
                     }}>Activate</Button>
             </div>
         </svelte:fragment>
