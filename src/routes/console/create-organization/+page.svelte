@@ -174,7 +174,7 @@
         }
     }
 
-    $: if (billingPlan === BillingPlan.PRO) {
+    $: if (billingPlan !== BillingPlan.FREE) {
         loadPaymentMethods();
     }
 </script>

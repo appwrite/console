@@ -270,7 +270,7 @@
                     </div>
                 </div>
             {/if}
-            {#if selectedOrg?.billingPlan === BillingPlan.PRO}
+            {#if selectedOrg?.billingPlan !== BillingPlan.FREE}
                 <section
                     class="card u-margin-block-start-24"
                     style:--p-card-padding="1.5rem"

@@ -22,6 +22,7 @@
         InputTextarea,
         Label
     } from '$lib/elements/forms';
+    import { formatCurrency } from '$lib/helpers/numbers.js';
     import {
         WizardSecondaryContainer,
         WizardSecondaryContent,
@@ -29,7 +30,7 @@
         WizardSecondaryHeader
     } from '$lib/layout';
     import { type Coupon, type PaymentList } from '$lib/sdk/billing';
-    import { tierToPlan, type Tier } from '$lib/stores/billing';
+    import { plansInfo, tierToPlan, type Tier } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { organization, organizationList, type Organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
@@ -242,7 +243,7 @@
 
     $: isUpgrade = billingPlan > $organization.billingPlan;
     $: isDowngrade = billingPlan < $organization.billingPlan;
-    $: if (billingPlan === BillingPlan.PRO) {
+    $: if (billingPlan !== BillingPlan.FREE) {
         loadPaymentMethods();
     }
     $: isButtonDisabled = $organization.billingPlan === billingPlan;
@@ -281,8 +282,21 @@
                     : ''} />
 
             {#if isDowngrade}
-                <PlanExcess tier={BillingPlan.FREE} class="u-margin-block-start-24" />
+                {#if billingPlan === BillingPlan.FREE}
+                    <PlanExcess tier={BillingPlan.FREE} class="u-margin-block-start-24" />
+                {:else if billingPlan === BillingPlan.PRO && $organization.billingPlan === BillingPlan.SCALE}
+                    {@const members = collaborators?.length ?? 0}
+                    <Alert type="error" class="u-margin-block-start-24">
+                        <svelte:fragment slot="title">
+                            Monthly payments are required for organization members on the Pro plan
+                        </svelte:fragment>
+                        On successful switching of your plan, you will be charged {formatCurrency(
+                            members * ($plansInfo?.get(billingPlan)?.addons?.member?.price ?? 0)
+                        )} monthly for {members} team members.
+                    </Alert>
+                {/if}
             {/if}
+            <!-- Show email input if upgrading from free plan -->
             {#if billingPlan !== BillingPlan.FREE && $organization.billingPlan === BillingPlan.FREE}
                 <FormList class="u-margin-block-start-16">
                     <InputTags
@@ -305,7 +319,7 @@
                     </Button>
                 {/if}
             {/if}
-            {#if !isUpgrade && billingPlan === BillingPlan.FREE && $organization.billingPlan !== BillingPlan.FREE}
+            {#if isDowngrade}
                 <FormList class="u-margin-block-start-24">
                     <InputSelect
                         id="reason"

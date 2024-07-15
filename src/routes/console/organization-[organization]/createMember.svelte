@@ -61,7 +61,7 @@
     {#if isCloud}
         <Alert type="info">
             {#if $organization?.billingPlan === BillingPlan.SCALE}
-                You can add unlimited organization members on the {plan.name} plan at no cost.
+                You can add unlimited organization members on the {plan.name} plan.
             {:else if $organization?.billingPlan === BillingPlan.PRO}
                 You can add unlimited organization members on the {plan.name} plan for
                 <b>{formatCurrency(plan.addons.member.price)} each per billing period</b>.

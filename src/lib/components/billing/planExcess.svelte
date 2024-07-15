@@ -98,7 +98,8 @@
                     <TableCell title="excess">
                         <p class="u-color-text-danger">
                             <span class="icon-arrow-up" />
-                            {humanFileSize(excess?.storage)}
+                            {humanFileSize(excess?.storage).value}
+                            {humanFileSize(excess?.storage).unit}
                         </p>
                     </TableCell>
                 </TableRow>
