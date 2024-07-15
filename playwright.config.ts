@@ -4,6 +4,9 @@ const config: PlaywrightTestConfig = {
     timeout: 120000,
     reportSlowTests: null,
     reporter: [['html', { open: 'never' }]],
+    use: {
+        baseURL: 'http://localhost:4173/console'
+    },
     webServer: {
         timeout: 120000,
         env: {

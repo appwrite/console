@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Button } from '$lib/elements/forms';
     import { HeaderAlert } from '$lib/layout';
@@ -21,7 +22,7 @@
             </Button>
             <Button
                 secondary
-                href={`/console/organization-${$organization.$id}/billing?type=confirmation&invoice=${$actionRequiredInvoices.invoices[0].$id}`}>
+                href={`${base}/organization-${$organization.$id}/billing?type=confirmation&invoice=${$actionRequiredInvoices.invoices[0].$id}`}>
                 Authorize payment
             </Button>
         </svelte:fragment>

@@ -1,9 +1,15 @@
 {
+    "redirects": [
+        {
+            "source": "/",
+            "destination": "/console"
+        }
+    ],
     "rewrites": [
         {
-            "source": "/(.*)",
+            "source": "/console/(.*)",
             "destination": "/"
         }
     ],
-    "installCommand": "npm install --legacy-peer-deps"
+    "installCommand": "npm ci"
 }

@@ -6,8 +6,7 @@
     import { trackPageView } from '$lib/actions/analytics';
     import { Notifications, Progress } from '$lib/layout';
     import { app } from '$lib/stores/app';
-    import { ENV, isCloud } from '$lib/system';
-    import * as Sentry from '@sentry/svelte';
+    import { isCloud } from '$lib/system';
     import { onMount } from 'svelte';
     import Loading from './loading.svelte';
     import { loading, requestedMigration } from './store';
@@ -39,17 +38,6 @@
         if ($page.url.searchParams.has('migrate')) {
             const migrateData = $page.url.searchParams.get('migrate');
             requestedMigration.set(parseIfString(migrateData) as Record<string, string>);
-        }
-
-        if (ENV.PROD) {
-            /**
-             * Sentry Error Logging
-             */
-            Sentry.init({
-                dsn: 'https://c7ce178bdedd486480317b72f282fd39@o1063647.ingest.sentry.io/4504158071422976',
-                integrations: [new Sentry.BrowserTracing()],
-                tracesSampleRate: 1.0
-            });
         }
 
         /**
@@ -87,7 +75,7 @@
                 const couponData = await sdk.forConsole.billing.getCoupon(code);
                 if (couponData?.campaign && campaigns.has(couponData.campaign)) {
                     if (user) {
-                        goto(`${base}/console/apply-credit?code=${code}`);
+                        goto(`${base}/apply-credit?code=${code}`);
                         loading.set(false);
                         return;
                     }
@@ -100,7 +88,7 @@
             const campaign = $page.url.searchParams.get('campaign');
             if (campaigns.has(campaign)) {
                 if (user) {
-                    goto(`${base}/console/apply-credit?campaign=${campaign}`);
+                    goto(`${base}/apply-credit?campaign=${campaign}`);
                     loading.set(false);
                     return;
                 }
@@ -110,7 +98,7 @@
         if (shouldRedirect(pathname, authenticationRoutes)) {
             if (user?.$id) {
                 if (shouldRedirect(pathname, acceptedAuthenticatedRoutes)) {
-                    await goto(`${base}/console`, {
+                    await goto(base, {
                         replaceState: true
                     });
                 }

@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { base } from '$app/paths';
     import { Avatar, AvatarInitials, Card, Heading } from '$lib/components';
     import AppwriteLogoDark from '$lib/images/appwrite-logo-dark.svg';
     import AppwriteLogoLight from '$lib/images/appwrite-logo-light.svg';
@@ -7,7 +8,6 @@
     import type { Coupon } from '$lib/sdk/billing';
     import { app } from '$lib/stores/app';
     import { campaigns, type CampaignData } from '$lib/stores/campaigns';
-    import { user } from '$lib/stores/user';
 
     export const imgLight = LoginLight;
     export const imgDark = LoginDark;
@@ -53,7 +53,7 @@
             class="logo u-flex u-gap-16"
             class:is-not-mobile={variation === 'default'}
             class:logo-variation={variation !== 'default'}>
-            <a href={user ? '/console' : '/'}>
+            <a href={base}>
                 {#if $app.themeInUse === 'dark'}
                     <img
                         src={AppwriteLogoDark}
@@ -195,7 +195,7 @@
             </div>
             <div
                 class="logo u-flex u-gap-16 u-margin-inline-auto is-only-mobile u-margin-block-start-32">
-                <a href={user ? '/console' : '/'}>
+                <a href={base}>
                     {#if $app.themeInUse === 'dark'}
                         <img
                             src={AppwriteLogoDark}

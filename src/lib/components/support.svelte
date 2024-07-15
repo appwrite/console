@@ -2,8 +2,8 @@
     import { Button } from '$lib/elements/forms';
     import { app } from '$lib/stores/app';
     import { wizard } from '$lib/stores/wizard';
-    import SupportWizard from '../../routes/console/supportWizard.svelte';
-    import { showSupportModal } from '../../routes/console/wizard/support/store';
+    import SupportWizard from '$routes/(console)/supportWizard.svelte';
+    import { showSupportModal } from '$routes/(console)/wizard/support/store';
     import { isCloud } from '$lib/system';
     import { organization } from '$lib/stores/organization';
     import { BillingPlan } from '$lib/constants';

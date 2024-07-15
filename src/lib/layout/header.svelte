@@ -55,7 +55,7 @@
     function createOrg() {
         showDropdown = false;
         if (isCloud) {
-            goto(`${base}/console/create-organization`);
+            goto(`${base}/create-organization`);
         } else newOrgModal.set(true);
     }
 
@@ -78,10 +78,7 @@
 <svelte:window on:click={onBlur} />
 
 <div class="logo u-inline-flex u-gap-16 u-cross-center">
-    <a
-        href={$organization
-            ? `${base}/console/organization-${$organization.$id}`
-            : `${base}/console`}>
+    <a href={$organization ? `${base}/organization-${$organization.$id}` : `${base}/console`}>
         <img
             src={$app.themeInUse == 'dark' ? AppwriteLogoDark : AppwriteLogoLight}
             width="120"
@@ -191,7 +188,7 @@
                                         : 'hover'}>
                                     {#each $organizationList.teams as org}
                                         <DropListLink
-                                            href={`${base}/console/organization-${org.$id}`}
+                                            href={`${base}/organization-${org.$id}`}
                                             on:click={() => {
                                                 showDropdown = false;
                                             }}>{org.name}</DropListLink>
@@ -205,7 +202,7 @@
                                     New organization
                                 </DropListItem>
                                 <DropListLink
-                                    href={`${base}/console/account`}
+                                    href={`${base}/account`}
                                     on:click={() => (showDropdown = false)}>
                                     Your account
                                 </DropListLink>
