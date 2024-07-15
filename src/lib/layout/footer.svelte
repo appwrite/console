@@ -80,6 +80,20 @@
         margin-block-start: auto;
     }
 
+    .inline-links-item {
+        padding-inline: 1rem;
+    }
+
+    .main-footer-end {
+        padding-block-start: 2rem;
+    }
+
+    @media (min-width: 807px) {
+        .main-footer-end {
+            padding-block-start: 0 !important;
+        }
+    }
+
     [class^='icon-']:not(.icon-cloud):not(:hover) {
         color: hsl(var(--color-neutral-50));
     }
