@@ -1,10 +1,4 @@
 {
-    "redirects": [
-        {
-            "source": "/",
-            "destination": "/console"
-        }
-    ],
     "rewrites": [
         {
             "source": "/console/(.*)",
