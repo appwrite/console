@@ -14,8 +14,7 @@
     import {
         WizardSecondaryContainer,
         WizardSecondaryContent,
-        WizardSecondaryFooter,
-        WizardSecondaryHeader
+        WizardSecondaryFooter
     } from '$lib/layout';
     import { type PaymentList } from '$lib/sdk/billing';
     import { app } from '$lib/stores/app';
@@ -195,10 +194,8 @@
     <title>Apply credits - Appwrite</title>
 </svelte:head>
 
-<WizardSecondaryContainer href={previousPage} bind:showExitModal>
-    <WizardSecondaryHeader confirmExit on:exit={() => (showExitModal = true)}>
-        Apply credits
-    </WizardSecondaryHeader>
+<WizardSecondaryContainer href={previousPage} bind:showExitModal confirmExit>
+    <svelte:fragment slot="title">Apply credits</svelte:fragment>
     <WizardSecondaryContent>
         <Form bind:this={formComponent} onSubmit={handleSubmit} bind:isSubmitting>
             <FormList>
