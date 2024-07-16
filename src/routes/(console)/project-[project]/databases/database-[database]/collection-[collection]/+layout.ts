@@ -10,17 +10,17 @@ import { Query } from '@appwrite.io/console';
 export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.COLLECTION);
     try {
+        const [collection, allCollections] = await Promise.all([
+            sdk.forProject.databases.getCollection(params.database, params.collection),
+            sdk.forProject.databases.listCollections(params.database, [Query.orderDesc('')])
+        ]);
+
         return {
             header: Header,
             breadcrumbs: Breadcrumbs,
-            collection: await sdk.forProject.databases.getCollection(
-                params.database,
-                params.collection
-            ),
             subNavigation: SubNavigation,
-            allCollections: await sdk.forProject.databases.listCollections(params.database, [
-                Query.orderDesc('')
-            ])
+            collection,
+            allCollections
         };
     } catch (e) {
         error(e.code, e.message);

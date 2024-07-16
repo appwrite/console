@@ -2,19 +2,19 @@ import { redirect } from '@sveltejs/kit';
 import { base } from '$app/paths';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ parent, url }) => {
+export const load: PageLoad = async ({ parent, url, untrack }) => {
     const { organizations, account } = await parent();
 
-    if (!account) {
-        redirect(302, `${base}/login`);
-    }
-
-    if (organizations.total) {
-        const teamId = account.prefs.organization ?? organizations.teams[0].$id;
-        if (!teamId) {
-            redirect(303, `${base}/account/organizations${url.search ?? ''}`);
-        } else redirect(303, `${base}/organization-${teamId}${url.search ?? ''}`);
-    } else {
-        redirect(303, `${base}/onboarding${url.search ?? ''}`);
-    }
+    untrack(() => {
+        if (organizations.total) {
+            const teamId = account.prefs.organization ?? organizations.teams[0].$id;
+            if (!teamId) {
+                redirect(303, `${base}/account/organizations${url.search}`);
+            } else {
+                redirect(303, `${base}/organization-${teamId}${url.search}`);
+            }
+        } else {
+            redirect(303, `${base}/onboarding${url.search}`);
+        }
+    });
 };

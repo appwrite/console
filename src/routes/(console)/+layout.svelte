@@ -11,7 +11,8 @@
     import { newOrgModal, organization } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
     import { afterUpdate, onMount } from 'svelte';
-    import { loading, requestedMigration } from '../store';
+    import { loading } from '$routes/store';
+    import { requestedMigration } from '../store';
     import Create from './createOrganization.svelte';
     import {
         showUsageRatesModal,

@@ -32,16 +32,22 @@ export const load: LayoutLoad = async ({ params, depends }) => {
 
     try {
         const prefs = await sdk.forConsole.account.getPrefs();
-        const newPrefs = { ...prefs, organization: params.organization };
-        sdk.forConsole.account.updatePrefs(newPrefs);
-        preferences.loadTeamPrefs(params.organization);
+        if (prefs.organization !== params.organization) {
+            const newPrefs = { ...prefs, organization: params.organization };
+            sdk.forConsole.account.updatePrefs(newPrefs);
+        }
+
+        const [organization, members] = await Promise.all([
+            sdk.forConsole.teams.get(params.organization) as Promise<Organization>,
+            sdk.forConsole.teams.listMemberships(params.organization),
+            preferences.loadTeamPrefs(params.organization)
+        ]);
+
         return {
             header: Header,
             breadcrumbs: Breadcrumbs,
-            organization: await (sdk.forConsole.teams.get(
-                params.organization
-            ) as Promise<Organization>),
-            members: await sdk.forConsole.teams.listMemberships(params.organization)
+            organization,
+            members
         };
     } catch (e) {
         const prefs = await sdk.forConsole.account.getPrefs();

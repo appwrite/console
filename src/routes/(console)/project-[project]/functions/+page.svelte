@@ -26,6 +26,7 @@
     import { parseExpression } from 'cron-parser';
     import { onMount } from 'svelte';
     import { functionsList } from './store';
+    import type { Models } from '@appwrite.io/console';
 
     export let data;
 
@@ -57,6 +58,10 @@
 
     function openWizard() {
         wizard.showCover(Initial);
+    }
+
+    function getNextScheduledExecution(func: Models.Function) {
+        return toLocaleDateTime(parseExpression(func.schedule, { utc: true }).next().toString());
     }
 
     $: $registerCommands([
@@ -108,7 +113,7 @@
                                     aria-hidden="true"
                                     use:tooltip={{
                                         content: `Next execution:
-                                        ${toLocaleDateTime(parseExpression(func.schedule, { utc: true }).next().toString())}`
+                                        ${getNextScheduledExecution(func)}`
                                     }} />
                             </li>
                         {/if}

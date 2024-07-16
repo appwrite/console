@@ -7,6 +7,15 @@ services:
                 VITE_APPWRITE_ENDPOINT: ${VITE_APPWRITE_ENDPOINT}
                 VITE_APPWRITE_GROWTH_ENDPOINT: ${VITE_APPWRITE_GROWTH_ENDPOINT}
                 VITE_STRIPE_PUBLIC_KEY: ${VITE_STRIPE_PUBLIC_KEY}
+        develop:
+            watch:
+                - action: rebuild
+                  path: ./
+                  ignore:
+                      - .github
+                      - tests/
+                      - node_modules/
+                      - build/
         environment:
             - VITE_CONSOLE_MODE
             - VITE_APPWRITE_ENDPOINT

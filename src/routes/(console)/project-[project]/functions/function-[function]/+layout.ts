@@ -11,15 +11,20 @@ export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.DEPLOYMENTS);
 
     try {
-        return {
-            header: Header,
-            breadcrumbs: Breadcrumbs,
-            function: await sdk.forProject.functions.get(params.function),
-            proxyRuleList: await sdk.forProject.proxy.listRules([
+        const [func, proxyRuleList] = await Promise.all([
+            sdk.forProject.functions.get(params.function),
+            sdk.forProject.proxy.listRules([
                 Query.equal('resourceType', 'function'),
                 Query.equal('resourceId', params.function),
                 Query.limit(1)
             ])
+        ]);
+
+        return {
+            header: Header,
+            breadcrumbs: Breadcrumbs,
+            function: func,
+            proxyRuleList
         };
     } catch (e) {
         error(e.code, e.message);

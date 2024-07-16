@@ -9,13 +9,15 @@ export const load: PageLoad = async ({ depends, url }) => {
     const limit = PAGE_LIMIT;
     const offset = Number(url.searchParams.get('offset') ?? 0);
 
+    const [variables, installations] = await Promise.all([
+        sdk.forProject.projectApi.listVariables(),
+        sdk.forProject.vcs.listInstallations([Query.limit(limit), Query.offset(offset)])
+    ]);
+
     return {
         limit,
         offset,
-        variables: await sdk.forProject.projectApi.listVariables(),
-        installations: await sdk.forProject.vcs.listInstallations([
-            Query.limit(limit),
-            Query.offset(offset)
-        ])
+        variables,
+        installations
     };
 };

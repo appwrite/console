@@ -9,11 +9,16 @@ export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.USER);
 
     try {
+        const [user, userFactors] = await Promise.all([
+            sdk.forProject.users.get(params.user),
+            sdk.forProject.users.listMfaFactors(params.user)
+        ]);
+
         return {
             header: Header,
             breadcrumbs: Breadcrumbs,
-            user: await sdk.forProject.users.get(params.user),
-            userFactors: await sdk.forProject.users.listMfaFactors(params.user)
+            user,
+            userFactors
         };
     } catch (e) {
         error(e.code, e.message);

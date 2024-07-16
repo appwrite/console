@@ -10,6 +10,7 @@ export const load: PageLoad = async ({ url, route }) => {
     const search = getSearch(url);
     const limit = getLimit(url, route, PAGE_LIMIT);
     const offset = pageToOffset(page, limit);
+
     if (typeof url.searchParams.get('create') === 'string') {
         showCreateUser.set(true);
     }
