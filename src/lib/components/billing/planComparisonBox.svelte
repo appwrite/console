@@ -4,7 +4,7 @@
     import { plansInfo, tierFree, tierPro, tierScale, type Tier } from '$lib/stores/billing';
     import { Card, SecondaryTabs, SecondaryTabsItem } from '..';
 
-    let selectedTab: Tier = 'tier-0';
+    let selectedTab: Tier = BillingPlan.FREE;
     export let downgrade = false;
 
     $: plan = $plansInfo.get(selectedTab);

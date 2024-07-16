@@ -23,9 +23,10 @@
                 name="plan"
                 bind:group={billingPlan}
                 disabled={anyOrgFree}
-                value="tier-0"
+                value={BillingPlan.FREE}
                 tooltipShow={anyOrgFree}
-                tooltipText="You are limited to 1 Free organization per account.">
+                tooltipText="You are limited to 1 Free organization per account."
+                padding={1.5}>
                 <svelte:fragment slot="custom" let:disabled>
                     <div
                         class="u-flex u-flex-vertical u-gap-4 u-width-full-line"
@@ -48,7 +49,7 @@
         </li>
 
         <li>
-            <LabelCard name="plan" bind:group={billingPlan} value="tier-1">
+            <LabelCard name="plan" bind:group={billingPlan} value={BillingPlan.PRO} padding={1.5}>
                 <svelte:fragment slot="custom">
                     <div class="u-flex u-flex-vertical u-gap-4 u-width-full-line">
                         <h4 class="body-text-2 u-bold">
@@ -68,7 +69,7 @@
             </LabelCard>
         </li>
         <li>
-            <LabelCard name="plan" bind:group={billingPlan} value="tier-2">
+            <LabelCard name="plan" bind:group={billingPlan} value={BillingPlan.SCALE} padding={1.5}>
                 <svelte:fragment slot="custom">
                     <div class="u-flex u-flex-vertical u-gap-4 u-width-full-line">
                         <h4 class="body-text-2 u-bold">
@@ -81,7 +82,7 @@
                             {tierScale.description}
                         </p>
                         <p>
-                            {formatCurrency(scalePlan?.price ?? 0)} per organization/month + usage
+                            {formatCurrency(scalePlan?.price ?? 0)} per month + usage
                         </p>
                     </div>
                 </svelte:fragment>
