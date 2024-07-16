@@ -1,8 +1,14 @@
 {
+    "redirects": [
+        {
+            "source": "/",
+            "destination": "/console"
+        }
+    ],
     "rewrites": [
         {
             "source": "/console/(.*)",
-            "destination": "/"
+            "destination": "/index.html"
         }
     ],
     "installCommand": "pnpm install --frozen-lockfile"
