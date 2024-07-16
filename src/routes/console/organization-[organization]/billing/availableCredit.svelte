@@ -9,7 +9,7 @@
         TableRow
     } from '$lib/elements/table';
     import { toLocaleDate } from '$lib/helpers/date';
-    import type { Credit, CreditList } from '$lib/sdk/billing';
+    import type { CreditList } from '$lib/sdk/billing';
     import { organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { wizard } from '$lib/stores/wizard';
@@ -25,6 +25,7 @@
 
     let offset = 0;
     let creditList: CreditList = {
+        available: 0,
         credits: [],
         total: 0
     };
@@ -56,15 +57,14 @@
         request();
     }
 
-    $: balance =
-        creditList?.credits?.reduce((acc: number, curr: Credit) => acc + curr.credits, 0) ?? 0;
-
     $: {
         if (reloadOnWizardClose && !$wizard.show) {
             request();
             reloadOnWizardClose = false;
         }
     }
+
+    $: console.log(creditList);
 </script>
 
 <CardGrid hideFooter={$organization?.billingPlan !== BillingPlan.FREE}>
@@ -87,7 +87,7 @@
             <div class="u-flex u-cross-center u-main-space-between">
                 <div class="u-flex u-gap-8 u-cross-center">
                     <h4 class="body-text-1 u-bold">Credit balance</h4>
-                    <span class="inline-tag">{formatCurrency(balance)}</span>
+                    <span class="inline-tag">{formatCurrency(creditList.available)}</span>
                 </div>
                 {#if creditList?.total}
                     <Button secondary on:click={handleCredits}>
