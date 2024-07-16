@@ -288,11 +288,11 @@
                     {@const members = collaborators?.length ?? 0}
                     <Alert type="error" class="u-margin-block-start-24">
                         <svelte:fragment slot="title">
-                            Monthly payments are required for organization members on the Pro plan
+                            Your monthly payments will be adjusted for the Pro plan
                         </svelte:fragment>
-                        On successful switching of your plan, you will be charged {formatCurrency(
+                        After switching plans, you will be charged {formatCurrency(
                             members * ($plansInfo?.get(billingPlan)?.addons?.member?.price ?? 0)
-                        )} monthly for {members} team members.
+                        )} monthly for {members} team members. This will be reflected in your next invoice.
                     </Alert>
                 {/if}
             {/if}
