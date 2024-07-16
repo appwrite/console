@@ -129,24 +129,27 @@ export type Func = {
      */
     providerSilentMode: boolean;
     /**
-     * CPU limit
+     * Runtime Size
      */
-    cpus: number;
-    /**
-     * Memory limit
-     */
-    memory: number;
+    size: string;
 };
 
-export class SpecsFunctions {
+export type Sizes = {
+    /**
+     * List of available runtime sizes
+     */
+    sizes: string[];
+};
+
+export class SizesFunctions {
     client: Client;
 
     constructor(client: Client) {
         this.client = client;
     }
 
-    async getSpecs(): Promise<Specs> {
-        const path = '/functions/specs';
+    async getSizes(): Promise<Sizes> {
+        const path = '/functions/sizes';
 
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call('GET', uri, {
@@ -197,8 +200,7 @@ export class SpecsFunctions {
         providerBranch?: string,
         providerSilentMode?: boolean,
         providerRootDirectory?: string,
-        cpus?: number,
-        memory?: number
+        size?: string
     ): Promise<Func> {
         if (typeof functionId === 'undefined') {
             throw new AppwriteException('Missing required parameter: "functionId"');
@@ -271,12 +273,8 @@ export class SpecsFunctions {
             payload['providerRootDirectory'] = providerRootDirectory;
         }
 
-        if (typeof cpus !== 'undefined') {
-            payload['cpus'] = cpus;
-        }
-
-        if (typeof memory !== 'undefined') {
-            payload['memory'] = memory;
+        if (typeof size !== 'undefined') {
+            payload['size'] = size;
         }
 
         const uri = new URL(this.client.config.endpoint + apiPath);
