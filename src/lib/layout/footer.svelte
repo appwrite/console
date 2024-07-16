@@ -84,13 +84,17 @@
         padding-inline: 1rem;
     }
 
-    .main-footer-end {
-        padding-block-start: 2rem;
+    .inline-links:where(.is-no-padding-first-and-last) :where(.inline-links-item):first-child {
+        padding-inline-start: 0;
     }
 
-    @media (min-width: 807px) {
+    .inline-links:where(.is-no-padding-first-and-last) :where(.inline-links-item):last-child {
+        padding-inline-end: 0;
+    }
+
+    @media (max-width: 768px) {
         .main-footer-end {
-            padding-block-start: 0 !important;
+            padding-block-start: 2rem;
         }
     }
 
