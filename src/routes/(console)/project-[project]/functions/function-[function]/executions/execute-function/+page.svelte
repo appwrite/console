@@ -45,7 +45,7 @@
         toLocaleTimeISO
     } from '$lib/helpers/date';
 
-    let previousPage: string = `${base}/console`;
+    let previousPage: string = base;
 
     afterNavigate(({ from }) => {
         previousPage = from?.url?.pathname || previousPage;

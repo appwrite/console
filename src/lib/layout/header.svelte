@@ -78,7 +78,7 @@
 <svelte:window on:click={onBlur} />
 
 <div class="logo u-inline-flex u-gap-16 u-cross-center">
-    <a href={$organization ? `${base}/organization-${$organization.$id}` : `${base}/console`}>
+    <a href={$organization ? `${base}/organization-${$organization.$id}` : base}>
         <img
             src={$app.themeInUse == 'dark' ? AppwriteLogoDark : AppwriteLogoLight}
             width="120"

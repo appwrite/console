@@ -6,7 +6,6 @@ import { browser } from '$app/environment';
 export type Account = Models.User<{ organization?: string } & Record<string, string>>;
 
 export const user = derived(page, ($page) => {
-    console.log($page.data.account);
     if (browser) sessionStorage.setItem('account', JSON.stringify($page.data.account));
     return $page.data.account as Account;
 });

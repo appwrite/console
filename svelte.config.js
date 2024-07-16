@@ -1,12 +1,9 @@
 import adapter from '@sveltejs/adapter-static';
 import preprocess from 'svelte-preprocess';
-import { preprocessMeltUI } from '@melt-ui/pp';
-import sequence from 'svelte-sequential-preprocessor';
+import { preprocessMeltUI, sequence } from '@melt-ui/pp';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
-    // Consult https://github.com/sveltejs/svelte-preprocess
-    // for more information about preprocessors
     preprocess: sequence([preprocess(), preprocessMeltUI()]),
     compilerOptions: {
         accessors: !!process.env.VITEST
@@ -16,7 +13,8 @@ const config = {
             $routes: './src/routes'
         },
         adapter: adapter({
-            fallback: 'index.html'
+            fallback: 'index.html',
+            precompress: true
         }),
         paths: {
             base: '/console'

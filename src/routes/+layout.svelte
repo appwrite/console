@@ -15,8 +15,11 @@
     import { user } from '$lib/stores/user';
     import { loading } from '$routes/store';
     import Loading from './loading.svelte';
+    loading.subscribe(console.log);
+    console.log(1);
 
     onMount(async () => {
+        console.log(2);
         // handle sources
         if (isCloud) {
             const urlParams = $page.url.searchParams;
