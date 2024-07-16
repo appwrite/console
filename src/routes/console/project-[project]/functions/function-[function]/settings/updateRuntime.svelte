@@ -69,8 +69,7 @@
         }
     }
 
-    $: isUpdateButtonEnabled =
-        runtime !== $func?.runtime;
+    $: isUpdateButtonEnabled = runtime !== $func?.runtime;
 </script>
 
 <Form onSubmit={updateRuntime}>
