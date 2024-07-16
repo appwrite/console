@@ -62,7 +62,6 @@
         EmailTemplateType,
         EmailTemplateLocale
     } from '@appwrite.io/console';
-    import { b } from 'vitest/dist/suite-IbNSsUWN';
 
     const projectId = $page.params.project;
 
