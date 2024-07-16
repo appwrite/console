@@ -24,8 +24,6 @@
 
         let runtimes = await $runtimesList;
 
-        console.log(runtimes);
-
         options = runtimes.runtimes.map((runtime) => ({
             label: `${runtime.name} - ${runtime.version}`,
             value: runtime.$id
