@@ -21,16 +21,17 @@ jobs:
               uses: docker/metadata-action@v5
               with:
                   images: appwrite/console
+                  tags: |
+                    type=semver,pattern={{major}}.{{minor}}.{{patch}}
+                    type=semver,pattern={{major}}.{{minor}}
+                    type=semver,pattern={{major}}
             - name: Build and push Docker image
               id: push
               uses: docker/build-push-action@v6
               with:
                   context: .
                   push: true
-                  tags: |
-                    type=semver,pattern={{major}}.{{minor}}.{{patch}}
-                    type=semver,pattern={{major}}.{{minor}}
-                    type=semver,pattern={{major}}
+                  tags: ${{ steps.meta.outputs.tags }}
                   labels: ${{ steps.meta.outputs.labels }}
                   build-args: |
                       "VITE_CONSOLE_MODE=self-hosted""
