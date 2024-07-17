@@ -1,16 +1,20 @@
 FROM node:20-alpine as build
 
+WORKDIR /app
+
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
-WORKDIR /app
+
+ADD ./package.json /app/package.json
+ADD ./pnpm-lock.yaml /app/pnpm-lock.yaml
+
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
 ADD ./build.js /app/build.js
 ADD ./tsconfig.json /app/tsconfig.json
 ADD ./svelte.config.js /app/svelte.config.js
 ADD ./vite.config.ts /app/vite.config.ts
-ADD ./package.json /app/package.json
-ADD ./pnpm-lock.yaml /app/pnpm-lock.yaml
 ADD ./src /app/src
 ADD ./static /app/static
 
@@ -24,7 +28,6 @@ ENV VITE_APPWRITE_GROWTH_ENDPOINT=$VITE_APPWRITE_GROWTH_ENDPOINT
 ENV VITE_CONSOLE_MODE=$VITE_CONSOLE_MODE
 ENV VITE_STRIPE_PUBLIC_KEY=$VITE_STRIPE_PUBLIC_KEY
 
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 RUN pnpm run sync && pnpm run build
 
 FROM nginx:1.25-alpine

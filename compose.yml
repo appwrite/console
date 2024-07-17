@@ -23,4 +23,4 @@ services:
             - VITE_APPWRITE_GROWTH_ENDPOINT
             - VITE_STRIPE_PUBLIC_KEY
         ports:
-            - '3000:3000'
+            - '3000:80'
