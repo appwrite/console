@@ -18,6 +18,7 @@
         Helper,
         InputDate,
         InputSelect,
+        InputSelectSearch,
         InputText,
         InputTextarea,
         InputTime
@@ -44,6 +45,7 @@
         toLocaleDateTime,
         toLocaleTimeISO
     } from '$lib/helpers/date';
+    import { last } from '$lib/helpers/array';
 
     let previousPage: string = base;
 
@@ -131,6 +133,12 @@
         ? toLocaleTimeISO(now.getTime())
         : '00:00';
     $: dateTime = new Date(`${date}T${time}`);
+
+    $: filteredKeyList = keyList.filter((key) => {
+        const name = last(headers)[0];
+        if (!name) return true;
+        return key.value.toLowerCase().includes(name?.toLowerCase());
+    });
 </script>
 
 <svelte:head>
@@ -195,14 +203,15 @@
                             {#if headers}
                                 {#each headers as [name, value], index}
                                     <FormItem isMultiple style="gap: 1rem">
-                                        <InputSelect
-                                            isMultiple
+                                        <InputSelectSearch
                                             fullWidth
                                             label="Key"
                                             placeholder="Select key"
-                                            options={keyList}
+                                            interactiveOutput
+                                            options={filteredKeyList}
                                             id={`key-${index}`}
-                                            bind:value={name} />
+                                            bind:value={name}
+                                            bind:search={name} />
                                         <InputText
                                             isMultiple
                                             fullWidth
