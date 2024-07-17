@@ -10,7 +10,6 @@
         <div class="top-banner-bg-1">
             <img
                 src={`${base}/images/top-banner/bg-pink-desktop.svg`}
-                `
                 width="1283"
                 height="1278"
                 alt="" />
