@@ -15,7 +15,7 @@
     async function handleSubmit() {
         try {
             await sdk.forProject.functions.deleteExecution($func.$id, selectedExecution.$id);
-            await invalidate(Dependencies.FUNCTION);
+            await invalidate(Dependencies.EXECUTIONS);
             showDelete = false;
             addNotification({
                 type: 'success',
