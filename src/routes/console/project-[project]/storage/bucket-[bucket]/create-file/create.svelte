@@ -28,10 +28,12 @@
     });
 
     async function create() {
+        const fileId = $createFile.id ?? ID.unique();
+
         try {
             const uploadPromise = uploader.uploadFile(
                 bucketId,
-                $createFile.id ?? ID.unique(),
+                fileId,
                 $createFile.files[0],
                 $createFile.permissions
             );
@@ -50,7 +52,7 @@
 
             await uploadPromise;
         } catch (e) {
-            uploader.removeAtIndex(0);
+            uploader.removeFromQueue(fileId);
 
             addNotification({
                 type: 'error',

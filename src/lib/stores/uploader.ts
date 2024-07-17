@@ -94,12 +94,6 @@ const createUploader = () => {
                 return n;
             });
         },
-        removeAtIndex: (itemIndex: number) => {
-            update((n) => {
-                n.files = n.files.filter((_file, index) => index !== itemIndex);
-                return n;
-            });
-        },
         removeFile: async (file: Models.File) => {
             if (file.chunksTotal === file.chunksUploaded) {
                 return update((n) => {
