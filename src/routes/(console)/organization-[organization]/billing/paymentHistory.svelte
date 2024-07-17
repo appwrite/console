@@ -23,8 +23,7 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { formatCurrency } from '$lib/helpers/numbers';
     import type { Invoice, InvoiceList } from '$lib/sdk/billing';
-    import { sdk } from '$lib/stores/sdk';
-    import { VARS } from '$lib/system';
+    import { getApiEndpoint, sdk } from '$lib/stores/sdk';
     import { Query } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { trackEvent } from '$lib/actions/analytics';
@@ -41,7 +40,7 @@
     };
 
     const limit = 5;
-    const endpoint = VARS.APPWRITE_ENDPOINT ?? `${$page.url.origin}/v1`;
+    const endpoint = getApiEndpoint();
 
     onMount(request);
 

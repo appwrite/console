@@ -7,7 +7,6 @@
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { page } from '$app/stores';
-    import { VARS } from '$lib/system';
     import {
         confirmPayment,
         initializeStripe,
@@ -19,9 +18,8 @@
     import { PaymentBoxes } from '$lib/components/billing';
     import { paymentMethods } from '$lib/stores/billing';
     import { onMount } from 'svelte';
-    import { sdk } from '$lib/stores/sdk';
+    import { getApiEndpoint, sdk } from '$lib/stores/sdk';
 
-    const endpoint = VARS.APPWRITE_ENDPOINT ?? `${$page.url.origin}/v1`;
     export let show = false;
     export let invoice: Invoice;
     let error: string = null;
@@ -29,6 +27,7 @@
     let name: string;
     let paymentMethodId: string;
     let setAsDefault = false;
+    const endpoint = getApiEndpoint();
 
     onMount(async () => {
         if (!$organization.paymentMethodId && !$organization.backupPaymentMethodId) {

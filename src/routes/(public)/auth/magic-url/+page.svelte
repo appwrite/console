@@ -1,15 +1,15 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { Heading } from '$lib/components';
+    import { getApiEndpoint } from '$lib/stores/sdk';
     import { Account, Client } from '@appwrite.io/console';
     import { onMount } from 'svelte';
-    import { VARS } from '$lib/system';
 
     const client = new Client();
     const account = new Account(client);
+    const endpoint = getApiEndpoint();
 
     onMount(async () => {
-        const endpoint = VARS.APPWRITE_ENDPOINT ?? `${$page.url.origin}/v1`;
         const projectId = $page.url.searchParams.get('project');
         client.setEndpoint(endpoint).setProject(projectId);
 

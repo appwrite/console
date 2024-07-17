@@ -2,8 +2,9 @@
     import { page } from '$app/stores';
     import { Vcs, Client } from '@appwrite.io/console';
     import { onMount } from 'svelte';
-    import { VARS } from '$lib/system';
+    import { getApiEndpoint } from '$lib/stores/sdk';
 
+    const endpoint = getApiEndpoint();
     const client = new Client();
     const vcs = new Vcs(client);
 
@@ -16,7 +17,6 @@
     let success = '';
 
     onMount(async () => {
-        const endpoint = VARS.APPWRITE_ENDPOINT ?? `${$page.url.origin}/v1`;
         const projectId = $page.url.searchParams.get('projectId');
         client.setEndpoint(endpoint).setProject(projectId).setMode('admin');
 

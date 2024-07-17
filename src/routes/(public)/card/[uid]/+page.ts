@@ -1,4 +1,4 @@
-import { VARS } from '$lib/system.js';
+import { getApiEndpoint } from '$lib/stores/sdk';
 import { redirect } from '@sveltejs/kit';
 
 function getCardImgUrls(userId: string, endpoint: string) {
@@ -25,11 +25,10 @@ async function urlContentToDataUri(url: string): Promise<string> {
     });
 }
 
-export async function load({ params, url, parent }) {
+export async function load({ params, parent }) {
     const { account } = await parent();
-
+    const endpoint = getApiEndpoint();
     const userId = params.uid;
-    const endpoint = VARS.APPWRITE_ENDPOINT ?? `${url.origin}/v1`;
     const { frontImg, backImg } = getCardImgUrls(userId, endpoint);
 
     try {

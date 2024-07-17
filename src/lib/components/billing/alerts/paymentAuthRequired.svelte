@@ -5,9 +5,8 @@
     import { HeaderAlert } from '$lib/layout';
     import { actionRequiredInvoices, hideBillingHeaderRoutes } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
-    import { VARS } from '$lib/system';
-
-    const endpoint = VARS.APPWRITE_ENDPOINT ?? `${$page.url.origin}/v1`;
+    import { getApiEndpoint } from '$lib/stores/sdk';
+    const endpoint = getApiEndpoint();
 </script>
 
 {#if $actionRequiredInvoices && $actionRequiredInvoices?.invoices?.length && !hideBillingHeaderRoutes.includes($page.url.pathname)}
