@@ -128,11 +128,12 @@
             type="font/woff2"
             crossorigin />
         <link rel="preload" as="style" type="text/css" href="/console/fonts/main.css" />
+        <link rel="stylesheet" href="/console/global.css" />
         <link rel="stylesheet" href="/console/fonts/main.css" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         %sveltekit.head%
     </head>
-    <body data-sveltekit-preload-data="hover">
+    <body data-sveltekit-preload-data="hover" data-loading="true">
         <script>
             let themeInUse = 'auto';
             const appwrite = localStorage.getItem('appwrite');
@@ -153,5 +154,25 @@
             document.body.setAttribute('class', `theme-${themeInUse}`);
         </script>
         <div id="svelte">%sveltekit.body%</div>
+        <div class="load-screen">
+            <div class="animation">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+            <img
+                src="/console/images/appwrite-logo-light.svg"
+                width="120"
+                height="22"
+                class="u-only-light"
+                alt="Appwrite Logo" />
+            <img
+                src="/console/images/appwrite-logo-dark.svg"
+                width="120"
+                height="22"
+                class="u-only-dark"
+                alt="Appwrite Logo" />
+        </div>
     </body>
 </html>

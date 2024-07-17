@@ -14,7 +14,6 @@
     import { campaigns } from '$lib/stores/campaigns';
     import { user } from '$lib/stores/user';
     import { loading } from '$routes/store';
-    import Loading from './loading.svelte';
 
     onMount(async () => {
         // handle sources
@@ -96,10 +95,6 @@
 {/if} -->
 
 <slot />
-
-{#if $loading}
-    <Loading />
-{/if}
 
 <Progress />
 

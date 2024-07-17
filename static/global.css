@@ -1,0 +1,61 @@
+.load-screen {
+    visibility: hidden;
+    opacity: 0;
+    z-index: 100000;
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    background-color: #000;
+    top: 0;
+    transition: all .2s ease-in-out;
+}
+
+[data-loading='true'] .load-screen {
+    visibility: visible;
+    opacity: 1;
+}
+
+.load-screen .animation {
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%) translateZ(1px);
+    width: 140px;
+    height: 140px;
+}
+.load-screen .animation > div {
+    box-sizing: border-box;
+    display: block;
+    position: absolute;
+    width: 124px;
+    height: 124px;
+    margin: 10px;
+    border: 10px solid hsl(var(--color-primary-200));
+    border-radius: 50%;
+    animation: animation 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+    border-color: hsl(var(--color-primary-200)) transparent transparent transparent;
+}
+.load-screen .animation > div:nth-child(1) {
+    animation-delay: -0.45s;
+}
+.load-screen .animation > div:nth-child(2) {
+    animation-delay: -0.3s;
+}
+.load-screen .animation > div:nth-child(3) {
+    animation-delay: -0.15s;
+}
+@keyframes animation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+.load-screen img {
+    position: absolute;
+    max-width: 100%;
+    bottom: 60px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
