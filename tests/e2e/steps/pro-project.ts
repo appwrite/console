@@ -42,7 +42,7 @@ export async function createProProject(page: Page): Promise<Metadata> {
         await page.locator('label').filter({ hasText: 'frankfurt' }).click();
         await page.getByRole('button', { name: 'create' }).click();
         await page.waitForURL('./project-**/overview/platforms');
-        expect(page.url()).toContain('./project-');
+        expect(page.url()).toContain('/project-');
 
         return getProjectIdFromUrl(page.url());
     });
