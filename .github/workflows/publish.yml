@@ -32,4 +32,4 @@ jobs:
                   labels: ${{ steps.meta.outputs.labels }}
                   build-args: |
                       "VITE_CONSOLE_MODE=self-hosted""
-                      "VITE_APPWRITE_GROWTH_ENDPOINT=${{ vars.VITE_APPWRITE_GROWTH_ENDPOINT }}"
+                      "VITE_APPWRITE_GROWTH_ENDPOINT=${{ secrets.VITE_APPWRITE_GROWTH_ENDPOINT }}"
