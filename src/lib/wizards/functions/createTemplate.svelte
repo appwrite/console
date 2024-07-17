@@ -69,9 +69,7 @@
                 await Promise.all(promises);
             }
 
-            goto(
-                `${base}/console/project-${$page.params.project}/functions/function-${response.$id}`
-            );
+            goto(`${base}/project-${$page.params.project}/functions/function-${response.$id}`);
             addNotification({
                 message: `${response.name} has been created`,
                 type: 'success'

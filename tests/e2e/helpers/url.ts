@@ -1,4 +1,5 @@
 export function getOrganizationIdFromUrl(pathname: string) {
+    // TODO: use base path from svelte here
     const regex = /\/console\/organization-([^/]+)(\/.*)?/;
     const match = pathname.match(regex);
 
@@ -10,6 +11,7 @@ export function getOrganizationIdFromUrl(pathname: string) {
 }
 
 export function getProjectIdFromUrl(pathname: string) {
+    // TODO: use base path from svelte here
     const regex = /\/console\/project-([^/]+)(\/.*)?/;
     const match = pathname.match(regex);
 
