@@ -26,9 +26,11 @@ jobs:
               uses: docker/build-push-action@v6
               with:
                   context: .
-                  file: ./Dockerfile
                   push: true
-                  tags: ${{ steps.meta.outputs.tags }}
+                  tags: |
+                    type=semver,pattern={{major}}.{{minor}}.{{patch}}
+                    type=semver,pattern={{major}}.{{minor}}
+                    type=semver,pattern={{major}}
                   labels: ${{ steps.meta.outputs.labels }}
                   build-args: |
                       "VITE_CONSOLE_MODE=self-hosted""
