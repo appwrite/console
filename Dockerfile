@@ -25,7 +25,7 @@ ENV VITE_CONSOLE_MODE=$VITE_CONSOLE_MODE
 ENV VITE_STRIPE_PUBLIC_KEY=$VITE_STRIPE_PUBLIC_KEY
 
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
-RUN pnpm run build
+RUN pnpm run sync && pnpm run build
 
 FROM nginx:1.25-alpine
 
