@@ -1,3 +1,12 @@
+body {
+    margin: 0;
+}
+
+[data-loading='true'] .load-screen {
+    visibility: visible;
+    opacity: 1;
+}
+
 .load-screen {
     visibility: hidden;
     opacity: 0;
@@ -7,12 +16,7 @@
     width: 100%;
     background-color: #000;
     top: 0;
-    transition: all .2s ease-in-out;
-}
-
-[data-loading='true'] .load-screen {
-    visibility: visible;
-    opacity: 1;
+    transition: all 0.2s ease-in-out;
 }
 
 .load-screen .animation {
@@ -30,10 +34,10 @@
     width: 124px;
     height: 124px;
     margin: 10px;
-    border: 10px solid hsl(var(--color-primary-200));
+    border: 10px solid rgb(219, 26, 90);
     border-radius: 50%;
     animation: animation 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-    border-color: hsl(var(--color-primary-200)) transparent transparent transparent;
+    border-color: rgb(219, 26, 90) transparent transparent transparent;
 }
 .load-screen .animation > div:nth-child(1) {
     animation-delay: -0.45s;
