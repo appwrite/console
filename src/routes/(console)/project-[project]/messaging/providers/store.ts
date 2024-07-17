@@ -2,6 +2,7 @@ import type { Column } from '$lib/helpers/types';
 import { MessagingProviderType, SmtpEncryption } from '@appwrite.io/console';
 import { writable } from 'svelte/store';
 import { Providers } from '../provider.svelte';
+import { base } from '$app/paths';
 
 export const columns = writable<Column[]>([
     { id: '$id', title: 'Provider ID', type: 'string', show: true },
@@ -81,8 +82,8 @@ export const providers: ProvidersMap = {
                         ],
                         popoverImage: {
                             src: {
-                                light: '/images/messaging/fcm-service-account-json-light.png',
-                                dark: '/images/messaging/fcm-service-account-json-dark.png'
+                                light: base + '/images/messaging/fcm-service-account-json-light.png',
+                                dark: base + '/images/messaging/fcm-service-account-json-dark.png'
                             },
                             alt: 'Screenshot of how to generate the Firebase Service Account JSON file'
                         }
@@ -105,8 +106,8 @@ export const providers: ProvidersMap = {
                         ],
                         popoverImage: {
                             src: {
-                                light: '/images/messaging/apns-team-id.png',
-                                dark: '/images/messaging/apns-team-id.png'
+                                light: base + '/images/messaging/apns-team-id.png',
+                                dark: base + '/images/messaging/apns-team-id.png'
                             },
                             alt: 'Screenshot of where to find the Team ID in the Apple Developer Member Center'
                         }
@@ -122,8 +123,8 @@ export const providers: ProvidersMap = {
                         ],
                         popoverImage: {
                             src: {
-                                light: '/images/messaging/apns-bundle-id.png',
-                                dark: '/images/messaging/apns-bundle-id.png'
+                                light: base + '/images/messaging/apns-bundle-id.png',
+                                dark: base + '/images/messaging/apns-bundle-id.png'
                             },
                             alt: 'Screenshot of where to find the Bundle ID in the Apple Developer Member Center'
                         }
@@ -140,8 +141,8 @@ export const providers: ProvidersMap = {
                         ],
                         popoverImage: {
                             src: {
-                                light: '/images/messaging/apns-authentication-key-id.png',
-                                dark: '/images/messaging/apns-authentication-key-id.png'
+                                light: base + '/images/messaging/apns-authentication-key-id.png',
+                                dark: base + '/images/messaging/apns-authentication-key-id.png'
                             },
                             alt: 'Screenshot of how to find the Authentication Key ID in the Apple Developer Member Center'
                         }
@@ -158,8 +159,8 @@ export const providers: ProvidersMap = {
                         ],
                         popoverImage: {
                             src: {
-                                light: '/images/messaging/apns-auth-key.png',
-                                dark: '/images/messaging/apns-auth-key.png'
+                                light: base + '/images/messaging/apns-auth-key.png',
+                                dark: base + '/images/messaging/apns-auth-key.png'
                             },
                             alt: 'Screenshot of where to download the Authentication Key in the Apple Developer Member Center'
                         }

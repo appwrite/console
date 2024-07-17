@@ -80,7 +80,7 @@
             <section
                 class="u-flex u-flex-vertical u-main-center u-cross-center u-height-100-percent u-width-full-line">
                 <img
-                    src={`/images/campaigns/${coupon?.campaign ?? campaign}/${$app.themeInUse}.png`}
+                    src={`${base}/images/campaigns/${coupon?.campaign ?? campaign}/${$app.themeInUse}.png`}
                     class="u-block u-image-object-fit-cover side-bg-img"
                     alt="promo" />
 
@@ -145,7 +145,7 @@
                         <div class="u-margin-block-start-16 u-flex u-gap-16">
                             {#if currentReview?.img}
                                 <Avatar
-                                    src={`/images/campaigns/${coupon?.campaign ?? campaign}/reviewers/${currentReview.img}`}
+                                    src={`${base}/images/campaigns/${coupon?.campaign ?? campaign}/reviewers/${currentReview.img}`}
                                     name={currentReview.name}
                                     size={40} />
                             {:else}
@@ -164,7 +164,7 @@
                         <p class="u-bold" style:text-transform="uppercase">provided to you by</p>
                         <img
                             style:max-block-size="2.5rem"
-                            src={`/images/campaigns/${coupon?.campaign ?? campaign}/footer/${$app.themeInUse}.png`}
+                            src={`${base}/images/campaigns/${coupon?.campaign ?? campaign}/footer/${$app.themeInUse}.png`}
                             alt={coupon?.campaign ?? campaign} />
                     </div>
                 {/if}

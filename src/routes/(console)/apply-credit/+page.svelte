@@ -257,7 +257,7 @@
                     <div class="card-bg"></div>
                     <div class="u-flex u-flex-vertical u-gap-24 u-cross-center u-position-relative">
                         <img
-                            src={`/images/campaigns/${data?.couponData?.campaign ?? data?.campaign}/${$app.themeInUse}.png`}
+                            src={`${base}/images/campaigns/${data?.couponData?.campaign ?? data?.campaign}/${$app.themeInUse}.png`}
                             class="u-block u-image-object-fit-cover card-img"
                             alt="promo" />
                         <p class="text">
