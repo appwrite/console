@@ -63,8 +63,6 @@
             reloadOnWizardClose = false;
         }
     }
-
-    $: console.log(creditList);
 </script>
 
 <CardGrid hideFooter={$organization?.billingPlan !== BillingPlan.FREE}>
