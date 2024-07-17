@@ -1,12 +1,12 @@
 <script lang="ts">
     import { Alert, CardGrid, Empty, Heading, PaginationInline } from '$lib/components';
     import {
-        Table,
         TableBody,
         TableCellHead,
         TableCellText,
         TableHeader,
-        TableRow
+        TableRow,
+        TableScroll
     } from '$lib/elements/table';
     import { toLocaleDate } from '$lib/helpers/date';
     import type { CreditList } from '$lib/sdk/billing';
@@ -86,7 +86,7 @@
         {:else}
             <div class="u-flex u-cross-center u-main-space-between">
                 <div class="u-flex u-gap-8 u-cross-center">
-                    <h4 class="body-text-1 u-bold">Credit balance</h4>
+                    <h4 class="body-text-1 u-bold">Balance</h4>
                     <span class="inline-tag">{formatCurrency(creditList.available)}</span>
                 </div>
                 {#if creditList?.total}
@@ -97,30 +97,38 @@
                 {/if}
             </div>
             {#if creditList?.total}
-                <Table noStyles noMargin>
+                <TableScroll noStyles noMargin class="u-margin-block-start-16">
                     <TableHeader>
+                        <TableCellHead>Code</TableCellHead>
+                        <TableCellHead>Remaining</TableCellHead>
+                        <TableCellHead>Amount</TableCellHead>
                         <TableCellHead>Date Added</TableCellHead>
                         <TableCellHead>Expiry Date</TableCellHead>
-                        <TableCellHead>Amount</TableCellHead>
                     </TableHeader>
                     <TableBody>
                         {#each creditList.credits as credit}
                             <TableRow>
+                                <TableCellText title="code">
+                                    {credit?.couponId ?? '-'}
+                                </TableCellText>
+                                <TableCellText title="remaining">
+                                    {formatCurrency(credit.credits)}
+                                </TableCellText>
+                                <TableCellText title="total">
+                                    {formatCurrency(credit.total)}
+                                </TableCellText>
                                 <TableCellText title="date added">
                                     {toLocaleDate(credit.$createdAt)}
                                 </TableCellText>
                                 <TableCellText title="expiry date">
                                     {toLocaleDate(credit.expiration)}
                                 </TableCellText>
-                                <TableCellText title="amount">
-                                    {formatCurrency(credit.total)}
-                                </TableCellText>
                             </TableRow>
                         {/each}
                     </TableBody>
-                </Table>
+                </TableScroll>
                 <div class="u-flex u-main-space-between">
-                    <p class="text">Total results: {creditList?.total}</p>
+                    <p class="text">Total coupons: {creditList?.total}</p>
                     <PaginationInline {limit} bind:offset sum={creditList?.total} hidePages />
                 </div>
             {:else}
