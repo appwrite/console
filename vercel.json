@@ -8,13 +8,13 @@
     ],
     "rewrites": [
         {
-            "source": "/console",
-            "destination": "/console/"
-        },
-        {
             "source": "/console/(.*)",
             "destination": "/$1"
-        }
+        },
+        {
+            "source": "/console/:path",
+            "destination": "/index.html"
+        },
     ],
     "installCommand": "pnpm install --frozen-lockfile"
 }
