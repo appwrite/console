@@ -13,8 +13,7 @@ const config = {
             $routes: './src/routes'
         },
         adapter: adapter({
-            fallback: 'index.html',
-            precompress: true
+            fallback: 'index.html'
         }),
         paths: {
             base: '/console'
