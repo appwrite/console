@@ -14,7 +14,7 @@
         {
             "source": "/console/:path*",
             "destination": "/index.html"
-        },
+        }
     ],
     "installCommand": "pnpm install --frozen-lockfile"
 }
