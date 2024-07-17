@@ -1,10 +1,10 @@
 import adapter from '@sveltejs/adapter-static';
-import preprocess from 'svelte-preprocess';
+import { sveltePreprocess } from 'svelte-preprocess';
 import { preprocessMeltUI, sequence } from '@melt-ui/pp';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
-    preprocess: sequence([preprocess(), preprocessMeltUI()]),
+    preprocess: sequence([sveltePreprocess(), preprocessMeltUI()]),
     compilerOptions: {
         accessors: !!process.env.VITEST
     },

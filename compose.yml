@@ -1,5 +1,6 @@
 services:
     console:
+        image: appwrite/console:dev
         build:
             context: .
             args:
