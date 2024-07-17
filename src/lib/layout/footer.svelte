@@ -94,7 +94,7 @@
 
     @media (max-width: 768px) {
         .main-footer-end {
-            padding-block-start: 2rem;
+            padding-block-start: 1rem;
         }
     }
 
