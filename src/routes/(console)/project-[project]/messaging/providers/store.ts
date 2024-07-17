@@ -82,7 +82,8 @@ export const providers: ProvidersMap = {
                         ],
                         popoverImage: {
                             src: {
-                                light: base + '/images/messaging/fcm-service-account-json-light.png',
+                                light:
+                                    base + '/images/messaging/fcm-service-account-json-light.png',
                                 dark: base + '/images/messaging/fcm-service-account-json-dark.png'
                             },
                             alt: 'Screenshot of how to generate the Firebase Service Account JSON file'

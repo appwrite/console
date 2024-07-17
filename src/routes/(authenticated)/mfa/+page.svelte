@@ -30,7 +30,7 @@
                 const redirect = $page.url.searchParams.get('redirect');
                 $page.url.searchParams.delete('redirect');
                 if (redirect) {
-                    await goto(`${base}${redirect}${$page.url.search}`);
+                    await goto(`${redirect}${$page.url.search}`);
                 } else {
                     await goto(`${base}/${$page.url.search ?? ''}`);
                 }

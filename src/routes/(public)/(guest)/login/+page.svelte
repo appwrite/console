@@ -55,7 +55,7 @@
                 const redirect = $page.url.searchParams.get('redirect');
                 $page.url.searchParams.delete('redirect');
                 if (redirect) {
-                    await goto(`${base}${redirect}${$page.url.search}`);
+                    await goto(`${redirect}${$page.url.search}`);
                 } else {
                     await goto(`${base}${$page.url.search ?? ''}`);
                 }
@@ -79,7 +79,7 @@
             const redirect = $page.url.searchParams.get('redirect');
             $page.url.searchParams.delete('redirect');
             if (redirect) {
-                url = `${base}${redirect}${$page.url.search}`;
+                url = `${redirect}${$page.url.search}`;
             } else {
                 url = `${base}${$page.url.search ?? ''}`;
             }

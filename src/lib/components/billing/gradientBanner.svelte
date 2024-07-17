@@ -8,10 +8,19 @@
 <div class="top-banner">
     <div class="top-banner-bg">
         <div class="top-banner-bg-1">
-            <img src={`${base}/images/top-banner/bg-pink-desktop.svg`}` width="1283" height="1278" alt="" />
+            <img
+                src={`${base}/images/top-banner/bg-pink-desktop.svg`}
+                `
+                width="1283"
+                height="1278"
+                alt="" />
         </div>
         <div class="top-banner-bg-2">
-            <img src={`${base}/images/top-banner/bg-mint-desktop.svg`} width="1051" height="1271" alt="" />
+            <img
+                src={`${base}/images/top-banner/bg-mint-desktop.svg`}
+                width="1051"
+                height="1271"
+                alt="" />
         </div>
     </div>
     <div class="top-banner-content u-color-text-primary">
