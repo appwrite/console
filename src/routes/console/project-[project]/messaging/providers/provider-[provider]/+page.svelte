@@ -53,6 +53,15 @@
                 from: $providerData.options['from']
             };
             break;
+        case Providers.Telnyx:
+            params = {
+                providerId: $providerData.$id,
+                name: $providerData.name,
+                enabled: $providerData.enabled,
+                apiKey: $providerData.credentials['apiKey'],
+                from: $providerData.options['from']
+            };
+            break;
         case Providers.Textmagic:
             params = {
                 providerId: $providerData.$id,
