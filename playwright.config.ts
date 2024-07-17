@@ -15,7 +15,7 @@ const config: PlaywrightTestConfig = {
             VITE_STRIPE_PUBLIC_KEY:
                 'pk_test_51LT5nsGYD1ySxNCyd7b304wPD8Y1XKKWR6hqo6cu3GIRwgvcVNzoZv4vKt5DfYXL1gRGw4JOqE19afwkJYJq1g3K004eVfpdWn'
         },
-        command: 'npm run build && npm run preview',
+        command: 'pnpm run build && pnpm run preview',
         port: 4173
     }
 };
