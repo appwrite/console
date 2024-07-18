@@ -21,9 +21,9 @@ jobs:
             - name: Install dependencies
               run: pnpm install --frozen-lockfile
             - name: Install Playwright Browsers
-              run: npx playwright install --with-deps chromium
+              run: pnpm exec playwright install --with-deps chromium
             - name: E2E Tests
-              run: npm run e2e
+              run: pnpm run e2e
             - uses: actions/upload-artifact@v4
               if: ${{ !cancelled() }}
               with:
