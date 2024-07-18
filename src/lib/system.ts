@@ -8,7 +8,7 @@ export const enum Mode {
 
 export const VARS = {
     CONSOLE_MODE: PUBLIC_CONSOLE_MODE as Mode,
-    APPWRITE_ENDPOINT: env.PUBLIC_APPWRITE_ENDPOINT,
+    APPWRITE_ENDPOINT: env.PUBLIC_APPWRITE_ENDPOINT ?? undefined,
     GROWTH_ENDPOINT: env.PUBLIC_GROWTH_ENDPOINT ?? undefined,
     PUBLIC_STRIPE_KEY: env.PUBLIC_STRIPE_KEY ?? undefined,
 };
