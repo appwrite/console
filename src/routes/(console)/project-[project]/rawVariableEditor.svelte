@@ -6,7 +6,7 @@
     import Button from '$lib/elements/forms/button.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import type { Models } from '@appwrite.io/console';
-    import { parse } from 'dotenv';
+    import { parse } from 'envfile';
 
     export let isGlobal: boolean;
     export let showEditor = false;
