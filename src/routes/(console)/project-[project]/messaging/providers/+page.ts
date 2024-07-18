@@ -11,8 +11,9 @@ import {
 } from '$lib/helpers/load';
 import { Dependencies, PAGE_LIMIT } from '$lib/constants';
 import { queries, queryParamToMap } from '$lib/components/filters';
+import type { PageLoad } from './$types';
 
-export const load = async ({ depends, url, route }) => {
+export const load: PageLoad = async ({ depends, url, route }) => {
     depends(Dependencies.MESSAGING_PROVIDERS);
 
     const page = getPage(url);

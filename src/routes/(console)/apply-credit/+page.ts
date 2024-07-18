@@ -3,8 +3,9 @@ import type { Coupon } from '$lib/sdk/billing.js';
 import { campaigns } from '$lib/stores/campaigns.js';
 import { sdk } from '$lib/stores/sdk.js';
 import { redirect } from '@sveltejs/kit';
+import type { PageLoad } from './$types';
 
-export const load = async ({ url }) => {
+export const load: PageLoad = async ({ url }) => {
     // Has promo code
     if (url.searchParams.has('code')) {
         let couponData: Coupon;

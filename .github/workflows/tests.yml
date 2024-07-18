@@ -8,7 +8,7 @@ on:
             - 'static/**/*'
 
 env:
-    VITE_APPWRITE_ENDPOINT: http://appwrite.test/v1
+    PUBLIC_APPWRITE_ENDPOINT: http://appwrite.test/v1
 
 jobs:
     build:

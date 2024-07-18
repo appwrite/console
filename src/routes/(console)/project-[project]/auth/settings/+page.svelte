@@ -12,6 +12,7 @@
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
     import { project } from '../../store';
+    import { base } from '$app/paths';
 
     const projectId = $page.params.project;
     let showProvider = false;
@@ -83,7 +84,7 @@
                                     <img
                                         height="20"
                                         width="20"
-                                        src={`/icons/${$app.themeInUse}/color/${oAuthProvider.icon}.svg`}
+                                        src={`${base}/icons/${$app.themeInUse}/color/${oAuthProvider.icon}.svg`}
                                         alt={provider.name} />
                                 </div>
                                 <p class="u-margin-block-start-8">{provider.name}</p>
