@@ -1,9 +1,5 @@
-import {
-    PUBLIC_APPWRITE_ENDPOINT,
-    PUBLIC_CONSOLE_MODE,
-    PUBLIC_GROWTH_ENDPOINT,
-    PUBLIC_STRIPE_KEY
-} from '$env/static/public';
+import { env } from '$env/dynamic/public';
+import { PUBLIC_CONSOLE_MODE } from '$env/static/public';
 
 export const enum Mode {
     CLOUD = 'cloud',
@@ -11,10 +7,10 @@ export const enum Mode {
 }
 
 export const VARS = {
-    APPWRITE_ENDPOINT: PUBLIC_APPWRITE_ENDPOINT,
-    GROWTH_ENDPOINT: PUBLIC_GROWTH_ENDPOINT,
     CONSOLE_MODE: PUBLIC_CONSOLE_MODE as Mode,
-    PUBLIC_STRIPE_KEY: PUBLIC_STRIPE_KEY
+    APPWRITE_ENDPOINT: env.PUBLIC_APPWRITE_ENDPOINT,
+    GROWTH_ENDPOINT: env.PUBLIC_GROWTH_ENDPOINT ?? undefined,
+    PUBLIC_STRIPE_KEY: env.PUBLIC_STRIPE_KEY ?? undefined,
 };
 
 export const ENV = {

@@ -4,7 +4,7 @@ import kleur from 'kleur';
 
 const { bold, yellow } = kleur;
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
-const env = loadEnv('production', __dirname);
+const env = loadEnv('production', __dirname, 'PUBLIC_');
 
 function log(text = '', prefix = '') {
     console.log(`${bold().green(`# ${prefix}`)}${text}`);
