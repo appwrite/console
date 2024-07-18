@@ -98,10 +98,9 @@
                 <TableScroll noStyles noMargin class="u-margin-block-start-16">
                     <TableHeader>
                         <TableCellHead>Code</TableCellHead>
+                        <TableCellHead>Total</TableCellHead>
                         <TableCellHead>Remaining</TableCellHead>
-                        <TableCellHead>Amount</TableCellHead>
-                        <TableCellHead>Date Added</TableCellHead>
-                        <TableCellHead>Expiry Date</TableCellHead>
+                        <TableCellHead>Expires at</TableCellHead>
                     </TableHeader>
                     <TableBody>
                         {#each creditList.credits as credit}
@@ -109,14 +108,11 @@
                                 <TableCellText title="code">
                                     {credit?.couponId ?? '-'}
                                 </TableCellText>
-                                <TableCellText title="remaining">
-                                    {formatCurrency(credit.credits)}
-                                </TableCellText>
                                 <TableCellText title="total">
                                     {formatCurrency(credit.total)}
                                 </TableCellText>
-                                <TableCellText title="date added">
-                                    {toLocaleDate(credit.$createdAt)}
+                                <TableCellText title="remaining">
+                                    {formatCurrency(credit.credits)}
                                 </TableCellText>
                                 <TableCellText title="expiry date">
                                     {toLocaleDate(credit.expiration)}
@@ -126,7 +122,7 @@
                     </TableBody>
                 </TableScroll>
                 <div class="u-flex u-main-space-between">
-                    <p class="text">Total coupons: {creditList?.total}</p>
+                    <p class="text">Total credits: {creditList?.total}</p>
                     <PaginationInline {limit} bind:offset sum={creditList?.total} hidePages />
                 </div>
             {:else}
