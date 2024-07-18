@@ -10,13 +10,13 @@
     import { organization } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
     import { isCloud } from '$lib/system';
-    import Create from '$routes/console/feedbackWizard.svelte';
-    import { showSupportModal } from '$routes/console/wizard/support/store';
+    import Create from '$routes/(console)/feedbackWizard.svelte';
+    import { showSupportModal } from '$routes/(console)/wizard/support/store';
 
     export let isOpen = false;
 
     $: project = $page.params.project;
-    $: projectPath = `${base}/console/project-${project}`;
+    $: projectPath = `${base}/project-${project}`;
 
     $: subNavigation = $page.data.subNavigation;
     // We need to have this second variable, because we only want narrow

@@ -2,7 +2,7 @@
     import { settings } from '$lib/components/consent.svelte';
     import { clickOnEnter } from '$lib/helpers/a11y';
     import { isCloud } from '$lib/system';
-    import { version } from '$routes/console/store';
+    import { version } from '$routes/(console)/store';
 
     const currentYear = new Date().getFullYear();
 </script>
