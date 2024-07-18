@@ -24,7 +24,7 @@ import {
 import { Billing } from '../sdk/billing';
 import { Sources } from '$lib/sdk/sources';
 import { SpecsFunctions } from '$lib/sdk/functionsSpec';
-import { ProjectDBStorage } from '$lib/sdk/usageDatabaseStorage';
+import { DBStorage } from '$lib/sdk/DBStorage';
 
 const endpoint = VARS.APPWRITE_ENDPOINT ?? `${globalThis?.location?.origin}/v1`;
 
@@ -46,7 +46,7 @@ const sdkForProject = {
     messaging: new Messaging(clientProject),
     project: new Project(clientProject),
     projectApi: new ProjectApi(clientProject),
-    projectDatabaseStorage: new ProjectDBStorage(clientProject),
+    DBStorage: new DBStorage(clientProject),
     storage: new Storage(clientProject),
     teams: new Teams(clientProject),
     users: new Users(clientProject),

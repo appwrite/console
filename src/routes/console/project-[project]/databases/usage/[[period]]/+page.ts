@@ -9,7 +9,7 @@ export const load: PageLoad = async ({ params }) => {
         ? params.period
         : DatabaseUsageRange.ThirtyDays;
     try {
-        return sdk.forProject.projectDatabaseStorage.getDBUsage(period);
+        return sdk.forProject.DBStorage.getUsage(period);
     } catch (e) {
         error(e.code, e.message);
     }

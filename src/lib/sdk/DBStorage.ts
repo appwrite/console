@@ -51,7 +51,7 @@ export type UsageDatabases = {
     /**
      * Aggregated total statistics of database storage.
      */
-    databasesStorageTotal: number;
+    storageTotal: number;
     /**
      * Aggregated total statistics of documents per period.
      */
@@ -67,7 +67,7 @@ export type UsageDatabases = {
     /**
      * Aggregated total statistics of database storage per period.
      */
-    databasesStorage: Metric[];
+    storage: Metric[];
 };
 
 /**
@@ -150,7 +150,41 @@ type UsageProject = {
     databasesStorageBreakdown: MetricBreakdown[];
 };
 
-export class ProjectDBStorage {
+/**
+ * UsageDatabase
+ */
+export type UsageDatabase = {
+    /**
+     * Time range of the usage stats.
+     */
+    range: string;
+    /**
+     * Total aggregated number of collections.
+     */
+    collectionsTotal: number;
+    /**
+     * Total aggregated number of documents.
+     */
+    documentsTotal: number;
+    /**
+     * Total aggregated sum of storage size (in bytes).
+     */
+    storageTotal: number;
+    /**
+     * Aggregated  number of collections per period.
+     */
+    collections: Metric[];
+    /**
+     * Aggregated  number of documents per period.
+     */
+    documents: Metric[];
+    /**
+     * Aggregated sum of storage size (in bytes) per period.
+     */
+    storage: Metric[];
+}
+
+export class DBStorage {
     client: Client;
 
     constructor(client: Client) {
@@ -167,7 +201,7 @@ export class ProjectDBStorage {
      * @throws {AppwriteException}
      * @returns {Promise}
     */
-    async getUsage(startDate: string, endDate: string, period?: ProjectUsageRange): Promise<UsageProject> {
+    async getProjectUsage(startDate: string, endDate: string, period?: ProjectUsageRange): Promise<UsageProject> {
         if (typeof startDate === 'undefined') {
             throw new AppwriteException('Missing required parameter: "startDate"');
         }
@@ -205,8 +239,35 @@ export class ProjectDBStorage {
      * @throws {AppwriteException}
      * @returns {Promise}
     */
-    async getDBUsage(range?: DatabaseUsageRange): Promise<UsageDatabases> {
+    async getUsage(range?: DatabaseUsageRange): Promise<UsageDatabases> {
         const apiPath = '/databases/usage';
+        const payload: Payload = {};
+
+        if (typeof range !== 'undefined') {
+            payload['range'] = range;
+        }
+
+        const uri = new URL(this.client.config.endpoint + apiPath);
+        return await this.client.call('get', uri, {
+            'content-type': 'application/json',
+        }, payload);
+    }
+
+    /**
+     * Get database usage stats
+     *
+     *
+     * @param {string} databaseId
+     * @param {DatabaseUsageRange} range
+     * @throws {AppwriteException}
+     * @returns {Promise}
+    */
+    async getDatabaseUsage(databaseId: string, range?: DatabaseUsageRange): Promise<UsageDatabase> {
+        if (typeof databaseId === 'undefined') {
+            throw new AppwriteException('Missing required parameter: "databaseId"');
+        }
+
+        const apiPath = '/databases/{databaseId}/usage'.replace('{databaseId}', databaseId);
         const payload: Payload = {};
 
         if (typeof range !== 'undefined') {

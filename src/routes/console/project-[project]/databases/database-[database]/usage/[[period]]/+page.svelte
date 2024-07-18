@@ -7,6 +7,8 @@
 
     $: total = data.collectionsTotal;
     $: count = data.collections;
+    $: totalStorage = data.storageTotal;
+    $: countStorage = data.storage;
 </script>
 
 <Usage
@@ -17,4 +19,14 @@
     countMetadata={{
         legend: 'Collections',
         title: 'Total collections'
+    }} />
+
+<Usage
+    title="Storage"
+    path={`/console/project-${$page.params.project}/databases/database-${$page.params.database}/usage`}
+    total={totalStorage}
+    count={countStorage}
+    countMetadata={{
+        legend: 'Collection Storage',
+        title: 'Total storage used'
     }} />
