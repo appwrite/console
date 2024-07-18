@@ -25,8 +25,7 @@
     import {
         WizardSecondaryContainer,
         WizardSecondaryContent,
-        WizardSecondaryFooter,
-        WizardSecondaryHeader
+        WizardSecondaryFooter
     } from '$lib/layout';
     import { type Coupon, type PaymentList } from '$lib/sdk/billing';
     import { plansInfo, tierFree, tierPro, tierToPlan, type Tier } from '$lib/stores/billing';
@@ -250,10 +249,8 @@
     <title>Change plan - Appwrite</title>
 </svelte:head>
 
-<WizardSecondaryContainer bind:showExitModal href={previousPage}>
-    <WizardSecondaryHeader confirmExit on:exit={() => (showExitModal = true)}>
-        Change plan
-    </WizardSecondaryHeader>
+<WizardSecondaryContainer bind:showExitModal href={previousPage} confirmExit>
+    <svelte:fragment slot="title">Change plan</svelte:fragment>
     <WizardSecondaryContent>
         <Form bind:this={formComponent} onSubmit={handleSubmit} bind:isSubmitting>
             <Label class="label u-margin-block-start-16">Select plan</Label>

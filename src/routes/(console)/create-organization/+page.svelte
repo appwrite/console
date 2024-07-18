@@ -16,8 +16,7 @@
     import {
         WizardSecondaryContainer,
         WizardSecondaryContent,
-        WizardSecondaryFooter,
-        WizardSecondaryHeader
+        WizardSecondaryFooter
     } from '$lib/layout';
     import type { Coupon, PaymentList } from '$lib/sdk/billing';
     import { plansInfo, tierFree, tierPro, tierToPlan } from '$lib/stores/billing';
@@ -186,10 +185,8 @@
     <title>Create organization - Appwrite</title>
 </svelte:head>
 
-<WizardSecondaryContainer bind:showExitModal href={previousPage}>
-    <WizardSecondaryHeader confirmExit on:exit={() => (showExitModal = true)}>
-        Create organization
-    </WizardSecondaryHeader>
+<WizardSecondaryContainer bind:showExitModal href={previousPage} confirmExit>
+    <svelte:fragment slot="title">Create organization</svelte:fragment>
     <WizardSecondaryContent>
         <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
             <FormList>

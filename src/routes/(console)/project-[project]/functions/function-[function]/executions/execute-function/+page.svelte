@@ -28,8 +28,7 @@
     import {
         WizardSecondaryContainer,
         WizardSecondaryContent,
-        WizardSecondaryFooter,
-        WizardSecondaryHeader
+        WizardSecondaryFooter
     } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
@@ -145,8 +144,8 @@
     <title>Execute function - Appwrite</title>
 </svelte:head>
 
-<WizardSecondaryContainer>
-    <WizardSecondaryHeader href={previousPage}>Execute function</WizardSecondaryHeader>
+<WizardSecondaryContainer href={previousPage}>
+    <svelte:fragment slot="title">Execute Function</svelte:fragment>
     <WizardSecondaryContent>
         <Form bind:this={formComponent} onSubmit={handleSubmit} bind:isSubmitting>
             <FormList>
