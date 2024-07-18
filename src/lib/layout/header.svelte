@@ -55,7 +55,7 @@
     function createOrg() {
         showDropdown = false;
         if (isCloud) {
-            goto(`${base}/console/create-organization`);
+            goto(`${base}/create-organization`);
         } else newOrgModal.set(true);
     }
 
@@ -78,10 +78,7 @@
 <svelte:window on:click={onBlur} />
 
 <div class="logo u-inline-flex u-gap-16 u-cross-center">
-    <a
-        href={$organization
-            ? `${base}/console/organization-${$organization.$id}`
-            : `${base}/console`}>
+    <a href={$organization ? `${base}/organization-${$organization.$id}` : base}>
         <img
             src={$app.themeInUse == 'dark' ? AppwriteLogoDark : AppwriteLogoLight}
             width="120"
@@ -124,6 +121,11 @@
         {/if}
         <DropList show={$feedback.show} scrollable on:blur={toggleFeedback}>
             <button class="button is-small is-text" on:click={toggleFeedback}>
+                {#if $feedback.notification}
+                    <span
+                        class="notification u-position-absolute u-inset-block-start-8 u-inset-inline-end-8"
+                    ></span>
+                {/if}
                 <span class="text">Feedback</span>
             </button>
             <svelte:fragment slot="other">
@@ -179,10 +181,14 @@
                         transition:slideFade|global={{ duration: 150 }}>
                         {#if $organizationList?.total}
                             <section class="drop-section u-overflow-y-auto u-max-height-200">
-                                <ul class="drop-list">
+                                <ul
+                                    class="drop-list"
+                                    data-sveltekit-preload-data={$page.params.organization
+                                        ? false
+                                        : 'hover'}>
                                     {#each $organizationList.teams as org}
                                         <DropListLink
-                                            href={`${base}/console/organization-${org.$id}`}
+                                            href={`${base}/organization-${org.$id}`}
                                             on:click={() => {
                                                 showDropdown = false;
                                             }}>{org.name}</DropListLink>
@@ -196,7 +202,7 @@
                                     New organization
                                 </DropListItem>
                                 <DropListLink
-                                    href={`${base}/console/account`}
+                                    href={`${base}/account`}
                                     on:click={() => (showDropdown = false)}>
                                     Your account
                                 </DropListLink>

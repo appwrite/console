@@ -72,5 +72,6 @@ export { default as FakeModal } from './fakeModal.svelte';
 export { default as RadioBoxes } from './radioBoxes.svelte';
 export { default as ModalWrapper } from './modalWrapper.svelte';
 export { default as ModalSideCol } from './modalSideCol.svelte';
+export { default as EmptyCardImageCloud } from './emptyCardImageCloud.svelte';
 export { default as ImagePreview } from './imagePreview.svelte';
 export { default as MfaChallengeFormList } from './mfaChallengeFormList.svelte';

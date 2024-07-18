@@ -4,7 +4,7 @@
     import { page } from '$app/stores';
     import { log } from '$lib/stores/logs';
     import { wizard } from '$lib/stores/wizard';
-    import { activeHeaderAlert } from '$routes/console/store';
+    import { activeHeaderAlert } from '$routes/(console)/store';
 
     export let isOpen = false;
     export let showSideNavigation = false;

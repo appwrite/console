@@ -20,7 +20,7 @@
             );
             addNotification({
                 type: 'success',
-                message: 'Feedback submitted successfully'
+                message: 'Thank you for your feedback'
             });
             feedback.toggleFeedback();
             feedbackData.reset();
@@ -33,15 +33,15 @@
     }
 </script>
 
-<section class="drop-section">
+<section class="drop-section u-padding-24">
     <header class="u-flex u-main-space-between u-gap-16">
-        <h4 class="body-text-1 u-bold">{$selectedFeedback.title}</h4>
+        <h4 class="label u-bold" style:font-size="var(--font-size-1)">{$selectedFeedback.title}</h4>
         <button
             type="button"
             class="button is-text is-only-icon u-margin-inline-start-auto"
             style="--button-size:1.5rem;"
-            aria-label="Close Modal"
-            title="Close Modal"
+            aria-label="Close feedback"
+            title="Close feedback"
             on:click={() => feedback.toggleFeedback()}>
             <span class="icon-x" aria-hidden="true" />
         </button>

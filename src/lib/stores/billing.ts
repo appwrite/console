@@ -20,15 +20,18 @@ import PaymentAuthRequired from '$lib/components/billing/alerts/paymentAuthRequi
 import { addNotification, notifications } from './notifications';
 import { goto } from '$app/navigation';
 import { base } from '$app/paths';
-import { activeHeaderAlert, orgMissingPaymentMethod } from '$routes/console/store';
+import { activeHeaderAlert, orgMissingPaymentMethod } from '$routes/(console)/store';
 import MarkedForDeletion from '$lib/components/billing/alerts/markedForDeletion.svelte';
 import { BillingPlan } from '$lib/constants';
 import PaymentMandate from '$lib/components/billing/alerts/paymentMandate.svelte';
 import MissingPaymentMethod from '$lib/components/billing/alerts/missingPaymentMethod.svelte';
 import LimitReached from '$lib/components/billing/alerts/limitReached.svelte';
 import { trackEvent } from '$lib/actions/analytics';
+import newDevUpgradePro from '$lib/components/billing/alerts/newDevUpgradePro.svelte';
 import { last } from '$lib/helpers/array';
 import { sizeToBytes, type Size } from '$lib/helpers/sizeConvertion';
+import { user } from './user';
+import { browser } from '$app/environment';
 
 export type Tier = 'tier-0' | 'tier-1' | 'tier-2';
 
@@ -48,6 +51,28 @@ export function tierToPlan(tier: Tier) {
             return tierScale;
         default:
             return tierFree;
+    }
+}
+
+export function getNextTier(tier: Tier) {
+    switch (tier) {
+        case BillingPlan.FREE:
+            return BillingPlan.PRO;
+        case BillingPlan.PRO:
+            return BillingPlan.SCALE;
+        default:
+            return BillingPlan.PRO;
+    }
+}
+
+export function getPreviousTier(tier: Tier) {
+    switch (tier) {
+        case BillingPlan.PRO:
+            return BillingPlan.FREE;
+        case BillingPlan.SCALE:
+            return BillingPlan.PRO;
+        default:
+            return BillingPlan.FREE;
     }
 }
 
@@ -234,13 +259,13 @@ export async function checkForUsageLimit(org: Organization) {
                 {
                     name: 'View usage',
                     method: () => {
-                        goto(`${base}/console/organization-${org.$id}/usage`);
+                        goto(`${base}/organization-${org.$id}/usage`);
                     }
                 },
                 {
                     name: 'Upgrade plan',
                     method: () => {
-                        goto(`${base}/console/organization-${org.$id}/change-plan`);
+                        goto(`${base}/organization-${org.$id}/change-plan`);
                         trackEvent('click_organization_upgrade', {
                             from: 'button',
                             source: 'limit_reached_notification'
@@ -298,7 +323,7 @@ export async function paymentExpired(org: Organization) {
                 {
                     name: 'Update payment details',
                     method: () => {
-                        goto(`${base}/console/account/payments`);
+                        goto(`${base}/account/payments`);
                     }
                 }
             ]
@@ -312,7 +337,7 @@ export async function paymentExpired(org: Organization) {
                 {
                     name: 'Update payment details',
                     method: () => {
-                        goto(`${base}/console/account/payments`);
+                        goto(`${base}/account/payments`);
                     }
                 }
             ]
@@ -366,9 +391,33 @@ export async function checkForMissingPaymentMethod() {
     }
 }
 
+// Display upgrade banner for new users after 1 week for 30 days
+export async function checkForNewDevUpgradePro(org: Organization) {
+    if (org?.billingPlan !== BillingPlan.FREE || !browser) return;
+
+    const orgs = await sdk.forConsole.billing.listOrganization([
+        Query.notEqual('billingPlan', BillingPlan.FREE)
+    ]);
+    if (orgs?.total) return;
+
+    const now = new Date().getTime();
+    const account = get(user);
+    const accountCreated = new Date(account.$createdAt).getTime();
+    if (now - accountCreated < 1000 * 60 * 60 * 24 * 7) return;
+    const isDismissed = !!localStorage.getItem('newDevUpgradePro');
+    if (isDismissed) return;
+    if (now - accountCreated < 1000 * 60 * 60 * 24 * 37) {
+        headerAlert.add({
+            id: 'newDevUpgradePro',
+            component: newDevUpgradePro,
+            show: true,
+            importance: 1
+        });
+    }
+}
 export const upgradeURL = derived(
     page,
-    ($page) => `${base}/console/organization-${$page.data?.organization?.$id}/change-plan`
+    ($page) => `${base}/organization-${$page.data?.organization?.$id}/change-plan`
 );
 
 export const hideBillingHeaderRoutes = ['/console/create-organization', '/console/account'];
