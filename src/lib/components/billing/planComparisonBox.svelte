@@ -11,23 +11,25 @@
 </script>
 
 <Card>
-    <SecondaryTabs stretch>
-        <SecondaryTabsItem
-            disabled={selectedTab === BillingPlan.FREE}
-            on:click={() => (selectedTab = BillingPlan.FREE)}>
-            {tierFree.name}
-        </SecondaryTabsItem>
-        <SecondaryTabsItem
-            disabled={selectedTab === BillingPlan.PRO}
-            on:click={() => (selectedTab = BillingPlan.PRO)}>
-            {tierPro.name}
-        </SecondaryTabsItem>
-        <SecondaryTabsItem
-            disabled={selectedTab === BillingPlan.SCALE}
-            on:click={() => (selectedTab = BillingPlan.SCALE)}>
-            {tierScale.name}
-        </SecondaryTabsItem>
-    </SecondaryTabs>
+    <div class="comparison-box">
+        <SecondaryTabs stretch>
+            <SecondaryTabsItem
+                disabled={selectedTab === BillingPlan.FREE}
+                on:click={() => (selectedTab = BillingPlan.FREE)}>
+                {tierFree.name}
+            </SecondaryTabsItem>
+            <SecondaryTabsItem
+                disabled={selectedTab === BillingPlan.PRO}
+                on:click={() => (selectedTab = BillingPlan.PRO)}>
+                {tierPro.name}
+            </SecondaryTabsItem>
+            <SecondaryTabsItem
+                disabled={selectedTab === BillingPlan.SCALE}
+                on:click={() => (selectedTab = BillingPlan.SCALE)}>
+                {tierScale.name}
+            </SecondaryTabsItem>
+        </SecondaryTabs>
+    </div>
 
     <div class="u-margin-block-start-24">
         {#if selectedTab === BillingPlan.FREE}
@@ -115,3 +117,22 @@
         {/if}
     </div>
 </Card>
+
+<style lang="scss">
+    .comparison-box {
+        border-radius: var(--border-radius-small);
+        background: hsl(var(--color-neutral-5));
+    }
+    :global(.theme-dark) .comparison-box {
+        background: hsl(var(--color-neutral-85));
+    }
+
+    .comparison-box :global(.secondary-tabs-button:where(:disabled)) {
+        background: hsl(var(--color-neutral-0));
+        border: 1px solid hsl(var(--color-neutral-10));
+    }
+    :global(.theme-dark) .comparison-box :global(.secondary-tabs-button:where(:disabled)) {
+        background: hsl(var(--color-neutral-80));
+        border: 1px solid hsl(var(--color-neutral-85));
+    }
+</style>

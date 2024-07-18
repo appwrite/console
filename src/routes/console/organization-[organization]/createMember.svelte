@@ -59,14 +59,12 @@
 
 <Modal title="Invite member" {error} size="big" bind:show={showCreate} onSubmit={create}>
     {#if isCloud}
-        <Alert type="info">
-            {#if $organization?.billingPlan === BillingPlan.SCALE}
-                You can add unlimited organization members on the {plan.name} plan.
-            {:else if $organization?.billingPlan === BillingPlan.PRO}
+        {#if $organization?.billingPlan === BillingPlan.PRO}
+            <Alert type="info">
                 You can add unlimited organization members on the {plan.name} plan for
                 <b>{formatCurrency(plan.addons.member.price)} each per billing period</b>.
-            {/if}
-        </Alert>
+            </Alert>
+        {/if}
     {/if}
     <FormList>
         <InputEmail

@@ -290,9 +290,12 @@
                         <svelte:fragment slot="title">
                             Your monthly payments will be adjusted for the Pro plan
                         </svelte:fragment>
-                        After switching plans, you will be charged {formatCurrency(
-                            members * ($plansInfo?.get(billingPlan)?.addons?.member?.price ?? 0)
-                        )} monthly for {members} team members. This will be reflected in your next invoice.
+                        After switching plans,
+                        <b
+                            >you will be charged {formatCurrency(
+                                members * ($plansInfo?.get(billingPlan)?.addons?.member?.price ?? 0)
+                            )} monthly for {members} team members.</b> This will be reflected in your
+                        next invoice.
                     </Alert>
                 {/if}
             {/if}
@@ -337,12 +340,13 @@
             {/if}
         </Form>
         <svelte:fragment slot="aside">
-            {#if billingPlan !== BillingPlan.FREE && $organization.billingPlan !== BillingPlan.PRO}
+            {#if billingPlan !== BillingPlan.FREE && $organization.billingPlan !== billingPlan}
                 <EstimatedTotalBox
                     {billingPlan}
                     {collaborators}
                     bind:couponData
-                    bind:billingBudget />
+                    bind:billingBudget
+                    {isDowngrade} />
             {:else}
                 <PlanComparisonBox downgrade={isDowngrade} />
             {/if}
