@@ -96,8 +96,8 @@
             {/if}
         {:else if selectedTab === BillingPlan.PRO}
             <h3 class="u-bold body-text-1">{plan.name} plan</h3>
-            <ul class="un-order-list u-margin-block-start-8">
-                <li>Everything in the Free plan, plus:</li>
+            <p class="u-margin-block-start-8">Everything in the Free plan, plus:</p>
+            <ul class="un-order-list u-margin-inline-start-4">
                 <li>Unlimited databases, buckets, functions</li>
                 <li>{plan.bandwidth}GB bandwidth</li>
                 <li>{plan.storage}GB storage</li>
@@ -106,8 +106,8 @@
             </ul>
         {:else if selectedTab === BillingPlan.SCALE}
             <h3 class="u-bold body-text-1">{plan.name} plan</h3>
-            <ul class="un-order-list u-margin-block-start-8">
-                <li>Everything in the Pro plan, plus:</li>
+            <p class="u-margin-block-start-8">Everything in the Pro plan, plus:</p>
+            <ul class="un-order-list u-margin-inline-start-4">
                 <li>Unlimited seats</li>
                 <li>Organization roles</li>
                 <li>SOC-2, BAA compliance</li>
