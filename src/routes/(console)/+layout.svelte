@@ -247,7 +247,7 @@
         if (isCloud && hasStripePublicKey) {
             const loadStripe = (await import('@stripe/stripe-js')).loadStripe;
 
-            $stripe = await loadStripe(VARS.STRIPE_PUBLIC_KEY);
+            $stripe = await loadStripe(VARS.PUBLIC_STRIPE_KEY);
             await checkForMissingPaymentMethod();
         }
     });

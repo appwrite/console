@@ -2,8 +2,9 @@ import { base } from '$app/paths';
 import { campaigns } from '$lib/stores/campaigns.js';
 import { sdk } from '$lib/stores/sdk';
 import { redirect } from '@sveltejs/kit';
+import type { PageLoad } from './$types';
 
-export const load = async ({ url }) => {
+export const load: PageLoad = async ({ url }) => {
     if (url.searchParams.has('code')) {
         const code = url.searchParams.get('code');
         try {

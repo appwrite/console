@@ -38,5 +38,5 @@ jobs:
                   tags: ${{ steps.meta.outputs.tags }}
                   labels: ${{ steps.meta.outputs.labels }}
                   build-args: |
-                      "VITE_CONSOLE_MODE=self-hosted"
-                      "VITE_APPWRITE_GROWTH_ENDPOINT=${{ secrets.VITE_APPWRITE_GROWTH_ENDPOINT }}"
+                      "PUBLIC_CONSOLE_MODE=self-hosted"
+                      "PUBLIC_GROWTH_ENDPOINT=${{ secrets.PUBLIC_GROWTH_ENDPOINT }}"

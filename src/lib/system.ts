@@ -1,15 +1,20 @@
-export enum Mode {
+import {
+    PUBLIC_APPWRITE_ENDPOINT,
+    PUBLIC_CONSOLE_MODE,
+    PUBLIC_GROWTH_ENDPOINT,
+    PUBLIC_STRIPE_KEY
+} from '$env/static/public';
+
+export const enum Mode {
     CLOUD = 'cloud',
     SELF_HOSTED = 'self-hosted'
 }
 
 export const VARS = {
-    APPWRITE_ENDPOINT: import.meta.env?.VITE_APPWRITE_ENDPOINT?.toString() as string | undefined,
-    GROWTH_ENDPOINT: import.meta.env?.VITE_APPWRITE_GROWTH_ENDPOINT?.toString() as
-        | string
-        | undefined,
-    CONSOLE_MODE: import.meta.env?.VITE_CONSOLE_MODE?.toString() as string | undefined,
-    STRIPE_PUBLIC_KEY: import.meta.env?.VITE_STRIPE_PUBLIC_KEY?.toString() as string | undefined
+    APPWRITE_ENDPOINT: PUBLIC_APPWRITE_ENDPOINT,
+    GROWTH_ENDPOINT: PUBLIC_GROWTH_ENDPOINT,
+    CONSOLE_MODE: PUBLIC_CONSOLE_MODE as Mode,
+    PUBLIC_STRIPE_KEY: PUBLIC_STRIPE_KEY
 };
 
 export const ENV = {
@@ -22,5 +27,5 @@ export const ENV = {
 export const MODE = VARS.CONSOLE_MODE === Mode.CLOUD ? Mode.CLOUD : Mode.SELF_HOSTED;
 export const isCloud = MODE === Mode.CLOUD;
 export const isSelfHosted = MODE !== Mode.CLOUD;
-export const hasStripePublicKey = !!VARS.STRIPE_PUBLIC_KEY;
+export const hasStripePublicKey = !!VARS.PUBLIC_STRIPE_KEY;
 export const GRACE_PERIOD_OVERRIDE = false;

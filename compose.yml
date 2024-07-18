@@ -4,10 +4,10 @@ services:
         build:
             context: .
             args:
-                VITE_CONSOLE_MODE: ${VITE_CONSOLE_MODE}
-                VITE_APPWRITE_ENDPOINT: ${VITE_APPWRITE_ENDPOINT}
-                VITE_APPWRITE_GROWTH_ENDPOINT: ${VITE_APPWRITE_GROWTH_ENDPOINT}
-                VITE_STRIPE_PUBLIC_KEY: ${VITE_STRIPE_PUBLIC_KEY}
+                PUBLIC_CONSOLE_MODE: ${PUBLIC_CONSOLE_MODE}
+                PUBLIC_APPWRITE_ENDPOINT: ${PUBLIC_APPWRITE_ENDPOINT}
+                PUBLIC_APPWRITE_GROWTH_ENDPOINT: ${PUBLIC_GROWTH_ENDPOINT}
+                PUBLIC_STRIPE_KEY: ${PUBLIC_STRIPE_KEY}
         develop:
             watch:
                 - action: rebuild
@@ -18,9 +18,9 @@ services:
                       - node_modules/
                       - build/
         environment:
-            - VITE_CONSOLE_MODE
-            - VITE_APPWRITE_ENDPOINT
-            - VITE_APPWRITE_GROWTH_ENDPOINT
-            - VITE_STRIPE_PUBLIC_KEY
+            - PUBLIC_CONSOLE_MODE
+            - PUBLIC_APPWRITE_ENDPOINT
+            - PUBLIC_GROWTH_ENDPOINT
+            - PUBLIC_STRIPE_KEY
         ports:
             - '3000:80'

@@ -3,8 +3,9 @@ import { sdk } from '$lib/stores/sdk';
 import { getLimit, getPage, getQuery, getSearch, pageToOffset } from '$lib/helpers/load';
 import { Dependencies, PAGE_LIMIT } from '$lib/constants';
 import { queryParamToMap, queries } from '$lib/components/filters';
+import type { PageLoad } from './$types';
 
-export const load = async ({ depends, url, route }) => {
+export const load: PageLoad = async ({ depends, url, route }) => {
     depends(Dependencies.MESSAGING_TOPICS);
     const page = getPage(url);
     const search = getSearch(url);
