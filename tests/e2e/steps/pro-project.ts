@@ -24,9 +24,17 @@ export async function createProProject(page: Page): Promise<Metadata> {
         await page.locator('id=plan').selectOption('tier-1');
         await page.getByRole('button', { name: 'get started' }).click();
         await page.waitForURL('/console/create-organization**');
-        await new Promise((r) => setTimeout(r, 1000));
         await page.getByRole('button', { name: 'add' }).first().click();
+        const dialog = page.locator('.modal').filter({
+            hasText: 'Add payment method'
+        });
+        await dialog.waitFor({
+            state: 'visible'
+        });
         await enterCreditCard(page);
+        await dialog.waitFor({
+            state: 'hidden'
+        });
         // skip members
         await page.getByRole('button', { name: 'create organization' }).click();
         await page.waitForURL('/console/organization-**');
