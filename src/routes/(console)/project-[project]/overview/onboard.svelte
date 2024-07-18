@@ -81,7 +81,7 @@
                             <span class="u-flex u-cross-center u-gap-16">
                                 <div class="avatar is-medium" aria-hidden="true">
                                     <img
-                                        src={`/icons/${$app.themeInUse}/${platform.icon}.svg`}
+                                        src={`${base}/icons/${$app.themeInUse}/${platform.icon}.svg`}
                                         alt="technology" />
                                 </div>
                                 <span class="text">{platform.title}</span>
@@ -116,7 +116,7 @@
                         <span class="u-flex u-cross-center u-gap-16">
                             <div class="avatar is-medium" aria-hidden="true">
                                 <img
-                                    src={`/icons/${$app.themeInUse}/grayscale/code.svg`}
+                                    src={`${base}/icons/${$app.themeInUse}/grayscale/code.svg`}
                                     alt="technology" />
                             </div>
                             <span class="text">API key</span>
@@ -135,7 +135,7 @@
                         <span class="u-flex u-cross-center u-gap-16">
                             <div class="avatar is-medium" aria-hidden="true">
                                 <img
-                                    src={`/icons/${$app.themeInUse}/grayscale/code.svg`}
+                                    src={`${base}/icons/${$app.themeInUse}/grayscale/code.svg`}
                                     alt="technology" />
                             </div>
                             <span class="text">Webhook</span>

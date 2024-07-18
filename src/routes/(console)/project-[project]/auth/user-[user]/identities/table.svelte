@@ -22,6 +22,7 @@
     import type { Column } from '$lib/helpers/types';
     import { oAuthProviders } from '$lib/stores/oauth-providers';
     import { app } from '$lib/stores/app';
+    import { base } from '$app/paths';
 
     export let columns: Column[];
     export let data: PageData;
@@ -93,7 +94,7 @@
                                             style="--p-text-size: 1rem"
                                             height="20"
                                             width="20"
-                                            src={`/icons/${$app.themeInUse}/color/${provider.icon}.svg`}
+                                            src={`${base}/icons/${$app.themeInUse}/color/${provider.icon}.svg`}
                                             alt={provider.name} />
                                     </div>
                                     {provider.name}
