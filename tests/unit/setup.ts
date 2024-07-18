@@ -8,4 +8,12 @@ beforeAll(() => {
     vi.mock('$app/navigation', () => ({
         goto: vi.fn()
     }));
+    vi.mock('$app/environment', () => ({
+        dev: true,
+        browser: true
+    }));
+    vi.mock('$env/static/public', () => import.meta.env);
+    vi.mock('$env/dynamic/public', () => ({
+        env: import.meta.env
+    }));
 });
