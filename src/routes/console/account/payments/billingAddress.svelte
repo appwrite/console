@@ -1,12 +1,5 @@
 <script lang="ts">
-    import {
-        CardGrid,
-        DropList,
-        DropListItem,
-        DropListLink,
-        Empty,
-        Heading
-    } from '$lib/components';
+    import { CardGrid, DropList, DropListItem, Empty, Heading } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import {
         Table,
@@ -92,12 +85,20 @@
                                                 This billing address is linked to the following
                                                 organizations:
                                             </p>
-                                            {#each linkedOrgs as org}
-                                                <DropListLink
-                                                    href={`${base}/console/organization-${org.$id}/billing`}>
-                                                    {org.name}
-                                                </DropListLink>
-                                            {/each}
+                                            <div class="u-flex u-flex-vertical u-gap-4">
+                                                {#each linkedOrgs as org}
+                                                    <a
+                                                        class="u-underline u-trim"
+                                                        href={`${base}/console/organization-${org.$id}/billing`}>
+                                                        {org.name}
+                                                    </a>
+                                                    <a
+                                                        class="u-underline u-trim"
+                                                        href={`${base}/console/organization-${org.$id}/billing`}>
+                                                        {org.name}
+                                                    </a>
+                                                {/each}
+                                            </div>
                                         </svelte:fragment>
                                     </DropList>
                                 {/if}
