@@ -10,7 +10,7 @@
         DropListItem,
         Heading
     } from '$lib/components';
-    import { Dependencies } from '$lib/constants';
+    import { BillingPlan, Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
     import { organization } from '$lib/stores/organization';
     import { Button } from '$lib/elements/forms';
@@ -320,10 +320,11 @@
     <ReplaceCard bind:show={showReplace} isBackup={isSelectedBackup} />
 {/if}
 {#if showDelete && isCloud && hasStripePublicKey}
+    {@const hasOtherMethod = isSelectedBackup
+        ? !!$organization?.paymentMethodId
+        : !!$organization?.backupPaymentMethodId}
     <DeleteOrgPayment
         bind:showDelete
         isBackup={isSelectedBackup}
-        disabled={isSelectedBackup
-            ? !$organization?.paymentMethodId
-            : !$organization?.backupPaymentMethodId} />
+        disabled={$organization?.billingPlan !== BillingPlan.FREE && !hasOtherMethod} />
 {/if}

@@ -4,6 +4,7 @@
         CreditCardInfo,
         DropList,
         DropListItem,
+        DropListLink,
         Empty,
         Heading
     } from '$lib/components';
@@ -20,7 +21,6 @@
     import { paymentMethods } from '$lib/stores/billing';
     import type { PaymentMethodData } from '$lib/sdk/billing';
     import { organizationList, type Organization } from '$lib/stores/organization';
-    import { tooltip } from '$lib/actions/tooltip';
     import { base } from '$app/paths';
     import EditPaymentModal from './editPaymentModal.svelte';
     import DeletePaymentModal from './deletePaymentModal.svelte';
@@ -34,6 +34,7 @@
     let showDelete = false;
     let showEdit = false;
     let isLinked = false;
+    let showLinked = false;
 
     $: orgList = $organizationList.teams as unknown as Organization[];
 
@@ -68,27 +69,27 @@
                                 <CreditCardInfo {paymentMethod}>
                                     <div class="u-flex u-gap-16 u-cross-center">
                                         {#if linkedOrgs?.length > 0}
-                                            <div
-                                                use:tooltip={{
-                                                    interactive: true,
-                                                    allowHTML: true,
-                                                    trigger: 'click',
-                                                    content: `
-                                                        <div class="u-flex u-flex-vertical u-gap-8">
-                                                            <p class="text">This payment method is linked to the following organizations:</p>                                                         
-                                                            ${linkedOrgs
-                                                                .map(
-                                                                    (org) =>
-                                                                        `<a href="${base}/console/organization-${org.$id}/billing" class="link">${org.name}</a>`
-                                                                )
-                                                                .join('')}
-                                                        </div>`
-                                                }}>
-                                                <Pill button>
+                                            <DropList bind:show={showLinked} width="20" scrollable>
+                                                <Pill
+                                                    button
+                                                    on:click={() => (showLinked = !showLinked)}>
                                                     <span class="icon-info" /> linked to organization
                                                 </Pill>
-                                            </div>
+                                                <svelte:fragment slot="list">
+                                                    <p class="u-break-word">
+                                                        This payment method is linked to the
+                                                        following organizations:
+                                                    </p>
+                                                    {#each linkedOrgs as org}
+                                                        <DropListLink
+                                                            href={`${base}/console/organization-${org.$id}/billing`}>
+                                                            {org.name}
+                                                        </DropListLink>
+                                                    {/each}
+                                                </svelte:fragment>
+                                            </DropList>
                                         {/if}
+
                                         <DropList
                                             bind:show={showDropdown[i]}
                                             placement="bottom-start"
