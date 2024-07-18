@@ -44,6 +44,9 @@
     import EmailMagicUrlTemplate from './emailMagicUrlTemplate.svelte';
     import EmailRecoveryTemplate from './emailRecoveryTemplate.svelte';
     import EmailInviteTemplate from './emailInviteTemplate.svelte';
+    import Email2FaTemplate from './email2FATemplate.svelte';
+    import EmailSessionAlertTemplate from './emailSessionAlertTemplate.svelte';
+
     // import SmsVerificationTemplate from './smsVerificationTemplate.svelte';
     // import SmsLoginTemplate from './smsLoginTemplate.svelte';
     // import { baseEmailTemplate, baseSmsTemplate, emailTemplate, smsTemplate } from './store';
@@ -59,7 +62,6 @@
         EmailTemplateType,
         EmailTemplateLocale
     } from '@appwrite.io/console';
-    import Email2FaTemplate from './email2FATemplate.svelte';
 
     const projectId = $page.params.project;
 
@@ -69,6 +71,7 @@
     $: emailResetPassword = emailOpen === 'recovery';
     $: emailInviteUser = emailOpen === 'invitation';
     $: email2FAVerificationOpen = emailOpen === 'mfaChallenge';
+    $: emailSessionAlertOpen = emailOpen === 'sessionAlert';
 
     // let smsOpen = 'verification';
     // $: smsVerificationOpen = smsOpen === 'verification';
@@ -188,6 +191,16 @@
                     <svelte:fragment slot="title">2FA verification</svelte:fragment>
                     <p class="text">Send a two-factor authentication email to a user.</p>
                     <Email2FaTemplate />
+                </CollapsibleItem>
+                <CollapsibleItem
+                    bind:open={emailSessionAlertOpen}
+                    on:click={(e) => {
+                        e.preventDefault();
+                        openEmail('sessionAlert');
+                    }}>
+                    <svelte:fragment slot="title">Session alert</svelte:fragment>
+                    <p class="text">Send an email to users when a new session is created.</p>
+                    <EmailSessionAlertTemplate />
                 </CollapsibleItem>
             </Collapsible>
         </svelte:fragment>
