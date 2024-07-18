@@ -109,9 +109,9 @@
             <p class="u-margin-block-start-8">Everything in the Pro plan, plus:</p>
             <ul class="un-order-list u-margin-inline-start-4">
                 <li>Unlimited seats</li>
-                <li>Organization roles</li>
-                <li>SOC-2, BAA compliance</li>
-                <li>SSO</li>
+                <li>Organization roles - coming soon</li>
+                <li>SOC-2, HIPAA compliance</li>
+                <li>SSO - coming soon</li>
                 <li>Priority support</li>
             </ul>
         {/if}
