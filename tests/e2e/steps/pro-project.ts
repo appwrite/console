@@ -8,7 +8,7 @@ type Metadata = {
 
 export async function enterCreditCard(page: Page) {
     const dialog = page.locator('.modal').filter({
-        hasText: 'Add payment method'
+        hasText: 'add payment method'
     });
     await dialog.waitFor({
         state: 'visible'
