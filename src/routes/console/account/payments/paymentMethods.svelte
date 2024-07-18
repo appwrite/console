@@ -33,7 +33,7 @@
     let showDelete = false;
     let showEdit = false;
     let isLinked = false;
-    let showLinked = false;
+    let showLinked = [];
 
     $: orgList = $organizationList.teams as unknown as Organization[];
 
@@ -68,10 +68,14 @@
                                 <CreditCardInfo {paymentMethod}>
                                     <div class="u-flex u-gap-16 u-cross-center">
                                         {#if linkedOrgs?.length > 0}
-                                            <DropList bind:show={showLinked} width="20" scrollable>
+                                            <DropList
+                                                bind:show={showLinked[i]}
+                                                width="20"
+                                                scrollable>
                                                 <Pill
                                                     button
-                                                    on:click={() => (showLinked = !showLinked)}>
+                                                    on:click={() =>
+                                                        (showLinked[i] = !showLinked[i])}>
                                                     <span class="icon-info" /> linked to organization
                                                 </Pill>
                                                 <svelte:fragment slot="list">

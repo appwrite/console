@@ -28,7 +28,7 @@
     let showDelete = false;
     let showDropdown = [];
     let countryList: Models.CountryList;
-    let showLinked = false;
+    let showLinked = [];
 
     onMount(async () => {
         countryList = await sdk.forProject.locale.listCountries();
@@ -76,8 +76,10 @@
                             </TableCell>
                             <TableCell style="vertical-align: top;">
                                 {#if linkedOrgs?.length > 0}
-                                    <DropList bind:show={showLinked} width="20" scrollable>
-                                        <Pill button on:click={() => (showLinked = !showLinked)}>
+                                    <DropList bind:show={showLinked[i]} width="20" scrollable>
+                                        <Pill
+                                            button
+                                            on:click={() => (showLinked[i] = !showLinked[i])}>
                                             <span class="icon-info" /> linked to organization
                                         </Pill>
                                         <svelte:fragment slot="list">
