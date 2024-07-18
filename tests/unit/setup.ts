@@ -1,4 +1,5 @@
-import { vi } from 'vitest';
+import '@testing-library/jest-dom/vitest';
+import { beforeAll, vi } from 'vitest';
 
 beforeAll(() => {
     vi.mock('$app/environment', () => ({
