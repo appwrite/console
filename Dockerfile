@@ -32,7 +32,7 @@ RUN pnpm run sync && pnpm run build
 
 FROM nginx:1.25-alpine
 
-EXPOSE 3000
+EXPOSE 80
 
 COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/build /usr/share/nginx/html/console
