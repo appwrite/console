@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { goto, invalidate } from '$app/navigation';
+    import { afterNavigate, goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
@@ -43,6 +43,10 @@
 
     onMount(async () => {
         displayNames = preferences.getDisplayNames();
+    });
+
+    afterNavigate(() => {
+        selectedDb = []
     });
 
     function formatArray(array: unknown[]) {
