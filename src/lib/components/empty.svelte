@@ -32,9 +32,9 @@
                     on:click={track}
                     aria-label="create {target}">
                     {#if $app.themeInUse === 'dark'}
-                        <img src={EmptyDark} alt="create" aria-hidden="true" width="376" />
+                        <img src={EmptyDark} alt="create" aria-hidden="true" height="242" />
                     {:else}
-                        <img src={EmptyLight} alt="create" aria-hidden="true" width="376" />
+                        <img src={EmptyLight} alt="create" aria-hidden="true" height="242" />
                     {/if}
                 </button>
             {/if}
@@ -62,22 +62,24 @@
         </div>
     </article>
 {:else}
-    <button
-        on:click|preventDefault
-        on:click={track}
-        aria-label="create"
-        type="button"
-        class="card u-grid u-cross-center u-width-full-line dashed"
-        class:common-section={marginTop}>
-        <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
-            <div class="common-section">
-                <div class="button is-secondary is-only-icon">
-                    <i class="icon-plus" />
+    <li>
+        <button
+            on:click|preventDefault
+            on:click={track}
+            aria-label="create"
+            type="button"
+            class="card u-grid u-cross-center u-width-full-line dashed u-height-100-percent"
+            class:common-section={marginTop}>
+            <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
+                <div class="common-section">
+                    <div class="button is-secondary is-only-icon">
+                        <i class="icon-plus" />
+                    </div>
+                </div>
+                <div class="common-section">
+                    <slot />
                 </div>
             </div>
-            <div class="common-section">
-                <slot />
-            </div>
-        </div>
-    </button>
+        </button>
+    </li>
 {/if}

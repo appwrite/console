@@ -3,7 +3,7 @@
     import { EmptySearch } from '.';
     import { queries } from './filters';
 
-    export let resource;
+    export let resource: string;
 </script>
 
 <EmptySearch hidePages>

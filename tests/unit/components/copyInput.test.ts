@@ -1,5 +1,5 @@
-import '@testing-library/jest-dom';
 import { vi } from 'vitest';
+import { expect, test } from 'vitest';
 import { render, fireEvent } from '@testing-library/svelte';
 import { CopyInput } from '../../../src/lib/components';
 
