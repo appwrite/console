@@ -243,7 +243,7 @@
                 <p class="text u-line-height-1-5">
                     You have no execution logs. Create and activate a deployment to see it here.
                 </p>
-                <p class="text u-line-height-1-5">Need a hand? Learn more in our documentation</p>
+                <p class="text u-line-height-1-5">Need a hand? Learn more in our documentation.</p>
             </div>
             <div class="u-flex u-gap-16">
                 <Button text external href="https://appwrite.io/docs/products/functions/execution">
