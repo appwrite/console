@@ -46,7 +46,7 @@
     });
 
     afterNavigate(() => {
-        selectedDb = []
+        selectedDb = [];
     });
 
     function formatArray(array: unknown[]) {
