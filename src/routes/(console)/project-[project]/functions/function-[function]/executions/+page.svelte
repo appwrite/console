@@ -49,11 +49,11 @@
             id: 'trigger',
             title: 'Trigger',
             type: 'string',
-            show: true,
+            show: false,
             width: 90,
             array: true,
             format: 'enum',
-            elements: ['http', 'scheduled', 'event']
+            elements: ['http', 'schedule', 'event']
         },
         {
             id: 'requestMethod',
