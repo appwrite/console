@@ -62,24 +62,22 @@
         </div>
     </article>
 {:else}
-    <li>
-        <button
-            on:click|preventDefault
-            on:click={track}
-            aria-label="create"
-            type="button"
-            class="card u-grid u-cross-center u-width-full-line dashed u-height-100-percent"
-            class:common-section={marginTop}>
-            <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
-                <div class="common-section">
-                    <div class="button is-secondary is-only-icon">
-                        <i class="icon-plus" />
-                    </div>
-                </div>
-                <div class="common-section">
-                    <slot />
+    <button
+        on:click|preventDefault
+        on:click={track}
+        aria-label="create"
+        type="button"
+        class="card u-grid u-cross-center u-width-full-line dashed u-height-100-percent"
+        class:common-section={marginTop}>
+        <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
+            <div class="common-section">
+                <div class="button is-secondary is-only-icon">
+                    <i class="icon-plus" />
                 </div>
             </div>
-        </button>
-    </li>
+            <div class="common-section">
+                <slot />
+            </div>
+        </div>
+    </button>
 {/if}
