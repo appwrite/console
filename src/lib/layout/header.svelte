@@ -154,6 +154,7 @@
             ]}
             text
             class="is-small"
+            ariaLabel="Toggle Command Center"
             on:click={toggleCommandCenter}>
             <i class="icon-search" />
         </Button>

@@ -215,7 +215,7 @@
                         aria-label="Show items in end side">
                         <span class="icon-cheveron-right" aria-hidden="true" />
                     </button>
-                    <ul class="tabs-list" data-sveltekit-noscroll>
+                    <ul class="tabs-list" role="tablist" data-sveltekit-noscroll>
                         <Tab
                             href={`${path}/platforms`}
                             selected={$page.url.pathname === `${path}/platforms`}

@@ -37,7 +37,7 @@
 
 <Form onSubmit={updateEmail}>
     <CardGrid>
-        <Heading tag="h6" size="7">Email</Heading>
+        <Heading tag="h2" size="7">Email</Heading>
 
         <svelte:fragment slot="aside">
             <FormList>

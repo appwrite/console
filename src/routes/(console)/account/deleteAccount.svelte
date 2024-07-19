@@ -9,7 +9,7 @@
 
 <CardGrid danger>
     <div>
-        <Heading tag="h6" size="7">Delete account</Heading>
+        <Heading tag="h2" size="7">Delete account</Heading>
     </div>
     <p>
         Your account will be permanently deleted and access will be lost to any of your teams and
@@ -21,7 +21,7 @@
                 <AvatarInitials size={48} name={$user.name} />
             </svelte:fragment>
             <svelte:fragment slot="title">
-                <h6 class="u-bold u-trim-1" data-private>{$user.name}</h6>
+                <span class="u-bold u-trim-1" data-private>{$user.name}</span>
             </svelte:fragment>
         </BoxAvatar>
     </svelte:fragment>

@@ -40,7 +40,7 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h6" size="7">Identities</Heading>
+    <Heading tag="h2" size="7">Identities</Heading>
     <p class="text">
         Identities are your connected GitHub accounts. You can sign in using these accounts.
     </p>

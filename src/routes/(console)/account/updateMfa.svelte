@@ -80,7 +80,7 @@
 </script>
 
 <CardGrid>
-    <Heading tag="h6" size="7">Multi-factor authentication</Heading>
+    <Heading tag="h2" size="7">Multi-factor authentication</Heading>
 
     <svelte:fragment slot="aside">
         <div class="u-flex u-flex-vertical u-gap-32">
@@ -104,7 +104,7 @@
             {#if $user.mfa}
                 <div class="u-flex-vertical u-gap-16">
                     <div class="u-sep-block-end" style="padding-block-end: 8px;">
-                        <EyebrowHeading tag="h6" size={3} class="u-normal">Methods</EyebrowHeading>
+                        <EyebrowHeading tag="h3" size={3} class="u-normal">Methods</EyebrowHeading>
                     </div>
                     <div
                         class="method u-flex u-flex-vertical-mobile u-gap-16 u-main-space-between u-sep-block-end"

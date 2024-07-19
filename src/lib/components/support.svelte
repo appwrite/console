@@ -88,6 +88,7 @@
         </a>
         <a
             href="https://github.com/appwrite/appwrite/issues"
+            aria-label="Open issue on GitHub"
             target="_blank"
             rel="noopener noreferrer"
             class="button is-secondary u-padding-inline-12 u-stretch u-main-center u-gap-4 u-flex-basis-auto">

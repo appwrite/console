@@ -30,7 +30,7 @@
 
 <Form onSubmit={updatePassword}>
     <CardGrid>
-        <Heading tag="h6" size="7">Password</Heading>
+        <Heading tag="h2" size="7">Password</Heading>
         <p class="text">
             Forgot your password? <a class="link" href={`${base}/recover`}>Recover your password</a>
         </p>
