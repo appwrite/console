@@ -78,7 +78,7 @@
             </Drop>
         {/if}
     </Label>
-    <div class="input-text-wrapper">
+    <div class="input-text-wrapper" style="--amount-of-buttons:1">
         <input
             {id}
             {placeholder}
@@ -93,6 +93,7 @@
             bind:value
             bind:this={element}
             on:invalid={handleInvalid} />
+        <slot/>
     </div>
     {#if error}
         <Helper type="warning">{error}</Helper>

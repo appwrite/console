@@ -10,7 +10,7 @@
     import { Dependencies } from '$lib/constants';
     import { organization } from '$lib/stores/organization';
     import { BillingPlan } from '$lib/constants';
-    import { isCloud } from '$lib/system';
+    import { isCloud, isSelfHosted } from '$lib/system';
     import MockNumbersLight from './mock-numbers-light.png';
     import MockNumbersDark from './mock-numbers-dark.png';
     import EmptyCardImageCloud from '$lib/components/emptyCardImageCloud.svelte';
@@ -58,14 +58,15 @@
 
     function generateNumber(): string {
         const areaCode = Math.floor(Math.random() * 800) + 200;
-        const lineNumber = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+        const lineNumber = Math.floor(Math.random() * 10000)
+            .toString()
+            .padStart(4, '0');
         return `+1${areaCode}555${lineNumber}`;
     }
 
     function generateOTP(): string {
         return Math.floor(100000 + Math.random() * 900000) + '';
     }
-
 </script>
 
 <Form onSubmit={updateMockNumbers}>
@@ -76,7 +77,7 @@
             for submitting your application to the App Store or Google Play. Learn more
         </p>
         <svelte:fragment slot="aside">
-            <!-- {#if isCloud && $organization?.billingPlan === BillingPlan.FREE}
+            {#if isCloud && $organization?.billingPlan === BillingPlan.FREE}
                 <EmptyCardImageCloud source="email_signature_card" let:nextTier noAspectRatio>
                     <svelte:fragment slot="image">
                         <div class=" is-only-mobile u-width-full-line u-height-100-percent">
@@ -116,67 +117,75 @@
                         >Upgrade to add mock phone numbers</svelte:fragment>
                     Upgrade to a {nextTier} to add mock phone numbers to your project.
                 </EmptyCardImageCloud>
-            {/if} -->
-            {#if $organization?.billingPlan !== BillingPlan.FREE}
-                {#if numbers?.length > 0}
-                    <ul class="form-list">
-                        {#each numbers as number, index}
-                            <FormItem isMultiple>
-                                <InputPhone
-                                    id={`key-${index}`}
-                                    bind:value={number.phone}
-                                    fullWidth
-                                    placeholder="Enter Phone Number"
-                                    label="Phone Number"
-                                    showLabel={index === 0 ? true : false}
-                                    minlength={8}
-                                    maxlength={16}
-                                    required />
-                                <InputText
-                                    id={`value-${index}`}
-                                    bind:value={number.otp}
-                                    fullWidth
-                                    placeholder="Enter value"
-                                    label="Verification Code"
-                                    showLabel={index === 0 ? true : false}
-                                    maxlength={6}
-                                    required />
-                                <FormItemPart alignEnd>
-                                    <Button
-                                        text
-                                        disabled={numbers.length === 0}
-                                        on:click={() => {
-                                            deletePhoneNumber(index);
-                                        }}>
-                                        <span class="icon-x" aria-hidden="true" />
-                                    </Button>
-                                </FormItemPart>
-                            </FormItem>
-                        {/each}
-                    </ul>
-                    {#if numbers?.length < 10}
-                        <Button
-                            noMargin
-                            text
-                            on:click={() =>
-                                addPhoneNumber({
-                                    phone: generateNumber(),
-                                    otp: generateOTP()
-                                })}
-                        disabled={numbers.length >= 10}>
-                            <span class="icon-plus" aria-hidden="true" />
-                            <span class="text">Add number</span>
-                        </Button>
-                    {/if}
-                {:else}
-                    <Empty
-                        on:click={() => {
+            {:else if numbers?.length > 0}
+                <ul class="form-list">
+                    {#each numbers as number, index}
+                        <FormItem isMultiple>
+                            <InputPhone
+                                id={`key-${index}`}
+                                bind:value={number.phone}
+                                fullWidth
+                                placeholder="Enter Phone Number"
+                                label="Phone Number"
+                                showLabel={index === 0 ? true : false}
+                                minlength={8}
+                                maxlength={16}
+                                required>
+                                <div class="options-list">
+                                    <button
+                                        on:click={() => (number.phone = generateNumber())}
+                                        class="options-list-button"
+                                        aria-label="regenerate text"
+                                        type="button">
+                                        <span class="icon-refresh" aria-hidden="true"></span>
+                                    </button>
+                                </div>
+                            </InputPhone>
+                            <InputText
+                                id={`value-${index}`}
+                                bind:value={number.otp}
+                                fullWidth
+                                placeholder="Enter value"
+                                label="Verification Code"
+                                pattern="\d*"
+                                showLabel={index === 0 ? true : false}
+                                maxlength={6}
+                                required />
+                            <FormItemPart alignEnd>
+                                <Button
+                                    text
+                                    disabled={numbers.length === 0}
+                                    on:click={() => {
+                                        deletePhoneNumber(index);
+                                    }}>
+                                    <span class="icon-x" aria-hidden="true" />
+                                </Button>
+                            </FormItemPart>
+                        </FormItem>
+                    {/each}
+                </ul>
+                {#if numbers?.length < 10}
+                    <Button
+                        noMargin
+                        text
+                        on:click={() =>
                             addPhoneNumber({
                                 phone: generateNumber(),
                                 otp: generateOTP()
-                            });
-                        }}>Generate number</Empty>
+                            })}
+                        disabled={numbers.length >= 10}>
+                        <span class="icon-plus" aria-hidden="true" />
+                        <span class="text">Add number</span>
+                    </Button>
                 {/if}
+            {:else}
+                <Empty
+                    on:click={() => {
+                        addPhoneNumber({
+                            phone: generateNumber(),
+                            otp: generateOTP()
+                        });
+                    }}>Generate number</Empty>
             {/if}
         </svelte:fragment>
 

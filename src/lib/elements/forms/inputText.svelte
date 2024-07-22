@@ -11,6 +11,7 @@
     export let id: string;
     export let name: string = id;
     export let value = '';
+    export let pattern: string = null;
     export let placeholder = '';
     export let required = false;
     export let hideRequired = false;
@@ -38,6 +39,11 @@
 
     const handleInvalid = (event: Event) => {
         event.preventDefault();
+
+        if (element.validity.patternMismatch) {
+            error = `Value must be a ${maxlength} digit number`;
+            return;
+        }
 
         if (element.validity.valueMissing) {
             error = 'This field is required';
@@ -118,6 +124,7 @@
             {readonly}
             {required}
             {maxlength}
+            {pattern}
             autocomplete={autocomplete ? 'on' : 'off'}
             type="text"
             class="input-text"
