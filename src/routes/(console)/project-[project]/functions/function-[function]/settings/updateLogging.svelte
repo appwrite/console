@@ -69,15 +69,15 @@
     <CardGrid>
         <Heading tag="h6" size="7">Execution logs</Heading>
         <p>
-            Enable or disable execution logs. We recommend disabling logs when transferring critical
-            data or for performance reasons.
+            Enable or disable execution logs. We recommend disabling them for better performance in
+            production.
         </p>
         <svelte:fragment slot="aside">
             <FormList>
                 <InputSwitch label="Logs" id="logging" bind:value={functionLogging}>
                     <svelte:fragment slot="description">
                         <p>
-                            When enabled, all execution responses will be accessible in the <a
+                            When disabled, execution logs and errors will not be shown in the <a
                                 href={`${base}/project-${$project.$id}/functions/function-${$func.$id}/executions`}
                                 class="link">
                                 Executions</a> tab
