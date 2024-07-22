@@ -325,6 +325,7 @@
         : !!$organization?.backupPaymentMethodId}
     <DeleteOrgPayment
         bind:showDelete
+        {hasOtherMethod}
         isBackup={isSelectedBackup}
         disabled={$organization?.billingPlan !== BillingPlan.FREE && !hasOtherMethod} />
 {/if}
