@@ -46,7 +46,7 @@
     } from '$lib/helpers/date';
     import { last } from '$lib/helpers/array';
 
-    let previousPage: string = base;
+    let previousPage: string = `${base}/project-${$page.params.project}/functions/function-${$page.params.function}/executions`;
 
     afterNavigate(({ from }) => {
         previousPage = from?.url?.pathname || previousPage;
@@ -126,10 +126,11 @@
     let now = new Date();
     let minDate: string;
     let date: string = toLocaleDateISO(now.getTime());
-    let time: string = toLocaleTimeISO(now.getTime());
-    $: minDate = toLocaleDateISO(now.getTime());
+    // We need to remove seconds from the min so the seconds are not displayed in the time picker
+    let time: string = toLocaleTimeISO(now.getTime()).split(':').slice(0, 2).join(':');
+    $: minDate = toLocaleDateISO(now.toString());
     $: minTime = isSameDay(new Date(date), new Date(minDate))
-        ? toLocaleTimeISO(now.getTime())
+        ? toLocaleTimeISO(now.getTime()).split(':').slice(0, 2).join(':')
         : '00:00';
     $: dateTime = new Date(`${date}T${time}`);
 
@@ -297,7 +298,6 @@
                                     required={true}
                                     min={minTime}
                                     bind:value={time}
-                                    step={1}
                                     isMultiple
                                     fullWidth />
                             </FormItem>
