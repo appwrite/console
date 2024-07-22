@@ -10,7 +10,7 @@
     import { Dependencies } from '$lib/constants';
     import { organization } from '$lib/stores/organization';
     import { BillingPlan } from '$lib/constants';
-    import { isCloud, isSelfHosted } from '$lib/system';
+    import { isCloud } from '$lib/system';
     import MockNumbersLight from './mock-numbers-light.png';
     import MockNumbersDark from './mock-numbers-dark.png';
     import EmptyCardImageCloud from '$lib/components/emptyCardImageCloud.svelte';

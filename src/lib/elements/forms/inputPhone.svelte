@@ -93,7 +93,7 @@
             bind:value
             bind:this={element}
             on:invalid={handleInvalid} />
-        <slot/>
+        <slot />
     </div>
     {#if error}
         <Helper type="warning">{error}</Helper>
