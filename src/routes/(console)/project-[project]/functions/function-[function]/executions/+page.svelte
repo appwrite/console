@@ -202,8 +202,7 @@
         <div class="common-section">
             <Alert type="info" isStandalone>
                 <svelte:fragment slot="title">Your execution logs are disabled</svelte:fragment>
-
-                To see the latest execution logs, enable them in your
+                To view execution logs and errors, enable them in your
                 <a
                     href={`${base}/project-${$project.$id}/functions/function-${$func.$id}/settings`}
                     class="link">
