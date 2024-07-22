@@ -27,7 +27,7 @@
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
 
-    $: anyOrgFree = $organizationList.teams?.find(
+    $: anyOrgFree = $organizationList.teams?.some(
         (org) => (org as Organization)?.billingPlan === BillingPlan.FREE
     );
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$/i;
@@ -79,7 +79,7 @@
                 billingPlan = plan as BillingPlan;
             }
         }
-        if (!!anyOrgFree) {
+        if (anyOrgFree) {
             billingPlan = BillingPlan.PRO;
         }
     });
@@ -202,7 +202,7 @@
                 For more details on our plans, visit our
                 <Button href="https://appwrite.io/pricing" external link>pricing page</Button>.
             </p>
-            <PlanSelection bind:billingPlan anyOrgFree={!!anyOrgFree} isNewOrg />
+            <PlanSelection bind:billingPlan {anyOrgFree} isNewOrg />
             {#if billingPlan !== BillingPlan.FREE}
                 <FormList class="u-margin-block-start-24">
                     <InputTags
