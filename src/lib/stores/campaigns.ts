@@ -84,6 +84,12 @@ campaigns
             ]
         }
     })
+    .set('FreeCodeCamp', {
+        template: 'card',
+        title: 'Claim your FreeCodeCamp $50 credits.',
+        description:
+            'Get $50 in Cloud credits when you upgrade or create an organization with a Pro plan'
+    })
     .set('FusionVC', {
         template: 'review',
         title: 'Welcome to Appwrite!',
