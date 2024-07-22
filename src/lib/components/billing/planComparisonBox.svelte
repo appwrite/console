@@ -109,8 +109,9 @@
             <p class="u-margin-block-start-8">Everything in the Pro plan, plus:</p>
             <ul class="un-order-list u-margin-inline-start-4">
                 <li>Unlimited seats</li>
-                <li>Organization roles <span class="inline-tag">Coming soon</span></li>
+                <li>Organization roles <span class="future-badge secondary">Coming soon</span></li>
                 <li>SOC-2, HIPAA compliance</li>
+                <li>SSO <span class="future-badge secondary small">Coming soon</span></li>
                 <li>SSO <span class="inline-tag">Coming soon</span></li>
                 <li>Priority support</li>
             </ul>
@@ -134,5 +135,45 @@
     :global(.theme-dark) .comparison-box :global(.secondary-tabs-button:where(:disabled)) {
         background: hsl(var(--color-neutral-80));
         border: 1px solid hsl(var(--color-neutral-85));
+    }
+
+    .future-badge {
+        --base-0: 0px;
+        --base-2: 2px;
+        --base-4: 4px;
+        --base-6: 6px;
+        --neutral-700: #56565c;
+        --neutral-900: #19191c;
+        --color-bgcolor-neutral-invert: var(--neutral-900);
+        --color-fgcolor-neutral-secondary: var(--neutral-700);
+        --color-overlay-on-neutral: #0000000f;
+        --p-badge-padding-block: var(--base-2);
+        --p-badge-padding-inline: var(--base-6);
+
+        display: inline-flex;
+        padding-block: var(--p-badge-padding-block);
+        padding-inline: var(--p-badge-padding-inline);
+        justify-content: center;
+        align-items: center;
+        border-radius: var(--base-6);
+
+        color: var(--p-badge-color);
+        background-color: var(--p-badge-background-color);
+
+        font-style: normal;
+        font-weight: 500;
+        line-height: 140%;
+        &.small {
+            --p-badge-padding-block: var(--base-0);
+            --p-badge-padding-inline: var(--base-4);
+        }
+        &.primary {
+            --p-badge-color: var(--color-fgcolor-on-invert);
+            --p-badge-background-color: var(--color-bgcolor-neutral-invert);
+        }
+        &.secondary {
+            --p-badge-color: var(--color-fgcolor-neutral-secondary);
+            --p-badge-background-color: var(--color-overlay-on-neutral);
+        }
     }
 </style>
