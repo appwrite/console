@@ -146,6 +146,14 @@
                         <NullCheckbox checked={value === null} on:change={handleNullChange} />
                     </li>
                 {/if}
+                <li class="buttons-list-item">
+                    <button
+                        class="options-list-button u-margin-inline-start-8"
+                        aria-label="regenerate text"
+                        type="button">
+                        <span class="icon-refresh" aria-hidden="true"></span>
+                    </button>
+                </li>
             </ul>
         {/if}
         <slot />

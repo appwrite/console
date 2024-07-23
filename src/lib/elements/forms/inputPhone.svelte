@@ -78,7 +78,7 @@
             </Drop>
         {/if}
     </Label>
-    <div class="input-text-wrapper" style="--amount-of-buttons:1">
+    <div class="input-text-wrapper">
         <input
             {id}
             {placeholder}
