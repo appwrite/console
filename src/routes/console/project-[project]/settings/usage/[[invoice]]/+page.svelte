@@ -28,7 +28,7 @@
     $: executions = data.usage.executions;
     $: executionsTotal = data.usage.executionsTotal;
     $: storage = data.usage.filesStorageTotal;
-    $: deployments = data.usage.deploymentsStorageTotal;
+    $: deploymentsTotal = data.usage.deploymentsStorageTotal;
 
     const tier = data?.currentInvoice?.tier ?? $organization?.billingPlan;
     const plan = tierToPlan(tier).name;
@@ -317,8 +317,8 @@
                     </div>
                 </Card>
             {/if}
-            {#if deployments}
-                {@const humanized = humanFileSize(deployments)}
+            {#if deploymentsTotal}
+                {@const humanized = humanFileSize(deploymentsTotal)}
                 <div class="u-flex u-flex-vertical">
                     <div class="u-flex u-main-space-between">
                         <p>
@@ -327,7 +327,7 @@
                         </p>
                     </div>
                 </div>
-                {#if data.usage.bucketsBreakdown.length > 0}
+                {#if data.usage.deploymentsStorageBreakdown.length > 0}
                 <Table noMargin noStyles>
                     <TableHeader>
                         <TableCellHead width={285}>Function</TableCellHead>

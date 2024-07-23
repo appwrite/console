@@ -5,10 +5,13 @@
     import { page } from '$app/stores';
     import type { PageData } from './$types';
     import { formatNumberWithCommas } from '$lib/helpers/numbers';
+    import { humanFileSize } from '$lib/helpers/sizeConvertion';
 
     export let data: PageData;
     $: total = data.executionsTotal;
     $: count = data.executions;
+    $: deploymentsStorageTotal = data.deploymentsStorageTotal;
+    $: deploymentsStorage = data.deploymentsStorage;
 </script>
 
 <Container>
@@ -46,4 +49,36 @@
                 ]} />
         </Card>
     {/if}
+    {#if deploymentsStorage}
+    <Card>
+        <Heading tag="h6" size="6">{humanFileSize(deploymentsStorageTotal).value}{humanFileSize(deploymentsStorageTotal).unit}</Heading>
+        <p>Deployments Storage</p>
+        <div class="u-margin-block-start-16" />
+        <BarChart
+            options={{
+                yAxis: {
+                    axisLabel: {
+                        formatter: (value) =>
+                            value
+                                ? `${humanFileSize(+value).value} ${
+                                    humanFileSize(+value).unit
+                                }`
+                                : '0'
+                    }
+                }
+            }}
+            series={[
+                {
+                    name: 'Bandwidth',
+                    data: [
+                        ...deploymentsStorage.map((e) => [e.date, e.value])
+                    ],
+                    tooltip: {
+                        valueFormatter: (value) =>
+                            `${humanFileSize(+value).value} ${humanFileSize(+value).unit}`
+                    }
+                }
+            ]} />
+    </Card>
+{/if}
 </Container>
