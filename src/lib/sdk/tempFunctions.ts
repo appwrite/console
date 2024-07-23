@@ -1,4 +1,10 @@
-import { AppwriteException, FunctionUsageRange, type Client, type Payload, type ProjectUsageRange } from '@appwrite.io/console';
+import {
+    AppwriteException,
+    FunctionUsageRange,
+    type Client,
+    type Payload,
+    type ProjectUsageRange
+} from '@appwrite.io/console';
 
 /**
  * Metric
@@ -176,8 +182,12 @@ export class TempFunctions {
      * @param {ProjectUsageRange} period
      * @throws {AppwriteException}
      * @returns {Promise}
-    */
-    async getUsage(startDate: string, endDate: string, period?: ProjectUsageRange): Promise<UsageProject> {
+     */
+    async getUsage(
+        startDate: string,
+        endDate: string,
+        period?: ProjectUsageRange
+    ): Promise<UsageProject> {
         if (typeof startDate === 'undefined') {
             throw new AppwriteException('Missing required parameter: "startDate"');
         }
@@ -202,9 +212,14 @@ export class TempFunctions {
         }
 
         const uri = new URL(this.client.config.endpoint + apiPath);
-        return await this.client.call('get', uri, {
-            'content-type': 'application/json',
-        }, payload);
+        return await this.client.call(
+            'get',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            payload
+        );
     }
 
     /**
@@ -215,7 +230,7 @@ export class TempFunctions {
      * @param {FunctionUsageRange} range
      * @throws {AppwriteException}
      * @returns {Promise}
-    */
+     */
     async getFunctionUsage(functionId: string, range?: FunctionUsageRange): Promise<UsageFunction> {
         if (typeof functionId === 'undefined') {
             throw new AppwriteException('Missing required parameter: "functionId"');
@@ -229,8 +244,13 @@ export class TempFunctions {
         }
 
         const uri = new URL(this.client.config.endpoint + apiPath);
-        return await this.client.call('get', uri, {
-            'content-type': 'application/json',
-        }, payload);
+        return await this.client.call(
+            'get',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            payload
+        );
     }
 }

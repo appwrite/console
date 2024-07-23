@@ -328,33 +328,33 @@
                     </div>
                 </div>
                 {#if data.usage.deploymentsStorageBreakdown.length > 0}
-                <Table noMargin noStyles>
-                    <TableHeader>
-                        <TableCellHead width={285}>Function</TableCellHead>
-                        <TableCellHead>Usage</TableCellHead>
-                        <TableCellHead width={140} />
-                    </TableHeader>
-                    <TableBody>
-                        {#each data.usage.deploymentsStorageBreakdown.sort((a, b) => b.value - a.value) as func}
-                            {@const humanized = humanFileSize(func.value)}
-                            <TableRow>
-                                <TableCell title="Function">
-                                    {func.name ?? func.resourceId}
-                                </TableCell>
-                                <TableCell title="Usage">
-                                    {humanized.value}{humanized.unit}
-                                </TableCell>
-                                <TableCellLink
-                                    href={`${base}/functions/function-${func.resourceId}`}
-                                    title="View function">
-                                    View function
-                                </TableCellLink>
-                            </TableRow>
-                        {/each}
-                    </TableBody>
-                </Table>
-            {/if}
-                {:else}
+                    <Table noMargin noStyles>
+                        <TableHeader>
+                            <TableCellHead width={285}>Function</TableCellHead>
+                            <TableCellHead>Usage</TableCellHead>
+                            <TableCellHead width={140} />
+                        </TableHeader>
+                        <TableBody>
+                            {#each data.usage.deploymentsStorageBreakdown.sort((a, b) => b.value - a.value) as func}
+                                {@const humanized = humanFileSize(func.value)}
+                                <TableRow>
+                                    <TableCell title="Function">
+                                        {func.name ?? func.resourceId}
+                                    </TableCell>
+                                    <TableCell title="Usage">
+                                        {humanized.value}{humanized.unit}
+                                    </TableCell>
+                                    <TableCellLink
+                                        href={`${base}/functions/function-${func.resourceId}`}
+                                        title="View function">
+                                        View function
+                                    </TableCellLink>
+                                </TableRow>
+                            {/each}
+                        </TableBody>
+                    </Table>
+                {/if}
+            {:else}
                 <Card isDashed>
                     <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
                         <span
