@@ -13,6 +13,7 @@
     import { plansInfo } from '$lib/stores/billing';
     import { formatCurrency } from '$lib/helpers/numbers';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
+    import { projects } from './store';
 
     export let showCreate = false;
 
@@ -21,7 +22,21 @@
     const url = `${$page.url.origin}/invite`;
     $: plan = $plansInfo?.get($organization?.billingPlan);
 
-    let email: string, name: string, error: string, role: string = 'owner';
+    let email: string,
+        name: string,
+        error: string,
+        role: string = 'owner',
+        project: string = 'all';
+    let projectsList = [
+        {
+            label: 'All Projects',
+            value: 'all'
+        },
+        ...$projects.projects.map((project) => ({
+            label: project.name,
+            value: project.$id
+        }))
+    ];
 
     const roles = [
         {
@@ -50,7 +65,7 @@
         try {
             const team = await sdk.forConsole.teams.createMembership(
                 $organization.$id,
-                [role],
+                [roleFormatted],
                 email,
                 undefined,
                 undefined,
@@ -73,6 +88,8 @@
             trackError(e, Submit.MemberCreate);
         }
     }
+
+    $: roleFormatted = `projects/${project}/${role}`;
 
     $: if (!showCreate) {
         error = null;
@@ -105,11 +122,8 @@
             label="Name (optional)"
             placeholder="Enter name"
             bind:value={name} />
-        <InputSelect
-            id="role"
-            label="Role"
-            options={roles}
-            bind:value={role} />
+        <InputSelect id="project" label="Projects" options={projectsList} bind:value={project} />
+        <InputSelect id="role" label="Role" options={roles} bind:value={role} />
     </FormList>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
