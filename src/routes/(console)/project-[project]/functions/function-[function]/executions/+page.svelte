@@ -49,11 +49,11 @@
             id: 'trigger',
             title: 'Trigger',
             type: 'string',
-            show: true,
+            show: false,
             width: 90,
             array: true,
             format: 'enum',
-            elements: ['http', 'scheduled', 'event']
+            elements: ['http', 'schedule', 'event']
         },
         {
             id: 'requestMethod',
@@ -170,7 +170,7 @@
                 href={`${base}/project-${$project.$id}/functions/function-${$func.$id}/executions/execute-function`}
                 disabled={!$func.$id || !$func?.deployment}>
                 <span class="icon-plus" aria-hidden="true" />
-                <span class="text">Execute now</span>
+                <span class="text">Execute</span>
             </Button>
         </div>
     </div>
@@ -242,7 +242,7 @@
                 <p class="text u-line-height-1-5">
                     You have no execution logs. Create and activate a deployment to see it here.
                 </p>
-                <p class="text u-line-height-1-5">Need a hand? Learn more in our documentation</p>
+                <p class="text u-line-height-1-5">Need a hand? Learn more in our documentation.</p>
             </div>
             <div class="u-flex u-gap-16">
                 <Button text external href="https://appwrite.io/docs/products/functions/execution">

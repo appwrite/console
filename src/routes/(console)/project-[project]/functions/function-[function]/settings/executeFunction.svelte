@@ -9,8 +9,8 @@
 
 <CardGrid>
     <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16">
-        <div class="avatar">
-            <SvgIcon name={$func.runtime.split('-')[0]} type="color" size={80} iconSize="large" />
+        <div class="avatar" style={`--p-image-size: ${32 / 16}rem`} aria-hidden="true">
+            <SvgIcon size={64} iconSize="large" name={$func.runtime.split('-')[0]}></SvgIcon>
         </div>
         <div class="u-flex-vertical u-gap-4">
             <Heading tag="h6" size="7">{$func.name}</Heading>
@@ -31,7 +31,7 @@
         <Button
             secondary
             href={`${base}/project-${$project.$id}/functions/function-${$func.$id}/executions/execute-function`}>
-            Execute now
+            Execute
         </Button>
     </svelte:fragment>
 </CardGrid>

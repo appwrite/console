@@ -241,16 +241,11 @@
                         <Button
                             noMargin
                             text
-                            disabled={headers?.length &&
-                            headers[headers.length - 1][0] &&
-                            headers[headers.length - 1][1]
+                            disabled={headers?.length && headers[headers.length - 1][0]
                                 ? false
                                 : true}
                             on:click={() => {
-                                if (
-                                    headers[headers.length - 1][0] &&
-                                    headers[headers.length - 1][1]
-                                ) {
+                                if (headers[headers.length - 1][0]) {
                                     headers.push(['', '']);
                                     headers = headers;
                                 }
@@ -320,7 +315,9 @@
                         {func.deployment}
                     </Id>
                 </div>
-                <ul class="u-flex u-main-space-between">
+                <ul
+                    class="u-grid u-width-full-line u-gap-16"
+                    style:grid-template-columns="repeat(3, 1fr)">
                     <li class="u-flex-vertical u-gap-8">
                         <p class="u-color-text-offline">Status</p>
                         <p>
