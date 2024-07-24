@@ -170,7 +170,7 @@
                 href={`${base}/project-${$project.$id}/functions/function-${$func.$id}/executions/execute-function`}
                 disabled={!$func.$id || !$func?.deployment}>
                 <span class="icon-plus" aria-hidden="true" />
-                <span class="text">Execute now</span>
+                <span class="text">Execute</span>
             </Button>
         </div>
     </div>

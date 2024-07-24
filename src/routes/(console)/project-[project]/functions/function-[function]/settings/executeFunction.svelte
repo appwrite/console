@@ -31,7 +31,7 @@
         <Button
             secondary
             href={`${base}/project-${$project.$id}/functions/function-${$func.$id}/executions/execute-function`}>
-            Execute now
+            Execute
         </Button>
     </svelte:fragment>
 </CardGrid>
