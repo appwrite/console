@@ -14,12 +14,13 @@
     import Create from '../create.svelte';
     import { abbreviateNumber } from '$lib/helpers/numbers';
     import { base } from '$app/paths';
-    import { Filters, queries, TagList } from '$lib/components/filters';
+    import { Filters, queries } from '$lib/components/filters';
     import { writable } from 'svelte/store';
     import type { Column } from '$lib/helpers/types';
     import { View } from '$lib/helpers/load';
     import Table from './table.svelte';
     import { tags } from '$lib/components/filters/store';
+    import SimpleFilters from './simpleFilters.svelte';
 
     export let data;
 
@@ -35,7 +36,7 @@
             width: 110,
             array: true,
             format: 'enum',
-            elements: ['completed', 'scheduled', 'waiting', 'processing', 'cancelled', 'failed']
+            elements: ['completed', 'failed', 'waiting', 'scheduled', 'processing', 'cancelled']
         },
         {
             id: '$createdAt',
@@ -53,7 +54,11 @@
             width: 90,
             array: true,
             format: 'enum',
-            elements: ['http', 'scheduled', 'event']
+            elements: [
+                { value: 'http', label: 'HTTP' },
+                { value: 'schedule', label: 'Schedule' },
+                { value: 'event', label: 'Event' }
+            ]
         },
         {
             id: 'requestMethod',
@@ -132,34 +137,16 @@
     </ContainerHeader>
     <div class="u-flex u-main-space-between is-not-mobile u-margin-block-start-16">
         <div class="u-flex u-gap-8 u-cross-center u-flex-wrap">
-            <TagList />
-
-            <Filters query={data.query} {columns} let:disabled let:toggle singleCondition>
+            <SimpleFilters {columns} />
+            <Filters query={data.query} {columns} let:disabled let:toggle>
                 <div class="u-flex u-gap-4">
-                    <Button
-                        text
-                        on:click={toggle}
-                        {disabled}
-                        noMargin={!$tags?.length}
-                        ariaLabel="open filter">
+                    <Button text on:click={toggle} {disabled} noMargin ariaLabel="open filter">
                         <span class="icon-filter-line" />
-                        {#if !$tags?.length}
-                            <span class="text">Filters</span>
+                        <span class="text">More filters</span>
+                        {#if $tags?.length}
+                            <span class="inline-tag">{$tags.length}</span>
                         {/if}
                     </Button>
-                    {#if $tags?.length}
-                        <div
-                            style="flex-basis:1px; background-color:hsl(var(--color-border)); width: 1px">
-                        </div>
-                        <Button
-                            text
-                            on:click={() => {
-                                queries.clearAll();
-                                queries.apply();
-                            }}>
-                            Clear all
-                        </Button>
-                    {/if}
                 </div>
             </Filters>
         </div>
