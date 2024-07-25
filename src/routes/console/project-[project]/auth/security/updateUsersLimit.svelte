@@ -70,7 +70,7 @@
                     <Pill>recommended</Pill>
                 </label>
             </li>
-            <li class="form-item is-multiple">
+            <li class="form-item is-multiple u-cross-center">
                 <div class="input-text-wrapper">
                     <label class="choice-item" for="limited">
                         <input
