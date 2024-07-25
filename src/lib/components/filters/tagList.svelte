@@ -1,11 +1,7 @@
 <script lang="ts">
     import { tooltip } from '$lib/actions/tooltip';
 
-    import { queries, tags, type TagValue } from './store';
-
-    function tagFormat(node: HTMLElement) {
-        node.innerHTML = node.innerHTML.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
-    }
+    import { queries, tagFormat, tags, type TagValue } from './store';
 
     // We cast to any to not cause type errors in the input components
     /* eslint  @typescript-eslint/no-explicit-any: 'off' */

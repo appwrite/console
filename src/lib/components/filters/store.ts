@@ -276,3 +276,7 @@ function generateDefaultOperators() {
 }
 
 export const operators = generateDefaultOperators();
+
+export function tagFormat(node: HTMLElement) {
+    node.innerHTML = node.innerHTML.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+}
