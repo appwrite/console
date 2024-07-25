@@ -44,7 +44,21 @@
             type: 'datetime',
             show: true,
             width: 120,
-            format: 'datetime'
+            format: 'datetime',
+            elements: [
+                {
+                    value: 5 * 60 * 1000,
+                    label: 'last 5 minutes'
+                },
+                {
+                    value: 60 * 60 * 1000,
+                    label: 'last 1 hour'
+                },
+                {
+                    value: 24 * 60 * 60 * 1000,
+                    label: 'last 24 hours'
+                }
+            ]
         },
         {
             id: 'trigger',
@@ -76,7 +90,25 @@
             type: 'integer',
             show: true,
             width: 100,
-            format: 'integer'
+            format: 'integer',
+            elements: [
+                {
+                    value: 299,
+                    label: 'Success (200-299)'
+                },
+                {
+                    value: 399,
+                    label: 'Redirect (300-399)'
+                },
+                {
+                    value: 499,
+                    label: 'Client error (400-499)'
+                },
+                {
+                    value: 599,
+                    label: 'Server error (500-599)'
+                }
+            ]
         },
         {
             id: 'requestPath',

@@ -1,6 +1,6 @@
 <script lang="ts">
     import { afterNavigate } from '$app/navigation';
-    import { DropList } from '$lib/components';
+    import { DropList, DropListItem } from '$lib/components';
     import {
         addFilter,
         queries,
@@ -16,172 +16,230 @@
 
     export let columns: Writable<Column[]>;
 
-    const statusCol = $columns.find((col) => col.id === 'status');
-    let showStatusFilter = false;
-    let statusTag: string = null;
-    let statusOptions = statusCol?.elements?.map((element) => {
-        return {
-            value: (element?.value ?? element) as string,
-            label: (element?.label ?? element) as string,
-            checked: false
-        };
-    });
-    let statusQueriesTotal = 0;
+    type FilterData = {
+        title: string;
+        id: string;
+        array: boolean;
+        show: boolean;
+        tag: string;
+        operator: ValidOperators;
+        options: { value: string; label: string; checked: boolean }[];
+    };
 
-    const triggerCol = $columns.find((col) => col.id === 'trigger');
-    let showTriggerFilter = false;
-    let triggerTag: string = null;
-    let triggerOptions = triggerCol?.elements?.map((element) => {
+    function buildFilterCol(col: Column, customOperator = null): FilterData {
         return {
-            value: (element?.value ?? element) as string,
-            label: (element?.label ?? element) as string,
-            checked: false
+            title: col.title,
+            id: col.id,
+            show: false,
+            array: col?.array,
+            tag: null,
+            operator: customOperator ?? ValidOperators.Equal,
+            options: col?.elements?.map((element) => {
+                return {
+                    value: (element?.value ?? element) as string,
+                    label: (element?.label ?? element) as string,
+                    checked: false
+                };
+            })
         };
-    });
-    let triggerQueriesTotal = 0;
+    }
+
+    const statusCol = $columns.find((col) => col.id === 'status');
+    let statusFilter = buildFilterCol(statusCol);
+    const triggerCol = $columns.find((col) => col.id === 'trigger');
+    let triggerFilter = buildFilterCol(triggerCol);
+    const methodCol = $columns.find((col) => col.id === 'requestMethod');
+    let methodFilter = buildFilterCol(methodCol);
+    const statusCodeCol = $columns.find((col) => col.id === 'responseStatusCode');
+    let statusCodeFilter = buildFilterCol(statusCodeCol);
+    const createdAtCol = $columns.find((col) => col.id === '$createdAt');
+    let createdAtFilter = buildFilterCol(createdAtCol);
 
     let localQueries = new Map<TagValue, string>();
+
     afterNavigate((p) => {
         const paramQueries = p.to.url.searchParams.get('query');
         localQueries = queryParamToMap(paramQueries || '[]');
         const localTags = Array.from(localQueries.keys());
-        //Set total
-        statusQueriesTotal = [...localQueries.values()].reduce((acc, query) => {
-            if (query.includes(`"attribute":"${statusCol.id}"`)) {
-                acc++;
-            }
-            return acc;
-        }, 0);
-        triggerQueriesTotal = [...localQueries.values()].reduce((acc, query) => {
-            if (query.includes(`"attribute":"${triggerCol.id}"`)) {
-                acc++;
-            }
-            return acc;
-        }, 0);
+
         // Set tags
         if (!localTags?.length) {
-            statusTag = null;
-            triggerTag = null;
+            statusFilter.tag = null;
+            triggerFilter.tag = null;
+            methodFilter.tag = null;
+            statusCodeFilter.tag = null;
+            createdAtFilter.tag = null;
         } else {
             const list = [...localTags].reverse();
-            list.forEach((tagData) => {
-                // STATUS
-                if (tagData.tag.includes(`**${statusCol.title}**`)) {
-                    statusTag = tagData.tag;
-                    if (Array.isArray(tagData.value) && tagData.value?.length) {
-                        const values = tagData.value as string[];
-                        statusOptions.forEach((option) => {
-                            option.checked = values.includes(option.value);
-                        });
-                    }
-                }
-
-                // TRIGGER
-                if (tagData.tag.includes(`**${triggerCol.title}**`)) {
-                    triggerTag = tagData.tag;
-                    if (Array.isArray(tagData.value) && tagData.value?.length) {
-                        const values = tagData.value as string[];
-                        triggerOptions.forEach((option) => {
-                            option.checked = values.includes(option.value);
-                        });
-                    }
-                }
+            [statusFilter, triggerFilter, methodFilter].forEach((filter) => {
+                setTag(filter, list);
             });
+
+            const statusCodeTag = list.find((tag) =>
+                tag.tag.includes(`**${statusCodeFilter.title}**`)
+            );
+            if (statusCodeTag) {
+                const ranges = statusCodeCol.elements as { value: number; label: string }[];
+
+                const codeRange = ranges.find((c) => c?.value && c.value === statusCodeTag.value);
+                if (codeRange) {
+                    statusCodeFilter.tag = `**${statusCodeFilter.title}** is **${codeRange.label}**`;
+                    statusCodeFilter = statusCodeFilter;
+                }
+            } else {
+                statusCodeFilter.tag = null;
+            }
+
+            const createdAtTag = list.find((tag) =>
+                tag.tag.includes(`**${createdAtFilter.title}**`)
+            );
+            if (createdAtTag) {
+                const now = new Date();
+
+                const diff = now.getTime() - new Date(createdAtTag.value as string).getTime();
+                const ranges = createdAtCol.elements as { value: string; label: string }[];
+                const dateRange = ranges.reduce((prev, curr) => {
+                    if (parseInt(curr.value) < diff && curr.value > prev.value) {
+                        return curr;
+                    }
+                    return prev;
+                });
+                if (dateRange) {
+                    createdAtFilter.tag = `**${createdAtFilter.title}** is **${dateRange.label}**`;
+                    createdAtFilter = createdAtFilter;
+                }
+            } else {
+                createdAtFilter.tag = null;
+            }
+
+            // Reasinging the filters to trigger reactivity
+            statusFilter = statusFilter;
+            triggerFilter = triggerFilter;
+            methodFilter = methodFilter;
+            statusCodeFilter = statusCodeFilter;
+            createdAtFilter = createdAtFilter;
         }
     });
 
+    function setTag(filter: FilterData, list: TagValue[]) {
+        const tagData = list.find((tag) => tag.tag.includes(`**${filter.title}**`));
+        if (tagData) {
+            filter.tag = tagData.tag;
+            if (Array.isArray(tagData.value) && tagData.value?.length) {
+                const values = tagData.value as string[];
+                filter.options.forEach((option) => {
+                    option.checked = values.includes(option.value);
+                });
+            }
+        } else {
+            filter.tag = null;
+        }
+    }
+
     function addFilterAndApply(
         colId: string,
+        colTitle: string,
         operator: ValidOperators,
-        value: unknown,
+        value: string,
         arrayValues: string[] = []
     ) {
-        const tagsList = $tags.filter((tag) => tag.tag.toLowerCase().includes(colId));
-        tagsList.forEach((tag) => queries.removeFilter(tag));
+        const tagList = $tags.filter((tag) => tag.tag.includes(colTitle));
+        tagList.forEach((tag) => queries.removeFilter(tag));
         if (value || arrayValues?.length) {
-            addFilter($columns, colId, operator, value, arrayValues);
+            if (colId === statusCodeFilter.id) {
+                addStatusCodeFilter(value, colId);
+            } else if (colId === createdAtFilter.id) {
+                addCreatedAtFilter(value, colId);
+            } else {
+                addFilter($columns, colId, operator, value, arrayValues);
+            }
         }
         queries.apply();
     }
+
+    function addStatusCodeFilter(value: string, colId: string) {
+        addFilter($columns, colId, ValidOperators.LessThanOrEqual, parseInt(value));
+        addFilter($columns, colId, ValidOperators.GreaterThanOrEqual, parseInt(value) - 99);
+    }
+    function addCreatedAtFilter(value: string, colId: string) {
+        const now = new Date();
+        const isoValue = new Date(now.getTime() - parseInt(value));
+        addFilter($columns, colId, ValidOperators.GreaterThanOrEqual, isoValue.toISOString());
+        addFilter($columns, colId, ValidOperators.LessThanOrEqual, now.toISOString());
+    }
 </script>
 
-<DropList bind:show={showStatusFilter} width="11">
-    <Pill button on:click={() => (showStatusFilter = !showStatusFilter)}>
-        {#if statusTag}
-            {#key statusTag}
+{#each [statusFilter, triggerFilter, methodFilter] as filter}
+    <DropList bind:show={filter.show}>
+        <Pill button on:click={() => (filter.show = !filter.show)}>
+            {#key filter.tag}
                 <span use:tagFormat>
-                    {statusTag}
+                    {filter?.tag ?? filter.title}
                 </span>
             {/key}
-        {:else}
-            <span class="text">
-                {statusCol.title}
+            <span class:icon-cheveron-down={!filter.show} class:icon-cheveron-up={filter.show}>
             </span>
-        {/if}
-        <span
-            class:icon-cheveron-down={!showStatusFilter}
-            class:icon-cheveron-up={showStatusFilter}>
-        </span>
-    </Pill>
-    <svelte:fragment slot="list">
-        {#if statusQueriesTotal > 1}
-            <li class="u-padding-inline-12">This will override your previous query.</li>
-        {/if}
-        {#each statusOptions as option (option.value + option.checked)}
-            <SelectSearchCheckbox
-                bind:value={option.checked}
-                on:click={() => {
-                    option.checked = !option.checked;
-                    statusOptions = statusOptions;
-                    addFilterAndApply(
-                        statusCol.id,
-                        ValidOperators.Equal,
-                        null,
-                        statusOptions.filter((opt) => opt.checked).map((opt) => opt.value) ?? []
-                    );
-                }}>
-                {option.label}
-            </SelectSearchCheckbox>
-        {/each}
-    </svelte:fragment>
-</DropList>
-<DropList bind:show={showTriggerFilter} width="11">
-    <Pill button on:click={() => (showTriggerFilter = !showTriggerFilter)}>
-        {#if triggerTag}
-            {#key triggerTag}
+        </Pill>
+        <svelte:fragment slot="list">
+            {#each filter.options as option (option.value + option.checked)}
+                <SelectSearchCheckbox
+                    bind:value={option.checked}
+                    on:click={() => {
+                        option.checked = !option.checked;
+                        addFilterAndApply(
+                            filter.id,
+                            filter.title,
+                            filter.operator,
+                            filter?.array ? null : option.checked ? option.value : null,
+                            filter?.array
+                                ? (filter.options
+                                      .filter((opt) => opt.checked)
+                                      .map((opt) => opt.value) ?? [])
+                                : []
+                        );
+                    }}>
+                    {option.label}
+                </SelectSearchCheckbox>
+            {/each}
+        </svelte:fragment>
+    </DropList>
+{/each}
+{#each [statusCodeFilter, createdAtFilter] as filter}
+    <DropList bind:show={filter.show}>
+        <Pill button on:click={() => (filter.show = !filter.show)}>
+            {#key filter.tag}
                 <span use:tagFormat>
-                    {triggerTag}
+                    {filter?.tag ?? filter.title}
                 </span>
             {/key}
-        {:else}
-            <span class="text">
-                {triggerCol.title}
+            <span class:icon-cheveron-down={!filter.show} class:icon-cheveron-up={filter.show}>
             </span>
-        {/if}
-        <span
-            class:icon-cheveron-down={!showTriggerFilter}
-            class:icon-cheveron-up={showTriggerFilter}>
-        </span>
-    </Pill>
-    <svelte:fragment slot="list">
-        {#if triggerQueriesTotal > 1}
-            <li class="u-padding-inline-12">This will override your previous query.</li>
-        {/if}
-        {#each triggerOptions as option (option.value + option.checked)}
-            <SelectSearchCheckbox
-                bind:value={option.checked}
+        </Pill>
+        <svelte:fragment slot="list">
+            {#each filter.options as option (option.value + option.checked)}
+                <DropListItem
+                    on:click={() => {
+                        filter.show = false;
+
+                        addFilterAndApply(
+                            filter.id,
+                            filter.title,
+                            filter.operator,
+                            filter?.array ? null : option.value,
+                            []
+                        );
+                    }}>
+                    {option.label}
+                </DropListItem>
+            {/each}
+            <DropListItem
                 on:click={() => {
-                    option.checked = !option.checked;
-                    triggerOptions = triggerOptions;
-                    addFilterAndApply(
-                        triggerCol.id,
-                        ValidOperators.Equal,
-                        null,
-                        triggerOptions.filter((opt) => opt.checked).map((opt) => opt.value) ?? []
-                    );
+                    filter.show = false;
+                    filter.tag = null;
+                    addFilterAndApply(filter.id, filter.title, filter.operator, null, []);
                 }}>
-                {option.label}
-            </SelectSearchCheckbox>
-        {/each}
-    </svelte:fragment>
-</DropList>
+                Clear selection
+            </DropListItem>
+        </svelte:fragment>
+    </DropList>
+{/each}
