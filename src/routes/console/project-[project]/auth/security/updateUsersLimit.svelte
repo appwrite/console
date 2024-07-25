@@ -80,7 +80,7 @@
                             type="radio"
                             bind:group={isLimited}
                             value={true} />
-                        <div class="choice-item-content">
+                        <div class="choice-item-content u-padding-inline-end-16">
                             <div class="choice-item-title">Limited</div>
                         </div>
                     </label>
