@@ -1,11 +1,14 @@
 <script lang="ts">
+    import { afterNavigate } from '$app/navigation';
     import { DropList } from '$lib/components';
     import {
         addFilter,
         queries,
+        queryParamToMap,
         tagFormat,
         tags,
-        ValidOperators
+        ValidOperators,
+        type TagValue
     } from '$lib/components/filters/store';
     import { Pill, SelectSearchCheckbox } from '$lib/elements';
     import type { Column } from '$lib/helpers/types';
@@ -23,6 +26,7 @@
             checked: false
         };
     });
+    let statusQueriesTotal = 0;
 
     const triggerCol = $columns.find((col) => col.id === 'trigger');
     let showTriggerFilter = false;
@@ -34,24 +38,53 @@
             checked: false
         };
     });
+    let triggerQueriesTotal = 0;
 
-    tags.subscribe((tagList) => {
-        if (!tagList?.length) {
+    let localQueries = new Map<TagValue, string>();
+    afterNavigate((p) => {
+        const paramQueries = p.to.url.searchParams.get('query');
+        localQueries = queryParamToMap(paramQueries || '[]');
+        const localTags = Array.from(localQueries.keys());
+        //Set total
+        statusQueriesTotal = [...localQueries.values()].reduce((acc, query) => {
+            if (query.includes(`"attribute":"${statusCol.id}"`)) {
+                acc++;
+            }
+            return acc;
+        }, 0);
+        triggerQueriesTotal = [...localQueries.values()].reduce((acc, query) => {
+            if (query.includes(`"attribute":"${triggerCol.id}"`)) {
+                acc++;
+            }
+            return acc;
+        }, 0);
+        // Set tags
+        if (!localTags?.length) {
             statusTag = null;
+            triggerTag = null;
         } else {
-            const list = [...tagList].reverse();
-            list.forEach((tag) => {
-                // Status
-                if (tag.tag.includes(`**${statusCol.title}**`)) {
-                    statusTag = tag.tag;
-                    if (Array.isArray(tag.value) && tag.value?.length) {
-                        const values = tag.value as string[];
+            const list = [...localTags].reverse();
+            list.forEach((tagData) => {
+                // STATUS
+                if (tagData.tag.includes(`**${statusCol.title}**`)) {
+                    statusTag = tagData.tag;
+                    if (Array.isArray(tagData.value) && tagData.value?.length) {
+                        const values = tagData.value as string[];
                         statusOptions.forEach((option) => {
                             option.checked = values.includes(option.value);
                         });
                     }
-                } else {
-                    statusTag = null;
+                }
+
+                // TRIGGER
+                if (tagData.tag.includes(`**${triggerCol.title}**`)) {
+                    triggerTag = tagData.tag;
+                    if (Array.isArray(tagData.value) && tagData.value?.length) {
+                        const values = tagData.value as string[];
+                        triggerOptions.forEach((option) => {
+                            option.checked = values.includes(option.value);
+                        });
+                    }
                 }
             });
         }
@@ -70,19 +103,6 @@
         }
         queries.apply();
     }
-
-    $: statusQueriesTotal = [...$queries.values()].reduce((acc, query) => {
-        if (query.includes(`"attribute":"${statusCol.id}"`)) {
-            acc++;
-        }
-        return acc;
-    }, 0);
-    $: triggerQueriesTotal = [...$queries.values()].reduce((acc, query) => {
-        if (query.includes(`"attribute":"${triggerCol.id}"`)) {
-            acc++;
-        }
-        return acc;
-    }, 0);
 </script>
 
 <DropList bind:show={showStatusFilter} width="11">
