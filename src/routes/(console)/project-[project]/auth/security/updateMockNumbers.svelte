@@ -82,16 +82,18 @@
                                 showLabel={index === 0 ? true : false}
                                 maxlength={6}
                                 required />
-                            <FormItemPart alignEnd>
-                                <Button
-                                    text
-                                    disabled={numbers.length === 0}
-                                    on:click={() => {
-                                        deletePhoneNumber(index);
-                                    }}>
-                                    <span class="icon-x" aria-hidden="true" />
-                                </Button>
-                            </FormItemPart>
+                            <div class="u-margin-block-start-20">
+                                <FormItemPart>
+                                    <Button
+                                        text
+                                        disabled={numbers.length === 0}
+                                        on:click={() => {
+                                            deletePhoneNumber(index);
+                                        }}>
+                                        <span class="icon-x" aria-hidden="true" />
+                                    </Button>
+                                </FormItemPart>
+                            </div>
                         </FormItem>
                     {/each}
                 </ul>
