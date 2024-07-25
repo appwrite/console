@@ -62,20 +62,21 @@
         localQueries = queryParamToMap(paramQueries || '[]');
         const localTags = Array.from(localQueries.keys());
 
-        // Set tags
         if (!localTags?.length) {
             statusFilter.tag = null;
             triggerFilter.tag = null;
             methodFilter.tag = null;
             statusCodeFilter.tag = null;
             createdAtFilter.tag = null;
-        } else {
-            const list = [...localTags].reverse();
             [statusFilter, triggerFilter, methodFilter].forEach((filter) => {
-                setTag(filter, list);
+                resetOptions(filter);
+            });
+        } else {
+            [statusFilter, triggerFilter, methodFilter].forEach((filter) => {
+                setFilterData(filter, localTags);
             });
 
-            const statusCodeTag = list.find((tag) =>
+            const statusCodeTag = localTags.find((tag) =>
                 tag.tag.includes(`**${statusCodeFilter.title}**`)
             );
             if (statusCodeTag) {
@@ -90,7 +91,7 @@
                 statusCodeFilter.tag = null;
             }
 
-            const createdAtTag = list.find((tag) =>
+            const createdAtTag = localTags.find((tag) =>
                 tag.tag.includes(`**${createdAtFilter.title}**`)
             );
             if (createdAtTag) {
@@ -121,7 +122,7 @@
         }
     });
 
-    function setTag(filter: FilterData, list: TagValue[]) {
+    function setFilterData(filter: FilterData, list: TagValue[]) {
         const tagData = list.find((tag) => tag.tag.includes(`**${filter.title}**`));
         if (tagData) {
             filter.tag = tagData.tag;
@@ -133,7 +134,14 @@
             }
         } else {
             filter.tag = null;
+            resetOptions(filter);
         }
+    }
+
+    function resetOptions(filter: FilterData) {
+        filter.options.forEach((option) => {
+            option.checked = false;
+        });
     }
 
     function addFilterAndApply(
