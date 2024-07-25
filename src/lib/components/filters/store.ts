@@ -13,27 +13,23 @@ export type TagValue = {
 };
 
 export type Operator = {
-    toTag: (
-        attribute: string,
-        input?: string | number | string[],
-        type?: string
-    ) => string | TagValue;
+    toTag: (attribute: string, input?: string | number | string[], type?: string) => TagValue;
     toQuery: (attribute: string, input?: string | number | string[]) => string;
     types: ColumnType[];
     hideInput?: boolean;
 };
 
-export function mapToQueryParams(map: Map<string | TagValue, string>) {
+export function mapToQueryParams(map: Map<TagValue, string>) {
     return encodeURIComponent(JSON.stringify(Array.from(map.entries())));
 }
 
 export function queryParamToMap(queryParam: string) {
     const decodedQueryParam = decodeURIComponent(queryParam);
-    const queries = JSON.parse(decodedQueryParam) as [string, string][];
+    const queries = JSON.parse(decodedQueryParam) as [TagValue, string][];
     return new Map(queries);
 }
 
-function initQueries(initialValue = new Map<string | TagValue, string>()) {
+function initQueries(initialValue = new Map<TagValue, string>()) {
     const queries = writable(initialValue);
 
     type AddFilterArgs = {
@@ -52,7 +48,7 @@ function initQueries(initialValue = new Map<string | TagValue, string>()) {
         });
     }
 
-    function removeFilter(tag: string | TagValue) {
+    function removeFilter(tag: TagValue) {
         queries.update((map) => {
             map.delete(tag);
             return map;
@@ -256,16 +252,22 @@ function generateDefaultOperators() {
             toQuery: operator.query,
             toTag: (attribute, input = null, type = null) => {
                 if (input === null) {
-                    return `**${attribute}** ${operatorName}`;
+                    return {
+                        value: '',
+                        tag: `**${attribute}** ${operatorName}`
+                    };
                 } else if (Array.isArray(input) && input.length > 2) {
                     return {
                         value: input,
                         tag: `**${attribute}** ${operatorName} **${formatArray(input)}** `
                     };
                 } else if (type === ValidTypes.Datetime) {
-                    return `**${attribute}** ${operatorName} **${toLocaleDateTime(input.toString())}**`;
+                    return {
+                        value: input,
+                        tag: `**${attribute}** ${operatorName} **${toLocaleDateTime(input.toString())}**`
+                    };
                 } else {
-                    return `**${attribute}** ${operatorName} **${input}**`;
+                    return { value: input, tag: `**${attribute}** ${operatorName} **${input}**` };
                 }
             },
             types: operator.types,
