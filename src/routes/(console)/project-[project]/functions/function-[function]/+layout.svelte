@@ -8,7 +8,6 @@
     import { func, showCreateDeployment } from './store';
     import { project } from '../../store';
     import type { Models } from '@appwrite.io/console';
-    import Execute from './execute.svelte';
     import { base } from '$app/paths';
 
     onMount(() => {
@@ -147,5 +146,3 @@
 </script>
 
 <slot />
-
-<Execute />

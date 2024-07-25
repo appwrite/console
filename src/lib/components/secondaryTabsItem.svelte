@@ -28,7 +28,6 @@
         {/if}
     {:else}
         <button
-            role="tab"
             type="button"
             class="secondary-tabs-button"
             class:u-width-full-line={fullWidth}

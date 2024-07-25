@@ -69,7 +69,7 @@
         <p class="text">
             Select scopes to grant the dynamic key generated temporarily for your function. It is
             best practice to allow only necessary permissions. <a
-                href="https://appwrite.io/docs/permissions"
+                href="https://appwrite.io/docs/advanced/platform/api-keys#scopes"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="link">Learn more</a
