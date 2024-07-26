@@ -105,9 +105,11 @@
                   operatorKey !== ValidOperators.IsNull);
 
     function toggleDropdown() {
+        dispatch('toggle', { show: !showFiltersDesktop });
         showFiltersDesktop = !showFiltersDesktop;
     }
     function toggleMobileModal() {
+        dispatch('toggle', { show: !showFiltersMobile });
         showFiltersMobile = !showFiltersMobile;
     }
 </script>
