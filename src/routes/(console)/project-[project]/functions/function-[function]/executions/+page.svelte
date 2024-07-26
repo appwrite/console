@@ -1,8 +1,8 @@
 <script lang="ts">
-    import { invalidate } from '$app/navigation';
+    import { afterNavigate, invalidate } from '$app/navigation';
     import { Alert, EmptySearch, PaginationWithLimit, ViewSelector } from '$lib/components';
     import { BillingPlan, Dependencies } from '$lib/constants';
-    import { Button } from '$lib/elements/forms';
+    import { Button, FormList } from '$lib/elements/forms';
     import { hoursToDays } from '$lib/helpers/date';
     import { Container, ContainerHeader } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
@@ -14,13 +14,14 @@
     import Create from '../create.svelte';
     import { abbreviateNumber } from '$lib/helpers/numbers';
     import { base } from '$app/paths';
-    import { Filters, queries } from '$lib/components/filters';
+    import { Filters, queries, TagList } from '$lib/components/filters';
     import { writable } from 'svelte/store';
     import type { Column } from '$lib/helpers/types';
     import { View } from '$lib/helpers/load';
     import Table from './table.svelte';
-    import { tags } from '$lib/components/filters/store';
-    import SimpleFilters from './simpleFilters.svelte';
+    import { addFilter, tags, ValidOperators } from '$lib/components/filters/store';
+    import QuickFilters from './quickFilters.svelte';
+    import InputText from '$lib/elements/forms/inputText.svelte';
 
     export let data;
 
@@ -128,6 +129,11 @@
         }
     ]);
 
+    const pathColumn = $columns.find((col) => col.id === 'requestPath');
+    let pathQuery: string;
+    const idColumn = $columns.find((col) => col.id === '$id');
+    let idQuery: string;
+
     onMount(() => {
         return sdk.forConsole.client.subscribe('console', (response) => {
             if (response.events.includes('functions.*.executions.*')) {
@@ -135,6 +141,26 @@
             }
         });
     });
+    let tagCount: number;
+    afterNavigate(() => {
+        pathQuery = '';
+        idQuery = '';
+        tagCount = $tags?.length;
+    });
+
+    function applyFilters() {
+        if (pathQuery) {
+            const tagList = $tags.filter((tag) => tag.tag.includes(pathColumn.title));
+            tagList.forEach((tag) => queries.removeFilter(tag));
+            addFilter($columns, pathColumn.id, ValidOperators.StartsWith, pathQuery);
+        }
+        if (idQuery) {
+            const tagList = $tags.filter((tag) => tag.tag.includes(idColumn.title));
+            tagList.forEach((tag) => queries.removeFilter(tag));
+            addFilter($columns, idColumn.id, ValidOperators.StartsWith, idQuery);
+        }
+        queries.apply();
+    }
 </script>
 
 <Container>
@@ -169,17 +195,45 @@
     </ContainerHeader>
     <div class="u-flex u-main-space-between is-not-mobile u-margin-block-start-16">
         <div class="u-flex u-gap-8 u-cross-center u-flex-wrap">
-            <SimpleFilters {columns} />
-            <Filters query={data.query} {columns} let:disabled let:toggle>
+            <QuickFilters {columns} />
+            <Filters
+                query={data.query}
+                {columns}
+                let:disabled
+                let:toggle
+                quickFilters
+                clearOnClick
+                enableApply={!!pathQuery || !!idQuery}
+                on:apply={applyFilters}>
                 <div class="u-flex u-gap-4">
                     <Button text on:click={toggle} {disabled} noMargin ariaLabel="open filter">
                         <span class="icon-filter-line" />
                         <span class="text">More filters</span>
-                        {#if $tags?.length}
-                            <span class="inline-tag">{$tags.length}</span>
+                        {#if tagCount}
+                            <span class="inline-tag">{tagCount}</span>
                         {/if}
                     </Button>
                 </div>
+                <svelte:fragment slot="quick">
+                    <p>Apply <b>quick</b> filter rules to refine the table view</p>
+                    <form on:submit|preventDefault class="u-margin-block-start-16">
+                        <FormList gap={16}>
+                            <InputText
+                                bind:value={pathQuery}
+                                label={pathColumn.title}
+                                id={pathColumn.id}
+                                placeholder="/" />
+                            <InputText
+                                bind:value={idQuery}
+                                label={idColumn.title}
+                                id={idColumn.id}
+                                placeholder="Enter ID" />
+                        </FormList>
+                    </form>
+                    <ul class="u-flex u-flex-wrap u-cross-center u-gap-8 u-margin-block-start-16">
+                        <TagList />
+                    </ul>
+                </svelte:fragment>
             </Filters>
         </div>
         <div class="u-flex u-gap-16">
@@ -195,15 +249,43 @@
     </div>
 
     <div class="u-flex u-main-space-between u-margin-block-start-16 is-only-mobile">
-        <Filters query={data.query} {columns}>
+        <!-- <QuickFilters {columns} /> -->
+
+        <Filters
+            query={data.query}
+            {columns}
+            quickFilters
+            clearOnClick
+            enableApply={!!pathQuery || !!idQuery}
+            on:apply={applyFilters}>
             <svelte:fragment slot="mobile" let:disabled let:toggle>
                 <Button text on:click={toggle} {disabled} ariaLabel="open filter" noMargin>
                     <span class="icon-filter-line" />
-                    <span class="text">Filters</span>
-                    {#if $tags?.length}
-                        <span class="inline-tag">{$tags?.length}</span>
+                    <span class="text">More filters</span>
+                    {#if tagCount}
+                        <span class="inline-tag">{tagCount}</span>
                     {/if}
                 </Button>
+            </svelte:fragment>
+            <svelte:fragment slot="quick">
+                <p>Apply <b>quick</b> filter rules to refine the table view</p>
+                <form on:submit|preventDefault class="u-margin-block-start-16">
+                    <FormList gap={16}>
+                        <InputText
+                            bind:value={pathQuery}
+                            label={pathColumn.title}
+                            id={pathColumn.id}
+                            placeholder="/" />
+                        <InputText
+                            bind:value={idQuery}
+                            label={idColumn.title}
+                            id={idColumn.id}
+                            placeholder="Enter ID" />
+                    </FormList>
+                </form>
+                <ul class="u-flex u-flex-wrap u-cross-center u-gap-8 u-margin-block-start-16">
+                    <TagList />
+                </ul>
             </svelte:fragment>
         </Filters>
         <div class=" u-flex u-gap-16">
