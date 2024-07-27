@@ -94,7 +94,9 @@
                 </a>
                 <div class="u-flex u-flex-vertical u-gap-16">
                     <Heading tag="h2" size="7">{$file.name}</Heading>
-                    <Id value={getView($file.$id)}>File URL</Id>
+                    <span style:width="auto">
+                        <Id value={getView($file.$id)}>File URL</Id>
+                    </span>
                 </div>
             </div>
             <svelte:fragment slot="aside">
