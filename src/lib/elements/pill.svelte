@@ -12,6 +12,9 @@
     export let external = false;
     export let href: string = null;
     export let event: string = null;
+    let classes = '';
+
+    export { classes as class };
 
     function track() {
         if (!event) {
@@ -55,7 +58,7 @@
     </button>
 {:else}
     <div
-        class="tag"
+        class="tag {classes}"
         class:is-disabled={disabled}
         class:is-selected={selected}
         class:is-success={success}
