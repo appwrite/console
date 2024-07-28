@@ -50,6 +50,7 @@
                 id="organization"
                 bind:value={selectedOrg}
                 label="Select organization"
+                wrapperTag="div"
                 options={organizations.map((p) => ({
                     label: p.name,
                     value: p.$id
@@ -93,6 +94,7 @@
                         id="project"
                         bind:value={$selectedProject}
                         label="Select a project"
+                        wrapperTag="div"
                         options={projects.map((p) => ({
                             label: p.name,
                             value: p.$id
