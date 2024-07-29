@@ -117,12 +117,12 @@ export const operators: Record<string, Operator> = {
         types: ['string']
     },
     'greater than': {
-        toQuery: (attr, input) => Query.greaterThan(attr, Number(input)),
+        toQuery: Query.greaterThan,
         toTag: (attribute, input) => `**${attribute}** greater than **${input}**`,
         types: ['integer', 'double', 'datetime']
     },
     'greater than or equal': {
-        toQuery: (attr, input) => Query.greaterThanEqual(attr, Number(input)),
+        toQuery: Query.greaterThanEqual,
         toTag: (attribute, input) => `**${attribute}** greater than or equal to **${input}**`,
         types: ['integer', 'double', 'datetime']
     },
