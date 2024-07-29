@@ -28,7 +28,7 @@
     $: executions = data.usage.executions;
     $: executionsTotal = data.usage.executionsTotal;
     $: storage = data.usage.filesStorageTotal;
-    $: deploymentsTotal = data.usage.deploymentsStorageTotal;
+    $: functionsTotal = data.usage.functionsStorageTotal;
 
     const tier = data?.currentInvoice?.tier ?? $organization?.billingPlan;
     const plan = tierToPlan(tier).name;
@@ -269,6 +269,18 @@
         </p>
 
         <svelte:fragment slot="aside">
+            {#if !storage && !functionsTotal}
+                <Card isDashed>
+                    <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
+                        <span
+                            class="icon-chart-square-bar text-large"
+                            aria-hidden="true"
+                            style="font-size: 32px;" />
+                        <p class="u-bold">No data to show for storage</p>
+                    </div>
+                </Card>
+            {/if}
+
             {#if storage}
                 {@const humanized = humanFileSize(storage)}
                 <div class="u-flex u-flex-vertical">
@@ -306,28 +318,18 @@
                         </TableBody>
                     </Table>
                 {/if}
-            {:else}
-                <Card isDashed>
-                    <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
-                        <span
-                            class="icon-chart-square-bar text-large"
-                            aria-hidden="true"
-                            style="font-size: 32px;" />
-                        <p class="u-bold">No data to show for files</p>
-                    </div>
-                </Card>
             {/if}
-            {#if deploymentsTotal}
-                {@const humanized = humanFileSize(deploymentsTotal)}
+            {#if functionsTotal}
+                {@const humanized = humanFileSize(functionsTotal)}
                 <div class="u-flex u-flex-vertical">
                     <div class="u-flex u-main-space-between">
                         <p>
-                            <span class="heading-level-4">Deployments - {humanized.value}</span>
+                            <span class="heading-level-4">Functions - {humanized.value}</span>
                             <span class="body-text-1 u-bold">{humanized.unit}</span>
                         </p>
                     </div>
                 </div>
-                {#if data.usage.deploymentsStorageBreakdown.length > 0}
+                {#if data.usage.functionsStorageBreakdown.length > 0}
                     <Table noMargin noStyles>
                         <TableHeader>
                             <TableCellHead width={285}>Function</TableCellHead>
@@ -335,7 +337,7 @@
                             <TableCellHead width={140} />
                         </TableHeader>
                         <TableBody>
-                            {#each data.usage.deploymentsStorageBreakdown.sort((a, b) => b.value - a.value) as func}
+                            {#each data.usage.functionsStorageBreakdown.sort((a, b) => b.value - a.value) as func}
                                 {@const humanized = humanFileSize(func.value)}
                                 <TableRow>
                                     <TableCell title="Function">
@@ -354,16 +356,6 @@
                         </TableBody>
                     </Table>
                 {/if}
-            {:else}
-                <Card isDashed>
-                    <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
-                        <span
-                            class="icon-chart-square-bar text-large"
-                            aria-hidden="true"
-                            style="font-size: 32px;" />
-                        <p class="u-bold">No data to show for deployments</p>
-                    </div>
-                </Card>
             {/if}
         </svelte:fragment>
     </CardGrid>

@@ -63,9 +63,9 @@ type UsageProject = {
      */
     filesStorageTotal: number;
     /**
-     * Total aggregated sum of deployments storage size (in bytes).
+     * Total aggregated sum of functions storage size (in bytes).
      */
-    deploymentsStorageTotal: number;
+    functionsStorageTotal: number;
     /**
      * Total aggregated number of buckets.
      */
@@ -95,9 +95,9 @@ type UsageProject = {
      */
     bucketsBreakdown: MetricBreakdown[];
     /**
-     * Aggregated breakdown in totals of usage by deployments.
+     * Aggregated breakdown in totals of usage by functions.
      */
-    deploymentsStorageBreakdown: MetricBreakdown[];
+    functionsStorageBreakdown: MetricBreakdown[];
 };
 
 /**
