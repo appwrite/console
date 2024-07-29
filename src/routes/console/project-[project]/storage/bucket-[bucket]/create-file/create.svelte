@@ -40,7 +40,6 @@
 
             createFile.reset();
             wizard.hide();
-            invalidate(Dependencies.FILES);
 
             addNotification({
                 type: 'success',
@@ -51,6 +50,7 @@
             });
 
             await uploadPromise;
+            invalidate(Dependencies.FILES);
         } catch (e) {
             uploader.removeFromQueue(fileId);
 

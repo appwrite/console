@@ -91,6 +91,7 @@ const createUploader = () => {
         removeFromQueue: (id: string) => {
             update((n) => {
                 n.files = n.files.filter((f) => f.$id !== id);
+                n.isOpen = n.files.length !== 0;
                 return n;
             });
         },
