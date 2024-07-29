@@ -62,6 +62,8 @@
                 if (m.userEmail !== $user.email) return m.userEmail;
             })
             ?.filter(Boolean) ?? [];
+    let totalExtraMembers = data?.aggregationList;
+    $: console.log(totalExtraMembers);
     let couponData: Partial<Coupon> = {
         code: null,
         status: null,
@@ -264,16 +266,6 @@
                 For more details on our plans, visit our
                 <Button href="https://appwrite.io/pricing" external link>pricing page</Button>.
             </p>
-            {#if anyOrgFree && billingPlan !== BillingPlan.FREE}
-                <Alert type="warning" class="u-margin-block-16">
-                    You are limited to one {tierToPlan(BillingPlan.FREE).name} organization per account.
-                    Consider upgrading or deleting <Button
-                        link
-                        href={`${base}/console/organization-${anyOrgFree.$id}`}
-                        >{anyOrgFree.name}</Button
-                    >.
-                </Alert>
-            {/if}
             <PlanSelection
                 bind:billingPlan
                 anyOrgFree={!!anyOrgFree}
