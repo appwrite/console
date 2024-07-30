@@ -62,8 +62,6 @@
                 if (m.userEmail !== $user.email) return m.userEmail;
             })
             ?.filter(Boolean) ?? [];
-    let totalExtraMembers = data?.aggregationList;
-    $: console.log(totalExtraMembers);
     let couponData: Partial<Coupon> = {
         code: null,
         status: null,
