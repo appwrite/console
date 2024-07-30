@@ -12,6 +12,8 @@
     import { isCloud } from '$lib/system';
     import { plansInfo } from '$lib/stores/billing';
     import { formatCurrency } from '$lib/helpers/numbers';
+    import InputSelect from '$lib/elements/forms/inputSelect.svelte';
+    import { projects } from './store';
 
     export let showCreate = false;
 
@@ -20,13 +22,50 @@
     const url = `${$page.url.origin}/invite`;
     $: plan = $plansInfo?.get($organization?.billingPlan);
 
-    let email: string, name: string, error: string;
+    let email: string,
+        name: string,
+        error: string,
+        role: string = 'owner',
+        project: string = 'all';
+    let projectsList = [
+        {
+            label: 'All Projects',
+            value: 'all'
+        },
+        ...$projects.projects.map((project) => ({
+            label: project.name,
+            value: project.$id
+        }))
+    ];
+
+    const roles = [
+        {
+            label: 'Owner',
+            value: 'owner'
+        },
+        {
+            label: 'Developer',
+            value: 'developer'
+        },
+        {
+            label: 'Editor',
+            value: 'editor'
+        },
+        {
+            label: 'Analyst',
+            value: 'analyst'
+        },
+        {
+            label: 'Billing',
+            value: 'billing'
+        }
+    ];
 
     async function create() {
         try {
             const team = await sdk.forConsole.teams.createMembership(
                 $organization.$id,
-                ['owner'],
+                [roleFormatted],
                 email,
                 undefined,
                 undefined,
@@ -49,6 +88,8 @@
             trackError(e, Submit.MemberCreate);
         }
     }
+
+    $: roleFormatted = `projects/${project}/${role}`;
 
     $: if (!showCreate) {
         error = null;
@@ -81,6 +122,8 @@
             label="Name (optional)"
             placeholder="Enter name"
             bind:value={name} />
+        <InputSelect id="project" label="Projects" options={projectsList} bind:value={project} />
+        <InputSelect id="role" label="Role" options={roles} bind:value={role} />
     </FormList>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
