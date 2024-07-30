@@ -273,9 +273,12 @@
 
             {#if isDowngrade}
                 {#if billingPlan === BillingPlan.FREE}
-                    <PlanExcess tier={BillingPlan.FREE} class="u-margin-block-start-24" />
+                    <PlanExcess
+                        tier={BillingPlan.FREE}
+                        class="u-margin-block-start-24"
+                        members={data?.members?.total ?? 0} />
                 {:else if billingPlan === BillingPlan.PRO && $organization.billingPlan === BillingPlan.SCALE}
-                    {@const members = collaborators?.length ?? 0}
+                    {@const extraMembers = collaborators?.length ?? 0}
                     <Alert type="error" class="u-margin-block-start-24">
                         <svelte:fragment slot="title">
                             Your monthly payments will be adjusted for the Pro plan
@@ -283,9 +286,10 @@
                         After switching plans,
                         <b
                             >you will be charged {formatCurrency(
-                                members * ($plansInfo?.get(billingPlan)?.addons?.member?.price ?? 0)
-                            )} monthly for {members} team members.</b> This will be reflected in your
-                        next invoice.
+                                extraMembers *
+                                    ($plansInfo?.get(billingPlan)?.addons?.member?.price ?? 0)
+                            )} monthly for {extraMembers} team members.</b> This will be reflected in
+                        your next invoice.
                     </Alert>
                 {/if}
             {/if}

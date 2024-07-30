@@ -422,14 +422,14 @@ export const upgradeURL = derived(
 
 export const hideBillingHeaderRoutes = ['/console/create-organization', '/console/account'];
 
-export function calculateExcess(usage: OrganizationUsage, plan: Plan, org: Organization) {
+export function calculateExcess(usage: OrganizationUsage, plan: Plan, members: number) {
     const totBandwidth = usage?.bandwidth?.length > 0 ? last(usage.bandwidth).value : 0;
     return {
         bandwidth: calculateResourceSurplus(totBandwidth, plan.bandwidth),
         storage: calculateResourceSurplus(usage?.storageTotal, plan.storage, 'GB'),
         users: calculateResourceSurplus(usage?.usersTotal, plan.users),
         executions: calculateResourceSurplus(usage?.executionsTotal, plan.executions, 'GB'),
-        members: calculateResourceSurplus(org.total, plan.members)
+        members: calculateResourceSurplus(members, plan.members)
     };
 }
 

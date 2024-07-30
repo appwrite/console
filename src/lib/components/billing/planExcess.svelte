@@ -23,6 +23,7 @@
     import { tooltip } from '$lib/actions/tooltip';
 
     export let tier: Tier;
+    export let members: number;
 
     const plan = $plansInfo?.get(tier);
     let excess: {
@@ -41,7 +42,7 @@
             $organization.billingCurrentInvoiceDate,
             new Date().toISOString()
         );
-        excess = calculateExcess(usage, plan, $organization);
+        excess = calculateExcess(usage, plan, members);
         showExcess = Object.values(excess).some((value) => value > 0);
     });
 </script>
