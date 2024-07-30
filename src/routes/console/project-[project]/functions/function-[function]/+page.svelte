@@ -105,7 +105,7 @@
                                 <b>Updated:</b>
                                 <DeploymentCreatedBy deployment={activeDeployment} />
                             </p>
-                            <p><b>Size:</b> {fileSize.value + fileSize.unit}</p>
+                            <p><b>Build Size:</b> {fileSize.value + fileSize.unit}</p>
                             <p class="u-flex u-gap-4 u-cross-center">
                                 <b>Source:</b>
                                 <DeploymentSource deployment={activeDeployment} />

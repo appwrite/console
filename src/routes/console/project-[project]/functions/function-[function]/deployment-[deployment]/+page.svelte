@@ -76,7 +76,7 @@
                     </p>
                     <p><b>Updated:</b> <DeploymentCreatedBy deployment={$deployment} /></p>
                     <p>
-                        <b>Size:</b>
+                        <b>Build Size:</b>
                         {fileSize.value + fileSize.unit}
                         <span
                             class="icon-info"
