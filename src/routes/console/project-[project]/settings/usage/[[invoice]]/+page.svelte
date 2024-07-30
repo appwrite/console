@@ -221,21 +221,23 @@
                         }
                     ]} />
                 {#if data.usage.executionsBreakdown.length > 0}
-                    <Table noMargin noStyles>
+                    <Table noMargin noStyles style="table-layout: auto">
                         <TableHeader>
-                            <TableCellHead width={250}>Function</TableCellHead>
+                            <TableCellHead>Function</TableCellHead>
                             <TableCellHead>Usage</TableCellHead>
+                            <TableCellHead />
                         </TableHeader>
                         <TableBody>
                             {#each data.usage.executionsBreakdown as func}
-                                <TableRow>
-                                    <TableCellLink
-                                        href={`${base}/functions/function-${func.resourceId}`}
-                                        title="Function">
+                                <TableRow link={`${base}/functions/function-${func.resourceId}`}>
+                                    <TableCell title="Function">
                                         {func.name ?? func.resourceId}
-                                    </TableCellLink>
+                                    </TableCell>
                                     <TableCell title="Usage">
                                         {formatNum(func.value)} executions
+                                    </TableCell>
+                                    <TableCell right={true}>
+                                        <span class="icon-cheveron-right u-cross-child-center"/>
                                     </TableCell>
                                 </TableRow>
                             {/each}
@@ -275,22 +277,25 @@
                     </div>
                 </div>
                 {#if data.usage.bucketsBreakdown.length > 0}
-                    <Table noMargin noStyles>
+                    <Table noMargin noStyles style="table-layout: auto">
                         <TableHeader>
-                            <TableCellHead width={250}>Bucket</TableCellHead>
+                            <TableCellHead>Bucket</TableCellHead>
                             <TableCellHead>Usage</TableCellHead>
+                            <TableCellHead />
                         </TableHeader>
                         <TableBody>
                             {#each data.usage.bucketsBreakdown.sort((a, b) => b.value - a.value) as bucket}
                                 {@const humanized = humanFileSize(bucket.value)}
-                                <TableRow>
-                                    <TableCellLink
-                                        href={`${base}/storage/bucket-${bucket.resourceId}`}
+                                <TableRow link={`${base}/storage/bucket-${bucket.resourceId}`}>
+                                    <TableCell
                                         title="View bucket">
                                         {bucket.name ?? bucket.resourceId}
-                                    </TableCellLink>
+                                    </TableCell>
                                     <TableCell title="Usage">
                                         {humanized.value}{humanized.unit}
+                                    </TableCell>
+                                    <TableCell right={true}>
+                                        <span class="icon-cheveron-right u-cross-child-center"/>
                                     </TableCell>
                                 </TableRow>
                             {/each}
