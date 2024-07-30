@@ -219,7 +219,7 @@
 
                         <ul class="clickable-list u-margin-block-start-16">
                             {#each templates as template}
-                                <li class="clickable-list-item">
+                                <li class="clickable-list-item u-padding-block-16">
                                     <button
                                         type="button"
                                         on:click={() => {
