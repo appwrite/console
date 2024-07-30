@@ -141,6 +141,117 @@ export type Sizes = {
     sizes: string[];
 };
 
+export enum FunctionUsageRange {
+    TwentyFourHours = '24h',
+    ThirtyDays = '30d',
+    NinetyDays = '90d',
+}
+
+/**
+ * Metric
+ */
+export type Metric = {
+    /**
+     * The value of this metric at the timestamp.
+     */
+    value: number;
+    /**
+     * The date at which this metric was aggregated in ISO 8601 format.
+     */
+    date: string;
+}
+/**
+ * Metric Breakdown
+ */
+export type MetricBreakdown = {
+    /**
+     * Resource ID.
+     */
+    resourceId: string;
+    /**
+     * Resource name.
+     */
+    name: string;
+    /**
+     * The value of this metric at the timestamp.
+     */
+    value: number;
+}
+
+/**
+ * UsageFunction
+ */
+export type UsageFunction = {
+    /**
+     * The time range of the usage stats.
+     */
+    range: string;
+    /**
+     * Total aggregated number of function deployments.
+     */
+    deploymentsTotal: number;
+    /**
+     * Total aggregated sum of function deployments storage.
+     */
+    deploymentsStorageTotal: number;
+    /**
+     * Total aggregated number of function builds.
+     */
+    buildsTotal: number;
+    /**
+     * total aggregated sum of function builds storage.
+     */
+    buildsStorageTotal: number;
+    /**
+     * Total aggregated sum of function builds compute time.
+     */
+    buildsTimeTotal: number;
+    /**
+     * Total  aggregated number of function executions.
+     */
+    executionsTotal: number;
+    /**
+     * Total aggregated sum of function  executions compute time.
+     */
+    executionsTimeTotal: number;
+    /**
+     * Total amount fo executions mbSeconds
+     */
+    executionsMbSecondsTotal: number;
+    /**
+     * Aggregated number of function deployments per period.
+     */
+    deployments: Metric[];
+    /**
+     * Aggregated number of  function deployments storage per period.
+     */
+    deploymentsStorage: Metric[];
+    /**
+     * Aggregated number of function builds per period.
+     */
+    builds: Metric[];
+    /**
+     * Aggregated sum of function builds storage per period.
+     */
+    buildsStorage: Metric[];
+    /**
+     * Aggregated sum of function builds compute time per period.
+     */
+    buildsTime: Metric[];
+    /**
+     * Aggregated number of function executions per period.
+     */
+    executions: Metric[];
+    /**
+     * Aggregated number of function executions compute time per period.
+     */
+    executionsTime: Metric[];
+    /**
+     * Aggregated number of function executions compute time per period.
+     */
+    executionsMbSeconds: Metric[];
+}
+
 export class SizesFunctions {
     client: Client;
 
@@ -286,5 +397,32 @@ export class SizesFunctions {
             },
             payload
         );
+    }
+
+    /**
+     * Get function usage
+     *
+     *
+     * @param {string} functionId
+     * @param {FunctionUsageRange} range
+     * @throws {AppwriteException}
+     * @returns {Promise}
+    */
+    async getFunctionUsage(functionId: string, range?: FunctionUsageRange): Promise<UsageFunction> {
+        if (typeof functionId === 'undefined') {
+            throw new AppwriteException('Missing required parameter: "functionId"');
+        }
+
+        const apiPath = '/functions/{functionId}/usage'.replace('{functionId}', functionId);
+        const payload: Payload = {};
+
+        if (typeof range !== 'undefined') {
+            payload['range'] = range;
+        }
+
+        const uri = new URL(this.client.config.endpoint + apiPath);
+        return await this.client.call('get', uri, {
+            'content-type': 'application/json',
+        }, payload);
     }
 }

@@ -49,10 +49,7 @@
         </Card>
     {/if}
 
-    <div class="u-flex u-main-space-between common-section">
-        <Heading tag="h2" size="5">GB Hours</Heading>
-    </div>
-    {#if count}
+    {#if mbSecondsCount}
         <Card>
             <Heading tag="h6" size="6">{formatNumberWithCommas(gbHoursTotal)}</Heading>
             <p>GB Hours</p>
