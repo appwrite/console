@@ -15,14 +15,14 @@
             <span class="icon-github" aria-hidden="true" /> <span class="link">GitHub</span>
         </button>
         <svelte:fragment slot="list">
-            <DropListLink href={deployment.providerRepositoryUrl} external icon="github">
+            <DropListLink href={deployment.providerRepositoryUrl} external icon="github" iconStyle="font-size:20px">
                 {deployment.providerRepositoryOwner}/{deployment.providerRepositoryName}
             </DropListLink>
-            <DropListLink href={deployment.providerBranchUrl} external icon="git-branch">
+            <DropListLink href={deployment.providerBranchUrl} external icon="git-branch" iconStyle="font-size:20px">
                 {deployment.providerBranch}
             </DropListLink>
             {#if deployment?.providerCommitMessage && deployment?.providerCommitHash && deployment?.providerCommitUrl}
-                <DropListLink href={deployment.providerCommitUrl} external icon="git-commit">
+                <DropListLink href={deployment.providerCommitUrl} external icon="git-commit" iconStyle="font-size:20px">
                     <Trim alternativeTrim>
                         {deployment?.providerCommitHash?.substring(0, 7)}
                         {deployment.providerCommitMessage}
