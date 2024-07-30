@@ -90,6 +90,30 @@ campaigns
         description:
             'Get $50 in Cloud credits when you upgrade or create an organization with a Pro plan'
     })
+    .set('AniaKubow', {
+        template: 'card',
+        title: 'Claim your FreeCodeCamp $50 credits.',
+        description:
+            'Get $50 in Cloud credits when you upgrade or create an organization with a Pro plan'
+    })
+    .set('Fireship', {
+        template: 'card',
+        title: 'Claim your FreeCodeCamp $50 credits.',
+        description:
+            'Get $50 in Cloud credits when you upgrade or create an organization with a Pro plan'
+    })
+    .set('Hyperplexed', {
+        template: 'card',
+        title: 'Claim your FreeCodeCamp $50 credits.',
+        description:
+            'Get $50 in Cloud credits when you upgrade or create an organization with a Pro plan'
+    })
+    .set('TraversyMedia', {
+        template: 'card',
+        title: 'Claim your FreeCodeCamp $50 credits.',
+        description:
+            'Get $50 in Cloud credits when you upgrade or create an organization with a Pro plan'
+    })
     .set('FusionVC', {
         template: 'review',
         title: 'Welcome to Appwrite!',
