@@ -225,3 +225,9 @@
         </Button>
     </div>
 {/if}
+
+<style>
+    .icon-lock-closed {
+        color: hsl(var(--color-neutral-50));
+    }
+</style>
