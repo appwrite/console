@@ -7,6 +7,12 @@ type Metadata = {
 };
 
 export async function enterCreditCard(page: Page) {
+    const dialog = page.locator('.modal').filter({
+        hasText: 'add payment method'
+    });
+    await dialog.waitFor({
+        state: 'visible'
+    });
     await page.getByPlaceholder('cardholder').fill('Test User');
     const stripe = page.frameLocator('[title="Secure payment input frame"]');
     await stripe.locator('id=Field-numberInput').fill('4242424242424242');
@@ -14,6 +20,9 @@ export async function enterCreditCard(page: Page) {
     await stripe.locator('id=Field-cvcInput').fill('123');
     await stripe.locator('id=Field-countryInput').selectOption('DE');
     await page.getByRole('button', { name: 'Add', exact: true }).click();
+    await dialog.waitFor({
+        state: 'hidden'
+    });
 }
 
 export async function createProProject(page: Page): Promise<Metadata> {
@@ -24,7 +33,7 @@ export async function createProProject(page: Page): Promise<Metadata> {
         await page.locator('id=plan').selectOption('tier-1');
         await page.getByRole('button', { name: 'get started' }).click();
         await page.waitForURL('/console/create-organization**');
-        await page.getByRole('button', { name: 'Add' }).first().click();
+        await page.getByRole('button', { name: 'add' }).first().click();
         await enterCreditCard(page);
         // skip members
         await page.getByRole('button', { name: 'create organization' }).click();

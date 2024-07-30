@@ -1,10 +1,10 @@
 <script lang="ts">
-    import { tooltip } from '$lib/actions/tooltip';
     import { FormList, InputChoice, InputNumber } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
     import { formatCurrency } from '$lib/helpers/numbers';
     import type { Coupon } from '$lib/sdk/billing';
     import { plansInfo, type Tier } from '$lib/stores/billing';
+    import { CreditsApplied } from '.';
 
     export let billingPlan: Tier;
     export let collaborators: string[];
@@ -32,9 +32,10 @@
 </script>
 
 <section
-    class="card u-margin-block-start-32 u-flex u-flex-vertical u-gap-8"
+    class="card u-flex u-flex-vertical u-gap-8"
     style:--p-card-padding="1.5rem"
     style:--p-card-border-radius="var(--border-radius-small)">
+    <slot />
     <span class="u-flex u-main-space-between">
         <p class="text">{currentPlan.name} plan</p>
         <p class="text">{formatCurrency(currentPlan.price)}</p>
@@ -46,43 +47,7 @@
         </p>
     </span>
     {#if couponData?.status === 'active'}
-        <span class="u-flex u-main-space-between">
-            <div class="u-flex u-cross-center u-gap-4">
-                <p class="text">
-                    <span class="icon-tag u-color-text-success" aria-hidden="true" />
-                    {#if couponData.credits >= 100}
-                        {couponData.code.toUpperCase()}
-                    {:else}
-                        <span use:tooltip={{ content: couponData.code.toUpperCase() }}>
-                            Credits applied
-                        </span>
-                    {/if}
-                </p>
-                {#if !fixedCoupon}
-                    <button
-                        type="button"
-                        class="button is-text is-only-icon"
-                        style="--button-size:1.5rem;"
-                        aria-label="Close"
-                        title="Close"
-                        on:click={() =>
-                            (couponData = {
-                                code: null,
-                                status: null,
-                                credits: null
-                            })}>
-                        <span class="icon-x" aria-hidden="true" />
-                    </button>
-                {/if}
-            </div>
-            {#if couponData.credits >= 100}
-                <p class="inline-tag" use:tooltip={{ content: formatCurrency(couponData.credits) }}>
-                    Credits applied
-                </p>
-            {:else}
-                <span class="u-color-text-success">-{formatCurrency(couponData.credits)}</span>
-            {/if}
-        </span>
+        <CreditsApplied bind:couponData {fixedCoupon} />
     {/if}
     <div class="u-sep-block-start" />
     <span class="u-flex u-main-space-between">

@@ -108,7 +108,7 @@
     <div
         class:input-text-wrapper={!$$slots.default}
         class:u-flex={$$slots.default}
-        class:u-gap-16={$$slots.default}
+        class:u-gap-8={$$slots.default}
         class:u-cross-center={$$slots.default}>
         <input
             {id}

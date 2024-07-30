@@ -3,7 +3,11 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { EstimatedTotalBox, SelectPaymentMethod } from '$lib/components/billing';
+    import {
+        CreditsApplied,
+        EstimatedTotalBox,
+        SelectPaymentMethod
+    } from '$lib/components/billing';
     import { BillingPlan, Dependencies } from '$lib/constants';
     import { Button, Form, FormList, InputSelect, InputTags, InputText } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
@@ -15,6 +19,7 @@
     } from '$lib/layout';
     import { type PaymentList } from '$lib/sdk/billing';
     import { app } from '$lib/stores/app';
+    import { campaigns } from '$lib/stores/campaigns';
     import { addNotification } from '$lib/stores/notifications';
     import { organizationList, type Organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
@@ -27,6 +32,7 @@
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$/i;
     let previousPage: string = `${base}/console`;
     let showExitModal = false;
+    let canSelectOrg = true;
 
     afterNavigate(({ from }) => {
         if (from?.url?.pathname) {
@@ -42,6 +48,7 @@
 
     let selectedOrgId: string = null;
     let formComponent: Form;
+    let couponForm: Form;
     let isSubmitting = writable(false);
     let methods: PaymentList;
     let paymentMethodId: string;
@@ -60,11 +67,18 @@
         }
     ];
     let name: string;
+    let coupon: string;
+    let couponData = data?.couponData;
+    let campaign = campaigns.get(data?.couponData?.campaign ?? data?.campaign);
 
     onMount(async () => {
         await loadPaymentMethods();
-        if (!$organizationList?.total) {
+        if (!$organizationList?.total || campaign?.onlyNewOrgs) {
             selectedOrgId = newOrgId;
+        }
+        if ($page.url.searchParams.has('org')) {
+            selectedOrgId = $page.url.searchParams.get('org');
+            canSelectOrg = false;
         }
     });
 
@@ -79,6 +93,7 @@
     }
 
     async function handleSubmit() {
+        if (!couponForm.checkValidity()) return;
         try {
             let org: Organization;
             // Create new org
@@ -105,8 +120,8 @@
             }
 
             // Add coupon
-            if (data.couponData?.code) {
-                await sdk.forConsole.billing.addCredit(org.$id, data.couponData.code);
+            if (couponData?.code) {
+                await sdk.forConsole.billing.addCredit(org.$id, couponData.code);
             }
 
             // Add budget
@@ -133,7 +148,8 @@
                 await sdk.forConsole.billing.updateTaxId(org.$id, taxId);
             }
             trackEvent(Submit.CreditRedeem, {
-                coupon: data.couponData.code
+                coupon: couponData.code,
+                campaign: couponData?.campaign
             });
             await invalidate(Dependencies.ORGANIZATION);
             await goto(`/console/organization-${org.$id}`);
@@ -151,21 +167,28 @@
         }
     }
 
+    async function addCoupon() {
+        try {
+            const response = await sdk.forConsole.billing.getCoupon(coupon);
+            couponData = response;
+            coupon = null;
+            addNotification({
+                type: 'success',
+                message: 'Credits applied successfully'
+            });
+        } catch (e) {
+            addNotification({
+                type: 'error',
+                message: e.message
+            });
+        }
+    }
+
     $: selectedOrg = $organizationList?.teams?.find(
         (team) => team.$id === selectedOrgId
     ) as Organization;
 
-    $: isButtonDisabled = checkButtonDisabled(selectedOrgId, name, paymentMethodId);
-
-    function checkButtonDisabled(id: string | null, name: string | null, method: string | null) {
-        if (id === newOrgId) {
-            return !name || !method;
-        } else if (id && selectedOrg?.billingPlan === BillingPlan.PRO) {
-            return !selectedOrg?.paymentMethodId;
-        } else if (id) {
-            return !method;
-        } else return true;
-    }
+    $: campaign = campaigns.get(data?.couponData?.campaign ?? data?.campaign);
 </script>
 
 <svelte:head>
@@ -179,7 +202,7 @@
     <WizardSecondaryContent>
         <Form bind:this={formComponent} onSubmit={handleSubmit} bind:isSubmitting>
             <FormList>
-                {#if $organizationList?.total}
+                {#if $organizationList?.total && !campaign?.onlyNewOrgs && canSelectOrg}
                     <InputSelect
                         bind:value={selectedOrgId}
                         label="Select organization"
@@ -209,39 +232,81 @@
                 {/if}
             </FormList>
         </Form>
-
+        <Form bind:this={couponForm} onSubmit={addCoupon}>
+            <FormList>
+                {#if !data?.couponData?.code && selectedOrgId}
+                    <InputText
+                        required
+                        disabled={!!couponData?.credits}
+                        bind:value={coupon}
+                        placeholder="Enter coupon code"
+                        id="code"
+                        label="Coupon code">
+                        <Button submit secondary disabled={!!couponData?.credits}>
+                            <span class="text">Apply</span>
+                        </Button>
+                    </InputText>
+                {/if}
+            </FormList>
+        </Form>
         <svelte:fragment slot="aside">
-            <div
-                class="box card-container u-position-relative"
-                style:--box-border-radius="var(--border-radius-small)">
-                <div class="card-bg"></div>
-                <div class="u-flex u-flex-vertical u-gap-24 u-cross-center u-position-relative">
-                    <img
-                        src={`/images/campaigns/${data.couponData.campaign}/${$app.themeInUse}.png`}
-                        class="u-block u-image-object-fit-cover card-img"
-                        alt="promo" />
-                    <p class="text">
-                        {data.campaign.title.replace('VALUE', data.couponData.credits)}
-                    </p>
+            {#if campaign?.template === 'card'}
+                <div
+                    class="box card-container u-position-relative"
+                    style:--box-border-radius="var(--border-radius-small)">
+                    <div class="card-bg"></div>
+                    <div class="u-flex u-flex-vertical u-gap-24 u-cross-center u-position-relative">
+                        <img
+                            src={`/images/campaigns/${data?.couponData?.campaign ?? data?.campaign}/${$app.themeInUse}.png`}
+                            class="u-block u-image-object-fit-cover card-img"
+                            alt="promo" />
+                        <p class="text">
+                            {#if couponData?.credits}
+                                {campaign.title.replace('VALUE', couponData.credits.toString())}
+                            {:else}
+                                {campaign.title}
+                            {/if}
+                        </p>
+                    </div>
                 </div>
-            </div>
+            {/if}
             {#if selectedOrg?.billingPlan === BillingPlan.PRO}
                 <section
                     class="card u-margin-block-start-24"
                     style:--p-card-padding="1.5rem"
                     style:--p-card-border-radius="var(--border-radius-small)">
-                    <p class="text">
-                        Credits will automatically be applied to your next invoice on <b
-                            >{toLocaleDate(selectedOrg.billingNextInvoiceDate)}.</b>
-                    </p>
+                    {#if couponData?.code && couponData?.status === 'active'}
+                        <CreditsApplied bind:couponData fixedCoupon={!!data?.couponData?.code} />
+                        <p class="text u-margin-block-start-12">
+                            Credits will automatically be applied to your next invoice on <b
+                                >{toLocaleDate(selectedOrg.billingNextInvoiceDate)}.</b>
+                        </p>
+                    {:else}
+                        <p class="text">Add a coupon code to apply credits to your organization.</p>
+                    {/if}
                 </section>
             {:else if selectedOrgId}
-                <EstimatedTotalBox
-                    fixedCoupon
-                    billingPlan={BillingPlan.PRO}
-                    {collaborators}
-                    bind:couponData={data.couponData}
-                    bind:billingBudget />
+                <div class:u-margin-block-start={campaign?.template === 'card'}>
+                    <EstimatedTotalBox
+                        fixedCoupon={!!data?.couponData?.code}
+                        billingPlan={BillingPlan.PRO}
+                        {collaborators}
+                        bind:couponData
+                        bind:billingBudget>
+                        {#if campaign?.template === 'review' && (campaign?.data?.cta || campaign?.data?.claimed || campaign?.data?.unclaimed)}
+                            <div class="u-margin-block-end-24">
+                                <p class="body-text-1 u-bold">{campaign?.data?.cta}</p>
+                                <p class="text u-margin-block-start-8">
+                                    {#if couponData?.code && couponData?.status === 'active' && campaign?.data?.claimed}
+                                        {campaign?.data?.claimed}
+                                    {:else if campaign?.data?.unclaimed}
+                                        {campaign?.data?.unclaimed}
+                                    {/if}
+                                </p>
+                            </div>
+                        {/if}
+                    </EstimatedTotalBox>
+                </div>
             {/if}
         </svelte:fragment>
     </WizardSecondaryContent>
@@ -250,17 +315,28 @@
         <Button fullWidthMobile secondary on:click={() => (showExitModal = true)}>Cancel</Button>
         <Button
             fullWidthMobile
-            on:click={() => formComponent.triggerSubmit()}
-            disabled={$isSubmitting || isButtonDisabled}>
+            on:click={() => {
+                if (formComponent.checkValidity() && couponForm.checkValidity()) {
+                    handleSubmit();
+                }
+            }}
+            disabled={$isSubmitting}>
             {#if $isSubmitting}
                 <span class="loader is-small is-transparent u-line-height-1-5" aria-hidden="true" />
             {/if}
-            Apply credits
+            {#if selectedOrgId === newOrgId}
+                Create Organization
+            {:else}
+                Apply Credits
+            {/if}
         </Button>
     </WizardSecondaryFooter>
     <svelte:fragment slot="exit">
         You can apply your credits to an organization at a later date. All other data entered will
-        be lost. Credits expire {toLocaleDate(data.couponData.expiration)}.
+        be lost.
+        {#if couponData?.expiration}
+            Credits expire {toLocaleDate(couponData.expiration)}.
+        {/if}
     </svelte:fragment>
 </WizardSecondaryContainer>
 

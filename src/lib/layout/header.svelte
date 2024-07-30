@@ -124,6 +124,11 @@
         {/if}
         <DropList show={$feedback.show} scrollable on:blur={toggleFeedback}>
             <button class="button is-small is-text" on:click={toggleFeedback}>
+                {#if $feedback.notification}
+                    <span
+                        class="notification u-position-absolute u-inset-block-start-8 u-inset-inline-end-8"
+                    ></span>
+                {/if}
                 <span class="text">Feedback</span>
             </button>
             <svelte:fragment slot="other">
@@ -179,7 +184,11 @@
                         transition:slideFade|global={{ duration: 150 }}>
                         {#if $organizationList?.total}
                             <section class="drop-section u-overflow-y-auto u-max-height-200">
-                                <ul class="drop-list">
+                                <ul
+                                    class="drop-list"
+                                    data-sveltekit-preload-data={$page.params.organization
+                                        ? false
+                                        : 'hover'}>
                                     {#each $organizationList.teams as org}
                                         <DropListLink
                                             href={`${base}/console/organization-${org.$id}`}

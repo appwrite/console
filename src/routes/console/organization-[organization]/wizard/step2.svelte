@@ -4,16 +4,16 @@
     import { WizardStep } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import { createProject } from './store';
-    import type { Region, RegionList } from '$lib/sdk/billing';
+    import { createProject, regions } from './store';
+    import type { Region } from '$lib/sdk/billing';
     import { addNotification } from '$lib/stores/notifications';
     import type { Models } from '@appwrite.io/console';
+    import { page } from '$app/stores';
 
-    let regions: RegionList;
     let prefs: Models.Preferences;
+
     onMount(async () => {
-        regions = await sdk.forConsole.billing.listRegions();
-        prefs = await sdk.forConsole.account.getPrefs();
+        prefs = $page.data.account.prefs;
     });
 
     async function notifyRegion(selectedRegion: Region) {
@@ -26,7 +26,7 @@
             addNotification({
                 type: 'success',
                 isHtml: true,
-                message: `You will be notified when <b>${selectedRegion.name}</b> region is available`
+                message: `You will be notified via email when <b>${selectedRegion.name}</b> region is available`
             });
         } catch (error) {
             addNotification({
@@ -48,7 +48,7 @@
             addNotification({
                 type: 'info',
                 isHtml: true,
-                message: `You won't be notified anymore when the <b>${selectedRegion.name}</b> region is available`
+                message: `You will no longer be notified when the <b>${selectedRegion.name}</b> region is available`
             });
         } catch (error) {
             addNotification({
@@ -66,11 +66,11 @@
     <svelte:fragment slot="subtitle">
         Choose a deployment region for your project. This region cannot be changed.
     </svelte:fragment>
-    {#if regions?.total}
+    {#if $regions}
         <ul
             class="grid-box u-margin-block-start-16"
             style="--p-grid-item-size:12em; --p-grid-item-size-small-screens:12rem; --grid-gap: 1rem;">
-            {#each regions.regions.filter((r) => r.$id !== 'default') as region}
+            {#each $regions.regions.filter((r) => r.$id !== 'default') as region}
                 <li>
                     <RegionCard
                         name="region"
@@ -115,7 +115,6 @@
                                     height={30}
                                     flag={region.flag}
                                     name={region.name} />
-
                                 {region.name}
                             {/if}
                         </div>

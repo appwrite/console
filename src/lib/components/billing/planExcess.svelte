@@ -20,6 +20,7 @@
     import type { OrganizationUsage } from '$lib/sdk/billing';
     import { sdk } from '$lib/stores/sdk';
     import { BillingPlan } from '$lib/constants';
+    import { tooltip } from '$lib/actions/tooltip';
 
     export let tier: Tier;
 
@@ -67,11 +68,15 @@
         </svelte:fragment>
     </Alert>
 
-    <TableScroll dense noMargin class="u-margin-block-start-16">
+    <TableScroll noMargin dense class="u-margin-block-start-16">
         <TableHeader>
             <TableCellHead>Resource</TableCellHead>
             <TableCellHead>Free limit</TableCellHead>
-            <TableCellHead>Excess usage</TableCellHead>
+            <TableCellHead>
+                Excess usage <span
+                    use:tooltip={{ content: 'Metrics are estimates updated every 24 hours' }}
+                    class="icon-info"></span>
+            </TableCellHead>
         </TableHeader>
         <TableBody>
             {#if excess?.members}
