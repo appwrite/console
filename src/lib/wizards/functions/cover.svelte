@@ -287,4 +287,20 @@
             hsl(var(--p-card-bg-color) / 0.5) 95.8%
         );
     }
+
+    .u-sep-block-start {
+        border-block-start: solid .0625rem hsl(var(--color-neutral)) !important;
+    }
+
+    .clickable-list-item:not(:last-child) {
+        border-block-end: solid .0625rem hsl(var(--color-neutral)) !important;
+    }
+
+    :global(.theme-light) {
+        --color-neutral: var(--color-neutral-10);
+    }
+
+    :global(.theme-dark) {
+        --color-neutral: var(--color-neutral-85);
+    }
 </style>
