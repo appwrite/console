@@ -10,7 +10,7 @@
     $: plan = $plansInfo.get(selectedTab);
 </script>
 
-<Card>
+<Card style="--card-padding: 1.5rem">
     <div class="comparison-box">
         <SecondaryTabs stretch>
             <SecondaryTabsItem
