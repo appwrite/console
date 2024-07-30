@@ -70,6 +70,7 @@
     let coupon: string;
     let couponData = data?.couponData;
     let campaign = campaigns.get(data?.couponData?.campaign ?? data?.campaign);
+    let billingPlan = BillingPlan.PRO;
 
     onMount(async () => {
         await loadPaymentMethods();
@@ -79,6 +80,9 @@
         if ($page.url.searchParams.has('org')) {
             selectedOrgId = $page.url.searchParams.get('org');
             canSelectOrg = false;
+        }
+        if (campaign?.plan) {
+            billingPlan = campaign.plan;
         }
     });
 
@@ -101,15 +105,15 @@
                 org = await sdk.forConsole.billing.createOrganization(
                     newOrgId,
                     name,
-                    BillingPlan.PRO,
+                    billingPlan,
                     paymentMethodId
                 );
             }
             // Upgrade existing org
-            else if (selectedOrg?.billingPlan !== BillingPlan.PRO) {
+            else if (selectedOrg?.billingPlan === BillingPlan.FREE) {
                 org = await sdk.forConsole.billing.updatePlan(
                     selectedOrg.$id,
-                    BillingPlan.PRO,
+                    billingPlan,
                     paymentMethodId,
                     null
                 );
