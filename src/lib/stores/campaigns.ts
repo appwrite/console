@@ -92,25 +92,25 @@ campaigns
     })
     .set('AniaKubow', {
         template: 'card',
-        title: 'Claim your FreeCodeCamp $50 credits.',
+        title: 'Claim your Ania Kubów $50 credits.',
         description:
             'Get $50 in Cloud credits when you upgrade or create an organization with a Pro plan'
     })
     .set('Fireship', {
         template: 'card',
-        title: 'Claim your FreeCodeCamp $50 credits.',
+        title: 'Claim your Fireship $50 credits.',
         description:
             'Get $50 in Cloud credits when you upgrade or create an organization with a Pro plan'
     })
     .set('Hyperplexed', {
         template: 'card',
-        title: 'Claim your FreeCodeCamp $50 credits.',
+        title: 'Claim your Hyperplexed $50 credits.',
         description:
             'Get $50 in Cloud credits when you upgrade or create an organization with a Pro plan'
     })
     .set('TraversyMedia', {
         template: 'card',
-        title: 'Claim your FreeCodeCamp $50 credits.',
+        title: 'Claim your TraversyMedia $50 credits.',
         description:
             'Get $50 in Cloud credits when you upgrade or create an organization with a Pro plan'
     })
