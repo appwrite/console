@@ -149,7 +149,7 @@ export type Sizes = {
 export enum FunctionUsageRange {
     TwentyFourHours = '24h',
     ThirtyDays = '30d',
-    NinetyDays = '90d',
+    NinetyDays = '90d'
 }
 
 /**
@@ -164,7 +164,7 @@ export type Metric = {
      * The date at which this metric was aggregated in ISO 8601 format.
      */
     date: string;
-}
+};
 /**
  * Metric Breakdown
  */
@@ -181,7 +181,7 @@ export type MetricBreakdown = {
      * The value of this metric at the timestamp.
      */
     value: number;
-}
+};
 
 /**
  * UsageFunction
@@ -255,7 +255,7 @@ export type UsageFunction = {
      * Aggregated number of function executions compute time per period.
      */
     executionsMbSeconds: Metric[];
-}
+};
 
 export class SizesFunctions {
     client: Client;
@@ -412,7 +412,7 @@ export class SizesFunctions {
      * @param {FunctionUsageRange} range
      * @throws {AppwriteException}
      * @returns {Promise}
-    */
+     */
     async getFunctionUsage(functionId: string, range?: FunctionUsageRange): Promise<UsageFunction> {
         if (typeof functionId === 'undefined') {
             throw new AppwriteException('Missing required parameter: "functionId"');
@@ -426,8 +426,13 @@ export class SizesFunctions {
         }
 
         const uri = new URL(this.client.config.endpoint + apiPath);
-        return await this.client.call('get', uri, {
-            'content-type': 'application/json',
-        }, payload);
+        return await this.client.call(
+            'get',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            payload
+        );
     }
 }

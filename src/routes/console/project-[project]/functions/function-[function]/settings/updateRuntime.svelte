@@ -23,7 +23,7 @@
 
     onMount(async () => {
         runtime ??= $func.runtime;
-        size ??= $func.size
+        size ??= $func.size;
 
         let runtimes = await $runtimesList;
         let allowedSizes = await $sizes;
@@ -33,7 +33,9 @@
         }));
 
         sizeOptions = allowedSizes.sizes.map((size) => ({
-            label: `${size.cpus} CPU, ${size.memory} MB RAM` + (size.plan ? ` (${size.plan} and higher)` : ''),
+            label:
+                `${size.cpus} CPU, ${size.memory} MB RAM` +
+                (size.plan ? ` (${size.plan} and higher)` : ''),
             value: size.slug,
             disabled: !size.enabled
         }));
@@ -78,8 +80,7 @@
         }
     }
 
-    $: isUpdateButtonEnabled =
-        runtime !== $func?.runtime || size !== $func?.size;
+    $: isUpdateButtonEnabled = runtime !== $func?.runtime || size !== $func?.size;
 </script>
 
 <Form onSubmit={updateRuntime}>
