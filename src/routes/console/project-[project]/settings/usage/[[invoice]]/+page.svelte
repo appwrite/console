@@ -4,11 +4,9 @@
     import {
         TableBody,
         TableCell,
-        TableCellLink,
         TableCellHead,
         TableHeader,
-        TableRow,
-        Table
+        Table, TableRowLink
     } from '$lib/elements/table';
     import { showUsageRatesModal, tierToPlan, upgradeURL } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
@@ -229,7 +227,7 @@
                         </TableHeader>
                         <TableBody>
                             {#each data.usage.executionsBreakdown as func}
-                                <TableRow link={`${base}/functions/function-${func.resourceId}`}>
+                                <TableRowLink href={`${base}/functions/function-${func.resourceId}`}>
                                     <TableCell title="Function">
                                         {func.name ?? func.resourceId}
                                     </TableCell>
@@ -239,7 +237,7 @@
                                     <TableCell right={true}>
                                         <span class="icon-cheveron-right u-cross-child-center"/>
                                     </TableCell>
-                                </TableRow>
+                                </TableRowLink>
                             {/each}
                         </TableBody>
                     </Table>
@@ -286,7 +284,7 @@
                         <TableBody>
                             {#each data.usage.bucketsBreakdown.sort((a, b) => b.value - a.value) as bucket}
                                 {@const humanized = humanFileSize(bucket.value)}
-                                <TableRow link={`${base}/storage/bucket-${bucket.resourceId}`}>
+                                <TableRowLink href={`${base}/storage/bucket-${bucket.resourceId}`}>
                                     <TableCell
                                         title="View bucket">
                                         {bucket.name ?? bucket.resourceId}
@@ -297,7 +295,7 @@
                                     <TableCell right={true}>
                                         <span class="icon-cheveron-right u-cross-child-center"/>
                                     </TableCell>
-                                </TableRow>
+                                </TableRowLink>
                             {/each}
                         </TableBody>
                     </Table>
