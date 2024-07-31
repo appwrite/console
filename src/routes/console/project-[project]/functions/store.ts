@@ -1,14 +1,14 @@
 import { page } from '$app/stores';
 import { derived } from 'svelte/store';
 import type { Models } from '@appwrite.io/console';
-import type { Sizes } from '$lib/sdk/functionsSpec';
+import type { Specification } from '$lib/sdk/functionsSpec';
 
 export const runtimesList = derived(
     page,
     async ($page) => (await $page.data.runtimesList) as Models.RuntimeList
 );
 
-export const sizes = derived(page, async ($page) => (await $page.data.sizes) as Sizes);
+export const specifications = derived(page, async ($page) => (await $page.data.specifications.specifications) as Specification[]);
 
 export const baseRuntimesList = derived(runtimesList, async ($runtimesList) => {
     const baseRuntimes = new Map<string, Models.Runtime>();

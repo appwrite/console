@@ -8,10 +8,10 @@ import type { LayoutLoad } from './$types';
 export const load: LayoutLoad = async ({ depends }) => {
     depends(Dependencies.FUNCTION_INSTALLATIONS);
 
-    const [runtimesList, installations, sizes] = await Promise.all([
+    const [runtimesList, installations, specifications] = await Promise.all([
         sdk.forProject.functions.listRuntimes(),
         sdk.forProject.vcs.listInstallations([Query.limit(100)]),
-        sdk.forProject.sizesFunctions.getSizes()
+        sdk.forProject.sizesFunctions.getSpecifications()
     ]);
 
     return {
@@ -19,6 +19,6 @@ export const load: LayoutLoad = async ({ depends }) => {
         breadcrumbs: Breadcrumbs,
         runtimesList,
         installations,
-        sizes
+        specifications
     };
 };

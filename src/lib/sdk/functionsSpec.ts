@@ -131,10 +131,10 @@ export type Func = {
     /**
      * Runtime Size
      */
-    size: string;
+    specification: string;
 };
 
-export type Size = {
+export type Specification = {
     slug: string;
     plan: string;
     cpus: number;
@@ -142,8 +142,8 @@ export type Size = {
     enabled: boolean;
 };
 
-export type Sizes = {
-    sizes: Size[];
+export type Specifications = {
+    specification: Specification[];
 };
 
 export enum FunctionUsageRange {
@@ -264,8 +264,8 @@ export class SizesFunctions {
         this.client = client;
     }
 
-    async getSizes(): Promise<Sizes[]> {
-        const path = '/functions/sizes';
+    async getSpecifications(): Promise<Specifications> {
+        const path = '/functions/specifications';
 
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call('GET', uri, {
@@ -316,7 +316,7 @@ export class SizesFunctions {
         providerBranch?: string,
         providerSilentMode?: boolean,
         providerRootDirectory?: string,
-        size?: string
+        specification?: string
     ): Promise<Func> {
         if (typeof functionId === 'undefined') {
             throw new AppwriteException('Missing required parameter: "functionId"');
@@ -389,8 +389,8 @@ export class SizesFunctions {
             payload['providerRootDirectory'] = providerRootDirectory;
         }
 
-        if (typeof size !== 'undefined') {
-            payload['size'] = size;
+        if (typeof specification !== 'undefined') {
+            payload['specification'] = specification;
         }
 
         const uri = new URL(this.client.config.endpoint + apiPath);

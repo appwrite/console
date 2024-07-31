@@ -10,32 +10,34 @@
     import { onMount } from 'svelte';
     import { func } from '../store';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
-    import { runtimesList, sizes } from '../../store';
+    import { runtimesList, specifications } from '../../store';
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { Runtime } from '@appwrite.io/console';
 
     const functionId = $page.params.function;
     let runtime: string = null;
-    let size: string = null;
+    let specification: string = null;
 
     let options = [];
-    let sizeOptions = [];
+    let specificationOptions = [];
 
     onMount(async () => {
         runtime ??= $func.runtime;
-        size ??= $func.size;
+        specification ??= $func.specification;
 
         let runtimes = await $runtimesList;
-        let allowedSizes = await $sizes;
+        let allowedSpecifications = await $specifications;
         options = runtimes.runtimes.map((runtime) => ({
             label: `${runtime.name} - ${runtime.version}`,
             value: runtime.$id
         }));
 
-        sizeOptions = allowedSizes.sizes.map((size) => ({
+        console.log(allowedSpecifications);
+
+        specificationOptions = allowedSpecifications.map((size) => ({
             label:
                 `${size.cpus} CPU, ${size.memory} MB RAM` +
-                (size.plan ? ` (${size.plan} and higher)` : ''),
+                (size.plan && !size.enabled ? ` (${size.plan} and higher)` : ''),
             value: size.slug,
             disabled: !size.enabled
         }));
@@ -63,7 +65,7 @@
                 $func.providerBranch || undefined,
                 $func.providerSilentMode || undefined,
                 $func.providerRootDirectory || undefined,
-                size
+                specification
             );
             await invalidate(Dependencies.FUNCTION);
             addNotification({
@@ -80,7 +82,7 @@
         }
     }
 
-    $: isUpdateButtonEnabled = runtime !== $func?.runtime || size !== $func?.size;
+    $: isUpdateButtonEnabled = runtime !== $func?.runtime || specification !== $func?.specification;
 </script>
 
 <Form onSubmit={updateRuntime}>
@@ -101,8 +103,8 @@
                     label="Specification"
                     id="size"
                     placeholder="Select runtime specification"
-                    bind:value={size}
-                    options={sizeOptions}
+                    bind:value={specification}
+                    options={specificationOptions}
                     required
                     hideRequired />
             </FormList>
