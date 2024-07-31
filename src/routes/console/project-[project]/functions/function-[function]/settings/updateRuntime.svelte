@@ -33,7 +33,7 @@
         }));
 
         sizeOptions = allowedSizes.sizes.map((size) => ({
-            label: `${size.cpus} CPU, ${size.memory} MB RAM` + (size.plan ? ` (${size.plan})` : ''),
+            label: `${size.cpus} CPU, ${size.memory} MB RAM` + (size.plan ? ` (${size.plan} and higher)` : ''),
             value: size.slug,
             disabled: !size.enabled
         }));
@@ -97,9 +97,9 @@
                     required
                     hideRequired />
                 <InputSelect
-                    label="Machine Size"
+                    label="Specification"
                     id="size"
-                    placeholder="Select runtime size"
+                    placeholder="Select runtime specification"
                     bind:value={size}
                     options={sizeOptions}
                     required
