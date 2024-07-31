@@ -32,10 +32,10 @@
             value: runtime.$id
         }));
 
-        console.log(allowedSizes);
-        sizeOptions = allowedSizes.map((size) => ({
-            label: size,
-            value: size
+        sizeOptions = allowedSizes.sizes.map((size) => ({
+            label: `${size.cpus} CPU, ${size.memory} MB RAM` + (size.plan ? ` (${size.plan})` : ''),
+            value: size.slug,
+            disabled: !size.enabled
         }));
     });
 

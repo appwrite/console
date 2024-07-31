@@ -134,11 +134,16 @@ export type Func = {
     size: string;
 };
 
+export type Size = {
+    slug: string;
+    plan: string;
+    cpus: number;
+    memory: number;
+    enabled: boolean;
+};
+
 export type Sizes = {
-    /**
-     * List of available runtime sizes
-     */
-    sizes: string[];
+    sizes: Size[];
 };
 
 export enum FunctionUsageRange {
@@ -259,7 +264,7 @@ export class SizesFunctions {
         this.client = client;
     }
 
-    async getSizes(): Promise<Sizes> {
+    async getSizes(): Promise<Sizes[]> {
         const path = '/functions/sizes';
 
         const uri = new URL(this.client.config.endpoint + path);
