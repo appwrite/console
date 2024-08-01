@@ -98,7 +98,7 @@
         >.
     </Alert>
 
-    <div class="editor-border">
+    <div class="editor-border box">
         <SecondaryTabs large class="u-sep-block-end u-padding-8">
             {#each ['Unix', 'CMD', 'PowerShell'] as cat}
                 <SecondaryTabsItem
@@ -118,6 +118,7 @@
                     withLineNumbers
                     withCopy
                     language="sh"
+                    class="cli-commands-code-box-no-outline"
                     label={codeSnippets[cat].language}
                     code={codeSnippets[cat].code} />
             {/if}
@@ -127,3 +128,17 @@
         <Button secondary on:click={() => (show = false)}>Close</Button>
     </svelte:fragment>
 </Modal>
+
+<style>
+    .box {
+        padding: unset !important;
+    }
+
+    /* should we use global here? */
+    .editor-border :global(.cli-commands-code-box-no-outline) {
+        margin: 1rem 0;
+        border: unset !important;
+        border-radius: unset!important;
+        padding: 0 var(--box-padding, 1.5rem ) 0 var(--box-padding, 1.5rem );
+    }
+</style>
