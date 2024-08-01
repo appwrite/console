@@ -6,7 +6,8 @@
         TableCellHead,
         TableHeader,
         TableScroll,
-        TableRowLink, TableCell
+        TableRowLink,
+        TableCell
     } from '$lib/elements/table';
     import { abbreviateNumber } from '$lib/helpers/numbers';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
@@ -57,7 +58,7 @@
             <TableHeader>
                 <TableCellHead>Project</TableCellHead>
                 <TableCellHead>Usage</TableCellHead>
-                <TableCellHead/>
+                <TableCellHead />
             </TableHeader>
             <TableBody>
                 {#each groupByProject(metric).sort((a, b) => b.usage - a.usage) as project}
@@ -67,7 +68,8 @@
                         </TableCell>
                         <TableCell title="Usage">{format(project.usage)}</TableCell>
                         <TableCell right={true}>
-                            <span class="icon-cheveron-right u-cross-child-center ignore-icon-rotate"/>
+                            <span
+                                class="icon-cheveron-right u-cross-child-center ignore-icon-rotate" />
                         </TableCell>
                     </TableRowLink>
                 {/each}

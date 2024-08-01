@@ -6,7 +6,8 @@
         TableCell,
         TableCellHead,
         TableHeader,
-        Table, TableRowLink
+        Table,
+        TableRowLink
     } from '$lib/elements/table';
     import { showUsageRatesModal, tierToPlan, upgradeURL } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
@@ -227,7 +228,8 @@
                         </TableHeader>
                         <TableBody>
                             {#each data.usage.executionsBreakdown as func}
-                                <TableRowLink href={`${base}/functions/function-${func.resourceId}`}>
+                                <TableRowLink
+                                    href={`${base}/functions/function-${func.resourceId}`}>
                                     <TableCell title="Function">
                                         {func.name ?? func.resourceId}
                                     </TableCell>
@@ -235,7 +237,7 @@
                                         {formatNum(func.value)} executions
                                     </TableCell>
                                     <TableCell right={true}>
-                                        <span class="icon-cheveron-right u-cross-child-center"/>
+                                        <span class="icon-cheveron-right u-cross-child-center" />
                                     </TableCell>
                                 </TableRowLink>
                             {/each}
@@ -285,15 +287,14 @@
                             {#each data.usage.bucketsBreakdown.sort((a, b) => b.value - a.value) as bucket}
                                 {@const humanized = humanFileSize(bucket.value)}
                                 <TableRowLink href={`${base}/storage/bucket-${bucket.resourceId}`}>
-                                    <TableCell
-                                        title="View bucket">
+                                    <TableCell title="View bucket">
                                         {bucket.name ?? bucket.resourceId}
                                     </TableCell>
                                     <TableCell title="Usage">
                                         {humanized.value}{humanized.unit}
                                     </TableCell>
                                     <TableCell right={true}>
-                                        <span class="icon-cheveron-right u-cross-child-center"/>
+                                        <span class="icon-cheveron-right u-cross-child-center" />
                                     </TableCell>
                                 </TableRowLink>
                             {/each}
