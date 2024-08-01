@@ -9,7 +9,7 @@
 
 <footer class="main-footer u-cross-center">
     <div class="main-footer-start">
-        <ul class="inline-links is-no-padding-first-and-last u-x-small u-flex-wrap u-row-gap-16">
+        <ul class="inline-links is-no-padding-first-and-last u-x-small u-flex-wrap u-gap-16">
             <li class="inline-links-item" style="line-height: 1.02;">
                 <div class="u-flex u-cross-center u-gap-8">
                     {#if isCloud}
@@ -80,25 +80,18 @@
         margin-block-start: auto;
     }
 
-    .inline-links-item {
-        padding-inline: 1rem;
-    }
-
-    .inline-links:where(.is-no-padding-first-and-last) :where(.inline-links-item):first-child {
-        padding-inline-start: 0;
-    }
-
-    .inline-links:where(.is-no-padding-first-and-last) :where(.inline-links-item):last-child {
-        padding-inline-end: 0;
-    }
-
-    @media (max-width: 768px) {
-        .main-footer-end {
-            padding-block-start: 1rem;
-        }
+    .main-footer-start .inline-links-item {
+        padding-inline-end: 1rem;
+        padding-inline-start: unset !important;
     }
 
     [class^='icon-']:not(.icon-cloud):not(:hover) {
         color: hsl(var(--color-neutral-50));
+    }
+
+    @media (max-width: 767.99px), (min-width: 768px) and (max-width: 1198.99px) {
+        .main-footer {
+            gap: 2rem;
+        }
     }
 </style>
