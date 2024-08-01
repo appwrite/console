@@ -64,7 +64,7 @@
         <svelte:fragment slot="aside">
             {@const status = $deployment.status}
             {@const fileSize = humanFileSize($deployment.size)}
-            <div class="u-flex u-main-space-between">
+            <div class="u-flex u-main-space-between deployment-info">
                 <div class="u-grid-equal-row-size u-gap-4 u-line-height-1">
                     <p>
                         <b>Build time:</b>
@@ -98,7 +98,7 @@
                         </p>
                     {/if}
                 </div>
-                <div class="u-flex u-flex-vertical u-cross-end">
+                <div class="u-flex u-flex-vertical u-cross-end deployment-status">
                     <Pill
                         danger={status === 'failed'}
                         warning={status === 'building'}
@@ -141,3 +141,16 @@
         </div>
     </Card>
 </Container>
+
+<style>
+    @media (max-width: 768px) {
+        .deployment-info, .code-panel-header {
+            flex-direction: column;
+        }
+
+        .deployment-status {
+            padding-block-start: 1.5rem;
+            align-items: start !important;
+        }
+    }
+</style>
