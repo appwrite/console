@@ -3,12 +3,10 @@
     import { Collapsible, CollapsibleItem } from '$lib/components';
     import {
         TableBody,
-        TableCellLink,
         TableCellHead,
         TableHeader,
-        TableRow,
         TableScroll,
-        TableCellText
+        TableRowLink, TableCell
     } from '$lib/elements/table';
     import { abbreviateNumber } from '$lib/helpers/numbers';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
@@ -55,27 +53,31 @@
 <Collapsible>
     <CollapsibleItem>
         <svelte:fragment slot="title">Project breakdown</svelte:fragment>
-        <TableScroll noMargin>
+        <TableScroll noMargin style="table-layout: auto">
             <TableHeader>
-                <TableCellHead width={185}>Project</TableCellHead>
-                <TableCellHead width={100}>Usage</TableCellHead>
-                <TableCellHead width={140} />
+                <TableCellHead>Project</TableCellHead>
+                <TableCellHead>Usage</TableCellHead>
+                <TableCellHead/>
             </TableHeader>
             <TableBody>
                 {#each groupByProject(metric).sort((a, b) => b.usage - a.usage) as project}
-                    <TableRow>
-                        <TableCellText title="Project">
+                    <TableRowLink href={getProjectUsageLink(project.projectId)}>
+                        <TableCell title="Project">
                             {getProjectName(project.projectId)}
-                        </TableCellText>
-                        <TableCellText title="Usage">{format(project.usage)}</TableCellText>
-                        <TableCellLink
-                            title="Go to project usage"
-                            href={getProjectUsageLink(project.projectId)}>
-                            View project usage
-                        </TableCellLink>
-                    </TableRow>
+                        </TableCell>
+                        <TableCell title="Usage">{format(project.usage)}</TableCell>
+                        <TableCell right={true}>
+                            <span class="icon-cheveron-right u-cross-child-center ignore-icon-rotate"/>
+                        </TableCell>
+                    </TableRowLink>
                 {/each}
             </TableBody>
         </TableScroll>
     </CollapsibleItem>
 </Collapsible>
+
+<style>
+    .ignore-icon-rotate {
+        rotate: unset !important;
+    }
+</style>
