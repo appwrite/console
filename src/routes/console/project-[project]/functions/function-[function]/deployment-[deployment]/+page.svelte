@@ -98,7 +98,7 @@
                         </p>
                     {/if}
                 </div>
-                <div class="u-flex u-flex-vertical u-cross-end deployment-status">
+                <div class="u-flex u-flex-vertical deployment-status">
                     <Pill
                         danger={status === 'failed'}
                         warning={status === 'building'}
