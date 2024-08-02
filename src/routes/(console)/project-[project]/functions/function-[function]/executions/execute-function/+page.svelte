@@ -58,16 +58,20 @@
     const deployment = data.activeDeployment as Models.Deployment;
 
     const keyList = [
-        { label: 'Authorization', value: 'Authorization' },
-        { label: 'Cache-Control', value: 'Cache-Control' },
-        { label: 'Content-Length', value: 'Content-Length' },
+        // Communication
         { label: 'Content-Type', value: 'Content-Type' },
+        { label: 'Accept', value: 'Accept' },
+        // Auth
+        { label: 'Authorization', value: 'Authorization' },
+        { label: 'Cookie', value: 'Cookie' },
+        // Optimizations
+        { label: 'Cache-control', value: 'Cache-control' },
+        { label: 'Forwarded', value: 'Forwarded' },
+        // Client-details
         { label: 'User-Agent', value: 'User-Agent' },
-        { label: 'X-Appwrite-Project', value: 'X-Appwrite-Project' },
-        { label: 'X-Appwrite-Key', value: 'X-Appwrite-Key' },
-        { label: 'X-Appwrite-JWT', value: 'X-Appwrite-JWT' },
-        { label: 'X-Appwrite-Response-Format', value: 'X-Appwrite-Response-Format' },
-        { label: 'X-Fallback-Cookies', value: 'X-Fallback-Cookies' }
+        { label: 'Referer', value: 'Referer' },
+        { label: 'Forwarded', value: 'Forwarded' },
+        { label: 'Host', value: 'Host' }
     ];
 
     const methodOptions = [
