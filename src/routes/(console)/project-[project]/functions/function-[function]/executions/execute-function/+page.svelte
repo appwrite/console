@@ -71,7 +71,8 @@
         { label: 'User-Agent', value: 'User-Agent' },
         { label: 'Referer', value: 'Referer' },
         { label: 'Forwarded', value: 'Forwarded' },
-        { label: 'Host', value: 'Host' }
+        { label: 'Host', value: 'Host' },
+        { label: 'Origin', value: 'Origin' },
     ];
 
     const methodOptions = [
