@@ -32,7 +32,7 @@
     }
 
     function isFileExtensionAllowed(fileExtension: string) {
-        if (allowedFileExtensions.length && !allowedFileExtensions.includes(fileExtension)) {
+        if (allowedFileExtensions?.length && !allowedFileExtensions.includes(fileExtension)) {
             return false;
         }
         return true;
@@ -44,6 +44,7 @@
         for (let i = 0; i < ev.dataTransfer.items.length; i++) {
             const fileExtension = ev.dataTransfer.items[i].getAsFile().name.split('.')[1];
             if (!isFileExtensionAllowed(fileExtension)) {
+                console.log(ev.dataTransfer.items[i].getAsFile().name, fileExtension);
                 error = 'Invalid file extension';
                 return;
             }
