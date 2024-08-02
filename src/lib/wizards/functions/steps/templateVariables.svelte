@@ -63,7 +63,7 @@
     </svelte:fragment>
     {#if $template?.variables?.length}
         {#if requiredVariables?.length}
-            {#if requiredVariables?.length === 1}
+            {#if requiredVariables?.length === 1 || requiredVariables.every((variable) => variable.required)}
                 <div class="collapsible-item">
                     <div class="collapsible-wrapper">
                         <div class="collapsible-button">
