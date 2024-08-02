@@ -316,7 +316,13 @@
                                             {/if}
                                         </Alert>
                                     {/if}
-                                    <Code withCopy noMargin code={execution.logs} language="sh" />
+                                    <Code
+                                        allowScroll
+                                        withCopy
+                                        noMargin
+                                        code={execution.logs}
+                                        language="sh"
+                                        class="limited-code-height" />
                                 {:else}
                                     <Card isDashed isTile>
                                         <p class="text u-text-center">No response was recorded.</p>
@@ -324,7 +330,13 @@
                                 {/if}
                             {:else if selectedResponse === 'errors'}
                                 {#if execution?.errors}
-                                    <Code withCopy noMargin code={execution.errors} language="sh" />
+                                    <Code
+                                        allowScroll
+                                        withCopy
+                                        noMargin
+                                        code={execution.errors}
+                                        language="sh"
+                                        class="limited-code-height" />
                                 {:else}
                                     <Card isDashed isTile>
                                         <p class="text u-text-center">No response was recorded.</p>
@@ -384,3 +396,10 @@
         </div>
     </section>
 {/if}
+
+<style>
+    :global(.limited-code-height) {
+        max-height: 50vh;
+        overflow: auto !important;
+    }
+</style>
