@@ -37,6 +37,6 @@
         class="tooltip"
         aria-label="input tooltip"
         use:tooltipAction={{ content: tooltip }}>
-        <span class="icon-info" aria-hidden="true" style="font-size: var(--icon-size-small)" />
+        <span class="icon-info" aria-hidden="true" style="position:fixed;  font-size: var(--icon-size-small); z-index:9999;" />
     </button>
 {/if}
