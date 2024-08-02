@@ -60,7 +60,7 @@
         EmailTemplateLocale
     } from '@appwrite.io/console';
     import Email2FaTemplate from './email2FATemplate.svelte';
-    import EmailMfaAddedTemplate from './emailMfaAddedTemplate.svelte';
+    import EmailMfaCreatedTemplate from './emailMfaCreatedTemplate.svelte';
     import EmailMfaRemovedTemplate from './emailMfaRemovedTemplate.svelte';
 
     const projectId = $page.params.project;
@@ -71,7 +71,7 @@
     $: emailResetPassword = emailOpen === 'recovery';
     $: emailInviteUser = emailOpen === 'invitation';
     $: email2FAVerificationOpen = emailOpen === 'mfaChallenge';
-    $: emailMFAAddedOpen = emailOpen === 'mfaAdded';
+    $: emailMfaCreated = emailOpen === 'mfaCreated';
     $: emailMFARemovedOpen = emailOpen === 'mfaRemoved';
 
     // let smsOpen = 'verification';
@@ -194,14 +194,14 @@
                     <Email2FaTemplate />
                 </CollapsibleItem>
                 <CollapsibleItem
-                    bind:open={emailMFAAddedOpen}
+                    bind:open={emailMfaCreated}
                     on:click={(e) => {
                         e.preventDefault();
-                        openEmail('mfaAdded');
+                        openEmail('mfaCreated');
                     }}>
                     <svelte:fragment slot="title">MFA authenticator added</svelte:fragment>
                     <p class="text">Send a email to a user when an MFA authenticator is added.</p>
-                    <EmailMfaAddedTemplate />
+                    <EmailMfaCreatedTemplate />
                 </CollapsibleItem>
                 <CollapsibleItem
                     bind:open={emailMFARemovedOpen}
