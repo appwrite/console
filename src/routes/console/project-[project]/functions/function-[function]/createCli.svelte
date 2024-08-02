@@ -132,6 +132,7 @@
 <style>
     .box {
         padding: unset !important;
+        background-color: unset !important;
     }
 
     /* should we use global here? */
@@ -139,6 +140,11 @@
         margin: 1rem 0;
         border: unset !important;
         border-radius: unset!important;
+        background-color: unset !important;
         padding: 0 var(--box-padding, 1.5rem ) 0 var(--box-padding, 1.5rem );
+    }
+
+    :global(.editor-border .cli-commands-code-box-no-outline pre) {
+        background-color: unset !important;
     }
 </style>
