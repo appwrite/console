@@ -42,7 +42,10 @@
     });
 </script>
 
-<section class="box u-overflow-hidden {classes}" class:common-section={!noMargin} class:noBoxPadding>
+<section
+    class="box u-overflow-hidden {classes}"
+    class:common-section={!noMargin}
+    class:noBoxPadding>
     <div
         class="controls u-position-absolute u-inset-inline-end-8 u-inset-block-start-8 u-flex u-gap-8">
         {#if label}

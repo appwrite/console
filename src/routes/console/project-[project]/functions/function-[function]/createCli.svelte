@@ -139,9 +139,9 @@
     .editor-border :global(.cli-commands-code-box-no-outline) {
         margin: 1rem 0;
         border: unset !important;
-        border-radius: unset!important;
+        border-radius: unset !important;
         background-color: unset !important;
-        padding: 0 var(--box-padding, 1.5rem ) 0 var(--box-padding, 1.5rem );
+        padding: 0 var(--box-padding, 1.5rem) 0 var(--box-padding, 1.5rem);
     }
 
     :global(.editor-border .cli-commands-code-box-no-outline pre) {

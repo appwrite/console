@@ -289,11 +289,11 @@
     }
 
     .u-sep-block-start {
-        border-block-start: solid .0625rem hsl(var(--color-neutral)) !important;
+        border-block-start: solid 0.0625rem hsl(var(--color-neutral)) !important;
     }
 
     .clickable-list-item:not(:last-child) {
-        border-block-end: solid .0625rem hsl(var(--color-neutral)) !important;
+        border-block-end: solid 0.0625rem hsl(var(--color-neutral)) !important;
     }
 
     :global(.theme-light) {

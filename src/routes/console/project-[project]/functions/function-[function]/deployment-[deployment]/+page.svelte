@@ -144,7 +144,8 @@
 
 <style>
     @media (max-width: 768px) {
-        .deployment-info, .code-panel-header {
+        .deployment-info,
+        .code-panel-header {
             flex-direction: column;
         }
 
