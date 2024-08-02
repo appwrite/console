@@ -162,10 +162,10 @@
                             </div>
                         </div>
                     </header>
-                    <div class="code-panel-content grid-1-2" style="u-grid">
+                    <div class="code-panel-content grid-1-2">
                         <div
                             class="grid-1-2-col-1 u-flex u-flex-vertical u-gap-16"
-                            class:theme-dark={$app.themeInUse === 'light'}>
+                            class:theme-dark={$app.themeInUse === 'dark'}>
                             <Heading tag="h3" size="6">Request</Heading>
                             <div class="u-sep-block-end">
                                 <Tabs>
@@ -278,7 +278,7 @@
                         </div>
                         <div
                             class="grid-1-2-col-2 u-flex u-flex-vertical u-gap-16 u-min-width-0"
-                            class:theme-dark={$app.themeInUse === 'light'}>
+                            class:theme-dark={$app.themeInUse === 'dark'}>
                             <Heading tag="h3" size="6">Response</Heading>
                             <div class="u-sep-block-end">
                                 <Tabs>
