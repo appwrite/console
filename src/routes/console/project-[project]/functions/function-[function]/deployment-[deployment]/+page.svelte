@@ -23,7 +23,7 @@
 
     let logs = '';
     let showScrollButton = false;
-    let codePanelContent: HTMLElement; /* global var to avoid frequent querySelector calls */
+    let codePanelContent: HTMLElement; /* var to avoid frequent querySelector calls */
 
     function handleScroll() {
         const threshold = codePanelContent.clientHeight * 0.25;
