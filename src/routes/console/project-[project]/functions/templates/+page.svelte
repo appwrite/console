@@ -181,7 +181,7 @@
                         <li>
                             <article class="card u-min-height-100-percent">
                                 <div class="u-flex u-gap-16 u-cross-center u-main-space-between">
-                                    <h2 class="body-text-1 u-bold u-trim-1">
+                                    <h2 class="body-text-1 u-bold u-trim-1 functions-template-title">
                                         {template.name}
                                     </h2>
                                     <ul class="avatars-group is-with-border">
@@ -267,5 +267,13 @@
     :global(.theme-light .functions-avatar-holder .avatar)  {
         background-color: var(--p-avatar-bg-color-default);
         --p-avatar-bg-color-default: hsl(var(--color-neutral-0));
+    }
+
+    :global(.theme-light .functions-template-title) {
+        color: hsl(var(--color-neutral-120));
+    }
+
+    :global(.theme-dark .functions-template-title) {
+        color: hsl(var(--color-neutral-15));
     }
 </style>
