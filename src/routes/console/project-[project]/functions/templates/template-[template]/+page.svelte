@@ -52,7 +52,7 @@
                         <h4 class="body-text-1 u-bold">Published by</h4>
                         <img
                             class="u-margin-block-start-8"
-                            src={$app.themeInUse == 'dark' ? AppwriteLogoDark : AppwriteLogoLight}
+                            src={$app.themeInUse === 'dark' ? AppwriteLogoDark : AppwriteLogoLight}
                             width="120"
                             height="22"
                             alt="Appwrite" />
@@ -63,7 +63,7 @@
         <section>
             <Card>
                 <Heading size="7" tag="h3">
-                    <span class="u-flex u-cross-center u-gap-8">
+                    <span class="u-flex u-cross-center u-gap-8 functions-avatar-holder">
                         <div class="avatar is-size-small">
                             <span
                                 style:--p-text-size="20px"

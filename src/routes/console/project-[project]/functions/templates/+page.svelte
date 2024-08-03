@@ -142,7 +142,7 @@
                                                 .getAll('runtime')
                                                 .includes(runtime)}
                                             on:change={(e) => applyFilter('runtime', runtime, e)} />
-                                        <div class="u-flex u-cross-center u-gap-8">
+                                        <div class="u-flex u-cross-center u-gap-8 functions-avatar-holder">
                                             <div class="avatar is-size-x-small">
                                                 <SvgIcon name={icon} iconSize="small" />
                                             </div>
@@ -188,7 +188,7 @@
                                         {#each displayed as runtime}
                                             {@const icon = getIconFromRuntime(runtime.name)}
                                             {#if icon}
-                                                <li class="avatars-group-item">
+                                                <li class="avatars-group-item functions-avatar-holder">
                                                     <div class="avatar is-size-small">
                                                         <img
                                                             style:--p-text-size="20px"
@@ -201,7 +201,7 @@
                                             {/if}
                                         {/each}
                                         {#if hidden.length}
-                                            <li class="avatars-group-item">
+                                            <li class="avatars-group-item functions-avatar-holder">
                                                 <div
                                                     class="avatar is-size-small"
                                                     use:tooltip={{
@@ -261,3 +261,11 @@
         </section>
     </div>
 </Container>
+
+
+<style>
+    :global(.theme-light .functions-avatar-holder .avatar)  {
+        background-color: var(--p-avatar-bg-color-default);
+        --p-avatar-bg-color-default: hsl(var(--color-neutral-0));
+    }
+</style>
