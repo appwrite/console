@@ -51,10 +51,6 @@
     bind:show={showGitDisconnect}
     onSubmit={handleSubmit}
     size="big">
-    <p>
-        Are you sure you want to disconnect this git installation? This will affect future
-        deployments to the following functions:
-    </p>
 
     {#await loadFunctions()}
         <div class="u-flex u-main-center">
@@ -64,6 +60,10 @@
         </div>
     {:then functions}
         {#if functions.total}
+            <p>
+                Are you sure you want to disconnect this git installation? This will affect future
+                deployments to the following functions:
+            </p>
             <div class="u-flex u-flex-vertical u-gap-12">
                 {#each functions.functions as func}
                     <div class="u-flex u-main-start u-gap-8">
