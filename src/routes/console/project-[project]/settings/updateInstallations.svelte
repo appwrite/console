@@ -90,7 +90,7 @@
     <svelte:fragment slot="aside">
         {#if total > 0}
             <div>
-                <div class="u-flex u-flex-vertical-mobile u-main-end">
+                <div class="u-flex u-flex-vertical-mobile u-main-end u-padding-block-end-16">
                     <ul class="buttons-list">
                         <li class="buttons-list-item">
                             <Button secondary on:click={() => (showGitIstall = true)}>
