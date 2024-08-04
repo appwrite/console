@@ -27,7 +27,7 @@
     <div class="grid-300px-1fr">
         <section>
             <Collapsible>
-                <li class="collapsible-item">
+                <li class="collapsible-item-divider collapsible-item">
                     <h3 class="u-flex u-gap-16 body-text-2 u-bold u-padding-block-12">
                         Use cases
                         <span class="inline-tag">{$template.usecases.length}</span>
@@ -38,7 +38,7 @@
                         {/each}
                     </div>
                 </li>
-                <li class="collapsible-item">
+                <li class="collapsible-item-divider collapsible-item">
                     <h3 class="u-flex u-gap-16 body-text-2 u-bold u-padding-block-12">
                         Runtimes
                         <span class="inline-tag">{$template.runtimes.length}</span>
@@ -49,7 +49,7 @@
                         {/each}
                     </div>
                 </li>
-                <li class="collapsible-item">
+                <li class="collapsible-item-divider collapsible-item">
                     <section class="card u-margin-block-start-24">
                         <h4 class="body-text-1 u-bold">Published by</h4>
                         <img
@@ -113,3 +113,14 @@
         </section>
     </div>
 </Container>
+
+<style>
+    :global(.theme-dark .collapsible-item-divider:where(:not(:last-child))) {
+        border-block-end: solid .0625rem hsl(var(--color-neutral-150));
+    }
+
+    :global(.theme-light .collapsible-item-divider:where(:not(:last-child))) {
+        border-block-end: solid .0625rem hsl(var(--color-neutral-10));
+    }
+
+</style>
