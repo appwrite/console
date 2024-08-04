@@ -101,7 +101,8 @@
                     </ul>
                 </div>
 
-                <Table noMargin noStyles>
+                <div style="overflow: auto">
+                    <Table noMargin noStyles isAutoLayout>
                     <TableHeader>
                         <TableCellHead width={150}>Installation ID</TableCellHead>
                         <TableCellHead>Repository</TableCellHead>
@@ -172,6 +173,7 @@
                         {/each}
                     </TableBody>
                 </Table>
+                </div>
             </div>
             <div class="u-flex u-main-space-between">
                 <p class="text">Total installations: {total}</p>
