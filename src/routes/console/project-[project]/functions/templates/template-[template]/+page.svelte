@@ -28,8 +28,9 @@
         <section>
             <Collapsible>
                 <li class="collapsible-item">
-                    <h3 class="body-text-2 u-bold u-padding-block-12">
-                        Use cases <span class="inline-tag">{$template.usecases.length}</span>
+                    <h3 class="u-flex u-gap-16 body-text-2 u-bold u-padding-block-12">
+                        Use cases
+                        <span class="inline-tag">{$template.usecases.length}</span>
                     </h3>
                     <div class="collapsible-content u-flex u-flex-wrap u-gap-8">
                         {#each $template.usecases as useCase}
@@ -38,8 +39,9 @@
                     </div>
                 </li>
                 <li class="collapsible-item">
-                    <h3 class="body-text-2 u-bold u-padding-block-12">
-                        Runtimes <span class="inline-tag">{$template.runtimes.length}</span>
+                    <h3 class="u-flex u-gap-16 body-text-2 u-bold u-padding-block-12">
+                        Runtimes
+                        <span class="inline-tag">{$template.runtimes.length}</span>
                     </h3>
                     <div class="collapsible-content u-flex u-flex-wrap u-gap-8">
                         {#each $template.runtimes as runtime}
@@ -63,7 +65,7 @@
         <section>
             <Card>
                 <Heading size="7" tag="h3">
-                    <span class="u-flex u-cross-center u-gap-8 functions-avatar-holder">
+                    <span class="u-flex u-cross-center u-gap-16 functions-avatar-holder">
                         <div class="avatar is-size-small">
                             <span
                                 style:--p-text-size="20px"
