@@ -3,6 +3,7 @@
     import { page } from '$app/stores';
     import {
         Alert,
+        Arrow,
         AvatarGroup,
         CardGrid,
         DropList,
@@ -202,7 +203,8 @@
                 <div class="u-flex u-cross-center u-flex-vertical u-gap-32">
                     <div class="u-flex u-cross-center u-flex-vertical u-gap-8">
                         <AvatarGroup class="git-installation-avatar-group" bordered icons={['github', 'gitlab', 'bitBucket', 'azure']} />
-                        <span class="icon-arrow-narrow-down" />
+
+                        <Arrow direction="down" />
 
                         <div class="avatar"><SvgIcon name="appwrite" type="color" size={80} /></div>
                     </div>
