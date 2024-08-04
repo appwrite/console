@@ -201,7 +201,7 @@
             <article class="card-git card is-border-dashed is-no-shadow">
                 <div class="u-flex u-cross-center u-flex-vertical u-gap-32">
                     <div class="u-flex u-cross-center u-flex-vertical u-gap-8">
-                        <AvatarGroup bordered icons={['github', 'gitlab', 'bitBucket', 'azure']} />
+                        <AvatarGroup class="git-installation-avatar-group" bordered icons={['github', 'gitlab', 'bitBucket', 'azure']} />
                         <span class="icon-arrow-narrow-down" />
 
                         <div class="avatar"><SvgIcon name="appwrite" type="color" size={80} /></div>
@@ -225,3 +225,9 @@
 {#if showGitDisconnect}
     <GitDisconnectModal bind:showGitDisconnect {selectedInstallation} />
 {/if}
+
+<style>
+    :global(.git-installation-avatar-group .icon-gitlab, .icon-bitBucket, .icon-azure) {
+        color: hsl(var(--color-neutral-50));
+    }
+</style>
