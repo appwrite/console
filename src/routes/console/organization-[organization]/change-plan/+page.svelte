@@ -111,9 +111,9 @@
     }
 
     async function handleSubmit() {
-        if (billingPlan === BillingPlan.FREE) {
+        if (isDowngrade) {
             await downgrade();
-        } else {
+        } else if (isUpgrade) {
             await upgrade();
         }
     }
