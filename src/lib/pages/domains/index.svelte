@@ -130,7 +130,7 @@
                         {:else}
                             <Pill warning>
                                 <span class="icon-clock u-text-color-gray" aria-hidden="true" />
-                                <p class="text">Blocked by verification</p>
+                                <p class="text">blocked by verification</p>
                             </Pill>
                         {/if}
                     </TableCell>
