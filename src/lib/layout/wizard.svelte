@@ -139,7 +139,18 @@
     }
 
     $: sortedSteps = [...steps].sort(([a], [b]) => (a > b ? 1 : -1));
-    $: isLastStep = $wizard.step === steps.size;
+    $: isLastStep = (() => {
+        if ($wizard.step === steps.size) {
+            return true;
+        }
+        let lastStep = true;
+        steps.forEach((step, i) => {
+            if (i > $wizard.step && !step.disabled) {
+                lastStep = false;
+            }
+        });
+        return lastStep;
+    })();
     $: currentStep = steps.get($wizard.step);
 </script>
 

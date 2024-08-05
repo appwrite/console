@@ -1,22 +1,29 @@
 <script lang="ts">
     import { ID, Runtime } from '@appwrite.io/console';
     import { Wizard } from '$lib/layout';
-    import type { WizardStepsType } from '$lib/layout/wizard.svelte';
     import { sdk } from '$lib/stores/sdk';
     import { wizard } from '$lib/stores/wizard';
     import { goto } from '$app/navigation';
-    import { choices, installation, repository, template, templateConfig } from './store';
+    import {
+        choices,
+        installation,
+        repository,
+        template,
+        templateConfig,
+        templateStepsComponents
+    } from './store';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import GitConfiguration from './steps/gitConfiguration.svelte';
-    import TemplateConfiguration from './steps/templateConfiguration.svelte';
-    import RepositoryBehaviour from './steps/repositoryBehaviour.svelte';
-    import CreateRepository from './steps/createRepository.svelte';
-    import TemplateVariables from './steps/templateVariables.svelte';
     import { scopes } from '$lib/constants';
     import { isValueOfStringEnum } from '$lib/helpers/types';
+    import TemplateConfiguration from './steps/templateConfiguration.svelte';
+    import TemplateScopes from './steps/templateScopes.svelte';
+    import TemplateVariables from './steps/templateVariables.svelte';
+    import TemplateDeployment from './steps/templateDeployment.svelte';
+    import CreateRepository from './steps/createRepository.svelte';
+    import GitConfiguration from './steps/gitConfiguration.svelte';
 
     async function create() {
         try {
@@ -50,15 +57,27 @@
                 runtimeDetail.entrypoint,
                 runtimeDetail.commands || undefined,
                 undefined,
-                $installation.$id,
-                $repository.id,
-                $choices.branch,
-                $choices.silentMode || undefined,
-                $choices.rootDir || undefined,
-                $template.providerRepositoryId,
-                $template.providerOwner,
-                runtimeDetail.providerRootDirectory,
-                $template.providerBranch
+                $templateConfig.repositoryBehaviour === 'manual' ? undefined : $installation.$id,
+                $templateConfig.repositoryBehaviour === 'manual' ? undefined : $repository.id,
+                $templateConfig.repositoryBehaviour === 'manual' ? undefined : $choices.branch,
+                $templateConfig.repositoryBehaviour === 'manual'
+                    ? undefined
+                    : $choices.silentMode || undefined,
+                $templateConfig.repositoryBehaviour === 'manual'
+                    ? undefined
+                    : $choices.rootDir || undefined,
+                $templateConfig.repositoryBehaviour === 'manual'
+                    ? undefined
+                    : $template.providerRepositoryId,
+                $templateConfig.repositoryBehaviour === 'manual'
+                    ? undefined
+                    : $template.providerOwner,
+                $templateConfig.repositoryBehaviour === 'manual'
+                    ? undefined
+                    : runtimeDetail.providerRootDirectory,
+                $templateConfig.repositoryBehaviour === 'manual'
+                    ? undefined
+                    : $template.providerBranch
             );
 
             if ($templateConfig.variables) {
@@ -93,27 +112,35 @@
         installation.set(null);
     }
 
-    const stepsComponents: WizardStepsType = new Map();
-    stepsComponents.set(1, {
+    $templateStepsComponents.set(1, {
         label: 'Configuration',
         component: TemplateConfiguration
     });
-    stepsComponents.set(2, {
+    $templateStepsComponents.set(2, {
+        label: 'Scopes',
+        component: TemplateScopes
+    });
+    $templateStepsComponents.set(3, {
         label: 'Variables',
-        component: TemplateVariables
+        component: TemplateVariables,
+        disabled: !$template?.variables?.length
     });
-    stepsComponents.set(3, {
-        label: 'Connect',
-        component: RepositoryBehaviour
+    $templateStepsComponents.set(4, {
+        label: 'Deployment',
+        component: TemplateDeployment
     });
-    stepsComponents.set(4, {
+    $templateStepsComponents.set(5, {
         label: 'Repository',
         component: CreateRepository
     });
-    stepsComponents.set(5, {
+    $templateStepsComponents.set(6, {
         label: 'Branch',
         component: GitConfiguration
     });
 </script>
 
-<Wizard title="Create Function" steps={stepsComponents} on:finish={create} on:exit={resetState} />
+<Wizard
+    title="Create Function"
+    steps={$templateStepsComponents}
+    on:finish={create}
+    on:exit={resetState} />
