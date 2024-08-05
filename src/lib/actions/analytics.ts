@@ -194,6 +194,7 @@ export enum Submit {
     AuthPasswordHistoryUpdate = 'submit_auth_password_history_limit_update',
     AuthPasswordDictionaryUpdate = 'submit_auth_password_dictionary_update',
     AuthPersonalDataCheckUpdate = 'submit_auth_personal_data_check_update',
+    AuthSessionAlertsUpdate = 'submit_auth_session_alerts_update',
     AuthMockNumbersUpdate = 'submit_auth_mock_numbers_update',
     SessionsLengthUpdate = 'submit_sessions_length_update',
     SessionsLimitUpdate = 'submit_sessions_limit_update',
