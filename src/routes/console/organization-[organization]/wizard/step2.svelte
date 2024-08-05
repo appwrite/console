@@ -26,7 +26,7 @@
             addNotification({
                 type: 'success',
                 isHtml: true,
-                message: `You will be notified when <b>${selectedRegion.name}</b> region is available`
+                message: `You will be notified via email when <b>${selectedRegion.name}</b> region is available`
             });
         } catch (error) {
             addNotification({
@@ -48,7 +48,7 @@
             addNotification({
                 type: 'info',
                 isHtml: true,
-                message: `You won't be notified anymore when the <b>${selectedRegion.name}</b> region is available`
+                message: `You will no longer be notified when the <b>${selectedRegion.name}</b> region is available`
             });
         } catch (error) {
             addNotification({

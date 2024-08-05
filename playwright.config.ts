@@ -4,6 +4,10 @@ const config: PlaywrightTestConfig = {
     timeout: 120000,
     reportSlowTests: null,
     reporter: [['html', { open: 'never' }]],
+    retries: 3,
+    use: {
+        trace: 'on-first-retry'
+    },
     webServer: {
         timeout: 120000,
         env: {
