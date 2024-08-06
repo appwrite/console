@@ -270,7 +270,7 @@
     }
 
     :global(.theme-light .functions-template-title) {
-        color: hsl(var(--color-neutral-120));
+        color: hsl(var(--color-neutral-70));
     }
 
     :global(.theme-dark .functions-template-title) {

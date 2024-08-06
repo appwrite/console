@@ -116,7 +116,7 @@
 
 <style>
     :global(.theme-dark .collapsible-item-divider:where(:not(:last-child))) {
-        border-block-end: solid .0625rem hsl(var(--color-neutral-150));
+        border-block-end: solid .0625rem hsl(var(--color-neutral-85));
     }
 
     :global(.theme-light .collapsible-item-divider:where(:not(:last-child))) {
