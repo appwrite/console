@@ -267,15 +267,18 @@
                                             <span class="icon-dots-horizontal" aria-hidden="true" />
                                         </button>
                                         <svelte:fragment slot="list">
-                                            <DropListItem
-                                                icon="refresh"
-                                                on:click={() => {
-                                                    selectedDeployment = deployment;
-                                                    showRedeploy = true;
-                                                    showDropdown = [];
-                                                }}>
-                                                Redeploy
-                                            </DropListItem>
+                                            {#if deployment.status === 'ready'}
+                                                <DropListItem
+                                                    icon="refresh"
+                                                    on:click={() => {
+                                                        selectedDeployment = deployment;
+                                                        showRedeploy = true;
+                                                        showDropdown = [];
+                                                    }}>
+                                                    Redeploy
+                                                </DropListItem>
+                                            {/if}
+
                                             {#if deployment.status === 'ready' && deployment.$id !== $func.deployment}
                                                 <DropListItem
                                                     icon="lightning-bolt"
