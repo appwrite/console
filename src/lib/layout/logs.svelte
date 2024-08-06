@@ -138,8 +138,8 @@
 
             <div class="u-stretch u-margin-block-start-32 u-overflow-hidden">
                 <section class="code-panel">
-                    <header class="code-panel-header u-flex u-main-space-between u-width-full-line">
-                        <div class="u-flex u-gap-24">
+                    <header class="code-panel-header code-panel-compact-header u-main-space-between u-width-full-line">
+                        <div class="u-flex">
                             <div class="u-flex u-gap-16">
                                 <h4 class="text u-bold">Method:</h4>
                                 <span class="u-text-color-gray">{execution.requestMethod}</span>
@@ -164,7 +164,7 @@
                     </header>
                     <div class="code-panel-content grid-1-2">
                         <div
-                            class="grid-1-2-col-1 u-flex u-flex-vertical u-gap-16"
+                            class="grid-1-2-col-1 u-flex u-flex-vertical u-gap-16 mobile-only-inline-16-padding"
                             class:theme-dark={$app.themeInUse === 'dark'}>
                             <Heading tag="h3" size="6">Request</Heading>
                             <div class="u-sep-block-end">
@@ -276,8 +276,9 @@
                                 </p>
                             {/if}
                         </div>
+                        <div class="u-sep-block-end is-only-mobile" />
                         <div
-                            class="grid-1-2-col-2 u-flex u-flex-vertical u-gap-16 u-min-width-0"
+                            class="grid-1-2-col-2 u-flex u-flex-vertical u-gap-16 u-min-width-0 mobile-only-inline-16-padding"
                             class:theme-dark={$app.themeInUse === 'dark'}>
                             <Heading tag="h3" size="6">Response</Heading>
                             <div class="u-sep-block-end">
@@ -401,5 +402,29 @@
     :global(.limited-code-height) {
         max-height: 50vh;
         overflow: auto !important;
+    }
+
+    .code-panel-compact-header .u-flex {
+        gap: 1.5rem !important;
+    }
+
+    @media (max-width: 768px) {
+        .code-panel-compact-header {
+            row-gap: 1rem;
+            flex-direction: column !important;
+        }
+
+        .code-panel-content {
+            padding: unset !important;
+            padding-block: 1.5rem !important;
+        }
+
+        .mobile-only-inline-16-padding {
+            padding-inline: 1.5rem !important;
+        }
+
+        .grid-1-2 {
+            row-gap: 1.5rem;
+        }
     }
 </style>
