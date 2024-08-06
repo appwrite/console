@@ -1,10 +1,10 @@
 <script lang="ts">
     import { Box } from '$lib/components';
     import { FormList, Helper, InputChoice, InputPassword } from '$lib/elements/forms';
-    import type { Variable } from '$lib/stores/marketplace';
+    import type { Models } from '@appwrite.io/console';
     import { templateConfig } from '../store';
 
-    export let appwriteVariable: Variable;
+    export let appwriteVariable: Models.TemplateVariable;
 </script>
 
 <Box radius="small" padding={16}>
