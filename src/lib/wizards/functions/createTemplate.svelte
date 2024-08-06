@@ -48,7 +48,7 @@
                 $templateConfig.$id || ID.unique(),
                 $templateConfig.name,
                 $templateConfig.runtime,
-                $template.permissions || undefined,
+                $templateConfig?.execute ? $template.permissions || undefined : undefined,
                 $template.events || undefined,
                 $template.cron || undefined,
                 $template.timeout || undefined,
@@ -56,7 +56,7 @@
                 undefined,
                 runtimeDetail.entrypoint,
                 runtimeDetail.commands || undefined,
-                undefined,
+                $templateConfig?.scopes?.length ? $templateConfig.scopes : undefined,
                 $templateConfig.repositoryBehaviour === 'manual' ? undefined : $installation.$id,
                 $templateConfig.repositoryBehaviour === 'manual' ? undefined : $repository.id,
                 $templateConfig.repositoryBehaviour === 'manual' ? undefined : $choices.branch,
@@ -118,7 +118,8 @@
     });
     $templateStepsComponents.set(2, {
         label: 'Scopes',
-        component: TemplateScopes
+        component: TemplateScopes,
+        disabled: !$template?.scopes?.length
     });
     $templateStepsComponents.set(3, {
         label: 'Variables',

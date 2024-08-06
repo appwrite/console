@@ -1,57 +1,78 @@
 <script lang="ts">
-    import { CustomId } from '$lib/components';
-    import { Pill } from '$lib/elements';
-    import { InputText, InputSelect, FormList } from '$lib/elements/forms';
+    import { scopes } from '$lib/constants';
+    import { FormList, InputChoice } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
     import { onMount } from 'svelte';
-    import { createFunction } from '../store';
-    import { runtimesList } from '$routes/(console)/project-[project]/functions/store';
+    import { template, templateConfig } from '../store';
 
-    let showCustomId = false;
-
-    let options = [];
-
-    onMount(async () => {
-        options = (await $runtimesList).runtimes.map((runtime) => ({
-            label: `${runtime.name} - ${runtime.version}`,
-            value: runtime.$id
-        }));
+    let templateScopes = [];
+    onMount(() => {
+        $templateConfig.execute = $template.permissions.includes('any');
+        templateScopes = scopes
+            .filter((scope) => $template.scopes.includes(scope.scope))
+            .map((scope) => ({
+                ...scope,
+                active: true
+            }));
     });
+
+    $: $templateConfig.scopes = templateScopes
+        ?.filter((scope) => scope.active)
+        ?.map((scope) => scope.scope);
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">Details</svelte:fragment>
-    <svelte:fragment slot="subtitle">Create and deploy your function manually.</svelte:fragment>
-    <FormList>
-        <InputText
-            label="Name"
-            id="name"
-            placeholder="Function name"
-            autofocus
-            bind:value={$createFunction.name}
-            required />
+    <svelte:fragment slot="title">Permissions</svelte:fragment>
+    <svelte:fragment slot="subtitle">
+        Enable recommended scopes and execute access for when your function is deployed.
+    </svelte:fragment>
+    <p>Execute permissions</p>
+    <FormList class="u-margin-block-start-16">
+        <div class="user-profile">
+            <span class="avatar" style:--p-text-size="1rem">
+                <span class="icon-lock-open" />
+            </span>
+            <span class="user-profile-info u-flex u-main-space-between u-gap-16">
+                <div>
+                    <p class="name u-bold">Public (anyone can execute)</p>
+                    <p class="text u-margin-block-start-4">
+                        This could include unauthorized users and search engines.
+                    </p>
+                </div>
 
-        <InputSelect
-            label="Runtime"
-            id="runtime"
-            placeholder="Select runtime"
-            bind:value={$createFunction.runtime}
-            {options}
-            required />
-
-        {#if !showCustomId}
-            <div>
-                <Pill button on:click={() => (showCustomId = !showCustomId)}>
-                    <span class="icon-pencil" aria-hidden="true" />
-                    <span class="text">Function ID </span>
-                </Pill>
+                <InputChoice
+                    type="switchbox"
+                    id="execute"
+                    label="Execute"
+                    showLabel={false}
+                    bind:value={$templateConfig.execute}></InputChoice>
+            </span>
+        </div>
+    </FormList>
+    <p class="text u-margin-block-start-48">Function scopes</p>
+    <FormList class="u-margin-block-start-16">
+        {#each templateScopes as scope, i}
+            <div class="user-profile">
+                <span class="avatar" style:--p-text-size="1rem">
+                    <span class={`icon-${scope.icon}`} />
+                </span>
+                <span class="user-profile-info u-flex u-main-space-between u-gap-16">
+                    <div>
+                        <p class="name u-bold">{scope.scope}</p>
+                        <p class="text u-margin-block-start-4">{scope.description}</p>
+                    </div>
+                    <InputChoice
+                        type="switchbox"
+                        id={scope.scope}
+                        label={scope.scope}
+                        showLabel={false}
+                        bind:value={scope.active}>
+                    </InputChoice>
+                </span>
             </div>
-        {:else}
-            <CustomId
-                bind:show={showCustomId}
-                name="Function"
-                bind:id={$createFunction.$id}
-                fullWidth />
-        {/if}
+            {#if i < templateScopes.length - 1}
+                <div class="with-separators"></div>
+            {/if}
+        {/each}
     </FormList>
 </WizardStep>
