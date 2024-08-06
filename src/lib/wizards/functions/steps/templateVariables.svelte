@@ -33,9 +33,7 @@
     $: requiredVariables = $template?.variables?.filter((v) => v.required);
     $: optionalVariables = $template?.variables?.filter((v) => !v.required);
 
-    function selectComponent(
-        variableType: 'password' | 'text' | 'number' | 'email' | 'url' | 'phone'
-    ): typeof SvelteComponent<unknown> {
+    function selectComponent(variableType: string): typeof SvelteComponent<unknown> {
         switch (variableType) {
             case 'password':
                 return InputPassword;
