@@ -164,7 +164,7 @@
                     </header>
                     <div class="code-panel-content grid-1-2">
                         <div
-                            class="grid-1-2-col-1 u-flex u-flex-vertical u-gap-16 mobile-only-inline-16-padding"
+                            class="grid-1-2-col-1 u-flex u-flex-vertical u-gap-16 mobile-only-inline-20-padding"
                             class:theme-dark={$app.themeInUse === 'dark'}>
                             <Heading tag="h3" size="6">Request</Heading>
                             <div class="u-sep-block-end">
@@ -248,7 +248,7 @@
                                     </div>
                                 {/if}
 
-                                <p class="text u-text-center u-padding-24">
+                                <p class="text u-text-center u-padding-16">
                                     {execution.requestHeaders?.length
                                         ? 'Not all header data is'
                                         : 'Header data is not'}
@@ -263,7 +263,7 @@
                                     >.
                                 </p>
                             {:else if selectedRequest === 'body'}
-                                <p class="text u-text-center u-padding-24">
+                                <p class="text u-text-center u-padding-16">
                                     Body data is not captured by Appwrite for your user's security
                                     and privacy. To display body data in the Logs tab, use
                                     <b>context.log()</b>.
@@ -276,9 +276,9 @@
                                 </p>
                             {/if}
                         </div>
-                        <div class="u-sep-block-end is-only-mobile" />
+                        <div class="u-sep-block-end is-only-mobile u-padding-block-start-16" />
                         <div
-                            class="grid-1-2-col-2 u-flex u-flex-vertical u-gap-16 u-min-width-0 mobile-only-inline-16-padding"
+                            class="grid-1-2-col-2 u-flex u-flex-vertical u-gap-16 u-min-width-0 mobile-only-inline-20-padding mobile-only-block-start-20-padding"
                             class:theme-dark={$app.themeInUse === 'dark'}>
                             <Heading tag="h3" size="6">Response</Heading>
                             <div class="u-sep-block-end">
@@ -363,7 +363,7 @@
                                         </TableBody>
                                     </TableScroll>
                                 {/if}
-                                <p class="text u-text-center u-padding-24">
+                                <p class="text u-text-center u-padding-16">
                                     {execution.responseHeaders?.length
                                         ? 'Not all header data is'
                                         : 'Header data is not'}
@@ -378,7 +378,7 @@
                                     >.
                                 </p>
                             {:else if selectedResponse === 'body'}
-                                <p class="text u-text-center u-padding-24">
+                                <p class="text u-text-center u-padding-16">
                                     Body data is not captured by Appwrite for your user's security
                                     and privacy. To display body data in the Logs tab, use
                                     <b>context.log()</b>.
@@ -419,12 +419,17 @@
             padding-block: 1.5rem !important;
         }
 
-        .mobile-only-inline-16-padding {
+        .mobile-only-inline-20-padding {
             padding-inline: 1.5rem !important;
         }
 
-        .grid-1-2 {
-            row-gap: 1.5rem;
+        .mobile-only-block-start-20-padding {
+            padding-block-start: 1.5rem !important;
+        }
+
+        .code-panel-content.grid-1-2 {
+            display: unset !important;
+            row-gap: unset !important;
         }
     }
 </style>
