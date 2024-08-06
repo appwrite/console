@@ -94,7 +94,10 @@
                 type: 'success'
             });
             trackEvent(Submit.FunctionCreate, {
-                customId: !!response.$id
+                customId: !!response.$id,
+                runtime: response.runtime,
+                deployment_type: $templateConfig.repositoryBehaviour,
+                scopes: $templateConfig.scopes
             });
             resetState();
         } catch (error) {
