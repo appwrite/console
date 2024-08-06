@@ -31,17 +31,23 @@ export type Invoice = {
     $id: string;
     $createdAt: Date;
     $updatedAt: Date;
+    permissions: string[];
     teamId: string;
     aggregationId: string;
+    plan: Tier;
     amount: number;
+    tax: number;
+    taxAmount: number;
+    vat: number;
+    vatAmount: number;
+    grossAmount: number;
+    creditsUsed: number;
     currency: string;
-    date: number;
     from: string;
     to: string;
     status: string;
     dueAt: string;
     clientSecret: string;
-    tier: Tier;
     usage: {
         name: string;
         value: number /* service over the limit*/;

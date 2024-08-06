@@ -29,7 +29,7 @@
     $: executionsTotal = data.usage.executionsTotal;
     $: storage = data.usage.filesStorageTotal;
 
-    const tier = data?.currentInvoice?.tier ?? $organization?.billingPlan;
+    const tier = data?.currentInvoice?.plan ?? $organization?.billingPlan;
     const plan = tierToPlan(tier).name;
 
     // let invoice = null;
