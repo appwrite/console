@@ -11,7 +11,6 @@
     export let couponData: Partial<Coupon>;
     export let billingBudget: number;
     export let fixedCoupon = false; // If true, the coupon cannot be removed
-    export let isDowngrade = false;
 
     const today = new Date();
     const billingPayDate = new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000);
@@ -42,8 +41,8 @@
         <p class="text">{formatCurrency(currentPlan.price)}</p>
     </span>
     <span class="u-flex u-main-space-between">
-        <p class="text" class:u-bold={isDowngrade}>Additional seats ({collaborators?.length})</p>
-        <p class="text" class:u-bold={isDowngrade}>
+        <p class="text">Additional seats ({collaborators?.length})</p>
+        <p class="text">
             {formatCurrency(extraSeatsCost)}
         </p>
     </span>
