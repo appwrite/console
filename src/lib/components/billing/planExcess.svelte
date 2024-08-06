@@ -23,7 +23,6 @@
     import { tooltip } from '$lib/actions/tooltip';
 
     export let tier: Tier;
-    export let members: number;
 
     const plan = $plansInfo?.get(tier);
     let excess: {
@@ -42,7 +41,7 @@
             $organization.billingCurrentInvoiceDate,
             new Date().toISOString()
         );
-        excess = calculateExcess(usage, plan, members);
+        excess = calculateExcess(usage, plan, $organization);
         showExcess = Object.values(excess).some((value) => value > 0);
     });
 </script>
@@ -99,8 +98,7 @@
                     <TableCell title="excess">
                         <p class="u-color-text-danger">
                             <span class="icon-arrow-up" />
-                            {humanFileSize(excess?.storage).value}
-                            {humanFileSize(excess?.storage).unit}
+                            {humanFileSize(excess?.storage)}
                         </p>
                     </TableCell>
                 </TableRow>
