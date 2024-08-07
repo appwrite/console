@@ -114,6 +114,12 @@ campaigns
         description:
             'Get $50 in Cloud credits when you upgrade or create an organization with a Pro plan'
     })
+    .set('VueJS', {
+        template: 'card',
+        title: 'Claim your $50 VueJS credits.',
+        description:
+            'Get $50 in Cloud credits when you upgrade or create an organization with a Pro plan'
+    })
     .set('FusionVC', {
         template: 'review',
         title: 'Welcome to Appwrite!',
