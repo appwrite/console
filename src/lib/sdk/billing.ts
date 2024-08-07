@@ -111,6 +111,7 @@ export type Credit = {
 };
 
 export type CreditList = {
+    available: number;
     credits: Credit[];
     total: number;
 };
