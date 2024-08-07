@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid, Heading } from '$lib/components';
-    import { InputPhone, InputText } from '$lib/elements/forms';
+    import { InputPhone, InputOTP } from '$lib/elements/forms';
     import { Button, Form, FormItem, FormItemPart } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
     import { project } from '../../store';
@@ -142,15 +142,16 @@
                                     <span class="icon-refresh" aria-hidden="true"></span>
                                 </button>
                             </InputPhone>
-                            <InputText
+                            <InputOTP
                                 id={`value-${index}`}
                                 bind:value={number.otp}
                                 fullWidth
                                 placeholder="Enter value"
                                 label="Verification Code"
-                                pattern="\d*"
-                                showLabel={index === 0 ? true : false}
                                 maxlength={6}
+                                pattern={'^[0-9]{6}$'}
+                                patternError="Value must be a 6 digit number"
+                                showLabel={index === 0 ? true : false}
                                 required>
                                 <button
                                     slot="options"
@@ -161,7 +162,7 @@
                                     type="button">
                                     <span class="icon-refresh" aria-hidden="true"></span>
                                 </button>
-                            </InputText>
+                            </InputOTP>
                             <FormItemPart alignEnd>
                                 <Button
                                     text
