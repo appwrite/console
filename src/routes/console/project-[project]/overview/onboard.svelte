@@ -1,7 +1,5 @@
 <script lang="ts">
     import { addPlatform, Platform } from './platforms/+page.svelte';
-    import OnboardDarkIntro from './intro-dark.png';
-    import OnboardLightIntro from './intro-light.png';
     import OnboardDark1Desktop from './onboard-1-dark-desktop.svg';
     import OnboardDark1Mobile from './onboard-1-dark-mobile.svg';
     import OnboardLight1Desktop from './onboard-1-light-desktop.svg';
@@ -43,7 +41,6 @@
         wizard.start(Wizard);
     }
 
-    $: onBoardIntro = $app.themeInUse === 'dark' ? OnboardDarkIntro : OnboardLightIntro;
     $: onBoardImage1Mobile = $app.themeInUse === 'dark' ? OnboardDark1Mobile : OnboardLight1Mobile;
     $: onBoardImage1Desktop =
         $app.themeInUse === 'dark' ? OnboardDark1Desktop : OnboardLight1Desktop;
@@ -53,7 +50,7 @@
 </script>
 
 <div class="card">
-    <header class="card-header common-section grid-1-2" style:--url={`url(${onBoardIntro})`}>
+    <header class="card-header common-section grid-1-2">
         <div class="grid-1-2-col-1">
             <h2 class="heading-level-5">Getting started</h2>
             <p class="u-line-height-1-5 u-margin-block-start-12">
@@ -150,7 +147,7 @@
     </section>
 </div>
 
-<article class="card u-grid u-width-full-line common-section onboard-cover">
+<article class="u-grid u-width-full-line common-section onboard-cover">
     <img src={onBoardImage1Mobile} class="is-only-mobile u-width-full-line" alt="statistics" />
     <img src={onBoardImage1Desktop} class="is-not-mobile u-width-full-line" alt="statistics" />
     <div class="u-height-100-percent u-width-full-line u-padding-block-start-20">
@@ -159,7 +156,7 @@
                 <i class="icon-lock-closed" />
             </div>
             <div class="common-section u-text-center">
-                <h7 class="heading-level-7">Add a platform to view data about your project</h7>
+                <h5 class="heading-level-5">Add a platform to view data about your project</h5>
             </div>
         </div>
     </div>
@@ -178,12 +175,31 @@
     @import '@appwrite.io/pink/src/abstract/variables/_devices.scss';
 
     .card {
-        background: #fbfbfc;
-
         :global(.theme-dark) & {
             background: #19191c !important;
         }
     }
+
+    :global(.theme-dark .card-header) {
+        background: unset !important;
+    }
+
+    .card-header {
+        min-block-size: 4.5625rem !important;
+    }
+
+    .card-separator {
+        border-block-start: unset !important;
+    }
+
+    .grid-box-item .card {
+        padding: 1rem !important;
+    }
+
+    article .heading-level-5 {
+        margin-inline: 4rem;
+    }
+
     @media #{$break2open} {
         .card-header {
             background-image: var(--url);
@@ -194,6 +210,9 @@
     .onboard-cover img {
         max-inline-size: none;
         max-block-size: none;
+    }
+    .onboard-cover {
+        position: relative;
     }
     .onboard-cover > div {
         background-color: transparent;
