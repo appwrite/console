@@ -131,15 +131,14 @@
                                 minlength={8}
                                 maxlength={16}
                                 required>
-                                <div class="options-list">
-                                    <button
-                                        on:click={() => (number.phone = generateNumber())}
-                                        class="options-list-button"
-                                        aria-label="regenerate text"
-                                        type="button">
-                                        <span class="icon-refresh" aria-hidden="true"></span>
-                                    </button>
-                                </div>
+                                <button
+                                    slot="options"
+                                    on:click={() => (number.phone = generateNumber())}
+                                    class="options-list-button"
+                                    aria-label="regenerate text"
+                                    type="button">
+                                    <span class="icon-refresh" aria-hidden="true"></span>
+                                </button>
                             </InputPhone>
                             <InputText
                                 id={`value-${index}`}
@@ -150,7 +149,16 @@
                                 pattern="\d*"
                                 showLabel={index === 0 ? true : false}
                                 maxlength={6}
-                                required />
+                                required>
+                                <button
+                                    slot="options"
+                                    on:click={() => (number.otp = generateOTP())}
+                                    class="options-list-button"
+                                    aria-label="regenerate text"
+                                    type="button">
+                                    <span class="icon-refresh" aria-hidden="true"></span>
+                                </button>
+                            </InputText>
                             <FormItemPart alignEnd>
                                 <Button
                                     text

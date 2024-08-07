@@ -133,7 +133,7 @@
             bind:this={element}
             on:invalid={handleInvalid}
             on:input />
-        {#if showTextCounter || showNullCheckbox}
+        {#if showTextCounter || showNullCheckbox || $$slots.options}
             <ul
                 class="buttons-list u-cross-center u-gap-8 u-position-absolute u-inset-block-start-8 u-inset-block-end-8 u-inset-inline-end-12">
                 {#if showTextCounter}
@@ -146,14 +146,11 @@
                         <NullCheckbox checked={value === null} on:change={handleNullChange} />
                     </li>
                 {/if}
-                <li class="buttons-list-item">
-                    <button
-                        class="options-list-button u-margin-inline-start-8"
-                        aria-label="regenerate text"
-                        type="button">
-                        <span class="icon-refresh" aria-hidden="true"></span>
-                    </button>
-                </li>
+                {#if $$slots.options}
+                    <li class="buttons-list-item options-list">
+                        <slot name="options"/>
+                    </li>
+                {/if}
             </ul>
         {/if}
         <slot />

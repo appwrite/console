@@ -93,7 +93,9 @@
             bind:value
             bind:this={element}
             on:invalid={handleInvalid} />
-        <slot />
+       <div class="options-list">
+        <slot name="options"/>
+       </div>
     </div>
     {#if error}
         <Helper type="warning">{error}</Helper>
