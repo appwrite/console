@@ -17,6 +17,7 @@
     import { app } from '$lib/stores/app';
     import Empty from '$lib/components/empty.svelte';
     import type { Models } from '@appwrite.io/console';
+    import { tooltip } from '$lib/actions/tooltip';
 
     let numbers: Models.MockNumber[] = $project?.authMockNumbers ?? [];
     let initialNumbers = [];
@@ -133,6 +134,7 @@
                                 required>
                                 <button
                                     slot="options"
+                                    use:tooltip={{ content: 'Regenerate', placement: 'bottom' }}
                                     on:click={() => (number.phone = generateNumber())}
                                     class="options-list-button"
                                     aria-label="regenerate text"
@@ -152,6 +154,7 @@
                                 required>
                                 <button
                                     slot="options"
+                                    use:tooltip={{ content: 'Regenerate', placement: 'bottom' }}
                                     on:click={() => (number.otp = generateOTP())}
                                     class="options-list-button"
                                     aria-label="regenerate text"
