@@ -19,7 +19,7 @@
     import { scopes } from '$lib/constants';
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import TemplateConfiguration from './steps/templateConfiguration.svelte';
-    import TemplateScopes from './steps/templateScopes.svelte';
+    import TemplatePermissions from './steps/templatePermissions.svelte';
     import TemplateVariables from './steps/templateVariables.svelte';
     import TemplateDeployment from './steps/templateDeployment.svelte';
     import CreateRepository from './steps/createRepository.svelte';
@@ -120,8 +120,8 @@
         component: TemplateConfiguration
     });
     $templateStepsComponents.set(2, {
-        label: 'Scopes',
-        component: TemplateScopes,
+        label: 'Permissions',
+        component: TemplatePermissions,
         disabled: !$template?.scopes?.length
     });
     $templateStepsComponents.set(3, {

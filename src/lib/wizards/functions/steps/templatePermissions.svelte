@@ -4,6 +4,7 @@
     import { WizardStep } from '$lib/layout';
     import { onMount } from 'svelte';
     import { template, templateConfig } from '../store';
+    import { tooltip } from '$lib/actions/tooltip';
 
     let templateScopes = [];
     onMount(() => {
@@ -26,7 +27,7 @@
     <svelte:fragment slot="subtitle">
         Enable recommended scopes and execute access for when your function is deployed.
     </svelte:fragment>
-    <p>Execute permissions</p>
+    <h3>Execute permissions</h3>
     <FormList class="u-margin-block-start-16">
         <div class="user-profile">
             <span class="avatar" style:--p-text-size="1rem">
@@ -34,7 +35,14 @@
             </span>
             <span class="user-profile-info u-flex u-main-space-between u-gap-16">
                 <div>
-                    <p class="name u-bold">Public (anyone can execute)</p>
+                    <p class="name u-bold">
+                        Public (anyone can execute) <span
+                            class="icon-info"
+                            use:tooltip={{
+                                content:
+                                    'You can further customize execute permissions in your function settings.'
+                            }} />
+                    </p>
                     <p class="text u-margin-block-start-4">
                         This could include unauthorized users and search engines.
                     </p>
@@ -49,7 +57,7 @@
             </span>
         </div>
     </FormList>
-    <p class="text u-margin-block-start-48">Function scopes</p>
+    <h3 class="text u-margin-block-start-48">Function scopes</h3>
     <FormList class="u-margin-block-start-16">
         {#each templateScopes as scope, i}
             <div class="user-profile">

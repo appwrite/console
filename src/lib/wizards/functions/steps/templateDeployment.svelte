@@ -32,14 +32,14 @@
     <FormList gap={16} class="u-margin-block-start-8">
         <LabelCard name="behaviour" value="new" bind:group={$templateConfig.repositoryBehaviour}>
             <svelte:fragment slot="title">Create a new repository</svelte:fragment>
-            Clone the template and create a new repository in your selected organization.
+            Clone the template to a newly created repository in your organization.
         </LabelCard>
         <LabelCard
             name="behaviour"
             value="existing"
             bind:group={$templateConfig.repositoryBehaviour}>
             <svelte:fragment slot="title">Add to existing repository</svelte:fragment>
-            Clone the template to an existing repository in your selected organization.
+            Clone the template to an existing repository in your organization.
         </LabelCard>
     </FormList>
 
@@ -47,7 +47,7 @@
     <ul class="u-margin-block-start-8">
         <LabelCard name="behaviour" value="manual" bind:group={$templateConfig.repositoryBehaviour}>
             <svelte:fragment slot="title">Create manually</svelte:fragment>
-            Clone the template to an existing repository in your selected organization.
+            Deploy a function from a template and change the code using the CLI.
         </LabelCard>
     </ul>
 </WizardStep>
