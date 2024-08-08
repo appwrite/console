@@ -1,7 +1,7 @@
 <script lang="ts">
     import { toggle } from '$lib/helpers/array';
     import { isHTMLInputElement } from '$lib/helpers/types';
-    import { TableCell } from '.';
+    import { TableCellButton } from '.';
     import { InputCheckbox } from '../forms';
 
     export let id: string;
@@ -24,13 +24,7 @@
     };
 </script>
 
-<TableCell>
-    <div
-        class="touch-area"
-        role="button"
-        tabindex="-1"
-        on:click={handleClick}
-        on:keypress={handleClick} />
+<TableCellButton on:click={handleClick} on:keypress={handleClick}>
     <InputCheckbox
         bind:element={el}
         id="select-{id}"
@@ -38,4 +32,4 @@
         checked={selectedIds.includes(id)}
         {disabled}
         on:click={handleClick} />
-</TableCell>
+</TableCellButton>
