@@ -22,7 +22,7 @@ export function isSupportOnline() {
         return false;
     }
 
-    if (hour < 9 || hour > 17) {
+    if (hour < 14) {
         return false;
     }
 
