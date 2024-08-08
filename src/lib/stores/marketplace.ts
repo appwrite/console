@@ -65,7 +65,7 @@ export const marketplace: MarketplaceTemplate[] = [
         vcsProvider: 'github',
         providerRepositoryId: 'templates',
         providerOwner: 'appwrite',
-        providerBranch: 'main',
+        providerBranch: '0.1.*',
         variables: [
             {
                 name: 'APPWRITE_API_KEY',
@@ -75,7 +75,8 @@ export const marketplace: MarketplaceTemplate[] = [
                 required: false,
                 type: 'password'
             }
-        ]
+        ],
+        scopes: ['functions.read', 'functions.write', 'documents.write']
     },
     {
         icon: 'icon-upstash',
@@ -99,7 +100,7 @@ export const marketplace: MarketplaceTemplate[] = [
         vcsProvider: 'github',
         providerRepositoryId: 'templates',
         providerOwner: 'appwrite',
-        providerBranch: 'main',
+        providerBranch: '0.1.*',
         variables: [
             {
                 name: 'UPSTASH_URL',
@@ -142,7 +143,7 @@ export const marketplace: MarketplaceTemplate[] = [
         vcsProvider: 'github',
         providerRepositoryId: 'templates',
         providerOwner: 'appwrite',
-        providerBranch: 'main',
+        providerBranch: '0.1.*',
         variables: [
             {
                 name: 'REDIS_HOST',
@@ -184,7 +185,7 @@ export const marketplace: MarketplaceTemplate[] = [
         vcsProvider: 'github',
         providerRepositoryId: 'templates',
         providerOwner: 'appwrite',
-        providerBranch: 'main',
+        providerBranch: '0.1.*',
         variables: [
             {
                 name: 'NEO4J_URI',
@@ -235,7 +236,7 @@ export const marketplace: MarketplaceTemplate[] = [
         vcsProvider: 'github',
         providerRepositoryId: 'templates',
         providerOwner: 'appwrite',
-        providerBranch: 'main',
+        providerBranch: '0.1.*',
         variables: [
             {
                 name: 'MONGO_URI',
@@ -271,7 +272,7 @@ export const marketplace: MarketplaceTemplate[] = [
         vcsProvider: 'github',
         providerRepositoryId: 'templates',
         providerOwner: 'appwrite',
-        providerBranch: 'main',
+        providerBranch: '0.1.*',
         variables: [
             {
                 name: 'PGHOST',
@@ -355,7 +356,7 @@ export const marketplace: MarketplaceTemplate[] = [
         vcsProvider: 'github',
         providerRepositoryId: 'templates',
         providerOwner: 'appwrite',
-        providerBranch: 'main',
+        providerBranch: '0.1.*',
         variables: [
             {
                 name: 'OPENAI_API_KEY',
@@ -403,7 +404,7 @@ export const marketplace: MarketplaceTemplate[] = [
         vcsProvider: 'github',
         providerRepositoryId: 'templates',
         providerOwner: 'appwrite',
-        providerBranch: 'main',
+        providerBranch: '0.1.*',
         variables: [
             {
                 name: 'DISCORD_PUBLIC_KEY',
@@ -453,7 +454,7 @@ export const marketplace: MarketplaceTemplate[] = [
         vcsProvider: 'github',
         providerRepositoryId: 'templates',
         providerOwner: 'appwrite',
-        providerBranch: 'main',
+        providerBranch: '0.1.*',
         variables: [
             {
                 name: 'PERSPECTIVE_API_KEY',
@@ -500,7 +501,7 @@ export const marketplace: MarketplaceTemplate[] = [
         vcsProvider: 'github',
         providerRepositoryId: 'templates',
         providerOwner: 'appwrite',
-        providerBranch: 'main',
+        providerBranch: '0.1.*',
         variables: [
             {
                 name: 'PANGEA_REDACT_TOKEN',
@@ -529,7 +530,7 @@ export const marketplace: MarketplaceTemplate[] = [
         vcsProvider: 'github',
         providerRepositoryId: 'templates',
         providerOwner: 'appwrite',
-        providerBranch: 'main',
+        providerBranch: '0.1.*',
         variables: []
     },
     {
@@ -555,7 +556,7 @@ export const marketplace: MarketplaceTemplate[] = [
         vcsProvider: 'github',
         providerRepositoryId: 'templates',
         providerOwner: 'appwrite',
-        providerBranch: 'main',
+        providerBranch: '0.1.*',
         variables: [
             {
                 name: 'GITHUB_TOKEN',
@@ -597,7 +598,7 @@ export const marketplace: MarketplaceTemplate[] = [
         vcsProvider: 'github',
         providerRepositoryId: 'templates',
         providerOwner: 'appwrite',
-        providerBranch: 'main',
+        providerBranch: '0.1.*',
         variables: [
             {
                 name: 'APPWRITE_API_KEY',
@@ -675,7 +676,7 @@ export const marketplace: MarketplaceTemplate[] = [
         vcsProvider: 'github',
         providerRepositoryId: 'templates',
         providerOwner: 'appwrite',
-        providerBranch: 'main',
+        providerBranch: '0.1.*',
         variables: [
             {
                 name: 'APPWRITE_API_KEY',
@@ -783,7 +784,7 @@ export const marketplace: MarketplaceTemplate[] = [
         vcsProvider: 'github',
         providerRepositoryId: 'templates',
         providerOwner: 'appwrite',
-        providerBranch: 'main',
+        providerBranch: '0.1.*',
         variables: [
             {
                 name: 'APPWRITE_API_KEY',
@@ -897,7 +898,7 @@ export const marketplace: MarketplaceTemplate[] = [
         vcsProvider: 'github',
         providerRepositoryId: 'templates',
         providerOwner: 'appwrite',
-        providerBranch: 'main',
+        providerBranch: '0.1.*',
         variables: [
             {
                 name: 'VONAGE_API_KEY',
@@ -952,7 +953,7 @@ export const marketplace: MarketplaceTemplate[] = [
         vcsProvider: 'github',
         providerRepositoryId: 'templates',
         providerOwner: 'appwrite',
-        providerBranch: 'main',
+        providerBranch: '0.1.*',
         variables: [
             {
                 name: 'FCM_PROJECT_ID',
@@ -1019,7 +1020,7 @@ export const marketplace: MarketplaceTemplate[] = [
         vcsProvider: 'github',
         providerRepositoryId: 'templates',
         providerOwner: 'appwrite',
-        providerBranch: 'main',
+        providerBranch: '0.1.*',
         variables: [
             {
                 name: 'SMTP_HOST',
@@ -1089,7 +1090,7 @@ export const marketplace: MarketplaceTemplate[] = [
         vcsProvider: 'github',
         providerRepositoryId: 'templates',
         providerOwner: 'appwrite',
-        providerBranch: 'main',
+        providerBranch: '0.1.*',
         variables: [
             {
                 name: 'APPWRITE_API_KEY',
@@ -1145,7 +1146,7 @@ export const marketplace: MarketplaceTemplate[] = [
         vcsProvider: 'github',
         providerRepositoryId: 'templates',
         providerOwner: 'appwrite',
-        providerBranch: 'main',
+        providerBranch: '0.1.*',
         variables: [
             {
                 name: 'APPWRITE_API_KEY',
@@ -1217,7 +1218,7 @@ export const marketplace: MarketplaceTemplate[] = [
         vcsProvider: 'github',
         providerRepositoryId: 'templates',
         providerOwner: 'appwrite',
-        providerBranch: 'main',
+        providerBranch: '0.1.*',
         variables: [
             {
                 name: 'HUGGINGFACE_ACCESS_TOKEN',
@@ -1250,7 +1251,7 @@ export const marketplace: MarketplaceTemplate[] = [
         vcsProvider: 'github',
         providerRepositoryId: 'templates',
         providerOwner: 'appwrite',
-        providerBranch: 'main',
+        providerBranch: '0.1.*',
         variables: [
             {
                 name: 'HUGGINGFACE_ACCESS_TOKEN',
@@ -1283,7 +1284,7 @@ export const marketplace: MarketplaceTemplate[] = [
         vcsProvider: 'github',
         providerRepositoryId: 'templates',
         providerOwner: 'appwrite',
-        providerBranch: 'main',
+        providerBranch: '0.1.*',
         variables: [
             {
                 name: 'APPWRITE_API_KEY',
@@ -1356,7 +1357,7 @@ export const marketplace: MarketplaceTemplate[] = [
         vcsProvider: 'github',
         providerRepositoryId: 'templates',
         providerOwner: 'appwrite',
-        providerBranch: 'main',
+        providerBranch: '0.1.*',
         variables: [
             {
                 name: 'APPWRITE_API_KEY',
@@ -1429,7 +1430,7 @@ export const marketplace: MarketplaceTemplate[] = [
         vcsProvider: 'github',
         providerRepositoryId: 'templates',
         providerOwner: 'appwrite',
-        providerBranch: 'main',
+        providerBranch: '0.1.*',
         variables: [
             {
                 name: 'APPWRITE_API_KEY',
@@ -1502,7 +1503,7 @@ export const marketplace: MarketplaceTemplate[] = [
         vcsProvider: 'github',
         providerRepositoryId: 'templates',
         providerOwner: 'appwrite',
-        providerBranch: 'main',
+        providerBranch: '0.1.*',
         variables: [
             {
                 name: 'APPWRITE_API_KEY',
@@ -1575,7 +1576,7 @@ export const marketplace: MarketplaceTemplate[] = [
         vcsProvider: 'github',
         providerRepositoryId: 'templates',
         providerOwner: 'appwrite',
-        providerBranch: 'main',
+        providerBranch: '0.1.*',
         variables: [
             {
                 name: 'REPLICATE_API_KEY',
@@ -1609,7 +1610,7 @@ export const marketplace: MarketplaceTemplate[] = [
         vcsProvider: 'github',
         providerRepositoryId: 'templates',
         providerOwner: 'appwrite',
-        providerBranch: 'main',
+        providerBranch: '0.1.*',
         variables: [
             {
                 name: 'TOGETHER_API_KEY',
@@ -1666,7 +1667,7 @@ export const marketplace: MarketplaceTemplate[] = [
         vcsProvider: 'github',
         providerRepositoryId: 'templates',
         providerOwner: 'appwrite',
-        providerBranch: 'main',
+        providerBranch: '0.1.*',
         variables: [
             {
                 name: 'PERPLEXITY_API_KEY',
@@ -1706,7 +1707,7 @@ export const marketplace: MarketplaceTemplate[] = [
         vcsProvider: 'github',
         providerRepositoryId: 'templates',
         providerOwner: 'appwrite',
-        providerBranch: 'main',
+        providerBranch: '0.1.*',
         variables: [
             {
                 name: 'REPLICATE_API_KEY',
@@ -1740,7 +1741,7 @@ export const marketplace: MarketplaceTemplate[] = [
         vcsProvider: 'github',
         providerRepositoryId: 'templates',
         providerOwner: 'appwrite',
-        providerBranch: 'main',
+        providerBranch: '0.1.*',
         variables: [
             {
                 name: 'OPENAI_API_KEY',
@@ -1818,7 +1819,7 @@ export const marketplace: MarketplaceTemplate[] = [
         vcsProvider: 'github',
         providerRepositoryId: 'templates',
         providerOwner: 'appwrite',
-        providerBranch: 'main',
+        providerBranch: '0.1.*',
         variables: [
             {
                 name: 'OPENAI_API_KEY',
@@ -1896,7 +1897,7 @@ export const marketplace: MarketplaceTemplate[] = [
         vcsProvider: 'github',
         providerRepositoryId: 'templates',
         providerOwner: 'appwrite',
-        providerBranch: 'main',
+        providerBranch: '0.1.*',
         variables: [
             {
                 name: 'ELEVENLABS_API_KEY',
@@ -1966,7 +1967,7 @@ export const marketplace: MarketplaceTemplate[] = [
         vcsProvider: 'github',
         providerRepositoryId: 'templates',
         providerOwner: 'appwrite',
-        providerBranch: 'main',
+        providerBranch: '0.1.*',
         variables: [
             {
                 name: 'LMNT_API_KEY',
@@ -2022,7 +2023,7 @@ export const marketplace: MarketplaceTemplate[] = [
         vcsProvider: 'github',
         providerRepositoryId: 'templates',
         providerOwner: 'appwrite',
-        providerBranch: 'main',
+        providerBranch: '0.1.*',
         variables: [
             {
                 name: 'ANYSCALE_API_KEY',
@@ -2062,7 +2063,7 @@ export const marketplace: MarketplaceTemplate[] = [
         vcsProvider: 'github',
         providerRepositoryId: 'templates',
         providerOwner: 'appwrite',
-        providerBranch: 'main',
+        providerBranch: '0.1.*',
         variables: [
             {
                 name: 'APPWRITE_API_KEY',
@@ -2119,7 +2120,7 @@ export const marketplace: MarketplaceTemplate[] = [
         vcsProvider: 'github',
         providerRepositoryId: 'templates',
         providerOwner: 'appwrite',
-        providerBranch: 'main',
+        providerBranch: '0.1.*',
         variables: [
             {
                 name: 'FAL_API_KEY',
@@ -2153,7 +2154,7 @@ export const marketplace: MarketplaceTemplate[] = [
         vcsProvider: 'github',
         providerRepositoryId: 'templates',
         providerOwner: 'appwrite',
-        providerBranch: 'main',
+        providerBranch: '0.1.*',
         variables: [
             {
                 name: 'APPWRITE_API_KEY',
@@ -2223,7 +2224,7 @@ export const marketplace: MarketplaceTemplate[] = [
         vcsProvider: 'github',
         providerRepositoryId: 'templates',
         providerOwner: 'appwrite',
-        providerBranch: 'main',
+        providerBranch: '0.1.*',
         variables: [
             {
                 name: 'APPWRITE_API_KEY',
@@ -2322,4 +2323,5 @@ export type MarketplaceTemplate = {
     providerOwner: string;
     providerBranch: string;
     variables: Variable[];
+    scopes?: string[];
 };

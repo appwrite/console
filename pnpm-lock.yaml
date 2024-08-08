@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@appwrite.io/console':
-        specifier: npm:matej-appwrite-console-16x@0.6.7
-        version: matej-appwrite-console-16x@0.6.7
+        specifier: npm:matej-appwrite-console@0.6.10
+        version: matej-appwrite-console@0.6.10
       '@appwrite.io/pink':
         specifier: 0.25.0
         version: 0.25.0
@@ -2182,8 +2182,8 @@ packages:
   makeerror@1.0.12:
     resolution: {integrity: sha512-JmqCvUhmt43madlpFzG4BQzG2Z3m6tvQDNKdClZnO3VbIudJYmxsT0FNJMeiB2+JTSlTQTSbU8QdesVmwJcmLg==}
 
-  matej-appwrite-console-16x@0.6.7:
-    resolution: {integrity: sha512-orhonLVjV0vzJE/OrI49DRJ75EAkEa+8QzWy30h1N04jNyAcEGFfx4OKmhWg4uG5XRrmWrrDj9nobHKCiBaDCg==}
+  matej-appwrite-console@0.6.10:
+    resolution: {integrity: sha512-gaeMHwp23uPcuBWe4/4nCNTyY81GAyyCsLFLwOom9Gl6m+VRwr7hgsz9wqoCfHfHA09nAAT3Vp9jFZoQ+WIeZQ==}
 
   mdn-data@2.0.30:
     resolution: {integrity: sha512-GaqWWShW4kv/G9IEucWScBx9G1/vsFZZJUO+tD26M8J8z3Kw5RDQjaoZe03YAClgeS/SWPOcb4nkFBTEi5DUEA==}
@@ -5627,7 +5627,7 @@ snapshots:
     dependencies:
       tmpl: 1.0.5
 
-  matej-appwrite-console-16x@0.6.7: {}
+  matej-appwrite-console@0.6.10: {}
 
   mdn-data@2.0.30: {}
 
