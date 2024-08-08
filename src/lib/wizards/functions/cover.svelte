@@ -210,6 +210,13 @@
                             {/await}
                         </ul>
                     </section>
+
+                    <Button
+                        text
+                        class="u-margin-block-start-24 u-margin-inline-start-auto"
+                        href={`${base}/project-${$page.params.project}/functions/templates?useCase=Starter`}>
+                        All starter templates <span class="icon-cheveron-right" />
+                    </Button>
                     <div class="u-sep-block-start common-section" />
                     <section class="common-section">
                         <Heading size="6" tag="h6">Templates</Heading>
