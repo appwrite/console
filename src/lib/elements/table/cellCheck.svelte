@@ -12,8 +12,8 @@
     const handleClick = (e: Event) => {
         // Prevent the link from being followed
         e.preventDefault();
+        e.stopPropagation();
         if (!isHTMLInputElement(el)) return;
-
         selectedIds = toggle(selectedIds, id);
 
         // Hack to make sure the checkbox is checked, independent of the
@@ -24,7 +24,7 @@
     };
 </script>
 
-<TableCellButton on:click={handleClick} on:keypress={handleClick}>
+<TableCellButton on:click={handleClick}>
     <InputCheckbox
         bind:element={el}
         id="select-{id}"
