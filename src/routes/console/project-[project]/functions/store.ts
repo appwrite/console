@@ -7,6 +7,11 @@ export const runtimesList = derived(
     async ($page) => (await $page.data.runtimesList) as Models.RuntimeList
 );
 
+export const specifications = derived(
+    page,
+    async ($page) => (await $page.data.specifications.specifications) as Models.Specification[]
+);
+
 export const baseRuntimesList = derived(runtimesList, async ($runtimesList) => {
     const baseRuntimes = new Map<string, Models.Runtime>();
     for (const runtime of (await $runtimesList).runtimes) {
