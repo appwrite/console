@@ -11,7 +11,7 @@ export const load: LayoutLoad = async ({ depends }) => {
     const [runtimesList, installations, specifications] = await Promise.all([
         sdk.forProject.functions.listRuntimes(),
         sdk.forProject.vcs.listInstallations([Query.limit(100)]),
-        sdk.forProject.sizesFunctions.getSpecifications()
+        sdk.forProject.functions.getSpecifications()
     ]);
 
     return {

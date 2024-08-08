@@ -35,7 +35,7 @@
         specificationOptions = allowedSpecifications.map((size) => ({
             label:
                 `${size.cpus} CPU, ${size.memory} MB RAM` +
-                (size.plan && !size.enabled ? ` (${size.plan} and higher)` : ''),
+                (!size.enabled ? ` (Upgrade to use this)` : ''),
             value: size.slug,
             disabled: !size.enabled
         }));
@@ -46,7 +46,7 @@
             if (!isValueOfStringEnum(Runtime, runtime)) {
                 throw new Error(`Invalid runtime: ${runtime}`);
             }
-            await sdk.forProject.sizesFunctions.update(
+            await sdk.forProject.functions.update(
                 functionId,
                 $func.name,
                 runtime,

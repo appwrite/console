@@ -1,7 +1,6 @@
 import { page } from '$app/stores';
 import { derived } from 'svelte/store';
 import type { Models } from '@appwrite.io/console';
-import type { Specification } from '$lib/sdk/functionsSpec';
 
 export const runtimesList = derived(
     page,
@@ -10,7 +9,7 @@ export const runtimesList = derived(
 
 export const specifications = derived(
     page,
-    async ($page) => (await $page.data.specifications.specifications) as Specification[]
+    async ($page) => (await $page.data.specifications.specifications) as Models.Specification[]
 );
 
 export const baseRuntimesList = derived(runtimesList, async ($runtimesList) => {

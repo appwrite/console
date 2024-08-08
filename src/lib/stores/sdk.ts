@@ -23,7 +23,6 @@ import {
 } from '@appwrite.io/console';
 import { Billing } from '../sdk/billing';
 import { Sources } from '$lib/sdk/sources';
-import { SizesFunctions } from '$lib/sdk/functionsSpec';
 
 const endpoint = VARS.APPWRITE_ENDPOINT ?? `${globalThis?.location?.origin}/v1`;
 
@@ -39,7 +38,6 @@ const sdkForProject = {
     avatars: new Avatars(clientProject),
     databases: new Databases(clientProject),
     functions: new Functions(clientProject),
-    sizesFunctions: new SizesFunctions(clientProject),
     health: new Health(clientProject),
     locale: new Locale(clientProject),
     messaging: new Messaging(clientProject),
