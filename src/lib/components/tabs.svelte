@@ -51,6 +51,7 @@
     {/if}
     <ul
         class="tabs-list scroll-shadow-horizontal"
+        role="tablist"
         bind:this={tabsList}
         on:scroll={throttle(onScroll, 25)}>
         <slot />

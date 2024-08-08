@@ -4,6 +4,7 @@ import {
     timeToMinutes,
     secsToUnit
 } from '$lib/helpers/timeConversion';
+import { describe, expect, it } from 'vitest';
 
 describe('Calculate time', () => {
     const tests: Array<[number, string]> = [

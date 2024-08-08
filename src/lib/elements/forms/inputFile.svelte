@@ -32,7 +32,7 @@
     }
 
     function isFileExtensionAllowed(fileExtension: string) {
-        if (allowedFileExtensions.length && !allowedFileExtensions.includes(fileExtension)) {
+        if (allowedFileExtensions?.length && !allowedFileExtensions.includes(fileExtension)) {
             return false;
         }
         return true;
@@ -42,7 +42,7 @@
         hovering = false;
         if (!ev.dataTransfer.items) return;
         for (let i = 0; i < ev.dataTransfer.items.length; i++) {
-            const fileExtension = ev.dataTransfer.items[i].getAsFile().name.split('.')[1];
+            const fileExtension = ev.dataTransfer.items[i].getAsFile().name.split('.').pop();
             if (!isFileExtensionAllowed(fileExtension)) {
                 error = 'Invalid file extension';
                 return;
@@ -183,15 +183,16 @@
             {#if files?.length}
                 <ul class="upload-file-box-list u-min-width-0">
                     {#each fileArray as file}
-                        {@const fileName = file.name.split('.')}
+                        {@const fileName = file.name.split('.').slice(0, -1).join('.')}
+                        {@const extension = file.name.split('.').pop()}
                         {@const fileSize = humanFileSize(file.size)}
                         <li class="u-flex u-cross-center u-min-width-0">
                             <span class="icon-document" aria-hidden="true" />
                             <span class="upload-file-box-name u-trim u-min-width-0">
-                                <Trim>{fileName[0]}</Trim>
+                                <Trim>{fileName}</Trim>
                             </span>
                             <span class="upload-file-box-name u-min-width-0 u-flex-shrink-0">
-                                .{fileName[1]}
+                                .{extension}
                             </span>
                             <span
                                 class="upload-file-box-size u-margin-inline-start-4 u-margin-inline-end-16">

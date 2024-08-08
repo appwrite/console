@@ -134,7 +134,7 @@
                             </Pill>
                         {/if}
                     </TableCell>
-                    <TableCell>
+                    <TableCell right>
                         <DropList
                             bind:show={showDomainsDropdown[i]}
                             placement="bottom-start"

@@ -1,4 +1,4 @@
-import '@testing-library/jest-dom';
+import { expect, test } from 'vitest';
 import { vi } from 'vitest';
 import { render } from '@testing-library/svelte';
 import { Form } from '../../../src/lib/elements/forms';

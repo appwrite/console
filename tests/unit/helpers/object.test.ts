@@ -1,4 +1,5 @@
 import { objectEntries } from '$lib/helpers/object';
+import { expect, test } from 'vitest';
 
 test('objectEntries', () => {
     const object = {

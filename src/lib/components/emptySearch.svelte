@@ -11,9 +11,9 @@
 <article class="card u-grid u-cross-center u-width-full-line common-section">
     <div class="u-flex u-flex-vertical u-cross-center u-gap-24 u-overflow-hidden">
         {#if $app.themeInUse === 'dark'}
-            <img src={Dark} alt="create" aria-hidden="true" />
+            <img src={Dark} height="175" alt="create" aria-hidden="true" />
         {:else}
-            <img src={Light} alt="create" aria-hidden="true" />
+            <img src={Light} height="175" alt="create" aria-hidden="true" />
         {/if}
         <slot />
     </div>

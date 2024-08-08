@@ -13,7 +13,6 @@ const config = defineConfig({
             '@sentry-internal/tracing',
             'analytics',
             'dayjs',
-            'dotenv',
             'echarts',
             'prismjs',
             'zrender'

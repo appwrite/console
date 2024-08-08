@@ -1,13 +1,70 @@
 <script lang="ts">
     import { trackEvent } from '$lib/actions/analytics';
+    import { Heading } from '$lib/components';
+    import { Button } from '$lib/elements/forms';
     import WizardExitModal from './wizardExitModal.svelte';
+    import { goto } from '$app/navigation';
 
-    export let showExitModal = false;
-    export let href = '';
+    type $$Props =
+        | {
+              confirmExit: boolean;
+              showExitModal: boolean;
+              href?: string;
+          }
+        | {
+              confirmExit?: boolean;
+              showExitModal?: boolean;
+              href: string;
+          };
+
+    export let confirmExit: $$Props['confirmExit'] = false;
+    export let href: $$Props['href'] = '';
+    export let showExitModal: $$Props['showExitModal'] = false;
+
+    function handleKeydown(event: KeyboardEvent) {
+        if (event.key === 'Escape') {
+            event.preventDefault();
+            if (confirmExit) {
+                showExitModal = true;
+            } else {
+                goto(href);
+                trackEvent('wizard_exit', {
+                    from: 'escape'
+                });
+            }
+        }
+    }
 </script>
+
+<svelte:window on:keydown={handleKeydown} />
 
 <section class="wizard-secondary c-wizard-position">
     <div class="wizard-secondary-container">
+        <header class="wizard-secondary-header">
+            <div class="u-flex u-main-space-between u-gap-32 u-cross-center">
+                <Heading size={5} tag="h1"><slot name="title" /></Heading>
+                <Button
+                    text
+                    round
+                    ariaLabel="close modal"
+                    href={confirmExit ? null : href}
+                    on:click={() => {
+                        if (confirmExit) {
+                            showExitModal = true;
+                        } else {
+                            trackEvent('wizard_exit', {
+                                from: 'button'
+                            });
+                        }
+                    }}>
+                    <span class="icon-x u-font-size-20" aria-hidden="true"></span>
+                </Button>
+            </div>
+            {#if $$slots.description}
+                <p class="body-text-2"><slot name="description" /></p>
+            {/if}
+        </header>
+
         <slot />
     </div>
 </section>

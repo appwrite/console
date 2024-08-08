@@ -36,7 +36,7 @@
     <InputSelect
         wrapperTag="div"
         id="rows"
-        label="Rows per page"
+        label={`${name} per page`}
         showLabel={false}
         {options}
         bind:value={limit}

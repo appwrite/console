@@ -5,7 +5,7 @@
     import { BillingPlan } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { organization } from '$lib/stores/organization';
-    import { activeHeaderAlert } from '$routes/console/store';
+    import { activeHeaderAlert } from '$routes/(console)/store';
     import GradientBanner from '../gradientBanner.svelte';
 
     let show = true;
@@ -29,7 +29,7 @@
                 secondary
                 fullWidthMobile
                 class="u-line-height-1"
-                href={`${base}/console/apply-credit?code=appw50&org=${$organization.$id}`}
+                href={`${base}/apply-credit?code=appw50&org=${$organization.$id}`}
                 on:click={() => {
                     trackEvent('click_credits_redeem', {
                         from: 'button',

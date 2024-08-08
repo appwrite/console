@@ -68,6 +68,7 @@
         target={external ? '_blank' : ''}
         rel={external ? 'noopener noreferrer' : ''}
         class={resolvedClasses}
+        style="pointer-events: {internalDisabled ? 'none' : 'auto'};"
         aria-label={ariaLabel}
         use:multiAction={actions}>
         <slot />

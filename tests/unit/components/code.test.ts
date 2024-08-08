@@ -1,6 +1,5 @@
-import '@testing-library/jest-dom';
 import { fireEvent, render } from '@testing-library/svelte';
-import { vi } from 'vitest';
+import { expect, test, vi } from 'vitest';
 import { Code } from '../../../src/lib/components';
 
 test('default props', async () => {

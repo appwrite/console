@@ -1,12 +1,12 @@
 <script lang="ts">
+    import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Button } from '$lib/elements/forms';
     import { HeaderAlert } from '$lib/layout';
     import { actionRequiredInvoices, hideBillingHeaderRoutes } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
-    import { VARS } from '$lib/system';
-
-    const endpoint = VARS.APPWRITE_ENDPOINT ?? `${$page.url.origin}/v1`;
+    import { getApiEndpoint } from '$lib/stores/sdk';
+    const endpoint = getApiEndpoint();
 </script>
 
 {#if $actionRequiredInvoices && $actionRequiredInvoices?.invoices?.length && !hideBillingHeaderRoutes.includes($page.url.pathname)}
@@ -21,7 +21,7 @@
             </Button>
             <Button
                 secondary
-                href={`/console/organization-${$organization.$id}/billing?type=confirmation&invoice=${$actionRequiredInvoices.invoices[0].$id}`}>
+                href={`${base}/organization-${$organization.$id}/billing?type=confirmation&invoice=${$actionRequiredInvoices.invoices[0].$id}`}>
                 Authorize payment
             </Button>
         </svelte:fragment>

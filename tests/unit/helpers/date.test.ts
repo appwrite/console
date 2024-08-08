@@ -1,4 +1,4 @@
-import '@testing-library/jest-dom';
+import { describe, expect, it } from 'vitest';
 import type { WeekDay } from '$lib/helpers/date';
 import {
     toLocaleDate,

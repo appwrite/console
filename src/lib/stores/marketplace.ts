@@ -75,7 +75,8 @@ export const marketplace: MarketplaceTemplate[] = [
                 required: false,
                 type: 'password'
             }
-        ]
+        ],
+        scopes: ['functions.read', 'functions.write', 'documents.write']
     },
     {
         icon: 'icon-upstash',
@@ -2322,4 +2323,5 @@ export type MarketplaceTemplate = {
     providerOwner: string;
     providerBranch: string;
     variables: Variable[];
+    scopes?: string[];
 };

@@ -47,9 +47,9 @@
             {#if (label && showLabel) || tooltip}
                 <div class="u-flex u-gap-4">
                     {#if label}
-                        <h6 class:u-hide={!showLabel} class="choice-item-title">
+                        <span class:u-hide={!showLabel} class="choice-item-title">
                             {label}
-                        </h6>
+                        </span>
                     {/if}
                     {#if tooltip}
                         <button

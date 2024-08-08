@@ -6,6 +6,7 @@
     export let tag: FormItemTag = 'li';
     export let fullWidth = false;
     export let isMultiple = false;
+    export let stackOnMobile = false;
     export let style: string = '';
     let classes: string = '';
     export { classes as class };
@@ -16,6 +17,7 @@
     class="form-item {classes}"
     {style}
     class:is-multiple={isMultiple}
-    class:u-width-full-line={fullWidth}>
+    class:u-width-full-line={fullWidth}
+    class:u-flex-vertical-mobile={stackOnMobile}>
     <slot />
 </svelte:element>

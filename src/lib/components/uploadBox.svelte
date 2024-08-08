@@ -41,7 +41,7 @@
                     {#if file.completed || file.progress === 100}
                         <a
                             class="upload-box-item"
-                            href={`${base}/console/project-${$page.params.project}/storage/bucket-${$page.params.bucket}/file-${file.$id}`}>
+                            href={`${base}/project-${$page.params.project}/storage/bucket-${$page.params.bucket}/file-${file.$id}`}>
                             <div class="u-margin-inline-end-16">
                                 <Avatar
                                     size={32}

@@ -45,7 +45,7 @@
     };
 </script>
 
-<div class="table-with-scroll {classes}" class:u-margin-block-start-32={!noMargin} data-private>
+<div class="table-with-scroll {classes}" class:u-margin-block-start-16={!noMargin} data-private>
     <div class="table-wrapper" use:hasOverflow={(v) => (isOverflowing = v)}>
         <table
             class="table"

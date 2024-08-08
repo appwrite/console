@@ -22,7 +22,7 @@
         </svelte:fragment>
         <svelte:fragment slot="buttons">
             <Button
-                href={`${base}/console/organization-${$failedInvoice?.teamId}/billing#paymentMethods`}
+                href={`${base}/organization-${$failedInvoice?.teamId}/billing#paymentMethods`}
                 secondary
                 fullWidthMobile>
                 <span class="text">Update billing details</span>

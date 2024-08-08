@@ -7,6 +7,7 @@ import {
     remove,
     symmetricDifference
 } from '$lib/helpers/array';
+import { describe, expect, it, test } from 'vitest';
 
 const tests = [
     {

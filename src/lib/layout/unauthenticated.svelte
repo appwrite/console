@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { base } from '$app/paths';
     import { Avatar, AvatarInitials, Card, Heading } from '$lib/components';
     import AppwriteLogoDark from '$lib/images/appwrite-logo-dark.svg';
     import AppwriteLogoLight from '$lib/images/appwrite-logo-light.svg';
@@ -7,7 +8,6 @@
     import type { Coupon } from '$lib/sdk/billing';
     import { app } from '$lib/stores/app';
     import { campaigns, type CampaignData } from '$lib/stores/campaigns';
-    import { user } from '$lib/stores/user';
 
     export const imgLight = LoginLight;
     export const imgDark = LoginDark;
@@ -16,7 +16,7 @@
     export let coupon: Coupon = null;
 
     $: selectedCampaign = campaigns.get(coupon?.campaign ?? campaign);
-    $: variation = (coupon?.campaign ?? campaign ? selectedCampaign?.template : 'default') as
+    $: variation = ((coupon?.campaign ?? campaign) ? selectedCampaign?.template : 'default') as
         | 'default'
         | CampaignData['template'];
 
@@ -53,7 +53,7 @@
             class="logo u-flex u-gap-16"
             class:is-not-mobile={variation === 'default'}
             class:logo-variation={variation !== 'default'}>
-            <a href={user ? '/console' : '/'}>
+            <a href={base}>
                 {#if $app.themeInUse === 'dark'}
                     <img
                         src={AppwriteLogoDark}
@@ -80,7 +80,7 @@
             <section
                 class="u-flex u-flex-vertical u-main-center u-cross-center u-height-100-percent u-width-full-line">
                 <img
-                    src={`/images/campaigns/${coupon?.campaign ?? campaign}/${$app.themeInUse}.png`}
+                    src={`${base}/images/campaigns/${coupon?.campaign ?? campaign}/${$app.themeInUse}.png`}
                     class="u-block u-image-object-fit-cover side-bg-img"
                     alt="promo" />
 
@@ -145,7 +145,7 @@
                         <div class="u-margin-block-start-16 u-flex u-gap-16">
                             {#if currentReview?.img}
                                 <Avatar
-                                    src={`/images/campaigns/${coupon?.campaign ?? campaign}/reviewers/${currentReview.img}`}
+                                    src={`${base}/images/campaigns/${coupon?.campaign ?? campaign}/reviewers/${currentReview.img}`}
                                     name={currentReview.name}
                                     size={40} />
                             {:else}
@@ -164,7 +164,7 @@
                         <p class="u-bold" style:text-transform="uppercase">provided to you by</p>
                         <img
                             style:max-block-size="2.5rem"
-                            src={`/images/campaigns/${coupon?.campaign ?? campaign}/footer/${$app.themeInUse}.png`}
+                            src={`${base}/images/campaigns/${coupon?.campaign ?? campaign}/footer/${$app.themeInUse}.png`}
                             alt={coupon?.campaign ?? campaign} />
                     </div>
                 {/if}
@@ -195,7 +195,7 @@
             </div>
             <div
                 class="logo u-flex u-gap-16 u-margin-inline-auto is-only-mobile u-margin-block-start-32">
-                <a href={user ? '/console' : '/'}>
+                <a href={base}>
                     {#if $app.themeInUse === 'dark'}
                         <img
                             src={AppwriteLogoDark}

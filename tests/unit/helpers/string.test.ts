@@ -1,4 +1,5 @@
 import { singular, camelize, capitalize } from '$lib/helpers/string';
+import { expect, test } from 'vitest';
 
 /*
 CAMELIZE

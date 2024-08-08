@@ -1,5 +1,4 @@
-import '@testing-library/jest-dom';
-import { vi } from 'vitest';
+import { expect, test, vi } from 'vitest';
 import { render, fireEvent } from '@testing-library/svelte';
 import Copy from '../../../src/lib/mock/copy.test.svelte';
 

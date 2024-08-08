@@ -24,7 +24,12 @@ import {
 import { Billing } from '../sdk/billing';
 import { Sources } from '$lib/sdk/sources';
 
-const endpoint = VARS.APPWRITE_ENDPOINT ?? `${globalThis?.location?.origin}/v1`;
+export function getApiEndpoint(): string {
+    if (VARS.APPWRITE_ENDPOINT) return VARS.APPWRITE_ENDPOINT;
+    return globalThis?.location?.origin + '/v1';
+}
+
+const endpoint = getApiEndpoint();
 
 const clientConsole = new Client();
 clientConsole.setEndpoint(endpoint).setProject('console');

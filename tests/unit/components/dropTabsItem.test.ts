@@ -1,12 +1,12 @@
-import '@testing-library/jest-dom';
+import { expect, test } from 'vitest';
 import { vi } from 'vitest';
 import { render, fireEvent } from '@testing-library/svelte';
 import { SecondaryTabsItem } from '../../../src/lib/components';
 
-test('shows button', () => {
+test('shows tab', () => {
     const { getByRole } = render(SecondaryTabsItem);
 
-    expect(getByRole('button')).toBeInTheDocument();
+    expect(getByRole('tab')).toBeInTheDocument();
 });
 
 test('shows link', () => {

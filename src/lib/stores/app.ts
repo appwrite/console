@@ -1,4 +1,5 @@
 import { browser } from '$app/environment';
+import { base } from '$app/paths';
 import { derived, writable } from 'svelte/store';
 
 export type AppStore = {
@@ -13,7 +14,7 @@ export const app = writable<AppStore>({
 
 export const iconPath = derived(app, ($app) => {
     return (name: string, type: 'color' | 'grayscale') => {
-        return `/icons/${$app.themeInUse}/${type}/${name}.svg`;
+        return `${base}/icons/${$app.themeInUse}/${type}/${name}.svg`;
     };
 });
 

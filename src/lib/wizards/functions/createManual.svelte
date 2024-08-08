@@ -16,8 +16,8 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import Details from './steps/details.svelte';
-    import Configuration from './steps/configuration.svelte';
+    import Details from './steps/manualDetails.svelte';
+    import Configuration from './steps/manualConfiguration.svelte';
     import ExecuteAccess from './steps/executeAccess.svelte';
     import { isValueOfStringEnum } from '$lib/helpers/types';
 
@@ -44,9 +44,7 @@
                 $createFunctionDeployment[0],
                 true
             );
-            goto(
-                `${base}/console/project-${$page.params.project}/functions/function-${response.$id}`
-            );
+            goto(`${base}/project-${$page.params.project}/functions/function-${response.$id}`);
             addNotification({
                 message: `${$createFunction.name} has been created`,
                 type: 'success'

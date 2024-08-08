@@ -1,4 +1,4 @@
-import '@testing-library/jest-dom';
+import { expect, test } from 'vitest';
 import { render } from '@testing-library/svelte';
 import BreadcrumbsComponent from '../../../src/lib/layout/breadcrumbs.svelte';
 

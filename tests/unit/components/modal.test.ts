@@ -1,8 +1,6 @@
-import '@testing-library/jest-dom';
-import { render, cleanup } from '@testing-library/svelte';
+import { render } from '@testing-library/svelte';
 import Modal from '../../../src/lib/mock/modal.test.svelte';
-
-afterEach(() => cleanup());
+import { expect, test } from 'vitest';
 
 test('renders modal', async () => {
     const { container } = render(Modal);
