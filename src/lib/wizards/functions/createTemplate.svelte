@@ -16,7 +16,6 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { scopes } from '$lib/constants';
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import TemplateConfiguration from './steps/templateConfiguration.svelte';
     import TemplatePermissions from './steps/templatePermissions.svelte';
@@ -33,16 +32,6 @@
             const runtimeDetail = $template.runtimes.find(
                 (r) => r.name === $templateConfig.runtime
             );
-            if ($templateConfig.appwriteApiKey) {
-                $templateConfig.variables['APPWRITE_API_KEY'] = $templateConfig.appwriteApiKey;
-            } else if ($templateConfig?.generateKey) {
-                const key = await sdk.forConsole.projects.createKey(
-                    $page.params.project,
-                    'Generated for Template',
-                    scopes.map((scope) => scope.scope)
-                );
-                $templateConfig.variables['APPWRITE_API_KEY'] = key.secret;
-            }
 
             const response = await sdk.forProject.functions.create(
                 $templateConfig.$id || ID.unique(),
