@@ -27,7 +27,7 @@
     <svelte:fragment slot="subtitle">
         Enable recommended scopes and execute access for when your function is deployed.
     </svelte:fragment>
-    <h3>Execute permissions</h3>
+    <h3 class="label">Execute permissions</h3>
     <FormList class="u-margin-block-start-16">
         <div class="user-profile">
             <span class="avatar" style:--p-text-size="1rem">
@@ -57,7 +57,7 @@
             </span>
         </div>
     </FormList>
-    <h3 class="text u-margin-block-start-48">Function scopes</h3>
+    <h3 class="label u-margin-block-start-48">Function scopes</h3>
     <FormList class="u-margin-block-start-16">
         {#each templateScopes as scope, i}
             <div class="user-profile">
