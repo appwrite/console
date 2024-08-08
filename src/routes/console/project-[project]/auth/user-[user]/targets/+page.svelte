@@ -5,7 +5,8 @@
         Heading,
         ViewSelector,
         EmptyFilter,
-        EmptySearch
+        EmptySearch,
+        DropList
     } from '$lib/components';
     import { Container } from '$lib/layout';
     import type { PageData } from './$types';
@@ -14,15 +15,34 @@
     import { columns } from './store';
     import { View } from '$lib/helpers/load';
     import Create from './create.svelte';
+    import { Pill } from '$lib/elements';
 
     export let data: PageData;
     let showAdd = false;
+    let showMoreInfo = false;
 </script>
 
 <Container>
     <div class="u-flex u-flex-vertical">
         <div class="u-flex u-main-space-between u-cross-center">
-            <Heading tag="h2" size="5">Targets</Heading>
+            <div class="u-flex u-gap-16 u-cross-center">
+                <Heading tag="h2" size="5">Targets</Heading>
+                <DropList bind:show={showMoreInfo} width="16">
+                    <Pill button on:click={() => (showMoreInfo = !showMoreInfo)}>
+                        <span class="icon-info" />More info
+                    </Pill>
+                    <svelte:fragment slot="list">
+                        <slot name="tooltip">
+                            <p>
+                                User targets include emails, phone numbers, and devices with your
+                                app installed. These targets can subscribe to a topic and receive
+                                messages published to it.
+                            </p>
+                        </slot>
+                    </svelte:fragment>
+                </DropList>
+            </div>
+
             <!-- TODO: Remove u-hide to add creating a target -->
             <div class="is-only-mobile u-hide">
                 <Button on:click={() => (showAdd = true)} event="create_user_target">
@@ -67,17 +87,16 @@
         </SearchQuery> -->
         <div class="u-flex u-gap-16 is-only-mobile u-margin-block-start-16">
             <div class="u-flex-basis-50-percent">
-                <!-- TODO: fix width -->
                 <ViewSelector
                     view={View.Table}
                     {columns}
                     hideView
                     allowNoColumns
-                    showColsTextMobile />
+                    showColsTextMobile
+                    fullWidthMobile />
             </div>
             <div class="u-flex-basis-50-percent">
-                <!-- TODO: fix width -->
-                <Filters query={data.query} {columns} />
+                <Filters query={data.query} {columns} fullWidthMobile />
             </div>
         </div>
     </div>
@@ -111,7 +130,7 @@
                     Need a hand? Check out our <Button
                         link
                         external
-                        href="http://appwrite.io/docs/products/messaging/targets"
+                        href="https://appwrite.io/docs/products/messaging/targets"
                         text>
                         documentation</Button
                     >.
