@@ -24,7 +24,7 @@
     };
 </script>
 
-<TableCell class="u-position-relative">
+<TableCell>
     <div
         class="touch-area"
         role="button"
@@ -39,10 +39,3 @@
         {disabled}
         on:click={handleClick} />
 </TableCell>
-
-<style lang="scss">
-    .touch-area {
-        position: absolute;
-        inset: 0;
-    }
-</style>

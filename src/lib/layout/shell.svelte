@@ -78,6 +78,18 @@
 </main>
 
 <style lang="scss">
+    :global([data-has-sub-navigation='true']) {
+        &:global([data-is-narrow='false']) {
+            main {
+                --p-side-size: 25rem; // 12.5rem + 12.5rem
+            }
+        }
+        &:global([data-is-narrow='true']) {
+            main {
+                --p-side-size: 17rem; // 12.5rem + 4.5rem
+            }
+        }
+    }
     main {
         min-height: 100vh;
 

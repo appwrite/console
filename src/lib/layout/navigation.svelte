@@ -46,6 +46,9 @@
         isOpen = false;
         $showSupportModal = true;
     }
+
+    $: window.document.body.dataset.isNarrow = String(narrow);
+    $: window.document.body.dataset.hasSubNavigation = String(hasSubNavigation);
 </script>
 
 <svelte:window on:keydown={handleKeyDown} />
