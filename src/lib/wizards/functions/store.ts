@@ -14,7 +14,6 @@ export const templateConfig = writable<{
     repositoryName?: string;
     repositoryPrivate?: boolean;
     repositoryId: string;
-    generateKey?: boolean;
     execute?: boolean;
     scopes?: string[];
 }>();
