@@ -14,6 +14,7 @@
         e.preventDefault();
         e.stopPropagation();
         if (!isHTMLInputElement(el)) return;
+
         selectedIds = toggle(selectedIds, id);
 
         // Hack to make sure the checkbox is checked, independent of the
