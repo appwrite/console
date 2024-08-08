@@ -16,7 +16,7 @@
     export let coupon: Coupon = null;
 
     $: selectedCampaign = campaigns.get(coupon?.campaign ?? campaign);
-    $: variation = ((coupon?.campaign ?? campaign) ? selectedCampaign?.template : 'default') as
+    $: variation = (coupon?.campaign ?? campaign ? selectedCampaign?.template : 'default') as
         | 'default'
         | CampaignData['template'];
 
