@@ -46,7 +46,7 @@
     } from '$lib/helpers/date';
     import { last } from '$lib/helpers/array';
 
-    let previousPage: string = base;
+    let previousPage: string = `${base}/project-${$page.params.project}/functions/function-${$page.params.function}/executions`;
 
     afterNavigate(({ from }) => {
         previousPage = from?.url?.pathname || previousPage;
@@ -58,16 +58,21 @@
     const deployment = data.activeDeployment as Models.Deployment;
 
     const keyList = [
-        { label: 'Authorization', value: 'Authorization' },
-        { label: 'Cache-Control', value: 'Cache-Control' },
-        { label: 'Content-Length', value: 'Content-Length' },
+        // Communication
         { label: 'Content-Type', value: 'Content-Type' },
+        { label: 'Accept', value: 'Accept' },
+        // Auth
+        { label: 'Authorization', value: 'Authorization' },
+        { label: 'Cookie', value: 'Cookie' },
+        // Optimizations
+        { label: 'Cache-control', value: 'Cache-control' },
+        { label: 'Forwarded', value: 'Forwarded' },
+        // Client-details
         { label: 'User-Agent', value: 'User-Agent' },
-        { label: 'X-Appwrite-Project', value: 'X-Appwrite-Project' },
-        { label: 'X-Appwrite-Key', value: 'X-Appwrite-Key' },
-        { label: 'X-Appwrite-JWT', value: 'X-Appwrite-JWT' },
-        { label: 'X-Appwrite-Response-Format', value: 'X-Appwrite-Response-Format' },
-        { label: 'X-Fallback-Cookies', value: 'X-Fallback-Cookies' }
+        { label: 'Referer', value: 'Referer' },
+        { label: 'Forwarded', value: 'Forwarded' },
+        { label: 'Host', value: 'Host' },
+        { label: 'Origin', value: 'Origin' },
     ];
 
     const methodOptions = [
@@ -126,10 +131,11 @@
     let now = new Date();
     let minDate: string;
     let date: string = toLocaleDateISO(now.getTime());
-    let time: string = toLocaleTimeISO(now.getTime());
-    $: minDate = toLocaleDateISO(now.getTime());
+    // We need to remove seconds from the min so the seconds are not displayed in the time picker
+    let time: string = toLocaleTimeISO(now.getTime()).split(':').slice(0, 2).join(':');
+    $: minDate = toLocaleDateISO(now.toString());
     $: minTime = isSameDay(new Date(date), new Date(minDate))
-        ? toLocaleTimeISO(now.getTime())
+        ? toLocaleTimeISO(now.getTime()).split(':').slice(0, 2).join(':')
         : '00:00';
     $: dateTime = new Date(`${date}T${time}`);
 
@@ -241,16 +247,11 @@
                         <Button
                             noMargin
                             text
-                            disabled={headers?.length &&
-                            headers[headers.length - 1][0] &&
-                            headers[headers.length - 1][1]
+                            disabled={headers?.length && headers[headers.length - 1][0]
                                 ? false
                                 : true}
                             on:click={() => {
-                                if (
-                                    headers[headers.length - 1][0] &&
-                                    headers[headers.length - 1][1]
-                                ) {
+                                if (headers[headers.length - 1][0]) {
                                     headers.push(['', '']);
                                     headers = headers;
                                 }
@@ -297,7 +298,6 @@
                                     required={true}
                                     min={minTime}
                                     bind:value={time}
-                                    step={1}
                                     isMultiple
                                     fullWidth />
                             </FormItem>
@@ -320,7 +320,9 @@
                         {func.deployment}
                     </Id>
                 </div>
-                <ul class="u-flex u-main-space-between">
+                <ul
+                    class="u-grid u-width-full-line u-gap-16"
+                    style:grid-template-columns="repeat(3, 1fr)">
                     <li class="u-flex-vertical u-gap-8">
                         <p class="u-color-text-offline">Status</p>
                         <p>

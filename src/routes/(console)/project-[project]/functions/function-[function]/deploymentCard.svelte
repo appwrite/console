@@ -15,8 +15,8 @@
 
 <CardGrid>
     <div class="u-flex u-cross-start u-gap-16">
-        <div class="avatar is-medium" aria-hidden="true">
-            <SvgIcon name={$func.runtime.split('-')[0]}></SvgIcon>
+        <div class="avatar" style={`--p-image-size: ${32 / 16}rem`} aria-hidden="true">
+            <SvgIcon size={64} iconSize="large" name={$func.runtime.split('-')[0]}></SvgIcon>
         </div>
         <div class="u-grid-equal-row-size u-gap-4 u-line-height-1">
             <p><b>Deployment ID</b></p>
