@@ -29,7 +29,7 @@ export const load: PageLoad = async ({ params, parent }) => {
         /**
          * Workaround because project id might not be populated yet.
          */
-        getSdkForProject(project).project.getUsage(startDate, endDate)
+        getSdkForProject(project).tempFunctions.getUsage(startDate, endDate)
     ]);
 
     if (invoice) {

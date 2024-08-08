@@ -23,6 +23,7 @@ import {
 } from '@appwrite.io/console';
 import { Billing } from '../sdk/billing';
 import { Sources } from '$lib/sdk/sources';
+import { TempFunctions } from '$lib/sdk/tempFunctions';
 
 const endpoint = VARS.APPWRITE_ENDPOINT ?? `${globalThis?.location?.origin}/v1`;
 
@@ -48,7 +49,8 @@ const sdkForProject = {
     users: new Users(clientProject),
     vcs: new Vcs(clientProject),
     proxy: new Proxy(clientProject),
-    migrations: new Migrations(clientProject)
+    migrations: new Migrations(clientProject),
+    tempFunctions: new TempFunctions(clientProject)
 };
 
 export const getSdkForProject = (projectId: string) => {
@@ -74,7 +76,8 @@ export const sdk = {
         console: new Console(clientConsole),
         assistant: new Assistant(clientConsole),
         billing: new Billing(clientConsole),
-        sources: new Sources(clientConsole)
+        sources: new Sources(clientConsole),
+        tempFunctions: new TempFunctions(clientConsole)
     },
     get forProject() {
         const projectId = getProjectId();
