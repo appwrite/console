@@ -14,7 +14,6 @@
     export let placeholder = '';
     export let required = false;
     export let hideRequired = false;
-    export let nullable = false;
     export let disabled = false;
     export let readonly = false;
     export let maxlength: number = null;
