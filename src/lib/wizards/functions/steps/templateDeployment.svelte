@@ -25,7 +25,7 @@
     <svelte:fragment slot="title">Deployment</svelte:fragment>
     <svelte:fragment slot="subtitle">
         Connect your function to a Git repository for automatic deployments or deploy your function
-        using CLI.
+        using the CLI.
     </svelte:fragment>
 
     <h3>Automatic with Git <span class="inline-code">Recommended</span></h3>
