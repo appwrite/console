@@ -60,6 +60,8 @@
         EmailTemplateLocale
     } from '@appwrite.io/console';
     import Email2FaTemplate from './email2FATemplate.svelte';
+    import EmailMfaCreatedTemplate from './emailMfaCreatedTemplate.svelte';
+    import EmailMfaRemovedTemplate from './emailMfaRemovedTemplate.svelte';
 
     const projectId = $page.params.project;
 
@@ -69,6 +71,8 @@
     $: emailResetPassword = emailOpen === 'recovery';
     $: emailInviteUser = emailOpen === 'invitation';
     $: email2FAVerificationOpen = emailOpen === 'mfaChallenge';
+    $: emailMfaCreated = emailOpen === 'mfaCreated';
+    $: emailMFARemovedOpen = emailOpen === 'mfaRemoved';
 
     // let smsOpen = 'verification';
     // $: smsVerificationOpen = smsOpen === 'verification';
@@ -189,6 +193,26 @@
                     <p class="text">Send a two-factor authentication email to a user.</p>
                     <Email2FaTemplate />
                 </CollapsibleItem>
+                <CollapsibleItem
+                    bind:open={emailMfaCreated}
+                    on:click={(e) => {
+                        e.preventDefault();
+                        openEmail('mfaCreated');
+                    }}>
+                    <svelte:fragment slot="title">MFA authenticator added</svelte:fragment>
+                    <p class="text">Send a email to a user when an MFA authenticator is added.</p>
+                    <EmailMfaCreatedTemplate />
+                </CollapsibleItem>
+                <CollapsibleItem
+                    bind:open={emailMFARemovedOpen}
+                    on:click={(e) => {
+                        e.preventDefault();
+                        openEmail('mfaRemoved');
+                    }}>
+                    <svelte:fragment slot="title">MFA authenticator removed</svelte:fragment>
+                    <p class="text">Send a email to a user when an MFA authenticator is removed.</p>
+                    <EmailMfaRemovedTemplate />
+            </CollapsibleItem>
             </Collapsible>
         </svelte:fragment>
         <svelte:fragment slot="actions">
