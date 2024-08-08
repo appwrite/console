@@ -26,6 +26,7 @@
     export let fullWidth = false;
     export let autofocus = false;
     export let interactiveOutput = false;
+    export let interactiveEmpty = false;
     // stretch is used inside of a flex container to give the element flex:1
     export let stretch = true;
     export let search = '';
@@ -202,7 +203,18 @@
                 </li>
             {:else}
                 <li class="drop-list-item">
-                    <span class="text">There are no {name} that match your search</span>
+                    <button
+                        class:drop-button={interactiveEmpty}
+                        type="button"
+                        on:click={() => {
+                            if (interactiveOutput && interactiveEmpty) hasFocus = !hasFocus;
+                        }}>
+                        <slot name="empty">
+                            <span class="text">
+                                There are no {name} that match your search
+                            </span>
+                        </slot>
+                    </button>
                 </li>
             {/each}
         </svelte:fragment>

@@ -213,10 +213,15 @@
                                             label="Key"
                                             placeholder="Select key"
                                             interactiveOutput
+                                            interactiveEmpty
                                             options={filteredKeyList}
                                             id={`key-${index}`}
                                             bind:value={name}
-                                            bind:search={name} />
+                                            bind:search={name}>
+                                            <svelte:fragment slot="empty">
+                                                {name}
+                                            </svelte:fragment>
+                                        </InputSelectSearch>
                                         <InputText
                                             isMultiple
                                             fullWidth
