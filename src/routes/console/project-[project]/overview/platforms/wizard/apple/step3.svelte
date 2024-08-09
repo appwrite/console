@@ -8,10 +8,14 @@
     const { endpoint, project } = sdk.forProject.client.config;
     const code = `import Appwrite
 
-let client = Client()
+${
+    !isSelfHosted
+        ? `let client = Client().setProject("${project}")`
+        : `let client = Client()
     .setEndpoint("${endpoint}")
     .setProject("${project}")
-    .setSelfSigned(true) // For self signed certificates, only use for development`;
+    .setSelfSigned(true) // For self signed certificates, only use for development`
+}`;
 
     let showAlert = true;
 </script>
@@ -21,9 +25,9 @@ let client = Client()
 
     <h2 class="heading-level-7">Initialize your SDK</h2>
     <p>
-        Initialize your SDK by pointing the client to your Appwrite project using your <Id
-            value={project}>Project ID</Id
-        >.
+        Initialize your SDK by pointing the client to your Appwrite project using your
+        <Id value={project}>Project ID</Id>
+        .
     </p>
     <Code label="Apple SDK" labelIcon="apple" language="swift" {code} withCopy withLineNumbers />
     <p class="u-margin-block-start-24">

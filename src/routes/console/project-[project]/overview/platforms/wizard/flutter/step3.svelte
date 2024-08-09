@@ -9,10 +9,14 @@
     const code = `import 'package:appwrite/appwrite.dart';
 
 Client client = Client();
-client
+${
+    !isSelfHosted
+        ? `client.setProject('${project}');`
+        : `client
     .setEndpoint('${endpoint}')
     .setProject('${project}')
-    .setSelfSigned(status: true); // For self signed certificates, only use for development`;
+    .setSelfSigned(status: true); // For self signed certificates, only use for development;`
+}`;
 
     let showAlert = true;
 </script>
@@ -22,8 +26,8 @@ client
 
     <h2 class="heading-level-7">Initialize your SDK</h2>
     <p data-private>
-        Initialize your SDK by pointing the client to your Appwrite project using your <Id
-            value={project}>Project ID</Id>
+        Initialize your SDK by pointing the client to your Appwrite project using your
+        <Id value={project}>Project ID</Id>
     </p>
     <div class="u-margin-block-start-16">
         <Code
