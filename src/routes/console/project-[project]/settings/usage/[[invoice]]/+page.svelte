@@ -4,11 +4,10 @@
     import {
         TableBody,
         TableCell,
-        TableCellLink,
         TableCellHead,
         TableHeader,
-        TableRow,
-        Table
+        Table,
+        TableRowLink
     } from '$lib/elements/table';
     import { showUsageRatesModal, tierToPlan, upgradeURL } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
@@ -221,27 +220,26 @@
                         }
                     ]} />
                 {#if data.usage.executionsBreakdown.length > 0}
-                    <Table noMargin noStyles>
+                    <Table noMargin noStyles style="table-layout: auto">
                         <TableHeader>
-                            <TableCellHead width={285}>Function</TableCellHead>
+                            <TableCellHead>Function</TableCellHead>
                             <TableCellHead>Usage</TableCellHead>
-                            <TableCellHead width={140} />
+                            <TableCellHead />
                         </TableHeader>
                         <TableBody>
                             {#each data.usage.executionsBreakdown as func}
-                                <TableRow>
+                                <TableRowLink
+                                    href={`${base}/functions/function-${func.resourceId}`}>
                                     <TableCell title="Function">
                                         {func.name ?? func.resourceId}
                                     </TableCell>
                                     <TableCell title="Usage">
                                         {formatNum(func.value)} executions
                                     </TableCell>
-                                    <TableCellLink
-                                        href={`${base}/functions/function-${func.resourceId}`}
-                                        title="View function">
-                                        View function
-                                    </TableCellLink>
-                                </TableRow>
+                                    <TableCell right={true}>
+                                        <span class="icon-cheveron-right u-cross-child-center" />
+                                    </TableCell>
+                                </TableRowLink>
                             {/each}
                         </TableBody>
                     </Table>
@@ -279,28 +277,26 @@
                     </div>
                 </div>
                 {#if data.usage.bucketsBreakdown.length > 0}
-                    <Table noMargin noStyles>
+                    <Table noMargin noStyles style="table-layout: auto">
                         <TableHeader>
-                            <TableCellHead width={285}>Bucket</TableCellHead>
+                            <TableCellHead>Bucket</TableCellHead>
                             <TableCellHead>Usage</TableCellHead>
-                            <TableCellHead width={140} />
+                            <TableCellHead />
                         </TableHeader>
                         <TableBody>
                             {#each data.usage.bucketsBreakdown.sort((a, b) => b.value - a.value) as bucket}
                                 {@const humanized = humanFileSize(bucket.value)}
-                                <TableRow>
-                                    <TableCell title="Function">
+                                <TableRowLink href={`${base}/storage/bucket-${bucket.resourceId}`}>
+                                    <TableCell title="View bucket">
                                         {bucket.name ?? bucket.resourceId}
                                     </TableCell>
                                     <TableCell title="Usage">
                                         {humanized.value}{humanized.unit}
                                     </TableCell>
-                                    <TableCellLink
-                                        href={`${base}/storage/bucket-${bucket.resourceId}`}
-                                        title="View bucket">
-                                        View bucket
-                                    </TableCellLink>
-                                </TableRow>
+                                    <TableCell right={true}>
+                                        <span class="icon-cheveron-right u-cross-child-center" />
+                                    </TableCell>
+                                </TableRowLink>
                             {/each}
                         </TableBody>
                     </Table>
