@@ -36,7 +36,7 @@
         on:click|preventDefault
         class="tooltip"
         aria-label="input tooltip"
-        use:tooltipAction={{ content: tooltip }}>
+        use:tooltipAction={{ content: tooltip, appendTo: 'parent' }}>
         <span class="icon-info" aria-hidden="true" style="font-size: var(--icon-size-small)" />
     </button>
 {/if}
