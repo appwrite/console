@@ -1,8 +1,8 @@
 <script lang="ts">
-    import { afterNavigate, invalidate } from '$app/navigation';
+    import { invalidate } from '$app/navigation';
     import { Alert, EmptySearch, PaginationWithLimit, ViewSelector } from '$lib/components';
     import { BillingPlan, Dependencies } from '$lib/constants';
-    import { Button, FormList, InputSelect } from '$lib/elements/forms';
+    import { Button } from '$lib/elements/forms';
     import { hoursToDays } from '$lib/helpers/date';
     import { Container, ContainerHeader } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
@@ -14,15 +14,14 @@
     import Create from '../create.svelte';
     import { abbreviateNumber } from '$lib/helpers/numbers';
     import { base } from '$app/paths';
-    import { Filters, queries, TagList } from '$lib/components/filters';
+    import { Filters, queries } from '$lib/components/filters';
     import { writable } from 'svelte/store';
     import type { Column } from '$lib/helpers/types';
     import { View } from '$lib/helpers/load';
     import Table from './table.svelte';
-    import { addFilter, tags, ValidOperators } from '$lib/components/filters/store';
     import QuickFilters from './quickFilters.svelte';
-    import InputText from '$lib/elements/forms/inputText.svelte';
     import { Pill } from '$lib/elements';
+    import { tags } from '$lib/components/filters/store';
 
     export let data;
 
@@ -144,20 +143,6 @@
         }
     ]);
 
-    const pathColumn = $columns.find((col) => col.id === 'requestPath');
-    let pathQuery: string;
-    const idColumn = $columns.find((col) => col.id === '$id');
-    let idQuery: string;
-    const durationColumn = $columns.find((col) => col.id === 'duration');
-    const durationOptions = [
-        ...durationColumn.elements,
-        {
-            value: null,
-            label: 'Select duration'
-        }
-    ] as { value: string; label: string }[];
-    let durationQuery: string = null;
-
     let showMobileFilters = false;
     onMount(() => {
         data?.query ? (showMobileFilters = true) : (showMobileFilters = false);
@@ -168,35 +153,8 @@
         });
     });
 
-    let tagCount: number;
-
-    afterNavigate(() => {
-        pathQuery = '';
-        idQuery = '';
-        tagCount = $tags?.length;
-    });
-
     function clearAll() {
         queries.clearAll();
-        queries.apply();
-    }
-
-    function applyFilters() {
-        if (pathQuery) {
-            const tagList = $tags.filter((tag) => tag.tag.includes(pathColumn.title));
-            tagList.forEach((tag) => queries.removeFilter(tag));
-            addFilter($columns, pathColumn.id, ValidOperators.StartsWith, pathQuery);
-        }
-        if (idQuery) {
-            const tagList = $tags.filter((tag) => tag.tag.includes(idColumn.title));
-            tagList.forEach((tag) => queries.removeFilter(tag));
-            addFilter($columns, idColumn.id, ValidOperators.StartsWith, idQuery);
-        }
-        if (durationQuery) {
-            const tagList = $tags.filter((tag) => tag.tag.includes(durationColumn.title));
-            tagList.forEach((tag) => queries.removeFilter(tag));
-            addFilter($columns, durationColumn.id, ValidOperators.GreaterThan, durationQuery);
-        }
         queries.apply();
     }
 </script>
@@ -234,60 +192,24 @@
     <div class="u-flex u-main-space-between is-not-mobile u-margin-block-start-16">
         <div class="u-flex u-gap-8 u-cross-center u-flex-wrap">
             <QuickFilters {columns} />
-            <Filters
-                query={data.query}
-                {columns}
-                let:disabled
-                let:toggle
-                quickFilters
-                clearOnClick
-                enableApply={!!pathQuery || !!idQuery || !!durationQuery}
-                on:apply={applyFilters}
-                on:toggle={() => {
-                    pathQuery = idQuery = '';
-                    durationQuery = null;
-                }}>
+            <Filters query={data.query} {columns} let:disabled let:toggle clearOnClick>
                 <div class="u-flex u-gap-4">
                     <Button
                         text
                         on:click={toggle}
                         {disabled}
                         ariaLabel="open filter"
-                        noMargin={!tagCount}>
+                        noMargin={!$tags?.length}>
                         <span class="icon-filter-line" />
                         <span class="text">More filters</span>
                     </Button>
-                    {#if tagCount}
+                    {#if $tags?.length}
                         <div
                             style="flex-basis: 1px; background-color: hsl(var(--color-border)); width: 1px;">
                         </div>
                         <Button text on:click={clearAll}>Clear All</Button>
                     {/if}
                 </div>
-                <svelte:fragment slot="quick">
-                    <form on:submit|preventDefault class="u-margin-block-start-16">
-                        <FormList gap={16}>
-                            <InputText
-                                bind:value={pathQuery}
-                                label={pathColumn.title}
-                                id={pathColumn.id}
-                                placeholder="/" />
-                            <InputSelect
-                                id={durationColumn.id}
-                                label={durationColumn.title}
-                                options={durationOptions}
-                                bind:value={durationQuery} />
-                            <InputText
-                                bind:value={idQuery}
-                                label={idColumn.title}
-                                id={idColumn.id}
-                                placeholder="Enter ID" />
-                        </FormList>
-                    </form>
-                    <ul class="u-flex u-flex-wrap u-cross-center u-gap-8 u-margin-block-start-16">
-                        <TagList />
-                    </ul>
-                </svelte:fragment>
             </Filters>
         </div>
         <div class="u-flex u-gap-16">
@@ -328,17 +250,7 @@
             class=" u-gap-8 u-flex-wrap u-margin-block-start-16">
             <QuickFilters {columns} />
 
-            <Filters
-                query={data.query}
-                {columns}
-                quickFilters
-                clearOnClick
-                enableApply={!!pathQuery || !!idQuery || !!durationQuery}
-                on:apply={applyFilters}
-                on:toggle={() => {
-                    pathQuery = idQuery = '';
-                    durationQuery = null;
-                }}>
+            <Filters query={data.query} {columns} clearOnClick>
                 <svelte:fragment slot="mobile" let:disabled let:toggle>
                     <Pill
                         button
@@ -350,30 +262,6 @@
                         <span class="text">More filters</span>
                         <span class="icon-cheveron-down" />
                     </Pill>
-                </svelte:fragment>
-                <svelte:fragment slot="quick">
-                    <form on:submit|preventDefault>
-                        <FormList gap={16}>
-                            <InputText
-                                bind:value={pathQuery}
-                                label={pathColumn.title}
-                                id={pathColumn.id}
-                                placeholder="/" />
-                            <InputSelect
-                                id={durationColumn.id}
-                                label={durationColumn.title}
-                                options={durationOptions}
-                                bind:value={durationQuery} />
-                            <InputText
-                                bind:value={idQuery}
-                                label={idColumn.title}
-                                id={idColumn.id}
-                                placeholder="Enter ID" />
-                        </FormList>
-                    </form>
-                    <ul class="u-flex u-flex-wrap u-cross-center u-gap-8 u-margin-block-start-16">
-                        <TagList />
-                    </ul>
                 </svelte:fragment>
             </Filters>
         </div>

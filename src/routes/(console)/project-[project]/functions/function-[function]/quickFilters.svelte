@@ -46,14 +46,12 @@
 
     const statusCol = $columns.find((col) => col.id === 'status');
     let statusFilter = buildFilterCol(statusCol);
-    const triggerCol = $columns.find((col) => col.id === 'trigger');
-    let triggerFilter = buildFilterCol(triggerCol);
-    const methodCol = $columns.find((col) => col.id === 'requestMethod');
-    let methodFilter = buildFilterCol(methodCol);
-    const statusCodeCol = $columns.find((col) => col.id === 'responseStatusCode');
-    let statusCodeFilter = buildFilterCol(statusCodeCol);
-    const createdAtCol = $columns.find((col) => col.id === '$createdAt');
-    let createdAtFilter = buildFilterCol(createdAtCol);
+    const typeCol = $columns.find((col) => col.id === 'type');
+    let typeFilter = buildFilterCol(typeCol);
+    const sizeCol = $columns.find((col) => col.id === 'size');
+    let sizeFilter = buildFilterCol(sizeCol);
+    const buildTimeCol = $columns.find((col) => col.id === 'buildTime');
+    let buildTimeFilter = buildFilterCol(buildTimeCol);
 
     let localQueries = new Map<TagValue, string>();
 
@@ -64,41 +62,24 @@
 
         if (!localTags?.length) {
             statusFilter.tag = null;
-            triggerFilter.tag = null;
-            methodFilter.tag = null;
-            statusCodeFilter.tag = null;
-            createdAtFilter.tag = null;
-            [statusFilter, triggerFilter, methodFilter].forEach((filter) => {
+            typeFilter.tag = null;
+            buildTimeFilter.tag = null;
+            [statusFilter, typeFilter].forEach((filter) => {
                 resetOptions(filter);
             });
         } else {
-            [statusFilter, triggerFilter, methodFilter].forEach((filter) => {
+            [statusFilter, typeFilter].forEach((filter) => {
                 setFilterData(filter, localTags);
             });
 
-            const statusCodeTag = localTags.find((tag) =>
-                tag.tag.includes(`**${statusCodeFilter.title}**`)
-            );
-            if (statusCodeTag) {
-                const ranges = statusCodeCol.elements as { value: number; label: string }[];
-
-                const codeRange = ranges.find((c) => c?.value && c.value === statusCodeTag.value);
-                if (codeRange) {
-                    statusCodeFilter.tag = `**${statusCodeFilter.title}** is **${codeRange.label}**`;
-                    statusCodeFilter = statusCodeFilter;
-                }
-            } else {
-                statusCodeFilter.tag = null;
-            }
-
             const createdAtTag = localTags.find((tag) =>
-                tag.tag.includes(`**${createdAtFilter.title}**`)
+                tag.tag.includes(`**${buildTimeFilter.title}**`)
             );
             if (createdAtTag) {
                 const now = new Date();
 
                 const diff = now.getTime() - new Date(createdAtTag.value as string).getTime();
-                const ranges = createdAtCol.elements as { value: string; label: string }[];
+                const ranges = buildTimeCol.elements as { value: string; label: string }[];
                 const dateRange = ranges.reduce((prev, curr) => {
                     if (parseInt(curr.value) < diff && curr.value > prev.value) {
                         return curr;
@@ -106,19 +87,37 @@
                     return prev;
                 });
                 if (dateRange) {
-                    createdAtFilter.tag = `**${createdAtFilter.title}** is **${dateRange.label}**`;
-                    createdAtFilter = createdAtFilter;
+                    buildTimeFilter.tag = `**${buildTimeFilter.title}** is **${dateRange.label}**`;
+                    buildTimeFilter = buildTimeFilter;
                 }
             } else {
-                createdAtFilter.tag = null;
+                buildTimeFilter.tag = null;
+            }
+
+            const sizeTag = localTags.find((tag) => tag.tag.includes(`**${sizeFilter.title}**`));
+            if (sizeTag) {
+                const size = sizeTag.value as string;
+                const ranges = sizeCol.elements as { value: string; label: string }[];
+                // find smallest range that is bigger than size
+                const sizeRange = ranges.reduce((prev, curr) => {
+                    if (parseInt(curr.value) > parseInt(size) && curr.value < prev.value) {
+                        return curr;
+                    }
+                    return prev;
+                });
+                if (sizeRange) {
+                    sizeFilter.tag = `**${sizeFilter.title}** is **${sizeRange.label}**`;
+                    sizeFilter = sizeFilter;
+                }
+            } else {
+                sizeFilter.tag = null;
             }
 
             // Reasinging the filters to trigger reactivity
             statusFilter = statusFilter;
-            triggerFilter = triggerFilter;
-            methodFilter = methodFilter;
-            statusCodeFilter = statusCodeFilter;
-            createdAtFilter = createdAtFilter;
+            typeFilter = typeFilter;
+            sizeFilter = sizeFilter;
+            buildTimeFilter = buildTimeFilter;
         }
     });
 
@@ -154,10 +153,10 @@
         const tagList = $tags.filter((tag) => tag.tag.includes(colTitle));
         tagList.forEach((tag) => queries.removeFilter(tag));
         if (value || arrayValues?.length) {
-            if (colId === statusCodeFilter.id) {
-                addStatusCodeFilter(value, colId);
-            } else if (colId === createdAtFilter.id) {
-                addCreatedAtFilter(value, colId);
+            if (colId === buildTimeFilter.id) {
+                addBuildTimeFilter(value, colId);
+            } else if (colId === sizeFilter.id) {
+                addBuildTimeFilter(value, colId);
             } else {
                 addFilter($columns, colId, operator, value, arrayValues);
             }
@@ -165,11 +164,7 @@
         queries.apply();
     }
 
-    function addStatusCodeFilter(value: string, colId: string) {
-        addFilter($columns, colId, ValidOperators.LessThanOrEqual, parseInt(value));
-        addFilter($columns, colId, ValidOperators.GreaterThanOrEqual, parseInt(value) - 99);
-    }
-    function addCreatedAtFilter(value: string, colId: string) {
+    function addBuildTimeFilter(value: string, colId: string) {
         const now = new Date();
         const isoValue = new Date(now.getTime() - parseInt(value));
         addFilter($columns, colId, ValidOperators.GreaterThanOrEqual, isoValue.toISOString());
@@ -177,7 +172,7 @@
     }
 </script>
 
-{#each [statusFilter, triggerFilter, methodFilter] as filter}
+{#each [statusFilter, typeFilter] as filter}
     <DropList bind:show={filter.show} noArrow class="u-margin-block-start-16">
         <Pill button on:click={() => (filter.show = !filter.show)}>
             {#key filter.tag}
@@ -224,7 +219,7 @@
         </svelte:fragment>
     </DropList>
 {/each}
-{#each [statusCodeFilter, createdAtFilter] as filter}
+{#each [buildTimeFilter, sizeFilter] as filter}
     <DropList bind:show={filter.show} noArrow class="u-margin-block-start-16">
         <Pill button on:click={() => (filter.show = !filter.show)}>
             {#key filter.tag}
