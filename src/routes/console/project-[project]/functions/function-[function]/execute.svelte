@@ -92,9 +92,8 @@
             class="link"
             href="https://appwrite.io/docs/products/functions/execution"
             target="_blank"
-            rel="noopener noreferrer">
-            Learn more
-        </a>.
+            rel="noopener noreferrer">Learn more</a
+        >.
     </p>
 
     <FormList>

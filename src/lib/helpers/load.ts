@@ -21,7 +21,7 @@ export enum View {
 export function getView(url: URL, route: Page['route'], fallback: View): View {
     return (url.searchParams.get('view') ?? preferences.get(route).view) === View.Grid
         ? View.Grid
-        : View.Table ?? fallback;
+        : (View.Table ?? fallback);
 }
 
 export function getColumns(route: Page['route'], fallback: string[]): string[] {

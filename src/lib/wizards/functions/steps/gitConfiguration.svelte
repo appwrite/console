@@ -67,7 +67,7 @@
                             $choices.branch = event.detail.value;
                         }}
                         interactiveOutput
-                        name="branch"
+                        name="branches"
                         {options} />
                     <InputText
                         id="root"
