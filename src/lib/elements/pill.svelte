@@ -12,6 +12,9 @@
     export let external = false;
     export let href: string = null;
     export let event: string = null;
+    export let style = '';
+    let classes = '';
+    export { classes as class };
 
     function track() {
         if (!event) {
@@ -26,10 +29,11 @@
 
 {#if href}
     <a
+        {style}
         {href}
         target={external ? '_blank' : '_self'}
         rel={external ? 'noopener noreferrer' : ''}
-        class="tag"
+        class="tag {classes}"
         class:is-disabled={disabled}
         class:is-selected={selected}
         class:is-success={success}
@@ -42,9 +46,10 @@
     <button
         on:click
         on:click={track}
+        {style}
         {disabled}
         type={submit ? 'submit' : 'button'}
-        class="tag"
+        class="tag {classes}"
         class:is-disabled={disabled}
         class:is-selected={selected}
         class:is-success={success}
@@ -55,7 +60,8 @@
     </button>
 {:else}
     <div
-        class="tag"
+        class="tag {classes}"
+        {style}
         class:is-disabled={disabled}
         class:is-selected={selected}
         class:is-success={success}

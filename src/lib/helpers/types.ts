@@ -38,7 +38,7 @@ export type Column = {
     filter?: boolean;
     array?: boolean;
     format?: string;
-    elements?: string[] | { value: string; label: string }[];
+    elements?: string[] | { value: string | number; label: string }[];
 };
 
 export function isValueOfStringEnum<T extends Record<string, string>>(

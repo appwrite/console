@@ -14,6 +14,8 @@
     export let wrapperFullWidth = false;
     export let position: 'relative' | 'static' = 'relative';
     export let noMaxWidthList = false;
+    let classes: string = '';
+    export { classes as class };
 </script>
 
 <Drop
@@ -29,7 +31,7 @@
     <slot />
     <svelte:fragment slot="list">
         <div
-            class="drop is-no-arrow"
+            class="drop is-no-arrow {classes}"
             class:u-max-width-100-percent={fullWidth}
             style:--drop-width-size-desktop={width ? `${width}rem` : ''}
             style:position>

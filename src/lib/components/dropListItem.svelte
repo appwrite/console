@@ -5,6 +5,7 @@
     export let icon: string = null;
     export let event: string = null;
     export let loading = false;
+    export let padding: number | null = null;
 
     function track() {
         if (!event) {
@@ -20,6 +21,8 @@
 <li class="drop-list-item">
     <button
         class="drop-button u-flex u-cross-center u-main-space-between"
+        style:--button-padding-horizontal={padding ? `${padding / 16}rem` : ''}
+        style:--button-padding-vertical={padding ? `${padding / 16}rem` : ''}
         on:click={track}
         on:click|preventDefault
         {disabled}>
