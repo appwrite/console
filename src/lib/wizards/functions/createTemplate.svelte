@@ -111,6 +111,7 @@
     $templateStepsComponents.set(2, {
         label: 'Permissions',
         component: TemplatePermissions,
+        // @ts-ignore - Remove this when SDK is updated
         disabled: !$template?.scopes?.length
     });
     $templateStepsComponents.set(3, {

@@ -10,6 +10,7 @@
     onMount(() => {
         $templateConfig.execute = $template.permissions.includes('any');
         templateScopes = scopes
+            // @ts-ignore - Remove this when SDK is updated
             .filter((scope) => $template.scopes.includes(scope.scope))
             .map((scope) => ({
                 ...scope,

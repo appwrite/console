@@ -7,7 +7,8 @@
     ) {
         const variables: Record<string, string> = {};
         template.variables.forEach((variable) => {
-            variables[variable.name] = variable.placeholder;
+            // @ts-ignore - Remove this when SDK is updated
+            variables[variable.name] = variable.value ?? '';
         });
 
         templateStore.set(template);
