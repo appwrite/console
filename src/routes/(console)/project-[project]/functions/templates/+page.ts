@@ -1,10 +1,9 @@
 import { CARD_LIMIT, Dependencies } from '$lib/constants';
 import { getPage, getSearch, getView, pageToOffset, View } from '$lib/helpers/load';
-import { marketplace } from '$lib/stores/marketplace';
 import { sdk } from '$lib/stores/sdk';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ url, route, depends }) => {
+export const load: PageLoad = async ({ url, route, depends, parent }) => {
     depends(Dependencies.FUNCTIONS);
 
     const limit = CARD_LIMIT;
@@ -16,16 +15,19 @@ export const load: PageLoad = async ({ url, route, depends }) => {
         useCases: url.searchParams.getAll('useCase'),
         runtimes: url.searchParams.getAll('runtime')
     };
-    const [runtimes, useCases] = marketplace.reduce(
+
+    const { templatesList } = await parent();
+
+    const [runtimes, useCases] = templatesList.templates.reduce(
         ([rt, uc], next) => {
             next.runtimes.forEach((runtime) => rt.add(runtime.name));
-            next.usecases.forEach((useCase) => uc.add(useCase));
+            next.useCases.forEach((useCase) => uc.add(useCase));
             return [rt, uc];
         },
         [new Set<string>(), new Set<string>()]
     );
 
-    const templates = marketplace.filter((template) => {
+    const templates = templatesList.templates.filter((template) => {
         if (
             filter.runtimes.length > 0 &&
             !template.runtimes.some((n) => filter.runtimes.includes(n.name))
@@ -35,7 +37,7 @@ export const load: PageLoad = async ({ url, route, depends }) => {
 
         if (
             filter.useCases.length > 0 &&
-            !template.usecases.some((n) => filter.useCases.includes(n))
+            !template.useCases.some((n) => filter.useCases.includes(n))
         ) {
             return false;
         }

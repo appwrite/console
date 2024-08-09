@@ -15,9 +15,9 @@
     import { Container, ContainerButton } from '$lib/layout';
     import { app } from '$lib/stores/app';
     import { isServiceLimited } from '$lib/stores/billing';
-    import type { Runtime } from '$lib/stores/marketplace.js';
     import { organization } from '$lib/stores/organization';
     import { connectTemplate } from '$lib/wizards/functions/cover.svelte';
+    import type { Models } from '@appwrite.io/console';
     import { functionsList } from '../store';
 
     export let data;
@@ -43,8 +43,8 @@
         goto(target.toString());
     }
 
-    function getBaseRuntimes(runtimes: Runtime[]): Runtime[] {
-        const baseRuntimes = new Map<string, Runtime>();
+    function getBaseRuntimes(runtimes: Models.TemplateRuntime[]): Models.TemplateRuntime[] {
+        const baseRuntimes = new Map<string, Models.TemplateRuntime>();
         for (const runtime of runtimes) {
             const [baseRuntime] = runtime.name.split('-');
             baseRuntimes.set(baseRuntime, {

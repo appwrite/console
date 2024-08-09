@@ -5,7 +5,7 @@
     import { WizardStep } from '$lib/layout';
     import { onMount } from 'svelte';
     import { createFunction } from '../store';
-    import { runtimesList } from '$routes/(console)/project-[project]/functions/store';
+    import { runtimesList } from '$lib/stores/runtimes';
 
     let showCustomId = false;
 

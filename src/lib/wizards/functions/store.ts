@@ -1,10 +1,9 @@
 import { page } from '$app/stores';
 import type { WizardStepsType } from '$lib/layout/wizard.svelte';
-import type { MarketplaceTemplate } from '$lib/stores/marketplace';
 import type { Models } from '@appwrite.io/console';
 import { derived, writable, type Writable } from 'svelte/store';
 
-export const template = writable<MarketplaceTemplate>();
+export const template = writable<Models.TemplateFunction>();
 export const templateConfig = writable<{
     $id: string;
     name: string;
