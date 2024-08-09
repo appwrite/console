@@ -78,7 +78,7 @@
                                         content:
                                             'You are limited to 1 free organization per account'
                                     }}>
-                                    <Pill>FREE</Pill>
+                                    <Pill class="eyebrow-heading-3">FREE</Pill>
                                 </div>
                             {/if}
                             {#if organization?.billingTrialStartDate && $daysLeftInTrial > 0 && organization.billingPlan !== BillingPlan.FREE && $plansInfo.get(organization.billingPlan)?.trialDays}
@@ -89,7 +89,7 @@
                                             organization.billingStartDate
                                         )}. ${$daysLeftInTrial} days remaining.`
                                     }}>
-                                    <Pill>TRIAL</Pill>
+                                    <Pill class="eyebrow-heading-3">TRIAL</Pill>
                                 </div>
                             {/if}
                         {/if}

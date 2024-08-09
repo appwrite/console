@@ -108,7 +108,7 @@
                                 {$organization.name}
                             </span>
                             {#if isCloud && $organization?.billingPlan === BillingPlan.FREE}
-                                <Pill>FREE</Pill>
+                                <Pill class="eyebrow-heading-3">FREE</Pill>
                             {/if}
                             {#if isCloud && $organization?.billingTrialStartDate && $daysLeftInTrial > 0 && $organization.billingPlan !== BillingPlan.FREE && $plansInfo.get($organization.billingPlan)?.trialDays}
                                 <div
@@ -118,7 +118,7 @@
                                             $organization.billingStartDate
                                         )}. ${$daysLeftInTrial} days remaining.`
                                     }}>
-                                    <Pill>TRIAL</Pill>
+                                    <Pill class="eyebrow-heading-3">TRIAL</Pill>
                                 </div>
                             {/if}
                         </span>
