@@ -58,7 +58,7 @@
                         {isTrial ? formatCurrency(0) : formatCurrency(currentPlan?.price)}
                     </div>
                 </CollapsibleItem>
-                {#if $organization?.billingPlan !== BillingPlan.FREE && extraUsage}
+                {#if $organization?.billingPlan !== BillingPlan.FREE && extraUsage > 0}
                     <CollapsibleItem isInfo gap={8}>
                         <svelte:fragment slot="beforetitle">
                             <span class="body-text-2"><b>Add-ons</b></span><span class="inline-tag"
