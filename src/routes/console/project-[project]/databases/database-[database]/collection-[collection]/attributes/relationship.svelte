@@ -154,30 +154,40 @@
     </ul>
 </li>
 
-<InputSelectSearch
-    id="related"
-    label="Related Collection"
-    name="collections"
-    bind:search
-    bind:value={data.relatedCollection}
-    required
-    interactiveOutput={!editing}
-    placeholder="Select a collection"
-    disabled={editing}
-    options={collections?.map((n) => ({ value: n.$id, label: n.$id, data: [n.name] })) ?? []}
-    on:select={updateKeyName}
-    let:option={o}>
-    <SelectSearchItem data={o.data}>
-        {o.label}
-    </SelectSearchItem>
-    <svelte:fragment slot="output" let:option={o}>
-        <output class="input-text" class:is-read-only={editing}>
-            <SelectSearchItem data={o.data}>
-                {o.label}
-            </SelectSearchItem>
-        </output>
-    </svelte:fragment>
-</InputSelectSearch>
+<div>
+    <InputSelectSearch
+        id="related"
+        label="Related Collection"
+        name="collections"
+        bind:search
+        bind:value={data.relatedCollection}
+        required
+        interactiveOutput={!editing}
+        placeholder="Select a collection"
+        disabled={editing}
+        options={collections?.map((n) => ({ value: n.$id, label: n.$id, data: [n.name] })) ?? []}
+        on:select={updateKeyName}
+        let:option={o}>
+        <SelectSearchItem data={o.data}>
+            {o.label}
+        </SelectSearchItem>
+        <svelte:fragment slot="output" let:option={o}>
+            <output class="input-text" class:is-read-only={editing}>
+                <SelectSearchItem data={o.data}>
+                    {o.label}
+                </SelectSearchItem>
+            </output>
+        </svelte:fragment>
+    </InputSelectSearch>
+
+    <div class="u-flex u-gap-4 u-margin-block-start-8 u-small">
+        <span class="icon-info u-cross-center u-margin-block-start-2 u-line-height-1 u-icon-small"
+              aria-hidden="true" />
+        <span class="text u-line-height-1-5">
+            Once created, related collection cannot be adjusted to maintain data integrity.
+        </span>
+    </div>
+</div>
 
 {#if data?.relatedCollection}
     <div>
@@ -190,12 +200,12 @@
             readonly={editing}
             required />
 
-        <div class="u-flex u-gap-4 u-margin-block-start-8 u-small u-cross-center">
+        <div class="u-flex u-gap-4 u-margin-block-start-8 u-small">
             <span
                 class="icon-info u-cross-center u-margin-block-start-2 u-line-height-1 u-icon-small"
                 aria-hidden="true" />
             <span class="text u-line-height-1-5">
-                Allowed characters: alphanumeric, hyphen, non-leading underscore, period
+                Allowed characters: a-z, A-Z, 0-9, -, . Once created, attribute key cannot be adjusted to maintain data integrity.
             </span>
         </div>
     </div>
@@ -209,12 +219,12 @@
                 required
                 readonly={editing} />
 
-            <div class="u-flex u-gap-4 u-margin-block-start-8 u-small u-cross-center">
+            <div class="u-flex u-gap-4 u-margin-block-start-8 u-small">
                 <span
                     class="icon-info u-cross-center u-margin-block-start-2 u-line-height-1 u-icon-small"
                     aria-hidden="true" />
                 <span class="text u-line-height-1-5">
-                    Allowed characters: alphanumeric, hyphen, non-leading underscore, period
+                    Allowed characters: a-z, A-Z, 0-9, -, . Once created, attribute key cannot be adjusted to maintain data integrity.
                 </span>
             </div>
         </div>

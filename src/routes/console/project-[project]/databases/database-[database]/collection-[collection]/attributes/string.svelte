@@ -69,13 +69,23 @@
     $: handleDefaultState($required || $array);
 </script>
 
-<InputNumber
-    id="size"
-    label="Size"
-    placeholder="Enter size"
-    bind:value={data.size}
-    required={!editing}
-    readonly={editing} />
+<div>
+    <InputNumber
+        id="size"
+        label="Size"
+        placeholder="Enter size"
+        bind:value={data.size}
+        required={!editing}
+        readonly={editing} />
+
+    <div class="u-flex u-gap-4 u-margin-block-start-8 u-small">
+        <span class="icon-info u-cross-center u-margin-block-start-2 u-line-height-1 u-icon-small"
+              aria-hidden="true" />
+        <span class="text u-line-height-1-5">
+            Once created, attribute size cannot be adjusted to maintain data integrity.
+        </span>
+    </div>
+</div>
 {#if data.size >= 50}
     <InputTextarea
         id="default"
