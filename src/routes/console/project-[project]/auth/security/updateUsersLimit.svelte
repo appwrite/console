@@ -70,7 +70,7 @@
                     <Pill>recommended</Pill>
                 </label>
             </li>
-            <li class="form-item is-multiple">
+            <li class="form-item is-multiple u-cross-center">
                 <div class="input-text-wrapper">
                     <label class="choice-item" for="limited">
                         <input
@@ -80,7 +80,7 @@
                             type="radio"
                             bind:group={isLimited}
                             value={true} />
-                        <div class="choice-item-content">
+                        <div class="choice-item-content u-padding-inline-end-16">
                             <div class="choice-item-title">Limited</div>
                         </div>
                     </label>
