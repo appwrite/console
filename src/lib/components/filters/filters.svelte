@@ -160,7 +160,9 @@
                         {#if singleCondition}
                             <Button text on:click={toggleDropdown}>Cancel</Button>
                         {:else}
-                            <Button text on:click={clearAll}>Clear all</Button>
+                            <Button disabled={applied === 0} text on:click={clearAll}>
+                                Clear all
+                            </Button>
                         {/if}
                         <Button on:click={apply} disabled={isButtonDisabled}>Apply</Button>
                     </div>

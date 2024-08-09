@@ -167,12 +167,19 @@
             }
         });
     });
+
     let tagCount: number;
+
     afterNavigate(() => {
         pathQuery = '';
         idQuery = '';
         tagCount = $tags?.length;
     });
+
+    function clearAll() {
+        queries.clearAll();
+        queries.apply();
+    }
 
     function applyFilters() {
         if (pathQuery) {
@@ -241,16 +248,23 @@
                     durationQuery = null;
                 }}>
                 <div class="u-flex u-gap-4">
-                    <Button text on:click={toggle} {disabled} noMargin ariaLabel="open filter">
+                    <Button
+                        text
+                        on:click={toggle}
+                        {disabled}
+                        ariaLabel="open filter"
+                        noMargin={!tagCount}>
                         <span class="icon-filter-line" />
                         <span class="text">More filters</span>
-                        {#if tagCount}
-                            <span class="inline-tag">{tagCount}</span>
-                        {/if}
                     </Button>
+                    {#if tagCount}
+                        <div
+                            style="flex-basis: 1px; background-color: hsl(var(--color-border)); width: 1px;">
+                        </div>
+                        <Button text on:click={clearAll}>Clear All</Button>
+                    {/if}
                 </div>
                 <svelte:fragment slot="quick">
-                    <p>Apply <b>quick</b> filter rules to refine the table view</p>
                     <form on:submit|preventDefault class="u-margin-block-start-16">
                         <FormList gap={16}>
                             <InputText
@@ -334,15 +348,11 @@
                         style="--p-tag-content-height: auto">
                         <!-- <span class="icon-filter-line" /> -->
                         <span class="text">More filters</span>
-                        {#if tagCount}
-                            <span class="inline-tag">{tagCount}</span>
-                        {/if}
                         <span class="icon-cheveron-down" />
                     </Pill>
                 </svelte:fragment>
                 <svelte:fragment slot="quick">
-                    <p>Apply <b>quick</b> filter rules to refine the table view</p>
-                    <form on:submit|preventDefault class="u-margin-block-start-16">
+                    <form on:submit|preventDefault>
                         <FormList gap={16}>
                             <InputText
                                 bind:value={pathQuery}

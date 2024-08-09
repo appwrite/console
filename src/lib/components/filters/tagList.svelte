@@ -1,6 +1,5 @@
 <script lang="ts">
     import { tooltip } from '$lib/actions/tooltip';
-
     import { queries, tagFormat, tags } from './store';
 </script>
 

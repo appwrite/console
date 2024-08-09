@@ -191,6 +191,7 @@
         <svelte:fragment slot="list">
             {#each filter.options as option (option.value + option.checked)}
                 <SelectSearchCheckbox
+                    padding={8}
                     bind:value={option.checked}
                     on:click={() => {
                         option.checked = !option.checked;
@@ -209,6 +210,15 @@
                     {option.label}
                 </SelectSearchCheckbox>
             {/each}
+            <DropListItem
+                padding={8}
+                on:click={() => {
+                    filter.show = false;
+                    filter.tag = null;
+                    addFilterAndApply(filter.id, filter.title, filter.operator, null, []);
+                }}>
+                Clear selection
+            </DropListItem>
         </svelte:fragment>
     </DropList>
 {/each}
@@ -226,6 +236,7 @@
         <svelte:fragment slot="list">
             {#each filter.options as option (option.value + option.checked)}
                 <DropListItem
+                    padding={8}
                     on:click={() => {
                         filter.show = false;
 
@@ -241,6 +252,7 @@
                 </DropListItem>
             {/each}
             <DropListItem
+                padding={8}
                 on:click={() => {
                     filter.show = false;
                     filter.tag = null;
