@@ -1,7 +1,7 @@
 <script lang="ts">
     import { toggle } from '$lib/helpers/array';
     import { isHTMLInputElement } from '$lib/helpers/types';
-    import { TableCell } from '.';
+    import { TableCellButton } from '.';
     import { InputCheckbox } from '../forms';
 
     export let id: string;
@@ -12,6 +12,7 @@
     const handleClick = (e: Event) => {
         // Prevent the link from being followed
         e.preventDefault();
+        e.stopPropagation();
         if (!isHTMLInputElement(el)) return;
 
         selectedIds = toggle(selectedIds, id);
@@ -24,13 +25,7 @@
     };
 </script>
 
-<TableCell class="u-position-relative">
-    <div
-        class="touch-area"
-        role="button"
-        tabindex="-1"
-        on:click={handleClick}
-        on:keypress={handleClick} />
+<TableCellButton on:click={handleClick}>
     <InputCheckbox
         bind:element={el}
         id="select-{id}"
@@ -38,11 +33,4 @@
         checked={selectedIds.includes(id)}
         {disabled}
         on:click={handleClick} />
-</TableCell>
-
-<style lang="scss">
-    .touch-area {
-        position: absolute;
-        inset: 0;
-    }
-</style>
+</TableCellButton>
