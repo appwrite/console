@@ -212,7 +212,7 @@
                     <svelte:fragment slot="title">MFA disabled</svelte:fragment>
                     <p class="text">Send an email to a user when MFA is disabled.</p>
                     <EmailMfaDisabledTemplate />
-            </CollapsibleItem>
+                </CollapsibleItem>
             </Collapsible>
         </svelte:fragment>
         <svelte:fragment slot="actions">
