@@ -11,7 +11,7 @@ import io.appwrite.services.Account
 val client = Client(context)
     .setEndpoint("${endpoint}")
     .setProject("${project}")
-    .setSelfSigned(status: true) // For self signed certificates, only use for development`;
+    .setSelfSigned(status = true) // For self signed certificates, only use for development`;
 </script>
 
 <WizardStep>
