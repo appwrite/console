@@ -149,10 +149,9 @@
                                 placeholder="Enter value"
                                 label="Verification Code"
                                 maxlength={6}
-                                required />
                                 pattern={'^[0-9]{6}$'}
                                 patternError="Value must be a 6 digit number"
-                                showLabel={index === 0 ? true : false}
+                                showLabel={index === 0}
                                 required>
                                 <button
                                     slot="options"
