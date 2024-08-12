@@ -34,12 +34,13 @@
     const handleInvalid = (event: Event) => {
         event.preventDefault();
 
-        if (element.validity.patternMismatch) {
-            error = "Allowed characters: leading '+' and maximum of 15 digits";
-            return;
-        }
         if (element.validity.valueMissing) {
             error = 'This field is required';
+            return;
+        }
+
+        if (element.validity.patternMismatch) {
+            error = "Allowed characters: leading '+' and maximum of 15 digits";
             return;
         }
 
@@ -93,6 +94,11 @@
             bind:value
             bind:this={element}
             on:invalid={handleInvalid} />
+        {#if $$slots.options}
+            <div class="options-list">
+                <slot name="options" />
+            </div>
+        {/if}
     </div>
     {#if error}
         <Helper type="warning">{error}</Helper>
