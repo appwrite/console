@@ -61,8 +61,7 @@
                 { value: 'manual', label: 'Manual' },
                 { value: 'cli', label: 'CLI' },
                 { value: 'vcs', label: 'Git' }
-            ],
-            filter: false
+            ]
         },
         {
             id: '$updatedAt',
@@ -92,7 +91,8 @@
                     value: 5 * 60,
                     label: 'more than 5 minutes'
                 }
-            ]
+            ],
+            filter: false
         },
         {
             id: 'size',
