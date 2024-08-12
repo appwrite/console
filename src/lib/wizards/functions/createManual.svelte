@@ -16,8 +16,8 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import Details from './steps/details.svelte';
-    import Configuration from './steps/configuration.svelte';
+    import Details from './steps/manualDetails.svelte';
+    import Configuration from './steps/manualConfiguration.svelte';
     import ExecuteAccess from './steps/executeAccess.svelte';
     import { isValueOfStringEnum } from '$lib/helpers/types';
 
