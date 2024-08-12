@@ -128,7 +128,7 @@
                                 fullWidth
                                 placeholder="Enter Phone Number"
                                 label="Phone Number"
-                                showLabel={index === 0 ? true : false}
+                                showLabel={index === 0}
                                 minlength={8}
                                 maxlength={16}
                                 required>
@@ -151,7 +151,7 @@
                                 maxlength={6}
                                 pattern={'^[0-9]{6}$'}
                                 patternError="Value must be a 6 digit number"
-                                showLabel={index === 0 ? true : false}
+                                showLabel={index === 0}
                                 required>
                                 <button
                                     slot="options"
@@ -163,16 +163,18 @@
                                     <span class="icon-refresh" aria-hidden="true"></span>
                                 </button>
                             </InputOTP>
-                            <FormItemPart alignEnd>
-                                <Button
-                                    text
-                                    disabled={numbers.length === 0}
-                                    on:click={() => {
-                                        deletePhoneNumber(index);
-                                    }}>
-                                    <span class="icon-x" aria-hidden="true" />
-                                </Button>
-                            </FormItemPart>
+                            <div class="u-margin-block-start-24">
+                                <FormItemPart>
+                                    <Button
+                                        text
+                                        disabled={numbers.length === 0}
+                                        on:click={() => {
+                                            deletePhoneNumber(index);
+                                        }}>
+                                        <span class="icon-x" aria-hidden="true" />
+                                    </Button>
+                                </FormItemPart>
+                            </div>
                         </FormItem>
                     {/each}
                 </ul>
