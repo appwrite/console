@@ -10,34 +10,22 @@
     import { onMount } from 'svelte';
     import { func } from '../store';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
-    import { runtimesList, specifications } from '../../store';
+    import { runtimesList } from '../../store';
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { Runtime } from '@appwrite.io/console';
 
     const functionId = $page.params.function;
     let runtime: string = null;
-    let specification: string = null;
 
     let options = [];
-    let specificationOptions = [];
 
     onMount(async () => {
         runtime ??= $func.runtime;
-        specification ??= $func.specification;
 
         let runtimes = await $runtimesList;
-        let allowedSpecifications = await $specifications;
         options = runtimes.runtimes.map((runtime) => ({
             label: `${runtime.name} - ${runtime.version}`,
             value: runtime.$id
-        }));
-
-        specificationOptions = allowedSpecifications.map((size) => ({
-            label:
-                `${size.cpus} CPU, ${size.memory} MB RAM` +
-                (!size.enabled ? ` (Upgrade to use this)` : ''),
-            value: size.slug,
-            disabled: !size.enabled
         }));
     });
 
@@ -62,12 +50,11 @@
                 $func.providerRepositoryId || undefined,
                 $func.providerBranch || undefined,
                 $func.providerSilentMode || undefined,
-                $func.providerRootDirectory || undefined,
-                specification
+                $func.providerRootDirectory || undefined
             );
             await invalidate(Dependencies.FUNCTION);
             addNotification({
-                message: 'Runtime settings have been updated',
+                message: 'Runtime has been updated',
                 type: 'success'
             });
             trackEvent(Submit.FunctionUpdateName);
@@ -79,8 +66,6 @@
             trackError(error, Submit.FunctionUpdateName);
         }
     }
-
-    $: isUpdateButtonEnabled = runtime !== $func?.runtime || specification !== $func?.specification;
 </script>
 
 <Form onSubmit={updateRuntime}>
@@ -97,19 +82,11 @@
                     {options}
                     required
                     hideRequired />
-                <InputSelect
-                    label="Specification"
-                    id="size"
-                    placeholder="Select runtime specification"
-                    bind:value={specification}
-                    options={specificationOptions}
-                    required
-                    hideRequired />
             </FormList>
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={!isUpdateButtonEnabled} submit>Update</Button>
+            <Button disabled={runtime === $func.runtime} submit>Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>
