@@ -1,7 +1,5 @@
 <script>
-    import { trackEvent } from '$lib/actions/analytics';
-    import { Button } from '$lib/elements/forms';
-    import { getNextTier, tierToPlan, upgradeURL } from '$lib/stores/billing';
+    import { getNextTier, tierToPlan } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import Card from './card.svelte';
 
