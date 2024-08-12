@@ -7,7 +7,7 @@
     export let transparent = false;
     export let noStyles = false;
     export let dense = false;
-    let classes: string = undefined;
+    let classes: string = '';
     export { classes as class };
 
     let isOverflowing = false;

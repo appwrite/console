@@ -12,6 +12,8 @@
     import { isCloud } from '$lib/system';
     import Create from '$routes/(console)/feedbackWizard.svelte';
     import { showSupportModal } from '$routes/(console)/wizard/support/store';
+    import { getContext } from 'svelte';
+    import type { Writable } from 'svelte/store';
 
     export let isOpen = false;
 
@@ -28,6 +30,9 @@
     $: {
         narrow = hasSubNavigation;
     }
+
+    $: getContext<Writable<boolean>>('isNarrow').set(narrow);
+    $: getContext<Writable<boolean>>('hasSubNavigation').set(hasSubNavigation);
 
     function handleKeyDown(event: KeyboardEvent) {
         // If Alt + S is pressed

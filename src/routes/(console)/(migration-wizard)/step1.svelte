@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { InputSelect } from '$lib/elements/forms';
+    import { FormList, InputSelect } from '$lib/elements/forms';
     import InputText from '$lib/elements/forms/inputText.svelte';
     import { WizardStep } from '$lib/layout';
     import { Query, type Models, ID } from '@appwrite.io/console';
@@ -44,7 +44,7 @@
 <WizardStep {beforeSubmit}>
     <svelte:fragment slot="title">Project</svelte:fragment>
 
-    <div class="u-flex u-flex-vertical u-gap-24">
+    <FormList>
         {#if organizations.length > 1}
             <InputSelect
                 id="organization"
@@ -107,7 +107,7 @@
                 {/if}
             </div>
         {/if}
-    </div>
+    </FormList>
 </WizardStep>
 
 <style lang="scss">

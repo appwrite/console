@@ -23,7 +23,6 @@
         runtime ??= $func.runtime;
 
         let runtimes = await $runtimesList;
-
         options = runtimes.runtimes.map((runtime) => ({
             label: `${runtime.name} - ${runtime.version}`,
             value: runtime.$id
@@ -56,7 +55,7 @@
             );
             await invalidate(Dependencies.FUNCTION);
             addNotification({
-                message: 'Runtime settings have been updated',
+                message: 'Runtime has been updated',
                 type: 'success'
             });
             trackEvent(Submit.FunctionUpdateName);
@@ -68,8 +67,6 @@
             trackError(error, Submit.FunctionUpdateName);
         }
     }
-
-    $: isUpdateButtonEnabled = runtime !== $func?.runtime;
 </script>
 
 <Form onSubmit={updateRuntime}>
@@ -90,7 +87,7 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={!isUpdateButtonEnabled} submit>Update</Button>
+            <Button disabled={runtime === $func.runtime} submit>Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>
