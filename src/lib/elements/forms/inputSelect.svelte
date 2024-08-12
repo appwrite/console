@@ -4,6 +4,7 @@
 
     export let id: string;
     export let label: string | undefined = undefined;
+    export let ariaLabel = label;
     export let optionalText: string | undefined = undefined;
     export let showLabel = true;
     export let value: string | number | boolean | null;
@@ -15,7 +16,6 @@
     export let options: {
         value: string | boolean | number | null;
         label: string;
-        disabled?: boolean;
     }[];
     export let isMultiple = false;
     export let fullWidth = false;
@@ -63,6 +63,7 @@
             {id}
             {required}
             {disabled}
+            aria-label={ariaLabel}
             bind:this={element}
             bind:value
             on:invalid={handleInvalid}
@@ -71,10 +72,7 @@
                 <option value={null} disabled selected hidden>{placeholder}</option>
             {/if}
             {#each options as option}
-                <option
-                    value={option.value}
-                    selected={option.value === value}
-                    disabled={option.disabled}>
+                <option value={option.value} selected={option.value === value}>
                     {option.label}
                 </option>
             {/each}

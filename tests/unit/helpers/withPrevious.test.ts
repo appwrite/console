@@ -1,5 +1,6 @@
 import { withPrevious } from '$lib/helpers/withPrevious';
 import { get } from 'svelte/store';
+import { describe, expect, it } from 'vitest';
 
 describe('withPrevious', () => {
     const curr = withPrevious(0);
