@@ -61,6 +61,7 @@ Follow the [install instructions](https://appwrite.io/docs/advanced/self-hosting
 ### 4. Setup environment variables
 
 Add a `.env` file by copying the `.env.example` file as a template in the project's root directory.
+
 > **Note**
 > If you are updating from Appwrite `1.5.x`, be aware that the variables for the console in the `.env` / `.env.example` file have changed in `1.6.x`.
 

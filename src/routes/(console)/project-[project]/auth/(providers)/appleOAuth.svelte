@@ -53,8 +53,8 @@
         </p>
         <InputSwitch id="state" bind:value={enabled} label={enabled ? 'Enabled' : 'Disabled'} />
         <InputText
-            id="bundleID"
-            label="Bundle ID"
+            id="servicesID"
+            label="Services ID"
             autofocus={true}
             placeholder="com.company.appname"
             bind:value={appId} />

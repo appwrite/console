@@ -80,7 +80,7 @@
     <FormList gap={16}>
         <InputFile
             label="Gzipped code (tar.gz)"
-            allowedFileExtensions={['gz']}
+            allowedFileExtensions={['gz', 'tar']}
             bind:files
             required={true} />
 

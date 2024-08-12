@@ -31,9 +31,8 @@
         <div
             class="drop is-no-arrow"
             class:u-max-width-100-percent={fullWidth}
-            style={`${width ? `--drop-width-size-desktop:${width}rem; ` : ''} ${
-                position === 'static' ? 'position:static' : 'position:relative'
-            }`}>
+            style:--drop-width-size-desktop={width ? `${width}rem` : ''}
+            style:position>
             {#if $$slots.list}
                 <section
                     class:u-overflow-y-auto={scrollable}

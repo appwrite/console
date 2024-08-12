@@ -72,7 +72,7 @@
         { label: 'Referer', value: 'Referer' },
         { label: 'Forwarded', value: 'Forwarded' },
         { label: 'Host', value: 'Host' },
-        { label: 'Origin', value: 'Origin' },
+        { label: 'Origin', value: 'Origin' }
     ];
 
     const methodOptions = [
