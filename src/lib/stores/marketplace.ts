@@ -9,7 +9,8 @@ const TemplateRuntimes = {
     RUBY: { name: 'ruby', versions: ['3.3', '3.2', '3.1', '3.0'] },
     PYTHON: { name: 'python', versions: ['3.12', '3.11', '3.10', '3.9', '3.8'] },
     DART: { name: 'dart', versions: ['3.3', '3.1', '3.0', '2.19', '2.18', '2.17', '2.16', '2.16'] },
-    BUN: { name: 'bun', versions: ['1.0'] }
+    BUN: { name: 'bun', versions: ['1.0'] },
+    GO: { name: 'go', versions: ['1.22'] }
 };
 
 const getRuntimes = (
@@ -46,20 +47,21 @@ export const marketplace: MarketplaceTemplate[] = [
         runtimes: [
             ...getRuntimes(TemplateRuntimes.NODE, 'npm install', 'src/main.js', 'node/starter'),
             ...getRuntimes(
-                TemplateRuntimes.PHP,
-                'composer install',
-                'src/index.php',
-                'php/starter'
-            ),
-            ...getRuntimes(TemplateRuntimes.RUBY, 'bundle install', 'lib/main.rb', 'ruby/starter'),
-            ...getRuntimes(
                 TemplateRuntimes.PYTHON,
                 'pip install -r requirements.txt',
                 'src/main.py',
                 'python/starter'
             ),
             ...getRuntimes(TemplateRuntimes.DART, 'dart pub get', 'lib/main.dart', 'dart/starter'),
-            ...getRuntimes(TemplateRuntimes.BUN, 'bun install', 'src/main.ts', 'bun/starter')
+            ...getRuntimes(
+                TemplateRuntimes.PHP,
+                'composer install',
+                'src/index.php',
+                'php/starter'
+            ),
+            ...getRuntimes(TemplateRuntimes.BUN, 'bun install', 'src/main.ts', 'bun/starter'),
+            ...getRuntimes(TemplateRuntimes.GO, '', 'main.go', 'go/starter'),
+            ...getRuntimes(TemplateRuntimes.RUBY, 'bundle install', 'lib/main.rb', 'ruby/starter')
         ],
         instructions: `For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/starter">file</a>.`,
         vcsProvider: 'github',
