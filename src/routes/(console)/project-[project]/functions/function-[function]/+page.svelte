@@ -46,7 +46,8 @@
             width: 110,
             array: true,
             format: 'enum',
-            elements: ['ready', 'processing', 'building', 'waiting', 'cancelled', 'failed']
+            elements: ['ready', 'processing', 'building', 'waiting', 'cancelled', 'failed'],
+            filter: false
         },
         {
             id: 'type',
@@ -60,7 +61,8 @@
                 { value: 'manual', label: 'Manual' },
                 { value: 'cli', label: 'CLI' },
                 { value: 'vcs', label: 'Git' }
-            ]
+            ],
+            filter: false
         },
         {
             id: '$updatedAt',

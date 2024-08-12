@@ -72,13 +72,13 @@
                 setFilterData(filter, localTags);
             });
 
-            const createdAtTag = localTags.find((tag) =>
+            const buildTimeTag = localTags.find((tag) =>
                 tag.tag.includes(`**${buildTimeFilter.title}**`)
             );
-            if (createdAtTag) {
+            if (buildTimeTag) {
                 const now = new Date();
 
-                const diff = now.getTime() - new Date(createdAtTag.value as string).getTime();
+                const diff = now.getTime() - new Date(buildTimeTag.value as string).getTime();
                 const ranges = buildTimeCol.elements as { value: string; label: string }[];
                 const dateRange = ranges.reduce((prev, curr) => {
                     if (parseInt(curr.value) < diff && curr.value > prev.value) {
@@ -100,7 +100,7 @@
                 const ranges = sizeCol.elements as { value: string; label: string }[];
                 // find smallest range that is bigger than size
                 const sizeRange = ranges.reduce((prev, curr) => {
-                    if (parseInt(curr.value) > parseInt(size) && curr.value < prev.value) {
+                    if (parseInt(size) >= parseInt(curr.value)) {
                         return curr;
                     }
                     return prev;
@@ -156,7 +156,7 @@
             if (colId === buildTimeFilter.id) {
                 addBuildTimeFilter(value, colId);
             } else if (colId === sizeFilter.id) {
-                addBuildTimeFilter(value, colId);
+                addSizeFilter(value, colId);
             } else {
                 addFilter($columns, colId, operator, value, arrayValues);
             }
@@ -164,6 +164,9 @@
         queries.apply();
     }
 
+    function addSizeFilter(value: string, colId: string) {
+        addFilter($columns, colId, ValidOperators.GreaterThanOrEqual, value);
+    }
     function addBuildTimeFilter(value: string, colId: string) {
         const now = new Date();
         const isoValue = new Date(now.getTime() - parseInt(value));
@@ -172,7 +175,7 @@
     }
 </script>
 
-{#each [statusFilter, typeFilter] as filter}
+{#each [typeFilter] as filter}
     <DropList bind:show={filter.show} noArrow class="u-margin-block-start-16">
         <Pill button on:click={() => (filter.show = !filter.show)}>
             {#key filter.tag}
@@ -219,7 +222,7 @@
         </svelte:fragment>
     </DropList>
 {/each}
-{#each [buildTimeFilter, sizeFilter] as filter}
+{#each [sizeFilter] as filter}
     <DropList bind:show={filter.show} noArrow class="u-margin-block-start-16">
         <Pill button on:click={() => (filter.show = !filter.show)}>
             {#key filter.tag}
