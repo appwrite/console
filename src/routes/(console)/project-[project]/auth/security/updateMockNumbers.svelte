@@ -192,29 +192,18 @@
                                     <span class="icon-refresh" aria-hidden="true"></span>
                                 </button>
                             </InputOTP>
-                            <!-- <FormItemPart alignEnd>
+                            <FormItemPart>
                                 <Button
                                     text
                                     disabled={numbers.length === 0}
-                                    class="u-padding-4"
+                                    class={'u-padding-4 ' +
+                                        (index === 0 ? 'u-margin-block-start-24' : '')}
                                     on:click={() => {
                                         deletePhoneNumber(index);
                                     }}>
                                     <span class="icon-x" aria-hidden="true" />
                                 </Button>
-                            </FormItemPart> -->
-                            <div class="u-margin-block-start-24">
-                                <FormItemPart>
-                                    <Button
-                                        text
-                                        disabled={numbers.length === 0}
-                                        on:click={() => {
-                                            deletePhoneNumber(index);
-                                        }}>
-                                        <span class="icon-x" aria-hidden="true" />
-                                    </Button>
-                                </FormItemPart>
-                            </div>
+                            </FormItemPart>
                         </FormItem>
                     {/each}
                 </ul>
