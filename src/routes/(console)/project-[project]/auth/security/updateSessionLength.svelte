@@ -44,7 +44,7 @@
         <form class="form u-grid u-gap-16">
             <ul class="form-list is-multiple">
                 <InputNumber id="length" label="Length" bind:value={$value} min={0} />
-                <InputSelect id="period" label="Time Period" bind:value={$unit} {options} />
+                <InputSelect id="period" label="Time period" bind:value={$unit} {options} />
             </ul>
         </form>
     </svelte:fragment>

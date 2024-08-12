@@ -5,7 +5,7 @@
 </script>
 
 <p
-    class="helper u-margin-block-start-8 {classes}"
+    class="helper u-margin-block-start-8 {classes} u-align-baseline"
     class:u-color-text-info={type === 'info'}
     class:u-color-text-danger={type === 'error'}
     class:u-color-text-success={type === 'success'}
@@ -18,7 +18,14 @@
             class:icon-exclamation={type === 'warning'}
             aria-hidden="true" />
     {/if}
-    <span class="text">
+    <span class="text u-line-height-1-5">
         <slot />
     </span>
 </p>
+
+<style>
+    [class^='icon-']::before,
+    [class*=' icon-']::before {
+        vertical-align: baseline;
+    }
+</style>
