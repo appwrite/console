@@ -128,7 +128,7 @@
                                 fullWidth
                                 placeholder="Enter Phone Number"
                                 label="Phone Number"
-                                showLabel={index === 0 ? true : false}
+                                showLabel={index === 0}
                                 minlength={8}
                                 maxlength={16}
                                 required>
