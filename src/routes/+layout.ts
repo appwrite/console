@@ -33,12 +33,15 @@ export const load: LayoutLoad = async ({ depends, url, route }) => {
     }
 
     const isPublicRoute = route.id?.startsWith('/(public)');
-    if (url.pathname && !isPublicRoute) {
+    if (!isPublicRoute) {
         url.searchParams.set('redirect', url.pathname);
     }
 
     if (error.type === 'user_more_factors_required') {
-        if (url.pathname === `${base}/mfa`) return; // Ensure any previous account/organizations are cleared
+        if (url.pathname === `${base}/mfa`)
+            return {
+                mfaRequired: true
+            };
         redirect(303, withParams(`${base}/mfa`, url.searchParams));
     }
 

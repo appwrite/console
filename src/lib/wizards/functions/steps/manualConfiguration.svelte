@@ -31,7 +31,7 @@
                 <FormList>
                     <InputTextarea
                         label="Commands"
-                        placeholder="Enter a build commad (e.g. 'npm install')"
+                        placeholder="Enter a build command (e.g. 'npm install')"
                         id="build"
                         tooltip="Enter a single command or chain multiple commands with the && operator"
                         bind:value={$createFunction.commands} />

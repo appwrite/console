@@ -80,7 +80,7 @@
     <FormList gap={16}>
         <InputFile
             label="Gzipped code (tar.gz)"
-            allowedFileExtensions={['gz']}
+            allowedFileExtensions={['gz', 'tar']}
             bind:files
             required={true} />
 
@@ -115,7 +115,7 @@
                             bind:value={entrypoint} />
                         <InputTextarea
                             label="Commands"
-                            placeholder="Enter a build commad (e.g. 'npm install')"
+                            placeholder="Enter a build command (e.g. 'npm install')"
                             tooltip="Enter a single command or chain multiple commands with the && operator"
                             id="build"
                             bind:value={buildCommand} />

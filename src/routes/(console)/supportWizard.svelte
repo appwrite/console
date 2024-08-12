@@ -84,8 +84,8 @@
     $wizard.finalAction = handleSubmit;
 
     const workTimings = {
-        start: '09:00',
-        end: '17:00',
+        start: '16:00',
+        end: '00:00',
         startDay: 'Monday' as WeekDay,
         endDay: 'Friday' as WeekDay
     };
