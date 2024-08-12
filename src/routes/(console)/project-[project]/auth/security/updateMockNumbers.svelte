@@ -163,7 +163,7 @@
                                     <span class="icon-refresh" aria-hidden="true"></span>
                                 </button>
                             </InputOTP>
-                            <div class="u-margin-block-start-20">
+                            <div class="u-margin-block-start-24">
                                 <FormItemPart>
                                     <Button
                                         text
