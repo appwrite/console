@@ -10,7 +10,7 @@
     import { Dependencies } from '$lib/constants';
     import { organization } from '$lib/stores/organization';
     import { BillingPlan } from '$lib/constants';
-    import { isCloud } from '$lib/system';
+    import { isCloud, isSelfHosted } from '$lib/system';
     import MockNumbersLight from './mock-numbers-light.png';
     import MockNumbersDark from './mock-numbers-dark.png';
     import EmptyCardImageCloud from '$lib/components/emptyCardImageCloud.svelte';
@@ -24,7 +24,17 @@
     let projectId: string = $project.$id;
 
     $: initialNumbers = $project?.authMockNumbers?.map((num) => ({ ...num })) ?? [];
-    $: submitDisabled = JSON.stringify(numbers) === JSON.stringify(initialNumbers);
+    $: isSubmitDisabled = JSON.stringify(numbers) === JSON.stringify(initialNumbers);
+
+    let isComponentDisabled: boolean =
+        (false && isSelfHosted) || (isCloud && $organization?.billingPlan === BillingPlan.FREE);
+    let emptyStateTitle: string = isSelfHosted
+        ? 'Available on Appwrite Cloud'
+        : 'Upgrade to add mock phone numbers';
+    let emptyStateDescription: string = isSelfHosted
+        ? 'Sign up to Cloud to add mock phone numbers to your projects.'
+        : 'Upgrade to a Pro plan to add mock phone numbers to your project.';
+    let cta: string = isSelfHosted ? 'Sign up' : 'Upgrade plan';
 
     async function updateMockNumbers() {
         try {
@@ -71,15 +81,21 @@
 </script>
 
 <Form onSubmit={updateMockNumbers}>
-    <CardGrid>
-        <Heading tag="h6" size="7" id="variables">Mock Phone Numbers</Heading>
+    <CardGrid hideFooter={isComponentDisabled}>
+        <Heading tag="h6" size="7" id="variables">Mock phone numbers</Heading>
         <p>
-            Generate <b>fictional</b> numbers to simulate phone verification when testing demo accounts
-            for submitting your application to the App Store or Google Play. Learn more
+            Generate <b>fictional</b> numbers to simulate phone verification when testing demo
+            accounts for submitting your application to the App Store or Google Play.
+            <a
+                href="https://appwrite.io/docs/products/auth/security#mock-numbers"
+                target="_blank"
+                class="u-underline"
+                rel="noopener noreferrer">
+                Learn more</a>
         </p>
         <svelte:fragment slot="aside">
-            {#if isCloud && $organization?.billingPlan === BillingPlan.FREE}
-                <EmptyCardImageCloud source="email_signature_card" let:nextTier noAspectRatio>
+            {#if isComponentDisabled}
+                <EmptyCardImageCloud source="email_signature_card" noAspectRatio>
                     <svelte:fragment slot="image">
                         <div class=" is-only-mobile u-width-full-line u-height-100-percent">
                             {#if $app.themeInUse === 'dark'}
@@ -114,22 +130,35 @@
                             {/if}
                         </div>
                     </svelte:fragment>
-                    <svelte:fragment slot="title"
-                        >Upgrade to add mock phone numbers</svelte:fragment>
-                    Upgrade to a {nextTier} to add mock phone numbers to your project.
+                    <svelte:fragment slot="title">{emptyStateTitle}</svelte:fragment>
+                    {emptyStateDescription}
+                    <svelte:fragment let:source slot="cta">
+                        <Button
+                            class="u-margin-block-start-32"
+                            secondary
+                            fullWidth
+                            href="https://cloud.appwrite.io/register"
+                            external
+                            on:click={() => {
+                                trackEvent('click_cloud_signup', {
+                                    from: 'button',
+                                    source
+                                });
+                            }}>{cta}</Button>
+                    </svelte:fragment>
                 </EmptyCardImageCloud>
             {:else if numbers?.length > 0}
-                <ul class="form-list">
+                <ul class="form-list u-gap-8">
                     {#each numbers as number, index}
                         <FormItem isMultiple>
                             <InputPhone
                                 id={`key-${index}`}
                                 bind:value={number.phone}
                                 fullWidth
-                                placeholder="Enter Phone Number"
-                                label="Phone Number"
+                                placeholder="Enter phone number"
+                                label="Phone number"
                                 showLabel={index === 0 ? true : false}
-                                minlength={8}
+                                minlength={9}
                                 maxlength={16}
                                 required>
                                 <button
@@ -147,10 +176,10 @@
                                 bind:value={number.otp}
                                 fullWidth
                                 placeholder="Enter value"
-                                label="Verification Code"
+                                label="Verification code"
                                 maxlength={6}
                                 pattern={'^[0-9]{6}$'}
-                                patternError="Value must be a 6 digit number"
+                                patternError="The value must contain 6 digits"
                                 showLabel={index === 0 ? true : false}
                                 required>
                                 <button
@@ -167,6 +196,7 @@
                                 <Button
                                     text
                                     disabled={numbers.length === 0}
+                                    class="u-padding-4"
                                     on:click={() => {
                                         deletePhoneNumber(index);
                                     }}>
@@ -202,7 +232,7 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={submitDisabled} submit>Update</Button>
+            <Button disabled={isSubmitDisabled} submit>Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>

@@ -12,11 +12,11 @@
 
 <Container>
     <UpdateUsersLimit />
-    <UpdateMockNumbers />
     <UpdateSessionLength />
     <UpdateSessionsLimit />
     <UpdatePasswordHistory />
     <UpdatePasswordDictionary />
     <UpdatePersonalDataCheck />
     <UpdateSessionAlerts />
+    <UpdateMockNumbers />
 </Container>
