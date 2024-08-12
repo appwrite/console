@@ -17,10 +17,10 @@
             loading = true;
         }, 1000);
         try {
-            const template = await loadEmailTemplate(projectId, 'mfaAdded', locale);
+            const template = await loadEmailTemplate(projectId, 'mfaDisabled', locale);
             emailTemplate.set(template);
             $baseEmailTemplate = { ...$emailTemplate };
-            trackEvent(Submit.EmailChangeLocale, { locale, type: 'mfaAdded' });
+            trackEvent(Submit.EmailChangeLocale, { locale, type: 'mfaDisabled' });
         } catch (error) {
             trackError(error, Submit.EmailChangeLocale);
             addNotification({

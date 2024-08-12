@@ -60,8 +60,8 @@
         EmailTemplateLocale
     } from '@appwrite.io/console';
     import Email2FaTemplate from './email2FATemplate.svelte';
-    import EmailMfaCreatedTemplate from './emailMfaCreatedTemplate.svelte';
-    import EmailMfaRemovedTemplate from './emailMfaRemovedTemplate.svelte';
+    import EmailMfaEnabledTemplate from './emailMfaEnabledTemplate.svelte';
+    import EmailMfaDisabledTemplate from './emailMfaDisabledTemplate.svelte';
 
     const projectId = $page.params.project;
 
@@ -71,8 +71,8 @@
     $: emailResetPassword = emailOpen === 'recovery';
     $: emailInviteUser = emailOpen === 'invitation';
     $: email2FAVerificationOpen = emailOpen === 'mfaChallenge';
-    $: emailMfaCreated = emailOpen === 'mfaCreated';
-    $: emailMFARemovedOpen = emailOpen === 'mfaRemoved';
+    $: emailMfaEnabled = emailOpen === 'mfaEnabled';
+    $: emailMFADisabledOpen = emailOpen === 'mfaDisabled';
 
     // let smsOpen = 'verification';
     // $: smsVerificationOpen = smsOpen === 'verification';
@@ -194,24 +194,24 @@
                     <Email2FaTemplate />
                 </CollapsibleItem>
                 <CollapsibleItem
-                    bind:open={emailMfaCreated}
+                    bind:open={emailMfaEnabled}
                     on:click={(e) => {
                         e.preventDefault();
-                        openEmail('mfaCreated');
+                        openEmail('mfaEnabled');
                     }}>
-                    <svelte:fragment slot="title">MFA authenticator added</svelte:fragment>
-                    <p class="text">Send a email to a user when an MFA authenticator is added.</p>
-                    <EmailMfaCreatedTemplate />
+                    <svelte:fragment slot="title">MFA enabled</svelte:fragment>
+                    <p class="text">Send an email to a user when MFA is enabled.</p>
+                    <EmailMfaEnabledTemplate />
                 </CollapsibleItem>
                 <CollapsibleItem
-                    bind:open={emailMFARemovedOpen}
+                    bind:open={emailMFADisabledOpen}
                     on:click={(e) => {
                         e.preventDefault();
-                        openEmail('mfaRemoved');
+                        openEmail('mfaDisabled');
                     }}>
-                    <svelte:fragment slot="title">MFA authenticator removed</svelte:fragment>
-                    <p class="text">Send a email to a user when an MFA authenticator is removed.</p>
-                    <EmailMfaRemovedTemplate />
+                    <svelte:fragment slot="title">MFA disabled</svelte:fragment>
+                    <p class="text">Send an email to a user when MFA is disabled.</p>
+                    <EmailMfaDisabledTemplate />
             </CollapsibleItem>
             </Collapsible>
         </svelte:fragment>
