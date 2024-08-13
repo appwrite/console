@@ -55,18 +55,10 @@
                 $templateConfig.repositoryBehaviour === 'manual'
                     ? undefined
                     : $choices.rootDir || undefined,
-                $templateConfig.repositoryBehaviour === 'manual'
-                    ? undefined
-                    : $template.providerRepositoryId,
-                $templateConfig.repositoryBehaviour === 'manual'
-                    ? undefined
-                    : $template.providerOwner,
-                $templateConfig.repositoryBehaviour === 'manual'
-                    ? undefined
-                    : runtimeDetail.providerRootDirectory,
-                $templateConfig.repositoryBehaviour === 'manual'
-                    ? undefined
-                    : $template.providerBranch
+                $template.providerRepositoryId || undefined,
+                $template.providerOwner || undefined,
+                runtimeDetail.providerRootDirectory || undefined,
+                $template.providerBranch || undefined
             );
 
             if ($templateConfig.variables) {
