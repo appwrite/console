@@ -19,7 +19,7 @@
             The message has been processed with errors. Please refer to the logs below for more
             information.
         </p>
-        <div style="max-inline-size: 524px" class="wrapped-code-block">
+        <div style="max-inline-size: 524px" class="wrapped-code-block-for-multi-line">
             <Code language="html" code={errors.join('\n')} withCopy allowScroll />
         </div>
     </div>
@@ -30,7 +30,8 @@
 </Modal>
 
 <style>
-    .wrapped-code-block :global(code) {
+    /* Certain errors are in a single line; this makes them multi-line for better readability. */
+    .wrapped-code-block-for-multi-line :global(code) {
         white-space: pre-wrap;
     }
 </style>
