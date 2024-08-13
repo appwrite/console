@@ -168,15 +168,17 @@
                                     Cancel
                                 </DropListItem>
                             {/if}
-                            <DropListItem
-                                icon="trash"
-                                on:click={() => {
-                                    selectedDeployment = deployment;
-                                    showDropdown = [];
-                                    showDelete = true;
-                                }}>
-                                Delete
-                            </DropListItem>
+                            {#if deployment.status !== 'building' && deployment.status !== 'processing'}
+                                <DropListItem
+                                    icon="trash"
+                                    on:click={() => {
+                                        selectedDeployment = deployment;
+                                        showDropdown = [];
+                                        showDelete = true;
+                                    }}>
+                                    Delete
+                                </DropListItem>
+                            {/if}
                         </svelte:fragment>
                     </DropList>
                 </TableCell>
