@@ -1,5 +1,6 @@
 <script lang="ts">
     import { afterNavigate } from '$app/navigation';
+    import { Submit, trackEvent } from '$lib/actions/analytics';
     import { DropList, DropListItem } from '$lib/components';
     import {
         addFilter,
@@ -162,6 +163,11 @@
             }
         }
         queries.apply();
+        trackEvent(Submit.ApplyQuickFilter, {
+            source: 'function_deployments',
+            column: colTitle,
+            value: value || arrayValues.join(', ')
+        });
     }
 
     function addSizeFilter(value: string, colId: string) {
@@ -177,7 +183,11 @@
 
 {#each [typeFilter] as filter}
     <DropList bind:show={filter.show} noArrow class="u-margin-block-start-16">
-        <Pill button on:click={() => (filter.show = !filter.show)}>
+        <Pill
+            button
+            on:click={() => (filter.show = !filter.show)}
+            event="apply_quick_filter"
+            eventData={{ source: 'function_deployments', column: filter.title }}>
             {#key filter.tag}
                 <span use:tagFormat>
                     {filter?.tag ?? filter.title}
@@ -224,7 +234,11 @@
 {/each}
 {#each [sizeFilter] as filter}
     <DropList bind:show={filter.show} noArrow class="u-margin-block-start-16">
-        <Pill button on:click={() => (filter.show = !filter.show)}>
+        <Pill
+            button
+            on:click={() => (filter.show = !filter.show)}
+            event="apply_quick_filter"
+            eventData={{ source: 'function_deployments', column: filter.title }}>
             {#key filter.tag}
                 <span use:tagFormat>
                     {filter?.tag ?? filter.title}
