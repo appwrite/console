@@ -31,7 +31,9 @@
 
 <style>
     /* Certain errors are in a single line; this makes them multi-line for better readability. */
+    .wrapped-code-block-for-multi-line :global(pre),
     .wrapped-code-block-for-multi-line :global(code) {
         white-space: pre-wrap;
+        padding: unset !important;
     }
 </style>
