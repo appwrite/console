@@ -165,7 +165,7 @@
         queries.apply();
         trackEvent(Submit.ApplyQuickFilter, {
             source: 'function_deployments',
-            column: colTitle,
+            column: colId,
             value: value || arrayValues.join(', ')
         });
     }
