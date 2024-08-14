@@ -33,10 +33,9 @@
             /* can we improve this? */
             const collectionPromises = $collections.collections.map(async (collection) => {
                 const { total: totalDocuments } = await sdk.forProject.databases.listDocuments(
-                    databaseId, collection.$id,
-                    [
-                        Query.limit(1)
-                    ]
+                    databaseId,
+                    collection.$id,
+                    [Query.limit(1)] /* limit 1, just to get the total count */
                 );
 
                 return {
@@ -136,10 +135,10 @@
         <Button
             secondary
             submit
-            disabled={
-            isLoadingDocumentsCount ||
-            ($collections.total > 0 && !error && (!databaseName || databaseName !== $database.name))
-        }>
+            disabled={isLoadingDocumentsCount ||
+                ($collections.total > 0 &&
+                    !error &&
+                    (!databaseName || databaseName !== $database.name))}>
             Delete
         </Button>
     </svelte:fragment>

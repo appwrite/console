@@ -9,7 +9,7 @@
         TableCellText,
         TableHeader,
         TableRowLink,
-        TableScroll,
+        TableScroll
     } from '$lib/elements/table';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import type { PageData } from './$types';
