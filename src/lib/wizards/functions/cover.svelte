@@ -7,7 +7,7 @@
     ) {
         const variables: Record<string, string> = {};
         template.variables.forEach((variable) => {
-            variables[variable.name] = variable.placeholder;
+            variables[variable.name] = variable.value ?? '';
         });
 
         templateStore.set(template);
@@ -43,7 +43,7 @@
     import { tooltip } from '$lib/actions/tooltip';
     import { isSelfHosted } from '$lib/system';
     import { consoleVariables } from '$routes/(console)/store';
-    import { templatesListWithoutStarter, starterTemplate } from '$lib/stores/templates';
+    import { featuredTemplatesList, starterTemplate } from '$lib/stores/templates';
 
     const isVcsEnabled = $consoleVariables?._APP_VCS_ENABLED === true;
     let hasInstallations: boolean;
@@ -225,7 +225,7 @@
                         </p>
 
                         <ul class="clickable-list u-margin-block-start-16">
-                            {#await $templatesListWithoutStarter}
+                            {#await $featuredTemplatesList}
                                 {#each Array(3) as _i}
                                     <li>
                                         <button

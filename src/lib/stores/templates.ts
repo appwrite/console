@@ -7,9 +7,11 @@ export const templatesList = derived(
     async ($page) => (await $page.data.templatesList) as Models.TemplateFunctionList
 );
 
-export const templatesListWithoutStarter = derived(templatesList, async ($templatesList) => {
+export const featuredTemplatesList = derived(templatesList, async ($templatesList) => {
     return {
-        templates: (await $templatesList).templates.filter((template) => template.id !== 'starter')
+        templates: (await $templatesList).templates
+            .filter((template) => template.id !== 'starter')
+            .slice(0, 2)
     };
 });
 
