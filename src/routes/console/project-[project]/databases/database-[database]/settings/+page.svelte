@@ -11,7 +11,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import Delete from '../delete.svelte';
-    import { database } from '../store';
+    import { database, collections } from '../store';
 
     let showDelete = false;
     let showError: false | 'name' | 'email' | 'password' = false;
@@ -93,14 +93,14 @@
             </div>
 
             <p>
-                The database will be permanently deleted, including all data associated with this
-                team. This action is irreversible.
+                The database will be permanently deleted, including all the collections within it.
+                This action is irreversible.
             </p>
             <svelte:fragment slot="aside">
                 <BoxAvatar>
                     <svelte:fragment slot="title">
                         <h6 class="u-bold u-trim-1">{$database.name}</h6>
-                        <span>Last updated: {toLocaleDateTime($database.$updatedAt)}</span>
+                        <span>{$collections.total} Collections</span>
                     </svelte:fragment>
                 </BoxAvatar>
             </svelte:fragment>
