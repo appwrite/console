@@ -68,6 +68,26 @@ campaigns
             ]
         }
     })
+    .set('Free100', {
+        template: 'review',
+        title: 'Get started with $100 credits',
+        description:
+            'Get $100 in Cloud credits when you upgrade or create an organization with a Pro plan.',
+        onlyNewOrgs: true,
+        data: {
+            cta: 'Get everything out of Cloud with Pro',
+            claimed: 'Your credits will be valid for 3 months.',
+            unclaimed: 'Apply your code to join Appwrite Pro.',
+            reviews: [
+                {
+                    name: 'David Foster',
+                    img: '1.jpeg',
+                    desc: 'Managing director',
+                    review: 'We really loved working with Appwrite for launching our bootstrapped "Open Mind" App. It was saving us a lot of money in comparison to Firebase since the amount of users grew quite fast and we needed a quick switch.'
+                }
+            ]
+        }
+    })
     .set('JSMastery', {
         template: 'review',
         title: 'Claim your JavaScript Mastery $50 credits.',

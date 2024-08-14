@@ -319,5 +319,6 @@ export enum Submit {
     MessagingTopicUpdateName = 'submit_messaging_topic_update_name',
     MessagingTopicUpdatePermissions = 'submit_messaging_topic_update_permissions',
     MessagingTopicSubscriberAdd = 'submit_messaging_topic_subscriber_add',
-    MessagingTopicSubscriberDelete = 'submit_messaging_topic_subscriber_delete'
+    MessagingTopicSubscriberDelete = 'submit_messaging_topic_subscriber_delete',
+    ApplyQuickFilter = 'submit_apply_quick_filter'
 }
