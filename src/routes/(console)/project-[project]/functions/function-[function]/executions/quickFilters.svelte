@@ -1,5 +1,6 @@
 <script lang="ts">
     import { afterNavigate } from '$app/navigation';
+    import { Submit, trackEvent } from '$lib/actions/analytics';
     import { DropList, DropListItem } from '$lib/components';
     import {
         addFilter,
@@ -163,6 +164,11 @@
             }
         }
         queries.apply();
+        trackEvent(Submit.ApplyQuickFilter, {
+            source: 'function_executions',
+            column: colId,
+            value: value || arrayValues.join(', ')
+        });
     }
 
     function addStatusCodeFilter(value: string, colId: string) {
@@ -179,7 +185,11 @@
 
 {#each [statusFilter, triggerFilter, methodFilter] as filter}
     <DropList bind:show={filter.show} noArrow class="u-margin-block-start-16">
-        <Pill button on:click={() => (filter.show = !filter.show)}>
+        <Pill
+            button
+            on:click={() => (filter.show = !filter.show)}
+            event="apply_quick_filter"
+            eventData={{ source: 'function_execution', column: filter.title }}>
             {#key filter.tag}
                 <span use:tagFormat>
                     {filter?.tag ?? filter.title}
@@ -226,7 +236,11 @@
 {/each}
 {#each [statusCodeFilter, createdAtFilter] as filter}
     <DropList bind:show={filter.show} noArrow class="u-margin-block-start-16">
-        <Pill button on:click={() => (filter.show = !filter.show)}>
+        <Pill
+            button
+            on:click={() => (filter.show = !filter.show)}
+            event="apply_quick_filter"
+            eventData={{ source: 'function_execution', column: filter.title }}>
             {#key filter.tag}
                 <span use:tagFormat>
                     {filter?.tag ?? filter.title}

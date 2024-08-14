@@ -12,6 +12,7 @@
     export let external = false;
     export let href: string = null;
     export let event: string = null;
+    export let eventData: Record<string, unknown> = {};
     export let style = '';
     let classes = '';
     export { classes as class };
@@ -22,7 +23,8 @@
         }
 
         trackEvent(`click_${event}`, {
-            from: 'tag'
+            from: 'tag',
+            ...eventData
         });
     }
 </script>
