@@ -116,6 +116,6 @@
         <slot />
     </div>
     {#if error}
-        <Helper type="warning">{error}</Helper>
+        <Helper type="warning" class="u-line-height-1">{error}</Helper>
     {/if}
 </svelte:component>

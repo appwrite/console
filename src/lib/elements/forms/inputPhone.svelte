@@ -19,7 +19,7 @@
     export let popoverProps: Record<string, unknown> = {};
     export let fullWidth = false;
 
-    const pattern = String.raw`^\+?[1-9]\d{1,14}$`;
+    const pattern = String.raw`^\+[1-9]\d{1,14}$`;
 
     let element: HTMLInputElement;
     let error: string;
@@ -40,7 +40,12 @@
         }
 
         if (element.validity.patternMismatch) {
-            error = "Allowed characters: leading '+' and maximum of 15 digits";
+            error = `Allowed characters: leading '+' and maximum of ${maxlength - 1} digits`;
+            return;
+        }
+
+        if (element.validity.tooShort) {
+            error = `The value must contain leading ‘+’ and at least ${minlength - 1} digits `;
             return;
         }
 

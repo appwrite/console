@@ -20,11 +20,14 @@
     import { writable } from 'svelte/store';
     import type { Column } from '$lib/helpers/types';
     import Table from './table.svelte';
-    import { Filters, TagList } from '$lib/components/filters';
+    import { Filters } from '$lib/components/filters';
     import { queries, tags } from '$lib/components/filters/store';
     import { View } from '$lib/helpers/load';
     import DeploymentCard from './deploymentCard.svelte';
     import RedeployModal from './redeployModal.svelte';
+    import QuickFilters from './quickFilters.svelte';
+    import { Pill } from '$lib/elements';
+    import { onMount } from 'svelte';
 
     export let data;
 
@@ -43,7 +46,8 @@
             width: 110,
             array: true,
             format: 'enum',
-            elements: ['ready', 'processing', 'building', 'waiting', 'cancelled', 'failed']
+            elements: ['ready', 'processing', 'building', 'waiting', 'cancelled', 'failed'],
+            filter: false
         },
         {
             id: 'type',
@@ -73,16 +77,56 @@
             title: 'Build time',
             type: 'integer',
             show: true,
-            width: 80
+            width: 80,
+            elements: [
+                {
+                    value: 15,
+                    label: 'more than 15 seconds'
+                },
+                {
+                    value: 60,
+                    label: 'more than 1 minute'
+                },
+                {
+                    value: 5 * 60,
+                    label: 'more than 5 minutes'
+                }
+            ],
+            filter: false
         },
         {
             id: 'size',
             title: 'Size',
             type: 'integer',
             show: true,
-            width: 80
+            width: 80,
+            elements: [
+                {
+                    value: 2 * 1000 * 1000,
+                    label: 'more than 2MB'
+                },
+                {
+                    value: 10 * 1000 * 1000,
+                    label: 'more than 10MB'
+                },
+                {
+                    value: 50 * 1000 * 1000,
+                    label: 'more than 50MB'
+                }
+            ]
         }
     ]);
+
+    let showMobileFilters = false;
+
+    onMount(() => {
+        data?.query ? (showMobileFilters = true) : (showMobileFilters = false);
+    });
+
+    function clearAll() {
+        queries.clearAll();
+        queries.apply();
+    }
 </script>
 
 <Container>
@@ -194,8 +238,7 @@
             <Heading tag="h3" size="7">All deployments</Heading>
             <div class="u-flex u-main-space-between is-not-mobile u-margin-block-start-16">
                 <div class="u-flex u-gap-8 u-cross-center u-flex-wrap">
-                    <TagList />
-
+                    <QuickFilters {columns} />
                     <Filters query={data.query} {columns} let:disabled let:toggle singleCondition>
                         <div class="u-flex u-gap-4">
                             <Button
@@ -205,22 +248,13 @@
                                 ariaLabel="open filter"
                                 noMargin={!$tags?.length}>
                                 <span class="icon-filter-line" />
-                                {#if !$tags?.length}
-                                    <span class="text">Filters</span>
-                                {/if}
+                                <span class="text">More filters</span>
                             </Button>
                             {#if $tags?.length}
                                 <div
                                     style="flex-basis:1px; background-color:hsl(var(--color-border)); width: 1px">
                                 </div>
-                                <Button
-                                    text
-                                    on:click={() => {
-                                        queries.clearAll();
-                                        queries.apply();
-                                    }}>
-                                    Clear all
-                                </Button>
+                                <Button text on:click={clearAll}>Clear all</Button>
                             {/if}
                         </div>
                     </Filters>
@@ -229,19 +263,40 @@
                     <ViewSelector view={View.Table} {columns} hideView allowNoColumns hideText />
                 </div>
             </div>
-            <div class="u-flex u-main-space-between u-margin-block-start-16 is-only-mobile">
-                <Filters query={data.query} {columns}>
-                    <svelte:fragment slot="mobile" let:disabled let:toggle>
-                        <Button text on:click={toggle} {disabled} ariaLabel="open filter" noMargin>
-                            <span class="icon-filter-line" />
-                            <span class="text">Filters</span>
-                            {#if $tags?.length}
-                                <span class="inline-tag">{$tags?.length}</span>
-                            {/if}
-                        </Button>
-                    </svelte:fragment>
-                </Filters>
-                <ViewSelector view={View.Table} {columns} hideView allowNoColumns />
+            <div class="is-only-mobile">
+                <div class="u-flex u-main-space-between u-margin-block-start-16">
+                    <Button
+                        text
+                        on:click={() => (showMobileFilters = !showMobileFilters)}
+                        ariaLabel="toggle filters"
+                        noMargin>
+                        <span class="icon-filter-line" />
+                        <span class="text">Filters</span>
+                    </Button>
+
+                    <ViewSelector view={View.Table} {columns} hideView allowNoColumns />
+                </div>
+                <div
+                    class:u-hide={!showMobileFilters}
+                    class:u-flex={showMobileFilters}
+                    class=" u-gap-8 u-flex-wrap u-margin-block-start-16">
+                    <QuickFilters {columns} />
+
+                    <Filters query={data.query} {columns} clearOnClick>
+                        <svelte:fragment slot="mobile" let:disabled let:toggle>
+                            <Pill
+                                button
+                                on:click={toggle}
+                                {disabled}
+                                class="u-flex u-gap-4 u-cross-center"
+                                style="--p-tag-content-height: auto">
+                                <!-- <span class="icon-filter-line" /> -->
+                                <span class="text">More filters</span>
+                                <span class="icon-cheveron-down" />
+                            </Pill>
+                        </svelte:fragment>
+                    </Filters>
+                </div>
             </div>
         </div>
         {#if $deploymentList.total}
@@ -254,12 +309,7 @@
                         <p>There are no deployments that match your filters.</p>
                     </div>
                     <div class="u-flex u-gap-16 common-section u-main-center">
-                        <Button
-                            secondary
-                            on:click={() => {
-                                queries.clearAll();
-                                queries.apply();
-                            }}>Clear filters</Button>
+                        <Button secondary on:click={clearAll}>Clear filters</Button>
                     </div>
                 </div>
             </EmptySearch>
