@@ -79,7 +79,7 @@
                             }}
                             on:connect={connect} />
                     </div>
-                    {#if isSelfHosted && isVcsEnabled}
+                    {#if isSelfHosted && !isVcsEnabled}
                         <div
                             class="overlay u-flex-vertical u-position-absolute u-height-100-percent u-width-full-line u-z-index-1 u-text-center u-inset-0"
                             style="border-radius: var(--border-radius-medium)">
