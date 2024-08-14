@@ -159,6 +159,9 @@
                                             </div>
                                             <div class="body-text-2">
                                                 {runtimeDetail.name}
+                                                {#if runtimeDetail.name.toLowerCase() === 'go'}
+                                                    <span class="inline-tag">New</span>
+                                                {/if}
                                             </div>
                                         </button>
                                     </li>
@@ -283,12 +286,17 @@
     </div>
 </WizardCover>
 
-<style>
+<style lang="scss">
     .git-container .overlay {
         background: linear-gradient(
             0,
             hsl(var(--p-card-bg-color)) 68.91%,
             hsl(var(--p-card-bg-color) / 0.5) 92.8%
         );
+    }
+
+    .inline-tag {
+        line-height: 140%;
+        font-weight: 500;
     }
 </style>
