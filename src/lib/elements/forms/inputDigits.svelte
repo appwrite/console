@@ -2,6 +2,8 @@
     import { onMount } from 'svelte';
     import { FormItem } from '.';
     import { createPinInput, melt } from '@melt-ui/svelte';
+    import { page } from '$app/stores';
+    import { sleep } from '$lib/helpers/promises';
 
     export let length: number = 6;
     export let value: string = '';
@@ -38,7 +40,13 @@
         }
     });
 
-    onMount(() => {
+    async function focusDigitInputs() {
+        /**
+         * this is to re-focus the inputs that feels natural
+         * as the blinking of the cursor takes around 250ms.
+         */
+        await sleep(250);
+
         const interval = setInterval(() => {
             const input = element.querySelector('input');
             if (element) {
@@ -48,6 +56,18 @@
                 clearInterval(interval);
             }
         }, 10);
+    }
+
+    onMount(() => {
+        /**
+         * Inputs will lose focus on any change.
+         * Changes include the url & query params like `?redirect=`.
+         *
+         * This subscription ensures that focus is restored when needed.
+         */
+        return page.subscribe(() => {
+            focusDigitInputs();
+        });
     });
 </script>
 
