@@ -72,7 +72,7 @@ campaigns
         template: 'review',
         title: 'Get started with $100 credits',
         description:
-            "Get $100 in Cloud credits when you upgrade or create an organization with a Pro plan.",
+            'Get $100 in Cloud credits when you upgrade or create an organization with a Pro plan.',
         onlyNewOrgs: true,
         data: {
             cta: 'Get everything out of Cloud with Pro',
