@@ -15,8 +15,6 @@ export type Feedback = {
 
 export type FeedbackData = {
     message: string;
-    name?: string;
-    email?: string;
     value?: number;
 };
 
@@ -47,8 +45,6 @@ export const selectedFeedback = writable<FeedbackOption>();
 function createFeedbackDataStore() {
     const { set, subscribe, update } = writable<FeedbackData>({
         message: '',
-        name: '',
-        email: '',
         value: null
     });
     return {
@@ -58,8 +54,6 @@ function createFeedbackDataStore() {
         reset: () => {
             update((feedbackData) => {
                 feedbackData.message = '';
-                feedbackData.name = '';
-                feedbackData.email = '';
                 feedbackData.value = null;
                 return feedbackData;
             });
@@ -113,8 +107,10 @@ function createFeedbackStore() {
         submitFeedback: async (
             subject: string,
             message: string,
-            firstname?: string,
+            name?: string,
             email?: string,
+            billingPlan?: string,
+            currentPage?: string,
             value?: number
         ) => {
             if (!VARS.GROWTH_ENDPOINT) return;
@@ -127,7 +123,9 @@ function createFeedbackStore() {
                     subject,
                     message,
                     email,
-                    firstname: firstname ? firstname : undefined,
+                    billingPlan,
+                    currentPage,
+                    name: name ? name : undefined,
                     customFields: value ? [{ id: '40655', value }] : undefined
                 })
             });
