@@ -34,7 +34,7 @@
             title: 'Status',
             type: 'enum',
             show: true,
-            width: 110,
+            width: 130,
             array: true,
             format: 'enum',
             elements: ['completed', 'failed', 'waiting', 'scheduled', 'processing', 'cancelled']

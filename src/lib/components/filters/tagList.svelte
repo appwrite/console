@@ -9,8 +9,9 @@
             content: tag?.value?.toString(),
             disabled: Array.isArray(tag.value) ? tag.value?.length < 3 : true
         }}
+        type="button"
         class="tag"
-        on:click={() => {
+        on:click|preventDefault={() => {
             queries.removeFilter(tag);
             queries.apply();
         }}>

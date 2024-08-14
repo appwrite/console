@@ -27,6 +27,7 @@
     export let autofocus = false;
     export let interactiveOutput = false;
     export let interactiveEmpty = false;
+    export let hideEmpty = false;
     // stretch is used inside of a flex container to give the element flex:1
     export let stretch = true;
     export let search = '';
@@ -52,7 +53,8 @@
     });
 
     function handleInput() {
-        hasFocus = true;
+        if (hideEmpty && !options?.length) hasFocus = false;
+        else hasFocus = true;
     }
 
     function handleKeydown(event: KeyboardEvent) {

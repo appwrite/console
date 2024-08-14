@@ -129,7 +129,8 @@
                             use:tooltip={{
                                 content: `Scheduled to execute on ${toLocaleDateTime(execution.scheduledAt)}`,
                                 disabled:
-                                    !execution?.scheduledAt || execution.status !== 'scheduled'
+                                    !execution?.scheduledAt || execution.status !== 'scheduled',
+                                maxWidth: 180
                             }}>
                             <Pill
                                 warning={execution.status === 'waiting' ||

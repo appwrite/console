@@ -174,10 +174,7 @@
 
 <div class="is-only-mobile">
     <slot name="mobile" {disabled} toggle={toggleMobileModal}>
-        <Button
-            secondary
-            on:click={() => (showFiltersMobile = !showFiltersMobile)}
-            {fullWidthMobile}>
+        <Button secondary on:click={toggleMobileModal} {fullWidthMobile}>
             <i class="icon-filter u-opacity-50" />
             Filters
             {#if applied > 0}
