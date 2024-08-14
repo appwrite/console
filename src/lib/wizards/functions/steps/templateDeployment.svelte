@@ -2,7 +2,17 @@
     import { LabelCard } from '$lib/components';
     import { FormList } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
+    import { consoleVariables } from '$routes/(console)/store';
+    import { onMount } from 'svelte';
     import { templateConfig, templateStepsComponents } from '../store';
+
+    const isVcsEnabled = $consoleVariables?._APP_VCS_ENABLED === true;
+
+    onMount(() => {
+        if (!isVcsEnabled) {
+            $templateConfig.repositoryBehaviour = 'manual';
+        }
+    });
 
     async function beforeSubmit() {
         if (!$templateConfig.repositoryBehaviour) {
@@ -30,14 +40,19 @@
 
     <h3>Automatic with Git <span class="inline-code">Recommended</span></h3>
     <FormList gap={16} class="u-margin-block-start-8">
-        <LabelCard name="behaviour" value="new" bind:group={$templateConfig.repositoryBehaviour}>
+        <LabelCard
+            name="behaviour"
+            value="new"
+            bind:group={$templateConfig.repositoryBehaviour}
+            disabled={!isVcsEnabled}>
             <svelte:fragment slot="title">Create a new repository</svelte:fragment>
             Clone the template to a newly created repository in your organization.
         </LabelCard>
         <LabelCard
             name="behaviour"
             value="existing"
-            bind:group={$templateConfig.repositoryBehaviour}>
+            bind:group={$templateConfig.repositoryBehaviour}
+            disabled={!isVcsEnabled}>
             <svelte:fragment slot="title">Add to existing repository</svelte:fragment>
             Clone the template to an existing repository in your organization.
         </LabelCard>

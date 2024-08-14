@@ -1,26 +1,20 @@
 <script lang="ts">
-    import { Alert, Card, Collapsible, Heading } from '$lib/components';
+    import { Card, Collapsible, Heading } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import { Container, ContainerButton } from '$lib/layout';
-    import { isSelfHosted } from '$lib/system';
+    import { isCloud } from '$lib/system';
     import AppwriteLogoDark from '$lib/images/appwrite-logo-dark.svg';
     import AppwriteLogoLight from '$lib/images/appwrite-logo-light.svg';
     import { connectTemplate } from '$lib/wizards/functions/cover.svelte';
-    import { consoleVariables } from '$routes/(console)/store';
     import { template } from './store';
     import { app } from '$lib/stores/app';
     import { isServiceLimited } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { functionsList } from '../../store';
 
-    const isVcsEnabled = $consoleVariables?._APP_VCS_ENABLED === true;
-
-    $: buttonDisabled = isServiceLimited(
-        'functions',
-        $organization?.billingPlan,
-        $functionsList?.total
-    );
+    $: buttonDisabled =
+        isCloud && isServiceLimited('functions', $organization?.billingPlan, $functionsList?.total);
 </script>
 
 <Container>
@@ -74,23 +68,7 @@
                     </span>
                 </Heading>
                 <p class="u-margin-block-start-24">{$template.tagline}</p>
-                {#if isSelfHosted && !isVcsEnabled}
-                    <Alert class="u-margin-block-start-24" type="info">
-                        <svelte:fragment slot="title">
-                            Cloning templates to a self-hosted instance
-                        </svelte:fragment>
-                        In order to clone a template to a locally hosted Appwrite project, you must set
-                        up a Git integration and configure your environment variables.
-                        <svelte:fragment slot="buttons">
-                            <Button
-                                href="https://appwrite.io/docs/advanced/self-hosting/functions"
-                                external
-                                text>
-                                Learn more
-                            </Button>
-                        </svelte:fragment>
-                    </Alert>
-                {/if}
+
                 <div class="u-flex u-gap-16 u-main-end u-margin-block-start-24 u-flex-wrap">
                     <Button
                         text
@@ -101,7 +79,7 @@
                     </Button>
                     <ContainerButton
                         title="functions"
-                        disabled={buttonDisabled || (isSelfHosted && !isVcsEnabled)}
+                        disabled={buttonDisabled}
                         buttonMethod={() => connectTemplate($template)}
                         showIcon={false}
                         buttonText="Create function"
