@@ -125,7 +125,7 @@
                                 {/if}
                             </TableCell>
                             <TableCellText title="due">
-                                {formatCurrency(invoice.amount)}
+                                {formatCurrency(invoice.grossAmount)}
                             </TableCellText>
                             <TableCell showOverflow right>
                                 <DropList
