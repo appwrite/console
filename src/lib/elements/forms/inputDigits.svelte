@@ -40,6 +40,20 @@
         }
     });
 
+    /**
+     * Clears the input fields and moves the focus to the first input.
+     * Usually used when resetting fields on auth fails, etc.
+     */
+    export function clearInputsAndRefocus() {
+        value = '';
+
+        if (element) {
+            const inputs = element.querySelectorAll('input');
+            inputs.forEach(input => input.value = '');
+            if (autofocus) inputs[0].focus();
+        }
+    }
+
     async function focusDigitInputs() {
         /**
          * this is to re-focus the inputs that feels natural
@@ -50,7 +64,14 @@
         const interval = setInterval(() => {
             const input = element.querySelector('input');
             if (element) {
-                if (input && autofocus) {
+                /**
+                 * Ensure the value is empty before refocusing.
+                 *
+                 * If the value is not cleared and the form is submitted,
+                 * the cursor will move to the first field while the last field remains filled.
+                 * This would cause the focus to appear visually odd and very inconsistent.
+                 */
+                if (input && autofocus && value === '') {
                     input.focus();
                 }
                 clearInterval(interval);
