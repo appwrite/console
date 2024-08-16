@@ -27,8 +27,7 @@
     $: isSubmitDisabled = JSON.stringify(numbers) === JSON.stringify(initialNumbers);
 
     // temporarily enable the component for design review
-    let isComponentDisabled: boolean =
-        (false && isSelfHosted) || (isCloud && $organization?.billingPlan === BillingPlan.FREE);
+    let isComponentDisabled: boolean = isSelfHosted || (isCloud && $organization?.billingPlan === BillingPlan.FREE);
     let emptyStateTitle: string = isSelfHosted
         ? 'Available on Appwrite Cloud'
         : 'Upgrade to add mock phone numbers';
@@ -43,7 +42,7 @@
             await invalidate(Dependencies.PROJECT);
             addNotification({
                 type: 'success',
-                message: 'Updated mock phone numbers successfully'
+                message: 'Mock phone numbers have been updated'
             });
             trackEvent(Submit.AuthMockNumbersUpdate);
         } catch (error) {
