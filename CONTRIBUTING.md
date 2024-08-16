@@ -49,7 +49,7 @@ git clone https://github.com/appwrite/console.git appwrite-console
 Navigate to the Appwrite Console repository and install dependencies.
 
 ```bash
-cd appwrite-console && npm install
+cd appwrite-console && pnpm install
 ```
 
 ### 3. Install and run Appwrite locally
@@ -62,10 +62,13 @@ Follow the [install instructions](https://appwrite.io/docs/advanced/self-hosting
 
 Add a `.env` file by copying the `.env.example` file as a template in the project's root directory.
 
+> **Note**
+> If you are updating from Appwrite `1.5.x`, be aware that the variables for the console in the `.env` / `.env.example` file have changed in `1.6.x`.
+
 Finally, start a development server:
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
 > **Note**
@@ -74,7 +77,7 @@ npm run dev
 ### Build
 
 ```bash
-npm run build
+pnpm build
 ```
 
 > You can preview the built app with `npm run preview`, regardless of whether you installed an adapter. This should _not_ be used to serve your app in production.
@@ -82,7 +85,7 @@ npm run build
 ### Tests
 
 ```bash
-npm test
+pnpm test
 ```
 
 This will run tests in the `tests/` directory.
@@ -92,13 +95,13 @@ This will run tests in the `tests/` directory.
 Code should be consistently formatted everywhere. Before committing code, run the code-formatter.
 
 ```bash
-npm run format
+pnpm run format
 ```
 
 ### Linter
 
 ```bash
-npm run lint
+pnpm run lint
 ```
 
 ### Diagnostics
@@ -110,7 +113,7 @@ Diagnostic tool that checks for the following:
 -   TypeScript compiler errors
 
 ```bash
-npm run check
+pnpm run check
 ```
 
 ## Submit a Pull Request 🚀
@@ -173,11 +176,11 @@ $ git push origin [name_of_your_new_branch]
 Before committing always make sure to run all available tools to improve the codebase:
 
 -   Formatter
-    -   `npm run format`
+    -   `pnpm run format`
 -   Tests
-    -   `npm test`
+    -   `pnpm test`
 -   Diagnostics
-    -   `npm run check`
+    -   `pnpm run check`
 
 ### Performance
 

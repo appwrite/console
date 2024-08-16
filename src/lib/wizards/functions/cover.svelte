@@ -24,14 +24,14 @@
 
 <script lang="ts">
     import { base } from '$app/paths';
-    import { AvatarGroup, Box, CardGrid, Heading } from '$lib/components';
+    import { AvatarGroup, Box, Heading } from '$lib/components';
     import { app } from '$lib/stores/app';
     import { wizard } from '$lib/stores/wizard';
     import { repository, templateConfig, template as templateStore } from './store';
     import { marketplace, type MarketplaceTemplate } from '$lib/stores/marketplace';
     import { Button } from '$lib/elements/forms';
     import { page } from '$app/stores';
-    import { baseRuntimesList } from '$routes/console/project-[project]/functions/store';
+    import { baseRuntimesList } from '$routes/(console)/project-[project]/functions/store';
     import { trackEvent } from '$lib/actions/analytics';
     import type { Models } from '@appwrite.io/console';
     import WizardCover from '$lib/layout/wizardCover.svelte';
@@ -40,7 +40,7 @@
     import CreateGit from './createGit.svelte';
     import { tooltip } from '$lib/actions/tooltip';
     import { isSelfHosted } from '$lib/system';
-    import { consoleVariables } from '$routes/console/store';
+    import { consoleVariables } from '$routes/(console)/store';
 
     const isVcsEnabled = $consoleVariables?._APP_VCS_ENABLED === true;
     let hasInstallations: boolean;
@@ -61,55 +61,7 @@
 <WizardCover>
     <svelte:fragment slot="title">Create Function</svelte:fragment>
     <div class="wizard-container container">
-        {#if isSelfHosted && !isVcsEnabled}
-            <div class="u-flex-vertical u-text-center">
-                <Heading tag="h5" size="5">Choose your source</Heading>
-                <p>
-                    Connect your function to a Git repository or use a template to get started. You
-                    can also create a function manually.
-                </p>
-            </div>
-            <CardGrid>
-                <Heading tag="h6" size="6">Create manually</Heading>
-                <p class="text">Create and deploy your function manually.</p>
-                <svelte:fragment slot="aside">
-                    <div class="u-flex u-height-100-percent u-main-end u-cross-center">
-                        <Button
-                            secondary
-                            on:click={() => {
-                                trackEvent('click_create_function_manual', {
-                                    from: 'cover'
-                                });
-                            }}
-                            on:click={() => wizard.start(CreateManual)}>Create function</Button>
-                    </div>
-                </svelte:fragment>
-            </CardGrid>
-        {/if}
-        <div
-            class="git-container u-position-relative"
-            class:u-margin-block-start-24={isSelfHosted && !isVcsEnabled}>
-            {#if isSelfHosted && !isVcsEnabled}
-                <div
-                    class="overlay u-flex-vertical u-position-absolute u-height-100-percent u-width-full-line u-z-index-1 card u-text-center">
-                    <div
-                        class="u-flex-vertical u-height-100-percent u-main-center u-cross-center u-gap-16">
-                        <Heading size="7" tag="h6">
-                            Configure your self-hosted instance to connect to Git
-                        </Heading>
-                        <p>
-                            Connect your function to a Git repository or use a pre-made template<br />after
-                            configuring your self-hosted instance. Learn more in our
-                            <a
-                                href="https://appwrite.io/docs/advanced/self-hosting/functions#git"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                class="link">documentation</a
-                            >.
-                        </p>
-                    </div>
-                </div>
-            {/if}
+        <div class="git-container u-position-relative">
             <div class="grid-1-1 u-gap-24">
                 <div class="card u-cross-child-start u-height-100-percent">
                     <Heading size="6" tag="h6">Connect Git repository</Heading>
@@ -127,7 +79,30 @@
                             }}
                             on:connect={connect} />
                     </div>
+                    {#if isSelfHosted && !isVcsEnabled}
+                        <div
+                            class="overlay u-flex-vertical u-position-absolute u-height-100-percent u-width-full-line u-z-index-1 u-text-center u-inset-0"
+                            style="border-radius: var(--border-radius-medium)">
+                            <div
+                                class="u-flex-vertical u-height-100-percent u-main-center u-cross-center u-gap-16 u-padding-inline-24">
+                                <Heading size="7" tag="h6" trimmed={false}>
+                                    Connect your self-hosted instance to Git
+                                </Heading>
+                                <p>
+                                    Configure your self-hosted instance to connect your function to
+                                    a Git repository.
+                                    <a
+                                        href="https://appwrite.io/docs/advanced/self-hosting/functions#git"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="link">Learn more</a
+                                    >.
+                                </p>
+                            </div>
+                        </div>
+                    {/if}
                 </div>
+
                 <div class="card u-height-100-percent">
                     <section class="common-section">
                         <Heading size="6" tag="h6">Quick start</Heading>
@@ -210,6 +185,13 @@
                             {/await}
                         </ul>
                     </section>
+
+                    <Button
+                        text
+                        class="u-margin-block-start-24 u-margin-inline-start-auto"
+                        href={`${base}/project-${$page.params.project}/functions/templates?useCase=Starter`}>
+                        All starter templates <span class="icon-cheveron-right" />
+                    </Button>
                     <div class="u-sep-block-start common-section" />
                     <section class="common-section">
                         <Heading size="6" tag="h6">Templates</Heading>
@@ -252,7 +234,7 @@
                         text
                         noMargin
                         class="u-margin-inline-start-auto u-margin-block-start-16"
-                        href={`${base}/console/project-${$page.params.project}/functions/templates`}>
+                        href={`${base}/project-${$page.params.project}/functions/templates`}>
                         <span> All templates </span>
                         <span class="icon-cheveron-right" aria-hidden="true" />
                     </Button>
@@ -284,7 +266,7 @@
         background: linear-gradient(
             0,
             hsl(var(--p-card-bg-color)) 68.91%,
-            hsl(var(--p-card-bg-color) / 0.5) 95.8%
+            hsl(var(--p-card-bg-color) / 0.5) 92.8%
         );
     }
 </style>
