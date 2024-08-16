@@ -43,7 +43,7 @@
             await invalidate(Dependencies.PROJECT);
             addNotification({
                 type: 'success',
-                message: 'Updated mock phone numbers successfully'
+                message: 'Mock phone numbers have been updated'
             });
             trackEvent(Submit.AuthMockNumbersUpdate);
         } catch (error) {
