@@ -1,7 +1,10 @@
 <script context="module" lang="ts">
     import CreateTemplate from './createTemplate.svelte';
 
-    export function connectTemplate(template: MarketplaceTemplate, runtime: string | null = null) {
+    export function connectTemplate(
+        template: Models.TemplateFunction,
+        runtime: string | null = null
+    ) {
         const variables: Record<string, string> = {};
         template.variables.forEach((variable) => {
             variables[variable.name] = variable.value ?? '';
@@ -28,10 +31,9 @@
     import { app } from '$lib/stores/app';
     import { wizard } from '$lib/stores/wizard';
     import { repository, templateConfig, template as templateStore } from './store';
-    import { marketplace, type MarketplaceTemplate } from '$lib/stores/marketplace';
     import { Button } from '$lib/elements/forms';
     import { page } from '$app/stores';
-    import { baseRuntimesList } from '$routes/(console)/project-[project]/functions/store';
+    import { baseRuntimesList } from '$lib/stores/runtimes';
     import { trackEvent } from '$lib/actions/analytics';
     import type { Models } from '@appwrite.io/console';
     import WizardCover from '$lib/layout/wizardCover.svelte';
@@ -41,13 +43,11 @@
     import { tooltip } from '$lib/actions/tooltip';
     import { isSelfHosted } from '$lib/system';
     import { consoleVariables } from '$routes/(console)/store';
+    import { featuredTemplatesList, starterTemplate } from '$lib/stores/templates';
 
     const isVcsEnabled = $consoleVariables?._APP_VCS_ENABLED === true;
     let hasInstallations: boolean;
     let selectedRepository: string;
-
-    const quickStart = marketplace.find((template) => template.id === 'starter');
-    const templates = marketplace.filter((template) => template.id !== 'starter').slice(0, 2);
 
     function connect(event: CustomEvent<Models.ProviderRepository>) {
         trackEvent('click_connect_repository', {
@@ -112,7 +112,7 @@
                             style:--grid-item-size="8rem"
                             style:--grid-item-size-small-screens="9rem"
                             style:--grid-gap=".5rem">
-                            {#await $baseRuntimesList}
+                            {#await Promise.all([$baseRuntimesList, $starterTemplate])}
                                 {#each Array(6) as _i}
                                     <li>
                                         <button
@@ -126,7 +126,7 @@
                                         </button>
                                     </li>
                                 {/each}
-                            {:then response}
+                            {:then [response, quickStart]}
                                 {@const runtimes = new Map(
                                     response.runtimes.map((r) => [r.$id, r])
                                 )}
@@ -159,6 +159,9 @@
                                             </div>
                                             <div class="body-text-2">
                                                 {runtimeDetail.name}
+                                                {#if runtimeDetail.name.toLowerCase() === 'go'}
+                                                    <span class="inline-tag">New</span>
+                                                {/if}
                                             </div>
                                         </button>
                                     </li>
@@ -200,34 +203,56 @@
                         </p>
 
                         <ul class="clickable-list u-margin-block-start-16">
-                            {#each templates as template}
-                                <li class="clickable-list-item">
-                                    <button
-                                        type="button"
-                                        on:click={() => {
-                                            trackEvent('click_connect_template', {
-                                                from: 'cover',
-                                                template: template.id
-                                            });
-                                        }}
-                                        on:click={() => connectTemplate(template)}
-                                        class="clickable-list-button u-width-full-line u-flex u-gap-12">
-                                        <div
-                                            class="avatar is-size-small"
-                                            style:--p-text-size="1.25rem">
-                                            <span class={template.icon} />
-                                        </div>
-                                        <div class="u-flex u-flex-vertical u-gap-4">
-                                            <div class="body-text-2 u-bold u-trim">
-                                                {template.name}
+                            {#await $featuredTemplatesList}
+                                {#each Array(3) as _i}
+                                    <li>
+                                        <button
+                                            disabled
+                                            class="clickable-list-button u-width-full-line u-flex u-gap-12">
+                                            <div class="avatar is-size-small">
+                                                <div class="loader" />
                                             </div>
-                                            <div class="u-trim-1 u-color-text-gray">
-                                                {template.tagline}
+                                            <div class="u-flex u-flex-vertical u-gap-4">
+                                                <div class="body-text-2 u-bold u-trim">
+                                                    <div class="loader" />
+                                                </div>
+                                                <div class="u-trim-1 u-color-text-gray">
+                                                    <div class="loader" />
+                                                </div>
                                             </div>
-                                        </div>
-                                    </button>
-                                </li>
-                            {/each}
+                                        </button>
+                                    </li>
+                                {/each}
+                            {:then templatesListWithoutStarter}
+                                {#each templatesListWithoutStarter.templates as template}
+                                    <li class="clickable-list-item">
+                                        <button
+                                            type="button"
+                                            on:click={() => {
+                                                trackEvent('click_connect_template', {
+                                                    from: 'cover',
+                                                    template: template.id
+                                                });
+                                            }}
+                                            on:click={() => connectTemplate(template)}
+                                            class="clickable-list-button u-width-full-line u-flex u-gap-12">
+                                            <div
+                                                class="avatar is-size-small"
+                                                style:--p-text-size="1.25rem">
+                                                <span class={template.icon} />
+                                            </div>
+                                            <div class="u-flex u-flex-vertical u-gap-4">
+                                                <div class="body-text-2 u-bold u-trim">
+                                                    {template.name}
+                                                </div>
+                                                <div class="u-trim-1 u-color-text-gray">
+                                                    {template.tagline}
+                                                </div>
+                                            </div>
+                                        </button>
+                                    </li>
+                                {/each}
+                            {/await}
                         </ul>
                     </section>
                     <Button
@@ -261,12 +286,17 @@
     </div>
 </WizardCover>
 
-<style>
+<style lang="scss">
     .git-container .overlay {
         background: linear-gradient(
             0,
             hsl(var(--p-card-bg-color)) 68.91%,
             hsl(var(--p-card-bg-color) / 0.5) 92.8%
         );
+    }
+
+    .inline-tag {
+        line-height: 140%;
+        font-weight: 500;
     }
 </style>

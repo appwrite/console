@@ -1,5 +1,5 @@
 import { page } from '$app/stores';
-import type { MarketplaceTemplate } from '$lib/stores/marketplace';
+import type { Models } from '@appwrite.io/console';
 import { derived } from 'svelte/store';
 
-export const template = derived(page, ($page) => $page.data.template as MarketplaceTemplate);
+export const template = derived(page, ($page) => $page.data.template as Models.TemplateFunction);
