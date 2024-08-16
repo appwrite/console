@@ -27,7 +27,7 @@
     $: isSubmitDisabled = JSON.stringify(numbers) === JSON.stringify(initialNumbers);
 
     // temporarily enable the component for design review
-    let isComponentDisabled: boolean = isSelfHosted || (isCloud && $organization?.billingPlan === BillingPlan.FREE);
+    let isComponentDisabled: boolean = false && isSelfHosted || (isCloud && $organization?.billingPlan === BillingPlan.FREE);
     let emptyStateTitle: string = isSelfHosted
         ? 'Available on Appwrite Cloud'
         : 'Upgrade to add mock phone numbers';
