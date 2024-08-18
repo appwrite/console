@@ -104,11 +104,13 @@ function createFeedbackStore() {
                 return feedback;
             });
         },
+        // TODO: update growth server to accept `billingPlan` and other keys.
         submitFeedback: async (
             subject: string,
             message: string,
             name?: string,
             email?: string,
+            // @ts-ignore
             billingPlan?: string,
             currentPage?: string,
             value?: number
@@ -123,10 +125,12 @@ function createFeedbackStore() {
                     subject,
                     message,
                     email,
-                    billingPlan,
-                    currentPage,
-                    name: name ? name : undefined,
-                    customFields: value ? [{ id: '40655', value }] : undefined
+                    // billingPlan,
+                    firstname: name ? name : undefined,
+                    customFields: [
+                        { id: '47364', currentPage },
+                        ...(value ? [{ id: '40655', value }] : [])
+                    ]
                 })
             });
             if (response.status >= 400) {
