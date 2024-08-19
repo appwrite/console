@@ -23,10 +23,10 @@
             <Collapsible>
                 <li class="collapsible-item">
                     <h3 class="body-text-2 u-bold u-padding-block-12">
-                        Use cases <span class="inline-tag">{$template.usecases.length}</span>
+                        Use cases <span class="inline-tag">{$template.useCases.length}</span>
                     </h3>
                     <div class="collapsible-content u-flex u-flex-wrap u-gap-8">
-                        {#each $template.usecases as useCase}
+                        {#each $template.useCases as useCase}
                             <Pill>{useCase}</Pill>
                         {/each}
                     </div>

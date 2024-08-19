@@ -19,7 +19,7 @@
                 </div>
             </div>
         {/if}
-        <div class="u-stretch u-flex-vertical">
+        <div class="u-stretch u-flex-vertical u-main-center">
             <h3 class="body-text-2 u-bold"><slot name="title" /></h3>
             <p class="u-margin-block-start-8">
                 <slot nextTier={tierToPlan(getNextTier($organization.billingPlan)).name} />

@@ -58,7 +58,7 @@
                 $template.providerRepositoryId || undefined,
                 $template.providerOwner || undefined,
                 runtimeDetail.providerRootDirectory || undefined,
-                $template.providerBranch || undefined
+                $template.providerVersion || undefined
             );
 
             if ($templateConfig.variables) {

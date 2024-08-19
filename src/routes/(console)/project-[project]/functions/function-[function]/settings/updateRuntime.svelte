@@ -10,7 +10,8 @@
     import { onMount } from 'svelte';
     import { func } from '../store';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
-    import { runtimesList, specifications } from '../../store';
+    import { specificationsList } from '$lib/stores/specifications';
+    import { runtimesList } from '$lib/stores/runtimes';
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { Runtime } from '@appwrite.io/console';
 
@@ -26,11 +27,13 @@
         specification ??= $func.specification;
 
         let runtimes = await $runtimesList;
-        let allowedSpecifications = await $specifications;
+        let allowedSpecifications = (await $specificationsList).specifications;
         options = runtimes.runtimes.map((runtime) => ({
             label: `${runtime.name} - ${runtime.version}`,
             value: runtime.$id
         }));
+
+        console.log(allowedSpecifications);
 
         specificationOptions = allowedSpecifications.map((size) => ({
             label:
