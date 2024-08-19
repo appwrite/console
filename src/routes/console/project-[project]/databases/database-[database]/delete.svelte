@@ -30,10 +30,7 @@
     let collections: Models.CollectionList = null;
 
     function buildQueries(): string[] {
-        const queries = [
-            Query.limit(3),
-            Query.orderDesc('$updatedAt'),
-        ];
+        const queries = [Query.limit(3), Query.orderDesc('$updatedAt')];
 
         if (collectionItems.length > 0) {
             queries.push(Query.offset(collectionItems.length));
@@ -68,7 +65,7 @@
                 };
             });
 
-            collectionItems = [...collectionItems, ...await Promise.all(collectionPromises)];
+            collectionItems = [...collectionItems, ...(await Promise.all(collectionPromises))];
         } catch (err) {
             error = true;
         } finally {

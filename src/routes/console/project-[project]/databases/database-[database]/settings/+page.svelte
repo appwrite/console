@@ -93,8 +93,8 @@
             </div>
 
             <p>
-                The database will be permanently deleted, including all collections within it.
-                This action is irreversible.
+                The database will be permanently deleted, including all collections within it. This
+                action is irreversible.
             </p>
             <svelte:fragment slot="aside">
                 <BoxAvatar>
