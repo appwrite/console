@@ -2,7 +2,6 @@
     import Modal from '$lib/components/modal.svelte';
     import Button from '$lib/elements/forms/button.svelte';
     import { sdk } from '$lib/stores/sdk';
-    import { goto } from '$app/navigation';
     import { page } from '$app/stores';
 
     export let showGitInstall: boolean;
@@ -15,7 +14,7 @@
         target.searchParams.set('success', redirect.toString());
         target.searchParams.set('failure', redirect.toString());
         target.searchParams.set('mode', 'admin');
-        goto(target);
+        return target;
     }
 </script>
 
@@ -23,7 +22,7 @@
     <p>Select a provider to import an existing git repositories.</p>
 
     <div class="u-flex u-cross-center u-flex-vertical u-gap-16">
-        <Button on:click={connectGitHub} fullWidth secondary>
+        <Button href={connectGitHub().toString()} fullWidth secondary>
             <span class="icon-github" aria-hidden="true" />
             <span class="text">GitHub</span>
         </Button>

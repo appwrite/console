@@ -20,6 +20,7 @@
     import { paymentMethods } from '$lib/stores/billing';
     import { onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
+    import { formatCurrency } from '$lib/helpers/numbers';
 
     const endpoint = VARS.APPWRITE_ENDPOINT ?? `${$page.url.origin}/v1`;
     export let show = false;
@@ -122,9 +123,9 @@
     title="Retry payment">
     <!-- TODO: format currency -->
     <p class="text">
-        Your payment of <span class="inline-tag">${invoice.amount}</span> due on {toLocaleDate(
-            invoice.dueAt
-        )} has failed. Retry your payment to avoid service interruptions with your projects.
+        Your payment of <span class="inline-tag">${formatCurrency(invoice.grossAmount)}</span> due
+        on {toLocaleDate(invoice.dueAt)} has failed. Retry your payment to avoid service interruptions
+        with your projects.
     </p>
 
     <Button
