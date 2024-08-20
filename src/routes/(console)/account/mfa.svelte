@@ -16,7 +16,7 @@
     let step = 1;
     let error = '';
 
-    async function addAuthenticator(): Promise<URL> {
+    async function addAuthenticator(): Promise<string> {
         type = await sdk.forConsole.account.createMfaAuthenticator(AuthenticatorType.Totp);
         trackEvent(Submit.AccountAuthenticatorCreate);
 
