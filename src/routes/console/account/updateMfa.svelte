@@ -65,7 +65,10 @@
                     message: 'Email verified successfully',
                     type: 'success'
                 });
-                await Promise.all([invalidate(Dependencies.ACCOUNT), invalidate(Dependencies.FACTORS)]);
+                await Promise.all([
+                    invalidate(Dependencies.ACCOUNT),
+                    invalidate(Dependencies.FACTORS)
+                ]);
             } catch (error) {
                 addNotification({
                     message: error.message,
@@ -207,7 +210,6 @@
                                 </div>
                             </div>
                         </div>
-
                     {:else if !$user.emailVerification}
                         <div
                             class="u-flex u-main-space-between u-sep-block-end"
