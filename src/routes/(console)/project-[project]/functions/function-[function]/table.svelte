@@ -148,14 +148,12 @@
                                 href={`${base}/project-${$page.params.project}/functions/function-${$page.params.function}/deployment-${deployment.$id}`}>
                                 Logs
                             </DropListLink>
-                            {#if deployment.status === 'ready'}
-                                <DropListLink
-                                    icon="download"
-                                    href={getDownload(deployment.$id)}
-                                    on:click={() => (showDropdown[index] = false)}>
-                                    Download
-                                </DropListLink>
-                            {/if}
+                            <DropListLink
+                                icon="download"
+                                href={getDownload(deployment.$id)}
+                                on:click={() => (showDropdown[index] = false)}>
+                                Download
+                            </DropListLink>
                             {#if deployment.status === 'processing' || deployment.status === 'building'}
                                 <DropListItem
                                     icon="x-circle"
