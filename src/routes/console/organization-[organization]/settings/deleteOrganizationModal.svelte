@@ -64,8 +64,16 @@
     }
 
     const tabs = [
-        { name: 'projects', label: { desktop: 'Projects', mobile: 'Projects' }, total: $projects.total },
-        { name: 'members', label: { desktop: 'Total Members', mobile: 'Members' }, total: $members.total }
+        {
+            name: 'projects',
+            label: { desktop: 'Projects', mobile: 'Projects' },
+            total: $projects.total
+        },
+        {
+            name: 'members',
+            label: { desktop: 'Total Members', mobile: 'Members' },
+            total: $members.total
+        }
     ];
 
     $: tabData =
@@ -170,14 +178,16 @@
                 <TableScroll dense noMargin>
                     <TableHeader>
                         {#each tabData.headers as header, index}
-                            <TableCellHead width={index === 1 ? columnWidthSmall : columnWidth}>{header}</TableCellHead>
+                            <TableCellHead width={index === 1 ? columnWidthSmall : columnWidth}
+                                >{header}</TableCellHead>
                         {/each}
                     </TableHeader>
                     <TableBody>
                         {#each tabData.rows as row}
                             <TableRow>
                                 {#each row.cells as cell, index}
-                                    <TableCell width={index === 1 ? columnWidthSmall : columnWidth}>{cell}</TableCell>
+                                    <TableCell width={index === 1 ? columnWidthSmall : columnWidth}
+                                        >{cell}</TableCell>
                                 {/each}
                             </TableRow>
                         {/each}
