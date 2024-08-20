@@ -283,7 +283,7 @@
                         <CreditsApplied bind:couponData fixedCoupon={!!data?.couponData?.code} />
                         <p class="text u-margin-block-start-12">
                             Credits will automatically be applied to your next invoice on <b
-                                >{toLocaleDate(selectedOrg.billingNextInvoiceDate)}.</b>
+                                >{toLocaleDate(selectedOrg?.billingNextInvoiceDate)}.</b>
                         </p>
                     {:else}
                         <p class="text">Add a coupon code to apply credits to your organization.</p>
