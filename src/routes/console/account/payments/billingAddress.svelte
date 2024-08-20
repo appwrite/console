@@ -35,6 +35,8 @@
     });
 
     $: orgList = $organizationList.teams as unknown as Organization[];
+
+    $: console.log(orgList);
 </script>
 
 <CardGrid>
@@ -89,11 +91,6 @@
                                             </p>
                                             <div class="u-flex u-flex-vertical u-gap-4">
                                                 {#each linkedOrgs as org}
-                                                    <a
-                                                        class="u-underline u-trim"
-                                                        href={`${base}/console/organization-${org.$id}/billing`}>
-                                                        {org.name}
-                                                    </a>
                                                     <a
                                                         class="u-underline u-trim"
                                                         href={`${base}/console/organization-${org.$id}/billing`}>
