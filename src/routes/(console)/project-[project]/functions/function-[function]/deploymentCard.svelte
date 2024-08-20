@@ -62,11 +62,18 @@
                         on:click|preventDefault
                         class="tooltip"
                         aria-label="input tooltip"
-                        use:tooltip={{ content: `
+                        use:tooltip={{
+                            content: `
                                 <p><b>Deployment size:</b> ${deploymentSize.value + deploymentSize.unit}</p>
                                 <p><b>Build size:</b> ${buildSize.value + buildSize.unit}</p>
-                            `, allowHTML: true, appendTo: 'parent' }}>
-                        <span class="icon-info" aria-hidden="true" style="font-size: var(--icon-size-small)" />
+                            `,
+                            allowHTML: true,
+                            appendTo: 'parent'
+                        }}>
+                        <span
+                            class="icon-info"
+                            aria-hidden="true"
+                            style="font-size: var(--icon-size-small)" />
                     </button>
                 </p>
             </li>

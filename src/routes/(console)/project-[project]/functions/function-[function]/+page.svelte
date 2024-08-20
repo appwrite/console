@@ -119,9 +119,9 @@
             id: 'buildSize',
             title: 'Build size',
             type: 'integer',
-            show: true,
+            show: false,
             filter: false,
-            width: 80,
+            width: 80
         }
     ]);
 
