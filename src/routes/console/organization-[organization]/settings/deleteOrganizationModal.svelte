@@ -114,7 +114,8 @@
                 The following projects and all data associated with <b>{$organization.name}</b> will
                 be permanently deleted. <b>This action is irreversible</b>.
             {:else}
-                <b>{$organization.name}</b> will be permanently deleted. <b>This action is irreversible</b>.
+                <b>{$organization.name}</b> will be permanently deleted.
+                <b>This action is irreversible</b>.
             {/if}
         </p>
 
