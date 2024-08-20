@@ -29,7 +29,8 @@
     export async function updateRelationship(
         databaseId: string,
         collectionId: string,
-        data: Partial<Models.AttributeRelationship>
+        data: Partial<Models.AttributeRelationship>,
+        originalKey?: string
     ) {
         if (!isValueOfStringEnum(RelationMutate, data.onDelete)) {
             throw new Error(`Invalid on delete: ${data.onDelete}`);
@@ -38,7 +39,8 @@
             databaseId,
             collectionId,
             data.key,
-            data.onDelete
+            data.onDelete,
+            data.key !== originalKey ? data.key : undefined,
         );
     }
 </script>
