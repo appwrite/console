@@ -17,7 +17,7 @@
         $organization?.billingPlan === BillingPlan.PRO ||
         $organization?.billingPlan === BillingPlan.SCALE;
 
-    $: supportTimings = `${utcHourToLocaleHour('09:00')} - ${utcHourToLocaleHour('17:00')} ${localeTimezoneName()}`;
+    $: supportTimings = `${utcHourToLocaleHour('16:00')} - ${utcHourToLocaleHour('00:00')} ${localeTimezoneName()}`;
 </script>
 
 {#if isCloud}
