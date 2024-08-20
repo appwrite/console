@@ -27,7 +27,7 @@
     let isLoadingDocumentsCount = false;
 
     /* enable overflow-x */
-    const columnWidth = 120;
+    const columnWidth = 135;
 
     $: collectionItems = [];
     let collections: Models.CollectionList = null;
@@ -132,7 +132,7 @@
                 </p>
 
                 <div class="u-flex-vertical u-gap-16">
-                    <TableScroll dense noMargin isSticky class="table">
+                    <TableScroll dense noMargin class="table">
                         <TableHeader>
                             <TableCellHead width={columnWidth}>Collection</TableCellHead>
                             <TableCellHead width={columnWidth}># of Documents</TableCellHead>
