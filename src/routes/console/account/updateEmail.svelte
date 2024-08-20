@@ -19,7 +19,7 @@
     async function updateEmail() {
         try {
             await sdk.forConsole.account.updateEmail(email, emailPassword);
-            await invalidate(Dependencies.ACCOUNT);
+            await Promise.all([invalidate(Dependencies.ACCOUNT), invalidate(Dependencies.FACTORS)]);
             addNotification({
                 message: 'Email has been updated',
                 type: 'success'
