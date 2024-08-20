@@ -30,10 +30,13 @@
     let collections: Models.CollectionList = null;
 
     function buildQueries(): string[] {
-        const queries = [Query.limit(3), Query.orderDesc('$updatedAt')];
+        const queries = [Query.orderDesc('$updatedAt')];
 
         if (collectionItems.length > 0) {
+            queries.push(Query.limit(25));
             queries.push(Query.offset(collectionItems.length));
+        } else {
+            queries.push(Query.limit(3));
         }
 
         return queries;
@@ -94,6 +97,7 @@
 
     /* reset data on modal close */
     $: if (!showDelete) {
+        databaseName = '';
         collections = null;
         collectionItems = [];
     }
@@ -152,10 +156,19 @@
                                 <div class="loader is-small" />
                             {/if}
                         </div>
+                    {:else}
+                        <button
+                            class="u-underline"
+                            on:click={() => {
+                                collectionItems = collectionItems.slice(0, 3);
+                            }}
+                            type="button">
+                            Show less
+                        </button>
                     {/if}
                 </div>
 
-                <FormList class="u-padding-block-start-24">
+                <FormList>
                     <InputText
                         label={`Confirm the database name to continue`}
                         placeholder="Enter {$database.name} to continue"
