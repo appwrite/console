@@ -30,6 +30,10 @@
     let selectedTab = 'projects';
     let organizationName: string = null;
 
+    /* enable overflow-x */
+    const columnWidth = 120;
+    const columnWidthSmall = columnWidth / 4;
+
     async function deleteOrg() {
         try {
             if (isCloud) {
@@ -60,8 +64,8 @@
     }
 
     const tabs = [
-        { name: 'projects', label: 'Projects', total: $projects.total },
-        { name: 'members', label: 'Team members', total: $members.total }
+        { name: 'projects', label: { desktop: 'Projects', mobile: 'Projects' }, total: $projects.total },
+        { name: 'members', label: { desktop: 'Total Members', mobile: 'Members' }, total: $members.total }
     ];
 
     $: tabData =
@@ -120,7 +124,7 @@
         </p>
 
         {#if $projects.total > 0}
-            <div class="box">
+            <div class="box is-only-desktop">
                 <SecondaryTabs large stretch class="u-sep-block-end u-padding-8">
                     {#each tabs as { name, label, total }}
                         <SecondaryTabsItem
@@ -128,22 +132,52 @@
                             fullWidth
                             disabled={selectedTab === name}
                             on:click={() => (selectedTab = name)}>
-                            {label} ({total})
+                            {label.desktop} ({total})
                         </SecondaryTabsItem>
                     {/each}
                 </SecondaryTabs>
 
-                <TableScroll dense noMargin isSticky>
+                <TableScroll dense noMargin>
                     <TableHeader>
                         {#each tabData.headers as header}
-                            <TableCellHead>{header}</TableCellHead>
+                            <TableCellHead width={columnWidth}>{header}</TableCellHead>
+                        {/each}
+                    </TableHeader>
+                    <TableBody>
+                        {#each tabData.rows as row}
+                            <TableRow>
+                                {#each row.cells as cell}
+                                    <TableCell width={columnWidth}>{cell}</TableCell>
+                                {/each}
+                            </TableRow>
+                        {/each}
+                    </TableBody>
+                </TableScroll>
+            </div>
+            <div class="box is-not-desktop">
+                <SecondaryTabs large stretch class="u-sep-block-end u-padding-8">
+                    {#each tabs as { name, label, total }}
+                        <SecondaryTabsItem
+                            center
+                            fullWidth
+                            disabled={selectedTab === name}
+                            on:click={() => (selectedTab = name)}>
+                            {label.mobile} ({total})
+                        </SecondaryTabsItem>
+                    {/each}
+                </SecondaryTabs>
+
+                <TableScroll dense noMargin>
+                    <TableHeader>
+                        {#each tabData.headers as header, index}
+                            <TableCellHead width={index === 1 ? columnWidthSmall : columnWidth}>{header}</TableCellHead>
                         {/each}
                     </TableHeader>
                     <TableBody>
                         {#each tabData.rows as row}
                             <TableRow>
                                 {#each row.cells as cell, index}
-                                    <TableCell width={index === 1 ? 125 : 0}>{cell}</TableCell>
+                                    <TableCell width={index === 1 ? columnWidthSmall : columnWidth}>{cell}</TableCell>
                                 {/each}
                             </TableRow>
                         {/each}
