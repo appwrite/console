@@ -23,9 +23,13 @@
     </span>
 </p>
 
-<style>
-    [class^='icon-']::before,
-    [class*=' icon-']::before {
-        vertical-align: baseline;
+<style lang="scss">
+    .icon-info,
+    .icon-exclamation-circle,
+    .icon-check-circle,
+    .icon-exclamation {
+        &::before {
+            vertical-align: baseline;
+        }
     }
 </style>
