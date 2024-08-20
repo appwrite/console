@@ -102,8 +102,7 @@
     });
     $templateStepsComponents.set(2, {
         label: 'Permissions',
-        component: TemplatePermissions,
-        disabled: !$template?.scopes?.length
+        component: TemplatePermissions
     });
     $templateStepsComponents.set(3, {
         label: 'Variables',
