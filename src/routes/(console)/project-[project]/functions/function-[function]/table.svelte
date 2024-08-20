@@ -154,7 +154,7 @@
                                 on:click={() => (showDropdown[index] = false)}>
                                 Download
                             </DropListLink>
-                            {#if deployment.status === 'processing' || deployment.status === 'building'}
+                            {#if deployment.status === 'processing' || deployment.status === 'building' || deployment.status === 'waiting'}
                                 <DropListItem
                                     icon="x-circle"
                                     event="deployment_cancel"
@@ -166,7 +166,7 @@
                                     Cancel
                                 </DropListItem>
                             {/if}
-                            {#if deployment.status !== 'building' && deployment.status !== 'processing'}
+                            {#if deployment.status !== 'building' && deployment.status !== 'processing' && deployment.status !== 'waiting'}
                                 <DropListItem
                                     icon="trash"
                                     on:click={() => {
