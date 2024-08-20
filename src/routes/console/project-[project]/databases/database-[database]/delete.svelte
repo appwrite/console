@@ -16,7 +16,7 @@
         TableRow,
         TableScroll
     } from '$lib/elements/table';
-    import { toLocaleDateTime } from '$lib/helpers/date';
+    import { toLocaleDate } from '$lib/helpers/date';
     import { type Models, Query } from '@appwrite.io/console';
     const databaseId = $page.params.database;
 
@@ -25,6 +25,9 @@
     let error = null;
     let databaseName: string = null;
     let isLoadingDocumentsCount = false;
+
+    /* enable overflow-x */
+    const columnWidth = 120;
 
     $: collectionItems = [];
     let collections: Models.CollectionList = null;
@@ -129,18 +132,18 @@
                 </p>
 
                 <div class="u-flex-vertical u-gap-16">
-                    <TableScroll dense noMargin isSticky class="table limited-modal-height">
+                    <TableScroll dense noMargin isSticky class="table">
                         <TableHeader>
-                            <TableCellHead>Collection</TableCellHead>
-                            <TableCellHead># of Documents</TableCellHead>
-                            <TableCellHead>Last Updated</TableCellHead>
+                            <TableCellHead width={columnWidth}>Collection</TableCellHead>
+                            <TableCellHead width={columnWidth}># of Documents</TableCellHead>
+                            <TableCellHead width={columnWidth}>Last Updated</TableCellHead>
                         </TableHeader>
                         <TableBody>
                             {#each collectionItems as collection}
                                 <TableRow>
-                                    <TableCell title="Collection">{collection.name}</TableCell>
-                                    <TableCell title="Documents">{collection.count}</TableCell>
-                                    <TableCell>{toLocaleDateTime(collection.updatedAt)}</TableCell>
+                                    <TableCell width={columnWidth} title="Collection">{collection.name}</TableCell>
+                                    <TableCell width={columnWidth} title="Document Count">{collection.count}</TableCell>
+                                    <TableCell width={columnWidth} title="Last Updated">{toLocaleDate(collection.updatedAt)}</TableCell>
                                 </TableRow>
                             {/each}
                         </TableBody>
@@ -201,15 +204,5 @@
 <style>
     :global(.max-height-dialog dialog) {
         max-height: 650px !important;
-    }
-
-    :global(.limited-modal-height .table-wrapper) {
-        overflow-y: scroll;
-        scrollbar-width: none;
-        -ms-overflow-style: none;
-    }
-
-    :global(.limited-modal-height .table-wrapper)::-webkit-scrollbar {
-        display: none;
     }
 </style>
