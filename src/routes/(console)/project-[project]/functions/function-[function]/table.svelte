@@ -109,6 +109,10 @@
                             <TableCellText width={column.width} title={column.title}>
                                 {calculateSize(deployment.size)}
                             </TableCellText>
+                        {:else if column.id === 'buildSize'}
+                            <TableCellText width={column.width} title={column.title}>
+                                {calculateSize(deployment.buildSize)}
+                            </TableCellText>
                         {/if}
                     {/if}
                 {/each}

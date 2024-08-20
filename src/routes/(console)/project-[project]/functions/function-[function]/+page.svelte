@@ -77,7 +77,7 @@
             title: 'Build time',
             type: 'integer',
             show: true,
-            width: 80,
+            width: 90,
             elements: [
                 {
                     value: 15,
@@ -96,10 +96,10 @@
         },
         {
             id: 'size',
-            title: 'Size',
+            title: 'Deployment size',
             type: 'integer',
             show: true,
-            width: 80,
+            width: 140,
             elements: [
                 {
                     value: 2 * 1000 * 1000,
@@ -114,6 +114,14 @@
                     label: 'more than 50MB'
                 }
             ]
+        },
+        {
+            id: 'buildSize',
+            title: 'Build size',
+            type: 'integer',
+            show: true,
+            filter: false,
+            width: 80,
         }
     ]);
 

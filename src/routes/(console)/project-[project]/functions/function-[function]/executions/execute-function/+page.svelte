@@ -353,10 +353,34 @@
                         </p>
                     </li>
                     <li class="u-flex-vertical u-gap-8">
-                        <p class="u-color-text-offline">Size</p>
+                        <p class="u-color-text-offline">Total size</p>
                         <p>
-                            {humanFileSize(deployment.size).value +
-                                humanFileSize(deployment.size).unit}
+                            {humanFileSize(deployment.size + deployment.buildSize).value +
+                                humanFileSize(deployment.size + deployment.buildSize).unit}
+                            <button
+                                type="button"
+                                on:click|preventDefault
+                                class="tooltip"
+                                aria-label="input tooltip"
+                                use:tooltip={{
+                                    content: `
+                                <p><b>Deployment size:</b> ${
+                                    humanFileSize(deployment.size).value +
+                                    humanFileSize(deployment.size).unit
+                                }</p>
+                                <p><b>Build size:</b> ${
+                                    humanFileSize(deployment.buildSize).value +
+                                    humanFileSize(deployment.buildSize).unit
+                                }</p>
+                            `,
+                                    allowHTML: true,
+                                    appendTo: 'parent'
+                                }}>
+                                <span
+                                    class="icon-info"
+                                    aria-hidden="true"
+                                    style="font-size: var(--icon-size-small)" />
+                            </button>
                         </p>
                     </li>
                 </ul>
