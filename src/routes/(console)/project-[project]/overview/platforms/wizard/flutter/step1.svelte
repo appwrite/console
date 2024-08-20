@@ -28,13 +28,15 @@
 
     const projectId = $page.params.project;
     const suggestions = ['*.vercel.app', '*.netlify.app', '*.gitpod.io'];
-    const placeholder: Record<
-        PlatformType,
-        {
-            name: string;
-            hostname: string;
-            tooltip: string;
-        }
+    const placeholder: Partial<
+        Record<
+            PlatformType,
+            {
+                name: string;
+                hostname: string;
+                tooltip: string;
+            }
+        >
     > = {
         [PlatformType.Flutterandroid]: {
             name: 'My Android App',
@@ -69,60 +71,16 @@
             name: 'My Windows App',
             hostname: 'appname',
             tooltip: 'Your application name'
-        },
-        // The following are not used, but added to avoid TS errors
-        [PlatformType.Web]: {
-            name: '',
-            hostname: '',
-            tooltip: ''
-        },
-        [PlatformType.Appleios]: {
-            name: '',
-            hostname: '',
-            tooltip: ''
-        },
-        [PlatformType.Applemacos]: {
-            name: '',
-            hostname: '',
-            tooltip: ''
-        },
-        [PlatformType.Applewatchos]: {
-            name: '',
-            hostname: '',
-            tooltip: ''
-        },
-        [PlatformType.Appletvos]: {
-            name: '',
-            hostname: '',
-            tooltip: ''
-        },
-        [PlatformType.Android]: {
-            name: '',
-            hostname: '',
-            tooltip: ''
-        },
-        [PlatformType.Unity]: {
-            name: '',
-            hostname: '',
-            tooltip: ''
         }
     };
 
-    const hostname: Record<PlatformType, string> = {
+    const hostname: Partial<Record<PlatformType, string>> = {
         [PlatformType.Flutterandroid]: 'Package Name',
         [PlatformType.Flutterios]: 'Bundle ID',
         [PlatformType.Flutterlinux]: 'Package Name',
         [PlatformType.Fluttermacos]: 'Bundle ID',
         [PlatformType.Flutterweb]: 'Hostname',
-        [PlatformType.Flutterwindows]: 'Package Name',
-        // The following are not used, but added to avoid TS errors
-        [PlatformType.Web]: '',
-        [PlatformType.Appleios]: '',
-        [PlatformType.Applemacos]: '',
-        [PlatformType.Applewatchos]: '',
-        [PlatformType.Appletvos]: '',
-        [PlatformType.Android]: '',
-        [PlatformType.Unity]: ''
+        [PlatformType.Flutterwindows]: 'Package Name'
     };
 
     async function beforeSubmit() {
@@ -148,7 +106,7 @@
     }
 
     $: registee = {
-        [PlatformType.Flutterandroid]: 'package name',
+        [PlatformType.Flutterandroid]: 'Package name',
         [PlatformType.Flutterios]: 'Bundle ID',
         [PlatformType.Flutterlinux]: 'Package name',
         [PlatformType.Fluttermacos]: 'Bundle ID',

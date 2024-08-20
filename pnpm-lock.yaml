@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@appwrite.io/console':
-        specifier: npm:matej-appwrite-console@0.6.13
-        version: matej-appwrite-console@0.6.13
+        specifier: 0.7.0-rc.2
+        version: 0.7.0-rc.2
       '@appwrite.io/pink':
         specifier: 0.25.0
         version: 0.25.0
@@ -189,6 +189,9 @@ packages:
 
   '@analytics/type-utils@0.6.2':
     resolution: {integrity: sha512-TD+xbmsBLyYy/IxFimW/YL/9L2IEnM7/EoV9Aeh56U64Ify8o27HJcKjo38XY9Tcn0uOq1AX3thkKgvtWvwFQg==}
+
+  '@appwrite.io/console@0.7.0-rc.2':
+    resolution: {integrity: sha512-V5Fx/ur1VboKbSgRJIoCxqMp/V3h3XQcsnE50IPaICOZ+rXoIt0IlfBNFKMnUGMBTyLVYbFfAYGkEMHlWv7v7w==}
 
   '@appwrite.io/pink-icons@0.25.0':
     resolution: {integrity: sha512-0O3i2oEuh5mWvjO80i+X6rbzrWLJ1m5wmv2/M3a1p2PyBJsFxN8xQMTEmTn3Wl/D26SsM7SpzbdW6gmfgoVU9Q==}
@@ -2164,9 +2167,6 @@ packages:
   makeerror@1.0.12:
     resolution: {integrity: sha512-JmqCvUhmt43madlpFzG4BQzG2Z3m6tvQDNKdClZnO3VbIudJYmxsT0FNJMeiB2+JTSlTQTSbU8QdesVmwJcmLg==}
 
-  matej-appwrite-console@0.6.13:
-    resolution: {integrity: sha512-F15YP98n9Um809SN3wbyZun8ZFY/m5MEU2uWUUU+4ej+PI0af3YGhwnkYC1nmciKpDbILf8O4hQ1+ORXKho8hg==}
-
   mdn-data@2.0.30:
     resolution: {integrity: sha512-GaqWWShW4kv/G9IEucWScBx9G1/vsFZZJUO+tD26M8J8z3Kw5RDQjaoZe03YAClgeS/SWPOcb4nkFBTEi5DUEA==}
 
@@ -3231,6 +3231,8 @@ snapshots:
       '@analytics/type-utils': 0.6.2
 
   '@analytics/type-utils@0.6.2': {}
+
+  '@appwrite.io/console@0.7.0-rc.2': {}
 
   '@appwrite.io/pink-icons@0.25.0': {}
 
@@ -5601,8 +5603,6 @@ snapshots:
   makeerror@1.0.12:
     dependencies:
       tmpl: 1.0.5
-
-  matej-appwrite-console@0.6.13: {}
 
   mdn-data@2.0.30: {}
 
