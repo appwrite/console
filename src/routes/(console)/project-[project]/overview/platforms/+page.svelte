@@ -66,6 +66,8 @@
     const getPlatformInfo = (platform: string) => {
         if (platform.includes('flutter')) {
             return 'color/flutter';
+        } else if (platform.includes('react-native')) {
+            return 'color/react';
         } else if (platform.includes('apple')) {
             return 'color/apple';
         } else if (platform.includes('android')) {

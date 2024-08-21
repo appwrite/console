@@ -9,11 +9,11 @@
     const { endpoint, project } = sdk.forProject.client.config;
     const code = `import { Client, Account, ID } from 'react-native-appwrite';
 
-    const client = new Client();
-    const client
-      .setEndpoint('${endpoint}')
-      .setProject('${project}')
-      .setPlatform('${$createPlatform.key}');`;
+const client = new Client();
+const client
+    .setEndpoint('${endpoint}')
+    .setProject('${project}')
+    .setPlatform('${$createPlatform.key}');`;
 
     let showAlert = true;
 </script>
