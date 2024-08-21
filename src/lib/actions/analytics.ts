@@ -231,6 +231,7 @@ export enum Submit {
     FunctionRedeploy = 'submit_function_redeploy',
     DeploymentCreate = 'submit_deployment_create',
     DeploymentDelete = 'submit_deployment_delete',
+    DeploymentCancel = 'submit_deployment_cancel',
     DeploymentUpdate = 'submit_deployment_update',
     ExecutionCreate = 'submit_execution_create',
     VariableCreate = 'submit_variable_create',
