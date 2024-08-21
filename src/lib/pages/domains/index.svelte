@@ -70,7 +70,11 @@
         <TableBody>
             {#each rules.rules as domain, i}
                 <TableRow>
-                    <TableCellLink title="Domain" href={`https://${domain.domain}`} external noStyle>
+                    <TableCellLink
+                        title="Domain"
+                        href={`https://${domain.domain}`}
+                        external
+                        noStyle>
                         <span class="u-flex u-gap-4 u-cross-center">
                             <Trim>
                                 <span class="link">{domain.domain}</span>
