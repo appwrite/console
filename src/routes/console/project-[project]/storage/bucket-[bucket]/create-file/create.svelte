@@ -28,17 +28,18 @@
     });
 
     async function create() {
+        const fileId = $createFile.id ?? ID.unique();
+
         try {
-            uploader.uploadFile(
+            const uploadPromise = uploader.uploadFile(
                 bucketId,
-                $createFile.id ?? ID.unique(),
+                fileId,
                 $createFile.files[0],
                 $createFile.permissions
             );
 
             createFile.reset();
             wizard.hide();
-            invalidate(Dependencies.FILES);
 
             addNotification({
                 type: 'success',
@@ -47,7 +48,12 @@
             trackEvent(Submit.FileCreate, {
                 customId: !!$createFile.id
             });
+
+            await uploadPromise;
+            invalidate(Dependencies.FILES);
         } catch (e) {
+            uploader.removeFromQueue(fileId);
+
             addNotification({
                 type: 'error',
                 message: e.message
