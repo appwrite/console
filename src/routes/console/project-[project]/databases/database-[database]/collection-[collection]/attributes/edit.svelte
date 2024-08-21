@@ -6,8 +6,8 @@
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, FormList, InputText } from '$lib/elements/forms';
-    import deepEqual from 'deep-equal';
     import { addNotification } from '$lib/stores/notifications';
+    import deepEqual from 'deep-equal';
     import type { Attributes } from '../store';
     import { attributeOptions, type Option } from './store';
 
@@ -63,8 +63,8 @@
             <div class="u-flex u-cross-center u-gap-8">
                 {option?.name}
                 {#if option?.type === 'relationship'}
-                    <div class="tag eyebrow-heading-3">
-                        <span class="text u-x-small">Beta</span>
+                    <div class="tag eyebrow-heading-3 is-not-mobile">
+                        <span class="text u-x-small">Experimental</span>
                     </div>
                 {/if}
             </div>
