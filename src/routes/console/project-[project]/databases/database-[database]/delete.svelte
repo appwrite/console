@@ -132,7 +132,7 @@
                 </p>
 
                 <div class="u-flex-vertical u-gap-16">
-                    <TableScroll dense noMargin class="table">
+                    <TableScroll dense noMargin class="table no-inner-borders">
                         <TableHeader>
                             <TableCellHead width={columnWidth}>Collection</TableCellHead>
                             <TableCellHead width={columnWidth}># of Documents</TableCellHead>
@@ -204,5 +204,10 @@
 <style>
     :global(.max-height-dialog dialog) {
         max-height: 650px !important;
+    }
+
+    :global(.no-inner-borders .table) {
+        box-shadow: unset !important;
+        border-radius: unset !important;
     }
 </style>
