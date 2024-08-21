@@ -25,18 +25,7 @@
     let email: string,
         name: string,
         error: string,
-        role: string = 'owner',
-        project: string = 'all';
-    let projectsList = [
-        {
-            label: 'All Projects',
-            value: 'all'
-        },
-        ...$projects.projects.map((project) => ({
-            label: project.name,
-            value: project.$id
-        }))
-    ];
+        role: string = 'owner';
 
     const roles = [
         {
@@ -65,7 +54,7 @@
         try {
             const team = await sdk.forConsole.teams.createMembership(
                 $organization.$id,
-                [roleFormatted],
+                [role],
                 email,
                 undefined,
                 undefined,
@@ -88,8 +77,6 @@
             trackError(e, Submit.MemberCreate);
         }
     }
-
-    $: roleFormatted = `projects/${project}/${role}`;
 
     $: if (!showCreate) {
         error = null;
@@ -122,7 +109,6 @@
             label="Name (optional)"
             placeholder="Enter name"
             bind:value={name} />
-        <InputSelect id="project" label="Projects" options={projectsList} bind:value={project} />
         <InputSelect id="role" label="Role" options={roles} bind:value={role} />
     </FormList>
     <svelte:fragment slot="footer">
