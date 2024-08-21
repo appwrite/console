@@ -70,6 +70,7 @@
     let coupon: string;
     let couponData = data?.couponData;
     let campaign = campaigns.get(data?.couponData?.campaign ?? data?.campaign);
+    let billingPlan = BillingPlan.PRO;
 
     onMount(async () => {
         await loadPaymentMethods();
@@ -79,6 +80,9 @@
         if ($page.url.searchParams.has('org')) {
             selectedOrgId = $page.url.searchParams.get('org');
             canSelectOrg = false;
+        }
+        if (campaign?.plan) {
+            billingPlan = campaign.plan;
         }
     });
 
@@ -101,15 +105,15 @@
                 org = await sdk.forConsole.billing.createOrganization(
                     newOrgId,
                     name,
-                    BillingPlan.PRO,
+                    billingPlan,
                     paymentMethodId
                 );
             }
             // Upgrade existing org
-            else if (selectedOrg?.billingPlan !== BillingPlan.PRO) {
+            else if (selectedOrg?.billingPlan === BillingPlan.FREE) {
                 org = await sdk.forConsole.billing.updatePlan(
                     selectedOrg.$id,
-                    BillingPlan.PRO,
+                    billingPlan,
                     paymentMethodId,
                     null
                 );
@@ -270,7 +274,7 @@
                     </div>
                 </div>
             {/if}
-            {#if selectedOrg?.billingPlan === BillingPlan.PRO}
+            {#if selectedOrg?.billingPlan !== BillingPlan.FREE}
                 <section
                     class="card u-margin-block-start-24"
                     style:--p-card-padding="1.5rem"
@@ -279,7 +283,7 @@
                         <CreditsApplied bind:couponData fixedCoupon={!!data?.couponData?.code} />
                         <p class="text u-margin-block-start-12">
                             Credits will automatically be applied to your next invoice on <b
-                                >{toLocaleDate(selectedOrg.billingNextInvoiceDate)}.</b>
+                                >{toLocaleDate(selectedOrg?.billingNextInvoiceDate)}.</b>
                         </p>
                     {:else}
                         <p class="text">Add a coupon code to apply credits to your organization.</p>
