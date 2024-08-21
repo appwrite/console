@@ -141,9 +141,12 @@
                         <TableBody>
                             {#each collectionItems as collection}
                                 <TableRow>
-                                    <TableCell width={columnWidth} title="Collection">{collection.name}</TableCell>
-                                    <TableCell width={columnWidth} title="Document Count">{collection.count}</TableCell>
-                                    <TableCell width={columnWidth} title="Last Updated">{toLocaleDate(collection.updatedAt)}</TableCell>
+                                    <TableCell width={columnWidth} title="Collection"
+                                        >{collection.name}</TableCell>
+                                    <TableCell width={columnWidth} title="Document Count"
+                                        >{collection.count}</TableCell>
+                                    <TableCell width={columnWidth} title="Last Updated"
+                                        >{toLocaleDate(collection.updatedAt)}</TableCell>
                                 </TableRow>
                             {/each}
                         </TableBody>
