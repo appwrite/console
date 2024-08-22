@@ -2,7 +2,7 @@
     import { settings } from '$lib/components/consent.svelte';
     import { clickOnEnter } from '$lib/helpers/a11y';
     import { isCloud } from '$lib/system';
-    import { version } from '$routes/console/store';
+    import { version } from '$routes/(console)/store';
 
     const currentYear = new Date().getFullYear();
 </script>
@@ -19,6 +19,7 @@
                         <a
                             class="text"
                             href="https://github.com/appwrite/appwrite/releases"
+                            aria-label="Appwrite releases on Github"
                             target="_blank"
                             rel="noreferrer">
                             Version {$version}
@@ -61,14 +62,19 @@
                 <span class="text">ⓒ {currentYear} Appwrite. All rights reserved.</span>
             </li>
             <li class="inline-links-item u-flex u-gap-8">
-                <a href="https://github.com/appwrite/appwrite" target="_blank" rel="noreferrer">
-                    <span class="icon-github" aria-hidden="true" aria-label="Appwrite on Github" />
+                <a
+                    href="https://github.com/appwrite/appwrite"
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label="Appwrite on Github">
+                    <span class="icon-github" aria-hidden="true" />
                 </a>
-                <a href="https://appwrite.io/discord" target="_blank" rel="noreferrer">
-                    <span
-                        class="icon-discord"
-                        aria-hidden="true"
-                        aria-label="Appwrite on Discord" />
+                <a
+                    href="https://appwrite.io/discord"
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label="Appwrite on Discord">
+                    <span class="icon-discord" aria-hidden="true" />
                 </a>
             </li>
         </ul>

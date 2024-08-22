@@ -4,6 +4,7 @@ import { sdk } from '$lib/stores/sdk';
 import { Query } from '@appwrite.io/console';
 import { get } from 'svelte/store';
 import type { Searcher } from '../commands';
+import { base } from '$app/paths';
 
 export const projectsSearcher = (async (query: string) => {
     const { projects } = await sdk.forConsole.projects.list([
@@ -17,7 +18,7 @@ export const projectsSearcher = (async (query: string) => {
             return {
                 label: project.name,
                 callback: () => {
-                    goto(`/console/project-${project.$id}`);
+                    goto(`${base}/project-${project.$id}`);
                 },
                 group: 'projects'
             } as const;

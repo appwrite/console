@@ -1,5 +1,6 @@
 import { createValueUnitPair } from '$lib/helpers/unit';
 import { get } from 'svelte/store';
+import { describe, expect, it } from 'vitest';
 
 describe('createValueUnitPair', () => {
     const { value, unit, baseValue } = createValueUnitPair(1024, [
