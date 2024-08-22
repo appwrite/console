@@ -32,11 +32,8 @@
     }) as Option;
 
     async function submit() {
-        console.log(originalKey);
-
         try {
             await option.update(databaseId, collectionId, selectedAttribute, originalKey);
-            originalKey = selectedAttribute.key;
             await invalidate(Dependencies.COLLECTION);
             if (!$page.url.pathname.includes('attributes')) {
                 await goto(
@@ -57,6 +54,7 @@
 
     $: if (showEdit) {
         currentAttr ??= { ...selectedAttribute };
+        originalKey = currentAttr.key;
         error = null;
     }
 </script>
