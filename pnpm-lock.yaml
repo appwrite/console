@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@appwrite.io/console':
-    specifier: npm:matej-appwrite-console@0.6.17
-    version: /matej-appwrite-console@0.6.17
+    specifier: npm:matej-appwrite-console@0.6.18
+    version: /matej-appwrite-console@0.6.18
   '@appwrite.io/pink':
     specifier: 0.25.0
     version: 0.25.0
@@ -4107,8 +4107,8 @@ packages:
       tmpl: 1.0.5
     dev: true
 
-  /matej-appwrite-console@0.6.17:
-    resolution: {integrity: sha512-oyzlNRHjFedWYpNDoksmW1wl+PqpX7Z1gFmMniwYk7cTmBMw/6WhulMMVJXuVH3OjjdlOtGLEBpHcRtIj5GG/g==}
+  /matej-appwrite-console@0.6.18:
+    resolution: {integrity: sha512-n1WmZBKjmJEJ3Fc3w/qAKwfLJSPoDQDR+B4loWpa2NLkKRICxZScIvUsegxaBx9uGPOE8Q+A8sw3iCQBVihLuQ==}
     dev: false
 
   /mdn-data@2.0.30:
