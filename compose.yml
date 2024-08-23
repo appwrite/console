@@ -6,7 +6,7 @@ services:
             args:
                 PUBLIC_CONSOLE_MODE: ${PUBLIC_CONSOLE_MODE}
                 PUBLIC_APPWRITE_ENDPOINT: ${PUBLIC_APPWRITE_ENDPOINT}
-                PUBLIC_APPWRITE_GROWTH_ENDPOINT: ${PUBLIC_GROWTH_ENDPOINT}
+                PUBLIC_GROWTH_ENDPOINT: ${PUBLIC_GROWTH_ENDPOINT}
                 PUBLIC_STRIPE_KEY: ${PUBLIC_STRIPE_KEY}
         develop:
             watch:
