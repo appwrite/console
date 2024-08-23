@@ -109,6 +109,10 @@
                             <TableCellText width={column.width} title={column.title}>
                                 {calculateSize(deployment.size)}
                             </TableCellText>
+                        {:else if column.id === 'buildSize'}
+                            <TableCellText width={column.width} title={column.title}>
+                                {calculateSize(deployment.buildSize)}
+                            </TableCellText>
                         {/if}
                     {/if}
                 {/each}
@@ -148,15 +152,13 @@
                                 href={`${base}/project-${$page.params.project}/functions/function-${$page.params.function}/deployment-${deployment.$id}`}>
                                 Logs
                             </DropListLink>
-                            {#if deployment.status === 'ready'}
-                                <DropListLink
-                                    icon="download"
-                                    href={getDownload(deployment.$id)}
-                                    on:click={() => (showDropdown[index] = false)}>
-                                    Download
-                                </DropListLink>
-                            {/if}
-                            {#if deployment.status === 'processing' || deployment.status === 'building'}
+                            <DropListLink
+                                icon="download"
+                                href={getDownload(deployment.$id)}
+                                on:click={() => (showDropdown[index] = false)}>
+                                Download
+                            </DropListLink>
+                            {#if deployment.status === 'processing' || deployment.status === 'building' || deployment.status === 'waiting'}
                                 <DropListItem
                                     icon="x-circle"
                                     event="deployment_cancel"
@@ -168,7 +170,7 @@
                                     Cancel
                                 </DropListItem>
                             {/if}
-                            {#if deployment.status !== 'building' && deployment.status !== 'processing'}
+                            {#if deployment.status !== 'building' && deployment.status !== 'processing' && deployment.status !== 'waiting'}
                                 <DropListItem
                                     icon="trash"
                                     on:click={() => {

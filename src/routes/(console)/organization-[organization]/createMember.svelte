@@ -59,14 +59,12 @@
 
 <Modal title="Invite member" {error} size="big" bind:show={showCreate} onSubmit={create}>
     {#if isCloud}
-        <Alert type="info">
-            {#if $organization?.billingPlan === BillingPlan.SCALE}
-                You can add unlimited organization members on the {plan.name} plan at no cost.
-            {:else if $organization?.billingPlan === BillingPlan.PRO}
+        {#if $organization?.billingPlan === BillingPlan.PRO}
+            <Alert type="info">
                 You can add unlimited organization members on the {plan.name} plan for
                 <b>{formatCurrency(plan.addons.member.price)} each per billing period</b>.
-            {/if}
-        </Alert>
+            </Alert>
+        {/if}
     {/if}
     <FormList>
         <InputEmail
@@ -84,6 +82,6 @@
     </FormList>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
-        <Button submit>Send invite</Button>
+        <Button submit submissionLoader>Send invite</Button>
     </svelte:fragment>
 </Modal>

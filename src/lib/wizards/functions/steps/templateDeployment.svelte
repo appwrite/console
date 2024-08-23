@@ -33,12 +33,8 @@
 
 <WizardStep {beforeSubmit}>
     <svelte:fragment slot="title">Deployment</svelte:fragment>
-    <svelte:fragment slot="subtitle">
-        Connect your function to a Git repository for automatic deployments or deploy your function
-        using the CLI.
-    </svelte:fragment>
 
-    <h3>Automatic with Git <span class="inline-code">Recommended</span></h3>
+    <h3>Connect with Git <span class="inline-code">Recommended</span></h3>
     <FormList gap={16} class="u-margin-block-start-8">
         <LabelCard
             name="behaviour"
@@ -58,11 +54,11 @@
         </LabelCard>
     </FormList>
 
-    <h3 class="u-margin-block-start-24">Manual with CLI</h3>
+    <h3 class="u-margin-block-start-24">Quick start</h3>
     <ul class="u-margin-block-start-8">
         <LabelCard name="behaviour" value="manual" bind:group={$templateConfig.repositoryBehaviour}>
-            <svelte:fragment slot="title">Create manually</svelte:fragment>
-            Deploy a function from a template and change the code using the CLI.
+            <svelte:fragment slot="title">Connect later</svelte:fragment>
+            Deploy now and continue development via CLI, or connect Git from your function settings.
         </LabelCard>
     </ul>
 </WizardStep>
