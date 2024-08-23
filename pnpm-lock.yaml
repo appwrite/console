@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@appwrite.io/console':
-        specifier: npm:bradley-console@0.6.5
-        version: bradley-console@0.6.5
+        specifier: npm:matej-appwrite-console@0.6.18
+        version: matej-appwrite-console@0.6.18
       '@appwrite.io/pink':
         specifier: 0.25.0
         version: 0.25.0
@@ -1147,9 +1147,6 @@ packages:
     resolution: {integrity: sha512-yQbXgO/OSZVD2IsiLlro+7Hf6Q18EJrKSEsdoMzKePKXct3gvD8oLcOQdIzGupr5Fj+EDe8gO/lxc1BzfMpxvA==}
     engines: {node: '>=8'}
 
-  bradley-console@0.6.5:
-    resolution: {integrity: sha512-IzXpW9MW3Ofx8+cKsEdQQU1TztA/LyzOEF4A6EgvdM2z3dx5S7FV99jWk9U1G9ugV2BGv49Pwp+yjqe8vRnzVA==}
-
   browserslist@4.23.3:
     resolution: {integrity: sha512-btwCFJVjI4YWDNfau8RhZ+B1Q/VLoUITrm3RlP6y1tYGWIOa+InuYiRGXUBXo8nA1qKmHMyLB/iVQg5TT4eFoA==}
     engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
@@ -2166,6 +2163,9 @@ packages:
 
   makeerror@1.0.12:
     resolution: {integrity: sha512-JmqCvUhmt43madlpFzG4BQzG2Z3m6tvQDNKdClZnO3VbIudJYmxsT0FNJMeiB2+JTSlTQTSbU8QdesVmwJcmLg==}
+
+  matej-appwrite-console@0.6.18:
+    resolution: {integrity: sha512-n1WmZBKjmJEJ3Fc3w/qAKwfLJSPoDQDR+B4loWpa2NLkKRICxZScIvUsegxaBx9uGPOE8Q+A8sw3iCQBVihLuQ==}
 
   mdn-data@2.0.30:
     resolution: {integrity: sha512-GaqWWShW4kv/G9IEucWScBx9G1/vsFZZJUO+tD26M8J8z3Kw5RDQjaoZe03YAClgeS/SWPOcb4nkFBTEi5DUEA==}
@@ -4346,8 +4346,6 @@ snapshots:
     dependencies:
       fill-range: 7.1.1
 
-  bradley-console@0.6.5: {}
-
   browserslist@4.23.3:
     dependencies:
       caniuse-lite: 1.0.30001651
@@ -5603,6 +5601,8 @@ snapshots:
   makeerror@1.0.12:
     dependencies:
       tmpl: 1.0.5
+
+  matej-appwrite-console@0.6.18: {}
 
   mdn-data@2.0.30: {}
 

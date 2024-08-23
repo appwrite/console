@@ -33,8 +33,6 @@
             value: runtime.$id
         }));
 
-        console.log(allowedSpecifications);
-
         specificationOptions = allowedSpecifications.map((size) => ({
             label:
                 `${size.cpus} CPU, ${size.memory} MB RAM` +

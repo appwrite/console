@@ -12,7 +12,7 @@ export const load: LayoutLoad = async ({ depends }) => {
         sdk.forProject.functions.listRuntimes(),
         sdk.forProject.vcs.listInstallations([Query.limit(100)]),
         sdk.forProject.functions.listTemplates(undefined, undefined, 100),
-        sdk.forProject.functions.getSpecifications()
+        sdk.forProject.functions.listSpecifications()
     ]);
 
     return {
