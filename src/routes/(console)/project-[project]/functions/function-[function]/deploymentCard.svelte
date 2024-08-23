@@ -9,6 +9,7 @@
     import DeploymentSource from './deploymentSource.svelte';
 
     import DeploymentDomains from './deploymentDomains.svelte';
+    import { tooltip } from '$lib/actions/tooltip';
 
     export let deployment: Models.Deployment;
 </script>
@@ -28,7 +29,9 @@
     </div>
     <svelte:fragment slot="aside">
         {@const status = deployment.status}
-        {@const fileSize = humanFileSize(deployment.size)}
+        {@const deploymentSize = humanFileSize(deployment.size)}
+        {@const buildSize = humanFileSize(deployment.buildSize)}
+        {@const totalSize = humanFileSize(deployment.buildSize + deployment.size)}
         <ul class="stats-grid-box u-gap-16">
             <li class="u-flex-vertical u-gap-4">
                 <p class="u-color-text-offline">Status</p>
@@ -51,9 +54,27 @@
                 </p>
             </li>
             <li class="u-flex-vertical u-gap-4">
-                <p class="u-color-text-offline">Build size</p>
+                <p class="u-color-text-offline">Total size</p>
                 <p class="u-line-height-2">
-                    {fileSize.value + fileSize.unit}
+                    {totalSize.value + totalSize.unit}
+                    <button
+                        type="button"
+                        on:click|preventDefault
+                        class="tooltip"
+                        aria-label="input tooltip"
+                        use:tooltip={{
+                            content: `
+                                <p><b>Deployment size:</b> ${deploymentSize.value + deploymentSize.unit}</p>
+                                <p><b>Build size:</b> ${buildSize.value + buildSize.unit}</p>
+                            `,
+                            allowHTML: true,
+                            appendTo: 'parent'
+                        }}>
+                        <span
+                            class="icon-info"
+                            aria-hidden="true"
+                            style="font-size: var(--icon-size-small)" />
+                    </button>
                 </p>
             </li>
             <li class="u-flex-vertical u-gap-4">

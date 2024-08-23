@@ -57,30 +57,32 @@
             </span>
         </div>
     </FormList>
-    <h3 class="label u-margin-block-start-48">Function scopes</h3>
-    <FormList class="u-margin-block-start-16">
-        {#each templateScopes as scope, i}
-            <div class="user-profile">
-                <span class="avatar" style:--p-text-size="1rem">
-                    <span class={`icon-${scope.icon}`} />
-                </span>
-                <span class="user-profile-info u-flex u-main-space-between u-gap-16">
-                    <div>
-                        <p class="name u-bold">{scope.scope}</p>
-                        <p class="text u-margin-block-start-4">{scope.description}</p>
-                    </div>
-                    <InputChoice
-                        type="switchbox"
-                        id={scope.scope}
-                        label={scope.scope}
-                        showLabel={false}
-                        bind:value={scope.active}>
-                    </InputChoice>
-                </span>
-            </div>
-            {#if i < templateScopes.length - 1}
-                <div class="with-separators"></div>
-            {/if}
-        {/each}
-    </FormList>
+    {#if templateScopes.length > 0}
+        <h3 class="label u-margin-block-start-48">Function scopes</h3>
+        <FormList class="u-margin-block-start-16">
+            {#each templateScopes as scope, i}
+                <div class="user-profile">
+                    <span class="avatar" style:--p-text-size="1rem">
+                        <span class={`icon-${scope.icon}`} />
+                    </span>
+                    <span class="user-profile-info u-flex u-main-space-between u-gap-16">
+                        <div>
+                            <p class="name u-bold">{scope.scope}</p>
+                            <p class="text u-margin-block-start-4">{scope.description}</p>
+                        </div>
+                        <InputChoice
+                            type="switchbox"
+                            id={scope.scope}
+                            label={scope.scope}
+                            showLabel={false}
+                            bind:value={scope.active}>
+                        </InputChoice>
+                    </span>
+                </div>
+                {#if i < templateScopes.length - 1}
+                    <div class="with-separators"></div>
+                {/if}
+            {/each}
+        </FormList>
+    {/if}
 </WizardStep>

@@ -98,6 +98,7 @@
             autocomplete={autocomplete ? 'on' : 'off'}
             bind:value
             bind:this={element}
+            style:--amount-of-buttons={$$slots.options ? 1 : 0}
             on:invalid={handleInvalid} />
         {#if $$slots.options}
             <div class="options-list">
