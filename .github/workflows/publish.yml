@@ -40,7 +40,7 @@ jobs:
                   build-args: |
                       "PUBLIC_CONSOLE_MODE=cloud"
                       "PUBLIC_GROWTH_ENDPOINT=${{ secrets.PUBLIC_GROWTH_ENDPOINT }}"
-                      "PUBLIC_STRIPE_KEY=${{ secrets.PUBLIC_GROWTH_ENDPOINT }}"
+                      "PUBLIC_STRIPE_KEY=${{ secrets.PUBLIC_STRIPE_KEY }}"
     publish-self-hosted:
         runs-on: ubuntu-latest
         steps:
