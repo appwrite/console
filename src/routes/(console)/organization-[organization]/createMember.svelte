@@ -82,6 +82,6 @@
     </FormList>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
-        <Button submit>Send invite</Button>
+        <Button submit submissionLoader>Send invite</Button>
     </svelte:fragment>
 </Modal>
