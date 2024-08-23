@@ -6,15 +6,14 @@
     import { trackPageView } from '$lib/actions/analytics';
     import { Notifications, Progress } from '$lib/layout';
     import { app } from '$lib/stores/app';
-    import { ENV, isCloud } from '$lib/system';
-    import * as Sentry from '@sentry/svelte';
+    import { isCloud } from '$lib/system';
     import { onMount } from 'svelte';
-    import Loading from './loading.svelte';
-    import { loading, requestedMigration } from './store';
+    import { requestedMigration } from './store';
     import { parseIfString } from '$lib/helpers/object';
     import { sdk } from '$lib/stores/sdk';
-    import type { Models } from '@appwrite.io/console';
     import { campaigns } from '$lib/stores/campaigns';
+    import { user } from '$lib/stores/user';
+    import { loading } from '$routes/store';
 
     onMount(async () => {
         // handle sources
@@ -41,90 +40,27 @@
             requestedMigration.set(parseIfString(migrateData) as Record<string, string>);
         }
 
-        if (ENV.PROD) {
-            /**
-             * Sentry Error Logging
-             */
-            Sentry.init({
-                dsn: 'https://c7ce178bdedd486480317b72f282fd39@o1063647.ingest.sentry.io/4504158071422976',
-                integrations: [new Sentry.BrowserTracing()],
-                tracesSampleRate: 1.0
-            });
-        }
-
-        /**
-         * Handle initial load.
-         */
-
-        function shouldRedirect(route: string, routes: string[]) {
-            return !routes.some((n) => route.startsWith(n));
-        }
-
-        const authenticationRoutes = ['/auth', '/git'];
-        const acceptedUnauthenticatedRoutes = [
-            '/login',
-            '/register',
-            '/recover',
-            '/invite',
-            '/card',
-            '/hackathon',
-            '/mfa'
-        ];
-        const acceptedAuthenticatedRoutes = [
-            '/console',
-            '/invite',
-            '/card',
-            '/hackathon',
-            '/recover'
-        ];
-
-        const pathname = $page.url.pathname;
-        const user = $page.data.account as Models.User<Record<string, string>>;
-
         if ($page.url.searchParams.has('code')) {
             const code = $page.url.searchParams.get('code');
-            try {
-                const couponData = await sdk.forConsole.billing.getCoupon(code);
-                if (couponData?.campaign && campaigns.has(couponData.campaign)) {
-                    if (user) {
-                        goto(`${base}/console/apply-credit?code=${code}`);
-                        loading.set(false);
-                        return;
-                    }
-                }
-            } catch (error) {
-                // Do nothing
-            }
-        }
-        if ($page.url.searchParams.has('campaign')) {
-            const campaign = $page.url.searchParams.get('campaign');
-            if (campaigns.has(campaign)) {
-                if (user) {
-                    goto(`${base}/console/apply-credit?campaign=${campaign}`);
+            const coupon = await sdk.forConsole.billing.getCoupon(code).catch<null>(() => null);
+            if (coupon?.campaign && campaigns.has(coupon.campaign)) {
+                if ($user) {
+                    goto(`${base}/apply-credit?code=${code}`);
                     loading.set(false);
                     return;
                 }
             }
         }
-
-        if (shouldRedirect(pathname, authenticationRoutes)) {
-            if (user?.$id) {
-                if (shouldRedirect(pathname, acceptedAuthenticatedRoutes)) {
-                    await goto(`${base}/console`, {
-                        replaceState: true
-                    });
-                }
-            } else {
-                if (acceptedUnauthenticatedRoutes.some((n) => pathname.startsWith(n))) {
-                    await goto(`${base}${pathname}${$page.url.search}`);
-                } else {
-                    await goto(`${base}/login`, {
-                        replaceState: true
-                    });
-                }
+        if (user && $page.url.searchParams.has('campaign')) {
+            const campaign = $page.url.searchParams.get('campaign');
+            if (campaigns.has(campaign)) {
+                goto(`${base}/apply-credit?campaign=${campaign}`);
+                loading.set(false);
+                return;
             }
-            loading.set(false);
         }
+
+        loading.set(false);
     });
 
     afterNavigate((navigation) => {
@@ -159,10 +95,6 @@
 {/if} -->
 
 <slot />
-
-{#if $loading}
-    <Loading />
-{/if}
 
 <Progress />
 
