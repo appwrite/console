@@ -35,6 +35,11 @@
             title: 'Android',
             icon: 'color/android',
             platform: Platform.Android
+        },
+        {
+            title: 'React Native',
+            icon: 'color/react',
+            platform: Platform.ReactNative
         }
     ];
 
