@@ -14,7 +14,7 @@
             endSegment,
             trigger
         },
-        states: { months, headingValue, daysOfWeek, segmentContents, value },
+        states: { months, headingValue, weekdays, segmentContents, value },
         helpers: { isDateDisabled, isDateUnavailable }
     } = createDateRangePicker();
 
@@ -75,7 +75,7 @@
             <table use:melt={$grid}>
                 <thead aria-hidden="true">
                     <tr>
-                        {#each $daysOfWeek as day}
+                        {#each $weekdays as day}
                             <th class="dt-cell">
                                 <span class="u-flex u-main-center u-cross-center">
                                     {day}
