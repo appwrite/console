@@ -137,7 +137,12 @@
                             bind:value />
                     {:else if column.type === 'datetime'}
                         {#key value}
-                            <InputDateTime id="value" bind:value label="value" showLabel={false} />
+                            <InputDateTime
+                                id="value"
+                                bind:value
+                                label="value"
+                                showLabel={false}
+                                step={60} />
                         {/key}
                     {:else}
                         <InputText id="value" bind:value placeholder="Enter value" />

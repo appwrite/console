@@ -10,7 +10,7 @@
     import { onMount } from 'svelte';
     import { func } from '../store';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
-    import { runtimesList } from '../../store';
+    import { runtimesList } from '$lib/stores/runtimes';
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { Runtime } from '@appwrite.io/console';
 
@@ -23,7 +23,6 @@
         runtime ??= $func.runtime;
 
         let runtimes = await $runtimesList;
-
         options = runtimes.runtimes.map((runtime) => ({
             label: `${runtime.name} - ${runtime.version}`,
             value: runtime.$id
@@ -56,7 +55,7 @@
             );
             await invalidate(Dependencies.FUNCTION);
             addNotification({
-                message: 'Runtime settings have been updated',
+                message: 'Runtime has been updated',
                 type: 'success'
             });
             trackEvent(Submit.FunctionUpdateName);
@@ -68,8 +67,6 @@
             trackError(error, Submit.FunctionUpdateName);
         }
     }
-
-    $: isUpdateButtonEnabled = runtime !== $func?.runtime;
 </script>
 
 <Form onSubmit={updateRuntime}>
@@ -90,7 +87,7 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={!isUpdateButtonEnabled} submit>Update</Button>
+            <Button disabled={runtime === $func.runtime} submit>Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>

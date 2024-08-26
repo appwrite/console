@@ -7,7 +7,7 @@
     export let width = 40;
     export let height = 30;
     export let quality = 100;
-    let classes: string = undefined;
+    let classes: string = '';
     export { classes as class };
 
     export function getFlag(country: string, width: number, height: number, quality: number) {

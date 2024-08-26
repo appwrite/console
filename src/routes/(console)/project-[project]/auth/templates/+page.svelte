@@ -68,6 +68,7 @@
     let emailOpen = 'verification';
     $: emailVerificationOpen = emailOpen === 'verification';
     $: emailMagicSessionOpen = emailOpen === 'magicSession';
+    $: emailOtpSessionOpen = emailOpen === 'otpSession';
     $: emailResetPassword = emailOpen === 'recovery';
     $: emailInviteUser = emailOpen === 'invitation';
     $: email2FAVerificationOpen = emailOpen === 'mfaChallenge';
@@ -160,6 +161,16 @@
                     }}>
                     <svelte:fragment slot="title">Magic URL</svelte:fragment>
                     <p class="text">Send an email to users that sign in with a magic URL.</p>
+                    <EmailMagicUrlTemplate />
+                </CollapsibleItem>
+                <CollapsibleItem
+                    bind:open={emailOtpSessionOpen}
+                    on:click={(e) => {
+                        e.preventDefault();
+                        openEmail('otpSession');
+                    }}>
+                    <svelte:fragment slot="title">OTP Session</svelte:fragment>
+                    <p class="text">Send an email to users that sign in with a email OTP.</p>
                     <EmailMagicUrlTemplate />
                 </CollapsibleItem>
                 <CollapsibleItem

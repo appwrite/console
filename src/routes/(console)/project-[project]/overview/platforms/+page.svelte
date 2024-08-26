@@ -6,13 +6,15 @@
     import CreateApple from './createApple.svelte';
     import CreateFlutter from './createFlutter.svelte';
     import CreateWeb from './createWeb.svelte';
+    import CreateReactNative from './createReactNative.svelte';
     import { versions } from './wizard/store';
 
     export enum Platform {
         Web,
         Flutter,
         Android,
-        Apple
+        Apple,
+        ReactNative
     }
 
     export async function addPlatform(type: Platform) {
@@ -24,7 +26,8 @@
         [Platform.Web]: CreateWeb,
         [Platform.Flutter]: CreateFlutter,
         [Platform.Android]: CreateAndroid,
-        [Platform.Apple]: CreateApple
+        [Platform.Apple]: CreateApple,
+        [Platform.ReactNative]: CreateReactNative
     };
 </script>
 
@@ -52,7 +55,9 @@
         'flutter-macos' = 'macOS',
         'flutter-windows' = 'Windows',
         'flutter-web' = 'Web',
-        'web' = 'Web'
+        'web' = 'Web',
+        'react-native-android' = 'Android',
+        'react-native-ios' = 'iOS'
     }
     let showDropdown = false;
     let showDropdownEmpty = false;
@@ -61,6 +66,8 @@
     const getPlatformInfo = (platform: string) => {
         if (platform.includes('flutter')) {
             return 'color/flutter';
+        } else if (platform.includes('react-native')) {
+            return 'color/react';
         } else if (platform.includes('apple')) {
             return 'color/apple';
         } else if (platform.includes('android')) {
@@ -89,6 +96,8 @@
             <DropListItem on:click={() => addPlatform(Platform.Flutter)}>Flutter app</DropListItem>
             <DropListItem on:click={() => addPlatform(Platform.Android)}>Android app</DropListItem>
             <DropListItem on:click={() => addPlatform(Platform.Apple)}>Apple app</DropListItem>
+            <DropListItem on:click={() => addPlatform(Platform.ReactNative)}
+                >React Native app</DropListItem>
         </svelte:fragment>
     </DropList>
 </ContainerHeader>

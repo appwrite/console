@@ -4,6 +4,7 @@
     import UpdatePasswordDictionary from './updatePasswordDictionary.svelte';
     import UpdatePasswordHistory from './updatePasswordHistory.svelte';
     import UpdatePersonalDataCheck from './updatePersonalDataCheck.svelte';
+    import UpdateSessionAlerts from './updateSessionAlerts.svelte';
     import UpdateSessionLength from './updateSessionLength.svelte';
     import UpdateSessionsLimit from './updateSessionsLimit.svelte';
     import UpdateUsersLimit from './updateUsersLimit.svelte';
@@ -11,10 +12,11 @@
 
 <Container>
     <UpdateUsersLimit />
-    <UpdateMockNumbers />
     <UpdateSessionLength />
     <UpdateSessionsLimit />
     <UpdatePasswordHistory />
     <UpdatePasswordDictionary />
     <UpdatePersonalDataCheck />
+    <UpdateSessionAlerts />
+    <UpdateMockNumbers />
 </Container>

@@ -1,6 +1,9 @@
 <script lang="ts">
+    import { trackEvent } from '$lib/actions/analytics';
     import { CardGrid, EmptyCardImageCloud, Heading } from '$lib/components';
+    import Button from '$lib/elements/forms/button.svelte';
     import { app } from '$lib/stores/app';
+    import { upgradeURL } from '$lib/stores/billing';
     import EmailDark from './email-footer-dark.png';
     import EmailLight from './email-footer-light.png';
     import EmailMobileDark from './email-footer-mobile-dark.png';
@@ -49,6 +52,20 @@
             </svelte:fragment>
             <svelte:fragment slot="title">Upgrade to edit email signature</svelte:fragment>
             Upgrade to a {nextTier} plan to enable or disable Appwrite branding in your emails.
+
+            <svelte:fragment let:source slot="cta">
+                <Button
+                    class="u-margin-block-start-32"
+                    secondary
+                    fullWidth
+                    href={$upgradeURL}
+                    on:click={() => {
+                        trackEvent('click_organization_upgrade', {
+                            from: 'button',
+                            source
+                        });
+                    }}>Upgrade plan</Button>
+            </svelte:fragment>
         </EmptyCardImageCloud>
     </svelte:fragment>
 </CardGrid>

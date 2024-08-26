@@ -14,7 +14,7 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { Container, ContainerHeader } from '$lib/layout';
     import { isServiceLimited } from '$lib/stores/billing';
-    import { marketplace } from '$lib/stores/marketplace.js';
+    import { templatesList } from '$lib/stores/templates';
     import { organization } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
     import Initial from '$lib/wizards/functions/cover.svelte';
@@ -34,7 +34,7 @@
 
     const project = $page.params.project;
 
-    onMount(() => {
+    onMount(async () => {
         const from = $page.url.searchParams.get('from');
         if (from === 'github') {
             const to = $page.url.searchParams.get('to');
@@ -43,7 +43,9 @@
                     const step = $page.url.searchParams.get('step');
                     const template = $page.url.searchParams.get('template');
                     const templateConfig = $page.url.searchParams.get('templateConfig');
-                    templateStore.set(marketplace.find((item) => item.id === template));
+                    templateStore.set(
+                        (await $templatesList).templates.find((item) => item.id === template)
+                    );
                     templateConfigStore.set(JSON.parse(templateConfig));
                     wizard.start(CreateTemplate);
                     wizard.setStep(Number(step));

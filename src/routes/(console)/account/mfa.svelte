@@ -16,7 +16,7 @@
     let step = 1;
     let error = '';
 
-    async function addAuthenticator(): Promise<URL> {
+    async function addAuthenticator(): Promise<string> {
         type = await sdk.forConsole.account.createMfaAuthenticator(AuthenticatorType.Totp);
         trackEvent(Submit.AccountAuthenticatorCreate);
 
@@ -58,7 +58,7 @@
                     style:background-repeat="no-repeat"
                     style:background-position="center"
                     style:background-size="contain">
-                    <img alt="MFA QR Code" class="code" src={qr.toString()} />
+                    <img alt="MFA QR Code" class="code" src={qr} />
                 </div>
                 <span class="with-separators eyebrow-heading-3">or</span>
 
