@@ -26,7 +26,8 @@
     $: initialNumbers = $project?.authMockNumbers?.map((num) => ({ ...num })) ?? [];
     $: isSubmitDisabled = JSON.stringify(numbers) === JSON.stringify(initialNumbers);
 
-    let isComponentDisabled: boolean = isSelfHosted || (isCloud && $organization?.billingPlan === BillingPlan.FREE);
+    let isComponentDisabled: boolean =
+        isSelfHosted || (isCloud && $organization?.billingPlan === BillingPlan.FREE);
     let emptyStateTitle: string = isSelfHosted
         ? 'Available on Appwrite Cloud'
         : 'Upgrade to add mock phone numbers';
