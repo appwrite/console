@@ -5,6 +5,7 @@
     import { Button, Form, FormItem, FormItemPart } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
     import { project } from '../../store';
+    import { upgradeURL } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
@@ -137,8 +138,7 @@
                             class="u-margin-block-start-32"
                             secondary
                             fullWidth
-                            href="https://cloud.appwrite.io/register"
-                            external
+                            href={$upgradeURL}
                             on:click={() => {
                                 trackEvent('click_cloud_signup', {
                                     from: 'button',
