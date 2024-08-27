@@ -79,7 +79,7 @@ const createUploader = () => {
                 (p) => {
                     newFile.$id = p.$id;
                     newFile.progress = p.progress;
-                    newFile.completed = p.progress === 100 ? true : false;
+                    newFile.completed = p.progress === 100;
                     updateFile(p.$id, newFile);
                 }
             );
@@ -91,6 +91,7 @@ const createUploader = () => {
         removeFromQueue: (id: string) => {
             update((n) => {
                 n.files = n.files.filter((f) => f.$id !== id);
+                n.isOpen = n.files.length !== 0;
                 return n;
             });
         },
