@@ -31,6 +31,7 @@
 
     export let buttonText: string = null;
     export let buttonMethod: () => void = null;
+    export let buttonHref: string = null;
     export let buttonEvent: string = buttonText?.toLocaleLowerCase();
     export let buttonDisabled = false;
 
@@ -177,7 +178,8 @@
                 disabled={isButtonDisabled}
                 {buttonText}
                 {buttonEvent}
-                {buttonMethod} />
+                {buttonMethod}
+                {buttonHref} />
         {/if}
     </slot>
 </header>

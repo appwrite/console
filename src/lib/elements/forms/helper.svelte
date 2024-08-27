@@ -18,7 +18,18 @@
             class:icon-exclamation={type === 'warning'}
             aria-hidden="true" />
     {/if}
-    <span class="text">
+    <span class="text u-line-height-1-5">
         <slot />
     </span>
 </p>
+
+<style lang="scss">
+    .icon-info,
+    .icon-exclamation-circle,
+    .icon-check-circle,
+    .icon-exclamation {
+        &::before {
+            vertical-align: baseline;
+        }
+    }
+</style>
