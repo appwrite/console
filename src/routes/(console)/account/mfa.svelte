@@ -31,7 +31,7 @@
             showSetup = false;
             addNotification({
                 type: 'success',
-                message: 'Authenticator app added successfully'
+                message: 'Authenticator app connected successfully'
             });
             trackEvent(Submit.AccountAuthenticatorUpdate);
         } catch (e) {
