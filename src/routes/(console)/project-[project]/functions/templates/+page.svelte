@@ -142,7 +142,8 @@
                                                 .getAll('runtime')
                                                 .includes(runtime)}
                                             on:change={(e) => applyFilter('runtime', runtime, e)} />
-                                        <div class="u-flex u-cross-center u-gap-8 functions-avatar-holder">
+                                        <div
+                                            class="u-flex u-cross-center u-gap-8 functions-avatar-holder">
                                             <div class="avatar is-size-x-small">
                                                 <SvgIcon name={icon} iconSize="small" />
                                             </div>
@@ -181,14 +182,16 @@
                         <li>
                             <article class="card u-min-height-100-percent">
                                 <div class="u-flex u-gap-16 u-cross-center u-main-space-between">
-                                    <h2 class="body-text-1 u-bold u-trim-1 functions-template-title">
+                                    <h2
+                                        class="body-text-1 u-bold u-trim-1 functions-template-title">
                                         {template.name}
                                     </h2>
                                     <ul class="avatars-group is-with-border">
                                         {#each displayed as runtime}
                                             {@const icon = getIconFromRuntime(runtime.name)}
                                             {#if icon}
-                                                <li class="avatars-group-item functions-avatar-holder">
+                                                <li
+                                                    class="avatars-group-item functions-avatar-holder">
                                                     <div class="avatar is-size-small">
                                                         <img
                                                             style:--p-text-size="20px"
@@ -262,9 +265,8 @@
     </div>
 </Container>
 
-
 <style>
-    :global(.theme-light .functions-avatar-holder .avatar)  {
+    :global(.theme-light .functions-avatar-holder .avatar) {
         background-color: var(--p-avatar-bg-color-default);
         --p-avatar-bg-color-default: hsl(var(--color-neutral-0));
     }
