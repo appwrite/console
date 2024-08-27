@@ -1,49 +1,86 @@
-import { version, build, files } from '$service-worker';
+/// <reference types="@sveltejs/kit" />
+/// <reference no-default-lib="true"/>
+/// <reference lib="esnext" />
+/// <reference lib="webworker" />
 
-const name = `cache-${version}`;
-const cachedFiles = [...build, ...files];
+import { build, files, version } from '$service-worker';
 
-self.addEventListener('install', (event: ExtendableEvent) => {
-    event.waitUntil(caches.open(name).then((cache) => cache.addAll(cachedFiles)));
-});
+const sw = self as unknown as ServiceWorkerGlobalScope;
 
-self.addEventListener('activate', (event: ExtendableEvent) => {
-    event.waitUntil(
-        caches.keys().then(async (keys) => {
-            for (const key of keys) {
-                if (!key.includes(version)) caches.delete(key);
-            }
-        })
-    );
-});
+// Create a unique cache name for this deployment
+const CACHE = `cache-${version}`;
 
-self.addEventListener('fetch', (event: FetchEvent) => {
-    const { request } = event;
+const ASSETS = [
+    ...build, // the app itself
+    ...files // everything in `static`
+];
 
-    if (request.method !== 'GET' || request.headers.has('range')) return;
-
-    const url = new URL(request.url);
-    const cached = caches.match(request);
-
-    if (url.origin === location.origin && cachedFiles.includes(url.pathname)) {
-        // always return build files from cache
-        event.respondWith(cached);
-    } else if (url.protocol === 'https:' || location.hostname === 'localhost') {
-        // hit the network for everything else...
-        const promise = fetch(request);
-
-        // ...and cache successful responses...
-        promise.then((response) => {
-            // cache successful responses
-            if (response.ok && response.type === 'basic') {
-                const clone = response.clone();
-                caches.open(name).then((cache) => {
-                    cache.put(request, clone);
-                });
-            }
-        });
-
-        // ...but if it fails, fall back to cache if available
-        event.respondWith(promise.catch(() => cached || promise));
+sw.addEventListener('install', (event) => {
+    // Create a new cache and add all files to it
+    async function addFilesToCache() {
+        const cache = await caches.open(CACHE);
+        await cache.addAll(ASSETS);
     }
+
+    event.waitUntil(addFilesToCache());
+});
+
+sw.addEventListener('activate', (event) => {
+    // Remove previous cached data from disk
+    async function deleteOldCaches() {
+        for (const key of await caches.keys()) {
+            if (key !== CACHE) await caches.delete(key);
+        }
+    }
+
+    event.waitUntil(deleteOldCaches());
+});
+
+sw.addEventListener('fetch', (event) => {
+    // ignore POST requests etc
+    if (event.request.method !== 'GET') return;
+
+    async function respond() {
+        const url = new URL(event.request.url);
+        const cache = await caches.open(CACHE);
+
+        // `build`/`files` can always be served from the cache
+        if (ASSETS.includes(url.pathname)) {
+            const response = await cache.match(url.pathname);
+
+            if (response) {
+                return response;
+            }
+        }
+
+        // for everything else, try the network first, but
+        // fall back to the cache if we're offline
+        try {
+            const response = await fetch(event.request);
+
+            // if we're offline, fetch can return a value that is not a Response
+            // instead of throwing - and we can't pass this non-Response to respondWith
+            if (!(response instanceof Response)) {
+                throw new Error('invalid response from fetch');
+            }
+
+            if (response.status === 200) {
+                cache.put(event.request, response.clone());
+            }
+
+            return response;
+        } catch (err) {
+            const response = await cache.match(event.request);
+
+            if (response) {
+                return response;
+            }
+
+            // if there's no cache, then just error out
+            // as there is nothing we can do to respond to this request
+            throw err;
+        }
+    }
+
+    event.respondWith(respond());
 });

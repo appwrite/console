@@ -1,9 +1,16 @@
 {
-    "rewrites": [
+    "redirects": [
         {
-            "source": "/(.*)",
-            "destination": "/"
+            "source": "/",
+            "destination": "/console/",
+            "permanent": true
         }
     ],
-    "installCommand": "npm install --legacy-peer-deps"
+    "rewrites": [
+        {
+            "source": "/console/(.*)",
+            "destination": "/$1"
+        }
+    ],
+    "installCommand": "pnpm install --frozen-lockfile"
 }
