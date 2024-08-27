@@ -150,3 +150,6 @@ dist
 
 # SvelteKit build / generate output
 .svelte-kit
+
+# Sentry Config File
+.sentryclirc
