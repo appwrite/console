@@ -4,6 +4,7 @@
 
     export let id: string;
     export let label: string | undefined = undefined;
+    export let ariaLabel = label;
     export let optionalText: string | undefined = undefined;
     export let showLabel = true;
     export let value: string | number | boolean | null;
@@ -62,6 +63,7 @@
             {id}
             {required}
             {disabled}
+            aria-label={ariaLabel}
             bind:this={element}
             bind:value
             on:invalid={handleInvalid}
