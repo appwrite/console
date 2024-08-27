@@ -1,22 +1,28 @@
 <script lang="ts">
     import { ID, Runtime } from '@appwrite.io/console';
     import { Wizard } from '$lib/layout';
-    import type { WizardStepsType } from '$lib/layout/wizard.svelte';
     import { sdk } from '$lib/stores/sdk';
     import { wizard } from '$lib/stores/wizard';
     import { goto } from '$app/navigation';
-    import { choices, installation, repository, template, templateConfig } from './store';
+    import {
+        choices,
+        installation,
+        repository,
+        template,
+        templateConfig,
+        templateStepsComponents
+    } from './store';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import GitConfiguration from './steps/gitConfiguration.svelte';
-    import TemplateConfiguration from './steps/templateConfiguration.svelte';
-    import RepositoryBehaviour from './steps/repositoryBehaviour.svelte';
-    import CreateRepository from './steps/createRepository.svelte';
-    import TemplateVariables from './steps/templateVariables.svelte';
-    import { scopes } from '$lib/constants';
     import { isValueOfStringEnum } from '$lib/helpers/types';
+    import TemplateConfiguration from './steps/templateConfiguration.svelte';
+    import TemplatePermissions from './steps/templatePermissions.svelte';
+    import TemplateVariables from './steps/templateVariables.svelte';
+    import TemplateDeployment from './steps/templateDeployment.svelte';
+    import CreateRepository from './steps/createRepository.svelte';
+    import GitConfiguration from './steps/gitConfiguration.svelte';
 
     async function create() {
         try {
@@ -26,22 +32,12 @@
             const runtimeDetail = $template.runtimes.find(
                 (r) => r.name === $templateConfig.runtime
             );
-            if ($templateConfig.appwriteApiKey) {
-                $templateConfig.variables['APPWRITE_API_KEY'] = $templateConfig.appwriteApiKey;
-            } else if ($templateConfig?.generateKey) {
-                const key = await sdk.forConsole.projects.createKey(
-                    $page.params.project,
-                    'Generated for Template',
-                    scopes.map((scope) => scope.scope)
-                );
-                $templateConfig.variables['APPWRITE_API_KEY'] = key.secret;
-            }
 
             const response = await sdk.forProject.functions.create(
                 $templateConfig.$id || ID.unique(),
                 $templateConfig.name,
                 $templateConfig.runtime,
-                $template.permissions || undefined,
+                $templateConfig?.execute ? $template.permissions || undefined : undefined,
                 $template.events || undefined,
                 $template.cron || undefined,
                 $template.timeout || undefined,
@@ -49,15 +45,20 @@
                 undefined,
                 runtimeDetail.entrypoint,
                 runtimeDetail.commands || undefined,
-                $installation.$id,
-                $repository.id,
-                $choices.branch,
-                $choices.silentMode || undefined,
-                $choices.rootDir || undefined,
-                $template.providerRepositoryId,
-                $template.providerOwner,
-                runtimeDetail.providerRootDirectory,
-                $template.providerBranch
+                $templateConfig?.scopes?.length ? $templateConfig.scopes : undefined,
+                $templateConfig.repositoryBehaviour === 'manual' ? undefined : $installation.$id,
+                $templateConfig.repositoryBehaviour === 'manual' ? undefined : $repository.id,
+                $templateConfig.repositoryBehaviour === 'manual' ? undefined : $choices.branch,
+                $templateConfig.repositoryBehaviour === 'manual'
+                    ? undefined
+                    : $choices.silentMode || undefined,
+                $templateConfig.repositoryBehaviour === 'manual'
+                    ? undefined
+                    : $choices.rootDir || undefined,
+                $template.providerRepositoryId || undefined,
+                $template.providerOwner || undefined,
+                runtimeDetail.providerRootDirectory || undefined,
+                $template.providerVersion || undefined
             );
 
             if ($templateConfig.variables) {
@@ -68,15 +69,16 @@
                 await Promise.all(promises);
             }
 
-            goto(
-                `${base}/console/project-${$page.params.project}/functions/function-${response.$id}`
-            );
+            goto(`${base}/project-${$page.params.project}/functions/function-${response.$id}`);
             addNotification({
                 message: `${response.name} has been created`,
                 type: 'success'
             });
             trackEvent(Submit.FunctionCreate, {
-                customId: !!response.$id
+                customId: !!response.$id,
+                runtime: response.runtime,
+                deployment_type: $templateConfig.repositoryBehaviour,
+                scopes: $templateConfig.scopes
             });
             resetState();
         } catch (error) {
@@ -94,27 +96,35 @@
         installation.set(null);
     }
 
-    const stepsComponents: WizardStepsType = new Map();
-    stepsComponents.set(1, {
+    $templateStepsComponents.set(1, {
         label: 'Configuration',
         component: TemplateConfiguration
     });
-    stepsComponents.set(2, {
+    $templateStepsComponents.set(2, {
+        label: 'Permissions',
+        component: TemplatePermissions
+    });
+    $templateStepsComponents.set(3, {
         label: 'Variables',
-        component: TemplateVariables
+        component: TemplateVariables,
+        disabled: !$template?.variables?.length
     });
-    stepsComponents.set(3, {
-        label: 'Connect',
-        component: RepositoryBehaviour
+    $templateStepsComponents.set(4, {
+        label: 'Deployment',
+        component: TemplateDeployment
     });
-    stepsComponents.set(4, {
+    $templateStepsComponents.set(5, {
         label: 'Repository',
         component: CreateRepository
     });
-    stepsComponents.set(5, {
+    $templateStepsComponents.set(6, {
         label: 'Branch',
         component: GitConfiguration
     });
 </script>
 
-<Wizard title="Create Function" steps={stepsComponents} on:finish={create} on:exit={resetState} />
+<Wizard
+    title="Create Function"
+    steps={$templateStepsComponents}
+    on:finish={create}
+    on:exit={resetState} />

@@ -73,7 +73,7 @@ export function createTimeUnitPair(initialValue = 0) {
     return { ...createValueUnitPair(initialValue, units), units };
 }
 
-export function createByteUnitPair(initialValue = 0, base = 1024) {
+export function createByteUnitPair(initialValue = 0, base: 1000 | 1024 = 1000) {
     const units: Unit[] = [
         { name: 'Bytes', value: 1 },
         { name: 'Kilobytes', value: base },

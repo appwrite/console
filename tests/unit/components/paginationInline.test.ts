@@ -1,4 +1,4 @@
-import '@testing-library/jest-dom';
+import { expect, test } from 'vitest';
 import { render, fireEvent } from '@testing-library/svelte';
 import { PaginationInline } from '../../../src/lib/components';
 
