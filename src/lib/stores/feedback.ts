@@ -71,8 +71,8 @@ export const feedbackData = createFeedbackDataStore();
 
 function createFeedbackStore() {
     const { subscribe, update } = writable<Feedback>({
-        elapsed: browser ? parseInt(localStorage.getItem('feedbackElapsed')) ?? 0 : 0,
-        visualized: browser ? parseInt(localStorage.getItem('feedbackVisualized')) ?? 0 : 0,
+        elapsed: browser ? (parseInt(localStorage.getItem('feedbackElapsed')) ?? 0) : 0,
+        visualized: browser ? (parseInt(localStorage.getItem('feedbackVisualized')) ?? 0) : 0,
         notification: false,
         type: 'general',
         show: false

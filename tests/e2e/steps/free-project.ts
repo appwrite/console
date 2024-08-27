@@ -8,23 +8,23 @@ type Metadata = {
 
 export async function createFreeProject(page: Page): Promise<Metadata> {
     const organizationId = await test.step('create organization', async () => {
-        await page.goto('/console');
-        await page.waitForURL('/console/onboarding');
+        await page.goto('./');
+        await page.waitForURL('./onboarding');
         await page.locator('id=name').fill('test org');
         await page.locator('id=plan').selectOption('tier-0');
         await page.getByRole('button', { name: 'get started' }).click();
-        await page.waitForURL('/console/organization-**');
+        await page.waitForURL('./organization-**');
         return getOrganizationIdFromUrl(page.url());
     });
 
     const projectId = await test.step('create project', async () => {
-        await page.waitForURL('/console/organization-**');
+        await page.waitForURL('./organization-**');
         await page.getByRole('button', { name: 'create project' }).first().click();
         await page.locator('id=name').fill('test project');
         await page.getByRole('button', { name: 'next' }).click();
         await page.locator('label').filter({ hasText: 'Frankfurt' }).click();
         await page.getByRole('button', { name: 'create' }).click();
-        await page.waitForURL('/console/project-**/overview/platforms');
+        await page.waitForURL('./project-**/overview/platforms');
         expect(page.url()).toContain('/console/project-');
 
         return getProjectIdFromUrl(page.url());
