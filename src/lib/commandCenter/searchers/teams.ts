@@ -1,15 +1,16 @@
 import { goto } from '$app/navigation';
 import { sdk } from '$lib/stores/sdk';
-import { project } from '$routes/console/project-[project]/store';
+import { project } from '$routes/(console)/project-[project]/store';
 import { get } from 'svelte/store';
 import type { Command, Searcher } from '../commands';
 import type { Models } from '@appwrite.io/console';
+import { base } from '$app/paths';
 
 const getTeamCommand = (team: Models.Team<Models.Preferences>, projectId: string) =>
     ({
         label: team.name,
         callback: () => {
-            goto(`/console/project-${projectId}/auth/teams/team-${team.$id}`);
+            goto(`${base}/project-${projectId}/auth/teams/team-${team.$id}`);
         },
         group: 'teams',
         icon: 'user-circle'
@@ -25,7 +26,7 @@ export const teamSearcher = (async (query: string) => {
             {
                 label: 'Go to members',
                 callback: () => {
-                    goto(`/console/project-${projectId}/auth/teams/team-${teams[0].$id}/members`);
+                    goto(`${base}/project-${projectId}/auth/teams/team-${teams[0].$id}/members`);
                 },
                 group: 'teams',
                 nested: true
@@ -34,7 +35,7 @@ export const teamSearcher = (async (query: string) => {
             {
                 label: 'Go to activity',
                 callback: () => {
-                    goto(`/console/project-${projectId}/auth/teams/team-${teams[0].$id}/activity`);
+                    goto(`${base}/project-${projectId}/auth/teams/team-${teams[0].$id}/activity`);
                 },
                 group: 'teams',
                 nested: true
