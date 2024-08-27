@@ -1,4 +1,4 @@
-import '@testing-library/jest-dom';
+import { afterEach, expect, test } from 'vitest';
 import { render, fireEvent, cleanup } from '@testing-library/svelte';
 import { InputRadio } from '../../../src/lib/elements/forms';
 import RadioGroup from '../../../src/lib/mock/inputRadio.test.svelte';
@@ -10,6 +10,7 @@ const data = {
     value: 'radio',
     name: 'radio'
 };
+
 afterEach(() => cleanup());
 
 test('shows label', () => {
