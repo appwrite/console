@@ -23,11 +23,11 @@
                 on:click={() => (selectedTab = BillingPlan.PRO)}>
                 {tierPro.name}
             </SecondaryTabsItem>
-            <SecondaryTabsItem
+            <!-- <SecondaryTabsItem
                 disabled={selectedTab === BillingPlan.SCALE}
                 on:click={() => (selectedTab = BillingPlan.SCALE)}>
                 {tierScale.name}
-            </SecondaryTabsItem>
+            </SecondaryTabsItem> -->
         </SecondaryTabs>
     </div>
 
