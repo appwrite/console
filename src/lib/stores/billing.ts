@@ -150,7 +150,7 @@ export const tierPro: TierData = {
 };
 export const tierScale: TierData = {
     name: 'Scale',
-    description: 'For scaling teams that need dedicated support.'
+    description: 'For scaling teams and agencies that need dedicated support.'
 };
 
 export const showUsageRatesModal = writable<boolean>(false);
@@ -362,7 +362,7 @@ export async function checkForMandate(org: Organization) {
     const paymentId = org.paymentMethodId ?? org.backupPaymentMethodId;
     if (!paymentId) return;
     const paymentMethod = await sdk.forConsole.billing.getPaymentMethod(paymentId);
-    if (paymentMethod.mandateId === null && paymentMethod.country === 'in') {
+    if (paymentMethod?.mandateId === null && paymentMethod?.country.toLowerCase() === 'in') {
         headerAlert.add({
             id: 'paymentMandate',
             component: PaymentMandate,
@@ -422,14 +422,14 @@ export const upgradeURL = derived(
 
 export const hideBillingHeaderRoutes = ['/console/create-organization', '/console/account'];
 
-export function calculateExcess(usage: OrganizationUsage, plan: Plan, org: Organization) {
+export function calculateExcess(usage: OrganizationUsage, plan: Plan, members: number) {
     const totBandwidth = usage?.bandwidth?.length > 0 ? last(usage.bandwidth).value : 0;
     return {
         bandwidth: calculateResourceSurplus(totBandwidth, plan.bandwidth),
         storage: calculateResourceSurplus(usage?.storageTotal, plan.storage, 'GB'),
         users: calculateResourceSurplus(usage?.usersTotal, plan.users),
         executions: calculateResourceSurplus(usage?.executionsTotal, plan.executions, 'GB'),
-        members: calculateResourceSurplus(org.total, plan.members)
+        members: calculateResourceSurplus(members, plan.members)
     };
 }
 

@@ -1,22 +1,40 @@
 <script lang="ts">
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid, Heading } from '$lib/components';
-    import { InputPhone, InputText } from '$lib/elements/forms';
+    import { InputPhone, InputOTP } from '$lib/elements/forms';
     import { Button, Form, FormItem, FormItemPart } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
     import { project } from '../../store';
     import { addNotification } from '$lib/stores/notifications';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
+    import { organization } from '$lib/stores/organization';
+    import { BillingPlan } from '$lib/constants';
+    import { isCloud, isSelfHosted } from '$lib/system';
+    import MockNumbersLight from './mock-numbers-light.png';
+    import MockNumbersDark from './mock-numbers-dark.png';
+    import EmptyCardImageCloud from '$lib/components/emptyCardImageCloud.svelte';
+    import { app } from '$lib/stores/app';
     import Empty from '$lib/components/empty.svelte';
     import type { Models } from '@appwrite.io/console';
+    import { tooltip } from '$lib/actions/tooltip';
 
     let numbers: Models.MockNumber[] = $project?.authMockNumbers ?? [];
     let initialNumbers = [];
     let projectId: string = $project.$id;
 
     $: initialNumbers = $project?.authMockNumbers?.map((num) => ({ ...num })) ?? [];
-    $: submitDisabled = JSON.stringify(numbers) === JSON.stringify(initialNumbers);
+    $: isSubmitDisabled = JSON.stringify(numbers) === JSON.stringify(initialNumbers);
+
+    let isComponentDisabled: boolean =
+        isSelfHosted || (isCloud && $organization?.billingPlan === BillingPlan.FREE);
+    let emptyStateTitle: string = isSelfHosted
+        ? 'Available on Appwrite Cloud'
+        : 'Upgrade to add mock phone numbers';
+    let emptyStateDescription: string = isSelfHosted
+        ? 'Sign up to Cloud to add mock phone numbers to your projects.'
+        : 'Upgrade to a Pro plan to add mock phone numbers to your project.';
+    let cta: string = isSelfHosted ? 'Sign up' : 'Upgrade plan';
 
     async function updateMockNumbers() {
         try {
@@ -24,7 +42,7 @@
             await invalidate(Dependencies.PROJECT);
             addNotification({
                 type: 'success',
-                message: 'Updated mock phone numbers successfully'
+                message: 'Mock phone numbers have been updated'
             });
             trackEvent(Submit.AuthMockNumbersUpdate);
         } catch (error) {
@@ -48,44 +66,138 @@
         numbers.splice(index, 1);
         numbers = numbers;
     }
+
+    function generateNumber(): string {
+        const areaCode = Math.floor(Math.random() * 800) + 200;
+        const lineNumber = Math.floor(Math.random() * 10000)
+            .toString()
+            .padStart(4, '0');
+        return `+1${areaCode}555${lineNumber}`;
+    }
+
+    function generateOTP(): string {
+        return Math.floor(100000 + Math.random() * 900000) + '';
+    }
 </script>
 
 <Form onSubmit={updateMockNumbers}>
-    <CardGrid>
-        <Heading tag="h6" size="7" id="variables">Mock Phone Numbers</Heading>
+    <CardGrid hideFooter={isComponentDisabled}>
+        <Heading tag="h6" size="7" id="variables">Mock phone numbers</Heading>
         <p>
-            Generate <b>fictional</b> numbers to simulate phone verification while testing demo accounts.
-            A maximum of 10 phone numbers can be generated.
+            Generate <b>fictional</b> numbers to simulate phone verification when testing demo
+            accounts for submitting your application to the App Store or Google Play.
+            <a
+                href="https://appwrite.io/docs/products/auth/security#mock-numbers"
+                target="_blank"
+                class="u-underline"
+                rel="noopener noreferrer">
+                Learn more</a>
         </p>
-
         <svelte:fragment slot="aside">
-            {#if numbers?.length > 0}
-                <ul class="form-list">
+            {#if isComponentDisabled}
+                <EmptyCardImageCloud source="email_signature_card" noAspectRatio>
+                    <svelte:fragment slot="image">
+                        <div class=" is-only-mobile u-width-full-line u-height-100-percent">
+                            {#if $app.themeInUse === 'dark'}
+                                <img
+                                    src={MockNumbersDark}
+                                    class="u-image-object-fit-cover u-only-dark u-width-full-line u-height-100-percent"
+                                    alt="Mock Numbers Example" />
+                            {:else}
+                                <img
+                                    src={MockNumbersLight}
+                                    class="u-image-object-fit-cover u-only-light u-width-full-line u-height-100-percent"
+                                    alt="Mock Numbers Example" />
+                            {/if}
+                        </div>
+                        <div class="is-not-mobile u-width-full-line u-height-100-percent">
+                            {#if $app.themeInUse === 'dark'}
+                                <img
+                                    src={MockNumbersDark}
+                                    width="266"
+                                    height="171"
+                                    class="u-image-object-fit-contain u-block u-only-dark u-width-full-line u-height-100-percent"
+                                    style:object-position="top"
+                                    alt="Mock Numbers Example" />
+                            {:else}
+                                <img
+                                    src={MockNumbersLight}
+                                    width="266"
+                                    height="171"
+                                    class="u-image-object-fit-contain u-only-light u-width-full-line u-height-100-percent"
+                                    style:object-position="top"
+                                    alt="Mock Numbers Example" />
+                            {/if}
+                        </div>
+                    </svelte:fragment>
+                    <svelte:fragment slot="title">{emptyStateTitle}</svelte:fragment>
+                    {emptyStateDescription}
+                    <svelte:fragment let:source slot="cta">
+                        <Button
+                            class="u-margin-block-start-32"
+                            secondary
+                            fullWidth
+                            href="https://cloud.appwrite.io/register"
+                            external
+                            on:click={() => {
+                                trackEvent('click_cloud_signup', {
+                                    from: 'button',
+                                    source
+                                });
+                            }}>{cta}</Button>
+                    </svelte:fragment>
+                </EmptyCardImageCloud>
+            {:else if numbers?.length > 0}
+                <ul class="form-list u-gap-8">
                     {#each numbers as number, index}
                         <FormItem isMultiple>
                             <InputPhone
                                 id={`key-${index}`}
                                 bind:value={number.phone}
                                 fullWidth
-                                placeholder="Enter Phone Number"
-                                label="Phone Number"
-                                showLabel={index === 0 ? true : false}
-                                minlength={8}
+                                placeholder="Enter phone number"
+                                label="Phone number"
+                                showLabel={index === 0}
+                                minlength={9}
                                 maxlength={16}
-                                required />
-                            <InputText
+                                required>
+                                <button
+                                    slot="options"
+                                    use:tooltip={{ content: 'Regenerate', placement: 'bottom' }}
+                                    on:click={() => (number.phone = generateNumber())}
+                                    class="options-list-button"
+                                    aria-label="regenerate text"
+                                    type="button">
+                                    <span class="icon-refresh" aria-hidden="true"></span>
+                                </button>
+                            </InputPhone>
+                            <InputOTP
                                 id={`value-${index}`}
                                 bind:value={number.otp}
                                 fullWidth
                                 placeholder="Enter value"
-                                label="Verification Code"
-                                showLabel={index === 0 ? true : false}
+                                label="Verification code"
                                 maxlength={6}
-                                required />
-                            <FormItemPart alignEnd>
+                                pattern={'^[0-9]{6}$'}
+                                patternError="The value must contain 6 digits"
+                                showLabel={index === 0}
+                                required>
+                                <button
+                                    slot="options"
+                                    use:tooltip={{ content: 'Regenerate', placement: 'bottom' }}
+                                    on:click={() => (number.otp = generateOTP())}
+                                    class="options-list-button"
+                                    aria-label="regenerate text"
+                                    type="button">
+                                    <span class="icon-refresh" aria-hidden="true"></span>
+                                </button>
+                            </InputOTP>
+                            <FormItemPart>
                                 <Button
                                     text
                                     disabled={numbers.length === 0}
+                                    class={'u-padding-4 ' +
+                                        (index === 0 ? 'u-margin-block-start-24' : '')}
                                     on:click={() => {
                                         deletePhoneNumber(index);
                                     }}>
@@ -101,8 +213,8 @@
                         text
                         on:click={() =>
                             addPhoneNumber({
-                                phone: '',
-                                otp: ''
+                                phone: generateNumber(),
+                                otp: generateOTP()
                             })}
                         disabled={numbers.length >= 10}>
                         <span class="icon-plus" aria-hidden="true" />
@@ -113,15 +225,15 @@
                 <Empty
                     on:click={() => {
                         addPhoneNumber({
-                            phone: '',
-                            otp: ''
+                            phone: generateNumber(),
+                            otp: generateOTP()
                         });
-                    }}>Create a mock phone number</Empty>
+                    }}>Generate number</Empty>
             {/if}
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={submitDisabled} submit>Update</Button>
+            <Button disabled={isSubmitDisabled} submit>Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>

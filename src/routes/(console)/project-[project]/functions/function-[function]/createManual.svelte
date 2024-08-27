@@ -80,7 +80,7 @@
     <FormList gap={16}>
         <InputFile
             label="Gzipped code (tar.gz)"
-            allowedFileExtensions={['gz']}
+            allowedFileExtensions={['gz', 'tar']}
             bind:files
             required={true} />
 
@@ -104,10 +104,7 @@
                     <svelte:fragment slot="subtitle">(optional)</svelte:fragment>
 
                     <FormList gap={16}>
-                        <p class="text">
-                            Overwrite your function entrypoint or build commands for a single
-                            deployment or save commands for future use.
-                        </p>
+                        <p class="text">Overwrite your function entrypoint or build commands.</p>
                         <InputText
                             label="Entrypoint"
                             id="entrypoint"

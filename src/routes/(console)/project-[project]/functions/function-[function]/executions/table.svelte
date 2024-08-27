@@ -66,8 +66,8 @@
                                 {@const status = execution.status}
                                 <div
                                     use:tooltip={{
-                                        content: `Scheduled to execute on ${toLocaleDateTime(execution?.schedule)}`,
-                                        disabled: !execution?.schedule
+                                        content: `Scheduled to execute on ${toLocaleDateTime(execution.scheduledAt)}`,
+                                        disabled: !execution?.scheduledAt || status !== 'scheduled'
                                     }}>
                                     <Pill
                                         warning={status === 'waiting' || status === 'building'}
@@ -75,8 +75,10 @@
                                         info={status === 'completed' || status === 'ready'}>
                                         {#if status === 'scheduled'}
                                             <span class="icon-clock" aria-hidden="true" />
+                                            {timeFromNow(execution.scheduledAt)}
+                                        {:else}
+                                            {status}
                                         {/if}
-                                        {status}
                                     </Pill>
                                 </div>
                             </TableCell>

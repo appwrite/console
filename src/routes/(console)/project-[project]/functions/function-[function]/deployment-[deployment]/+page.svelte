@@ -60,26 +60,26 @@
     <DeploymentCard deployment={$deployment}>
         <svelte:fragment slot="actions">
             <div class="u-flex u-flex-wrap">
-                {#if $deployment.status === 'processing'}
+                {#if $deployment.status === 'processing' || $deployment.status === 'building' || $deployment.status === 'waiting'}
                     <Button
                         text
-                        class="u-margin-inline-end-16"
                         on:click={() => {
                             showCancel = true;
                         }}>Cancel</Button>
                 {/if}
 
-                {#if $deployment.status === 'ready'}
-                    <Button text href={getDownload($deployment.$id)} class="u-margin-inline-end-16">
-                        Download code
-                    </Button>
+                {#if $deployment.size > 0}
+                    <Button text href={getDownload($deployment.$id)}>Download code</Button>
                 {/if}
-                <Button
-                    secondary
-                    disabled={data.activeDeployment}
-                    on:click={() => {
-                        showActivate = true;
-                    }}>Activate</Button>
+
+                {#if $func.deployment !== $deployment.$id && $deployment.status === 'ready'}
+                    <Button
+                        secondary
+                        disabled={data.activeDeployment}
+                        on:click={() => {
+                            showActivate = true;
+                        }}>Activate</Button>
+                {/if}
             </div>
         </svelte:fragment>
     </DeploymentCard>

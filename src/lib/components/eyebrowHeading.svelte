@@ -7,7 +7,7 @@
     export let trimmed = true;
     export let id: string = null;
     export let style: string = undefined;
-    let classes: string = undefined;
+    let classes: string = '';
     export { classes as class };
 </script>
 
