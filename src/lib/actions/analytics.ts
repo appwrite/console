@@ -194,6 +194,8 @@ export enum Submit {
     AuthPasswordHistoryUpdate = 'submit_auth_password_history_limit_update',
     AuthPasswordDictionaryUpdate = 'submit_auth_password_dictionary_update',
     AuthPersonalDataCheckUpdate = 'submit_auth_personal_data_check_update',
+    AuthSessionAlertsUpdate = 'submit_auth_session_alerts_update',
+    AuthMockNumbersUpdate = 'submit_auth_mock_numbers_update',
     SessionsLengthUpdate = 'submit_sessions_length_update',
     SessionsLimitUpdate = 'submit_sessions_limit_update',
     SessionDelete = 'submit_session_delete',
@@ -226,13 +228,16 @@ export enum Submit {
     FunctionUpdateLogging = 'submit_function_update_logging',
     FunctionUpdateTimeout = 'submit_function_update_timeout',
     FunctionUpdateEvents = 'submit_function_update_events',
+    FunctionUpdateScopes = 'submit_function_key_update_scopes',
     FunctionConnectRepo = 'submit_function_connect_repo',
     FunctionDisconnectRepo = 'submit_function_disconnect_repo',
     FunctionRedeploy = 'submit_function_redeploy',
     DeploymentCreate = 'submit_deployment_create',
     DeploymentDelete = 'submit_deployment_delete',
     DeploymentUpdate = 'submit_deployment_update',
+    DeploymentCancel = 'submit_deployment_cancel',
     ExecutionCreate = 'submit_execution_create',
+    ExecutionDelete = 'submit_execution_delete',
     VariableCreate = 'submit_variable_create',
     VariableDelete = 'submit_variable_delete',
     VariableUpdate = 'submit_variable_update',
@@ -314,5 +319,6 @@ export enum Submit {
     MessagingTopicUpdateName = 'submit_messaging_topic_update_name',
     MessagingTopicUpdatePermissions = 'submit_messaging_topic_update_permissions',
     MessagingTopicSubscriberAdd = 'submit_messaging_topic_subscriber_add',
-    MessagingTopicSubscriberDelete = 'submit_messaging_topic_subscriber_delete'
+    MessagingTopicSubscriberDelete = 'submit_messaging_topic_subscriber_delete',
+    ApplyQuickFilter = 'submit_apply_quick_filter'
 }

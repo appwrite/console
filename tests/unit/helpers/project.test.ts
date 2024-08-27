@@ -1,5 +1,5 @@
 import { getProjectId } from '$lib/helpers/project';
-import { vi } from 'vitest';
+import { expect, test, vi } from 'vitest';
 
 test('getProjectId', () => {
     const tests: Array<{
