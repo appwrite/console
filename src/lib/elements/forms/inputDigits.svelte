@@ -49,7 +49,7 @@
 
         if (element) {
             const inputs = element.querySelectorAll('input');
-            inputs.forEach(input => input.value = '');
+            inputs.forEach((input) => (input.value = ''));
             if (autofocus) inputs[0].focus();
         }
     }

@@ -75,7 +75,12 @@
         {:else if challengeType == AuthenticationFactor.Phone}
             <p>A 6-digit verification code was sent to your phone, enter it below.</p>
         {/if}
-        <InputDigits bind:value={code} required autofocus {autoSubmit} bind:this={inputDigitFields} />
+        <InputDigits
+            bind:value={code}
+            required
+            autofocus
+            {autoSubmit}
+            bind:this={inputDigitFields} />
     {/if}
     {#if showVerifyButton}
         <FormItem>
