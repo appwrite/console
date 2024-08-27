@@ -27,30 +27,30 @@ export async function enterCreditCard(page: Page) {
 
 export async function createProProject(page: Page): Promise<Metadata> {
     const organizationId = await test.step('create organization', async () => {
-        await page.goto('/console');
-        await page.waitForURL('/console/onboarding');
+        await page.goto('./');
+        await page.waitForURL('./onboarding');
         await page.locator('id=name').fill('test org');
         await page.locator('id=plan').selectOption('tier-1');
         await page.getByRole('button', { name: 'get started' }).click();
-        await page.waitForURL('/console/create-organization**');
+        await page.waitForURL('./create-organization**');
         await page.getByRole('button', { name: 'add' }).first().click();
         await enterCreditCard(page);
         // skip members
         await page.getByRole('button', { name: 'create organization' }).click();
-        await page.waitForURL('/console/organization-**');
+        await page.waitForURL('./organization-**');
 
         return getOrganizationIdFromUrl(page.url());
     });
 
     const projectId = await test.step('create project', async () => {
-        await page.waitForURL('/console/organization-**');
+        await page.waitForURL('./organization-**');
         await page.getByRole('button', { name: 'create project' }).first().click();
         await page.getByPlaceholder('project name').fill('test project');
         await page.getByRole('button', { name: 'next' }).click();
         await page.locator('label').filter({ hasText: 'frankfurt' }).click();
         await page.getByRole('button', { name: 'create' }).click();
-        await page.waitForURL('/console/project-**/overview/platforms');
-        expect(page.url()).toContain('/console/project-');
+        await page.waitForURL('./project-**/overview/platforms');
+        expect(page.url()).toContain('/project-');
 
         return getProjectIdFromUrl(page.url());
     });

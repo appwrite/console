@@ -12,17 +12,12 @@
         InputNumber
     } from '$lib/elements/forms';
     import { Card, Collapsible, CollapsibleItem } from '$lib/components';
-    import AppwriteVariable from '../components/appwriteVariable.svelte';
     import type { SvelteComponent } from 'svelte';
 
     async function beforeSubmit() {
         for (const variable of $template.variables) {
             if (!variable.required) {
                 continue;
-            }
-            if (variable.name === 'APPWRITE_API_KEY') {
-                if ($templateConfig.appwriteApiKey || $templateConfig.generateKey) continue;
-                else throw new Error(`Please set ${variable.name} variable or generate it.`);
             }
             if (!$templateConfig.variables[variable.name]) {
                 throw new Error(`Please set ${variable.name} variable.`);
@@ -33,9 +28,7 @@
     $: requiredVariables = $template?.variables?.filter((v) => v.required);
     $: optionalVariables = $template?.variables?.filter((v) => !v.required);
 
-    function selectComponent(
-        variableType: 'password' | 'text' | 'number' | 'email' | 'url' | 'phone'
-    ): typeof SvelteComponent<unknown> {
+    function selectComponent(variableType: string): typeof SvelteComponent<unknown> {
         switch (variableType) {
             case 'password':
                 return InputPassword;

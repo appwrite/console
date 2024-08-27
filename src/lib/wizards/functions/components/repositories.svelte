@@ -6,7 +6,7 @@
     import { timeFromNow } from '$lib/helpers/date';
     import { app } from '$lib/stores/app';
     import { sdk } from '$lib/stores/sdk';
-    import { repositories } from '$routes/console/project-[project]/functions/function-[function]/store';
+    import { repositories } from '$routes/(console)/project-[project]/functions/function-[function]/store';
     import { installation, installations, repository } from '../store';
     import { createEventDispatcher } from 'svelte';
 
@@ -120,7 +120,7 @@
     <p class="text u-margin-block-start-16">
         Manage organization configuration in your <a
             class="link"
-            href={`${base}/console/project-${$page.params.project}/settings`}>project settings</a
+            href={`${base}/project-${$page.params.project}/settings`}>project settings</a
         >.
     </p>
     {#if selectedInstallation}

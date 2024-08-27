@@ -4,7 +4,9 @@
     import { page } from '$app/stores';
     import { log } from '$lib/stores/logs';
     import { wizard } from '$lib/stores/wizard';
-    import { activeHeaderAlert } from '$routes/console/store';
+    import { activeHeaderAlert } from '$routes/(console)/store';
+    import { setContext } from 'svelte';
+    import { writable } from 'svelte/store';
 
     export let isOpen = false;
     export let showSideNavigation = false;
@@ -40,6 +42,10 @@
             wizard.hide();
         }
     });
+
+    const isNarrow = setContext('isNarrow', writable(false));
+    const hasSubNavigation = setContext('hasSubNavigation', writable(false));
+    $: sideSize = $hasSubNavigation ? ($isNarrow ? '17rem' : '25rem') : '12.5rem';
 </script>
 
 <svelte:window bind:scrollY={y} />
@@ -48,7 +54,8 @@
     class:grid-with-side={showSideNavigation}
     class:is-open={isOpen}
     class:u-hide={$wizard.show || $log.show || $wizard.cover}
-    class:is-fixed-layout={$activeHeaderAlert?.show}>
+    class:is-fixed-layout={$activeHeaderAlert?.show}
+    style:--p-side-size={sideSize}>
     {#if $activeHeaderAlert?.show}
         <svelte:component this={$activeHeaderAlert.component} />
     {/if}
