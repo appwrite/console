@@ -44,7 +44,7 @@
 </script>
 
 {#if filteredMethods?.length}
-    {#if selectedPaymentMethod?.country === 'in'}
+    {#if selectedPaymentMethod?.country?.toLowerCase() === 'in'}
         <Alert type="warning">
             <svelte:fragment slot="title">Indian credit or debit card-holders</svelte:fragment>
             To comply with RBI regulations in India, Appwrite will ask for verification to charge up

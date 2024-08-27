@@ -12,17 +12,12 @@
         InputNumber
     } from '$lib/elements/forms';
     import { Card, Collapsible, CollapsibleItem } from '$lib/components';
-    import AppwriteVariable from '../components/appwriteVariable.svelte';
     import type { SvelteComponent } from 'svelte';
 
     async function beforeSubmit() {
         for (const variable of $template.variables) {
             if (!variable.required) {
                 continue;
-            }
-            if (variable.name === 'APPWRITE_API_KEY') {
-                if ($templateConfig.appwriteApiKey || $templateConfig.generateKey) continue;
-                else throw new Error(`Please set ${variable.name} variable or generate it.`);
             }
             if (!$templateConfig.variables[variable.name]) {
                 throw new Error(`Please set ${variable.name} variable.`);
@@ -33,9 +28,7 @@
     $: requiredVariables = $template?.variables?.filter((v) => v.required);
     $: optionalVariables = $template?.variables?.filter((v) => !v.required);
 
-    function selectComponent(
-        variableType: 'password' | 'text' | 'number' | 'email' | 'url' | 'phone'
-    ): typeof SvelteComponent<unknown> {
+    function selectComponent(variableType: string): typeof SvelteComponent<unknown> {
         switch (variableType) {
             case 'password':
                 return InputPassword;
@@ -72,25 +65,21 @@
 
                     <FormList>
                         {#each requiredVariables as variable}
-                            {#if variable.name === 'APPWRITE_API_KEY'}
-                                <AppwriteVariable appwriteVariable={variable} />
-                            {:else}
-                                <div>
-                                    <svelte:component
-                                        this={selectComponent(variable.type)}
-                                        id={variable.name}
-                                        label={variable.name}
-                                        placeholder={variable.placeholder ?? 'Enter value'}
-                                        required={variable.required}
-                                        autocomplete={false}
-                                        minlength={variable.type === 'password' ? 0 : null}
-                                        showPasswordButton={variable.type === 'password'}
-                                        bind:value={$templateConfig.variables[variable.name]} />
-                                    <Helper type="neutral">
-                                        {@html variable.description}
-                                    </Helper>
-                                </div>
-                            {/if}
+                            <div>
+                                <svelte:component
+                                    this={selectComponent(variable.type)}
+                                    id={variable.name}
+                                    label={variable.name}
+                                    placeholder={variable.placeholder ?? 'Enter value'}
+                                    required={variable.required}
+                                    autocomplete={false}
+                                    minlength={variable.type === 'password' ? 0 : null}
+                                    showPasswordButton={variable.type === 'password'}
+                                    bind:value={$templateConfig.variables[variable.name]} />
+                                <Helper type="neutral">
+                                    {@html variable.description}
+                                </Helper>
+                            </div>
                         {/each}
                     </FormList>
                 </CollapsibleItem>
@@ -107,25 +96,21 @@
 
                     <FormList>
                         {#each optionalVariables as variable}
-                            {#if variable.name === 'APPWRITE_API_KEY'}
-                                <AppwriteVariable appwriteVariable={variable} />
-                            {:else}
-                                <div>
-                                    <svelte:component
-                                        this={selectComponent(variable.type)}
-                                        id={variable.name}
-                                        label={variable.name}
-                                        placeholder={variable.placeholder ?? 'Enter value'}
-                                        required={variable.required}
-                                        autocomplete={false}
-                                        showPasswordButton={variable.type === 'password'}
-                                        bind:value={$templateConfig.variables[variable.name]} />
+                            <div>
+                                <svelte:component
+                                    this={selectComponent(variable.type)}
+                                    id={variable.name}
+                                    label={variable.name}
+                                    placeholder={variable.placeholder ?? 'Enter value'}
+                                    required={variable.required}
+                                    autocomplete={false}
+                                    showPasswordButton={variable.type === 'password'}
+                                    bind:value={$templateConfig.variables[variable.name]} />
 
-                                    <Helper type="neutral">
-                                        {@html variable.description}
-                                    </Helper>
-                                </div>
-                            {/if}
+                                <Helper type="neutral">
+                                    {@html variable.description}
+                                </Helper>
+                            </div>
                         {/each}
                     </FormList>
                 </CollapsibleItem>

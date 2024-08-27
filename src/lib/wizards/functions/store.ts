@@ -1,20 +1,20 @@
 import { page } from '$app/stores';
-import type { MarketplaceTemplate } from '$lib/stores/marketplace';
+import type { WizardStepsType } from '$lib/layout/wizard.svelte';
 import type { Models } from '@appwrite.io/console';
-import { derived, writable } from 'svelte/store';
+import { derived, writable, type Writable } from 'svelte/store';
 
-export const template = writable<MarketplaceTemplate>();
+export const template = writable<Models.TemplateFunction>();
 export const templateConfig = writable<{
     $id: string;
     name: string;
     runtime: string;
     variables: { [key: string]: unknown };
-    repositoryBehaviour: 'new' | 'existing';
-    repositoryName: string;
-    repositoryPrivate: boolean;
+    repositoryBehaviour: 'new' | 'existing' | 'manual';
+    repositoryName?: string;
+    repositoryPrivate?: boolean;
     repositoryId: string;
-    appwriteApiKey?: string;
-    generateKey?: boolean;
+    execute?: boolean;
+    scopes?: string[];
 }>();
 export const repository = writable<Models.ProviderRepository>();
 export const installation = writable<Models.Installation>();
@@ -59,3 +59,5 @@ function createFunctionStore() {
 export const createFunction = createFunctionStore();
 
 export const createFunctionDeployment = writable<FileList>();
+
+export const templateStepsComponents: Writable<WizardStepsType> = writable(new Map());

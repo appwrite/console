@@ -1,7 +1,5 @@
 <script>
-    import { trackEvent } from '$lib/actions/analytics';
-    import { Button } from '$lib/elements/forms';
-    import { getNextTier, tierToPlan, upgradeURL } from '$lib/stores/billing';
+    import { getNextTier, tierToPlan } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import Card from './card.svelte';
 
@@ -21,22 +19,12 @@
                 </div>
             </div>
         {/if}
-        <div class="u-stretch u-flex-vertical">
+        <div class="u-stretch u-flex-vertical u-main-center">
             <h3 class="body-text-2 u-bold"><slot name="title" /></h3>
             <p class="u-margin-block-start-8">
                 <slot nextTier={tierToPlan(getNextTier($organization.billingPlan)).name} />
             </p>
-            <Button
-                class="u-margin-block-start-32"
-                secondary
-                fullWidth
-                href={$upgradeURL}
-                on:click={() => {
-                    trackEvent('click_organization_upgrade', {
-                        from: 'button',
-                        source
-                    });
-                }}>Upgrade plan</Button>
+            <slot name="cta" {source} />
         </div>
     </div>
 </Card>
