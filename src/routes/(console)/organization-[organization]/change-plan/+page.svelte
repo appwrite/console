@@ -149,9 +149,9 @@
                 type: 'success',
                 isHtml: true,
                 message: `
-                    <b>${$organization.name}</b> has been changed to ${
-                        tierToPlan(billingPlan).name
-                    } plan.`
+                        <b>${$organization.name}</b> will change to ${
+                            tierToPlan(billingPlan).name
+                        } plan at the end of the current billing cycle.`
             });
 
             trackEvent(Submit.OrganizationDowngrade, {
@@ -162,7 +162,7 @@
                 type: 'error',
                 message: e.message
             });
-            trackError(e, isUpgrade ? Submit.OrganizationUpgrade : Submit.OrganizationDowngrade);
+            trackError(e, Submit.OrganizationDowngrade);
         }
     }
 
@@ -213,22 +213,12 @@
             await invalidate(Dependencies.ORGANIZATION);
 
             await goto(`${base}/organization-${org.$id}`);
-            if (isUpgrade) {
-                addNotification({
-                    type: 'success',
-                    message: 'Your organization has been upgraded'
-                });
-            } else {
-                addNotification({
-                    type: 'success',
-                    isHtml: true,
-                    message: `
-                        <b>${$organization.name}</b> will change to ${
-                            tierToPlan(billingPlan).name
-                        } plan at the end of the current billing cycle.`
-                });
-            }
-            trackEvent(isUpgrade ? Submit.OrganizationUpgrade : Submit.OrganizationDowngrade, {
+            addNotification({
+                type: 'success',
+                message: 'Your organization has been upgraded'
+            });
+
+            trackEvent(Submit.OrganizationUpgrade, {
                 plan: tierToPlan(billingPlan)?.name
             });
         } catch (e) {
@@ -236,7 +226,7 @@
                 type: 'error',
                 message: e.message
             });
-            trackError(e, isUpgrade ? Submit.OrganizationUpgrade : Submit.OrganizationDowngrade);
+            trackError(e, Submit.OrganizationUpgrade);
         }
     }
 
@@ -324,6 +314,7 @@
                         bind:value={feedbackDowngradeReason} />
                     <InputTextarea
                         id="comment"
+                        required
                         label="If you need to elaborate, please do so here"
                         placeholder="Enter feedback"
                         bind:value={feedbackMessage} />
