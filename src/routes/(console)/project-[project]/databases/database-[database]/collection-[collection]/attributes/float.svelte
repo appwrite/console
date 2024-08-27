@@ -88,18 +88,19 @@
         </li>
         <li class="u-flex-basis-50-percent">
             <InputNumber
-            id="max"
-            label="Max"
-            placeholder="Enter size"
-            bind:value={data.max}
-            step="any"
-            required={editing} />
+                id="max"
+                label="Max"
+                placeholder="Enter size"
+                bind:value={data.max}
+                step="any"
+                required={editing} />
         </li>
     </ul>
 
     <div class="u-flex u-gap-4 u-margin-block-start-8 u-small">
-        <span class="icon-info u-cross-center u-margin-block-start-2 u-line-height-1 u-icon-small"
-              aria-hidden="true" />
+        <span
+            class="icon-info u-cross-center u-margin-block-start-2 u-line-height-1 u-icon-small"
+            aria-hidden="true" />
         <span class="text u-line-height-1-5">
             Once created, attribute range cannot be adjusted to maintain data integrity.
         </span>
