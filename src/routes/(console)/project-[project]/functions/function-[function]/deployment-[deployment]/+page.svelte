@@ -67,7 +67,8 @@
                         invalidate(Dependencies.DEPLOYMENT);
                     }
                 }
-        });
+            }
+        );
 
         return () => {
             unsubscribe();

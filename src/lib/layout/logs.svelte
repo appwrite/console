@@ -152,7 +152,8 @@
 
             <div class="u-stretch u-margin-block-start-32 u-overflow-hidden">
                 <section class="code-panel">
-                    <header class="code-panel-header code-panel-compact-header u-main-space-between u-width-full-line">
+                    <header
+                        class="code-panel-header code-panel-compact-header u-main-space-between u-width-full-line">
                         <div class="u-flex">
                             <div class="u-flex u-gap-16">
                                 <h4 class="text u-bold">Method:</h4>
@@ -195,8 +196,7 @@
                     </header>
                     <div class="code-panel-content grid-1-2">
                         <div
-                            class="grid-1-2-col-1 u-flex u-flex-vertical u-gap-16 mobile-only-inline-20-padding"
-                        >
+                            class="grid-1-2-col-1 u-flex u-flex-vertical u-gap-16 mobile-only-inline-20-padding">
                             <Heading tag="h3" size="6">Request</Heading>
                             <div class="u-sep-block-end">
                                 <Tabs>
@@ -309,8 +309,7 @@
                         </div>
                         <div class="u-sep-block-end is-only-mobile u-padding-block-start-16" />
                         <div
-                            class="grid-1-2-col-2 u-flex u-flex-vertical u-gap-16 u-min-width-0 mobile-only-inline-20-padding mobile-only-block-start-20-padding"
-                        >
+                            class="grid-1-2-col-2 u-flex u-flex-vertical u-gap-16 u-min-width-0 mobile-only-inline-20-padding mobile-only-block-start-20-padding">
                             <Heading tag="h3" size="6">Response</Heading>
                             <div class="u-sep-block-end">
                                 <Tabs>
