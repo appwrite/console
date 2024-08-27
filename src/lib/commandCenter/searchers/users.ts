@@ -1,16 +1,17 @@
 import { goto } from '$app/navigation';
 import { sdk } from '$lib/stores/sdk';
-import { project } from '$routes/console/project-[project]/store';
+import { project } from '$routes/(console)/project-[project]/store';
 import { get } from 'svelte/store';
 import type { Command, Searcher } from '../commands';
 import type { Models } from '@appwrite.io/console';
-import { promptDeleteUser } from '$routes/console/project-[project]/auth/user-[user]/dangerZone.svelte';
+import { promptDeleteUser } from '$routes/(console)/project-[project]/auth/user-[user]/dangerZone.svelte';
+import { base } from '$app/paths';
 
 const getUserCommand = (user: Models.User<Models.Preferences>, projectId: string) =>
     ({
         label: user.name,
         callback: () => {
-            goto(`/console/project-${projectId}/auth/user-${user.$id}`);
+            goto(`${base}/project-${projectId}/auth/user-${user.$id}`);
         },
         group: 'users',
         icon: 'user-circle'
@@ -35,7 +36,7 @@ export const userSearcher = (async (query: string) => {
             {
                 label: 'Go to activity',
                 callback: () => {
-                    goto(`/console/project-${projectId}/auth/user-${users[0].$id}/activity`);
+                    goto(`${base}/project-${projectId}/auth/user-${users[0].$id}/activity`);
                 },
                 group: 'users',
                 nested: true
@@ -43,7 +44,7 @@ export const userSearcher = (async (query: string) => {
             {
                 label: 'Go to sessions',
                 callback: () => {
-                    goto(`/console/project-${projectId}/auth/user-${users[0].$id}/sessions`);
+                    goto(`${base}/project-${projectId}/auth/user-${users[0].$id}/sessions`);
                 },
                 group: 'users',
                 nested: true
@@ -51,7 +52,7 @@ export const userSearcher = (async (query: string) => {
             {
                 label: 'Go to memberships',
                 callback: () => {
-                    goto(`/console/project-${projectId}/auth/user-${users[0].$id}/memberships`);
+                    goto(`${base}/project-${projectId}/auth/user-${users[0].$id}/memberships`);
                 },
                 group: 'users',
                 nested: true

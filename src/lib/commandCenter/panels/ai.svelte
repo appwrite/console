@@ -8,10 +8,9 @@
 
     import { isLanguage, type Language } from '$lib/components/code.svelte';
     import { preferences } from '$lib/stores/preferences';
-    import { VARS } from '$lib/system';
+    import { getApiEndpoint } from '$lib/stores/sdk';
 
-    const endpoint = VARS.APPWRITE_ENDPOINT ?? `${globalThis?.location?.origin}/v1`;
-
+    const endpoint = getApiEndpoint();
     const { input, handleSubmit, completion, isLoading, complete, error } = useCompletion({
         api: endpoint + '/console/assistant',
         headers: {
