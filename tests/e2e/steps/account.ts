@@ -9,7 +9,7 @@ type Metadata = {
 export function registerUserStep(page: Page): Promise<Metadata> {
     return test.step('register user', async () => {
         const seed = crypto.randomUUID();
-        await page.goto('/register');
+        await page.goto('./register');
         // await page.getByRole('button', { name: 'only required' }).click();
         const inputs = {
             name: page.locator('id=name'),
@@ -27,7 +27,7 @@ export function registerUserStep(page: Page): Promise<Metadata> {
         await inputs.password.fill(values.password);
         await inputs.terms.check();
         await page.getByRole('button', { name: 'Sign up', exact: true }).click();
-        await page.waitForURL('/console/onboarding');
+        await page.waitForURL('./onboarding');
 
         return values;
     });

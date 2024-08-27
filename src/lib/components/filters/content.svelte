@@ -6,13 +6,14 @@
         InputText,
         InputTags,
         FormList,
-        InputSelectCheckbox
+        InputSelectCheckbox,
+        InputDateTime
     } from '$lib/elements/forms';
     import { createEventDispatcher, onMount } from 'svelte';
-    import { tags, queries, type TagValue, operators, addFilter } from './store';
+    import { tags, operators, addFilter, queries } from './store';
     import type { Column } from '$lib/helpers/types';
     import type { Writable } from 'svelte/store';
-    import { tooltip } from '$lib/actions/tooltip';
+    import { TagList } from '.';
 
     // We cast to any to not cause type errors in the input components
     /* eslint  @typescript-eslint/no-explicit-any: 'off' */
@@ -21,6 +22,7 @@
     export let columnId: string | null = null;
     export let arrayValues: string[] = [];
     export let operatorKey: string | null = null;
+    export let singleCondition = false;
 
     $: column = $columns.find((c) => c.id === columnId) as Column;
 
@@ -41,6 +43,10 @@
 
     onMount(() => {
         value = column?.array ? [] : null;
+        if (column?.type === 'datetime') {
+            const today = new Date();
+            value = today.toISOString();
+        }
     });
 
     function addFilterAndReset() {
@@ -49,21 +55,9 @@
         operatorKey = null;
         value = null;
         arrayValues = [];
-    }
-
-    function tagFormat(node: HTMLElement) {
-        node.innerHTML = node.innerHTML.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
-    }
-
-    function isTypeTagValue(obj: any): obj is TagValue {
-        if (typeof obj === 'string') return false;
-        return (
-            obj &&
-            typeof obj.tag === 'string' &&
-            (typeof obj.value === 'string' ||
-                typeof obj.value === 'number' ||
-                Array.isArray(obj.value))
-        );
+        if (singleCondition) {
+            queries.apply();
+        }
     }
 
     const dispatch = createEventDispatcher<{
@@ -75,7 +69,7 @@
 
 <div>
     <form on:submit|preventDefault={addFilterAndReset}>
-        <ul class="selects u-flex u-gap-8 u-margin-block-start-16">
+        <ul class="selects u-flex u-gap-8 u-margin-block-start-16 u-flex-vertical-mobile">
             <InputSelect
                 id="column"
                 options={$columns
@@ -101,10 +95,10 @@
                             name="value"
                             bind:tags={arrayValues}
                             placeholder="Select value"
-                            options={column?.elements?.map((value) => ({
-                                label: value,
-                                value,
-                                checked: arrayValues.includes(value)
+                            options={column?.elements?.map((e) => ({
+                                label: e?.label ?? e,
+                                value: e?.value ?? e,
+                                checked: arrayValues.includes(e?.value ?? e)
                             }))}>
                         </InputSelectCheckbox>
                     {:else}
@@ -123,7 +117,10 @@
                             id="value"
                             bind:value
                             placeholder="Select value"
-                            options={column?.elements?.map((value) => ({ label: value, value }))}
+                            options={column?.elements?.map((e) => ({
+                                label: e?.label ?? e,
+                                value: e?.value ?? e
+                            }))}
                             label="Value"
                             showLabel={false} />
                     {:else if column.type === 'integer' || column.type === 'double'}
@@ -138,48 +135,34 @@
                                 { label: 'False', value: false }
                             ].filter(Boolean)}
                             bind:value />
+                    {:else if column.type === 'datetime'}
+                        {#key value}
+                            <InputDateTime
+                                id="value"
+                                bind:value
+                                label="value"
+                                showLabel={false}
+                                step={60} />
+                        {/key}
                     {:else}
                         <InputText id="value" bind:value placeholder="Enter value" />
                     {/if}
                 </ul>
             {/if}
         {/if}
-        <Button text disabled={isDisabled} class="u-margin-block-start-4" noMargin submit>
-            <i class="icon-plus" />
-            Add condition
-        </Button>
+        {#if !singleCondition}
+            <Button text disabled={isDisabled} class="u-margin-block-start-4" noMargin submit>
+                <i class="icon-plus" />
+                Add condition
+            </Button>
+        {/if}
     </form>
 
-    <ul class="u-flex u-flex-wrap u-cross-center u-gap-8 u-margin-block-start-16 tags">
-        {#each $tags as tag (tag)}
-            {#if isTypeTagValue(tag)}
-                <button
-                    use:tooltip={{
-                        content: tag?.value?.toString()
-                    }}
-                    class="tag"
-                    on:click={() => {
-                        queries.removeFilter(tag);
-                    }}>
-                    <span class="text" use:tagFormat>
-                        {tag.tag}
-                    </span>
-                    <i class="icon-x" />
-                </button>
-            {:else}
-                <button
-                    class="tag"
-                    on:click={() => {
-                        queries.removeFilter(tag);
-                    }}>
-                    <span class="text" use:tagFormat>
-                        {tag}
-                    </span>
-                    <i class="icon-x" />
-                </button>
-            {/if}
-        {/each}
-    </ul>
+    {#if !singleCondition}
+        <ul class="u-flex u-flex-wrap u-cross-center u-gap-8 u-margin-block-start-16 tags">
+            <TagList />
+        </ul>
+    {/if}
 </div>
 
 <style lang="scss">

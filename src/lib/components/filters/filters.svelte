@@ -5,13 +5,27 @@
     import type { Column } from '$lib/helpers/types';
     import type { Writable } from 'svelte/store';
     import Content from './content.svelte';
-    import { addFilter, queries, queriesAreDirty, queryParamToMap, tags } from './store';
+    import {
+        addFilter,
+        queries,
+        queriesAreDirty,
+        queryParamToMap,
+        tags,
+        ValidOperators
+    } from './store';
+    import { createEventDispatcher } from 'svelte';
 
     export let query = '[]';
     export let columns: Writable<Column[]>;
     export let disabled = false;
     export let fullWidthMobile = false;
+    export let singleCondition = false;
+    export let clearOnClick = false; // When enabled the user doesn't have to click apply to clear the filters
+    export let enableApply = false;
+    export let quickFilters = false;
+    let displayQuickFilters = quickFilters;
 
+    const dispatch = createEventDispatcher();
     const parsedQueries = queryParamToMap(query);
     queries.set(parsedQueries);
 
@@ -36,10 +50,22 @@
     function clearAll() {
         selectedColumn = null;
         queries.clearAll();
+        if (clearOnClick) {
+            queries.apply();
+        }
     }
 
     function apply() {
-        if (selectedColumn && operatorKey && value) {
+        if (quickFilters && displayQuickFilters) {
+            dispatch('apply');
+        } else if (
+            selectedColumn &&
+            operatorKey &&
+            (operatorKey === ValidOperators.IsNotNull ||
+                operatorKey === ValidOperators.IsNull ||
+                value ||
+                arrayValues.length)
+        ) {
             addFilter($columns, selectedColumn, operatorKey, value, arrayValues);
             selectedColumn = null;
             value = null;
@@ -49,16 +75,106 @@
         queries.apply();
     }
 
-    $: if (!showFiltersDesktop && !showFiltersMobile) {
-        selectedColumn = null;
+    function afterApply(
+        e: CustomEvent<{
+            applied: number;
+        }>
+    ) {
+        applied = e.detail.applied;
+        if (singleCondition) {
+            showFiltersDesktop = false;
+            showFiltersMobile = false;
+        }
     }
 
-    $: isButtonDisabled = $queriesAreDirty ? false : !selectedColumn || !operatorKey || !value;
+    $: if (!showFiltersDesktop && !showFiltersMobile) {
+        selectedColumn = null;
+        value = null;
+        operatorKey = null;
+        arrayValues = [];
+    }
+
+    $: isButtonDisabled =
+        $queriesAreDirty || (quickFilters && displayQuickFilters && enableApply)
+            ? false
+            : !selectedColumn ||
+              !operatorKey ||
+              (!value &&
+                  !arrayValues.length &&
+                  operatorKey !== ValidOperators.IsNotNull &&
+                  operatorKey !== ValidOperators.IsNull);
+
+    function toggleDropdown() {
+        dispatch('toggle', { show: !showFiltersDesktop });
+        showFiltersDesktop = !showFiltersDesktop;
+    }
+    function toggleMobileModal() {
+        dispatch('toggle', { show: !showFiltersMobile });
+        showFiltersMobile = !showFiltersMobile;
+    }
 </script>
 
 <div class="is-not-mobile">
     <Drop bind:show={showFiltersDesktop} noArrow>
-        <Button secondary on:click={() => (showFiltersDesktop = !showFiltersDesktop)} {disabled}>
+        <slot {disabled} toggle={toggleDropdown}>
+            <Button secondary on:click={toggleDropdown} {disabled}>
+                <i class="icon-filter u-opacity-50" />
+                Filters
+                {#if applied > 0}
+                    <span class="inline-tag">
+                        {applied}
+                    </span>
+                {/if}
+            </Button>
+        </slot>
+        <svelte:fragment slot="list">
+            <div class="dropped card">
+                {#if displayQuickFilters}
+                    <slot name="quick" />
+                {:else}
+                    <p>Apply filter rules to refine the table view</p>
+                    <Content
+                        bind:columnId={selectedColumn}
+                        bind:operatorKey
+                        bind:value
+                        bind:arrayValues
+                        {columns}
+                        {singleCondition}
+                        on:apply={afterApply}
+                        on:clear={() => (applied = 0)} />
+                {/if}
+                <hr />
+                <div
+                    class="u-flex u-cross-center u-margin-block-start-16"
+                    class:u-main-end={!quickFilters}
+                    class:u-main-space-between={quickFilters}>
+                    {#if quickFilters}
+                        <Button
+                            text
+                            on:click={() => (displayQuickFilters = !displayQuickFilters)}
+                            class="u-margin-block-end-auto">
+                            {displayQuickFilters ? 'Advanced filters' : 'Quick filters'}
+                        </Button>
+                    {/if}
+                    <div class="u-flex u-gap-8">
+                        {#if singleCondition}
+                            <Button text on:click={toggleDropdown}>Cancel</Button>
+                        {:else}
+                            <Button disabled={applied === 0} text on:click={clearAll}>
+                                Clear all
+                            </Button>
+                        {/if}
+                        <Button on:click={apply} disabled={isButtonDisabled}>Apply</Button>
+                    </div>
+                </div>
+            </div>
+        </svelte:fragment>
+    </Drop>
+</div>
+
+<div class="is-only-mobile">
+    <slot name="mobile" {disabled} toggle={toggleMobileModal}>
+        <Button secondary on:click={toggleMobileModal} {fullWidthMobile}>
             <i class="icon-filter u-opacity-50" />
             Filters
             {#if applied > 0}
@@ -67,54 +183,49 @@
                 </span>
             {/if}
         </Button>
-        <svelte:fragment slot="list">
-            <div class="dropped card">
-                <p>Apply filter rules to refine the table view</p>
-                <Content
-                    bind:columnId={selectedColumn}
-                    bind:operatorKey
-                    bind:value
-                    bind:arrayValues
-                    {columns}
-                    on:apply={(e) => (applied = e.detail.applied)}
-                    on:clear={() => (applied = 0)} />
-                <hr />
-                <div class="u-flex u-margin-block-start-16 u-main-end u-gap-8">
-                    <Button text on:click={clearAll}>Clear all</Button>
-                    <Button on:click={apply} disabled={isButtonDisabled}>Apply</Button>
-                </div>
-            </div>
-        </svelte:fragment>
-    </Drop>
-</div>
-
-<div class="is-only-mobile">
-    <Button secondary on:click={() => (showFiltersMobile = !showFiltersMobile)} {fullWidthMobile}>
-        <i class="icon-filter u-opacity-50" />
-        Filters
-        {#if applied > 0}
-            <span class="inline-tag">
-                {applied}
-            </span>
-        {/if}
-    </Button>
+    </slot>
 
     <Modal
         title="Filters"
         description="Apply filter rules to refine the table view"
         bind:show={showFiltersMobile}
         size="big">
-        <Content
-            {columns}
-            bind:columnId={selectedColumn}
-            bind:operatorKey
-            bind:value
-            bind:arrayValues
-            on:apply={(e) => (applied = e.detail.applied)}
-            on:clear={() => (applied = 0)} />
+        {#if displayQuickFilters}
+            <slot name="quick" />
+        {:else}
+            <Content
+                {columns}
+                bind:columnId={selectedColumn}
+                bind:operatorKey
+                bind:value
+                bind:arrayValues
+                {singleCondition}
+                on:apply={afterApply}
+                on:clear={() => (applied = 0)} />
+        {/if}
         <svelte:fragment slot="footer">
-            <Button text on:click={clearAll}>Clear all</Button>
-            <Button on:click={apply} disabled={isButtonDisabled}>Apply</Button>
+            <div
+                class="u-flex u-cross-center u-width-full-line"
+                class:u-main-end={!quickFilters}
+                class:u-main-space-between={quickFilters}>
+                {#if quickFilters}
+                    <Button
+                        text
+                        noMargin
+                        on:click={() => (displayQuickFilters = !displayQuickFilters)}
+                        class="u-margin-block-end-auto">
+                        {displayQuickFilters ? 'Advanced filters' : 'Quick filters'}
+                    </Button>
+                {/if}
+                <div class="u-flex u-gap-8">
+                    {#if singleCondition}
+                        <Button text on:click={() => (showFiltersMobile = false)}>Cancel</Button>
+                    {:else}
+                        <Button text on:click={clearAll}>Clear all</Button>
+                    {/if}
+                    <Button on:click={apply} disabled={isButtonDisabled}>Apply</Button>
+                </div>
+            </div>
         </svelte:fragment>
     </Modal>
 </div>
