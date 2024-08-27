@@ -1,7 +1,7 @@
 <script lang="ts">
     import { BillingPlan } from '$lib/constants';
     import { formatNum } from '$lib/helpers/string';
-    import { plansInfo, tierFree, tierPro, tierScale, type Tier } from '$lib/stores/billing';
+    import { plansInfo, tierFree, tierPro, type Tier } from '$lib/stores/billing';
     import { Card, SecondaryTabs, SecondaryTabsItem } from '..';
 
     let selectedTab: Tier = BillingPlan.FREE;
