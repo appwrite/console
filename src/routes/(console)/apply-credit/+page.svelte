@@ -105,7 +105,10 @@
                     newOrgId,
                     name,
                     billingPlan,
-                    paymentMethodId
+                    paymentMethodId,
+                    undefined,
+                    collaborators?.length ? collaborators : undefined,
+                    couponData?.code ? couponData.code : undefined
                 );
             }
             // Upgrade existing org
@@ -114,36 +117,37 @@
                     selectedOrg.$id,
                     billingPlan,
                     paymentMethodId,
-                    null
+                    undefined,
+                    collaborators?.length ? collaborators : undefined,
+                    couponData?.code ? couponData.code : undefined
                 );
             }
             // Existing pro org
             else {
                 org = selectedOrg;
-            }
 
-            // Add coupon
-            if (couponData?.code) {
-                await sdk.forConsole.billing.addCredit(org.$id, couponData.code);
+                // Add coupon
+                if (couponData?.code) {
+                    await sdk.forConsole.billing.addCredit(org.$id, couponData.code);
+                }
+                // Add collaborators
+                if (collaborators?.length) {
+                    collaborators.forEach(async (collaborator) => {
+                        await sdk.forConsole.teams.createMembership(
+                            org.$id,
+                            ['owner'],
+                            collaborator,
+                            undefined,
+                            undefined,
+                            `${$page.url.origin}/${base}/organization-${org.$id}`
+                        );
+                    });
+                }
             }
 
             // Add budget
             if (billingBudget) {
                 await sdk.forConsole.billing.updateBudget(org.$id, billingBudget, [75]);
-            }
-
-            // Add collaborators
-            if (collaborators?.length) {
-                collaborators.forEach(async (collaborator) => {
-                    await sdk.forConsole.teams.createMembership(
-                        org.$id,
-                        ['owner'],
-                        collaborator,
-                        undefined,
-                        undefined,
-                        `${$page.url.origin}/${base}/organization-${org.$id}`
-                    );
-                });
             }
 
             // Add tax ID

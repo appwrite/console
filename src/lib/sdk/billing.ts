@@ -307,7 +307,9 @@ export class Billing {
         name: string,
         billingPlan: string,
         paymentMethodId: string,
-        billingAddressId: string = undefined
+        billingAddressId: string = undefined,
+        invites: string[] = undefined,
+        couponId: string = undefined
     ): Promise<Organization> {
         const path = `/organizations`;
         const params = {
@@ -315,7 +317,9 @@ export class Billing {
             name,
             billingPlan,
             paymentMethodId,
-            billingAddressId
+            billingAddressId,
+            invites,
+            couponId
         };
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(

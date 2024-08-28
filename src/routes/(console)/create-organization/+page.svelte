@@ -117,32 +117,14 @@
                     name,
                     billingPlan,
                     paymentMethodId,
-                    null
+                    null,
+                    collaborators?.length ? collaborators : undefined,
+                    couponData?.code
                 );
 
                 //Add budget
                 if (billingBudget) {
                     await sdk.forConsole.billing.updateBudget(org.$id, billingBudget, [75]);
-                }
-
-                //Add coupon
-                if (couponData?.code) {
-                    await sdk.forConsole.billing.addCredit(org.$id, couponData.code);
-                    trackEvent(Submit.CreditRedeem);
-                }
-
-                //Add collaborators
-                if (collaborators?.length) {
-                    collaborators.forEach(async (collaborator) => {
-                        await sdk.forConsole.teams.createMembership(
-                            org.$id,
-                            ['owner'],
-                            collaborator,
-                            undefined,
-                            undefined,
-                            `${$page.url.origin}/${base}/organization-${org.$id}`
-                        );
-                    });
                 }
 
                 // Add tax ID
@@ -154,7 +136,8 @@
             trackEvent(Submit.OrganizationCreate, {
                 plan: tierToPlan(billingPlan)?.name,
                 budget_cap_enabled: !!billingBudget,
-                members_invited: collaborators?.length
+                members_invited: collaborators?.length,
+                coupon: couponData?.code ?? null
             });
 
             await invalidate(Dependencies.ACCOUNT);
