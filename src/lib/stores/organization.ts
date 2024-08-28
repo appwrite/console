@@ -3,6 +3,15 @@ import { derived, writable } from 'svelte/store';
 import type { Models } from '@appwrite.io/console';
 import type { Tier } from './billing';
 
+export type CreateOrgAuth = {
+    status: number;
+    message: string;
+    teamId: string;
+    invoiceId: string;
+    clientSecret: string;
+    type: string;
+};
+
 export type Organization = Models.Team<Record<string, unknown>> & {
     billingBudget: number;
     billingPlan: Tier;

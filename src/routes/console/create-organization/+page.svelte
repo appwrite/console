@@ -22,8 +22,13 @@
     import type { Coupon, PaymentList } from '$lib/sdk/billing';
     import { plansInfo, tierFree, tierPro, tierToPlan } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
-    import { organizationList, type Organization } from '$lib/stores/organization';
+    import {
+        organizationList,
+        type CreateOrgAuth,
+        type Organization
+    } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
+    import { confirmPayment } from '$lib/stores/stripe';
     import { ID } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
@@ -90,9 +95,13 @@
         paymentMethodId = methods.paymentMethods.find((method) => !!method?.last4)?.$id ?? null;
     }
 
+    function isOrganization(org: Organization | CreateOrgAuth): org is Organization {
+        return (org as Organization).$id !== undefined;
+    }
+
     async function create() {
         try {
-            let org: Organization;
+            let org: Organization | CreateOrgAuth;
 
             if (billingPlan === BillingPlan.FREE) {
                 org = await sdk.forConsole.billing.createOrganization(
@@ -113,8 +122,14 @@
                     collaborators
                 );
 
+                if (!isOrganization(org) && org.status == 402) {
+                    let clientSecret = org.clientSecret;
+                    await confirmPayment('', clientSecret, paymentMethodId);
+                    // throw new Error('Payment requires authentication');
+                }
+
                 //Add budget
-                if (billingBudget) {
+                if (billingBudget && isOrganization(org)) {
                     await sdk.forConsole.billing.updateBudget(org.$id, billingBudget, [75]);
                 }
 

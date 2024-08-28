@@ -12,7 +12,7 @@ export const load: PageLoad = async ({ url, route }) => {
     return {
         offset,
         limit,
-        organizations: await sdk.forConsole.teams.list([
+        organizations: await sdk.forConsole.billing.listOrganization([
             Query.offset(offset),
             Query.limit(limit),
             Query.orderDesc('')

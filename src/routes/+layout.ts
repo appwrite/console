@@ -22,7 +22,7 @@ export const load: LayoutLoad = async ({ depends, url }) => {
 
         return {
             account,
-            organizations: await sdk.forConsole.teams.list()
+            organizations: await sdk.forConsole.billing.listOrganization()
         };
     } catch (error) {
         const acceptedRoutes = [
