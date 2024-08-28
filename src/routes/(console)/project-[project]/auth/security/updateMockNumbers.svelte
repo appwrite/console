@@ -33,7 +33,7 @@
         ? 'Available on Appwrite Cloud'
         : 'Upgrade to add mock phone numbers';
     let emptyStateDescription: string = isSelfHosted
-        ? 'Sign up to Cloud to add mock phone numbers to your projects.'
+        ? 'Sign up for Cloud to add mock phone numbers to your projects.'
         : 'Upgrade to a Pro plan to add mock phone numbers to your project.';
     let cta: string = isSelfHosted ? 'Sign up' : 'Upgrade plan';
 
