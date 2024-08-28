@@ -149,7 +149,9 @@
                             }
                         }
                     ]} />
-                <ProjectBreakdown projects={project} metric="bandwidth" {data} />
+                {#if project?.length > 0}
+                    <ProjectBreakdown projects={project} metric="bandwidth" {data} />
+                {/if}
             {:else}
                 <Card isDashed>
                     <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
@@ -198,7 +200,9 @@
                             )
                         }
                     ]} />
-                <ProjectBreakdown projects={project} metric="users" {data} />
+                {#if project?.length > 0}
+                    <ProjectBreakdown projects={project} metric="users" {data} />
+                {/if}
             {:else}
                 <Card isDashed>
                     <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
@@ -248,7 +252,9 @@
                             ]
                         }
                     ]} />
-                <ProjectBreakdown projects={project} metric="executions" {data} />
+                {#if project?.length > 0}
+                    <ProjectBreakdown projects={project} metric="executions" {data} />
+                {/if}
             {:else}
                 <Card isDashed>
                     <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
@@ -284,7 +290,9 @@
                     progressValue={bytesToSize(current, 'GB')}
                     progressMax={max}
                     minimum={1} />
-                <ProjectBreakdown projects={project} metric="storage" {data} />
+                {#if project?.length > 0}
+                    <ProjectBreakdown projects={project} metric="storage" {data} />
+                {/if}
             {:else}
                 <Card isDashed>
                     <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
