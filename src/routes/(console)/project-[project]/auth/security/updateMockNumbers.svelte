@@ -138,7 +138,8 @@
                             class="u-margin-block-start-32"
                             secondary
                             fullWidth
-                            href={$upgradeURL}
+                            external={isSelfHosted}
+                            href={isCloud ? $upgradeURL : 'https://cloud.appwrite.io/register'}
                             on:click={() => {
                                 trackEvent('click_cloud_signup', {
                                     from: 'button',
