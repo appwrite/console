@@ -103,23 +103,14 @@
                     null
                 );
             } else {
-                // Create free organization if coming from onboarding
-                if (previousPage.includes('/console/onboarding') && !anyOrgFree) {
-                    await sdk.forConsole.billing.createOrganization(
-                        ID.unique(),
-                        'Personal Projects',
-                        BillingPlan.FREE,
-                        null,
-                        null
-                    );
-                }
-
                 org = await sdk.forConsole.billing.createOrganization(
                     ID.unique(),
                     name,
                     billingPlan,
                     paymentMethodId,
-                    null
+                    null,
+                    couponData?.code,
+                    collaborators
                 );
 
                 //Add budget
@@ -127,25 +118,25 @@
                     await sdk.forConsole.billing.updateBudget(org.$id, billingBudget, [75]);
                 }
 
-                //Add coupon
-                if (couponData?.code) {
-                    await sdk.forConsole.billing.addCredit(org.$id, couponData.code);
-                    trackEvent(Submit.CreditRedeem);
-                }
+                // //Add coupon
+                // if (couponData?.code) {
+                //     await sdk.forConsole.billing.addCredit(org.$id, couponData.code);
+                //     trackEvent(Submit.CreditRedeem);
+                // }
 
-                //Add collaborators
-                if (collaborators?.length) {
-                    collaborators.forEach(async (collaborator) => {
-                        await sdk.forConsole.teams.createMembership(
-                            org.$id,
-                            ['owner'],
-                            collaborator,
-                            undefined,
-                            undefined,
-                            `${$page.url.origin}/console/organization-${org.$id}`
-                        );
-                    });
-                }
+                // //Add collaborators
+                // if (collaborators?.length) {
+                //     collaborators.forEach(async (collaborator) => {
+                //         await sdk.forConsole.teams.createMembership(
+                //             org.$id,
+                //             ['owner'],
+                //             collaborator,
+                //             undefined,
+                //             undefined,
+                //             `${$page.url.origin}/console/organization-${org.$id}`
+                //         );
+                //     });
+                // }
 
                 // Add tax ID
                 if (taxId) {
