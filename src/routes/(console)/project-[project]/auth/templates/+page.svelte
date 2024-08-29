@@ -208,7 +208,7 @@
                     <Email2FaTemplate />
                 </CollapsibleItem>
                 <CollapsibleItem
-                    bind:open={emailMfaEnabled}
+                    bind:open={emailMfaEnabledOpen}
                     on:click={(e) => {
                         e.preventDefault();
                         openEmail('mfaEnabled');
@@ -218,7 +218,7 @@
                     <EmailMfaEnabledTemplate />
                 </CollapsibleItem>
                 <CollapsibleItem
-                    bind:open={emailMFADisabledOpen}
+                    bind:open={emailMfaDisabledOpen}
                     on:click={(e) => {
                         e.preventDefault();
                         openEmail('mfaDisabled');
@@ -226,6 +226,7 @@
                     <svelte:fragment slot="title">MFA disabled</svelte:fragment>
                     <p class="text">Send an email to a user when MFA is disabled.</p>
                     <EmailMfaDisabledTemplate />
+                </CollapsibleItem>
 
                 <CollapsibleItem
                     bind:open={emailSessionAlertOpen}
