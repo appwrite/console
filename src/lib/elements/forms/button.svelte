@@ -21,7 +21,7 @@
     export let ariaLabel: string = null;
     export let noMargin = false;
     export let event: string = null;
-    let classes: string = undefined;
+    let classes: string = '';
     export { classes as class };
     export let actions: MultiActionArray = [];
     export let submissionLoader = false;
@@ -68,6 +68,7 @@
         target={external ? '_blank' : ''}
         rel={external ? 'noopener noreferrer' : ''}
         class={resolvedClasses}
+        style="pointer-events: {internalDisabled ? 'none' : 'auto'};"
         aria-label={ariaLabel}
         use:multiAction={actions}>
         <slot />

@@ -53,7 +53,7 @@
     {style}
     on:click
     on:keyup={clickOnEnter}
-    role={href || isButton ? 'button' : 'generic'}
+    role={href || isButton ? 'button' : 'presentation'}
     {href}>
     <slot />
 </svelte:element>

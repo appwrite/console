@@ -7,14 +7,15 @@
 
     export let title: string;
     export let tooltipContent =
-        $organization.billingPlan === BillingPlan.FREE
+        $organization?.billingPlan === BillingPlan.FREE
             ? `Upgrade to add more ${title.toLocaleLowerCase()}`
             : `You've reached the ${title.toLocaleLowerCase()} limit for the ${
-                  tierToPlan($organization.billingPlan).name
+                  tierToPlan($organization?.billingPlan)?.name
               } plan`;
     export let disabled: boolean;
     export let buttonText: string;
     export let buttonMethod: () => void | Promise<void>;
+    export let buttonHref: string = null;
     export let buttonEvent: string = buttonText?.toLocaleLowerCase();
     export let icon = 'plus';
     export let showIcon = true;
@@ -31,7 +32,8 @@
         secondary={buttonType === 'secondary'}
         on:click={buttonMethod}
         event={buttonEvent}
-        {disabled}>
+        {disabled}
+        href={buttonHref}>
         {#if showIcon}
             <span class={`icon-${icon}`} aria-hidden="true" />
         {/if}
