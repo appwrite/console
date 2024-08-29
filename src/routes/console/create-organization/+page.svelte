@@ -88,6 +88,14 @@
         if (anyOrgFree) {
             billingPlan = BillingPlan.PRO;
         }
+        if($page.url.searchParams.has('type')) {
+            const type = $page.url.searchParams.get('type');
+            if(type === 'confirmed') {
+                const organizationId= $page.url.searchParams.get('id');
+                const invites = $page.url.searchParams.getAll('invites');
+                await validate(organizationId, invites);
+            }
+        }
     });
 
     async function loadPaymentMethods() {
@@ -97,6 +105,27 @@
 
     function isOrganization(org: Organization | CreateOrgAuth): org is Organization {
         return (org as Organization).$id !== undefined;
+    }
+
+    async function validate(organizationId: string, invites: string[]) {
+        try {
+            let org = await sdk.forConsole.billing.validateOrganization(organizationId, invites);
+            if (isOrganization(org)) {
+                await preloadData(`${base}/console/organization-${org.$id}`);
+                await goto(`${base}/console/organization-${org.$id}`);
+                addNotification({
+                    type: 'success',
+                    message: `${org.name ?? 'Organization'} has been created`
+                });
+            }
+        } catch (e) {
+            addNotification({
+                type: 'error',
+                message: e.message
+            });
+            trackError(e, Submit.OrganizationCreate);
+        }
+
     }
 
     async function create() {
@@ -126,8 +155,15 @@
 
                 if (!isOrganization(org) && org.status == 402) {
                     let clientSecret = org.clientSecret;
-                    await confirmPayment('', clientSecret, paymentMethodId);
-                    // throw new Error('Payment requires authentication');
+                    let params = new URLSearchParams();
+                    params.append('type', 'confirmed');
+                    params.append('id', org.teamId);
+                    for (let index = 0; index < collaborators.length; index++) {
+                        const invite = collaborators[index];
+                        params.append('invites', invite);
+                    }
+                    await confirmPayment('', clientSecret, paymentMethodId, '/console/create-organization?'+params.toString());
+                    await validate(org.teamId, collaborators);
                 }
 
                 //Add budget
@@ -167,13 +203,15 @@
                 members_invited: collaborators?.length
             });
 
-            await invalidate(Dependencies.ACCOUNT);
-            await preloadData(`${base}/console/organization-${org.$id}`);
-            await goto(`${base}/console/organization-${org.$id}`);
-            addNotification({
-                type: 'success',
-                message: `${name ?? 'Organization'} has been created`
-            });
+            if(isOrganization(org)) {
+                await invalidate(Dependencies.ACCOUNT);
+                await preloadData(`${base}/console/organization-${org.$id}`);
+                await goto(`${base}/console/organization-${org.$id}`);
+                addNotification({
+                    type: 'success',
+                    message: `${org.name ?? 'Organization'} has been created`
+                });
+            }
         } catch (e) {
             addNotification({
                 type: 'error',

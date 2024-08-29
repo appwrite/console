@@ -302,16 +302,36 @@ export class Billing {
         );
     }
 
+    async validateOrganization(
+        organizationId: string,
+        invites: string[],
+    ): Promise<Organization> {
+        const path = `/organizations/${organizationId}/validate`;
+        const params = {
+            organizationId,
+            invites,
+        };
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'PATCH',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            params
+        );
+    }
+
     async createOrganization(
         organizationId: string,
         name: string,
         billingPlan: string,
         paymentMethodId: string,
-        billingAddressId: string = undefined,
-        couponId: string = undefined,
+        billingAddressId: string = null,
+        couponId: string = null,
         invites: Array<string> = [],
         budget: number = undefined,
-        taxId: string = undefined
+        taxId: string = null
     ): Promise<Organization | CreateOrgAuth> {
         const path = `/organizations`;
         const params = {
