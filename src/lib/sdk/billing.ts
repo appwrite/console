@@ -309,7 +309,9 @@ export class Billing {
         paymentMethodId: string,
         billingAddressId: string = undefined,
         couponId: string = undefined,
-        invites: Array<string> = []
+        invites: Array<string> = [],
+        budget: number = undefined,
+        taxId: string = undefined
     ): Promise<Organization | CreateOrgAuth> {
         const path = `/organizations`;
         const params = {
@@ -319,7 +321,9 @@ export class Billing {
             paymentMethodId,
             billingAddressId,
             couponId,
-            invites
+            invites,
+            budget,
+            taxId
         };
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(

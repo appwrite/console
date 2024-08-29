@@ -119,7 +119,9 @@
                     paymentMethodId,
                     null,
                     couponData?.code,
-                    collaborators
+                    collaborators,
+                    billingBudget,
+                    taxId
                 );
 
                 if (!isOrganization(org) && org.status == 402) {
@@ -129,9 +131,9 @@
                 }
 
                 //Add budget
-                if (billingBudget && isOrganization(org)) {
-                    await sdk.forConsole.billing.updateBudget(org.$id, billingBudget, [75]);
-                }
+                // if (billingBudget && isOrganization(org)) {
+                //     await sdk.forConsole.billing.updateBudget(org.$id, billingBudget, [75]);
+                // }
 
                 // //Add coupon
                 // if (couponData?.code) {
@@ -154,9 +156,9 @@
                 // }
 
                 // Add tax ID
-                if (taxId) {
-                    await sdk.forConsole.billing.updateTaxId(org.$id, taxId);
-                }
+                // if (taxId) {
+                //     await sdk.forConsole.billing.updateTaxId(org.$id, taxId);
+                // }
             }
 
             trackEvent(Submit.OrganizationCreate, {
