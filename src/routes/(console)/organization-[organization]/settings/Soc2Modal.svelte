@@ -36,6 +36,8 @@
 
     let role = '';
 
+    let error: string;
+
     onMount(async () => {
         const countryList = await sdk.forProject.locale.listCountries();
         const locale = await sdk.forProject.locale.get();
@@ -61,7 +63,7 @@
                 subject: 'support',
                 email: email,
                 firstName: $user?.name ?? '',
-                message: '',
+                message: 'Soc-2',
                 tags: ['cloud'],
                 customFields: [
                     { id: '41612', value: 'Soc-2' },
@@ -79,11 +81,10 @@
         trackEvent(Submit.RequestSoc2);
         if (response.status !== 200) {
             trackError(new Error(response.status.toString()), Submit.RequestSoc2);
-            addNotification({
-                message: 'There was an error submitting your request. Please try again later.',
-                type: 'error'
-            });
+            error = 'There was an error submitting your request. Please try again later.';
         } else {
+            show = false;
+
             addNotification({
                 message: `Your request was sent, we will get in contact with you at ${email} in a few working days`,
                 type: 'success'
@@ -93,6 +94,7 @@
 </script>
 
 <Modal
+    bind:error
     bind:show
     onSubmit={handleSubmit}
     size="big"
