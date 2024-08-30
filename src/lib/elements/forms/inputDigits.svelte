@@ -54,41 +54,16 @@
         }
     }
 
-    async function focusDigitInputs() {
-        /**
-         * this is to re-focus the inputs that feels natural
-         * as the blinking of the cursor takes around 250ms.
-         */
-        await sleep(250);
-
+    onMount(() => {
         const interval = setInterval(() => {
             const input = element.querySelector('input');
             if (element) {
-                /**
-                 * Ensure the value is empty before refocusing.
-                 *
-                 * If the value is not cleared and the form is submitted,
-                 * the cursor will move to the first field while the last field remains filled.
-                 * This would cause the focus to appear visually odd and very inconsistent.
-                 */
-                if (input && autofocus && value === '') {
+                if (input && autofocus) {
                     input.focus();
                 }
                 clearInterval(interval);
             }
         }, 10);
-    }
-
-    onMount(() => {
-        /**
-         * Inputs will lose focus on any change.
-         * Changes include the url & query params like `?redirect=`.
-         *
-         * This subscription ensures that focus is restored when needed.
-         */
-        return page.subscribe(() => {
-            focusDigitInputs();
-        });
     });
 </script>
 
