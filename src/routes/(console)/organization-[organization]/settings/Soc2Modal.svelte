@@ -11,7 +11,7 @@
     import { onMount } from 'svelte';
     export let show = false;
     let email = '';
-    let employees = null;
+    let employees: string = null;
     let employeesOptions = [
         {
             value: '1-5',
@@ -61,14 +61,19 @@
                 subject: 'support',
                 email: email,
                 firstName: $user?.name ?? '',
-                message: 'message',
+                message: '',
                 tags: ['cloud'],
                 customFields: [
                     { id: '41612', value: 'Soc-2' },
                     { id: '48493', value: $user?.name ?? '' },
                     { id: '48492', value: $organization?.$id ?? '' },
                     { id: '48490', value: $user?.$id ?? '' }
-                ]
+                ],
+                metaFields: {
+                    employees: employees,
+                    country: country,
+                    role: role
+                }
             })
         });
         trackEvent(Submit.RequestSoc2);
