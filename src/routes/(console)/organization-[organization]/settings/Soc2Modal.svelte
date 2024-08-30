@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
-    import { FormList, InputEmail, InputSelect, InputText, InputURL } from '$lib/elements/forms';
+    import { FormList, InputEmail, InputSelect, InputText } from '$lib/elements/forms';
     import Button from '$lib/elements/forms/button.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { organization } from '$lib/stores/organization';
@@ -99,7 +99,7 @@
     onSubmit={handleSubmit}
     size="big"
     headerDivider={false}
-    title="Service Organization Control Type 2 (Soc-2)">
+    title="Request Soc-2">
     <FormList>
         <InputEmail label="Email" placeholder="Enter email" id="email" bind:value={email} />
         <InputSelect
@@ -123,7 +123,7 @@
             id="role"
             bind:value={role}
             required />
-        <InputURL label="Website" placeholder="Enter website" id="website" />
+        <InputText label="Website" placeholder="Enter website" id="website" />
     </FormList>
     <svelte:fragment slot="footer">
         <Button submit>

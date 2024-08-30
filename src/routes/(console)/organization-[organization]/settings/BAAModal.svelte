@@ -1,14 +1,7 @@
 <script lang="ts">
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
-    import {
-        Button,
-        FormList,
-        InputEmail,
-        InputSelect,
-        InputText,
-        InputURL
-    } from '$lib/elements/forms';
+    import { Button, FormList, InputEmail, InputSelect, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
@@ -103,7 +96,7 @@
     bind:show
     onSubmit={handleSubmit}
     size="big"
-    title="Business Associate Agreement (BAA)"
+    title="Request BAA"
     headerDivider={false}>
     <FormList>
         <InputEmail label="Email" placeholder="Enter email" id="email" bind:value={email} />
@@ -128,7 +121,7 @@
             id="role"
             bind:value={role}
             required />
-        <InputURL label="Website" placeholder="Enter website" id="website" />
+        <InputText label="Website" placeholder="Enter website" id="website" />
     </FormList>
     <svelte:fragment slot="footer">
         <Button submit>
