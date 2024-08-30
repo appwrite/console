@@ -18,10 +18,11 @@
         WizardSecondaryFooter
     } from '$lib/layout';
     import type { Coupon, PaymentList } from '$lib/sdk/billing';
-    import { tierToPlan } from '$lib/stores/billing';
+    import { buildOrgRedirectURL, tierToPlan } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { organizationList, type Organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
+    import { confirmPayment } from '$lib/stores/stripe';
     import { ID } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
@@ -78,6 +79,16 @@
                 billingPlan = plan as BillingPlan;
             }
         }
+        if ($page.url.searchParams.has('paymentMethod')) {
+            paymentMethodId = $page.url.searchParams.get('paymentMethod');
+        }
+        if ($page.url.searchParams.has('collaborators')) {
+            collaborators = $page.url.searchParams.get('collaborators')?.split(',') ?? [];
+        }
+        if ($page.url.searchParams.has('validate')) {
+            const id = $page.url.searchParams.get('validate');
+            await sdk.forConsole.billing.validateOrganization(id);
+        }
         if (anyOrgFree) {
             billingPlan = BillingPlan.PRO;
         }
@@ -118,18 +129,25 @@
                     billingPlan,
                     paymentMethodId,
                     null,
-                    collaborators?.length ? collaborators : undefined,
-                    couponData?.code
+                    collaborators?.length ? collaborators : null,
+                    couponData?.code ?? null,
+                    taxId ?? null,
+                    billingBudget ?? null
                 );
 
-                //Add budget
-                if (billingBudget) {
-                    await sdk.forConsole.billing.updateBudget(org.$id, billingBudget, [75]);
-                }
+                if (org?.client_secret) {
+                    let redirectURL = buildOrgRedirectURL(
+                        `${base}/create-organization`,
+                        name,
+                        billingPlan,
+                        paymentMethodId,
+                        org.$id,
+                        collaborators,
+                        couponData?.code
+                    );
+                    await confirmPayment(org.$id, org.client_secret, paymentMethodId, redirectURL);
 
-                // Add tax ID
-                if (taxId) {
-                    await sdk.forConsole.billing.updateTaxId(org.$id, taxId);
+                    await sdk.forConsole.billing.validateOrganization(org.$id);
                 }
             }
 

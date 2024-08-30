@@ -438,3 +438,23 @@ export function calculateResourceSurplus(total: number, limit: number, limitUnit
     const realLimit = (limitUnit ? sizeToBytes(limit, limitUnit) : limit) || Infinity;
     return total > realLimit ? total - realLimit : 0;
 }
+
+export function buildOrgRedirectURL(
+    base: string,
+    name: string,
+    plan: string,
+    paymentMethodId: string,
+    id: string,
+    collaborators: string[] = null,
+    coupon: string = null
+) {
+    const url = new URL(base);
+    url.searchParams.append('name', name);
+    url.searchParams.append('plan', plan);
+    url.searchParams.append('paymentMethod', paymentMethodId);
+    url.searchParams.append('validate', id);
+    if (collaborators?.length) url.searchParams.append('collaborators', collaborators.join(','));
+    if (coupon) url.searchParams.append('coupon', coupon);
+
+    return url.toString();
+}
