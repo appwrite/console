@@ -516,7 +516,7 @@
                                     <Button
                                         secondary
                                         external
-                                        href={`${base}/console/project-${$page.params.project}/storage`}>
+                                        href={`${base}/project-${$page.params.project}/storage`}>
                                         Create bucket
                                     </Button>
                                 </div>

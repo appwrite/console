@@ -32,9 +32,9 @@
                     on:click={track}
                     aria-label="create {target}">
                     {#if $app.themeInUse === 'dark'}
-                        <img src={EmptyDark} alt="create" aria-hidden="true" width="376" />
+                        <img src={EmptyDark} alt="create" aria-hidden="true" height="242" />
                     {:else}
-                        <img src={EmptyLight} alt="create" aria-hidden="true" width="376" />
+                        <img src={EmptyLight} alt="create" aria-hidden="true" height="242" />
                     {/if}
                 </button>
             {/if}
