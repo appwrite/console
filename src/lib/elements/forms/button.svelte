@@ -65,7 +65,7 @@
         rel={external ? 'noopener noreferrer' : ''}
         class={resolvedClasses}
         aria-label={ariaLabel}
-        --button-width={fullWidth ? '100%' : undefined}>
+        --button-width={fullWidth ? '100%' : 'fit-content'}>
         <slot />
     </Anchor>
 {:else}
@@ -78,7 +78,7 @@
         class={resolvedClasses}
         aria-label={ariaLabel}
         type={submit ? 'submit' : 'button'}
-        --button-width={fullWidth ? '100%' : undefined}>
+        --button-width={fullWidth ? '100%' : 'fit-content'}>
         {#if $isSubmitting && submissionLoader}
             <span
                 class="loader is-small"
