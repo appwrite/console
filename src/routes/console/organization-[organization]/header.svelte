@@ -87,7 +87,7 @@
         }
     ];
     $: tabs =
-        isCloud && isBilling
+        isCloud && $isBilling
             ? [
                   ...permanentTabs,
                   {
@@ -99,7 +99,7 @@
                   ...billingTabs,
                   ...permanentTabSettings
               ]
-            : isCloud && !isBilling
+            : isCloud && !$isBilling
               ? [
                     ...permanentTabs,
                     {
