@@ -60,7 +60,7 @@
                         {#if typeof page === 'number'}
                             <li class="pagination-item">
                                 {#if currentPage === page}
-                                    <Button ariaLabel="page" disabled>
+                                    <Button text ariaLabel="page" disabled>
                                         <span class="text">{page}</span>
                                     </Button>
                                 {:else}
@@ -78,7 +78,7 @@
                 </ol>
             {/if}
             {#if currentPage >= totalPages}
-                <Button disabled text ariaLabel="next page">
+                <Button text ariaLabel="next page" disabled>
                     <span class="text">Next</span>
                     <span class="icon-cheveron-right" aria-hidden="true" />
                 </Button>
@@ -92,7 +92,7 @@
     {/key}
 {:else}
     <nav class="pagination">
-        <Button text disabled ariaLabel="prev page">
+        <Button text ariaLabel="prev page" disabled>
             <span class="icon-cheveron-left" aria-hidden="true" />
             <span class="text">Prev</span>
         </Button>
