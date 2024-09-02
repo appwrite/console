@@ -10,7 +10,6 @@
 
     export let submit = false;
     export let secondary = false;
-    export let github = false;
     export let text = false;
     export let danger = false;
     export let round = false;
