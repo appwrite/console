@@ -3,10 +3,10 @@
     import { getContext, hasContext } from 'svelte';
     import { readable } from 'svelte/store';
     import type { FormContext } from './form.svelte';
-    import { Button, Anchor } from '@appwrite.io/pink-svelte';
+    import { Button } from '@appwrite.io/pink-svelte';
     import type { ComponentProps } from 'svelte';
 
-    type Props = ComponentProps<Button>;
+    type Props = ComponentProps<Button.Button>;
 
     export let submit = false;
     export let secondary = false;
@@ -53,7 +53,7 @@
 </script>
 
 {#if href}
-    <Anchor
+    <Button.Anchor
         on:click
         on:click={track}
         {href}
@@ -67,9 +67,9 @@
         aria-label={ariaLabel}
         --button-width={fullWidth ? '100%' : 'fit-content'}>
         <slot />
-    </Anchor>
+    </Button.Anchor>
 {:else}
-    <Button
+    <Button.Button
         on:click
         on:click={track}
         {size}
@@ -86,5 +86,5 @@
                 aria-hidden="true" />
         {/if}
         <slot isSubmitting={$isSubmitting} />
-    </Button>
+    </Button.Button>
 {/if}
