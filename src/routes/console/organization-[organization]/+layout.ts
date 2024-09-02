@@ -16,7 +16,10 @@ export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.ORGANIZATION);
     depends(Dependencies.MEMBERS);
     depends(Dependencies.PAYMENT_METHODS);
-
+    let data: {roles: string[], scopes: string[]} = {
+        roles: [],
+        scopes: []
+    };
     if (isCloud) {
         await failedInvoice.load(params.organization);
 
@@ -28,6 +31,10 @@ export const load: LayoutLoad = async ({ params, depends }) => {
                 importance: 1
             });
         }
+
+        const res = await sdk.forConsole.billing.getRoles(params.organization);
+        data.roles = res.roles;
+        data.scopes = res.scopes;
     }
 
     try {
@@ -41,6 +48,8 @@ export const load: LayoutLoad = async ({ params, depends }) => {
             organization: await (sdk.forConsole.teams.get(
                 params.organization
             ) as Promise<Organization>),
+            roles: data.roles,
+            scopes: data.scopes,
             members: await sdk.forConsole.teams.listMemberships(params.organization)
         };
     } catch (e) {
@@ -49,4 +58,5 @@ export const load: LayoutLoad = async ({ params, depends }) => {
         sdk.forConsole.account.updatePrefs(newPrefs);
         error(e.code, e.message);
     }
+    return data;
 };

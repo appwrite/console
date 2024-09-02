@@ -32,6 +32,7 @@
         organization,
         organizationList
     } from '$lib/stores/organization';
+    import { isBilling, isDeveloper } from '$lib/stores/roles';
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
 
     let areMembersLimited: boolean;
@@ -46,6 +47,8 @@
 
     function createOrg() {
         showDropdown = false;
+        console.log('billing:', isBilling);
+        console.log('developer:', isDeveloper);
         if (isCloud) {
             goto(`${base}/console/create-organization`);
         } else newOrgModal.set(true);
@@ -76,23 +79,38 @@
         }
     ];
 
-    $: tabs = isCloud
-        ? [
-              ...permanentTabs,
-              {
-                  href: `${path}/usage`,
-                  event: 'usage',
-                  title: 'Usage',
-                  hasChildren: true
-              },
-              {
-                  href: `${path}/billing`,
-                  event: 'billing',
-                  title: 'Billing'
-              },
-              ...permanentTabSettings
-          ]
-        : [...permanentTabs, ...permanentTabSettings];
+    $: billingTabs = [
+        {
+            href: `${path}/billing`,
+            event: 'billing',
+            title: 'Billing'
+        }
+    ];
+    $: tabs =
+        isCloud && isBilling
+            ? [
+                  ...permanentTabs,
+                  {
+                      href: `${path}/usage`,
+                      event: 'usage',
+                      title: 'Usage',
+                      hasChildren: true
+                  },
+                  ...billingTabs,
+                  ...permanentTabSettings
+              ]
+            : isCloud && !isBilling
+              ? [
+                    ...permanentTabs,
+                    {
+                        href: `${path}/usage`,
+                        event: 'usage',
+                        title: 'Usage',
+                        hasChildren: true
+                    },
+                    ...permanentTabSettings
+                ]
+              : [...permanentTabs, ...permanentTabSettings];
 </script>
 
 {#if $organization?.$id}

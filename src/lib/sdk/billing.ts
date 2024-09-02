@@ -358,7 +358,7 @@ export class Billing {
         );
     }
 
-    async getScopes(organizationId: string): Promise<Roles> {
+    async getRoles(organizationId: string): Promise<Roles> {
         const path = `/organizations/${organizationId}/roles`;
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
