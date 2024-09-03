@@ -32,6 +32,7 @@
     import { writable } from 'svelte/store';
     import { readOnly } from '$lib/stores/billing';
     import { isCloud } from '$lib/system';
+    import { canWriteTeams } from '$lib/stores/roles';
 
     export let data: PageData;
 
@@ -49,6 +50,7 @@
         buttonDisabled={isCloud && $readOnly}
         let:isButtonDisabled>
         <SearchQuery search={data.search} placeholder="Search by name">
+            {#if $canWriteTeams}
             <div
                 use:tooltip={{
                     content: `Upgrade to add more teams`,
@@ -62,6 +64,7 @@
                     <span class="text">Create team</span>
                 </Button>
             </div>
+            {/if}
         </SearchQuery>
     </ContainerHeader>
 
@@ -110,6 +113,7 @@
     {:else}
         <Empty
             single
+            allowCreate={$canWriteTeams}
             on:click={() => ($showCreateTeam = true)}
             href="https://appwrite.io/docs/references/cloud/client-web/teams"
             target="team" />

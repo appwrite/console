@@ -17,6 +17,7 @@
     import { isServiceLimited } from '$lib/stores/billing';
     import type { Runtime } from '$lib/stores/marketplace.js';
     import { organization } from '$lib/stores/organization';
+    import { canWriteFunctions } from '$lib/stores/roles';
     import { connectTemplate } from '$lib/wizards/functions/cover.svelte';
     import { functionsList } from '../store';
 
@@ -226,7 +227,7 @@
                                         text>
                                         <span class="text">View details</span>
                                     </Button>
-
+                                    {#if $canWriteFunctions}
                                     <ContainerButton
                                         title="functions"
                                         disabled={buttonDisabled}
@@ -235,6 +236,7 @@
                                         showIcon={false}
                                         buttonText="Create function"
                                         buttonEvent="create_function" />
+                                    {/if}
                                 </div>
                             </article>
                         </li>

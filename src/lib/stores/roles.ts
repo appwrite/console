@@ -18,6 +18,7 @@ export const canWriteWebhooks = derived(scopes, ($scopes) => $scopes.includes("w
 export const canWritePlatforms = derived(scopes, ($scopes) => $scopes.includes("platforms.write"));
 export const canWriteTargets = derived(scopes, ($scopes) => $scopes.includes("targets.write"));
 export const canWriteUsers = derived(scopes, ($scopes) => $scopes.includes("users.write"));
+export const canWriteTeams = derived(scopes, ($scopes) => $scopes.includes("teams.write"));
 export const canWriteCollections = derived(scopes, ($scopes) => $scopes.includes("collections.write"));
 export const canWriteExecutions = derived(scopes, ($scopes) => $scopes.includes("executions.write"));
 export const canWriteSubscribers = derived(scopes, ($scopes) => $scopes.includes("subscribers.write"));

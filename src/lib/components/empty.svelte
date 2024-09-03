@@ -11,6 +11,7 @@
     export let target: string = null;
     export let href: string = null;
     export let marginTop = false;
+    export let allowCreate = false;
 
     function track() {
         if (target) {
@@ -54,9 +55,11 @@
                         text
                         event="empty_documentation"
                         ariaLabel="create {target}">Documentation</Button>
+                    {#if allowCreate}
                     <Button secondary on:click on:click={track}>
                         Create {target}
                     </Button>
+                    {/if}
                 </div>
             </slot>
         </div>

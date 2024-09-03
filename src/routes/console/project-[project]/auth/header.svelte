@@ -3,6 +3,7 @@
     import { Tab, Tabs } from '$lib/components';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover, CoverTitle } from '$lib/layout';
+    import { canWriteUsers } from '$lib/stores/roles';
 
     const projectId = $page.params.project;
     const path = `/console/project-${projectId}/auth`;
@@ -19,28 +20,36 @@
             hasChildren: true,
             event: 'teams'
         },
-        {
-            href: `${path}/security`,
-            title: 'Security',
-            event: 'security'
-        },
-        {
-            href: `${path}/templates`,
-            title: 'Templates',
-            hasChildren: false,
-            event: 'templates'
-        },
+        ...($canWriteUsers
+            ? [
+                  {
+                      href: `${path}/security`,
+                      title: 'Security',
+                      event: 'security'
+                  },
+                  {
+                      href: `${path}/templates`,
+                      title: 'Templates',
+                      hasChildren: false,
+                      event: 'templates'
+                  }
+              ]
+            : []),
         {
             href: `${path}/usage`,
             title: 'Usage',
             hasChildren: true,
             event: 'usage'
         },
-        {
-            href: `${path}/settings`,
-            title: 'Settings',
-            event: 'settings'
-        }
+        ...($canWriteUsers
+            ? [
+                  {
+                      href: `${path}/settings`,
+                      title: 'Settings',
+                      event: 'settings'
+                  }
+              ]
+            : [])
     ];
 </script>
 

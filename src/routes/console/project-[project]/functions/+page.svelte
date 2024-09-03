@@ -20,6 +20,7 @@
     import { parseExpression } from 'cron-parser';
     import { onMount } from 'svelte';
     import { functionsList } from './store';
+    import { canWriteFunctions } from '$lib/stores/roles';
 
     export let data;
 
@@ -72,7 +73,7 @@
 <Container>
     <ContainerHeader
         title="Functions"
-        buttonText="Create function"
+        buttonText={$canWriteFunctions ? "Create function" : ""}
         buttonEvent="create_function"
         buttonMethod={openWizard}
         total={data.functions.total} />

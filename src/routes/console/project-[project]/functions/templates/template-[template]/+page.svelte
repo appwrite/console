@@ -13,6 +13,7 @@
     import { isServiceLimited } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { functionsList } from '../../store';
+    import { canWriteFunctions } from '$lib/stores/roles';
 
     const isVcsEnabled = $consoleVariables?._APP_VCS_ENABLED === true;
 
@@ -99,6 +100,7 @@
                         View source
                         <span class="icon-external-link" />
                     </Button>
+                    {#if $canWriteFunctions}
                     <ContainerButton
                         title="functions"
                         disabled={buttonDisabled || (isSelfHosted && !isVcsEnabled)}
@@ -106,6 +108,7 @@
                         showIcon={false}
                         buttonText="Create function"
                         buttonEvent="create_function" />
+                    {/if}
                 </div>
             </Card>
         </section>
