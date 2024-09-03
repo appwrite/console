@@ -90,7 +90,7 @@
         }
         if ($page.url.searchParams.has('type')) {
             const type = $page.url.searchParams.get('type');
-            if (type === 'confirmed') {
+            if (type === 'payment_confirmed') {
                 const organizationId = $page.url.searchParams.get('id');
                 const invites = $page.url.searchParams.getAll('invites');
                 await validate(organizationId, invites);
@@ -155,7 +155,7 @@
                 if (!isOrganization(org) && org.status == 402) {
                     let clientSecret = org.clientSecret;
                     let params = new URLSearchParams();
-                    params.append('type', 'confirmed');
+                    params.append('type', 'payment_confirmed');
                     params.append('id', org.teamId);
                     for (let index = 0; index < collaborators.length; index++) {
                         const invite = collaborators[index];
