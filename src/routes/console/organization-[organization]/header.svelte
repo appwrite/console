@@ -32,7 +32,13 @@
         organization,
         organizationList
     } from '$lib/stores/organization';
-    import { canSeeBilling, isBilling, isDeveloper } from '$lib/stores/roles';
+    import {
+        canSeeBilling,
+        canSeeProjects,
+        isBilling,
+        isDeveloper,
+        isOwner
+    } from '$lib/stores/roles';
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
 
     let areMembersLimited: boolean;
@@ -57,7 +63,7 @@
     $: avatars = $members.memberships?.map((m) => m.userName) ?? [];
     $: organizationId = $page.params.organization;
     $: path = `/console/organization-${organizationId}`;
-    $: permanentTabSettings = [
+    $: settingsTab = [
         {
             href: `${path}/settings`,
             event: 'settings',
@@ -65,52 +71,50 @@
         }
     ];
     $: permanentTabs = [
-        {
-            href: path,
-            title: 'Projects',
-            event: 'projects',
-            hasChildren: true
-        },
-        {
-            href: `${path}/members`,
-            title: 'Members',
-            event: 'members',
-            hasChildren: true
-        }
-    ];
-
-    $: billingTabs = [
-        {
-            href: `${path}/billing`,
-            event: 'billing',
-            title: 'Billing'
-        }
-    ];
-    $: tabs =
-        isCloud && $canSeeBilling
+        ...($canSeeProjects
             ? [
-                  ...permanentTabs,
+                  {
+                      href: path,
+                      title: 'Projects',
+                      event: 'projects',
+                      hasChildren: true
+                  }
+              ]
+            : []),
+        ...($isOwner
+            ? [
+                  {
+                      href: `${path}/members`,
+                      title: 'Members',
+                      event: 'members',
+                      hasChildren: true
+                  }
+              ]
+            : [])
+    ];
+    $: tabs = [
+        ...permanentTabs,
+        ...(isCloud && $isOwner
+            ? [
                   {
                       href: `${path}/usage`,
                       event: 'usage',
                       title: 'Usage',
                       hasChildren: true
-                  },
-                  ...billingTabs,
-                  ...permanentTabSettings
+                  }
               ]
-            : isCloud && !$canSeeBilling
-              ? [
-                    ...permanentTabs,
-                    {
-                        href: `${path}/usage`,
-                        event: 'usage',
-                        title: 'Usage',
-                        hasChildren: true
-                    },
-                    ...permanentTabSettings
-                ]
-              : [...permanentTabs, ...permanentTabSettings];
+            : []),
+        ...(isCloud && $canSeeBilling
+            ? [
+                  {
+                      href: `${path}/billing`,
+                      event: 'billing',
+                      title: 'Billing'
+                  }
+              ]
+            : []),
+        ...($isOwner ? settingsTab : [])
+    ];
 </script>
 
 {#if $organization?.$id}
@@ -163,6 +167,7 @@
                         </ul>
                     </section></svelte:fragment>
             </DropList>
+            {#if $isOwner}
             <div class="u-margin-inline-start-auto">
                 <div class="u-flex u-gap-16 u-cross-center">
                     <a href={`${path}/members`} class="is-not-mobile">
@@ -187,7 +192,9 @@
                         </Button>
                     </div>
                 </div>
-            </div></svelte:fragment>
+            </div>
+            {/if}
+        </svelte:fragment>
         <Tabs>
             {#each tabs as tab}
                 <Tab
