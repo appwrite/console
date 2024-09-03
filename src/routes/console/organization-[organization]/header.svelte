@@ -32,7 +32,7 @@
         organization,
         organizationList
     } from '$lib/stores/organization';
-    import { isBilling, isDeveloper } from '$lib/stores/roles';
+    import { canSeeBilling, isBilling, isDeveloper } from '$lib/stores/roles';
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
 
     let areMembersLimited: boolean;
@@ -87,7 +87,7 @@
         }
     ];
     $: tabs =
-        isCloud && $isBilling
+        isCloud && $canSeeBilling
             ? [
                   ...permanentTabs,
                   {
@@ -99,7 +99,7 @@
                   ...billingTabs,
                   ...permanentTabSettings
               ]
-            : isCloud && !$isBilling
+            : isCloud && !$canSeeBilling
               ? [
                     ...permanentTabs,
                     {

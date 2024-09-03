@@ -16,14 +16,20 @@ export const load: LayoutLoad = async ({ params, depends }) => {
         const newPrefs = { ...prefs, organization: project.teamId };
         sdk.forConsole.account.updatePrefs(newPrefs);
         preferences.loadTeamPrefs(project.teamId);
-
+        var roles = [];
+        var scopes = [];
         if (isCloud) {
             await failedInvoice.load(project.teamId);
+            const res = await sdk.forConsole.billing.getRoles(project.teamId);
+            roles = res.roles;
+            scopes = res.scopes;
         }
 
         return {
             project,
-            organization: await (sdk.forConsole.teams.get(project.teamId) as Promise<Organization>)
+            organization: await (sdk.forConsole.teams.get(project.teamId) as Promise<Organization>),
+            roles,
+            scopes
         };
     } catch (e) {
         error(e.code, e.message);
