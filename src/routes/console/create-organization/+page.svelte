@@ -24,7 +24,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import {
         organizationList,
-        type CreateOrgAuth,
+        type OrganizationError,
         type Organization
     } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
@@ -88,10 +88,10 @@
         if (anyOrgFree) {
             billingPlan = BillingPlan.PRO;
         }
-        if($page.url.searchParams.has('type')) {
+        if ($page.url.searchParams.has('type')) {
             const type = $page.url.searchParams.get('type');
-            if(type === 'confirmed') {
-                const organizationId= $page.url.searchParams.get('id');
+            if (type === 'confirmed') {
+                const organizationId = $page.url.searchParams.get('id');
                 const invites = $page.url.searchParams.getAll('invites');
                 await validate(organizationId, invites);
             }
@@ -103,7 +103,7 @@
         paymentMethodId = methods.paymentMethods.find((method) => !!method?.last4)?.$id ?? null;
     }
 
-    function isOrganization(org: Organization | CreateOrgAuth): org is Organization {
+    function isOrganization(org: Organization | OrganizationError): org is Organization {
         return (org as Organization).$id !== undefined;
     }
 
@@ -125,12 +125,11 @@
             });
             trackError(e, Submit.OrganizationCreate);
         }
-
     }
 
     async function create() {
         try {
-            let org: Organization | CreateOrgAuth;
+            let org: Organization | OrganizationError;
 
             if (billingPlan === BillingPlan.FREE) {
                 org = await sdk.forConsole.billing.createOrganization(
@@ -162,39 +161,14 @@
                         const invite = collaborators[index];
                         params.append('invites', invite);
                     }
-                    await confirmPayment('', clientSecret, paymentMethodId, '/console/create-organization?'+params.toString());
+                    await confirmPayment(
+                        '',
+                        clientSecret,
+                        paymentMethodId,
+                        '/console/create-organization?' + params.toString()
+                    );
                     await validate(org.teamId, collaborators);
                 }
-
-                //Add budget
-                // if (billingBudget && isOrganization(org)) {
-                //     await sdk.forConsole.billing.updateBudget(org.$id, billingBudget, [75]);
-                // }
-
-                // //Add coupon
-                // if (couponData?.code) {
-                //     await sdk.forConsole.billing.addCredit(org.$id, couponData.code);
-                //     trackEvent(Submit.CreditRedeem);
-                // }
-
-                // //Add collaborators
-                // if (collaborators?.length) {
-                //     collaborators.forEach(async (collaborator) => {
-                //         await sdk.forConsole.teams.createMembership(
-                //             org.$id,
-                //             ['owner'],
-                //             collaborator,
-                //             undefined,
-                //             undefined,
-                //             `${$page.url.origin}/console/organization-${org.$id}`
-                //         );
-                //     });
-                // }
-
-                // Add tax ID
-                // if (taxId) {
-                //     await sdk.forConsole.billing.updateTaxId(org.$id, taxId);
-                // }
             }
 
             trackEvent(Submit.OrganizationCreate, {
@@ -203,7 +177,7 @@
                 members_invited: collaborators?.length
             });
 
-            if(isOrganization(org)) {
+            if (isOrganization(org)) {
                 await invalidate(Dependencies.ACCOUNT);
                 await preloadData(`${base}/console/organization-${org.$id}`);
                 await goto(`${base}/console/organization-${org.$id}`);

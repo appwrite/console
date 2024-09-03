@@ -3,7 +3,7 @@ import { derived, writable } from 'svelte/store';
 import type { Models } from '@appwrite.io/console';
 import type { Tier } from './billing';
 
-export type CreateOrgAuth = {
+export type OrganizationError = {
     status: number;
     message: string;
     teamId: string;

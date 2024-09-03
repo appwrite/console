@@ -1,5 +1,5 @@
 import type { Client, Models } from '@appwrite.io/console';
-import type { CreateOrgAuth, Organization, OrganizationList } from '../stores/organization';
+import type { OrganizationError, Organization, OrganizationList } from '../stores/organization';
 import type { PaymentMethod } from '@stripe/stripe-js';
 import type { Tier } from '$lib/stores/billing';
 
@@ -332,7 +332,7 @@ export class Billing {
         invites: Array<string> = [],
         budget: number = undefined,
         taxId: string = null
-    ): Promise<Organization | CreateOrgAuth> {
+    ): Promise<Organization | OrganizationError> {
         const path = `/organizations`;
         const params = {
             organizationId,

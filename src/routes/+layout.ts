@@ -6,6 +6,7 @@ import { redirect } from '@sveltejs/kit';
 import { Dependencies } from '$lib/constants';
 import type { LayoutLoad } from './$types';
 import { redirectTo } from './store';
+import { isCloud } from '$lib/system';
 
 export const ssr = false;
 
@@ -22,7 +23,7 @@ export const load: LayoutLoad = async ({ depends, url }) => {
 
         return {
             account,
-            organizations: await sdk.forConsole.billing.listOrganization()
+            organizations: isCloud ? await sdk.forConsole.billing.listOrganization() : await sdk.forConsole.teams.list()
         };
     } catch (error) {
         const acceptedRoutes = [
