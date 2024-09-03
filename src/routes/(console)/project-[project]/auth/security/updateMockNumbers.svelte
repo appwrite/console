@@ -5,6 +5,7 @@
     import { Button, Form, FormItem, FormItemPart } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
     import { project } from '../../store';
+    import { upgradeURL } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
@@ -32,7 +33,7 @@
         ? 'Available on Appwrite Cloud'
         : 'Upgrade to add mock phone numbers';
     let emptyStateDescription: string = isSelfHosted
-        ? 'Sign up to Cloud to add mock phone numbers to your projects.'
+        ? 'Sign up for Cloud to add mock phone numbers to your projects.'
         : 'Upgrade to a Pro plan to add mock phone numbers to your project.';
     let cta: string = isSelfHosted ? 'Sign up' : 'Upgrade plan';
 
@@ -137,8 +138,8 @@
                             class="u-margin-block-start-32"
                             secondary
                             fullWidth
-                            href="https://cloud.appwrite.io/register"
-                            external
+                            external={isSelfHosted}
+                            href={isCloud ? $upgradeURL : 'https://cloud.appwrite.io/register'}
                             on:click={() => {
                                 trackEvent('click_cloud_signup', {
                                     from: 'button',
