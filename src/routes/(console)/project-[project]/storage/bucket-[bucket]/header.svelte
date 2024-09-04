@@ -4,6 +4,7 @@
     import { Id, Tab, Tabs } from '$lib/components';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover, CoverTitle } from '$lib/layout';
+    import { canWriteBuckets } from '$lib/stores/roles';
     import { bucket } from './store';
 
     const projectId = $page.params.project;
@@ -22,11 +23,11 @@
             event: 'usage',
             hasChildren: true
         },
-        {
+        ...$canWriteBuckets ? [{
             href: `${path}/settings`,
             event: 'settings',
             title: 'Settings'
-        }
+        }]:[]
     ];
 </script>
 

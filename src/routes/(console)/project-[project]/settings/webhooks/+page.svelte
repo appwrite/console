@@ -28,6 +28,7 @@
     import Create from './createWebhook.svelte';
     import FailedModal from './failedModal.svelte';
     import MessageStatusPill from './messageStatusPill.svelte';
+    import { canWriteWebhooks } from '$lib/stores/roles';
 
     export let data: PageData;
 
@@ -49,10 +50,12 @@
 
 <Container>
     <GridHeader title="Webhooks" {columns} view={data.view} hideColumns={false} hideView={true}>
+        {#if $canWriteWebhooks}
         <Button on:click={openWizard} event="create_webhook">
             <span class="icon-plus" aria-hidden="true" />
             <span class="text">Create webhook</span>
         </Button>
+        {/if}
     </GridHeader>
 
     {#if data.webhooks.total}
@@ -120,7 +123,7 @@
             single
             href="https://appwrite.io/docs/advanced/platform/webhooks"
             target="webhook"
-            on:click={openWizard} />
+            on:click={$canWriteWebhooks ? openWizard : null} />
     {/if}
 </Container>
 

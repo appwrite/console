@@ -16,6 +16,7 @@
     import { Button, FormList, InputSelect } from '$lib/elements/forms';
     import { Submit, trackEvent } from '$lib/actions/analytics';
     import Transfer from './transferProject.svelte';
+    import { canWriteProjects } from '$lib/stores/roles';
 
     export let data;
 
@@ -76,6 +77,7 @@
 <Container>
     {#if $project}
         <UpdateName />
+        {#if $canWriteProjects}
         <UpdateServices />
         <UpdateInstallations {...data.installations} limit={data.limit} offset={data.offset} />
         <UpdateVariables
@@ -84,7 +86,6 @@
             {sdkDeleteVariable}
             isGlobal={true}
             variableList={data.variables} />
-
         <CardGrid>
             <Heading tag="h6" size="7">Transfer project</Heading>
             <p class="text">Transfer your project to another organization that you own.</p>
@@ -110,6 +111,7 @@
             </svelte:fragment>
         </CardGrid>
         <DeleteProject />
+        {/if}
     {/if}
 </Container>
 

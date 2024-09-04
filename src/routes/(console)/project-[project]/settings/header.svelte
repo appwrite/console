@@ -5,6 +5,7 @@
     import { isTabSelected } from '$lib/helpers/load';
     import type { TabElement } from '$lib/helpers/load';
     import { Cover, CoverTitle } from '$lib/layout';
+    import { canWriteProjects } from '$lib/stores/roles';
     import { isCloud } from '$lib/system';
 
     const projectId = $page.params.project;
@@ -25,7 +26,7 @@
             title: 'Webhooks',
             event: 'webhooks'
         },
-        {
+        ...$canWriteProjects?[{
             href: `${path}/migrations`,
             title: 'Migrations',
             event: 'migrations'
@@ -34,7 +35,7 @@
             href: `${path}/smtp`,
             title: 'SMTP',
             event: 'smtp'
-        }
+        }]:[]
     ];
 
     if (isCloud) {

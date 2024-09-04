@@ -10,6 +10,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { project } from '../store';
+    import { canWriteProjects } from '$lib/stores/roles';
 
     const endpoint = sdk.forConsole.client.config.endpoint;
     const projectId = $page.params.project;
@@ -60,6 +61,7 @@
             </Button>
         </svelte:fragment>
     </CardGrid>
+    {#if $canWriteProjects}
     <CardGrid>
         <Heading tag="h6" size="7">Name</Heading>
 
@@ -78,4 +80,5 @@
             <Button disabled={name === $project.name} submit>Update</Button>
         </svelte:fragment>
     </CardGrid>
+    {/if}
 </Form>
