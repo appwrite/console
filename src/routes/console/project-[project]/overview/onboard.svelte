@@ -13,6 +13,7 @@
     import { app } from '$lib/stores/app';
     import { wizard } from '$lib/stores/wizard';
     import Wizard from './keys/wizard.svelte';
+    import { canWriteKeys, canWritePlatforms } from '$lib/stores/roles';
 
     export let projectId: string;
 
@@ -52,6 +53,7 @@
         $app.themeInUse === 'dark' ? OnboardDark2Desktop : OnboardLight2Desktop;
 </script>
 
+{#if $canWriteKeys || $canWritePlatforms}
 <div class="card">
     <header class="card-header common-section grid-1-2" style:--url={`url(${onBoardIntro})`}>
         <div class="grid-1-2-col-1">
@@ -62,6 +64,7 @@
         </div>
     </header>
 
+    {#if $canWritePlatforms}
     <section class="common-section card-separator grid-1-2">
         <div class="grid-1-2-col-1">
             <h3 class="heading-level-7">Add a platform</h3>
@@ -95,11 +98,12 @@
             </ul>
         </div>
     </section>
-
     <div class="separator-with-text">
         <span class="text">OR</span>
     </div>
+    {/if}
 
+    {#if $canWriteKeys}
     <section class="common-section grid-1-2">
         <div class="grid-1-2-col-1">
             <h3 class="heading-level-7">Integrate with your server</h3>
@@ -148,7 +152,9 @@
             </ul>
         </div>
     </section>
+    {/if}
 </div>
+{/if}
 
 <article class="card u-grid u-width-full-line common-section onboard-cover">
     <img src={onBoardImage1Mobile} class="is-only-mobile u-width-full-line" alt="statistics" />

@@ -37,6 +37,7 @@
     import { app } from '$lib/stores/app';
     import type { PageData } from './$types';
     import { ContainerHeader } from '$lib/layout';
+    import { canWritePlatforms } from '$lib/stores/roles';
 
     export let data: PageData;
 
@@ -80,10 +81,12 @@
     total={data?.platforms?.total}
     let:isButtonDisabled>
     <DropList bind:show={showDropdown} placement="bottom-start">
+        {#if $canWritePlatforms}
         <Button on:click={() => (showDropdown = !showDropdown)} disabled={isButtonDisabled}>
             <span class="icon-plus" aria-hidden="true" />
             <span class="text">Add platform</span>
         </Button>
+        {/if}
         <svelte:fragment slot="list">
             <DropListItem on:click={() => addPlatform(Platform.Web)}>Web app</DropListItem>
             <DropListItem on:click={() => addPlatform(Platform.Flutter)}>Flutter app</DropListItem>
@@ -149,9 +152,11 @@
                         Documentation
                     </Button>
                     <DropList bind:show={showDropdownEmpty} placement="bottom-start">
+                        {#if $canWritePlatforms}
                         <Button secondary on:click={() => (showDropdownEmpty = !showDropdownEmpty)}>
                             <span class="text">Add platform</span>
                         </Button>
+                        {/if}
                         <svelte:fragment slot="list">
                             <DropListItem on:click={() => addPlatform(Platform.Web)}>
                                 Web

@@ -7,6 +7,7 @@
     import { isCloud } from '$lib/system';
     import CardPlanLimit from './cardPlanLimit.svelte';
 
+    export let showEmpty = true;
     export let offset = 0;
     export let total = 0;
     export let event: string = null;
@@ -28,9 +29,11 @@
         {#if isCloud && serviceId && total >= planLimit}
             <CardPlanLimit {service} />
         {:else}
+            {#if showEmpty}
             <Empty on:click target={event}>
                 <slot name="empty" />
             </Empty>
+            {/if}
         {/if}
     {/if}
 </ul>
