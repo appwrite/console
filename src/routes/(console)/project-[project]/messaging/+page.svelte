@@ -138,9 +138,11 @@
     {#if data.messages.total}
         <TableScroll>
             <TableHeader>
+                {#if $canWriteMessages}
                 <TableCellHeadCheck
                     bind:selected
                     pageItemsIds={data.messages.messages.map((d) => d.$id)} />
+                {/if}
                 {#each $columns as column}
                     {#if column.show}
                         <TableCellHead width={column.width}>{column.title}</TableCellHead>
@@ -151,11 +153,12 @@
                 {#each data.messages.messages as message (message.$id)}
                     <TableRowLink
                         href={`${base}/project-${project}/messaging/message-${message.$id}`}>
+                        {#if $canWriteMessages}
                         <TableCellCheck
                             bind:selectedIds={selected}
                             id={message.$id}
                             disabled={message.status === 'processing'} />
-
+                        {/if}
                         {#each $columns as column (column.id)}
                             {#if column.show}
                                 {#if column.id === '$id'}
