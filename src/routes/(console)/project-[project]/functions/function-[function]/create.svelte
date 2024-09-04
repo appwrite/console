@@ -26,14 +26,14 @@
 
 <DropList bind:show placement="bottom-end">
     {#if $canWriteFunctions}
-    <Button {secondary} {round} on:click={() => (show = !show)} event="create_deployment">
-        <slot>
-            {#if !secondary}
-                <span class="icon-plus" aria-hidden="true" />
-            {/if}
-            <span class="text">Create deployment</span>
-        </slot>
-    </Button>
+        <Button {secondary} {round} on:click={() => (show = !show)} event="create_deployment">
+            <slot>
+                {#if !secondary}
+                    <span class="icon-plus" aria-hidden="true" />
+                {/if}
+                <span class="text">Create deployment</span>
+            </slot>
+        </Button>
     {/if}
     <svelte:fragment slot="list">
         <DropListItem

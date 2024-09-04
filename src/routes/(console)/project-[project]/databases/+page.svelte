@@ -57,19 +57,19 @@
                     hideColumns={!data.databases.total}
                     hideView={!data.databases.total} />
                 {#if $canWriteDatabases}
-                <div
-                    use:tooltip={{
-                        content: `Upgrade to add more databases`,
-                        disabled: !isCreationDisabled
-                    }}>
-                    <Button
-                        on:click={() => (showCreate = true)}
-                        event="create_database"
-                        disabled={isCreationDisabled}>
-                        <span class="icon-plus" aria-hidden="true" />
-                        <span class="text">Create database</span>
-                    </Button>
-                </div>
+                    <div
+                        use:tooltip={{
+                            content: `Upgrade to add more databases`,
+                            disabled: !isCreationDisabled
+                        }}>
+                        <Button
+                            on:click={() => (showCreate = true)}
+                            event="create_database"
+                            disabled={isCreationDisabled}>
+                            <span class="icon-plus" aria-hidden="true" />
+                            <span class="text">Create database</span>
+                        </Button>
+                    </div>
                 {/if}
             </div>
         </svelte:fragment>

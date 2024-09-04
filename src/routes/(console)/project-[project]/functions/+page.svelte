@@ -86,7 +86,7 @@
 <Container>
     <ContainerHeader
         title="Functions"
-        buttonText={$canWriteFunctions ? "Create function" : ""}
+        buttonText={$canWriteFunctions ? 'Create function' : ''}
         buttonEvent="create_function"
         buttonMethod={openWizard}
         total={data.functions.total} />

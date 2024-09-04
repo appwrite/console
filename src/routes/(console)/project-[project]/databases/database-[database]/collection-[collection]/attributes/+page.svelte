@@ -53,7 +53,7 @@
         <Heading tag="h2" size="5">Attributes</Heading>
 
         {#if $canWriteCollections}
-        <CreateAttributeDropdown bind:showCreateDropdown bind:selectedOption bind:showCreate />
+            <CreateAttributeDropdown bind:showCreateDropdown bind:selectedOption bind:showCreate />
         {/if}
     </div>
 

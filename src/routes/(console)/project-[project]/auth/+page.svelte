@@ -46,19 +46,19 @@
     <ContainerHeader title="Users" isFlex={false} total={data.users.total} let:isButtonDisabled>
         <SearchQuery search={data.search} placeholder="Search by name, email, phone, or ID">
             {#if $canWriteUsers}
-            <div
-                use:tooltip={{
-                    content: `Upgrade to add more users`,
-                    disabled: !isButtonDisabled
-                }}>
-                <Button
-                    on:click={() => ($showCreateUser = true)}
-                    event="create_user"
-                    disabled={isButtonDisabled}>
-                    <span class="icon-plus" aria-hidden="true" />
-                    <span class="text">Create user</span>
-                </Button>
-            </div>
+                <div
+                    use:tooltip={{
+                        content: `Upgrade to add more users`,
+                        disabled: !isButtonDisabled
+                    }}>
+                    <Button
+                        on:click={() => ($showCreateUser = true)}
+                        event="create_user"
+                        disabled={isButtonDisabled}>
+                        <span class="icon-plus" aria-hidden="true" />
+                        <span class="text">Create user</span>
+                    </Button>
+                </div>
             {/if}
         </SearchQuery>
     </ContainerHeader>

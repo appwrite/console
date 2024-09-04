@@ -12,7 +12,7 @@ export const load: PageLoad = async ({ params, url, route, depends, parent }) =>
     const limit = getLimit(url, route, CARD_LIMIT);
     const offset = pageToOffset(page, limit);
 
-    if(!parentData.scopes.includes('projects.read')) {
+    if (!parentData.scopes.includes('projects.read')) {
         return redirect(301, `/console/organization-${params.organization}/billing`);
     }
 

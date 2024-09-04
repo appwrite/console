@@ -23,11 +23,15 @@
             event: 'usage',
             hasChildren: true
         },
-        ...$canWriteBuckets ? [{
-            href: `${path}/settings`,
-            event: 'settings',
-            title: 'Settings'
-        }]:[]
+        ...($canWriteBuckets
+            ? [
+                  {
+                      href: `${path}/settings`,
+                      event: 'settings',
+                      title: 'Settings'
+                  }
+              ]
+            : [])
     ];
 </script>
 

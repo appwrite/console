@@ -228,14 +228,14 @@
                                         <span class="text">View details</span>
                                     </Button>
                                     {#if $canWriteFunctions}
-                                    <ContainerButton
-                                        title="functions"
-                                        disabled={buttonDisabled}
-                                        buttonType="secondary"
-                                        buttonMethod={() => connectTemplate(template)}
-                                        showIcon={false}
-                                        buttonText="Create function"
-                                        buttonEvent="create_function" />
+                                        <ContainerButton
+                                            title="functions"
+                                            disabled={buttonDisabled}
+                                            buttonType="secondary"
+                                            buttonMethod={() => connectTemplate(template)}
+                                            showIcon={false}
+                                            buttonText="Create function"
+                                            buttonEvent="create_function" />
                                     {/if}
                                 </div>
                             </article>

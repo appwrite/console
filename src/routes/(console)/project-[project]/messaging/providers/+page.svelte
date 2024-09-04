@@ -31,9 +31,9 @@
         <div class="u-flex u-main-space-between">
             <Heading tag="h2" size="5">Providers</Heading>
             {#if $canWriteProviders}
-            <div class="is-only-mobile">
-                <CreateProviderDropdown bind:showCreateDropdown={showCreateDropdownMobile} />
-            </div>
+                <div class="is-only-mobile">
+                    <CreateProviderDropdown bind:showCreateDropdown={showCreateDropdownMobile} />
+                </div>
             {/if}
         </div>
         <!-- TODO: fix width of search input in mobile -->
@@ -47,7 +47,7 @@
                     allowNoColumns
                     showColsTextMobile />
                 {#if $canWriteProviders}
-                <CreateProviderDropdown bind:showCreateDropdown={showCreateDropdownDesktop} />
+                    <CreateProviderDropdown bind:showCreateDropdown={showCreateDropdownDesktop} />
                 {/if}
             </div>
         </SearchQuery>
@@ -107,14 +107,14 @@
                     Documentation
                 </Button>
                 {#if $canWriteProviders}
-                <CreateProviderDropdown bind:showCreateDropdown={showCreateDropdownEmpty}>
-                    <Button
-                        secondary
-                        on:click={() => (showCreateDropdownEmpty = !showCreateDropdownEmpty)}
-                        event="create_provider">
-                        <span class="text">Create provider</span>
-                    </Button>
-                </CreateProviderDropdown>
+                    <CreateProviderDropdown bind:showCreateDropdown={showCreateDropdownEmpty}>
+                        <Button
+                            secondary
+                            on:click={() => (showCreateDropdownEmpty = !showCreateDropdownEmpty)}
+                            event="create_provider">
+                            <span class="text">Create provider</span>
+                        </Button>
+                    </CreateProviderDropdown>
                 {/if}
             </div>
         </Empty>

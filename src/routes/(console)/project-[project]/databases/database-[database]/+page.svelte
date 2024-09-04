@@ -19,10 +19,10 @@
         hideColumns={!data.collections.total}
         hideView={!data.collections.total}>
         {#if $canWriteCollections}
-        <Button on:click={() => ($showCreate = true)} event="create_collection">
-            <span class="icon-plus" aria-hidden="true" />
-            <span class="text">Create collection</span>
-        </Button>
+            <Button on:click={() => ($showCreate = true)} event="create_collection">
+                <span class="icon-plus" aria-hidden="true" />
+                <span class="text">Create collection</span>
+            </Button>
         {/if}
     </GridHeader>
 

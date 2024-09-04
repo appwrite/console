@@ -27,12 +27,12 @@
 <div class="common-section u-flex u-gap-12">
     <Heading tag="h3" size="7">API keys</Heading>
     {#if $canWriteKeys}
-    <span class="u-margin-inline-start-auto">
-        <Button on:click={createApiKey}>
-            <span class="icon-plus" aria-hidden="true" />
-            <span class="text">Create API key</span>
-        </Button>
-    </span>
+        <span class="u-margin-inline-start-auto">
+            <Button on:click={createApiKey}>
+                <span class="icon-plus" aria-hidden="true" />
+                <span class="text">Create API key</span>
+            </Button>
+        </span>
     {/if}
 </div>
 

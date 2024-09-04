@@ -51,19 +51,19 @@
         let:isButtonDisabled>
         <SearchQuery search={data.search} placeholder="Search by name">
             {#if $canWriteTeams}
-            <div
-                use:tooltip={{
-                    content: `Upgrade to add more teams`,
-                    disabled: !isButtonDisabled
-                }}>
-                <Button
-                    on:click={() => ($showCreateTeam = true)}
-                    event="create_team"
-                    disabled={isButtonDisabled}>
-                    <span class="icon-plus" aria-hidden="true" />
-                    <span class="text">Create team</span>
-                </Button>
-            </div>
+                <div
+                    use:tooltip={{
+                        content: `Upgrade to add more teams`,
+                        disabled: !isButtonDisabled
+                    }}>
+                    <Button
+                        on:click={() => ($showCreateTeam = true)}
+                        event="create_team"
+                        disabled={isButtonDisabled}>
+                        <span class="icon-plus" aria-hidden="true" />
+                        <span class="text">Create team</span>
+                    </Button>
+                </div>
             {/if}
         </SearchQuery>
     </ContainerHeader>

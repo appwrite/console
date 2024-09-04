@@ -79,13 +79,13 @@
                         <span class="icon-external-link" />
                     </Button>
                     {#if $canWriteFunctions}
-                    <ContainerButton
-                        title="functions"
-                        disabled={buttonDisabled}
-                        buttonMethod={() => connectTemplate($template)}
-                        showIcon={false}
-                        buttonText="Create function"
-                        buttonEvent="create_function" />
+                        <ContainerButton
+                            title="functions"
+                            disabled={buttonDisabled}
+                            buttonMethod={() => connectTemplate($template)}
+                            showIcon={false}
+                            buttonText="Create function"
+                            buttonEvent="create_function" />
                     {/if}
                 </div>
             </Card>

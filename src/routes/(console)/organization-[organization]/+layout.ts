@@ -18,11 +18,11 @@ export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.PAYMENT_METHODS);
     var roles = [];
     var scopes = [];
-    
+
     try {
         if (isCloud) {
             await failedInvoice.load(params.organization);
-    
+
             if (get(failedInvoice)) {
                 headerAlert.add({
                     show: true,
@@ -31,7 +31,7 @@ export const load: LayoutLoad = async ({ params, depends }) => {
                     importance: 1
                 });
             }
-    
+
             const res = await sdk.forConsole.billing.getRoles(params.organization);
             roles = res.roles;
             scopes = res.scopes;

@@ -78,39 +78,39 @@
     {#if $project}
         <UpdateName />
         {#if $canWriteProjects}
-        <UpdateServices />
-        <UpdateInstallations {...data.installations} limit={data.limit} offset={data.offset} />
-        <UpdateVariables
-            {sdkCreateVariable}
-            {sdkUpdateVariable}
-            {sdkDeleteVariable}
-            isGlobal={true}
-            variableList={data.variables} />
-        <CardGrid>
-            <Heading tag="h6" size="7">Transfer project</Heading>
-            <p class="text">Transfer your project to another organization that you own.</p>
+            <UpdateServices />
+            <UpdateInstallations {...data.installations} limit={data.limit} offset={data.offset} />
+            <UpdateVariables
+                {sdkCreateVariable}
+                {sdkUpdateVariable}
+                {sdkDeleteVariable}
+                isGlobal={true}
+                variableList={data.variables} />
+            <CardGrid>
+                <Heading tag="h6" size="7">Transfer project</Heading>
+                <p class="text">Transfer your project to another organization that you own.</p>
 
-            <svelte:fragment slot="aside">
-                <FormList>
-                    <InputSelect
-                        id="organization"
-                        label="Available organizations"
-                        bind:value={teamId}
-                        options={$organizationList.teams.map((team) => ({
-                            value: team.$id,
-                            label: team.name
-                        }))} />
-                </FormList>
-            </svelte:fragment>
+                <svelte:fragment slot="aside">
+                    <FormList>
+                        <InputSelect
+                            id="organization"
+                            label="Available organizations"
+                            bind:value={teamId}
+                            options={$organizationList.teams.map((team) => ({
+                                value: team.$id,
+                                label: team.name
+                            }))} />
+                    </FormList>
+                </svelte:fragment>
 
-            <svelte:fragment slot="actions">
-                <Button
-                    secondary
-                    disabled={teamId === $project.teamId}
-                    on:click={() => (showTransfer = true)}>Transfer</Button>
-            </svelte:fragment>
-        </CardGrid>
-        <DeleteProject />
+                <svelte:fragment slot="actions">
+                    <Button
+                        secondary
+                        disabled={teamId === $project.teamId}
+                        on:click={() => (showTransfer = true)}>Transfer</Button>
+                </svelte:fragment>
+            </CardGrid>
+            <DeleteProject />
         {/if}
     {/if}
 </Container>

@@ -168,31 +168,31 @@
                     </section></svelte:fragment>
             </DropList>
             {#if $isOwner}
-            <div class="u-margin-inline-start-auto">
-                <div class="u-flex u-gap-16 u-cross-center">
-                    <a href={`${path}/members`} class="is-not-mobile">
-                        <AvatarGroup size={40} {avatars} total={$members?.total ?? 0} />
-                    </a>
-                    <div
-                        use:tooltip={{
-                            content:
-                                $organization?.billingPlan === BillingPlan.FREE
-                                    ? `Upgrade to add more members`
-                                    : `You've reached the members limit for the ${
-                                          tierToPlan($organization?.billingPlan)?.name
-                                      } plan`,
-                            disabled: !areMembersLimited
-                        }}>
-                        <Button
-                            secondary
-                            on:click={() => newMemberModal.set(true)}
-                            disabled={areMembersLimited}>
-                            <span class="icon-plus" aria-hidden="true" />
-                            <span class="text">Invite</span>
-                        </Button>
+                <div class="u-margin-inline-start-auto">
+                    <div class="u-flex u-gap-16 u-cross-center">
+                        <a href={`${path}/members`} class="is-not-mobile">
+                            <AvatarGroup size={40} {avatars} total={$members?.total ?? 0} />
+                        </a>
+                        <div
+                            use:tooltip={{
+                                content:
+                                    $organization?.billingPlan === BillingPlan.FREE
+                                        ? `Upgrade to add more members`
+                                        : `You've reached the members limit for the ${
+                                              tierToPlan($organization?.billingPlan)?.name
+                                          } plan`,
+                                disabled: !areMembersLimited
+                            }}>
+                            <Button
+                                secondary
+                                on:click={() => newMemberModal.set(true)}
+                                disabled={areMembersLimited}>
+                                <span class="icon-plus" aria-hidden="true" />
+                                <span class="text">Invite</span>
+                            </Button>
+                        </div>
                     </div>
                 </div>
-            </div>
             {/if}
         </svelte:fragment>
         <Tabs>

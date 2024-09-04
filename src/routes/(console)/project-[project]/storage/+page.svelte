@@ -30,7 +30,7 @@
     <ContainerHeader
         title="Buckets"
         total={data.buckets.total}
-        buttonText={$canWriteBuckets ? "Create bucket" : ""}
+        buttonText={$canWriteBuckets ? 'Create bucket' : ''}
         buttonEvent="create_bucket"
         buttonMethod={() => ($showCreateBucket = true)} />
     {#if data.buckets.total}

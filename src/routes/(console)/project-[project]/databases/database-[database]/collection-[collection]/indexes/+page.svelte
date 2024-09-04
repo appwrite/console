@@ -40,13 +40,13 @@
         <Heading tag="h2" size="5">Indexes</Heading>
 
         {#if $canWriteCollections}
-        <Button
-            event="create_index"
-            disabled={!$collection?.attributes?.length}
-            on:click={() => (showCreateIndex = true)}>
-            <span class="icon-plus" aria-hidden="true" />
-            <span class="text">Create index</span>
-        </Button>
+            <Button
+                event="create_index"
+                disabled={!$collection?.attributes?.length}
+                on:click={() => (showCreateIndex = true)}>
+                <span class="icon-plus" aria-hidden="true" />
+                <span class="text">Create index</span>
+            </Button>
         {/if}
     </div>
     {#if $collection?.attributes?.length}

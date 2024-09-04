@@ -144,13 +144,13 @@
 
             <DropList bind:show={showDropdown} placement="bottom-end">
                 {#if $canWriteProjects}
-                <Button
-                    on:click={handleCreateProject}
-                    event="create_project"
-                    disabled={$readOnly && !GRACE_PERIOD_OVERRIDE}>
-                    <span class="icon-plus" aria-hidden="true" />
-                    <span class="text">Create project</span>
-                </Button>
+                    <Button
+                        on:click={handleCreateProject}
+                        event="create_project"
+                        disabled={$readOnly && !GRACE_PERIOD_OVERRIDE}>
+                        <span class="icon-plus" aria-hidden="true" />
+                        <span class="text">Create project</span>
+                    </Button>
                 {/if}
                 <svelte:fragment slot="list">
                     <DropListItem on:click={() => (showCreate = true)}>Empty project</DropListItem>

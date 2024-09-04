@@ -63,9 +63,9 @@
 <TableScroll>
     <TableHeader>
         {#if $canWriteCollections}
-        <TableCellHeadCheck
-            bind:selected
-            pageItemsIds={data.collections.collections.map((c) => c.$id)} />
+            <TableCellHeadCheck
+                bind:selected
+                pageItemsIds={data.collections.collections.map((c) => c.$id)} />
         {/if}
         {#each $columns as column}
             {#if column.show}
@@ -78,7 +78,7 @@
             <TableRowLink
                 href={`${base}/project-${projectId}/databases/database-${databaseId}/collection-${collection.$id}`}>
                 {#if $canWriteCollections}
-                <TableCellCheck bind:selectedIds={selected} id={collection.$id} />
+                    <TableCellCheck bind:selectedIds={selected} id={collection.$id} />
                 {/if}
                 {#each $columns as column}
                     {#if column.show}

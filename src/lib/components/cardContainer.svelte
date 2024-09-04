@@ -28,12 +28,10 @@
     {#if total > 3 ? total < limit + offset : total % 2 !== 0}
         {#if isCloud && serviceId && total >= planLimit}
             <CardPlanLimit {service} />
-        {:else}
-            {#if showEmpty}
+        {:else if showEmpty}
             <Empty on:click target={event}>
                 <slot name="empty" />
             </Empty>
-            {/if}
         {/if}
     {/if}
 </ul>

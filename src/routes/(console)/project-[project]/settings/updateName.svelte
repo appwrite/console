@@ -62,23 +62,23 @@
         </svelte:fragment>
     </CardGrid>
     {#if $canWriteProjects}
-    <CardGrid>
-        <Heading tag="h6" size="7">Name</Heading>
+        <CardGrid>
+            <Heading tag="h6" size="7">Name</Heading>
 
-        <svelte:fragment slot="aside">
-            <FormList>
-                <InputText
-                    id="name"
-                    label="Name"
-                    bind:value={name}
-                    required
-                    placeholder="Enter name" />
-            </FormList>
-        </svelte:fragment>
+            <svelte:fragment slot="aside">
+                <FormList>
+                    <InputText
+                        id="name"
+                        label="Name"
+                        bind:value={name}
+                        required
+                        placeholder="Enter name" />
+                </FormList>
+            </svelte:fragment>
 
-        <svelte:fragment slot="actions">
-            <Button disabled={name === $project.name} submit>Update</Button>
-        </svelte:fragment>
-    </CardGrid>
+            <svelte:fragment slot="actions">
+                <Button disabled={name === $project.name} submit>Update</Button>
+            </svelte:fragment>
+        </CardGrid>
     {/if}
 </Form>

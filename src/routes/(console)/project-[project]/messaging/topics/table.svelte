@@ -62,9 +62,9 @@
 <TableScroll>
     <TableHeader>
         {#if $canWriteTopics}
-        <TableCellHeadCheck
-            bind:selected={selectedIds}
-            pageItemsIds={data.topics.topics.map((d) => d.$id)} />
+            <TableCellHeadCheck
+                bind:selected={selectedIds}
+                pageItemsIds={data.topics.topics.map((d) => d.$id)} />
         {/if}
         {#each columns as column}
             {#if column.show}
@@ -77,7 +77,7 @@
             <TableRowLink
                 href={`${base}/project-${$project.$id}/messaging/topics/topic-${topic.$id}`}>
                 {#if $canWriteTopics}
-                <TableCellCheck bind:selectedIds id={topic.$id} />
+                    <TableCellCheck bind:selectedIds id={topic.$id} />
                 {/if}
                 {#each columns as column (column.id)}
                     {#if column.show}

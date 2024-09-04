@@ -60,9 +60,9 @@
 <TableScroll>
     <TableHeader>
         {#if $canWriteDatabases}
-        <TableCellHeadCheck
-            bind:selected
-            pageItemsIds={data.databases.databases.map((c) => c.$id)} />
+            <TableCellHeadCheck
+                bind:selected
+                pageItemsIds={data.databases.databases.map((c) => c.$id)} />
         {/if}
         {#each $columns as column}
             {#if column.show}
@@ -74,7 +74,7 @@
         {#each data.databases.databases as database}
             <TableRowLink href={`${base}/project-${projectId}/databases/database-${database.$id}`}>
                 {#if $canWriteDatabases}
-                <TableCellCheck bind:selectedIds={selected} id={database.$id} />
+                    <TableCellCheck bind:selectedIds={selected} id={database.$id} />
                 {/if}
                 {#each $columns as column}
                     {#if column.show}

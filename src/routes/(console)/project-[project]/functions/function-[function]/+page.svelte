@@ -187,15 +187,15 @@
                             Build logs
                         </Button>
                         {#if $canWriteFunctions}
-                        <Button
-                            text
-                            class="u-margin-inline-end-16"
-                            on:click={() => {
-                                selectedDeployment = activeDeployment;
-                                showRedeploy = true;
-                            }}>
-                            Redeploy
-                        </Button>
+                            <Button
+                                text
+                                class="u-margin-inline-end-16"
+                                on:click={() => {
+                                    selectedDeployment = activeDeployment;
+                                    showRedeploy = true;
+                                }}>
+                                Redeploy
+                            </Button>
                         {/if}
                         <Button
                             secondary

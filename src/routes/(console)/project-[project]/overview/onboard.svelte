@@ -57,106 +57,109 @@
 </script>
 
 {#if $canWriteKeys || $canWritePlatforms}
-<div class="card">
-    <header class="card-header common-section grid-1-2">
-        <div class="grid-1-2-col-1">
-            <h2 class="heading-level-5">Getting started</h2>
-            <p class="u-line-height-1-5 u-margin-block-start-12">
-                Here are some next steps to start building
-            </p>
-        </div>
-    </header>
+    <div class="card">
+        <header class="card-header common-section grid-1-2">
+            <div class="grid-1-2-col-1">
+                <h2 class="heading-level-5">Getting started</h2>
+                <p class="u-line-height-1-5 u-margin-block-start-12">
+                    Here are some next steps to start building
+                </p>
+            </div>
+        </header>
 
-    {#if $canWritePlatforms}
-    <section class="common-section card-separator grid-1-2">
-        <div class="grid-1-2-col-1">
-            <h3 class="heading-level-7">Add a platform</h3>
-            <p class="u-line-height-1-5 u-margin-block-start-16">
-                Our SDKs make it possible to easily integrate with any platform.
-            </p>
-        </div>
-        <div class="grid-1-2-col-2">
-            <ul class="grid-box">
-                {#each platforms as platform}
-                    <li class="grid-box-item">
-                        <button
-                            type="button"
-                            class="card u-width-full-line"
-                            on:click={() => addPlatform(platform.platform)}>
-                            <span class="u-flex u-cross-center u-gap-16">
-                                <div class="avatar is-medium" aria-hidden="true">
-                                    <img
-                                        src={`${base}/icons/${$app.themeInUse}/${platform.icon}.svg`}
-                                        alt="technology" />
-                                </div>
-                                <span class="text">{platform.title}</span>
-                                <span
-                                    class="icon-plus u-margin-inline-start-auto"
-                                    style="font-size: var(--icon-size-large);"
-                                    aria-hidden="true" />
-                            </span>
-                        </button>
-                    </li>
-                {/each}
-            </ul>
-        </div>
-    </section>
-    <div class="separator-with-text">
-        <span class="text">OR</span>
+        {#if $canWritePlatforms}
+            <section class="common-section card-separator grid-1-2">
+                <div class="grid-1-2-col-1">
+                    <h3 class="heading-level-7">Add a platform</h3>
+                    <p class="u-line-height-1-5 u-margin-block-start-16">
+                        Our SDKs make it possible to easily integrate with any platform.
+                    </p>
+                </div>
+                <div class="grid-1-2-col-2">
+                    <ul class="grid-box">
+                        {#each platforms as platform}
+                            <li class="grid-box-item">
+                                <button
+                                    type="button"
+                                    class="card u-width-full-line"
+                                    on:click={() => addPlatform(platform.platform)}>
+                                    <span class="u-flex u-cross-center u-gap-16">
+                                        <div class="avatar is-medium" aria-hidden="true">
+                                            <img
+                                                src={`${base}/icons/${$app.themeInUse}/${platform.icon}.svg`}
+                                                alt="technology" />
+                                        </div>
+                                        <span class="text">{platform.title}</span>
+                                        <span
+                                            class="icon-plus u-margin-inline-start-auto"
+                                            style="font-size: var(--icon-size-large);"
+                                            aria-hidden="true" />
+                                    </span>
+                                </button>
+                            </li>
+                        {/each}
+                    </ul>
+                </div>
+            </section>
+            <div class="separator-with-text">
+                <span class="text">OR</span>
+            </div>
+        {/if}
+
+        {#if $canWriteKeys}
+            <section class="common-section grid-1-2">
+                <div class="grid-1-2-col-1">
+                    <h3 class="heading-level-7">Integrate with your server</h3>
+                    <p class="u-line-height-1-5 u-margin-block-start-16">
+                        Appwrite is designed to adapt to your existing backend. Integrate Appwrite
+                        with your backend code base using Server SDKs or Webhooks.
+                    </p>
+                </div>
+                <div class="grid-1-2-col-2">
+                    <ul class="grid-box">
+                        <li class="grid-box-item">
+                            <button
+                                type="button"
+                                class="card u-width-full-line"
+                                on:click={createKey}>
+                                <span class="u-flex u-cross-center u-gap-16">
+                                    <div class="avatar is-medium" aria-hidden="true">
+                                        <img
+                                            src={`${base}/icons/${$app.themeInUse}/grayscale/code.svg`}
+                                            alt="technology" />
+                                    </div>
+                                    <span class="text">API key</span>
+                                    <span
+                                        class="icon-plus u-margin-inline-start-auto"
+                                        style="font-size: var(--icon-size-large);"
+                                        aria-hidden="true" />
+                                </span>
+                            </button>
+                        </li>
+                        <li class="grid-box-item">
+                            <a
+                                href={`${base}/project-${projectId}/settings/webhooks`}
+                                style="line-height: 1.5;"
+                                class="card u-width-full-line">
+                                <span class="u-flex u-cross-center u-gap-16">
+                                    <div class="avatar is-medium" aria-hidden="true">
+                                        <img
+                                            src={`${base}/icons/${$app.themeInUse}/grayscale/code.svg`}
+                                            alt="technology" />
+                                    </div>
+                                    <span class="text">Webhook</span>
+                                    <span
+                                        class="icon-plus u-margin-inline-start-auto"
+                                        style="font-size: var(--icon-size-large);"
+                                        aria-hidden="true" />
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+        {/if}
     </div>
-    {/if}
-
-    {#if $canWriteKeys}
-    <section class="common-section grid-1-2">
-        <div class="grid-1-2-col-1">
-            <h3 class="heading-level-7">Integrate with your server</h3>
-            <p class="u-line-height-1-5 u-margin-block-start-16">
-                Appwrite is designed to adapt to your existing backend. Integrate Appwrite with your
-                backend code base using Server SDKs or Webhooks.
-            </p>
-        </div>
-        <div class="grid-1-2-col-2">
-            <ul class="grid-box">
-                <li class="grid-box-item">
-                    <button type="button" class="card u-width-full-line" on:click={createKey}>
-                        <span class="u-flex u-cross-center u-gap-16">
-                            <div class="avatar is-medium" aria-hidden="true">
-                                <img
-                                    src={`${base}/icons/${$app.themeInUse}/grayscale/code.svg`}
-                                    alt="technology" />
-                            </div>
-                            <span class="text">API key</span>
-                            <span
-                                class="icon-plus u-margin-inline-start-auto"
-                                style="font-size: var(--icon-size-large);"
-                                aria-hidden="true" />
-                        </span>
-                    </button>
-                </li>
-                <li class="grid-box-item">
-                    <a
-                        href={`${base}/project-${projectId}/settings/webhooks`}
-                        style="line-height: 1.5;"
-                        class="card u-width-full-line">
-                        <span class="u-flex u-cross-center u-gap-16">
-                            <div class="avatar is-medium" aria-hidden="true">
-                                <img
-                                    src={`${base}/icons/${$app.themeInUse}/grayscale/code.svg`}
-                                    alt="technology" />
-                            </div>
-                            <span class="text">Webhook</span>
-                            <span
-                                class="icon-plus u-margin-inline-start-auto"
-                                style="font-size: var(--icon-size-large);"
-                                aria-hidden="true" />
-                        </span>
-                    </a>
-                </li>
-            </ul>
-        </div>
-    </section>
-    {/if}
-</div>
 {/if}
 
 <article class="u-grid u-width-full-line common-section onboard-cover">

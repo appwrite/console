@@ -56,9 +56,9 @@
                         event="empty_documentation"
                         ariaLabel="create {target}">Documentation</Button>
                     {#if allowCreate}
-                    <Button secondary on:click on:click={track}>
-                        Create {target}
-                    </Button>
+                        <Button secondary on:click on:click={track}>
+                            Create {target}
+                        </Button>
                     {/if}
                 </div>
             </slot>

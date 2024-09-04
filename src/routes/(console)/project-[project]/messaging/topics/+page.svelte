@@ -54,12 +54,12 @@
         <div class="u-flex u-main-space-between">
             <Heading tag="h2" size="5">Topics</Heading>
             {#if $canWriteTopics}
-            <div class="is-only-mobile">
-                <Button on:click={() => ($showCreate = true)} event="create_topic">
-                    <span class="icon-plus" aria-hidden="true" />
-                    <span class="text">Create topic</span>
-                </Button>
-            </div>
+                <div class="is-only-mobile">
+                    <Button on:click={() => ($showCreate = true)} event="create_topic">
+                        <span class="icon-plus" aria-hidden="true" />
+                        <span class="text">Create topic</span>
+                    </Button>
+                </div>
             {/if}
         </div>
         <!-- TODO: fix width of search input in mobile -->
@@ -73,10 +73,10 @@
                     allowNoColumns
                     showColsTextMobile />
                 {#if $canWriteTopics}
-                <Button on:click={() => ($showCreate = true)} event="create_topic">
-                    <span class="icon-plus" aria-hidden="true" />
-                    <span class="text">Create topic</span>
-                </Button>
+                    <Button on:click={() => ($showCreate = true)} event="create_topic">
+                        <span class="icon-plus" aria-hidden="true" />
+                        <span class="text">Create topic</span>
+                    </Button>
                 {/if}
             </div>
         </SearchQuery>

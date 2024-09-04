@@ -65,9 +65,9 @@
 <TableScroll>
     <TableHeader>
         {#if $canWriteProviders}
-        <TableCellHeadCheck
-            bind:selected={selectedIds}
-            pageItemsIds={data.providers.providers.map((d) => d.$id)} />
+            <TableCellHeadCheck
+                bind:selected={selectedIds}
+                pageItemsIds={data.providers.providers.map((d) => d.$id)} />
         {/if}
         {#each $columns as column}
             {#if column.show}
@@ -78,9 +78,11 @@
     <TableBody>
         {#each data.providers.providers as provider (provider.$id)}
             <TableRowLink
-                href={$canWriteProviders ? `${base}/project-${$project.$id}/messaging/providers/provider-${provider.$id}` : '#'}>
+                href={$canWriteProviders
+                    ? `${base}/project-${$project.$id}/messaging/providers/provider-${provider.$id}`
+                    : '#'}>
                 {#if $canWriteProviders}
-                <TableCellCheck bind:selectedIds id={provider.$id} />
+                    <TableCellCheck bind:selectedIds id={provider.$id} />
                 {/if}
                 {#each $columns as column}
                     {#if column.show}

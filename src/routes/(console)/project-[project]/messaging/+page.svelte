@@ -95,9 +95,9 @@
 <Container>
     <ContainerHeader title="Messages">
         {#if $canWriteMessages}
-        <div class="is-only-mobile">
-            <CreateMessageDropdown bind:showCreateDropdown={showCreateDropdownMobile} />
-        </div>
+            <div class="is-only-mobile">
+                <CreateMessageDropdown bind:showCreateDropdown={showCreateDropdownMobile} />
+            </div>
         {/if}
     </ContainerHeader>
     <div class="u-flex u-flex-vertical u-gap-16 u-margin-block-start-16">
@@ -115,7 +115,8 @@
                         allowNoColumns
                         showColsTextMobile />
                     {#if $canWriteMessages}
-                    <CreateMessageDropdown bind:showCreateDropdown={showCreateDropdownDesktop} />
+                        <CreateMessageDropdown
+                            bind:showCreateDropdown={showCreateDropdownDesktop} />
                     {/if}
                 </div>
             </div>
@@ -139,9 +140,9 @@
         <TableScroll>
             <TableHeader>
                 {#if $canWriteMessages}
-                <TableCellHeadCheck
-                    bind:selected
-                    pageItemsIds={data.messages.messages.map((d) => d.$id)} />
+                    <TableCellHeadCheck
+                        bind:selected
+                        pageItemsIds={data.messages.messages.map((d) => d.$id)} />
                 {/if}
                 {#each $columns as column}
                     {#if column.show}
@@ -154,10 +155,10 @@
                     <TableRowLink
                         href={`${base}/project-${project}/messaging/message-${message.$id}`}>
                         {#if $canWriteMessages}
-                        <TableCellCheck
-                            bind:selectedIds={selected}
-                            id={message.$id}
-                            disabled={message.status === 'processing'} />
+                            <TableCellCheck
+                                bind:selectedIds={selected}
+                                id={message.$id}
+                                disabled={message.status === 'processing'} />
                         {/if}
                         {#each $columns as column (column.id)}
                             {#if column.show}
@@ -281,14 +282,14 @@
                     Documentation
                 </Button>
                 {#if $canWriteMessages}
-                <CreateMessageDropdown bind:showCreateDropdown={showCreateDropdownEmpty}>
-                    <Button
-                        secondary
-                        on:click={() => (showCreateDropdownEmpty = !showCreateDropdownEmpty)}
-                        event="create_message">
-                        <span class="text">Create message</span>
-                    </Button>
-                </CreateMessageDropdown>
+                    <CreateMessageDropdown bind:showCreateDropdown={showCreateDropdownEmpty}>
+                        <Button
+                            secondary
+                            on:click={() => (showCreateDropdownEmpty = !showCreateDropdownEmpty)}
+                            event="create_message">
+                            <span class="text">Create message</span>
+                        </Button>
+                    </CreateMessageDropdown>
                 {/if}
             </div>
         </Empty>

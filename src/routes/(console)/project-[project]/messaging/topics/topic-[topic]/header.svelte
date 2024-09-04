@@ -21,11 +21,15 @@
             title: 'Activity',
             event: 'activity'
         },
-        ...$canWriteTopics ? [{
-            href: `${path}/settings`,
-            title: 'Settings',
-            event: 'settings'
-        }]:[]
+        ...($canWriteTopics
+            ? [
+                  {
+                      href: `${path}/settings`,
+                      title: 'Settings',
+                      event: 'settings'
+                  }
+              ]
+            : [])
     ];
 </script>
 

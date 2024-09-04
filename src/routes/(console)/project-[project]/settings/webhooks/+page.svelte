@@ -51,10 +51,10 @@
 <Container>
     <GridHeader title="Webhooks" {columns} view={data.view} hideColumns={false} hideView={true}>
         {#if $canWriteWebhooks}
-        <Button on:click={openWizard} event="create_webhook">
-            <span class="icon-plus" aria-hidden="true" />
-            <span class="text">Create webhook</span>
-        </Button>
+            <Button on:click={openWizard} event="create_webhook">
+                <span class="icon-plus" aria-hidden="true" />
+                <span class="text">Create webhook</span>
+            </Button>
         {/if}
     </GridHeader>
 
