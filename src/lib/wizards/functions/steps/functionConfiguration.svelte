@@ -7,7 +7,7 @@
     import { onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
     import { choices, createFunction, installation, repository } from '../store';
-    import { runtimesList } from '$routes/console/project-[project]/functions/store';
+    import { runtimesList } from '$lib/stores/runtimes';
 
     let showCustomId = false;
 
@@ -108,7 +108,7 @@
                 <FormList>
                     <InputTextarea
                         label="Commands"
-                        placeholder="Enter a build commad (e.g. 'npm install')"
+                        placeholder="Enter a build command (e.g. 'npm install')"
                         id="build"
                         tooltip="Enter a single command or chain multiple commands with the && operator"
                         bind:value={$createFunction.commands} />

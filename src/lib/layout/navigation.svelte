@@ -11,13 +11,15 @@
     import { canSeeDatabases } from '$lib/stores/roles';
     import { wizard } from '$lib/stores/wizard';
     import { isCloud } from '$lib/system';
-    import Create from '$routes/console/feedbackWizard.svelte';
-    import { showSupportModal } from '$routes/console/wizard/support/store';
+    import Create from '$routes/(console)/feedbackWizard.svelte';
+    import { showSupportModal } from '$routes/(console)/wizard/support/store';
+    import { getContext } from 'svelte';
+    import type { Writable } from 'svelte/store';
 
     export let isOpen = false;
 
     $: project = $page.params.project;
-    $: projectPath = `${base}/console/project-${project}`;
+    $: projectPath = `${base}/project-${project}`;
 
     $: subNavigation = $page.data.subNavigation;
     // We need to have this second variable, because we only want narrow
@@ -29,6 +31,9 @@
     $: {
         narrow = hasSubNavigation;
     }
+
+    $: getContext<Writable<boolean>>('isNarrow').set(narrow);
+    $: getContext<Writable<boolean>>('hasSubNavigation').set(hasSubNavigation);
 
     function handleKeyDown(event: KeyboardEvent) {
         // If Alt + S is pressed

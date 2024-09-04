@@ -16,7 +16,7 @@
     }
 </script>
 
-{#if $paymentMissingMandate && $paymentMissingMandate.country === 'in' && $paymentMissingMandate.mandateId === null && !hideBillingHeaderRoutes.includes($page.url.pathname)}
+{#if $paymentMissingMandate && $paymentMissingMandate?.country?.toLowerCase() === 'in' && $paymentMissingMandate.mandateId === null && !hideBillingHeaderRoutes.includes($page.url.pathname)}
     <HeaderAlert title="Authorization required" type="info">
         The payment method for {$organization.name} needs to be verified.
         <svelte:fragment slot="buttons">

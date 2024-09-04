@@ -1,7 +1,7 @@
 <script lang="ts">
     export let large = false;
     export let stretch = false;
-    let classes: string = undefined;
+    let classes: string = '';
     export { classes as class };
 </script>
 

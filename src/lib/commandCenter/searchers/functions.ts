@@ -1,17 +1,18 @@
 import { goto } from '$app/navigation';
 import { sdk } from '$lib/stores/sdk';
-import { project } from '$routes/console/project-[project]/store';
+import { project } from '$routes/(console)/project-[project]/store';
 import { get } from 'svelte/store';
 import type { Searcher } from '../commands';
 import type { Models } from '@appwrite.io/console';
 import { page } from '$app/stores';
-import { showCreateDeployment } from '$routes/console/project-[project]/functions/function-[function]/store';
+import { showCreateDeployment } from '$routes/(console)/project-[project]/functions/function-[function]/store';
+import { base } from '$app/paths';
 
 const getFunctionCommand = (fn: Models.Function, projectId: string) => {
     return {
         label: fn.name,
         callback: () => {
-            goto(`/console/project-${projectId}/functions/function-${fn.$id}`);
+            goto(`${base}/project-${projectId}/functions/function-${fn.$id}`);
         },
         group: 'functions',
         icon: 'lightning-bolt'
@@ -35,7 +36,7 @@ export const functionsSearcher = (async (query: string) => {
                 async callback() {
                     const $page = get(page);
                     if (!$page.url.pathname.endsWith(func.$id)) {
-                        await goto(`/console/project-${projectId}/functions/function-${func.$id}`);
+                        await goto(`${base}/project-${projectId}/functions/function-${func.$id}`);
                     }
                     showCreateDeployment.set(true);
                 },
@@ -46,7 +47,7 @@ export const functionsSearcher = (async (query: string) => {
                 label: 'Go to deployments',
                 nested: true,
                 callback() {
-                    goto(`/console/project-${projectId}/functions/function-${func.$id}`);
+                    goto(`${base}/project-${projectId}/functions/function-${func.$id}`);
                 },
                 group: 'functions'
             },
@@ -54,7 +55,7 @@ export const functionsSearcher = (async (query: string) => {
                 label: 'Go to usage',
                 nested: true,
                 callback() {
-                    goto(`/console/project-${projectId}/functions/function-${func.$id}/usage`);
+                    goto(`${base}/project-${projectId}/functions/function-${func.$id}/usage`);
                 },
                 group: 'functions'
             },
@@ -62,7 +63,7 @@ export const functionsSearcher = (async (query: string) => {
                 label: 'Go to executions',
                 nested: true,
                 callback() {
-                    goto(`/console/project-${projectId}/functions/function-${func.$id}/executions`);
+                    goto(`${base}/project-${projectId}/functions/function-${func.$id}/executions`);
                 },
                 group: 'functions'
             },
@@ -70,7 +71,7 @@ export const functionsSearcher = (async (query: string) => {
                 label: 'Go to settings',
                 nested: true,
                 callback() {
-                    goto(`/console/project-${projectId}/functions/function-${func.$id}/settings`);
+                    goto(`${base}/project-${projectId}/functions/function-${func.$id}/settings`);
                 },
                 group: 'functions'
             }

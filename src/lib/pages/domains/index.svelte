@@ -140,7 +140,7 @@
                         {/if}
                     </TableCell>
                     {#if $canWriteRules}
-                    <TableCell>
+                    <TableCell right>
                         <DropList
                             bind:show={showDomainsDropdown[i]}
                             placement="bottom-start"
