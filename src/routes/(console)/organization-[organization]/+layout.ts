@@ -18,24 +18,24 @@ export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.PAYMENT_METHODS);
     var roles = [];
     var scopes = [];
-    if (isCloud) {
-        await failedInvoice.load(params.organization);
-
-        if (get(failedInvoice)) {
-            headerAlert.add({
-                show: true,
-                component: ProjectsAtRisk,
-                id: 'projectsAtRisk',
-                importance: 1
-            });
-        }
-
-        const res = await sdk.forConsole.billing.getRoles(params.organization);
-        roles = res.roles;
-        scopes = res.scopes;
-    }
-
+    
     try {
+        if (isCloud) {
+            await failedInvoice.load(params.organization);
+    
+            if (get(failedInvoice)) {
+                headerAlert.add({
+                    show: true,
+                    component: ProjectsAtRisk,
+                    id: 'projectsAtRisk',
+                    importance: 1
+                });
+            }
+    
+            const res = await sdk.forConsole.billing.getRoles(params.organization);
+            roles = res.roles;
+            scopes = res.scopes;
+        }
         const prefs = await sdk.forConsole.account.getPrefs();
         if (prefs.organization !== params.organization) {
             const newPrefs = { ...prefs, organization: params.organization };
@@ -62,5 +62,4 @@ export const load: LayoutLoad = async ({ params, depends }) => {
         sdk.forConsole.account.updatePrefs(newPrefs);
         error(e.code, e.message);
     }
-    return {roles, scopes};
 };

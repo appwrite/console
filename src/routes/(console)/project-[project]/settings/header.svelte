@@ -26,16 +26,20 @@
             title: 'Webhooks',
             event: 'webhooks'
         },
-        ...$canWriteProjects?[{
-            href: `${path}/migrations`,
-            title: 'Migrations',
-            event: 'migrations'
-        },
-        {
-            href: `${path}/smtp`,
-            title: 'SMTP',
-            event: 'smtp'
-        }]:[]
+        ...($canWriteProjects
+            ? [
+                  {
+                      href: `${path}/migrations`,
+                      title: 'Migrations',
+                      event: 'migrations'
+                  },
+                  {
+                      href: `${path}/smtp`,
+                      title: 'SMTP',
+                      event: 'smtp'
+                  }
+              ]
+            : [])
     ];
 
     if (isCloud) {
