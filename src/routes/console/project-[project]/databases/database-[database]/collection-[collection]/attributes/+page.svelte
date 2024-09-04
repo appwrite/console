@@ -14,6 +14,7 @@
         TableRow
     } from '$lib/elements/table';
     import { Container } from '$lib/layout';
+    import { canWriteCollections } from '$lib/stores/roles';
     import Create from '../createAttribute.svelte';
     import { isRelationship } from '../document-[document]/attributes/store';
     import FailedModal from '../failedModal.svelte';
@@ -51,7 +52,9 @@
     <div class="u-flex u-gap-12 common-section u-main-space-between">
         <Heading tag="h2" size="5">Attributes</Heading>
 
+        {#if $canWriteCollections}
         <CreateAttributeDropdown bind:showCreateDropdown bind:selectedOption bind:showCreate />
+        {/if}
     </div>
 
     {#if $attributes.length}

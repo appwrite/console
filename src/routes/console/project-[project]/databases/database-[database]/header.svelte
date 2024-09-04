@@ -3,6 +3,7 @@
     import { Id, Tab, Tabs } from '$lib/components';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover, CoverTitle } from '$lib/layout';
+    import { canWriteDatabases } from '$lib/stores/roles';
     import { database } from './store';
 
     const projectId = $page.params.project;
@@ -21,11 +22,15 @@
             event: 'usage',
             hasChildren: true
         },
-        {
-            href: `${path}/settings`,
-            event: 'settings',
-            title: 'Settings'
-        }
+        ...($canWriteDatabases
+            ? [
+                  {
+                      href: `${path}/settings`,
+                      event: 'settings',
+                      title: 'Settings'
+                  }
+              ]
+            : [])
     ];
 </script>
 

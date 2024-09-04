@@ -20,6 +20,7 @@
     import Delete from './delete.svelte';
     import Retry from './wizard/retry.svelte';
     import { Pill } from '$lib/elements';
+    import { canWriteRules } from '$lib/stores/roles';
 
     export let rules: Models.ProxyRuleList;
     export let type: ResourceType;
@@ -55,9 +56,11 @@
         <slot name="heading" />
     </Heading>
 
+    {#if $canWriteRules}
     <Button on:click={openWizard}>
         <span class="icon-plus" aria-hidden="true" /> <span class="text">Create domain</span>
     </Button>
+    {/if}
 </div>
 {#if rules.total}
     <TableScroll>
@@ -65,7 +68,9 @@
             <TableCellHead width={150}>Name</TableCellHead>
             <TableCellHead width={120}>Verification Status</TableCellHead>
             <TableCellHead width={180}>Certificate Status</TableCellHead>
+            {#if $canWriteRules}
             <TableCellHead width={40} />
+            {/if}
         </TableHeader>
         <TableBody>
             {#each rules.rules as domain, i}
@@ -134,6 +139,7 @@
                             </Pill>
                         {/if}
                     </TableCell>
+                    {#if $canWriteRules}
                     <TableCell>
                         <DropList
                             bind:show={showDomainsDropdown[i]}
@@ -168,6 +174,7 @@
                             </svelte:fragment>
                         </DropList>
                     </TableCell>
+                    {/if}
                 </TableRow>
             {/each}
         </TableBody>

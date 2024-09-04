@@ -3,6 +3,7 @@
     import { Id, Tab, Tabs } from '$lib/components';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover, CoverTitle } from '$lib/layout';
+    import { canWriteFunctions } from '$lib/stores/roles';
     import { func } from './store';
 
     const projectId = $page.params.project;
@@ -32,11 +33,11 @@
             event: 'sage',
             hasChildren: true
         },
-        {
+        ...$canWriteFunctions ? [{
             href: `${path}/settings`,
             event: 'settings',
             title: 'Settings'
-        }
+        }] : []
     ];
 </script>
 

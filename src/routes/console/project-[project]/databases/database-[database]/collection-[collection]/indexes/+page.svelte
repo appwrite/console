@@ -21,6 +21,7 @@
     import CreateAttributeDropdown from '../attributes/createAttributeDropdown.svelte';
     import type { Option } from '../attributes/store';
     import FailedModal from '../failedModal.svelte';
+    import { canWriteCollections } from '$lib/stores/roles';
 
     let showDropdown = [];
     let selectedIndex: Models.Index = null;
@@ -38,6 +39,7 @@
     <div class="u-flex u-gap-12 common-section u-main-space-between">
         <Heading tag="h2" size="5">Indexes</Heading>
 
+        {#if $canWriteCollections}
         <Button
             event="create_index"
             disabled={!$collection?.attributes?.length}
@@ -45,6 +47,7 @@
             <span class="icon-plus" aria-hidden="true" />
             <span class="text">Create index</span>
         </Button>
+        {/if}
     </div>
     {#if $collection?.attributes?.length}
         {#if $indexes.length}

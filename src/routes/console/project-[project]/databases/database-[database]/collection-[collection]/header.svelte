@@ -3,6 +3,7 @@
     import { Id, Tab, Tabs } from '$lib/components';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover, CoverTitle } from '$lib/layout';
+    import { canWriteCollections } from '$lib/stores/roles';
     import { collection } from './store';
 
     $: projectId = $page.params.project;
@@ -38,11 +39,11 @@
             event: 'usage',
             hasChildren: true
         },
-        {
+        ...$canWriteCollections ? [{
             href: `${path}/settings`,
             title: 'Settings',
             event: 'settings'
-        }
+        }]:[]
     ];
 </script>
 

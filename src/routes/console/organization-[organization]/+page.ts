@@ -3,17 +3,16 @@ import { sdk } from '$lib/stores/sdk';
 import { getLimit, getPage, pageToOffset } from '$lib/helpers/load';
 import { CARD_LIMIT, Dependencies } from '$lib/constants';
 import type { PageLoad } from './$types';
-import { canSeeProjects } from '$lib/stores/roles';
 import { redirect } from '@sveltejs/kit';
 
 export const load: PageLoad = async ({ params, url, route, depends, parent }) => {
-    await parent();
+    const parentData = await parent();
     depends(Dependencies.ORGANIZATION);
     const page = getPage(url);
     const limit = getLimit(url, route, CARD_LIMIT);
     const offset = pageToOffset(page, limit);
 
-    if(!canSeeProjects) {
+    if(!parentData.scopes.includes('projects.read')) {
         return redirect(301, `/console/organization-${params.organization}/billing`);
     }
 

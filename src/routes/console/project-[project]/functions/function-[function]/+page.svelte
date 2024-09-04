@@ -41,6 +41,7 @@
     import DeploymentDomains from './deploymentDomains.svelte';
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
     import { readOnly } from '$lib/stores/billing';
+    import { canWriteFunctions } from '$lib/stores/roles';
 
     export let data;
 
@@ -59,7 +60,9 @@
 
 <Container>
     <ContainerHeader title="Deployments">
+        {#if $canWriteFunctions}
         <Create main />
+        {/if}
     </ContainerHeader>
     {#if $deploymentList?.total}
         {@const activeDeployment = data.activeDeployment}
@@ -163,9 +166,11 @@
             </CardGrid>
         {:else if $deploymentList.total}
             <Empty noMedia single>
+                {#if $canWriteFunctions}
                 <Create secondary round>
                     <i class="icon-plus" />
                 </Create>
+                {/if}
                 <div class="u-text-center">
                     <p class="body-text-2 u-margin-block-start-4">
                         Add a new deployment, or activate an existing one to see your function in

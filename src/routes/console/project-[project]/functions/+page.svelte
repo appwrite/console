@@ -81,6 +81,7 @@
     {#if data.functions.total}
         <CardContainer
             {offset}
+            showEmpty={$canWriteFunctions}
             event="functions"
             total={data.functions.total}
             on:click={openWizard}
