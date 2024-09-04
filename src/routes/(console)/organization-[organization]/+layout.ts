@@ -52,7 +52,9 @@ export const load: LayoutLoad = async ({ params, depends }) => {
             header: Header,
             breadcrumbs: Breadcrumbs,
             organization,
-            members
+            members,
+            roles,
+            scopes
         };
     } catch (e) {
         const prefs = await sdk.forConsole.account.getPrefs();
