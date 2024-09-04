@@ -24,6 +24,7 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { sdk } from '$lib/stores/sdk';
+    import { canWriteProviders } from '$lib/stores/roles';
 
     export let data: PageData;
 
@@ -75,7 +76,7 @@
     <TableBody>
         {#each data.providers.providers as provider (provider.$id)}
             <TableRowLink
-                href={`${base}/project-${$project.$id}/messaging/providers/provider-${provider.$id}`}>
+                href={$canWriteProviders ? `${base}/project-${$project.$id}/messaging/providers/provider-${provider.$id}` : '#'}>
                 <TableCellCheck bind:selectedIds id={provider.$id} />
                 {#each $columns as column}
                     {#if column.show}

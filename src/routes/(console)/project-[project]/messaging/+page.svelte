@@ -42,6 +42,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import type { Column } from '$lib/helpers/types';
     import { writable } from 'svelte/store';
+    import { canWriteMessages } from '$lib/stores/roles';
 
     export let data: PageData;
     let selected: string[] = [];
@@ -93,9 +94,11 @@
 
 <Container>
     <ContainerHeader title="Messages">
+        {#if $canWriteMessages}
         <div class="is-only-mobile">
             <CreateMessageDropdown bind:showCreateDropdown={showCreateDropdownMobile} />
         </div>
+        {/if}
     </ContainerHeader>
     <div class="u-flex u-flex-vertical u-gap-16 u-margin-block-start-16">
         <SearchQuery
@@ -111,7 +114,9 @@
                         hideView
                         allowNoColumns
                         showColsTextMobile />
+                    {#if $canWriteMessages}
                     <CreateMessageDropdown bind:showCreateDropdown={showCreateDropdownDesktop} />
+                    {/if}
                 </div>
             </div>
         </SearchQuery>
@@ -272,6 +277,7 @@
                     ariaLabel={`create message`}>
                     Documentation
                 </Button>
+                {#if $canWriteMessages}
                 <CreateMessageDropdown bind:showCreateDropdown={showCreateDropdownEmpty}>
                     <Button
                         secondary
@@ -280,6 +286,7 @@
                         <span class="text">Create message</span>
                     </Button>
                 </CreateMessageDropdown>
+                {/if}
             </div>
         </Empty>
     {/if}
