@@ -17,6 +17,12 @@
             hasChildren: true
         },
         {
+            href: `${path}/backups`,
+            title: 'Backups',
+            event: 'backups',
+            hasChildren: true
+        },
+        {
             href: `${path}/usage`,
             title: 'Usage',
             event: 'usage',
