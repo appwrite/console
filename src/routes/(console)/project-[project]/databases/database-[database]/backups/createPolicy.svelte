@@ -74,8 +74,11 @@
             dayOfMonth = selectedDay || '28';
         } else if (policyFrequency === 'weekly') {
             const selectedDays = daysSelectionArray
-                .map(dayLabel => backupFrequencies.weekly.find(option => option.label === dayLabel)?.index)
-                .filter(index => index !== undefined)
+                .map(
+                    (dayLabel) =>
+                        backupFrequencies.weekly.find((option) => option.label === dayLabel)?.index
+                )
+                .filter((index) => index !== undefined)
                 .join(',');
 
             // Default to Monday (1)
@@ -133,7 +136,9 @@
                 return `A backup will run weekly on ${days} at ${timeFormatted}.`;
             }
             case 'monthly': {
-                const monthDay = backupFrequencies[policyFrequency].find(option => option.value === backupFrequency).label.toLowerCase();
+                const monthDay = backupFrequencies[policyFrequency]
+                    .find((option) => option.value === backupFrequency)
+                    .label.toLowerCase();
                 return `A backup will run monthly on the ${monthDay} at ${timeFormatted}.`;
             }
             default:
@@ -145,10 +150,9 @@
         const [hour, minute] = time24.split(':');
         const hourInt = parseInt(hour, 10);
         const suffix = hourInt >= 12 ? 'PM' : 'AM';
-        const hour12 = ((hourInt + 11) % 12 + 1);
+        const hour12 = ((hourInt + 11) % 12) + 1;
         return `${hour12}:${minute} ${suffix}`;
     }
-
 </script>
 
 <Modal
@@ -206,7 +210,6 @@
                 {/if}
             </div>
             <span>{backupScheduleText()}</span>
-
         </div>
 
         <div class="u-flex-vertical u-gap-8">
@@ -222,8 +225,8 @@
                     Every backup created under this policy will be retained <b>forever</b>.
                 {:else}
                     Every backup created under this policy will be retained for <b
-                >{backupRetainingOptions.find((option) => option.value === policyRetention)
-                    ?.label ?? '3 months'}</b> before being automatically deleted.
+                        >{backupRetainingOptions.find((option) => option.value === policyRetention)
+                            ?.label ?? '3 months'}</b> before being automatically deleted.
                 {/if}
             </span>
         </div>

@@ -67,7 +67,8 @@
                 goto(`${base}/project-${project}/databases/database-${databaseId}/backups`);
             },
             disabled:
-                $page.url.pathname.includes('/backups') || $page.url.pathname.includes('collection-'),
+                $page.url.pathname.includes('/backups') ||
+                $page.url.pathname.includes('collection-'),
             keys: ['g', 'b'],
             group: 'databases'
         },
