@@ -12,12 +12,4 @@
     export { classes as class };
 </script>
 
-<svelte:element
-    this={tag}
-    class="form-item {classes}"
-    {style}
-    class:is-multiple={isMultiple}
-    class:u-width-full-line={fullWidth}
-    class:u-flex-vertical-mobile={stackOnMobile}>
-    <slot />
-</svelte:element>
+<slot />
