@@ -7,6 +7,7 @@
     import { trackEvent } from '$lib/actions/analytics';
 
     export let single = false;
+    export let card = true;
     export let noMedia = false;
     export let target: string = null;
     export let href: string = null;
@@ -22,7 +23,7 @@
 </script>
 
 {#if single}
-    <article class="card u-grid u-cross-center u-width-full-line common-section">
+    <article class:card class="u-grid u-cross-center u-width-full-line common-section">
         <div
             class="u-flex u-flex-vertical u-cross-center u-gap-24 u-width-full-line u-overflow-hidden u-padding-block-8">
             {#if !noMedia}
@@ -31,11 +32,13 @@
                     on:click|preventDefault
                     on:click={track}
                     aria-label="create {target}">
-                    {#if $app.themeInUse === 'dark'}
-                        <img src={EmptyDark} alt="create" aria-hidden="true" height="242" />
-                    {:else}
-                        <img src={EmptyLight} alt="create" aria-hidden="true" height="242" />
-                    {/if}
+                    <slot name="empty-media">
+                        {#if $app.themeInUse === 'dark'}
+                            <img src={EmptyDark} alt="create" aria-hidden="true" height="242" />
+                        {:else}
+                            <img src={EmptyLight} alt="create" aria-hidden="true" height="242" />
+                        {/if}
+                    </slot>
                 </button>
             {/if}
             <slot>
@@ -54,7 +57,7 @@
                         text
                         event="empty_documentation"
                         ariaLabel="create {target}">Documentation</Button>
-                    <Button secondary on:click on:click={track}>
+                    <Button secondary on:click={track}>
                         Create {target}
                     </Button>
                 </div>
@@ -67,7 +70,8 @@
         on:click={track}
         aria-label="create"
         type="button"
-        class="card u-grid u-cross-center u-width-full-line dashed"
+        class:card
+        class="u-grid u-cross-center u-width-full-line dashed"
         class:common-section={marginTop}>
         <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
             <div class="common-section">

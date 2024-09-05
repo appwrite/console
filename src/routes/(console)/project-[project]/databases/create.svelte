@@ -1,12 +1,16 @@
 <script lang="ts">
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { Modal, CustomId } from '$lib/components';
+    import { Modal, CustomId, Alert } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { Button, InputText, FormList } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { ID } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
+    import { isCloud } from '$lib/system';
+    import { BillingPlan } from '$lib/constants';
+    import { organization } from '$lib/stores/organization';
+    import { upgradeURL } from '$lib/stores/billing';
 
     export let showCreate = false;
 
@@ -14,7 +18,8 @@
 
     let name = '';
     let id: string = null;
-    let showCustomId = true;
+    let showCustomId = false;
+    let showPlanUpgradeAlert = true;
 
     const create = async () => {
         try {
@@ -37,6 +42,10 @@
             trackError(error, Submit.DatabaseCreate);
         }
     };
+
+    $: if (!showCreate) {
+        showPlanUpgradeAlert = true;
+    }
 </script>
 
 <Modal title="Create database" size="big" onSubmit={create} bind:show={showCreate}>
@@ -58,6 +67,20 @@
             </div>
         {:else}
             <CustomId bind:show={showCustomId} name="Database" bind:id autofocus={false} />
+        {/if}
+
+        {#if isCloud && $organization?.billingPlan === BillingPlan.FREE}
+            {#if showPlanUpgradeAlert}
+                <Alert type="warning" dismissible on:dismiss={() => (showPlanUpgradeAlert = false)}>
+                    <svelte:fragment slot="title">This database won't be backed up</svelte:fragment>
+                    Upgrade your plan to manage database backup policies
+                    <svelte:fragment slot="buttons">
+                        <Button href={$upgradeURL} text>Upgrade plan</Button>
+                    </svelte:fragment>
+                </Alert>
+            {/if}
+        {:else}
+            Backup Policies Tabs here
         {/if}
     </FormList>
     <svelte:fragment slot="footer">
