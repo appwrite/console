@@ -45,11 +45,12 @@
     {label}
     {required}
     {disabled}
-    {autofocus}
     {minlength}
     {maxlength}
-    autocomplete={autocomplete ? 'on' : 'off'}
     {placeholder}
+    state={error ? 'error' : 'default'}
+    autofocus={autofocus || undefined}
+    autocomplete={autocomplete ? 'on' : 'off'}
     helper={error}
     on:invalid={handleInvalid}
     bind:value />

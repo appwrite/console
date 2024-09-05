@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { SvelteComponent, onMount } from 'svelte';
+    import { SvelteComponent } from 'svelte';
     import { Input } from '@appwrite.io/pink-svelte';
 
     export let label: string = undefined;
@@ -36,15 +36,9 @@
         error = event.currentTarget.validationMessage;
     };
 
-    $: {
-        if (value) {
-            error = null;
-        }
+    $: if (value) {
+        error = null;
     }
-
-    type $$Events = {
-        input: Event & { target: HTMLInputElement };
-    };
 </script>
 
 <Input.Text
@@ -56,9 +50,10 @@
     {maxlength}
     {label}
     {nullable}
-    {autofocus}
+    autofocus={autofocus || undefined}
+    autocomplete={autocomplete ? 'on' : 'off'}
     helper={error}
+    state={error ? 'error' : 'default'}
     on:invalid={handleInvalid}
     on:input
-    autocomplete={autocomplete ? 'on' : 'off'}
     bind:value />

@@ -1,8 +1,5 @@
 <script lang="ts">
-    import { SvelteComponent, onMount } from 'svelte';
-    import { FormItem, Helper, Label } from '.';
-    import NullCheckbox from './nullCheckbox.svelte';
-    import { Drop } from '$lib/components';
+    import { SvelteComponent } from 'svelte';
     import { Input } from '@appwrite.io/pink-svelte';
 
     export let label: string;
@@ -27,6 +24,7 @@
 
     const handleInvalid = (event: Event & { currentTarget: EventTarget & HTMLInputElement }) => {
         event.preventDefault();
+
         if (event.currentTarget.validity.typeMismatch) {
             error = 'Emails should be formatted as: name@example.com';
             return;
@@ -51,10 +49,11 @@
     {required}
     {label}
     {nullable}
-    {autofocus}
     on:input
     on:invalid={handleInvalid}
     type="email"
     helper={error}
+    state={error ? 'error' : 'default'}
+    autofocus={autofocus || undefined}
     autocomplete={autocomplete ? 'on' : 'off'}
     bind:value />

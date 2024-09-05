@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { clickOnEnter } from '$lib/helpers/a11y';
+    import { Card, Layout } from '@appwrite.io/pink-svelte';
 
     type BaseProps = {
         isTile?: boolean;
@@ -30,30 +30,25 @@
     export { classes as class };
     export let style = '';
 
-    function getElement() {
-        switch (true) {
-            case !!href:
-                return 'a';
-            case isButton:
-                return 'button';
-            default:
-                return 'article';
-        }
-    }
+    $: resolvedClasses = [!isTile && 'common-section', classes].filter(Boolean).join(' ');
 </script>
 
-<svelte:element
-    this={getElement()}
-    class="card {classes}"
-    class:common-section={!isTile}
-    class:is-border-dashed={isDashed}
-    class:is-danger={danger}
-    class:is-allowed-focus={href}
-    {...$$restProps}
-    {style}
-    on:click
-    on:keyup={clickOnEnter}
-    role={href || isButton ? 'button' : 'presentation'}
-    {href}>
-    <slot />
-</svelte:element>
+{#if href}
+    <Card.Link class={resolvedClasses} on:click {href} {style}>
+        <Layout.Stack gap="xl">
+            <slot />
+        </Layout.Stack>
+    </Card.Link>
+{:else if isButton}
+    <Card.Button class={resolvedClasses} {style} on:click>
+        <Layout.Stack gap="xl">
+            <slot />
+        </Layout.Stack>
+    </Card.Button>
+{:else}
+    <Card.Base class={resolvedClasses} {style}>
+        <Layout.Stack gap="xl">
+            <slot />
+        </Layout.Stack>
+    </Card.Base>
+{/if}

@@ -1,6 +1,6 @@
 <script lang="ts">
     import { tooltip as tooltipAction } from '$lib/actions/tooltip';
-    import { FormItem, Helper } from '.';
+    import { Helper } from '.';
 
     export let type: 'checkbox' | 'switchbox' = 'checkbox';
     export let label: string;
@@ -29,48 +29,46 @@
     }
 </script>
 
-<FormItem>
-    <label class="choice-item" for={id}>
-        <input
-            {id}
-            {disabled}
-            {required}
-            type="checkbox"
-            class:switch={type === 'switchbox'}
-            aria-checked={value}
-            bind:this={element}
-            bind:checked={value}
-            on:change
-            on:invalid={handleInvalid} />
+<label class="choice-item" for={id}>
+    <input
+        {id}
+        {disabled}
+        {required}
+        type="checkbox"
+        class:switch={type === 'switchbox'}
+        aria-checked={value}
+        bind:this={element}
+        bind:checked={value}
+        on:change
+        on:invalid={handleInvalid} />
 
-        <div class="choice-item-content" class:u-width-full-line={fullWidth}>
-            {#if (label && showLabel) || tooltip}
-                <div class="u-flex u-gap-4">
-                    {#if label}
-                        <span class:u-hide={!showLabel} class="choice-item-title">
-                            {label}
-                        </span>
-                    {/if}
-                    {#if tooltip}
-                        <button
-                            type="button"
-                            class="tooltip"
-                            aria-label="variables info"
-                            use:tooltipAction={{ content: tooltip }}>
-                            <span
-                                class="icon-info"
-                                aria-hidden="true"
-                                style="font-size: var(--icon-size-small)" />
-                        </button>
-                    {/if}
-                </div>
-            {/if}
-            {#if $$slots.default}
-                <p class="choice-item-paragraph"><slot /></p>
-            {/if}
-        </div>
-    </label>
-    {#if error}
-        <Helper type="warning">{error}</Helper>
-    {/if}
-</FormItem>
+    <div class="choice-item-content" class:u-width-full-line={fullWidth}>
+        {#if (label && showLabel) || tooltip}
+            <div class="u-flex u-gap-4">
+                {#if label}
+                    <span class:u-hide={!showLabel} class="choice-item-title">
+                        {label}
+                    </span>
+                {/if}
+                {#if tooltip}
+                    <button
+                        type="button"
+                        class="tooltip"
+                        aria-label="variables info"
+                        use:tooltipAction={{ content: tooltip }}>
+                        <span
+                            class="icon-info"
+                            aria-hidden="true"
+                            style="font-size: var(--icon-size-small)" />
+                    </button>
+                {/if}
+            </div>
+        {/if}
+        {#if $$slots.default}
+            <p class="choice-item-paragraph"><slot /></p>
+        {/if}
+    </div>
+</label>
+{#if error}
+    <Helper type="warning">{error}</Helper>
+{/if}

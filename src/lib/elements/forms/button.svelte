@@ -55,6 +55,7 @@
 {#if href}
     <Button.Anchor
         on:click
+        on:mousedown
         on:click={track}
         {href}
         {download}
@@ -65,12 +66,13 @@
         rel={external ? 'noopener noreferrer' : ''}
         class={resolvedClasses}
         aria-label={ariaLabel}
-        --button-width={fullWidth ? '100%' : 'fit-content'}>
+        --button-width={fullWidth ? '100%' : undefined}>
         <slot />
     </Button.Anchor>
 {:else}
     <Button.Button
         on:click
+        on:mousedown
         on:click={track}
         {size}
         disabled={internalDisabled}
@@ -78,7 +80,7 @@
         class={resolvedClasses}
         aria-label={ariaLabel}
         type={submit ? 'submit' : 'button'}
-        --button-width={fullWidth ? '100%' : 'fit-content'}>
+        --button-width={fullWidth ? '100%' : undefined}>
         {#if $isSubmitting && submissionLoader}
             <span
                 class="loader is-small"

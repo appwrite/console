@@ -1,13 +1,12 @@
 <script lang="ts">
+    import { Layout } from '@appwrite.io/pink-svelte';
+
     export let isCommonSection = false;
-    export let gap = 24;
+    export let gap = null;
     let classes = '';
     export { classes as class };
 </script>
 
-<ul
-    class="form-list {classes}"
-    class:common-section={isCommonSection}
-    style={`--form-list-gap: ${gap / 16}rem;`}>
+<Layout.Stack gap="l">
     <slot />
-</ul>
+</Layout.Stack>

@@ -1,23 +1,22 @@
 <script lang="ts">
-    import { app } from '$lib/stores/app';
-    import Light from '$lib/images/search-light.svg';
-    import Dark from '$lib/images/search-dark.svg';
     import PaginationInline from './paginationInline.svelte';
-
+    import { Card, Empty } from '@appwrite.io/pink-svelte';
     export let hidePagination = false;
     export let hidePages = false;
+    export let target = '';
+    export let search = '';
 </script>
 
-<article class="card u-grid u-cross-center u-width-full-line common-section">
-    <div class="u-flex u-flex-vertical u-cross-center u-gap-24 u-overflow-hidden">
-        {#if $app.themeInUse === 'dark'}
-            <img src={Dark} height="175" alt="create" aria-hidden="true" />
-        {:else}
-            <img src={Light} height="175" alt="create" aria-hidden="true" />
-        {/if}
-        <slot />
-    </div>
-</article>
+<Card.Base padding="none" class="common-section">
+    <Empty
+        title={`Sorry, we couldn't find ‘${search}’`}
+        description={`There are no ${target} that match your search.`}
+        type="secondary">
+        <svelte:fragment slot="actions">
+            <slot />
+        </svelte:fragment>
+    </Empty>
+</Card.Base>
 
 {#if !hidePagination}
     <div class="u-flex u-margin-block-start-32 u-main-space-between u-cross-center">
