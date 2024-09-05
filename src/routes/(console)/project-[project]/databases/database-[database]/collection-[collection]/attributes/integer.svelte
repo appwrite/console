@@ -34,7 +34,7 @@
             data.min,
             data.max,
             data.default,
-            data.key !== originalKey ? data.key : undefined,
+            data.key !== originalKey ? data.key : undefined
         );
     }
 </script>

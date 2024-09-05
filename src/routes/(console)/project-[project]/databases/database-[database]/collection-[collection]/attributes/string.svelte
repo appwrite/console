@@ -31,7 +31,7 @@
             data.required,
             data.default,
             data.size,
-            data.key !== originalKey ? data.key : undefined,
+            data.key !== originalKey ? data.key : undefined
         );
     }
 </script>
@@ -72,11 +72,7 @@
     $: handleDefaultState($required || $array);
 </script>
 
-<InputNumber
-    id="size"
-    label="Size"
-    placeholder="Enter size"
-    bind:value={data.size} />
+<InputNumber id="size" label="Size" placeholder="Enter size" bind:value={data.size} />
 {#if data.size >= 50}
     <InputTextarea
         id="default"

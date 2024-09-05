@@ -41,7 +41,7 @@
             collectionId,
             originalKey,
             data.onDelete,
-            data.key !== originalKey ? data.key : undefined,
+            data.key !== originalKey ? data.key : undefined
         );
     }
 </script>

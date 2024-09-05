@@ -31,7 +31,7 @@
             data.key,
             data.required,
             data.default,
-            data.key !== originalKey ? data.key : undefined,
+            data.key !== originalKey ? data.key : undefined
         );
     }
 </script>
