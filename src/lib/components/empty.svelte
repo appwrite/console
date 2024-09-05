@@ -23,7 +23,7 @@
 </script>
 
 {#if single}
-    <article class:card class="u-grid u-cross-center u-width-full-line common-section">
+    <article class:card={card} class="u-grid u-cross-center u-width-full-line common-section">
         <div
             class="u-flex u-flex-vertical u-cross-center u-gap-24 u-width-full-line u-overflow-hidden u-padding-block-8">
             {#if !noMedia}
@@ -57,7 +57,7 @@
                         text
                         event="empty_documentation"
                         ariaLabel="create {target}">Documentation</Button>
-                    <Button secondary on:click={track}>
+                    <Button secondary on:click on:click={track}>
                         Create {target}
                     </Button>
                 </div>
@@ -70,7 +70,7 @@
         on:click={track}
         aria-label="create"
         type="button"
-        class:card
+        class:card={card}
         class="u-grid u-cross-center u-width-full-line dashed"
         class:common-section={marginTop}>
         <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
