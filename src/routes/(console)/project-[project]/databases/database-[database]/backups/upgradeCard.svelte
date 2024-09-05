@@ -2,8 +2,8 @@
     import { Button } from '$lib/elements/forms';
     import { app } from '$lib/stores/app';
 
-    import EmptyDark from '$lib/images/backups-empty-dark.svg';
-    import EmptyLight from '$lib/images/backups-empty-light.svg';
+    import EmptyDark from '$lib/images/backups/backups-empty-dark.svg';
+    import EmptyLight from '$lib/images/backups/backups-empty-light.svg';
     import { upgradeURL } from '$lib/stores/billing';
     import { Card } from '$lib/components';
     import { isCloud } from '$lib/system';

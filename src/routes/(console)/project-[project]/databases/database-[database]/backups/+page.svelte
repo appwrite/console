@@ -14,10 +14,10 @@
     import { BillingPlan, Dependencies } from '$lib/constants';
     import { isCloud, isSelfHosted } from '$lib/system';
     import { organization } from '$lib/stores/organization';
-    import LockedBackupsDarkDesktop from '$lib/images/backups-locked-dark.svg';
-    import LockedBackupsLightDesktop from '$lib/images/backups-locked-light.svg';
-    import LockedBackupsDarkMobile from '$lib/images/backups-locked-mobile-dark.svg';
-    import LockedBackupsLightMobile from '$lib/images/backups-locked-mobile-light.svg';
+    import LockedBackupsDarkDesktop from '$lib/images/backups/backups-locked-dark.svg';
+    import LockedBackupsLightDesktop from '$lib/images/backups/backups-locked-light.svg';
+    import LockedBackupsDarkMobile from '$lib/images/backups/backups-locked-mobile-dark.svg';
+    import LockedBackupsLightMobile from '$lib/images/backups/backups-locked-mobile-light.svg';
     import { app } from '$lib/stores/app';
 
     let showCreatePolicy = false;

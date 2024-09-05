@@ -5,8 +5,8 @@
     import { type Models } from '@appwrite.io/console';
 
     import { app } from '$lib/stores/app';
-    import EmptyDark from '$lib/images/backups-empty-dark.svg';
-    import EmptyLight from '$lib/images/backups-empty-light.svg';
+    import EmptyDark from '$lib/images/backups/backups-empty-dark.svg';
+    import EmptyLight from '$lib/images/backups/backups-empty-light.svg';
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import { invalidate } from '$app/navigation';
