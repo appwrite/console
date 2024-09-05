@@ -1,32 +1,33 @@
 <script context="module" lang="ts">
-    import type { Models } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
+    import type { Models } from '@appwrite.io/console';
 
-    export async function submitIp(
+    export async function submitString(
         databaseId: string,
         collectionId: string,
         key: string,
-        data: Partial<Models.AttributeIp>
+        data: Partial<Models.AttributeString>
     ) {
-        await sdk.forProject.databases.createIpAttribute(
+        await sdk.forProject.databases.createStringAttribute(
             databaseId,
             collectionId,
             key,
+            data.size,
             data.required,
             data.default,
             data.array
         );
     }
-    export async function updateIp(
+    export async function updateString(
         databaseId: string,
         collectionId: string,
-        data: Partial<Models.AttributeIp>,
+        data: Partial<Models.AttributeString>,
         originalKey?: string
     ) {
-        await sdk.forProject.databases.updateIpAttribute(
+        await sdk.forProject.databases.updateStringAttribute(
             databaseId,
             collectionId,
-            data.key,
+            originalKey,
             data.required,
             data.default,
             data.key !== originalKey ? data.key : undefined,
@@ -35,12 +36,16 @@
 </script>
 
 <script lang="ts">
-    import { InputText, InputChoice } from '$lib/elements/forms';
-
-    export let editing = false;
-    export let data: Partial<Models.AttributeIp>;
-
+    import { InputChoice, InputNumber, InputText, InputTextarea } from '$lib/elements/forms';
     import { createConservative } from '$lib/helpers/stores';
+
+    export let data: Partial<Models.AttributeString> = {
+        required: false,
+        size: 0,
+        default: null,
+        array: false
+    };
+    export let editing = false;
 
     let savedDefault = data.default;
 
@@ -56,7 +61,7 @@
     const {
         stores: { required, array },
         listen
-    } = createConservative<Partial<Models.AttributeIp>>({
+    } = createConservative<Partial<Models.AttributeString>>({
         required: false,
         array: false,
         ...data
@@ -66,13 +71,32 @@
     $: handleDefaultState($required || $array);
 </script>
 
-<InputText
-    id="default"
-    label="Default value"
-    placeholder="Enter value"
-    bind:value={data.default}
-    disabled={data.required || data.array}
-    nullable={!data.required && !data.array} />
+<InputNumber
+    id="size"
+    label="Size"
+    placeholder="Enter size"
+    bind:value={data.size}
+    required={!editing}
+    readonly={editing} />
+{#if data.size >= 50}
+    <InputTextarea
+        id="default"
+        label="Default"
+        placeholder="Enter string"
+        disabled={data.required || data.array}
+        nullable={!data.required && !data.array}
+        maxlength={data.size}
+        bind:value={data.default} />
+{:else}
+    <InputText
+        id="default"
+        label="Default"
+        placeholder="Enter string"
+        disabled={data.required || data.array}
+        nullable={!data.required && !data.array}
+        maxlength={data.size}
+        bind:value={data.default} />
+{/if}
 <InputChoice id="required" label="Required" bind:value={data.required} disabled={data.array}>
     Indicate whether this is a required attribute
 </InputChoice>
