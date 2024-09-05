@@ -71,9 +71,6 @@
             const selectedDay = backupFrequencies.monthly.find(
                 (option) => option.value === backupFrequency
             )?.day;
-
-
-
             dayOfMonth = selectedDay || '28';
         } else if (policyFrequency === 'weekly') {
             const selectedDays = daysSelectionArray
@@ -84,7 +81,7 @@
             // Default to Monday (1)
             dayOfWeek = selectedDays || '1';
         } else if (policyFrequency === 'hourly') {
-            return `0 * * * *`;
+            return `${new Date().getMinutes()} * * * *`;
         }
 
         return `${minute} ${hour} ${dayOfMonth} * ${dayOfWeek}`;
