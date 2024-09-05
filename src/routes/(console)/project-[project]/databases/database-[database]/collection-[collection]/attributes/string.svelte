@@ -30,7 +30,7 @@
             originalKey,
             data.required,
             data.default,
-            data.size
+            data.size,
             data.key !== originalKey ? data.key : undefined,
         );
     }
