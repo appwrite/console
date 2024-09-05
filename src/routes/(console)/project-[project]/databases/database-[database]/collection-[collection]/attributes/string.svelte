@@ -28,7 +28,8 @@
             collectionId,
             data.key,
             data.required,
-            data.default
+            data.default,
+            data.size
         );
     }
 </script>
@@ -73,9 +74,7 @@
     id="size"
     label="Size"
     placeholder="Enter size"
-    bind:value={data.size}
-    required={!editing}
-    readonly={editing} />
+    bind:value={data.size} />
 {#if data.size >= 50}
     <InputTextarea
         id="default"

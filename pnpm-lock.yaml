@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@appwrite.io/console':
-        specifier: 1.0.1
-        version: 1.0.1
+        specifier: npm:bradley-console@1.0.1
+        version: bradley-console@1.0.1
       '@appwrite.io/pink':
         specifier: 0.25.0
         version: 0.25.0
@@ -192,9 +192,6 @@ packages:
 
   '@analytics/type-utils@0.6.2':
     resolution: {integrity: sha512-TD+xbmsBLyYy/IxFimW/YL/9L2IEnM7/EoV9Aeh56U64Ify8o27HJcKjo38XY9Tcn0uOq1AX3thkKgvtWvwFQg==}
-
-  '@appwrite.io/console@1.0.1':
-    resolution: {integrity: sha512-9U7jG0XnRcxDhuma308z8XD/BF9cK6OpukxN87Tk0N/QGsNJBbH1it0LLCt6X7rPzNpOALT0LLTeMa0VEsQBow==}
 
   '@appwrite.io/pink-icons@0.25.0':
     resolution: {integrity: sha512-0O3i2oEuh5mWvjO80i+X6rbzrWLJ1m5wmv2/M3a1p2PyBJsFxN8xQMTEmTn3Wl/D26SsM7SpzbdW6gmfgoVU9Q==}
@@ -1468,6 +1465,9 @@ packages:
   braces@3.0.3:
     resolution: {integrity: sha512-yQbXgO/OSZVD2IsiLlro+7Hf6Q18EJrKSEsdoMzKePKXct3gvD8oLcOQdIzGupr5Fj+EDe8gO/lxc1BzfMpxvA==}
     engines: {node: '>=8'}
+
+  bradley-console@1.0.1:
+    resolution: {integrity: sha512-cdX5xkUg4rnIjdEojkONddY1o2bXevBuHk4mzy6qzxiFlnfxZdEmO+oHVo2JKeOH8H8uq6kjrt/Xz3LH60Zdbg==}
 
   browserslist@4.23.3:
     resolution: {integrity: sha512-btwCFJVjI4YWDNfau8RhZ+B1Q/VLoUITrm3RlP6y1tYGWIOa+InuYiRGXUBXo8nA1qKmHMyLB/iVQg5TT4eFoA==}
@@ -3691,8 +3691,6 @@ snapshots:
 
   '@analytics/type-utils@0.6.2': {}
 
-  '@appwrite.io/console@1.0.1': {}
-
   '@appwrite.io/pink-icons@0.25.0': {}
 
   '@appwrite.io/pink@0.25.0':
@@ -5253,6 +5251,8 @@ snapshots:
   braces@3.0.3:
     dependencies:
       fill-range: 7.1.1
+
+  bradley-console@1.0.1: {}
 
   browserslist@4.23.3:
     dependencies:
