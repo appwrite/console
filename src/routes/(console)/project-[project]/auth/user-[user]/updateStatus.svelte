@@ -130,9 +130,6 @@
     </svelte:fragment>
 
     <svelte:fragment slot="actions">
-        <Button text={$user.status} secondary={!$user.status} on:click={() => updateStatus()}>
-            {$user.status ? 'Block account' : 'Unblock account'}
-        </Button>
         {#if $user.status}
             {#if $user.phone && $user.email}
                 <DropList bind:show={showVerifcationDropdown} placement="top-start">
@@ -161,5 +158,8 @@
                 </Button>
             {/if}
         {/if}
+        <Button text={$user.status} secondary={!$user.status} on:click={() => updateStatus()}>
+            {$user.status ? 'Block account' : 'Unblock account'}
+        </Button>
     </svelte:fragment>
 </CardGrid>

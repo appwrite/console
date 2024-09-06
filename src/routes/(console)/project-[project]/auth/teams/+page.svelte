@@ -97,12 +97,8 @@
             offset={data.offset}
             total={data.teams.total} />
     {:else if data.search}
-        <EmptySearch>
-            <div class="u-text-center">
-                <b>Sorry, we couldn't find ‘{data.search}'</b>
-                <p>There are no teams that match your search.</p>
-            </div>
-            <Button secondary href={`${base}/project-${$page.params.project}/auth/teams`}>
+        <EmptySearch target="teams" search={data.search} hidePagination={data.teams.total === 0}>
+            <Button secondary size="small" href={`${base}/project-${$page.params.project}/auth/teams`}>
                 Clear Search
             </Button>
         </EmptySearch>

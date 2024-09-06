@@ -123,7 +123,7 @@
                 {#if isCloud}
                     <span class="with-separators eyebrow-heading-3">or</span>
                     <FormItem>
-                        <Button github fullWidth on:click={onGithubLogin} {disabled}>
+                        <Button secondary fullWidth on:click={onGithubLogin} {disabled}>
                             <span class="icon-github" aria-hidden="true" />
                             <span class="text">Sign in with GitHub</span>
                         </Button>

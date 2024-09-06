@@ -4,6 +4,8 @@
     import { trackEvent } from '$lib/actions/analytics';
     import { onMount } from 'svelte';
     import { onDestroy } from 'svelte';
+    import { Input } from '@appwrite.io/pink-svelte';
+    import { IconX } from '@appwrite.io/pink-icons-svelte';
 
     export let search = '';
     export let placeholder = '';
@@ -60,25 +62,13 @@
 
 <div class="u-flex u-gap-12 common-section u-main-space-between">
     <div class={fullWidth ? 'u-width-full-line' : 'u-flex-basis-50-percent'}>
-        <div class="input-text-wrapper" class:is-with-end-button={isWithEndButton}>
-            <input
-                {placeholder}
-                {disabled}
-                {required}
-                type="search"
-                class="input-text"
-                bind:value={search} />
-            <span class="icon-search" aria-hidden="true" />
-            {#if isWithEndButton && search}
-                <button
-                    class="button is-text is-only-icon"
-                    style="--button-size:1.5rem;"
-                    aria-label="Clear search"
-                    on:click={() => (search = '')}>
-                    <span class="icon-x" aria-hidden="true" />
-                </button>
-            {/if}
-        </div>
+        <Input.Text {placeholder} {disabled} {required} type="search" bind:value={search}>
+            <svelte:fragment slot="end">
+                {#if search}
+                    <Input.Action icon={IconX} on:click={() => (search = '')} />
+                {/if}
+            </svelte:fragment>
+        </Input.Text>
     </div>
     <slot />
 </div>

@@ -10,7 +10,8 @@ const config = {
     },
     kit: {
         alias: {
-            $routes: './src/routes'
+            $routes: './src/routes',
+            $themes: './src/themes'
         },
         adapter: adapter({
             fallback: 'index.html',
