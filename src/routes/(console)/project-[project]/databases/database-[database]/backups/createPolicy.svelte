@@ -95,8 +95,6 @@
         try {
             const cronExpression = generateCronExpression();
 
-            console.log(cronExpression);
-
             await sdk.forProject.backups.createPolicy(
                 ID.unique(),
                 ['databases'],
