@@ -27,10 +27,9 @@ export const load: PageLoad = async ({ params, url, route, depends }) => {
             await sdk.forProject.backups.listPolicies([
                 Query.limit(limit),
                 Query.offset(offset),
-                Query.orderDesc('')
-                // TODO: add queries once supported.
-                // Query.equal('resourceType', 'database'),
-                // Query.equal('resourceId', params.database),
+                Query.orderDesc(''),
+                Query.equal('resourceType', 'database'),
+                Query.equal('resourceId', params.database),
             ])
         ]);
     } catch (e) {
