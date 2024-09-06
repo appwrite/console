@@ -53,6 +53,29 @@
             return `Retained for ${retention / 7} week${retention > 7 ? 's' : ''}`;
         return `Retained for ${retention} day${retention > 1 ? 's' : ''}`;
     };
+
+    function getPolicyDescription(cron: string): string {
+        const cronParts = cron.split(' ');
+
+        // A standard cron has 5 parts: minute, hour, day of month, month, day of week
+        const [minute, hour, dayOfMonth, month, dayOfWeek] = cronParts;
+
+        if (dayOfMonth !== '*' && month === '*' && dayOfWeek === '*') {
+            return 'Runs monthly';
+        }
+
+        if (dayOfMonth === '*' && month === '*' && dayOfWeek !== '*') {
+            return `Runs weekly on Monday`;
+        }
+
+        if (dayOfMonth === '*' && month === '*' && dayOfWeek === '*' && hour === '*' && minute !== '*') {
+            return 'Runs hourly';
+        }
+
+        if (dayOfMonth === '*' && month === '*' && dayOfWeek === '*' && hour !== '*' && minute !== '*') {
+            return 'Runs daily';
+        }
+    }
 </script>
 
 <Card
@@ -93,7 +116,8 @@
                     </div>
 
                     <div class="policy-item-subtitles u-flex u-gap-6">
-                        <!--                        -->
+                        <!-- TODO: add descriptions -->
+                        {getPolicyDescription(policy.schedule)}
                         <span class="small-ellipse">●</span>
                         {formatRetentionMessage(policy.retention)}
                     </div>
@@ -102,25 +126,27 @@
                 <!-- Previous and Next section -->
                 <div
                     class="policy-cycles u-flex u-cross-start u-padding-block-2 policy-item-subtitles">
-                    <!-- TODO: Need to get previous backup date from API -->
+                    <!--
+                        // TODO: Need to get previous backup date from API, we could do it the dirty way too but let's wait for now
+                        <div class="u-flex-vertical policy-item-caption">
+                            <span style="color: #97979B">Previous</span>
 
-                    <!--                    <div class="u-flex-vertical policy-item-caption">-->
-                    <!--                        <span style="color: #97979B">Previous</span>-->
+                            <div
+                                class="u-flex u-gap-4 u-cross-center policy-item-subtitles darker-neutral-color">
+                                <span style="font-size: 1.25rem; color: hsl(var(--color-success-100));">
+                                    ●
+                                </span>
 
-                    <!--                        <div-->
-                    <!--                            class="u-flex u-gap-4 u-cross-center policy-item-subtitles darker-neutral-color">-->
-                    <!--                            <span style="font-size: 1.25rem; color: hsl(var(&#45;&#45;color-success-100));">-->
-                    <!--                                ●-->
-                    <!--                            </span>-->
+                    // TODO: get previous backup from this policy if exists!
+                    {toLocaleDateTime(parseExpression(policy.schedule, { utc: true }).prev().toString())}
+                </div>
+            </div>
 
-                    <!--                            &lt;!&ndash; TODO: get previous backup from this policy if exists! &ndash;&gt;-->
-                    <!--                            &lt;!&ndash;{toLocaleDateTime(parseExpression(policy.schedule, { utc: true }).prev().toString())}&ndash;&gt;-->
-                    <!--                        </div>-->
-                    <!--                    </div>-->
+            <div class="u-border-vertical" />
+            -->
 
-                    <!--                    <div class="u-border-vertical" />-->
 
-                    <div class="u-flex-vertical policy-item-caption">
+            <div class="u-flex-vertical policy-item-caption">
                         <span style="color: #97979B">Next</span>
                         <div
                             class="u-flex u-gap-4 u-cross-center policy-item-subtitles darker-neutral-color">
