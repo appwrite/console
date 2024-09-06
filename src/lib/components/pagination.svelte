@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page as pageStore } from '$app/stores';
-    import { Button } from '$lib/elements/forms';
+    import { Pagination } from '@appwrite.io/pink-svelte';
 
     export let sum: number;
     export let limit: number;
@@ -40,7 +40,8 @@
     }
 </script>
 
-{#if totalPages > 1}
+<Pagination page={currentPage} total={totalPages} {limit} createLink={getLink} />
+<!-- {#if totalPages > 1}
     {#key $pageStore.url}
         <nav class="pagination">
             {#if currentPage <= 1}
@@ -110,4 +111,4 @@
             <span class="icon-cheveron-right" aria-hidden="true" />
         </Button>
     </nav>
-{/if}
+{/if} -->

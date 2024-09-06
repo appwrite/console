@@ -23,7 +23,9 @@
     import type { PageData } from './$types';
     import Create from './createUser.svelte';
     import { tooltip } from '$lib/actions/tooltip';
-    import { Table } from '@appwrite.io/pink-svelte';
+    import { Badge, Icon, Table } from '@appwrite.io/pink-svelte';
+    import { Tag } from '@appwrite.io/pink-svelte';
+    import { IconDuplicate } from '@appwrite.io/pink-icons-svelte';
 
     export let data: PageData;
 
@@ -90,25 +92,32 @@
                     </Table.Cell>
                     <Table.Cell onlyDesktop title="Status">
                         {#if user.status}
-                            <Pill success={user.emailVerification || user.phoneVerification}>
-                                {user.emailVerification && user.phoneVerification
+                            {@const success = user.emailVerification || user.phoneVerification}
+                            <Badge
+                                size="x-small"
+                                variant="secondary"
+                                type={success ? 'success' : undefined}
+                                content={user.emailVerification && user.phoneVerification
                                     ? 'verified'
                                     : user.emailVerification
                                       ? 'verified email'
                                       : user.phoneVerification
                                         ? 'verified phone'
-                                        : 'unverified'}
-                            </Pill>
+                                        : 'unverified'} />
                         {:else}
-                            <Pill danger>blocked</Pill>
+                            <Badge
+                                size="x-small"
+                                variant="secondary"
+                                type="error"
+                                content="blocked" />
                         {/if}
                     </Table.Cell>
                     <Table.Cell onlyDesktop showOverflow title="ID">
                         <Copy value={user.$id} event="user">
-                            <Pill button>
-                                <span class="icon-duplicate" aria-hidden="true" />
-                                <span class="text">User ID</span>
-                            </Pill>
+                            <Tag size="small">
+                                <Icon size="small" icon={IconDuplicate} />
+                                User ID
+                            </Tag>
                         </Copy>
                     </Table.Cell>
                     <Table.Cell onlyDesktop title="Labels">
