@@ -46,8 +46,7 @@
 </script>
 
 <Container size="xxl">
-    <!-- TODO: fix/implement layout for mobile -->
-    <div class="u-flex u-gap-32">
+    <div class="u-flex u-gap-32 u-flex-vertical-mobile">
         {#if !isDisabled}
             <div class="u-flex-vertical">
                 <ContainerHeader
