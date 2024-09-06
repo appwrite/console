@@ -55,8 +55,6 @@
     let backupPolicyName: string = null;
     let policyFrequency: string = 'monthly';
 
-    let daysSelectionArray: string[] = [];
-
     let policyRetention: number = 30;
     let backupFrequency: string = 'end';
 
@@ -73,16 +71,8 @@
             )?.day;
             dayOfMonth = selectedDay || '28';
         } else if (policyFrequency === 'weekly') {
-            const selectedDays = daysSelectionArray
-                .map(
-                    (dayLabel) =>
-                        backupFrequencies.weekly.find((option) => option.label === dayLabel)?.index
-                )
-                .filter((index) => index !== undefined)
-                .join(',');
-
-            // Default to Monday (1)
-            dayOfWeek = selectedDays || '1';
+            // Monday
+            dayOfWeek = '1';
         } else if (policyFrequency === 'hourly') {
             return `${new Date().getMinutes()} * * * *`;
         }
@@ -112,6 +102,7 @@
                 message: `${backupPolicyName} backup policy has been created`
             });
 
+            resetFormVariables();
             invalidate(Dependencies.BACKUPS);
         } catch (err) {
             addNotification({
@@ -129,10 +120,8 @@
                 return 'A backup will run every hour.';
             case 'daily':
                 return `A backup will run daily at ${timeFormatted}.`;
-            case 'weekly': {
-                const days = daysSelectionArray.join(', ');
-                return `A backup will run weekly on ${days} at ${timeFormatted}.`;
-            }
+            case 'weekly':
+                return `A backup will run weekly on Monday at ${timeFormatted}.`;
             case 'monthly': {
                 const monthDay = backupFrequencies[policyFrequency]
                     .find((option) => option.value === backupFrequency)
@@ -150,6 +139,16 @@
         const suffix = hourInt >= 12 ? 'PM' : 'AM';
         const hour12 = ((hourInt + 11) % 12) + 1;
         return `${hour12}:${minute} ${suffix}`;
+    }
+
+    function resetFormVariables() {
+        error = null;
+        selectedTime = '00:00';
+        backupPolicyName = null;
+        policyFrequency = 'monthly';
+
+        policyRetention = 30;
+        backupFrequency = 'end';
     }
 </script>
 
@@ -184,18 +183,6 @@
                         placeholder="End of month (28th)"
                         fullWidth
                         options={backupFrequencies[policyFrequency]} />
-                {:else if policyFrequency === 'weekly'}
-                    <div class="u-flex-vertical u-width-full-line">
-                        <Label>Timing</Label>
-                        <InputSelectCheckbox
-                            name="Timing"
-                            bind:tags={daysSelectionArray}
-                            placeholder="Select the weekdays for backup"
-                            options={backupFrequencies[policyFrequency].map((option) => ({
-                                ...option,
-                                checked: daysSelectionArray.includes(option.value)
-                            }))} />
-                    </div>
                 {/if}
 
                 {#if policyFrequency !== 'hourly'}
@@ -203,7 +190,7 @@
                         <InputTime
                             id="time"
                             bind:value={selectedTime}
-                            label={policyFrequency === 'daily' ? 'Timing' : ''} />
+                            label={policyFrequency === 'daily' || policyFrequency === 'weekly' ? 'Timing' : ''} />
                     </div>
                 {/if}
             </div>
