@@ -190,7 +190,9 @@
                         <InputTime
                             id="time"
                             bind:value={selectedTime}
-                            label={policyFrequency === 'daily' || policyFrequency === 'weekly' ? 'Timing' : ''} />
+                            label={policyFrequency === 'daily' || policyFrequency === 'weekly'
+                                ? 'Timing'
+                                : ''} />
                     </div>
                 {/if}
             </div>

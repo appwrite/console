@@ -68,11 +68,23 @@
             return `Runs weekly on Monday`;
         }
 
-        if (dayOfMonth === '*' && month === '*' && dayOfWeek === '*' && hour === '*' && minute !== '*') {
+        if (
+            dayOfMonth === '*' &&
+            month === '*' &&
+            dayOfWeek === '*' &&
+            hour === '*' &&
+            minute !== '*'
+        ) {
             return 'Runs hourly';
         }
 
-        if (dayOfMonth === '*' && month === '*' && dayOfWeek === '*' && hour !== '*' && minute !== '*') {
+        if (
+            dayOfMonth === '*' &&
+            month === '*' &&
+            dayOfWeek === '*' &&
+            hour !== '*' &&
+            minute !== '*'
+        ) {
             return 'Runs daily';
         }
     }
@@ -145,8 +157,7 @@
             <div class="u-border-vertical" />
             -->
 
-
-            <div class="u-flex-vertical policy-item-caption">
+                    <div class="u-flex-vertical policy-item-caption">
                         <span style="color: #97979B">Next</span>
                         <div
                             class="u-flex u-gap-4 u-cross-center policy-item-subtitles darker-neutral-color">
