@@ -163,8 +163,7 @@
     state="warning"
     bind:show={showDelete}
     headerDivider={false}
-    onSubmit={deleteBackup}
->
+    onSubmit={deleteBackup}>
     <p class="text" data-private>
         Are you sure you want to delete <b>{cleanBackupName(selectedBackup)}</b>?
         <br />This action is irreversible.

@@ -29,7 +29,7 @@ export const load: PageLoad = async ({ params, url, route, depends }) => {
                 Query.offset(offset),
                 Query.orderDesc(''),
                 Query.equal('resourceType', 'database'),
-                Query.equal('resourceId', params.database),
+                Query.equal('resourceId', params.database)
             ])
         ]);
     } catch (e) {

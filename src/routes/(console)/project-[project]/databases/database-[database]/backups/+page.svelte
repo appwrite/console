@@ -141,7 +141,10 @@
 
 <CreatePolicy bind:showCreate={showCreatePolicy} />
 
-<Modal title="Create manual backup" bind:show={showCreateManualBackup} onSubmit={createManualBackup}>
+<Modal
+    title="Create manual backup"
+    bind:show={showCreateManualBackup}
+    onSubmit={createManualBackup}>
     <p class="text" data-private>
         Manual backups are <b>retained forever</b> unless manually deleted. Use them when making significant
         changes to your data structure or as a safeguard for future rollbacks.

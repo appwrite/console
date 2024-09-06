@@ -173,8 +173,7 @@
     state="warning"
     bind:show={showDelete}
     headerDivider={false}
-    onSubmit={deletePolicy}
->
+    onSubmit={deletePolicy}>
     <p class="text" data-private>
         Are you sure you want to delete <b>{selectedPolicy.name}</b> policy?
         <br />This action is irreversible.
