@@ -1,4 +1,4 @@
-import { derived } from 'svelte/store';
+import { derived, writable } from 'svelte/store';
 import { page } from '$app/stores';
 import { type Models, Query } from '@appwrite.io/console';
 import { sdk } from '$lib/stores/sdk';
@@ -7,10 +7,12 @@ import BackupDatabase from '$lib/components/billing/alerts/backupDatabase.svelte
 
 export const database = derived(page, ($page) => $page.data?.database as Models.Database);
 
+export const showPolicyAlert = writable<boolean>(false);
+
 export async function checkForDatabaseBackupPolicies(database: Models.Database) {
     let total = 0;
     try {
-        const policies = await sdk.forConsole.backups.listPolicies([
+        const policies = await sdk.forProject.backups.listPolicies([
             Query.limit(1),
             Query.equal('resourceId', database.$id)
         ]);
@@ -19,6 +21,8 @@ export async function checkForDatabaseBackupPolicies(database: Models.Database) 
     } catch (e) {
         // ignore, backups not allowed on free plan error.
     }
+
+    showPolicyAlert.set(total <= 0);
 
     if (!total) {
         headerAlert.add({

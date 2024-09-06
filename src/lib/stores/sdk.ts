@@ -71,7 +71,6 @@ export const sdk = {
         client: clientConsole,
         account: new Account(clientConsole),
         avatars: new Avatars(clientConsole),
-        backups: new Backups(clientConsole),
         functions: new Functions(clientConsole),
         health: new Health(clientConsole),
         locale: new Locale(clientConsole),

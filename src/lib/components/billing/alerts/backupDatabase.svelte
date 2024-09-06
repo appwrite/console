@@ -6,6 +6,7 @@
     import { HeaderAlert } from '$lib/layout';
     import { isCloud } from '$lib/system.js';
     import { upgradeURL } from '$lib/stores/billing';
+    import { showPolicyAlert } from '$lib/stores/database';
 
     const isFreePlan = $organization?.billingPlan === BillingPlan.FREE;
 
@@ -14,15 +15,28 @@
         : 'Protect your data by quickly adding a backup policy';
     const ctaText = isFreePlan ? 'Upgrade plan' : 'Add backup';
     const ctaURL = isFreePlan ? $upgradeURL : `${$page.url.pathname}/backups`;
+
+    /**
+     * TODO: @itznotabug check with design if we just hide the banner locally or use localStorage to hide it forever.
+     */
+    function handleClose() {
+        showPolicyAlert.set(false);
+    }
 </script>
 
-{#if isCloud && $organization?.$id && $page.url.pathname.match(/\/databases\/database-[^/]+$/)}
+{#if $showPolicyAlert && isCloud && $organization?.$id && $page.url.pathname.match(/\/databases\/database-[^/]+$/)}
     <HeaderAlert type="warning" title="Your database is not backed up">
         <svelte:fragment>{subtitle}</svelte:fragment>
         <svelte:fragment slot="buttons">
-            <Button href={ctaURL} secondary fullWidthMobile>
-                <span class="text">{ctaText}</span>
-            </Button>
+            <div class="u-flex u-gap-16">
+                <Button href={ctaURL} secondary fullWidthMobile>
+                    <span class="text">{ctaText}</span>
+                </Button>
+
+                <Button text on:click={handleClose}>
+                    <span class="icon-x" aria-hidden="true"></span>
+                </Button>
+            </div>
         </svelte:fragment>
     </HeaderAlert>
 {/if}
