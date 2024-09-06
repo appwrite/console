@@ -85,7 +85,7 @@
         toLocaleDateTime(backup.$createdAt).replaceAll(',', '');
 </script>
 
-<TableScroll>
+<TableScroll class="custom-height-table-column">
     <TableHeader>
         <TableCellHead width={180}>Backups</TableCellHead>
         <TableCellHead width={176}>Size</TableCellHead>
@@ -162,18 +162,20 @@
     icon="exclamation"
     state="warning"
     bind:show={showDelete}
-    headerDivider={false}>
+    headerDivider={false}
+    onSubmit={deleteBackup}
+>
     <p class="text" data-private>
         Are you sure you want to delete <b>{cleanBackupName(selectedBackup)}</b>?
         <br />This action is irreversible.
     </p>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-        <Button secondary on:click={deleteBackup}>Delete</Button>
+        <Button secondary submit>Delete</Button>
     </svelte:fragment>
 </Modal>
 
-<Modal title="Restore backup" bind:show={showRestore}>
+<Modal title="Restore backup" bind:show={showRestore} onSubmit={restoreBackup}>
     <p class="text" data-private>
         Restoring this backup will duplicate the database from the selected backup version. This
         action may take a while.
@@ -229,12 +231,16 @@
 
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showRestore = false)}>Cancel</Button>
-        <Button submit on:click={restoreBackup}>Restore</Button>
+        <Button submit>Restore</Button>
     </svelte:fragment>
 </Modal>
 
 <style lang="scss">
     .icon-dots-horizontal {
         font-size: 1.5rem;
+    }
+
+    :global(.custom-height-table-column .table-col) {
+        height: 54px;
     }
 </style>

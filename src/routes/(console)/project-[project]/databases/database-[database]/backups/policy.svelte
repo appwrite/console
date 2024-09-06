@@ -172,14 +172,16 @@
     icon="exclamation"
     state="warning"
     bind:show={showDelete}
-    headerDivider={false}>
+    headerDivider={false}
+    onSubmit={deletePolicy}
+>
     <p class="text" data-private>
         Are you sure you want to delete <b>{selectedPolicy.name}</b> policy?
         <br />This action is irreversible.
     </p>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-        <Button secondary submit on:click={deletePolicy}>Delete</Button>
+        <Button secondary submit>Delete</Button>
     </svelte:fragment>
 </Modal>
 
