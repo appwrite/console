@@ -56,6 +56,8 @@
         currentAttr ??= { ...selectedAttribute };
         originalKey = currentAttr.key;
         error = null;
+    } else {
+        currentAttr = null;
     }
 </script>
 
