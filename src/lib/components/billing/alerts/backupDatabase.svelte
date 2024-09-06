@@ -1,0 +1,28 @@
+<script lang="ts">
+    import { page } from '$app/stores';
+    import { BillingPlan } from '$lib/constants';
+    import { Button } from '$lib/elements/forms';
+    import { organization } from '$lib/stores/organization';
+    import { HeaderAlert } from '$lib/layout';
+    import { isCloud } from '$lib/system.js';
+    import { upgradeURL } from '$lib/stores/billing';
+
+    const isFreePlan = $organization?.billingPlan === BillingPlan.FREE;
+
+    const subtitle = isFreePlan
+        ? 'Upgrade your plan to ensure your data stays safe with advanced backup policies'
+        : 'Protect your data by quickly adding a backup policy';
+    const ctaText = isFreePlan ? 'Upgrade plan' : 'Add backup';
+    const ctaURL = isFreePlan ? $upgradeURL : `${$page.url.pathname}/backups`;
+</script>
+
+{#if isCloud && $organization?.$id && $page.url.pathname.match(/\/databases\/database-[^/]+$/)}
+    <HeaderAlert type="warning" title="Your database is not backed up">
+        <svelte:fragment>{subtitle}</svelte:fragment>
+        <svelte:fragment slot="buttons">
+            <Button href={ctaURL} secondary fullWidthMobile>
+                <span class="text">{ctaText}</span>
+            </Button>
+        </svelte:fragment>
+    </HeaderAlert>
+{/if}
