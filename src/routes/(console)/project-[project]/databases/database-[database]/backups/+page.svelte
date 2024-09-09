@@ -19,6 +19,7 @@
     import LockedBackupsDarkMobile from '$lib/images/backups/backups-locked-mobile-dark.svg';
     import LockedBackupsLightMobile from '$lib/images/backups/backups-locked-mobile-light.svg';
     import { app } from '$lib/stores/app';
+    import { onMount } from 'svelte';
 
     let showCreatePolicy = false;
     let showCreateManualBackup = false;
@@ -43,6 +44,15 @@
             showCreateManualBackup = false;
         }
     };
+
+    onMount(() => {
+        // TODO: @itznotabug, the events need to be fixed then we can use `archives.*`
+        return sdk.forConsole.client.subscribe('console', (response) => {
+            if (response.events.includes('migrations.*')) {
+                invalidate(Dependencies.BACKUPS);
+            }
+        });
+    });
 </script>
 
 <Container size="xxl">
@@ -99,7 +109,7 @@
                                 event="empty_documentation"
                                 href="https://appwrite.io/docs/products/databases/backups"
                                 ariaLabel="create backup"
-                                >Documentation
+                            >Documentation
                             </Button>
 
                             <Button
