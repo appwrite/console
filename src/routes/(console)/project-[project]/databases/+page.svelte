@@ -34,7 +34,7 @@
                 showCreate = true;
             },
             keys: ['c'],
-            disabled: showCreate || isCreationDisabled,
+            disabled: showCreate || isCreationDisabled || !$canWriteDatabases,
             icon: 'plus',
             group: 'databases',
             rank: 10

@@ -90,7 +90,7 @@
                 showCreate = true;
             },
             keys: ['c'],
-            disabled: $readOnly && !GRACE_PERIOD_OVERRIDE,
+            disabled: ($readOnly && !GRACE_PERIOD_OVERRIDE) || !$canWriteProjects,
             group: 'projects',
             icon: 'plus'
         }
