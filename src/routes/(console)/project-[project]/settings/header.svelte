@@ -45,7 +45,7 @@
             hasChildren: true,
             disabled: !isCloud
         }
-    ].filter((tab) => !tab.disabled);;
+    ].filter((tab) => !tab.disabled);
 </script>
 
 <Cover>

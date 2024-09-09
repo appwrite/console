@@ -21,7 +21,7 @@ export const load: LayoutLoad = async ({ params, depends }) => {
         var roles = [];
         var scopes = [];
         if (isCloud) {
-            if(get(canSeeBilling)) {
+            if (get(canSeeBilling)) {
                 await failedInvoice.load(project.teamId);
             }
             const res = await sdk.forConsole.billing.getRoles(project.teamId);

@@ -17,7 +17,13 @@
     import { MigrationBox } from '$lib/components';
     import { page } from '$app/stores';
     import { base } from '$app/paths';
-    import { canSeeBuckets, canSeeDatabases, canSeeFunctions, canSeeMessages, canWriteProjects } from '$lib/stores/roles';
+    import {
+        canSeeBuckets,
+        canSeeDatabases,
+        canSeeFunctions,
+        canSeeMessages,
+        canWriteProjects
+    } from '$lib/stores/roles';
 
     onMount(() => {
         return sdk.forConsole.client.subscribe(['project', 'console'], (response) => {

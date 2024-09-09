@@ -74,9 +74,10 @@
             keys: ['c'],
             disabled:
                 $wizard.show ||
-                isServiceLimited('functions', $organization?.billingPlan, $functionsList?.total) || !$canWriteFunctions,
+                isServiceLimited('functions', $organization?.billingPlan, $functionsList?.total) ||
+                !$canWriteFunctions,
             icon: 'plus',
-            group: 'functions',
+            group: 'functions'
         }
     ]);
 

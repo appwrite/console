@@ -22,7 +22,7 @@ export const load: LayoutLoad = async ({ params, depends }) => {
 
     try {
         if (isCloud) {
-            if(get(canSeeBilling)) {
+            if (get(canSeeBilling)) {
                 await failedInvoice.load(params.organization);
                 if (get(failedInvoice)) {
                     headerAlert.add({

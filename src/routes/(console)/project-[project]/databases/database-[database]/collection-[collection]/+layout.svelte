@@ -149,7 +149,8 @@
             group: 'collections',
             disabled:
                 $page.url.pathname.endsWith('display-name') ||
-                $page.url.pathname.endsWith('settings') || !$canWriteCollections,
+                $page.url.pathname.endsWith('settings') ||
+                !$canWriteCollections,
             icon: 'eye'
         },
         {
@@ -162,7 +163,8 @@
             group: 'collections',
             disabled:
                 $page.url.pathname.endsWith('permissions') ||
-                $page.url.pathname.endsWith('settings') || !$canWriteCollections,
+                $page.url.pathname.endsWith('settings') ||
+                !$canWriteCollections,
             icon: 'puzzle'
         },
         {
@@ -175,7 +177,8 @@
             group: 'collections',
             disabled:
                 $page.url.pathname.endsWith('document-security') ||
-                $page.url.pathname.endsWith('settings') || !$canWriteCollections,
+                $page.url.pathname.endsWith('settings') ||
+                !$canWriteCollections,
             icon: 'lock-closed'
         },
         {

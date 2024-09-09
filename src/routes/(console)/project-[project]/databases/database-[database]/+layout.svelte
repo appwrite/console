@@ -69,7 +69,8 @@
             },
             disabled:
                 $page.url.pathname.includes('/settings') ||
-                $page.url.pathname.includes('collection-') || !$canWriteDatabases,
+                $page.url.pathname.includes('collection-') ||
+                !$canWriteDatabases,
             keys: ['g', 's'],
             group: 'collections'
         },

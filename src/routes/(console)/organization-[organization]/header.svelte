@@ -64,7 +64,6 @@
     $: organizationId = $page.params.organization;
     $: path = `${base}/organization-${organizationId}`;
     $: tabs = [
-
         {
             href: `${path}/settings`,
             event: 'settings',
@@ -90,15 +89,15 @@
             event: 'usage',
             title: 'Usage',
             hasChildren: true,
-          disabled: !(isCloud && $isOwner)
+            disabled: !(isCloud && $isOwner)
         },
         {
             href: `${path}/billing`,
             event: 'billing',
             title: 'Billing',
             disabled: !(isCloud && $canSeeBilling)
-        },
-    ].filter((tab) => !tab.disabled);;
+        }
+    ].filter((tab) => !tab.disabled);
 </script>
 
 {#if $organization?.$id}
