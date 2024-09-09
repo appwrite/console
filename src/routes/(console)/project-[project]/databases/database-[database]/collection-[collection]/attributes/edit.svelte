@@ -16,6 +16,7 @@
 
     const databaseId = $page.params.database;
     const collectionId = $page.params.collection;
+    let originalKey = '';
 
     let error: string;
     let currentAttr: Attributes;
@@ -32,7 +33,7 @@
 
     async function submit() {
         try {
-            await option.update(databaseId, collectionId, selectedAttribute);
+            await option.update(databaseId, collectionId, selectedAttribute, originalKey);
             await invalidate(Dependencies.COLLECTION);
             if (!$page.url.pathname.includes('attributes')) {
                 await goto(
@@ -53,7 +54,10 @@
 
     $: if (showEdit) {
         currentAttr ??= { ...selectedAttribute };
+        originalKey = currentAttr.key;
         error = null;
+    } else {
+        currentAttr = null;
     }
 </script>
 
@@ -76,8 +80,7 @@
                     label="Attribute Key"
                     placeholder="Enter Key"
                     bind:value={selectedAttribute.key}
-                    autofocus
-                    readonly />
+                    autofocus />
             {/if}
             {#if option}
                 <svelte:component
