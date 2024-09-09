@@ -98,7 +98,10 @@
             total={data.teams.total} />
     {:else if data.search}
         <EmptySearch target="teams" search={data.search} hidePagination={data.teams.total === 0}>
-            <Button secondary size="small" href={`${base}/project-${$page.params.project}/auth/teams`}>
+            <Button
+                secondary
+                size="small"
+                href={`${base}/project-${$page.params.project}/auth/teams`}>
                 Clear Search
             </Button>
         </EmptySearch>
