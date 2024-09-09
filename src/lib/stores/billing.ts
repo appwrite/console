@@ -32,6 +32,7 @@ import { last } from '$lib/helpers/array';
 import { sizeToBytes, type Size } from '$lib/helpers/sizeConvertion';
 import { user } from './user';
 import { browser } from '$app/environment';
+import { canSeeBilling } from './roles';
 
 export type Tier = 'tier-0' | 'tier-1' | 'tier-2';
 
@@ -116,6 +117,7 @@ export const failedInvoice = cachedStore<
     return {
         load: async (orgId) => {
             if (!isCloud) set(null);
+            if(!get(canSeeBilling)) set(null);
             const invoices = await sdk.forConsole.billing.listInvoices(orgId);
             const failedInvoices = invoices.invoices.filter((i) => i.status === 'failed');
             // const failedInvoices = invoices.invoices;
