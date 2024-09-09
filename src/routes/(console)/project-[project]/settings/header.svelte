@@ -26,30 +26,26 @@
             title: 'Webhooks',
             event: 'webhooks'
         },
-        ...($canWriteProjects
-            ? [
-                  {
-                      href: `${path}/migrations`,
-                      title: 'Migrations',
-                      event: 'migrations'
-                  },
-                  {
-                      href: `${path}/smtp`,
-                      title: 'SMTP',
-                      event: 'smtp'
-                  }
-              ]
-            : [])
-    ];
-
-    if (isCloud) {
-        tabs.push({
+        {
+            href: `${path}/migrations`,
+            title: 'Migrations',
+            event: 'migrations',
+            disabled: !$canWriteProjects
+        },
+        {
+            href: `${path}/smtp`,
+            title: 'SMTP',
+            event: 'smtp',
+            disabled: !$canWriteProjects
+        },
+        {
             href: `${path}/usage`,
             title: 'Usage',
             event: 'usage',
-            hasChildren: true
-        });
-    }
+            hasChildren: true,
+            disabled: !isCloud
+        }
+    ].filter((tab) => !tab.disabled);;
 </script>
 
 <Cover>

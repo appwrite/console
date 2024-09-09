@@ -21,16 +21,13 @@
             title: 'Activity',
             event: 'activity'
         },
-        ...($canWriteTopics
-            ? [
-                  {
-                      href: `${path}/settings`,
-                      title: 'Settings',
-                      event: 'settings'
-                  }
-              ]
-            : [])
-    ];
+        {
+            href: `${path}/settings`,
+            title: 'Settings',
+            event: 'settings',
+            disabled: !$canWriteTopics
+        }
+    ].filter((tab) => !tab.disabled);
 </script>
 
 <Cover>

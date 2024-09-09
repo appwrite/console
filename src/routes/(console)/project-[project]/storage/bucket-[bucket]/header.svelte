@@ -23,16 +23,13 @@
             event: 'usage',
             hasChildren: true
         },
-        ...($canWriteBuckets
-            ? [
-                  {
-                      href: `${path}/settings`,
-                      event: 'settings',
-                      title: 'Settings'
-                  }
-              ]
-            : [])
-    ];
+        {
+            href: `${path}/settings`,
+            event: 'settings',
+            title: 'Settings',
+            disabled: !$canWriteBuckets
+        }
+    ].filter((tab) => !tab.disabled);
 </script>
 
 <Cover>

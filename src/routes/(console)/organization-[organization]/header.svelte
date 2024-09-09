@@ -63,58 +63,42 @@
     $: avatars = $members.memberships?.map((m) => m.userName) ?? [];
     $: organizationId = $page.params.organization;
     $: path = `${base}/organization-${organizationId}`;
-    $: settingsTab = [
+    $: tabs = [
+
         {
             href: `${path}/settings`,
             event: 'settings',
-            title: 'Settings'
-        }
-    ];
-    $: permanentTabs = [
-        ...($canSeeProjects
-            ? [
-                  {
-                      href: path,
-                      title: 'Projects',
-                      event: 'projects',
-                      hasChildren: true
-                  }
-              ]
-            : []),
-        ...($isOwner
-            ? [
-                  {
-                      href: `${path}/members`,
-                      title: 'Members',
-                      event: 'members',
-                      hasChildren: true
-                  }
-              ]
-            : [])
-    ];
-    $: tabs = [
-        ...permanentTabs,
-        ...(isCloud && $isOwner
-            ? [
-                  {
-                      href: `${path}/usage`,
-                      event: 'usage',
-                      title: 'Usage',
-                      hasChildren: true
-                  }
-              ]
-            : []),
-        ...(isCloud && $canSeeBilling
-            ? [
-                  {
-                      href: `${path}/billing`,
-                      event: 'billing',
-                      title: 'Billing'
-                  }
-              ]
-            : []),
-        ...($isOwner ? settingsTab : [])
-    ];
+            title: 'Settings',
+            disabled: !$isOwner
+        },
+        {
+            href: path,
+            title: 'Projects',
+            event: 'projects',
+            hasChildren: true,
+            disabled: !$canSeeProjects
+        },
+        {
+            href: `${path}/members`,
+            title: 'Members',
+            event: 'members',
+            hasChildren: true,
+            disabled: !$isOwner
+        },
+        {
+            href: `${path}/usage`,
+            event: 'usage',
+            title: 'Usage',
+            hasChildren: true,
+          disabled: !(isCloud && $isOwner)
+        },
+        {
+            href: `${path}/billing`,
+            event: 'billing',
+            title: 'Billing',
+            disabled: !(isCloud && $canSeeBilling)
+        },
+    ].filter((tab) => !tab.disabled);;
 </script>
 
 {#if $organization?.$id}
