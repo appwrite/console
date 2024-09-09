@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { UploadBox } from '$lib/components';
+    import { UploadBox, BackupRestoreBox } from '$lib/components';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { project, stats } from './store';
@@ -95,3 +95,4 @@
 
 <UploadBox />
 <MigrationBox />
+<BackupRestoreBox />
