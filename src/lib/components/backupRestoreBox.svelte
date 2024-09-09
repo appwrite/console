@@ -54,7 +54,6 @@
     onMount(() => {
         // TODO: @itznotabug, the events need to be fixed then we can use `archives.*`
         sdk.forConsole.client.subscribe(['project', 'console'], (response) => {
-            console.log(response.events);
             if (response.events.includes('migrations.*')) {
                 fetchBackupRestores();
             }
@@ -68,7 +67,7 @@
             {@const items = backupRestoreItems[key]}
             {#if items.length > 0}
                 <section class="upload-box is-float"
-                         style="inset-block-end: {index === 1 && items.length > 0 ? '10.25rem' : null}">
+                         style="inset-block-end: {index === 0 && items.length > 1 ? '10.25rem' : null}">
                     <header class="upload-box-header">
                         <h4 class="upload-box-title">
                             <span class="text">{key === 'archives' ? 'Creating Backup' : 'Creating Restoration'}</span>
