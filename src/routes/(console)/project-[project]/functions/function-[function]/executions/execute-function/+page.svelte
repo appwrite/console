@@ -113,7 +113,6 @@
                 `${base}/project-${$page.params.project}/functions/function-${func.$id}/executions`
             );
             invalidate(Dependencies.EXECUTIONS);
-            close();
             addNotification({
                 type: 'success',
                 message: `Function has been executed`
