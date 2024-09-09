@@ -97,9 +97,7 @@
             const fileExtension = file.name.split('.').pop();
             return isFileExtensionAllowed(fileExtension);
         });
-        const isOverSize = maxSize
-            ? Array.from(target.files).some((file) => isFileOverSize(file))
-            : false;
+        const isOverSize = maxSize && Array.from(target.files).some((file) => isFileOverSize(file));
 
         if (!isValidFiles) {
             error = 'Invalid file extension';
