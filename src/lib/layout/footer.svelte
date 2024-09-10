@@ -48,16 +48,6 @@
                         <span class="text">Cookies</span>
                     </a>
                 </li>
-                <!-- <li class="inline-links-item">
-                    <span
-                        style:cursor="pointer"
-                        role="button"
-                        tabindex="0"
-                        on:keyup={clickOnEnter}
-                        on:click={() => settings.set(true)}>
-                        <span class="text">Cookies</span>
-                    </span>
-                </li> -->
             {/if}
         </ul>
     </div>
