@@ -7,7 +7,7 @@
     import { trackEvent } from '$lib/actions/analytics';
 
     export let single = false;
-    export let card = true;
+    export let isCard = true;
     export let noMedia = false;
     export let target: string = null;
     export let href: string = null;
@@ -23,7 +23,7 @@
 </script>
 
 {#if single}
-    <article class:card={card} class="u-grid u-cross-center u-width-full-line common-section">
+    <article class:card={isCard} class="u-grid u-cross-center u-width-full-line common-section">
         <div
             class="u-flex u-flex-vertical u-cross-center u-gap-24 u-width-full-line u-overflow-hidden u-padding-block-8">
             {#if !noMedia}
@@ -70,7 +70,7 @@
         on:click={track}
         aria-label="create"
         type="button"
-        class:card={card}
+        class:card={isCard}
         class="u-grid u-cross-center u-width-full-line dashed"
         class:common-section={marginTop}>
         <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">

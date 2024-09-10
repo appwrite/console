@@ -173,7 +173,7 @@
                 </div>
             </div>
         {:else}
-            <Empty single card={false} target="backup" on:click={() => (showCreatePolicy = true)}>
+            <Empty single isCard={false} target="backup" on:click={() => (showCreatePolicy = true)}>
                 <div slot="empty-media">
                     {#if $app.themeInUse === 'dark'}
                         <img src={EmptyDark} alt="create" aria-hidden="true" height="242" />
