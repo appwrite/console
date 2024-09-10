@@ -44,6 +44,11 @@
             </li>
             {#if isCloud}
                 <li class="inline-links-item">
+                    <a href="https://appwrite.io/cookies" target="_blank" rel="noreferrer">
+                        <span class="text">Cookies</span>
+                    </a>
+                </li>
+                <!-- <li class="inline-links-item">
                     <span
                         style:cursor="pointer"
                         role="button"
@@ -52,7 +57,7 @@
                         on:click={() => settings.set(true)}>
                         <span class="text">Cookies</span>
                     </span>
-                </li>
+                </li> -->
             {/if}
         </ul>
     </div>
