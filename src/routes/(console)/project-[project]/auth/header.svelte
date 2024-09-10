@@ -21,36 +21,31 @@
             hasChildren: true,
             event: 'teams'
         },
-        ...($canWriteUsers
-            ? [
-                  {
-                      href: `${path}/security`,
-                      title: 'Security',
-                      event: 'security'
-                  },
-                  {
-                      href: `${path}/templates`,
-                      title: 'Templates',
-                      hasChildren: false,
-                      event: 'templates'
-                  }
-              ]
-            : []),
+        {
+            href: `${path}/security`,
+            title: 'Security',
+            event: 'security',
+            disabled: !$canWriteUsers
+        },
+        {
+            href: `${path}/templates`,
+            title: 'Templates',
+            hasChildren: false,
+            event: 'templates',
+            disabled: !$canWriteUsers
+        },
         {
             href: `${path}/usage`,
             title: 'Usage',
             hasChildren: true,
             event: 'usage'
         },
-        ...($canWriteUsers
-            ? [
-                  {
-                      href: `${path}/settings`,
-                      title: 'Settings',
-                      event: 'settings'
-                  }
-              ]
-            : [])
+        {
+            href: `${path}/settings`,
+            title: 'Settings',
+            event: 'settings',
+            disabled: !$canWriteUsers
+        }
     ];
 </script>
 

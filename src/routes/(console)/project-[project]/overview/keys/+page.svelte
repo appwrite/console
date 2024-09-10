@@ -1,5 +1,8 @@
 <script lang="ts" context="module">
     export function createApiKey() {
+        if (!get(canWriteKeys)) {
+            return;
+        }
         wizard.start(Wizard);
     }
 </script>
@@ -18,6 +21,7 @@
     import { toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
     import { canWriteKeys } from '$lib/stores/roles';
     import { wizard } from '$lib/stores/wizard';
+    import { get } from 'svelte/store';
     import type { PageData } from './$types';
     import Wizard from './wizard.svelte';
 

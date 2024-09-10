@@ -119,7 +119,7 @@
     {:else}
         <Empty
             single
-            on:click={$canWriteTopics ? () => ($showCreate = true) : null}
+            on:click={() => $canWriteTopics && ($showCreate = true)}
             href="https://appwrite.io/docs/products/messaging/topics"
             target="topic" />
     {/if}

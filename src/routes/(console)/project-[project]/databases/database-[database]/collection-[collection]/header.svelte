@@ -40,15 +40,12 @@
             event: 'usage',
             hasChildren: true
         },
-        ...($canWriteCollections
-            ? [
-                  {
-                      href: `${path}/settings`,
-                      title: 'Settings',
-                      event: 'settings'
-                  }
-              ]
-            : [])
+        {
+            href: `${path}/settings`,
+            title: 'Settings',
+            event: 'settings',
+            disabled: !$canWriteCollections
+        }
     ];
 </script>
 

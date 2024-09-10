@@ -34,15 +34,12 @@
             event: 'sage',
             hasChildren: true
         },
-        ...($canWriteFunctions
-            ? [
-                  {
-                      href: `${path}/settings`,
-                      event: 'settings',
-                      title: 'Settings'
-                  }
-              ]
-            : [])
+        {
+            href: `${path}/settings`,
+            event: 'settings',
+            title: 'Settings',
+            disabled: !$canWriteFunctions
+        }
     ];
 </script>
 

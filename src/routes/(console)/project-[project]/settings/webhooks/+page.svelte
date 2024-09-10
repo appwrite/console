@@ -1,5 +1,8 @@
 <script lang="ts" context="module">
     export function openWebhooksWizard() {
+        if (!get(canWriteWebhooks)) {
+            return;
+        }
         wizard.start(Create);
     }
 </script>
@@ -29,6 +32,7 @@
     import FailedModal from './failedModal.svelte';
     import MessageStatusPill from './messageStatusPill.svelte';
     import { canWriteWebhooks } from '$lib/stores/roles';
+    import { get } from 'svelte/store';
 
     export let data: PageData;
 
@@ -36,6 +40,9 @@
     let selectedWebhook: Models.Webhook;
 
     function openWizard() {
+        if (!$canWriteWebhooks) {
+            return;
+        }
         wizard.start(Create);
     }
 
@@ -123,7 +130,7 @@
             single
             href="https://appwrite.io/docs/advanced/platform/webhooks"
             target="webhook"
-            on:click={$canWriteWebhooks ? openWizard : null} />
+            on:click={openWizard} />
     {/if}
 </Container>
 

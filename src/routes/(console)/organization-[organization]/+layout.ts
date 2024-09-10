@@ -17,8 +17,8 @@ export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.ORGANIZATION);
     depends(Dependencies.MEMBERS);
     depends(Dependencies.PAYMENT_METHODS);
-    var roles = [];
-    var scopes = [];
+    let roles = [];
+    let scopes = [];
 
     try {
         if (isCloud) {

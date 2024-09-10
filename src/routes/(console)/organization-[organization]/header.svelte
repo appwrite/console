@@ -53,8 +53,6 @@
 
     function createOrg() {
         showDropdown = false;
-        console.log('billing:', isBilling);
-        console.log('developer:', isDeveloper);
         if (isCloud) {
             goto(`${base}/create-organization`);
         } else newOrgModal.set(true);
