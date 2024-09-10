@@ -32,13 +32,7 @@
         organization,
         organizationList
     } from '$lib/stores/organization';
-    import {
-        canSeeBilling,
-        canSeeProjects,
-        isBilling,
-        isDeveloper,
-        isOwner
-    } from '$lib/stores/roles';
+    import { canSeeBilling, canSeeProjects, isOwner } from '$lib/stores/roles';
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
 
     let areMembersLimited: boolean;

@@ -22,7 +22,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import type { Column } from '$lib/helpers/types';
-    import { canWriteMessages, canWriteTopics } from '$lib/stores/roles';
+    import { canWriteTopics } from '$lib/stores/roles';
 
     export let columns: Column[];
     export let data: PageData;

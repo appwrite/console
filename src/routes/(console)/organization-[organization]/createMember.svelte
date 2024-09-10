@@ -14,7 +14,6 @@
     import { plansInfo } from '$lib/stores/billing';
     import { formatCurrency } from '$lib/helpers/numbers';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
-    import { projects } from './store';
 
     export let showCreate = false;
 
