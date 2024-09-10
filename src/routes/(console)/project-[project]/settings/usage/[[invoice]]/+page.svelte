@@ -45,8 +45,6 @@
     //     label: toLocaleDate(invoice.from),
     //     value: invoice.$id
     // }));
-
-    $: console.log(data.usage.executionsBreakdown);
 </script>
 
 <Container>
