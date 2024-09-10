@@ -3,9 +3,6 @@
     import { type Models, Query } from '@appwrite.io/console';
     import { onMount } from 'svelte';
 
-    let showBackupBox = false;
-    let showRestoreBox = false;
-
     let backupRestoreItems: {
         archives: Map<string, Models.BackupArchive>;
         restorations: Map<string, Models.BackupRestoration>;
@@ -13,6 +10,9 @@
         archives: new Map(),
         restorations: new Map()
     };
+
+    $: showBackupRestoreBox =
+        backupRestoreItems.archives.size > 0 || backupRestoreItems.restorations.size > 0;
 
     const fetchBackupRestores = async () => {
         try {
@@ -26,15 +26,14 @@
             backupRestoreItems.archives = new Map(
                 archivesResponse.archives.map((item) => [item.$id, item])
             );
+
+            // this is a one time op.
             backupRestoreItems.restorations = new Map(
                 restorationsResponse.restorations.map((item) => [item.$id, item])
             );
         } catch (e) {
             // ignore?
         }
-
-        showBackupBox = backupRestoreItems.archives.size > 0;
-        showRestoreBox = backupRestoreItems.restorations.size > 0;
     };
 
     // fresh fetch.
@@ -53,10 +52,6 @@
             }
 
             backupRestoreItems[$collection] = collectionMap;
-
-            showBackupBox = $collection === 'archives' && backupRestoreItems.archives.size > 0;
-            showRestoreBox =
-                $collection === 'restorations' && backupRestoreItems.restorations.size > 0;
         }
     };
 
@@ -76,14 +71,19 @@
         }
     };
 
-    const handleClose = (which: 'archives' | 'restorations') => {
+    const handleClose = (which: string) => {
         backupRestoreItems[which] = new Map();
-        showBackupBox = backupRestoreItems.archives.size > 0;
-        showRestoreBox = backupRestoreItems.restorations.size > 0;
     };
 
     const reversed = (backupItem: Map<string, Models.BackupArchive | Models.BackupRestoration>) =>
         [...backupItem.values()].reverse();
+
+    // TODO: `startedAt` is probably not correct here. need more info.
+    const backupName = (item: Models.BackupArchive | Models.BackupRestoration, key: string) => {
+        const attribute = key === 'archives' ? '$createdAt' : 'startedAt';
+        const date = new Date(item[attribute]);
+        return `${date.toDateString().slice(4, 10)}, ${date.toTimeString().slice(0, 5)}`;
+    };
 
     onMount(() => {
         sdk.forConsole.client.subscribe('console', (response) => {
@@ -97,79 +97,56 @@
     });
 </script>
 
-{#if showBackupBox}
+{#if showBackupRestoreBox}
     <div class="u-flex u-flex-vertical u-gap-16">
-        <section
-            class="upload-box is-float"
-            style="inset-block-end: {showRestoreBox ? '10.25rem' : null}">
-            <header class="upload-box-header">
-                <h4 class="upload-box-title">
-                    <span class="text">Creating Backup</span>
-                </h4>
-                <button
-                    class="upload-box-button"
-                    aria-label="close backup restore box"
-                    on:click={() => handleClose('archives')}>
-                    <span class="icon-x" aria-hidden="true" />
-                </button>
-            </header>
+        {#each Object.keys(backupRestoreItems) as key}
+            {@const isBackup = key === 'archives'}
+            {@const items = reversed(backupRestoreItems[key])}
+            {@const titleText = isBackup ? 'Creating Backup' : 'Creating Restoration'}
+            {@const shouldInsetRestorations =
+            key === 'restorations' && backupRestoreItems.archives.size > 0}
 
-            <div class="upload-box-content is-open">
-                <!-- reversing shouldn't have much overhead as the items would be less -->
-                {#each reversed(backupRestoreItems.archives) as item, index (item.$id)}
-                    <section
-                        class="progress-bar"
-                        class:u-padding-block-end-32={index !==
-                            backupRestoreItems.archives.size - 1}>
-                        <div class="progress-bar-top-line u-flex u-gap-8 u-main-space-between">
-                            <span> Preparing database server for backup </span>
-                        </div>
-                        <div
-                            class="progress-bar-container"
-                            class:is-danger={item.status === 'failed'}
-                            style="--graph-size:{graphSize(item.status)}%" />
-                    </section>
-                {/each}
-            </div>
-        </section>
-    </div>
-{/if}
+            {#if items.length > 0}
+                <section
+                    class="upload-box is-float"
+                    style="inset-block-end: {shouldInsetRestorations ? '10.25rem' : null}">
+                    <header class="upload-box-header">
+                        <h4 class="upload-box-title">
+                            <span class="text">{titleText}</span>
+                        </h4>
+                        <button
+                            class="upload-box-button"
+                            aria-label="close backup restore box"
+                            on:click={() => handleClose(key)}>
+                            <span class="icon-x" aria-hidden="true" />
+                        </button>
+                    </header>
 
-{#if showRestoreBox}
-    <div class="u-flex u-flex-vertical u-gap-16">
-        <section class="upload-box is-float">
-            <header class="upload-box-header">
-                <h4 class="upload-box-title">
-                    <span class="text">Creating Restoration</span>
-                </h4>
-                <button
-                    class="upload-box-button"
-                    aria-label="close backup restore box"
-                    on:click={() => handleClose('restorations')}>
-                    <span class="icon-x" aria-hidden="true" />
-                </button>
-            </header>
+                    <div class="upload-box-content is-open">
+                        {#each items as item, index (item.$id)}
+                            <section
+                                class="progress-bar"
+                                class:u-padding-block-end-32={index !== items.length - 1}>
+                                <div
+                                    class="progress-bar-top-line u-flex u-gap-8 u-main-space-between">
+                                    <span class="body-text-2">
+                                        Preparing database server...
+                                    </span>
 
-            <div class="upload-box-content is-open">
-                <!-- reversing shouldn't have much overhead as the items would be less -->
-                {#each reversed(backupRestoreItems.restorations) as item, index (item.$id)}
-                    <section
-                        class="progress-bar"
-                        class:u-padding-block-end-32={index !==
-                            backupRestoreItems.restorations.size - 1}>
-                        <div class="progress-bar-top-line u-flex u-gap-8 u-main-space-between">
-                            <span> Preparing database server restore </span>
-                        </div>
-                        {#key item.status}
-                            <div
-                                class="progress-bar-container"
-                                class:is-danger={item.status === 'failed'}
-                                style="--graph-size:{graphSize(item.status)}%" />
-                        {/key}
-                    </section>
-                {/each}
-            </div>
-        </section>
+                                    <span class="backup-name">
+                                        {backupName(item, key)}
+                                    </span>
+                                </div>
+                                <div
+                                    class="progress-bar-container"
+                                    class:is-danger={item.status === 'failed'}
+                                    style="--graph-size:{graphSize(item.status)}%" />
+                            </section>
+                        {/each}
+                    </div>
+                </section>
+            {/if}
+        {/each}
     </div>
 {/if}
 
@@ -178,5 +155,15 @@
         padding: 1.5rem;
         min-width: 400px;
         max-width: 100vw;
+    }
+
+    .backup-name {
+        font-size: 12px;
+        font-weight: 400;
+        line-height: 130%;
+        font-style: normal;
+        letter-spacing: -0.12px;
+        color: var(--mid-neutrals-50, #818186);
+        font-family: var(--font-family-sansSerif, Inter);
     }
 </style>
