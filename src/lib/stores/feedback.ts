@@ -126,7 +126,7 @@ function createFeedbackStore() {
                     message,
                     email,
                     // billingPlan,
-                    firstname: name ? name : undefined,
+                    firstname: name || 'Unknown',
                     customFields: [
                         { id: '47364', currentPage },
                         ...(value ? [{ id: '40655', value }] : [])
