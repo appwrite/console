@@ -110,7 +110,6 @@ function createFeedbackStore() {
             message: string,
             name?: string,
             email?: string,
-            // @ts-ignore
             billingPlan?: string,
             currentPage?: string,
             value?: number
