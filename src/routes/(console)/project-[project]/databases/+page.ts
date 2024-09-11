@@ -73,7 +73,7 @@ async function fetchLastBackups(databases: Models.DatabaseList) {
                     Query.limit(1),
                     Query.orderDesc('$createdAt'),
                     Query.equal('resourceType', 'database'),
-                    Query.equal('resourceId', database.$id),
+                    Query.equal('resourceId', database.$id)
                 ]);
 
                 if (archives.length > 0) {

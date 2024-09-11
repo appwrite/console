@@ -174,7 +174,11 @@
                         <div
                             class="u-flex u-gap-4 u-cross-center policy-item-subtitles darker-neutral-color">
                             {toLocaleDateTime(
-                                parseExpression(policy.schedule, { utc: !isHourlySchedule(policy.schedule) }).next().toString()
+                                parseExpression(policy.schedule, {
+                                    utc: !isHourlySchedule(policy.schedule)
+                                })
+                                    .next()
+                                    .toString()
                             )}
                         </div>
                     </div>
