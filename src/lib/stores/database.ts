@@ -1,4 +1,4 @@
-import { derived, writable } from 'svelte/store';
+import { derived, writable, get } from 'svelte/store';
 import { page } from '$app/stores';
 import { type Models, Query } from '@appwrite.io/console';
 import { sdk } from '$lib/stores/sdk';
@@ -8,6 +8,7 @@ import BackupDatabase from '$lib/components/billing/alerts/backupDatabase.svelte
 export const database = derived(page, ($page) => $page.data?.database as Models.Database);
 
 export const showPolicyAlert = writable<boolean>(false);
+export const userHidPolicyBanner = writable<boolean>(false);
 
 export async function checkForDatabaseBackupPolicies(database: Models.Database) {
     let total = 0;
@@ -22,7 +23,7 @@ export async function checkForDatabaseBackupPolicies(database: Models.Database) 
         // ignore, backups not allowed on free plan error.
     }
 
-    showPolicyAlert.set(total <= 0);
+    showPolicyAlert.set(!get(userHidPolicyBanner) && total <= 0);
 
     if (!total) {
         headerAlert.add({

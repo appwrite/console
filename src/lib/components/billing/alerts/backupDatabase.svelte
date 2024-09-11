@@ -6,7 +6,7 @@
     import { HeaderAlert } from '$lib/layout';
     import { isCloud } from '$lib/system.js';
     import { upgradeURL } from '$lib/stores/billing';
-    import { showPolicyAlert } from '$lib/stores/database';
+    import { showPolicyAlert, userHidPolicyBanner } from '$lib/stores/database';
 
     const isFreePlan = $organization?.billingPlan === BillingPlan.FREE;
 
@@ -21,6 +21,7 @@
      */
     function handleClose() {
         showPolicyAlert.set(false);
+        userHidPolicyBanner.set(true);
     }
 </script>
 
