@@ -96,7 +96,7 @@
         },
         {
             id: 'size',
-            title: 'Deployment size',
+            title: 'Size',
             type: 'integer',
             show: true,
             width: 140,

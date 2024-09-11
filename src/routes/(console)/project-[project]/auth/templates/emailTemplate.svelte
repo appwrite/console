@@ -130,7 +130,7 @@
                                 >here</a
                             >.
                         </p>
-                        <div class="u-margin-block-start-16 u-flex u-gap-8">
+                        <div class="u-margin-block-start-16 u-flex u-flex-wrap u-gap-8">
                             <slot />
                         </div>
                     </li>

@@ -1,57 +1,52 @@
 <script context="module" lang="ts">
-    import type { Models } from '@appwrite.io/console';
     import { sdk } from '$lib/stores/sdk';
+    import type { Models } from '@appwrite.io/console';
 
-    export async function submitFloat(
+    export async function submitString(
         databaseId: string,
         collectionId: string,
         key: string,
-        data: Partial<Models.AttributeFloat>
+        data: Partial<Models.AttributeString>
     ) {
-        await sdk.forProject.databases.createFloatAttribute(
+        await sdk.forProject.databases.createStringAttribute(
             databaseId,
             collectionId,
             key,
+            data.size,
             data.required,
-            data.min,
-            data.max,
             data.default,
             data.array
         );
     }
-
-    export async function updateFloat(
+    export async function updateString(
         databaseId: string,
         collectionId: string,
-        data: Partial<Models.AttributeFloat>,
+        data: Partial<Models.AttributeString>,
         originalKey?: string
     ) {
-        await sdk.forProject.databases.updateFloatAttribute(
+        await sdk.forProject.databases.updateStringAttribute(
             databaseId,
             collectionId,
-            data.key,
+            originalKey,
             data.required,
-            data.min,
-            data.max,
             data.default,
+            data.size,
             data.key !== originalKey ? data.key : undefined
         );
     }
 </script>
 
 <script lang="ts">
-    import { InputNumber, InputChoice } from '$lib/elements/forms';
+    import { InputChoice, InputNumber, InputText, InputTextarea } from '$lib/elements/forms';
+    import { createConservative } from '$lib/helpers/stores';
 
-    export let editing = false;
-    export let data: Partial<Models.AttributeFloat> = {
+    export let data: Partial<Models.AttributeString> = {
         required: false,
-        min: 0,
-        max: 0,
-        default: 0,
+        size: 0,
+        default: null,
         array: false
     };
-
-    import { createConservative } from '$lib/helpers/stores';
+    export let editing = false;
 
     let savedDefault = data.default;
 
@@ -67,7 +62,7 @@
     const {
         stores: { required, array },
         listen
-    } = createConservative<Partial<Models.AttributeFloat>>({
+    } = createConservative<Partial<Models.AttributeString>>({
         required: false,
         array: false,
         ...data
@@ -78,29 +73,31 @@
 </script>
 
 <InputNumber
-    id="min"
-    label="Min"
+    id="size"
+    label="Size"
     placeholder="Enter size"
-    bind:value={data.min}
-    step="any"
-    required={editing} />
-<InputNumber
-    id="max"
-    label="Max"
-    placeholder="Enter size"
-    bind:value={data.max}
-    step="any"
-    required={editing} />
-<InputNumber
-    id="default"
-    label="Default value"
-    placeholder="Enter value"
-    min={data.min}
-    max={data.max}
-    bind:value={data.default}
-    disabled={data.required || data.array}
-    nullable={!data.required && !data.array}
-    step="any" />
+    bind:value={data.size}
+    required={!editing}
+    readonly={editing} />
+{#if data.size >= 50}
+    <InputTextarea
+        id="default"
+        label="Default"
+        placeholder="Enter string"
+        disabled={data.required || data.array}
+        nullable={!data.required && !data.array}
+        maxlength={data.size}
+        bind:value={data.default} />
+{:else}
+    <InputText
+        id="default"
+        label="Default"
+        placeholder="Enter string"
+        disabled={data.required || data.array}
+        nullable={!data.required && !data.array}
+        maxlength={data.size}
+        bind:value={data.default} />
+{/if}
 <InputChoice id="required" label="Required" bind:value={data.required} disabled={data.array}>
     Indicate whether this is a required attribute
 </InputChoice>

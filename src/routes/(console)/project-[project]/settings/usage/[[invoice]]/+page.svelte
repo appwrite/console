@@ -18,10 +18,11 @@
     import { formatNum } from '$lib/helpers/string';
     import { total } from '$lib/layout/usage.svelte';
     import { BillingPlan } from '$lib/constants.js';
+    import { base } from '$app/paths';
 
     export let data;
 
-    $: base = `${base}/project-${data.project.$id}`;
+    $: baseRoute = `${base}/project-${data.project.$id}`;
     $: network = data.usage.network;
     $: users = data.usage.users;
     $: usersTotal = data.usage.usersTotal;
@@ -237,7 +238,7 @@
                                         {formatNum(func.value)} executions
                                     </TableCell>
                                     <TableCellLink
-                                        href={`${base}/functions/function-${func.resourceId}`}
+                                        href={`${baseRoute}/functions/function-${func.resourceId}`}
                                         title="View function">
                                         View function
                                     </TableCellLink>
@@ -296,7 +297,7 @@
                                         {humanized.value}{humanized.unit}
                                     </TableCell>
                                     <TableCellLink
-                                        href={`${base}/storage/bucket-${bucket.resourceId}`}
+                                        href={`${baseRoute}/storage/bucket-${bucket.resourceId}`}
                                         title="View bucket">
                                         View bucket
                                     </TableCellLink>
