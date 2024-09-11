@@ -2,6 +2,7 @@
     import { invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
+    import { tooltip } from '$lib/actions/tooltip';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Id, Modal } from '$lib/components';
     import FloatingActionBar from '$lib/components/floatingActionBar.svelte';
@@ -10,13 +11,13 @@
     import {
         TableBody,
         TableCell,
+        TableCellCheck,
         TableCellHead,
         TableCellHeadCheck,
         TableCellText,
         TableHeader,
         TableRowLink,
-        TableScroll,
-        TableCellCheck
+        TableScroll
     } from '$lib/elements/table';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
@@ -54,6 +55,15 @@
             showDelete = false;
         }
     }
+
+    function getPolicyDescription(cron: string): string {
+        const [minute, hour, dayOfMonth, , dayOfWeek] = cron.split(' ');
+
+        if (dayOfMonth !== '*') return 'Monthly';
+        if (dayOfWeek !== '*') return 'Weekly on Mondays';
+        if (minute !== '*' && hour === '*') return 'Hourly';
+        if (hour !== '*') return 'Daily';
+    }
 </script>
 
 <TableScroll>
@@ -84,6 +94,25 @@
                         {:else if column.id === 'name'}
                             <TableCellText width={column.width} title={column.title}>
                                 {database.name}
+                            </TableCellText>
+                        {:else if column.id === 'backup'}
+                            <TableCellText width={column.width} title={column.title}>
+                                {#if !data.policies || !data.policies[database.$id]}
+                                    <span class="icon-exclamation" /> No backup policies
+                                {:else}
+                                    <span
+                                        use:tooltip={{
+                                            content:
+                                                data.lastBackups && data.lastBackups[database.$id]
+                                                    ? `Last backup: ${data.lastBackups[database.$id]}`
+                                                    : null,
+                                            placement: 'bottom'
+                                        }}>
+                                        {data.policies[database.$id]
+                                            .map((policy) => getPolicyDescription(policy.schedule))
+                                            .join(', ')}
+                                    </span>
+                                {/if}
                             </TableCellText>
                         {:else}
                             <TableCellText width={column.width} title={column.title}>
@@ -146,5 +175,9 @@
             padding: 0rem 0.375rem;
             display: inline-block;
         }
+    }
+
+    .icon-exclamation {
+        color: hsl(var(--color-warning-100)) !important;
     }
 </style>

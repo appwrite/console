@@ -40,18 +40,18 @@ async function fetchDatabasesAndBackups(limit: number, offset: number) {
 }
 
 async function fetchPolicies(databases: Models.DatabaseList) {
-    const databasePolicies: Record<string, boolean> = {};
+    const databasePolicies: Record<string, Models.BackupPolicy[]> = {};
 
     await Promise.all(
         databases.databases.map(async (database) => {
             try {
                 const { policies } = await sdk.forProject.backups.listPolicies([
-                    Query.limit(1),
+                    Query.limit(3), // not all fit in the table so 3 should be enough.
                     Query.equal('resourceId', database.$id)
                 ]);
 
                 if (policies.length > 0) {
-                    databasePolicies[database.$id] = true;
+                    databasePolicies[database.$id] = policies;
                 }
             } catch (e) {
                 // ignore
