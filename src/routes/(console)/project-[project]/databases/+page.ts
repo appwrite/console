@@ -47,6 +47,7 @@ async function fetchPolicies(databases: Models.DatabaseList) {
             try {
                 const { policies } = await sdk.forProject.backups.listPolicies([
                     Query.limit(3), // not all fit in the table so 3 should be enough.
+                    Query.equal('resourceType', 'database'),
                     Query.equal('resourceId', database.$id)
                 ]);
 
@@ -71,7 +72,8 @@ async function fetchLastBackups(databases: Models.DatabaseList) {
                 const { archives } = await sdk.forProject.backups.listArchives([
                     Query.limit(1),
                     Query.orderDesc('$createdAt'),
-                    Query.equal('resourceId', database.$id)
+                    Query.equal('resourceType', 'database'),
+                    Query.equal('resourceId', database.$id),
                 ]);
 
                 if (archives.length > 0) {
