@@ -6,7 +6,8 @@ beforeAll(() => {
         browser: true
     }));
     vi.mock('$app/navigation', () => ({
-        goto: vi.fn()
+        goto: vi.fn(),
+        beforeNavigate: vi.fn()
     }));
     vi.mock('$app/environment', () => ({
         dev: true,

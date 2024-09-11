@@ -84,7 +84,7 @@
         {
             label: 'Create new organization',
             callback: () => {
-                newOrgModal.set(true);
+                isCloud ? goto(`${base}/create-organization`) : newOrgModal.set(true);
             },
             keys: ['c', 'o'],
             group: 'organizations'

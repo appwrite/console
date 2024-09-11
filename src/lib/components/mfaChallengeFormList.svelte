@@ -24,6 +24,7 @@
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { AuthenticationFactor, type Models } from '@appwrite.io/console';
+    import { addNotification } from '$lib/stores/notifications';
 
     export let factors: Models.MfaFactors & { recoveryCode: boolean };
     /** If true, the form will be submitted automatically when the code is entered. */
@@ -40,8 +41,16 @@
     async function createChallenge(factor: AuthenticationFactor) {
         disabled = true;
         challengeType = factor;
-        challenge = await sdk.forConsole.account.createMfaChallenge(factor);
-        disabled = false;
+        try {
+            challenge = await sdk.forConsole.account.createMfaChallenge(factor);
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+        } finally {
+            disabled = false;
+        }
     }
 
     onMount(async () => {
