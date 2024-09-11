@@ -55,7 +55,7 @@
         return `Retained for ${retention} day${retention > 1 ? 's' : ''}`;
     };
 
-    function getPolicyDescription(cron: string): string {
+    const getPolicyDescription = (cron: string): string => {
         const cronParts = cron.split(' ');
 
         // A standard cron has 5 parts: minute, hour, day of month, month, day of week
@@ -88,7 +88,14 @@
         ) {
             return 'Runs daily';
         }
-    }
+    };
+
+    // Switches to UTC for non-hourly,
+    // keeps local time for hourly schedules.
+    const isHourlySchedule = (cron: string): boolean => {
+        const [_, hour, dayOfMonth, month, dayOfWeek] = cron.split(' ');
+        return hour === '*' && dayOfMonth === '*' && month === '*' && dayOfWeek === '*';
+    };
 </script>
 
 <Card
@@ -167,7 +174,7 @@
                         <div
                             class="u-flex u-gap-4 u-cross-center policy-item-subtitles darker-neutral-color">
                             {toLocaleDateTime(
-                                parseExpression(policy.schedule, { utc: false }).next().toString()
+                                parseExpression(policy.schedule, { utc: !isHourlySchedule(policy.schedule) }).next().toString()
                             )}
                         </div>
                     </div>

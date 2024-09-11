@@ -5,7 +5,6 @@
         FormList,
         InputRadio,
         InputSelect,
-        InputSelectCheckbox,
         InputText,
         InputTime,
         Label
@@ -59,7 +58,14 @@
     let backupFrequency: string = 'end';
 
     const generateCronExpression = () => {
-        const [hour, minute] = selectedTime.split(':');
+        const [localHour, localMinute] = selectedTime.split(':');
+
+        // Convert local time to UTC
+        const now = new Date();
+        now.setHours(parseInt(localHour), parseInt(localMinute), 0);
+
+        const utcHour = now.getUTCHours();
+        const utcMinute = now.getUTCMinutes();
 
         let dayOfWeek = '*';
         let dayOfMonth = '*';
@@ -77,7 +83,7 @@
             return `${new Date().getMinutes()} * * * *`;
         }
 
-        return `${minute} ${hour} ${dayOfMonth} * ${dayOfWeek}`;
+        return `${utcMinute} ${utcHour} ${dayOfMonth} * ${dayOfWeek}`;
     };
 
     // TODO: reset values on modal close.
