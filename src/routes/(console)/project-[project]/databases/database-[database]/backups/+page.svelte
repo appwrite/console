@@ -67,7 +67,10 @@
                     buttonDisabled={isDisabled}
                     buttonMethod={() => (showCreatePolicy = true)} />
 
-                <BackupPolicy policies={data.policies} bind:showCreatePolicy />
+                <BackupPolicy
+                    bind:showCreatePolicy
+                    policies={data.policies}
+                    lastBackupDates={data.lastBackupDates} />
             </div>
 
             <div class="u-flex-vertical u-width-full-line">

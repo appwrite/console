@@ -20,6 +20,7 @@
 
     export let showCreatePolicy = false;
     export let policies: Models.BackupPolicyList;
+    export let lastBackupDates: Record<string, string>;
 
     async function deletePolicy() {
         try {
@@ -128,7 +129,6 @@
                     </div>
 
                     <div class="policy-item-subtitles u-flex u-gap-6">
-                        <!-- TODO: add descriptions -->
                         {getPolicyDescription(policy.schedule)}
                         <span class="small-ellipse">●</span>
                         {formatRetentionMessage(policy.retention)}
@@ -138,33 +138,34 @@
                 <!-- Previous and Next section -->
                 <div
                     class="policy-cycles u-flex u-cross-start u-padding-block-2 policy-item-subtitles">
-                    <!--
-                        // TODO: Need to get previous backup date from API, we could do it the dirty way too but let's wait for now
-                        <div class="u-flex-vertical policy-item-caption">
-                            <span style="color: #97979B">Previous</span>
+                    <div class="u-flex-vertical policy-item-caption">
+                        <span style="color: #97979B">Previous</span>
 
-                            <div
-                                class="u-flex u-gap-4 u-cross-center policy-item-subtitles darker-neutral-color">
-                                <span style="font-size: 1.25rem; color: hsl(var(--color-success-100));">
-                                    ●
-                                </span>
+                        <div
+                            class="u-flex u-gap-4 u-cross-center policy-item-subtitles darker-neutral-color">
+                            <span
+                                style="font-size: 1rem; margin-bottom: 2px; color: {lastBackupDates[
+                                    policy.$id
+                                ]
+                                    ? 'hsl(var(--color-success-100))'
+                                    : 'inherit'};">
+                                ●
+                            </span>
 
-                    // TODO: get previous backup from this policy if exists!
-                    {toLocaleDateTime(parseExpression(policy.schedule, { utc: true }).prev().toString())}
-                </div>
-            </div>
+                            {#if lastBackupDates[policy.$id]}
+                                {toLocaleDateTime(lastBackupDates[policy.$id])}
+                            {:else}
+                                No backups yet
+                            {/if}
+                        </div>
+                    </div>
 
-            <div class="u-border-vertical" />
-            -->
+                    <div class="u-border-vertical" />
 
                     <div class="u-flex-vertical policy-item-caption">
                         <span style="color: #97979B">Next</span>
                         <div
                             class="u-flex u-gap-4 u-cross-center policy-item-subtitles darker-neutral-color">
-                            <span style="font-size: 1.25rem; color: hsl(var(--color-success-100));">
-                                ●
-                            </span>
-
                             {toLocaleDateTime(
                                 parseExpression(policy.schedule, { utc: false }).next().toString()
                             )}

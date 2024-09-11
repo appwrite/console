@@ -36,11 +36,35 @@ export const load: PageLoad = async ({ params, url, route, depends }) => {
         // ignore
     }
 
+    const lastBackupDates: Record<string, string | null> = policies.policies.reduce(
+        (acc, policy) => {
+            const lastBackup = getPreviousBackup(policy, backups.archives);
+            if (lastBackup) acc[policy.$id] = lastBackup;
+            return acc;
+        },
+        {}
+    );
+
     return {
         offset,
         limit,
         view,
         backups,
-        policies
+        policies,
+        lastBackupDates
     };
+};
+
+// TODO: would be best if we could get the last backup from the database model itself.
+const getPreviousBackup = (
+    policy: Models.BackupPolicy,
+    archives: Models.BackupArchive[]
+): string | null => {
+    const latestBackup = archives
+        .filter((archive) => archive.policyId === policy.$id)
+        .sort((a, b) => new Date(b.$createdAt).getTime() - new Date(a.$createdAt).getTime())[0];
+
+    return latestBackup && new Date(latestBackup.$createdAt).getTime() < Date.now()
+        ? latestBackup.$createdAt
+        : null;
 };
