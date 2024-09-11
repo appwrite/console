@@ -110,6 +110,8 @@ function createFeedbackStore() {
             message: string,
             name?: string,
             email?: string,
+            // eslint-disable-next-line
+            // @ts-expect-error
             billingPlan?: string,
             currentPage?: string,
             value?: number
