@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Alert, Modal } from '$lib/components';
     import { InputText, InputEmail, Button, FormList } from '$lib/elements/forms';
@@ -17,7 +18,7 @@
 
     const dispatch = createEventDispatcher();
 
-    const url = `${$page.url.origin}/invite`;
+    const url = `${$page.url.origin}${base}/invite`;
     $: plan = $plansInfo?.get($organization?.billingPlan);
 
     let email: string, name: string, error: string;
