@@ -38,7 +38,7 @@
             await sdk.forProject.backups.deleteArchive(selectedBackup.$id);
             addNotification({
                 type: 'success',
-                message: 'Backup delete'
+                message: 'Backup deleted'
             });
 
             invalidate(Dependencies.BACKUPS);
