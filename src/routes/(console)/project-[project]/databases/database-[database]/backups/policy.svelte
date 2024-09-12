@@ -98,7 +98,7 @@
     };
 </script>
 
-<div class="u-flex u-flex-vertical u-gap-10">
+<div class="u-flex u-flex-vertical u-gap-16">
     <Card
         class="u-margin-block-start-24"
         style="--card-padding: 1rem; --card-padding-mobile: 2rem; min-width: 21rem;">
@@ -221,10 +221,12 @@
         </div>
     </Card>
 
-    <span class="policy-item-subtitles policy-addon-fee-alert">
-        Database backups are free until <b>November 2024</b>. Starting then, a $20.00 fee will apply
-        per backup policy.
-    </span>
+    {#if policies.total > 0}
+        <span class="policy-item-subtitles policy-addon-fee-alert">
+            Database backups are free until <b>November 2024</b>. Starting then, a $20.00 fee will
+            apply per backup policy.
+        </span>
+    {/if}
 </div>
 
 <Modal
@@ -269,7 +271,7 @@
     }
 
     .policy-addon-fee-alert {
-        margin-inline: 12px;
+        margin-inline: 0.5rem;
     }
 
     :global(.theme-light .policy-addon-fee-alert) {

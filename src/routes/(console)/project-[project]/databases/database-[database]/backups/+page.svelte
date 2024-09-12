@@ -95,7 +95,9 @@
                         {/if}
                     </div>
                 {:else}
-                    <article class="empty card u-width-full-line common-section">
+                    <article
+                        class:empty-bigger={data.policies.total === 0}
+                        class="empty card u-width-full-line common-section">
                         No backups yet
                     </article>
                 {/if}
@@ -152,5 +154,9 @@
         block-size: 365px;
         text-align: center;
         align-content: center;
+    }
+
+    .empty-bigger {
+        block-size: 450px;
     }
 </style>
