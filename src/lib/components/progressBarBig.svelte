@@ -29,11 +29,11 @@
         </p>
     </div>
     {#if showBar}
-        <ProgressBar maxSize={100} data={[]}/>
-        <div
-            class="progress-bar-container u-margin-block-start-16"
-            class:is-warning={progress >= 75 && progress < 100}
-            class:is-danger={progress >= 100}
-            style:--graph-size={Math.max(Math.min(progress, maximum), minimum) + '%'} />
+        <ProgressBar maxSize={100} data={[{size: 10, color: '#85DBD8', tooltip: {title: "First Appwrite project", label: "107GB", linkTitle: "View usage", linkPath: "/something"}},{size: 20, color: '#68A3FE59', tooltip: {title: "Second Appwrite project", label: "107GB", linkTitle: "View usage", linkPath: "/something"}},{size: 10, color: '#7C67FE59', tooltip: {title: "Third Appwrite project", label: "107GB", linkTitle: "View usage", linkPath: "/something"}}]}/>
+<!--        <div-->
+<!--            class="progress-bar-container u-margin-block-start-16"-->
+<!--            class:is-warning={progress >= 75 && progress < 100}-->
+<!--            class:is-danger={progress >= 100}-->
+<!--            style:&#45;&#45;graph-size={Math.max(Math.min(progress, maximum), minimum) + '%'} />-->
     {/if}
 </section>
