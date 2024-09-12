@@ -7,6 +7,15 @@
     import { upgradeURL } from '$lib/stores/billing';
     import { Card } from '$lib/components';
     import { isCloud } from '$lib/system';
+
+    // TODO: need copy confirmation for Pro plan x Enterprise plans.
+    const title = isCloud
+        ? 'Backups are available for free on Pro plan until Nov 2024'
+        : 'Database Backups are available on Appwrite Cloud';
+
+    const message = isCloud
+        ? "Upgrade now to unlock Appwrite's backups."
+        : "Sign up now to access Appwrite's backups.";
 </script>
 
 <div>
@@ -46,12 +55,12 @@
             <div class="u-flex u-flex-vertical-mobile u-gap-mobile-6">
                 <div class="u-flex-vertical u-gap-8">
                     <h3 class="body-text-2 u-bold">
-                        Backups are available for free on Pro plan until Nov 2024
+                        {title}
                     </h3>
 
                     <span class="u-padding-inline-end-32">
-                        Upgrade now to unlock Appwrite's backups. Schedule automatic or manual
-                        backups to protect your data and ensure quick recovery.
+                        {message} Schedule automatic or manual backups to protect your data and ensure
+                        quick recovery.
                     </span>
                 </div>
 
