@@ -23,24 +23,22 @@
     const message = isFreePlan
         ? 'Schedule automatic or manual backups to protect your data and ensure quick recovery.'
         : isCloud
-            ? 'Protect your data and ensure quick recovery with our new backups.<br/><br/><b>Try it now for free until Nov 2024.</b>'
-            : 'Protect your data and ensure quick recovery with Appwrite backups. Sign up now.';
+          ? 'Protect your data and ensure quick recovery with our new backups.<br/><br/><b>Try it now for free until Nov 2024.</b>'
+          : 'Protect your data and ensure quick recovery with Appwrite backups. Sign up now.';
 
-    const ctaText = isFreePlan
-        ? 'Upgrade plan'
-        : isCloud
-            ? 'Try now'
-            : 'Sign up';
+    const ctaText = isFreePlan ? 'Upgrade plan' : isCloud ? 'Try now' : 'Sign up';
 
     const ctaLink = isFreePlan
         ? $upgradeURL
         : isCloud
-            // TODO: @itznotabug, confirm if we should navigate to databases
-            ? `${base}/project-${$page.params.project}/databases`
-            : 'https://cloud.appwrite.io/register';
+          ? // TODO: @itznotabug, confirm if we should navigate to databases
+            `${base}/project-${$page.params.project}/databases`
+          : 'https://cloud.appwrite.io/register';
 
     // we already show banners on `/databases/databases-databaseID` and `/databases/databases-databaseID/backups`.
-    $: shouldShow = !$userHidBackupsPromotion && !$page.url.pathname.match(/\/databases\/database-[^/]+(\/backups)?$/);
+    $: shouldShow =
+        !$userHidBackupsPromotion &&
+        !$page.url.pathname.match(/\/databases\/database-[^/]+(\/backups)?$/);
 
     function handleClose() {
         $userHidBackupsPromotion = true;
@@ -82,8 +80,7 @@
                     class="button"
                     href={ctaLink}
                     external={!isCloud}
-                    on:click={handleClose}
-                >
+                    on:click={handleClose}>
                     {ctaText}
                 </Button>
 
@@ -119,14 +116,17 @@
         padding-inline: 0.5rem;
         backdrop-filter: blur(23.84245491027832px);
         border: 0.795px solid transparent;
-        background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.5) 100%) padding-box,
-        linear-gradient(180deg, rgba(255, 255, 255, 0), rgba(200, 200, 200, 0.1)) border-box;
+        background:
+            linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.5) 100%)
+                padding-box,
+            linear-gradient(180deg, rgba(255, 255, 255, 0), rgba(200, 200, 200, 0.1)) border-box;
         background-clip: padding-box, border-box;
     }
 
     :global(.theme-dark) .showcase-images {
-        background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.5) 100%) padding-box,
-        linear-gradient(180deg, rgba(0, 0, 0, 0), rgba(150, 150, 150, 0.1)) border-box;
+        background:
+            linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.5) 100%) padding-box,
+            linear-gradient(180deg, rgba(0, 0, 0, 0), rgba(150, 150, 150, 0.1)) border-box;
     }
 
     .inline-tag {
