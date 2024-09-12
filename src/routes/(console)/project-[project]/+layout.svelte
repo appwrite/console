@@ -1,11 +1,11 @@
 <script lang="ts">
-    import { UploadBox, BackupRestoreBox } from '$lib/components';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { project, stats } from './store';
 
     import { goto } from '$app/navigation';
     import { registerCommands, registerSearchers } from '$lib/commandCenter';
+    import { BackupPromotionBox, BackupRestoreBox, MigrationBox, UploadBox } from '$lib/components';
 
     import {
         bucketSearcher,
@@ -14,7 +14,6 @@
         teamSearcher,
         userSearcher
     } from '$lib/commandCenter/searchers';
-    import { MigrationBox } from '$lib/components';
     import { page } from '$app/stores';
     import { base } from '$app/paths';
 
@@ -96,3 +95,4 @@
 <UploadBox />
 <MigrationBox />
 <BackupRestoreBox />
+<BackupPromotionBox />

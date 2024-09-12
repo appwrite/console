@@ -9,6 +9,7 @@ export const database = derived(page, ($page) => $page.data?.database as Models.
 
 export const showPolicyAlert = writable<boolean>(false);
 export const userHidPolicyBanner = writable<boolean>(false);
+export const userHidBackupsPromotion = writable<boolean>(false);
 
 export async function checkForDatabaseBackupPolicies(database: Models.Database) {
     // fast path: revert if the user manually dismissed the banner.
