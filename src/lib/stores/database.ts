@@ -11,7 +11,11 @@ export const showPolicyAlert = writable<boolean>(false);
 export const userHidPolicyBanner = writable<boolean>(false);
 
 export async function checkForDatabaseBackupPolicies(database: Models.Database) {
+    // fast path: revert if the user manually dismissed the banner.
+    if (get(userHidPolicyBanner)) return;
+
     let total = 0;
+
     try {
         const policies = await sdk.forProject.backups.listPolicies([
             Query.limit(1),
@@ -23,7 +27,7 @@ export async function checkForDatabaseBackupPolicies(database: Models.Database) 
         // ignore, backups not allowed on free plan error.
     }
 
-    showPolicyAlert.set(!get(userHidPolicyBanner) && total <= 0);
+    showPolicyAlert.set(total <= 0);
 
     if (!total) {
         headerAlert.add({
