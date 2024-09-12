@@ -2,6 +2,9 @@
     import { sdk } from '$lib/stores/sdk';
     import { type Models, Query } from '@appwrite.io/console';
     import { onMount } from 'svelte';
+    import { isCloud } from '$lib/system';
+    import { organization } from '$lib/stores/organization';
+    import { BillingPlan } from '$lib/constants';
 
     let backupRestoreItems: {
         archives: Models.BackupArchive[];
@@ -15,6 +18,9 @@
         backupRestoreItems.archives.length > 0 || backupRestoreItems.restorations.length > 0;
 
     const fetchBackupRestores = async (fromRealtime: boolean = false) => {
+        // fast path: don't fetch if org is on a free plan.
+        if (isCloud && $organization.billingPlan === BillingPlan.FREE) return;
+
         try {
             const query = [Query.orderDesc('')];
 
@@ -66,6 +72,9 @@
     };
 
     onMount(() => {
+        // fast path: don't subscribe if org is on a free plan.
+        if (isCloud && $organization.billingPlan === BillingPlan.FREE) return;
+
         sdk.forConsole.client.subscribe('console', (response) => {
             if (
                 response.events.includes('archives.*') ||
