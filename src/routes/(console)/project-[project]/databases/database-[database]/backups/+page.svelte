@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Alert, Empty, Modal, PaginationWithLimit } from '$lib/components';
+    import { Alert, Modal, PaginationWithLimit } from '$lib/components';
     import { Container } from '$lib/layout';
     import ContainerHeader from './containerHeader.svelte';
     import BackupPolicy from './policy.svelte';
@@ -95,35 +95,9 @@
                         {/if}
                     </div>
                 {:else}
-                    <Empty single on:click={() => (showCreateManualBackup = true)}>
-                        <div class="u-text-center">
-                            <div class="body-text-2 u-bold darker-neutral-color">
-                                Create a backup to get started.
-                            </div>
-                            <p class="body-text-2 u-margin-block-start-4 policy-item-caption">
-                                Need a hand? Learn more in our documentation.
-                            </p>
-                        </div>
-
-                        <div class="u-flex u-gap-16 u-main-center">
-                            <Button
-                                text
-                                external
-                                event="empty_documentation"
-                                href="https://appwrite.io/docs/products/databases/backups"
-                                ariaLabel="create backup"
-                                >Documentation
-                            </Button>
-
-                            <Button
-                                event="create_policy"
-                                class="small-radius-border-button"
-                                on:click={() => (showCreateManualBackup = true)}>
-                                <span class="icon-plus" aria-hidden="true" />
-                                <span class="text">Create Backup</span>
-                            </Button>
-                        </div>
-                    </Empty>
+                    <article class="empty card u-width-full-line common-section">
+                        No backups yet
+                    </article>
                 {/if}
             </div>
         {:else}
@@ -172,3 +146,11 @@
         <Button submit>Create</Button>
     </svelte:fragment>
 </Modal>
+
+<style>
+    .empty {
+        block-size: 365px;
+        text-align: center;
+        align-content: center;
+    }
+</style>
