@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { ProgressBar } from '$lib/components/progressbar';
+
     export let currentValue: string;
     export let currentUnit: string;
     export let maxValue: string;
@@ -27,6 +29,7 @@
         </p>
     </div>
     {#if showBar}
+        <ProgressBar maxSize={100} data={[]}/>
         <div
             class="progress-bar-container u-margin-block-start-16"
             class:is-warning={progress >= 75 && progress < 100}

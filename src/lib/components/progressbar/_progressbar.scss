@@ -1,0 +1,21 @@
+@mixin base {
+
+  :global(.theme-dark) {
+    --progressbar-background-color: var(--neutral-800,#2D2D31);
+  }
+  :global(.theme-light) {
+    --progressbar-background-color: var(--neutral-40, #F4F4F7);
+  }
+
+
+
+  .progressbar {
+
+    &__container {
+      height: 0.5rem;
+      background-color: var(--progressbar-background-color);
+      border-radius: 0.25rem;
+    }
+
+  }
+}

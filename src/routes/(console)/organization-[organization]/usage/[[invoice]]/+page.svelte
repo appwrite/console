@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
-    import { Card, CardGrid, Heading, ProgressBarBig } from '$lib/components';
+    import { Card, CardGrid, Heading, ProgressBarBig, ProgressBar } from '$lib/components';
     import {
         getServiceLimit,
         showUsageRatesModal,
