@@ -97,21 +97,24 @@
                             </TableCellText>
                         {:else if column.id === 'backup'}
                             <TableCellText width={column.width} title={column.title}>
-                                {#if !data.policies || !data.policies[database.$id]}
+                                {@const policies = data.policies?.[database.$id] ?? null}
+                                {@const lastBackup = data.lastBackups?.[database.$id] ?? null}
+                                {@const description = policies
+                                    ?.map((policy) => getPolicyDescription(policy.schedule))
+                                    .join(', ')}
+
+                                {#if !policies}
                                     <span class="icon-exclamation" /> No backup policies
-                                {:else}
+                                {:else if lastBackup}
                                     <span
                                         use:tooltip={{
-                                            content:
-                                                data.lastBackups && data.lastBackups[database.$id]
-                                                    ? `Last backup: ${data.lastBackups[database.$id]}`
-                                                    : null,
-                                            placement: 'bottom'
+                                            placement: 'bottom',
+                                            content: `Last backup: ${lastBackup}`
                                         }}>
-                                        {data.policies[database.$id]
-                                            .map((policy) => getPolicyDescription(policy.schedule))
-                                            .join(', ')}
+                                        {description}
                                     </span>
+                                {:else}
+                                    <span>{description}</span>
                                 {/if}
                             </TableCellText>
                         {:else}
