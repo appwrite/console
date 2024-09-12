@@ -4,33 +4,34 @@
     import { onMount } from 'svelte';
 
     let backupRestoreItems: {
-        archives: Map<string, Models.BackupArchive>;
-        restorations: Map<string, Models.BackupRestoration>;
+        archives: Models.BackupArchive[];
+        restorations: Models.BackupRestoration[];
     } = {
-        archives: new Map(),
-        restorations: new Map()
+        archives: [],
+        restorations: []
     };
 
     $: showBackupRestoreBox =
-        backupRestoreItems.archives.size > 0 || backupRestoreItems.restorations.size > 0;
+        backupRestoreItems.archives.length > 0 || backupRestoreItems.restorations.length > 0;
 
-    const fetchBackupRestores = async () => {
+    const fetchBackupRestores = async (fromRealtime: boolean = false) => {
         try {
-            const query = [Query.notEqual('status', ['completed', 'failed'])];
+            const query = [Query.orderDesc('')];
+
+            if (!fromRealtime) {
+                query.push(
+                    Query.notEqual('status', 'failed'),
+                    Query.notEqual('status', 'completed')
+                );
+            }
+
             const [archivesResponse, restorationsResponse] = await Promise.all([
                 sdk.forProject.backups.listArchives(query),
                 sdk.forProject.backups.listRestorations(query)
             ]);
 
-            // this is a one time op.
-            backupRestoreItems.archives = new Map(
-                archivesResponse.archives.map((item) => [item.$id, item])
-            );
-
-            // this is a one time op.
-            backupRestoreItems.restorations = new Map(
-                restorationsResponse.restorations.map((item) => [item.$id, item])
-            );
+            backupRestoreItems.archives = archivesResponse.archives;
+            backupRestoreItems.restorations = restorationsResponse.restorations;
         } catch (e) {
             // ignore?
         }
@@ -39,30 +40,12 @@
     // fresh fetch.
     fetchBackupRestores();
 
-    const updateOrAddItem = (payload) => {
-        const { $id, status, $collection } = payload;
-
-        if ($collection in backupRestoreItems) {
-            const collectionMap = backupRestoreItems[$collection];
-
-            if (collectionMap.has($id)) {
-                collectionMap.get($id).status = status;
-            } else if (status === 'pending' || status === 'processing' || status === 'uploading') {
-                collectionMap.set($id, payload);
-            }
-
-            backupRestoreItems[$collection] = collectionMap;
-        }
-    };
-
     const graphSize = (status: string) => {
         switch (status) {
             case 'pending':
                 return 10;
             case 'processing':
                 return 30;
-            case 'uploading':
-                return 60;
             case 'completed':
             case 'failed':
                 return 100;
@@ -74,9 +57,6 @@
     const handleClose = (which: string) => {
         backupRestoreItems[which] = new Map();
     };
-
-    const reversed = (backupItem: Map<string, Models.BackupArchive | Models.BackupRestoration>) =>
-        [...backupItem.values()].reverse();
 
     // TODO: `startedAt` is probably not correct here. need more info.
     const backupName = (item: Models.BackupArchive | Models.BackupRestoration, key: string) => {
@@ -91,25 +71,21 @@
                 response.events.includes('archives.*') ||
                 response.events.includes('restorations.*')
             ) {
-                updateOrAddItem(response.payload);
+                fetchBackupRestores(true);
             }
         });
     });
 </script>
 
 {#if showBackupRestoreBox}
-    <div class="u-flex u-flex-vertical u-gap-16">
+    <div class="box-holder u-flex u-flex-vertical u-gap-16" style="align-items: end">
         {#each Object.keys(backupRestoreItems) as key}
             {@const isBackup = key === 'archives'}
-            {@const items = reversed(backupRestoreItems[key])}
+            {@const items = backupRestoreItems[key]}
             {@const titleText = isBackup ? 'Creating Backup' : 'Creating Restoration'}
-            {@const shouldInsetRestorations =
-                key === 'restorations' && backupRestoreItems.archives.size > 0}
 
             {#if items.length > 0}
-                <section
-                    class="upload-box is-float"
-                    style="inset-block-end: {shouldInsetRestorations ? '10.25rem' : null}">
+                <section class="upload-box is-float">
                     <header class="upload-box-header">
                         <h4 class="upload-box-title">
                             <span class="text">{titleText}</span>
@@ -153,6 +129,16 @@
         padding: 1.5rem;
         min-width: 400px;
         max-width: 100vw;
+    }
+
+    .box-holder {
+        right: 2rem;
+        bottom: 1rem;
+        position: absolute;
+    }
+
+    .is-float {
+        position: unset !important;
     }
 
     .backup-name {
