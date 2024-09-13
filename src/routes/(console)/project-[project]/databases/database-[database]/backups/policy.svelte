@@ -371,7 +371,7 @@
         }
 
         .policy-card-item-padding[data-visible='true'][data-show-every='true']:nth-child(3)
-        .policy-cycles {
+            .policy-cycles {
             height: auto !important;
             visibility: visible !important;
         }
@@ -397,7 +397,7 @@
 
         .opacity-gradient-bottom[data-visible='true'][data-show-every='true']::after,
         :global(.theme-dark)
-        .opacity-gradient-bottom[data-visible='true'][data-show-every='true']::after {
+            .opacity-gradient-bottom[data-visible='true'][data-show-every='true']::after {
             background: transparent !important;
         }
     }

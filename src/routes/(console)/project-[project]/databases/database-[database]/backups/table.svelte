@@ -1,7 +1,14 @@
 <script lang="ts">
     import { Card, CustomId, DropList, DropListItem, Modal } from '$lib/components';
     import { Button, FormList, Helper, InputText } from '$lib/elements/forms';
-    import { TableBody, TableCell, TableCellHead, TableHeader, TableRow, TableScroll } from '$lib/elements/table';
+    import {
+        TableBody,
+        TableCell,
+        TableCellHead,
+        TableHeader,
+        TableRow,
+        TableScroll
+    } from '$lib/elements/table';
     import type { PageData } from './$types';
     import { timeFromNow, toLocaleDateTime } from '$lib/helpers/date';
     import { Pill } from '$lib/elements';
@@ -133,10 +140,10 @@
                                 {#if backup.status === 'completed'}
                                     <DropListItem
                                         on:click={() => {
-                                        showRestore = true;
-                                        selectedBackup = backup;
-                                        showDropdown[index] = false;
-                                    }}>
+                                            showRestore = true;
+                                            selectedBackup = backup;
+                                            showDropdown[index] = false;
+                                        }}>
                                         Restore
                                     </DropListItem>
                                 {/if}
@@ -209,7 +216,7 @@
         {#if !showCustomId}
             <div>
                 <Pill button on:click={() => (showCustomId = !showCustomId)}
-                ><span class="icon-pencil" aria-hidden="true" /><span class="text">
+                    ><span class="icon-pencil" aria-hidden="true" /><span class="text">
                         Database ID
                     </span></Pill>
             </div>
@@ -235,11 +242,11 @@
 </Modal>
 
 <style lang="scss">
-  .icon-dots-horizontal {
-    font-size: 1.5rem;
-  }
+    .icon-dots-horizontal {
+        font-size: 1.5rem;
+    }
 
-  :global(.custom-height-table-column .table-col) {
-    height: 54px;
-  }
+    :global(.custom-height-table-column .table-col) {
+        height: 54px;
+    }
 </style>
