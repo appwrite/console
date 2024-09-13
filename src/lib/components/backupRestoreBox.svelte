@@ -143,11 +143,12 @@
     .box-holder {
         right: 2rem;
         bottom: 1rem;
-        position: absolute;
+        display: flex;
+        position: fixed;
     }
 
     .is-float {
-        position: unset !important;
+        position: static;
     }
 
     .backup-name {
