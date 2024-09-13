@@ -46,7 +46,6 @@
     };
 
     onMount(() => {
-        // TODO: @itznotabug, the events need to be fixed then we can use `archives.*`
         return sdk.forConsole.client.subscribe('console', (response) => {
             if (response.events.includes('archives.*') || response.events.includes('policies.*')) {
                 invalidate(Dependencies.BACKUPS);
@@ -157,6 +156,6 @@
     }
 
     .empty-bigger {
-        block-size: 450px;
+        block-size: 363px;
     }
 </style>

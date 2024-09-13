@@ -1,14 +1,7 @@
 <script lang="ts">
     import { Card, CustomId, DropList, DropListItem, Modal } from '$lib/components';
     import { Button, FormList, Helper, InputText } from '$lib/elements/forms';
-    import {
-        TableBody,
-        TableCell,
-        TableCellHead,
-        TableHeader,
-        TableRow,
-        TableScroll
-    } from '$lib/elements/table';
+    import { TableBody, TableCell, TableCellHead, TableHeader, TableRow, TableScroll } from '$lib/elements/table';
     import type { PageData } from './$types';
     import { timeFromNow, toLocaleDateTime } from '$lib/helpers/date';
     import { Pill } from '$lib/elements';
@@ -87,25 +80,25 @@
 
 <TableScroll class="custom-height-table-column">
     <TableHeader>
-        <TableCellHead width={180}>Backups</TableCellHead>
-        <TableCellHead width={176}>Size</TableCellHead>
-        <TableCellHead width={178}>Size</TableCellHead>
-        <TableCellHead width={176}>Policy</TableCellHead>
+        <TableCellHead width={192}>Backups</TableCellHead>
+        <TableCellHead width={120}>Size</TableCellHead>
+        <TableCellHead width={120}>Status</TableCellHead>
+        <TableCellHead width={120}>Policy</TableCellHead>
     </TableHeader>
     <TableBody>
         {#each data.backups.archives as backup, index}
             <TableRow>
-                <TableCell width={180} title={backup.$createdAt}>
+                <TableCell width={192} title={backup.$createdAt}>
                     {cleanBackupName(backup)}
                 </TableCell>
-                <TableCell width={164} title="Backup Size">
+                <TableCell width={90} title="Backup Size">
                     {#if backup.status === 'completed'}
                         {calculateSize(backup.size)}
                     {:else}
                         -
                     {/if}
                 </TableCell>
-                <TableCell width={163} title="Backup Status">
+                <TableCell width={120} title="Backup Status">
                     <div class="u-flex u-gap-8 u-cross-baseline">
                         <Pill
                             warning={backup.status === 'pending'}
@@ -118,9 +111,14 @@
                         <!--{/if}-->
                     </div>
                 </TableCell>
-                <TableCell width={163} title="Backup Policy">
+                <TableCell width={120} title="Backup Policy">
                     <div class="u-flex u-main-space-between u-cross-baseline">
                         {backup.policyId ? backup.policyId : 'Manual'}
+                    </div>
+                </TableCell>
+
+                <TableCell right>
+                    <div class="u-flex u-cross-center">
                         <DropList bind:show={showDropdown[index]} placement="bottom-end">
                             <button
                                 class="button is-only-icon is-text"
@@ -132,14 +130,16 @@
                             </button>
 
                             <svelte:fragment slot="list">
-                                <DropListItem
-                                    on:click={() => {
+                                {#if backup.status === 'completed'}
+                                    <DropListItem
+                                        on:click={() => {
                                         showRestore = true;
                                         selectedBackup = backup;
                                         showDropdown[index] = false;
                                     }}>
-                                    Restore
-                                </DropListItem>
+                                        Restore
+                                    </DropListItem>
+                                {/if}
                                 <DropListItem
                                     on:click={() => {
                                         showDelete = true;
@@ -209,7 +209,7 @@
         {#if !showCustomId}
             <div>
                 <Pill button on:click={() => (showCustomId = !showCustomId)}
-                    ><span class="icon-pencil" aria-hidden="true" /><span class="text">
+                ><span class="icon-pencil" aria-hidden="true" /><span class="text">
                         Database ID
                     </span></Pill>
             </div>
@@ -235,11 +235,11 @@
 </Modal>
 
 <style lang="scss">
-    .icon-dots-horizontal {
-        font-size: 1.5rem;
-    }
+  .icon-dots-horizontal {
+    font-size: 1.5rem;
+  }
 
-    :global(.custom-height-table-column .table-col) {
-        height: 54px;
-    }
+  :global(.custom-height-table-column .table-col) {
+    height: 54px;
+  }
 </style>

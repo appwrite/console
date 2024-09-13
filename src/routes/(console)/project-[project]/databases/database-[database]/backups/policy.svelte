@@ -1,6 +1,6 @@
 <script lang="ts">
     import Card from '$lib/components/card.svelte';
-    import { DropList, DropListItem, Empty, Modal } from '$lib/components';
+    import { DropList, DropListItem, Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms/index';
     import { type Models } from '@appwrite.io/console';
 
@@ -17,6 +17,8 @@
     let showDropdown = [];
     let showDelete = false;
     let selectedPolicy: Models.BackupPolicy = null;
+
+    let showEveryPolicy = false;
 
     export let showCreatePolicy = false;
     export let policies: Models.BackupPolicyList;
@@ -101,15 +103,16 @@
 <div class="u-flex u-flex-vertical u-gap-16">
     <Card
         class="u-margin-block-start-24"
-        style="--card-padding: 1rem; --card-padding-mobile: 2rem; min-width: 21rem;">
+        style="--card-padding: 0.5rem; --card-padding-mobile: 0.5rem; min-width: 21.5rem;">
         <div class="u-flex-vertical-mobile">
-            {#each policies.policies as policy, index}
-                <!-- TODO: check card paddings later -->
+            {#each policies.policies as policy, index (policy.$id)}
                 <div
                     class="policy-card-item-padding u-flex-vertical u-gap-10"
+                    class:u-padding-block-end-10={index === 0}
                     class:u-padding-block-start-10={index !== 0}
-                    class:u-sep-block-end={index !== policies.total - 1}
-                    style:margin-block={index !== 0 ? '6px' : ''}>
+                    class:opacity-gradient-bottom={index === 2}
+                    data-show-every={showEveryPolicy}
+                    data-visible={index < 3 || showEveryPolicy}>
                     <div class="u-flex-vertical u-gap-2">
                         <div class="u-flex u-main-space-between">
                             <h3 class="body-text-2 u-bold darker-neutral-color">{policy.name}</h3>
@@ -143,12 +146,10 @@
                         </div>
                     </div>
 
-                    <!-- Previous and Next section -->
                     <div
-                        class="policy-cycles u-flex u-cross-start u-padding-block-2 policy-item-subtitles">
+                        class="policy-cycles u-flex u-gap-12 u-cross-start u-padding-block-2 policy-item-subtitles">
                         <div class="u-flex-vertical policy-item-caption">
                             <span style="color: #97979B">Previous</span>
-
                             <div
                                 class="u-flex u-gap-4 u-cross-center policy-item-subtitles darker-neutral-color">
                                 <span
@@ -156,10 +157,7 @@
                                         policy.$id
                                     ]
                                         ? 'hsl(var(--color-success-100))'
-                                        : 'inherit'};">
-                                    ●
-                                </span>
-
+                                        : 'inherit'};">●</span>
                                 {#if lastBackupDates[policy.$id]}
                                     {toLocaleDateTime(lastBackupDates[policy.$id])}
                                 {:else}
@@ -186,16 +184,12 @@
                     </div>
                 </div>
             {:else}
-                <Empty
-                    single
-                    isCard={false}
-                    target="backup"
-                    on:click={() => (showCreatePolicy = true)}>
-                    <div slot="empty-media">
+                <div class="u-padding-24 u-flex-vertical u-gap-16 u-cross-center">
+                    <div>
                         {#if $app.themeInUse === 'dark'}
-                            <img src={EmptyDark} alt="create" aria-hidden="true" height="242" />
+                            <img src={EmptyDark} alt="create" aria-hidden="true" height="152" />
                         {:else}
-                            <img src={EmptyLight} alt="create" aria-hidden="true" height="242" />
+                            <img src={EmptyLight} alt="create" aria-hidden="true" height="152" />
                         {/if}
                     </div>
 
@@ -203,11 +197,12 @@
                         <div class="body-text-2 u-bold darker-neutral-color">
                             Ensure your data stays safe
                         </div>
-                        <p class="body-text-2 u-margin-block-start-4 policy-item-caption">
+                        <p class="body-text-2 u-padding-block-start-4 policy-item-caption">
                             Create a backup policy to automate regular and secure data protection.
                         </p>
                     </div>
-                    <div class="u-flex u-gap-16 u-main-center">
+
+                    <div class="u-flex u-main-center">
                         <Button
                             event="create_policy"
                             class="small-radius-border-button"
@@ -216,9 +211,21 @@
                             <span class="text">Create Policy</span>
                         </Button>
                     </div>
-                </Empty>
+                </div>
             {/each}
         </div>
+
+        {#if !showEveryPolicy && policies.policies.length > 3}
+            <div class="is-only-mobile show-more-policy-wrapper">
+                <Button
+                    secondary
+                    fullWidthMobile
+                    class="show-more-policy-button"
+                    on:click={() => (showEveryPolicy = !showEveryPolicy)}>
+                    Show more
+                </Button>
+            </div>
+        {/if}
     </Card>
 
     {#if policies.total > 0}
@@ -267,7 +274,12 @@
     }
 
     .policy-card-item-padding {
-        /*padding-inline: var(--space-3, 6px) var(--space-4, 8px);*/
+        padding: var(--space-3, 6px) var(--space-4, 8px);
+        border-block-end: solid 0.0625rem hsl(var(--color-border));
+    }
+
+    .policy-card-item-padding:last-child {
+        border-block-end: none !important;
     }
 
     .policy-addon-fee-alert {
@@ -282,6 +294,10 @@
         padding-block-start: 10px !important;
     }
 
+    .u-padding-block-end-10 {
+        padding-block-end: 10px !important;
+    }
+
     .policy-item-subtitles {
         font-size: 12px;
         font-weight: 400;
@@ -291,7 +307,7 @@
     }
 
     .policy-cycles {
-        margin-block: 0.625rem !important;
+        margin-block-start: 0.625rem !important;
     }
 
     :global(.theme-light .policy-item-subtitles) {
@@ -304,5 +320,85 @@
 
     :global(.theme-light .darker-neutral-color) {
         color: var(--color-neutral-80, #414146);
+    }
+
+    :global(.show-more-policy-button) {
+        background: transparent;
+        border-radius: 1rem !important;
+    }
+
+    .show-more-policy-wrapper {
+        padding-inline: 13px;
+        padding-block-end: 4px;
+    }
+
+    @media (max-width: 768px) {
+        .policy-cycles.u-cross-start {
+            justify-content: space-between !important;
+        }
+
+        .policy-card-item-padding {
+            display: none !important;
+            visibility: hidden !important;
+        }
+
+        .policy-card-item-padding[data-visible='true'] {
+            display: block !important;
+            visibility: visible !important;
+        }
+
+        .policy-card-item-padding[data-visible='true']:nth-child(3) {
+            opacity: 0.25;
+            border-block-end: none !important;
+        }
+
+        .policy-card-item-padding[data-visible='true']:nth-child(3) .policy-cycles {
+            height: 0 !important;
+            margin: unset !important;
+            padding: unset !important;
+            visibility: hidden !important;
+        }
+
+        .policy-card-item-padding[data-visible='false']:nth-child(n + 4) {
+            height: 0 !important;
+            padding: unset !important;
+            border-block-end: none !important;
+        }
+
+        .policy-card-item-padding[data-visible='true'][data-show-every='true']:nth-child(3) {
+            opacity: 1;
+            border-block-end: solid 0.0625rem hsl(var(--color-border)) !important;
+        }
+
+        .policy-card-item-padding[data-visible='true'][data-show-every='true']:nth-child(3)
+        .policy-cycles {
+            height: auto !important;
+            visibility: visible !important;
+        }
+
+        .opacity-gradient-bottom {
+            overflow: hidden;
+            position: relative;
+        }
+
+        .opacity-gradient-bottom[data-visible='true']::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 100%;
+            background: linear-gradient(to top, rgba(255, 255, 255, 1), transparent);
+        }
+
+        :global(.theme-dark) .opacity-gradient-bottom[data-visible='true']::after {
+            background: linear-gradient(to top, rgba(28, 28, 33, 1), transparent);
+        }
+
+        .opacity-gradient-bottom[data-visible='true'][data-show-every='true']::after,
+        :global(.theme-dark)
+        .opacity-gradient-bottom[data-visible='true'][data-show-every='true']::after {
+            background: transparent !important;
+        }
     }
 </style>
