@@ -23,7 +23,8 @@
     export async function updateInteger(
         databaseId: string,
         collectionId: string,
-        data: Partial<Models.AttributeInteger>
+        data: Partial<Models.AttributeInteger>,
+        originalKey?: string
     ) {
         await sdk.forProject.databases.updateIntegerAttribute(
             databaseId,
@@ -32,7 +33,8 @@
             data.required,
             data.min,
             data.max,
-            data.default
+            data.default,
+            data.key !== originalKey ? data.key : undefined
         );
     }
 </script>

@@ -18,10 +18,11 @@
     import { formatNum } from '$lib/helpers/string';
     import { total } from '$lib/layout/usage.svelte';
     import { BillingPlan } from '$lib/constants.js';
+    import { base } from '$app/paths';
 
     export let data;
 
-    $: base = `${base}/project-${data.project.$id}`;
+    $: baseRoute = `${base}/project-${data.project.$id}`;
     $: network = data.usage.network;
     $: users = data.usage.users;
     $: usersTotal = data.usage.usersTotal;
@@ -240,7 +241,7 @@
                                         {formatNum(func.value)} executions
                                     </TableCell>
                                     <TableCellLink
-                                        href={`${base}/functions/function-${func.resourceId}`}
+                                        href={`${baseRoute}/functions/function-${func.resourceId}`}
                                         title="View function">
                                         View function
                                     </TableCellLink>
@@ -307,10 +308,6 @@
                         </p>
                     </div>
                 </div>
-                <ProgressBarBig
-                    progressValue={bytesToSize(storage, 'MB')}
-                    progressMax={bytesToSize(storage, 'MB')}
-                    progressBarData={progressBarStorageDate} />
             {:else}
                 <Card isDashed>
                     <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
