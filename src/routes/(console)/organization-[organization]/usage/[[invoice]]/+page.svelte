@@ -273,8 +273,7 @@
         <Heading tag="h6" size="7">Storage</Heading>
 
         <p class="text">
-            Calculated for all your files, deployments, builds and databases. While in beta, only
-            file storage is counted against your plan limits.
+            Calculated for all your files, deployments and builds.
         </p>
 
         <svelte:fragment slot="aside">
