@@ -93,23 +93,31 @@
                     </div>
                 </a>
                 <div class="u-flex u-flex-vertical u-gap-4">
-                    <Heading tag="h2" size="7" trimmed={false} trimmedSecondLine={true}>{$file.name}</Heading>
+                    <Heading tag="h2" size="7" trimmed={false} trimmedSecondLine={true}
+                        >{$file.name}</Heading>
                     <p>{$file.mimeType}</p>
                 </div>
             </div>
             <svelte:fragment slot="aside">
                 <div>
-
                     <p><span class="u-bold">Size:</span> {calculateSize($file.sizeOriginal)}</p>
                     <p><span class="u-bold">Created:</span> {toLocaleDate($file.$createdAt)}</p>
-                    <p><span class="u-bold">Last updated:</span> {toLocaleDate($file.$updatedAt)}</p>
+                    <p>
+                        <span class="u-bold">Last updated:</span>
+                        {toLocaleDate($file.$updatedAt)}
+                    </p>
                 </div>
                 <div>
-                File URL:
+                    File URL:
                     <div class="url-container">
                         <span>{getView($file.$id)}</span>
-                        <div class="divider"/>
-                        <button class="icon-document-duplicate" title="Copy to clipboard" on:click={() => {navigator.clipboard.writeText(getView($file.$id))}}/>
+                        <div class="divider" />
+                        <button
+                            class="icon-document-duplicate"
+                            title="Copy to clipboard"
+                            on:click={() => {
+                                navigator.clipboard.writeText(getView($file.$id));
+                            }} />
                     </div>
                 </div>
             </svelte:fragment>
@@ -187,12 +195,12 @@
 
 <style>
     :global(.theme-dark) {
-        --url-container-background-color: var(--neutral-800,#2D2D31);
-        --url-container-border-color: var(--neutral-80,#424248);
+        --url-container-background-color: var(--neutral-800, #2d2d31);
+        --url-container-border-color: var(--neutral-80, #424248);
     }
     :global(.theme-light) {
-        --url-container-background-color: var(--color-light-neutral-5, #FAFAFB);
-        --url-container-border-color: var(--color-light-neutral-15, #D8D8DB)
+        --url-container-background-color: var(--color-light-neutral-5, #fafafb);
+        --url-container-border-color: var(--color-light-neutral-15, #d8d8db);
     }
 
     .url-container {
