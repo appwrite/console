@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { CardGrid, BoxAvatar, Heading, Alert, Id } from '$lib/components';
+    import { CardGrid, BoxAvatar, Heading, Alert } from '$lib/components';
     import { Container } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
     import { file } from './store';
