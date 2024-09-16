@@ -4,8 +4,8 @@ export type ProgressbarData = {
     tooltip?: {
         title: string;
         label: string;
-        linkTitle: string;
-        linkPath: string;
+        linkTitle?: string;
+        linkPath?: string;
     };
 };
 
