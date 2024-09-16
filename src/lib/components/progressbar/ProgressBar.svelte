@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { tooltip } from '$lib/actions/tooltip';
     import type { ProgressbarData, ProgressbarProps } from '$lib/components';
 
     type $$Props = ProgressbarProps;
@@ -9,41 +10,83 @@
     export let maxSize: $$Props['maxSize'];
 
     /**
+     * The data for the progressbar
+     */
+    export let data: $$Props['data'];
+
+    /**
      * The remaining value of the progressbar
      */
-    let remainder = $$props.data.reduce(
-        (sum: number, item: ProgressbarData) => sum - item.size,
-        maxSize
-    );
+    $: remainder = data.reduce((sum: number, item: ProgressbarData) => sum - item.size, maxSize);
 </script>
 
 <section class="progressbar__container">
     {#each $$props.data as item}
         <div
             class="progressbar__content"
-            style="background-color:{item.color}; width: {(item.size / maxSize) * 100}%;">
-            {#if item.tooltip}
-                <div
-                    class="progressbar__content-tooltip"
-                    class:progressbar__content-tooltip--has-link={item.tooltip.linkPath &&
-                        item.tooltip.linkTitle}>
-                    <div>
-                        <span class="progressbar__content-tooltip-title">{item.tooltip.title}</span>
-                        <span class="progressbar__content-tooltip-label">{item.tooltip.label}</span>
-                    </div>
-                    {#if item.tooltip.linkPath && item.tooltip.linkTitle}
-                        <a href={item.tooltip.linkPath}>{item.tooltip.linkTitle}</a>
-                    {/if}
-                </div>
-            {/if}
+            style:background-color={item.color}
+            style:width={`${(item.size / maxSize) * 100}%`}
+            use:tooltip={{
+                disabled: !item.tooltip,
+                allowHTML: true,
+                content: `<span class="u-bold">${item.tooltip.title}</span> ${item.tooltip.label}`
+            }}>
         </div>
     {/each}
     {#if remainder > 0}
-        <div class="progressbar__content" style="width: {(remainder / maxSize) * 100}%;" />
+        <div class="progressbar__content" style:width={`${(remainder / maxSize) * 100}%`} />
     {/if}
 </section>
 
 <style lang="scss">
-    @use './progressbar';
-    @include progressbar.base;
+    :root {
+        --progressbar-border-radius: 0.25rem;
+        --progressbar-tooltip-label-color: #818186;
+        --progressbar-tooltip-link-color: #6c6c71;
+    }
+
+    :global(.theme-dark) {
+        --progressbar-background-color: var(--neutral-800, #2d2d31);
+        --progressbar-tooltip-background-color: var(--neutral-800, #2d2d31);
+        --progressbar-tooltip-border-color: var(--neutral-80, #424248);
+    }
+    :global(.theme-light) {
+        --progressbar-background-color: var(--neutral-40, #f4f4f7);
+        --progressbar-tooltip-background-color: #ffffff;
+        --progressbar-tooltip-border-color: #ededf0;
+    }
+
+    .progressbar {
+        &__container {
+            height: 0.5rem;
+            background-color: var(--progressbar-background-color);
+            border-radius: var(--progressbar-border-radius);
+            display: flex;
+            flex-direction: row;
+            gap: 2px;
+        }
+
+        &__content {
+            height: 100%;
+            min-width: 4px;
+            display: flex;
+            justify-content: center;
+
+            &::before {
+                content: '';
+                height: 2.5rem;
+                margin-top: -1.25rem;
+                width: 100%;
+            }
+
+            &:first-child {
+                border-top-left-radius: var(--progressbar-border-radius);
+                border-bottom-left-radius: var(--progressbar-border-radius);
+            }
+            &:last-child {
+                border-top-right-radius: var(--progressbar-border-radius);
+                border-bottom-right-radius: var(--progressbar-border-radius);
+            }
+        }
+    }
 </style>

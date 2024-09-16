@@ -279,7 +279,7 @@
                         size: bytesToSize(data.usage.filesStorageTotal, 'MB'),
                         color: '#85DBD8',
                         tooltip: {
-                            title: 'File storage total',
+                            title: 'File storage',
                             label: `${Math.round(bytesToSize(data.usage.filesStorageTotal, 'MB') * 100) / 100}MB`
                         }
                     },

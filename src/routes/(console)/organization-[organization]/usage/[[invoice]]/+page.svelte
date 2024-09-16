@@ -287,7 +287,7 @@
                         size: bytesToSize(data.organizationUsage.filesStorageTotal, 'GB'),
                         color: '#85DBD8',
                         tooltip: {
-                            title: 'File storage total',
+                            title: 'File storage',
                             label: `${Math.round(bytesToSize(data.organizationUsage.filesStorageTotal, 'GB') * 100) / 100}GB`
                         }
                     },
