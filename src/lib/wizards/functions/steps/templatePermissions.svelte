@@ -44,7 +44,7 @@
                             }} />
                     </p>
                     <p class="text u-margin-block-start-4">
-                        This could include unauthorized users and search engines.
+                        This could include unauthorized users and bots.
                     </p>
                 </div>
 
