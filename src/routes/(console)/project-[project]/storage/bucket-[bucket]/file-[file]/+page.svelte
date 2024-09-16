@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { CardGrid, BoxAvatar, Heading, Alert } from '$lib/components';
+    import { CardGrid, BoxAvatar, Heading, Alert, CopyInput } from '$lib/components';
     import { Container } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
     import { file } from './store';
@@ -107,19 +107,7 @@
                         {toLocaleDate($file.$updatedAt)}
                     </p>
                 </div>
-                <div>
-                    File URL:
-                    <div class="url-container">
-                        <span>{getView($file.$id)}</span>
-                        <div class="divider" />
-                        <button
-                            class="icon-document-duplicate"
-                            title="Copy to clipboard"
-                            on:click={() => {
-                                navigator.clipboard.writeText(getView($file.$id));
-                            }} />
-                    </div>
-                </div>
+                <CopyInput label="File URL" showLabel={true} value={getView($file.$id)} />
             </svelte:fragment>
 
             <svelte:fragment slot="actions">
@@ -192,37 +180,3 @@
 </Container>
 
 <Delete bind:showDelete />
-
-<style>
-    :global(.theme-dark) {
-        --url-container-background-color: var(--neutral-800, #2d2d31);
-        --url-container-border-color: var(--neutral-80, #424248);
-    }
-    :global(.theme-light) {
-        --url-container-background-color: var(--color-light-neutral-5, #fafafb);
-        --url-container-border-color: var(--color-light-neutral-15, #d8d8db);
-    }
-
-    .url-container {
-        display: flex;
-        border-radius: 4px;
-        border: 1px solid var(--url-container-border-color);
-        background: var(--url-container-background-color);
-        padding: 0.75rem;
-        align-items: center;
-        margin-top: 0.25rem;
-
-        & span {
-            text-overflow: ellipsis;
-            overflow: hidden;
-            white-space: nowrap;
-        }
-
-        & .divider {
-            border-left: 1px solid var(--url-container-border-color);
-            width: 1px;
-            height: 20px;
-            margin: 0 1rem;
-        }
-    }
-</style>
