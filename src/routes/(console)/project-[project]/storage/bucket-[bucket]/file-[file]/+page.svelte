@@ -94,7 +94,6 @@
                 </a>
                 <div class="u-flex u-flex-vertical u-gap-16">
                     <Heading tag="h2" size="7">{$file.name}</Heading>
-                    <Id value={getView($file.$id)}>File URL</Id>
                 </div>
             </div>
             <svelte:fragment slot="aside">
@@ -103,6 +102,14 @@
                     <p>Size: {calculateSize($file.sizeOriginal)}</p>
                     <p>Created: {toLocaleDate($file.$createdAt)}</p>
                     <p>Last updated: {toLocaleDate($file.$updatedAt)}</p>
+                </div>
+                <div>
+                File URL:
+                    <div class="url-container">
+                        <span>{getView($file.$id)}</span>
+                        <div class="divider"/>
+                        <button class="icon-document-duplicate" title="Copy to clipboard" on:click={() => {navigator.clipboard.writeText(getView($file.$id))}}/>
+                    </div>
                 </div>
             </svelte:fragment>
 
@@ -176,3 +183,37 @@
 </Container>
 
 <Delete bind:showDelete />
+
+<style>
+    :global(.theme-dark) {
+        --url-container-background-color: var(--neutral-800,#2D2D31);
+        --url-container-border-color: var(--neutral-80,#424248);
+    }
+    :global(.theme-light) {
+        --url-container-background-color: var(--color-light-neutral-5, #FAFAFB);
+        --url-container-border-color: var(--color-light-neutral-15, #D8D8DB)
+    }
+
+    .url-container {
+        display: flex;
+        border-radius: 4px;
+        border: 1px solid var(--url-container-border-color);
+        background: var(--url-container-background-color);
+        padding: 0.75rem;
+        align-items: center;
+        margin-top: 0.25rem;
+
+        & span {
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        & .divider {
+            border-left: 1px solid var(--url-container-border-color);
+            width: 1px;
+            height: 20px;
+            margin: 0 1rem;
+        }
+    }
+</style>
