@@ -92,16 +92,17 @@
                         </div>
                     </div>
                 </a>
-                <div class="u-flex u-flex-vertical u-gap-16">
+                <div class="u-flex u-flex-vertical u-gap-4">
                     <Heading tag="h2" size="7" trimmed={false} trimmedSecondLine={true}>{$file.name}</Heading>
+                    <p>{$file.mimeType}</p>
                 </div>
             </div>
             <svelte:fragment slot="aside">
                 <div>
 
-                    <p>Size: {calculateSize($file.sizeOriginal)}</p>
-                    <p>Created: {toLocaleDate($file.$createdAt)}</p>
-                    <p>Last updated: {toLocaleDate($file.$updatedAt)}</p>
+                    <p><span class="u-bold">Size:</span> {calculateSize($file.sizeOriginal)}</p>
+                    <p><span class="u-bold">Created:</span> {toLocaleDate($file.$createdAt)}</p>
+                    <p><span class="u-bold">Last updated:</span> {toLocaleDate($file.$updatedAt)}</p>
                 </div>
                 <div>
                 File URL:
