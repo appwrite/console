@@ -1,17 +1,19 @@
 @mixin base {
     :root {
         --progressbar-border-radius: 0.25rem;
-        --progressbar-tooltip-background-color: #ffffff;
-        --progressbar-tooltip-border-color: #ededf0;
         --progressbar-tooltip-label-color: #818186;
         --progressbar-tooltip-link-color: #6c6c71;
     }
 
     :global(.theme-dark) {
         --progressbar-background-color: var(--neutral-800, #2d2d31);
+        --progressbar-tooltip-background-color: var(--neutral-800, #2d2d31);
+        --progressbar-tooltip-border-color: var(--neutral-80, #424248);
     }
     :global(.theme-light) {
         --progressbar-background-color: var(--neutral-40, #f4f4f7);
+        --progressbar-tooltip-background-color: #ffffff;
+        --progressbar-tooltip-border-color: #ededf0;
     }
 
     .progressbar {
