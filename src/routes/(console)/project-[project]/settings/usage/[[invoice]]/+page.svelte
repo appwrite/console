@@ -308,6 +308,10 @@
                         </p>
                     </div>
                 </div>
+                <ProgressBarBig
+                    progressValue={bytesToSize(storage, 'MB')}
+                    progressMax={bytesToSize(storage, 'MB')}
+                    progressBarData={progressBarStorageDate} />
             {:else}
                 <Card isDashed>
                     <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
