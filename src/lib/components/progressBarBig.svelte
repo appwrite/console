@@ -14,7 +14,7 @@
 </script>
 
 <section class="progress-bar">
-    {#if currentValue && currentUnit && progress && maxValue && maxUnit}
+    {#if currentValue !== undefined && currentUnit !== undefined && progress !== undefined && maxValue !== undefined && maxUnit !== undefined}
         <div class="u-flex u-flex-vertical">
             <div class="u-flex u-main-space-between">
                 <p>
