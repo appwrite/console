@@ -62,7 +62,7 @@
             );
             addNotification({
                 type: 'success',
-                message: 'Backup restore initiated'
+                message: 'Database restore initiated'
             });
 
             invalidate(Dependencies.BACKUPS);

@@ -32,7 +32,7 @@
             await sdk.forProject.backups.createArchive(['databases'], data.database.$id);
             addNotification({
                 type: 'success',
-                message: 'Backup successfully created'
+                message: 'Database backup initiated'
             });
             invalidate(Dependencies.BACKUPS);
         } catch (error) {
