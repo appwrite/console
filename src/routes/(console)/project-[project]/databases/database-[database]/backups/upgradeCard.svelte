@@ -2,15 +2,18 @@
     import { Button } from '$lib/elements/forms';
     import { app } from '$lib/stores/app';
 
-    import EmptyDark from '$lib/images/backups/backups-empty-dark.svg';
-    import EmptyLight from '$lib/images/backups/backups-empty-light.svg';
+    import EmptyDark from '$lib/images/backups/backups-placeholder-dark.svg';
+    import EmptyLight from '$lib/images/backups/backups-placeholder-light.svg';
+
+    import EmptyDarkMobile from '$lib/images/backups/backups-empty-dark.svg';
+    import EmptyLightMobile from '$lib/images/backups/backups-empty-light.svg';
+
     import { upgradeURL } from '$lib/stores/billing';
     import { Card } from '$lib/components';
     import { isCloud } from '$lib/system';
 
-    // TODO: need copy confirmation for Pro plan x Enterprise plans.
     const title = isCloud
-        ? 'Backups are available for free on Pro plan until Nov 2024'
+        ? 'Backups are available for free on paid plans until Nov 2024'
         : 'Database Backups are available on Appwrite Cloud';
 
     const message = isCloud
@@ -19,21 +22,21 @@
 </script>
 
 <div>
-    <Card style="--card-padding: 1rem; --card-padding-mobile: 2rem">
+    <Card style="--card-padding: 1rem; --card-padding-mobile: 1rem">
         <div class="u-flex u-gap-24 u-flex-vertical-mobile u-cross-center">
             <div
                 style:--p-file-preview-border-color="transparent"
-                class="file-preview is-full-cover-image is-full-width-mobile u-height-100-percent">
+                class="is-full-cover-image is-full-width-mobile u-height-100-percent">
                 <div class="is-only-mobile u-width-full-line u-height-100-percent">
                     {#if $app.themeInUse === 'dark'}
                         <img
-                            src={EmptyDark}
-                            class="u-only-dark u-width-full-line u-height-100-percent"
+                            src={EmptyDarkMobile}
+                            class="placeholder u-image-object-fit-contain u-only-dark u-width-full-line u-height-100-percent"
                             alt="Mock Numbers Example" />
                     {:else}
                         <img
-                            src={EmptyLight}
-                            class="u-only-light u-width-full-line u-height-100-percent"
+                            src={EmptyLightMobile}
+                            class="placeholder u-image-object-fit-contain u-only-light u-width-full-line u-height-100-percent"
                             alt="Mock Numbers Example" />
                     {/if}
                 </div>
