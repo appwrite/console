@@ -41,10 +41,10 @@
 
     $: if (id === databaseId) {
         icon = 'exclamation';
-        element.setCustomValidity('Database ID must be different from the one being restored.');
+        element?.setCustomValidity('Database ID must be different from the one being restored.');
     } else {
         icon = 'info';
-        element.setCustomValidity('');
+        element?.setCustomValidity('');
     }
 
     $: if (id?.length) {

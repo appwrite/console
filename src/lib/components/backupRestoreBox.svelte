@@ -143,7 +143,7 @@
                                 class:u-padding-block-end-32={index !== items.length - 1}>
                                 <div
                                     class="progress-bar-top-line u-flex u-gap-8 u-main-space-between">
-                                    <span class="body-text-2"> Preparing database server... </span>
+                                    <span class="body-text-2"> Preparing database... </span>
 
                                     <span class="backup-name">
                                         {backupName(item, key)}

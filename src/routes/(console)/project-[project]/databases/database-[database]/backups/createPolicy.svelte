@@ -104,8 +104,9 @@
             error = null;
             showCreate = false;
             addNotification({
+                isHtml: true,
                 type: 'success',
-                message: `${backupPolicyName} backup policy has been created`
+                message: `<b>${backupPolicyName}</b> backup policy has been created`
             });
 
             resetFormVariables();
