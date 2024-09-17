@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { Card, CustomId, DropList, DropListItem, Modal } from '$lib/components';
-    import { Button, FormList, Helper, InputText } from '$lib/elements/forms';
+    import { Card, DropList, DropListItem, Modal } from '$lib/components';
+    import { Button, FormList, InputText } from '$lib/elements/forms';
     import {
         TableBody,
         TableCell,
@@ -9,6 +9,7 @@
         TableRow,
         TableScroll
     } from '$lib/elements/table';
+    import RestoreModal from './restoreModal.svelte';
     import type { PageData } from './$types';
     import { timeFromNow, toLocaleDateTime } from '$lib/helpers/date';
     import { Pill } from '$lib/elements';
@@ -28,7 +29,6 @@
 
     let showDropdown = [];
 
-    let error = null;
     let showRestore = false;
     let showCustomId = false;
     let newDatabaseInfo: { name: string; id: string } = { name: null, id: null };
@@ -53,11 +53,6 @@
     };
 
     const restoreBackup = async () => {
-        if (newDatabaseInfo.id === databaseId) {
-            error = 'Database ID must be different from the one being restored';
-            return;
-        }
-
         try {
             await sdk.forProject.backups.createRestoration(
                 selectedBackup.$id,
@@ -222,15 +217,12 @@
             </div>
         {:else}
             <div class="u-flex u-flex-vertical u-gap-8">
-                <CustomId
+                <RestoreModal
                     bind:show={showCustomId}
                     name="Database"
+                    {databaseId}
                     bind:id={newDatabaseInfo.id}
                     autofocus={false} />
-
-                {#if error}
-                    <Helper type="warning">{error}</Helper>
-                {/if}
             </div>
         {/if}
     </FormList>
