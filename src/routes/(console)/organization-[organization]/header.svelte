@@ -57,12 +57,6 @@
     $: path = `${base}/organization-${organizationId}`;
     $: tabs = [
         {
-            href: `${path}/settings`,
-            event: 'settings',
-            title: 'Settings',
-            disabled: !$isOwner
-        },
-        {
             href: path,
             title: 'Projects',
             event: 'projects',
@@ -88,6 +82,12 @@
             event: 'billing',
             title: 'Billing',
             disabled: !(isCloud && $canSeeBilling)
+        },
+        {
+            href: `${path}/settings`,
+            event: 'settings',
+            title: 'Settings',
+            disabled: !$isOwner
         }
     ].filter((tab) => !tab.disabled);
 </script>
