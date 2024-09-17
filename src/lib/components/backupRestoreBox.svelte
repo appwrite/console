@@ -36,8 +36,37 @@
                 sdk.forProject.backups.listRestorations(query)
             ]);
 
-            backupRestoreItems.archives = archivesResponse.archives;
-            backupRestoreItems.restorations = restorationsResponse.restorations;
+            // TODO: @itznotabug
+            //  we should move to realtime after the cross org bug is taken care of.
+            let filteredArchives = archivesResponse.archives;
+            let filteredRestorations = restorationsResponse.restorations;
+
+            if (fromRealtime) {
+                const backupArchiveIds = new Set(
+                    backupRestoreItems.archives.map((item) => item.$id)
+                );
+
+                const backupRestorationIds = new Set(
+                    backupRestoreItems.restorations.map((item) => item.$id)
+                );
+
+                filteredArchives = archivesResponse.archives.filter((archive) => {
+                    return (
+                        (archive.status !== 'completed' && archive.status !== 'failed') ||
+                        backupArchiveIds.has(archive.$id)
+                    );
+                });
+
+                filteredRestorations = restorationsResponse.restorations.filter((restoration) => {
+                    return (
+                        (restoration.status !== 'completed' && restoration.status !== 'failed') ||
+                        backupRestorationIds.has(restoration.$id)
+                    );
+                });
+            }
+
+            backupRestoreItems.archives = filteredArchives;
+            backupRestoreItems.restorations = filteredRestorations;
         } catch (e) {
             // ignore?
         }
@@ -61,7 +90,7 @@
     };
 
     const handleClose = (which: string) => {
-        backupRestoreItems[which] = new Map();
+        backupRestoreItems[which] = [];
     };
 
     // TODO: `startedAt` is probably not correct here. need more info.
