@@ -14,7 +14,7 @@ export const load: PageLoad = async ({ params, url, route, depends, parent }) =>
     const limit = getLimit(url, route, CARD_LIMIT);
     const offset = pageToOffset(page, limit);
 
-    if (get(canSeeProjects)) {
+    if (!get(canSeeProjects)) {
         return redirect(301, `/console/organization-${params.organization}/billing`);
     }
 
