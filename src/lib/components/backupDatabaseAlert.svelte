@@ -4,9 +4,10 @@
     import { Button } from '$lib/elements/forms';
     import { organization } from '$lib/stores/organization';
     import { HeaderAlert } from '$lib/layout';
-    import { isCloud } from '$lib/system.js';
+    import { isCloud } from '$lib/system';
     import { upgradeURL } from '$lib/stores/billing';
-    import { showPolicyAlert, userHidPolicyBanner } from '$lib/stores/database';
+    import { hideNotificationBanner } from '$lib/helpers/notifications';
+    import { backupsBannerId, showPolicyAlert } from '$lib/stores/database';
 
     const isFreePlan = $organization?.billingPlan === BillingPlan.FREE;
 
@@ -16,12 +17,9 @@
     const ctaText = isFreePlan ? 'Upgrade plan' : 'Add backup';
     const ctaURL = isFreePlan ? $upgradeURL : `${$page.url.pathname}/backups`;
 
-    /**
-     * TODO: @itznotabug check with design if we just hide the banner locally or use localStorage to hide it forever.
-     */
     function handleClose() {
         showPolicyAlert.set(false);
-        userHidPolicyBanner.set(true);
+        hideNotificationBanner(backupsBannerId);
     }
 </script>
 
