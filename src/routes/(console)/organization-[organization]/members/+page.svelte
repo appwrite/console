@@ -66,7 +66,7 @@
             <TableHeader>
                 <TableCellHead width={160}>Name</TableCellHead>
                 <TableCellHead width={120}>Email</TableCellHead>
-                <TableCellHead width={120}><i class="icon-info" /> Role</TableCellHead>
+                <TableCellHead width={120}>Role</TableCellHead>
                 <TableCellHead width={90}>2FA</TableCellHead>
                 <TableCellHead width={60} />
                 <TableCellHead width={30} />
