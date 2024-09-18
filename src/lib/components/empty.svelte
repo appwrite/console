@@ -11,7 +11,7 @@
     export let target: string = null;
     export let href: string = null;
     export let marginTop = false;
-    export let allowCreate = false;
+    export let allowCreate = true;
 
     function track() {
         if (target) {
