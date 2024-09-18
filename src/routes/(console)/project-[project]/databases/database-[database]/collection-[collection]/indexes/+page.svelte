@@ -133,13 +133,14 @@
             </div>
         {:else}
             <Empty
+                allowCreate={$canWriteCollections}
                 single
                 href="https://appwrite.io/docs/products/databases/collections#indexes"
                 target="index"
-                on:click={() => (showCreateIndex = true)} />
+                on:click={() => (showCreateIndex = $canWriteCollections)} />
         {/if}
     {:else}
-        <Empty single target="attribute" on:click={() => (showCreateDropdown = true)}>
+        <Empty single target="attribute" on:click={() => (showCreateDropdown = $canWriteCollections)}>
             <div class="u-text-center">
                 <Heading size="7" tag="h2">Create an attribute to get started.</Heading>
                 <p class="body-text-2 u-bold u-margin-block-start-4">
@@ -153,6 +154,7 @@
                     text
                     event="empty_documentation"
                     ariaLabel={`create {target}`}>Documentation</Button>
+                {#if $canWriteCollections}
                 <CreateAttributeDropdown
                     bind:showCreateDropdown
                     bind:showCreate={showCreateAttribute}
@@ -166,6 +168,7 @@
                         Create attribute
                     </Button>
                 </CreateAttributeDropdown>
+                {/if}
             </div>
         </Empty>
     {/if}
