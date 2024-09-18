@@ -66,6 +66,7 @@
             <TableHeader>
                 <TableCellHead width={160}>Name</TableCellHead>
                 <TableCellHead width={120}>Email</TableCellHead>
+                <TableCellHead width={120}><i class="icon-info" /> Role</TableCellHead>
                 <TableCellHead width={90}>2FA</TableCellHead>
                 <TableCellHead width={60} />
                 <TableCellHead width={30} />
@@ -88,6 +89,7 @@
                             </div>
                         </TableCell>
                         <TableCellText title="Email">{member.userEmail}</TableCellText>
+                        <TableCellText title="Role">{member.roles.join(',')}</TableCellText>
                         <TableCellText title="2FA">
                             <Pill success={member.mfa}>
                                 {#if member.mfa}
