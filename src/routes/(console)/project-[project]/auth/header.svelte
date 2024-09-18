@@ -4,7 +4,7 @@
     import { Tab, Tabs } from '$lib/components';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover, CoverTitle } from '$lib/layout';
-    import { canWriteUsers } from '$lib/stores/roles';
+    import { canWriteProjects } from '$lib/stores/roles';
 
     const projectId = $page.params.project;
     const path = `${base}/project-${projectId}/auth`;
@@ -25,14 +25,14 @@
             href: `${path}/security`,
             title: 'Security',
             event: 'security',
-            disabled: !$canWriteUsers
+            disabled: !$canWriteProjects
         },
         {
             href: `${path}/templates`,
             title: 'Templates',
             hasChildren: false,
             event: 'templates',
-            disabled: !$canWriteUsers
+            disabled: !$canWriteProjects
         },
         {
             href: `${path}/usage`,
@@ -44,7 +44,7 @@
             href: `${path}/settings`,
             title: 'Settings',
             event: 'settings',
-            disabled: !$canWriteUsers
+            disabled: !$canWriteProjects
         }
     ].filter((tab) => !tab.disabled);;
 </script>
