@@ -7,6 +7,7 @@
     import type { ColumnType } from '$lib/helpers/types';
     import { Container } from '$lib/layout';
     import { preferences } from '$lib/stores/preferences';
+    import { canWriteCollections } from '$lib/stores/roles';
     import { wizard } from '$lib/stores/wizard';
     import type { PageData } from './$types';
     import CreateAttributeDropdown from './attributes/createAttributeDropdown.svelte';
@@ -119,7 +120,7 @@
                     on:click={openWizard} />
             {/if}
         {:else}
-            <Empty single target="attribute" on:click={() => (showCreateDropdown = true)}>
+            <Empty allowCreate={$canWriteCollections} single target="attribute" on:click={() => (showCreateDropdown = true)}>
                 <div class="u-text-center">
                     <Heading size="7" tag="h2">Create an attribute to get started.</Heading>
                     <p class="body-text-2 u-bold u-margin-block-start-4">
@@ -133,6 +134,7 @@
                         text
                         event="empty_documentation"
                         ariaLabel={`create {target}`}>Documentation</Button>
+                    {#if $canWriteCollections}
                     <CreateAttributeDropdown
                         bind:showCreateDropdown
                         bind:showCreate={showCreateAttribute}
@@ -146,6 +148,7 @@
                             Create attribute
                         </Button>
                     </CreateAttributeDropdown>
+                    {/if}
                 </div>
             </Empty>
         {/if}
