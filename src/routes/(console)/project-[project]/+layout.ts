@@ -6,8 +6,6 @@ import { preferences } from '$lib/stores/preferences';
 import { failedInvoice } from '$lib/stores/billing';
 import { isCloud } from '$lib/system';
 import type { Organization } from '$lib/stores/organization';
-import { get } from 'svelte/store';
-import { canSeeBilling } from '$lib/stores/roles';
 
 export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.PROJECT);
