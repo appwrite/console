@@ -50,6 +50,7 @@
     import Create from './create-file/create.svelte';
     import DeleteFile from './deleteFile.svelte';
     import { isCloud } from '$lib/system';
+    import { onMount } from 'svelte';
 
     export let data;
 
@@ -90,6 +91,30 @@
     $: maxFileSize = isCloud
         ? humanFileSize(sizeToBytes(getServiceLimit('fileSize'), 'MB', 1000))
         : null;
+
+    let isUploading = false;
+
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+        if (isUploading) {
+            event.preventDefault();
+            event.returnValue = 'An upload is in progress. Are you sure you want to leave?';
+        }
+    };
+
+    onMount(() => {
+        const unsubscribe = uploader.subscribe(() => {
+            isUploading = $uploader.files.some(
+                (file) => (!file.completed || file.progress < 100) && !file.failed
+            );
+        });
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+
+        return () => {
+            unsubscribe();
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+        };
+    });
 </script>
 
 <Container>
