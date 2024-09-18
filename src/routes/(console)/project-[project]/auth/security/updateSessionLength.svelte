@@ -9,13 +9,12 @@
     import { sdk } from '$lib/stores/sdk';
     import { project } from '../../store';
 
-    const projectId = $project.$id;
     const { value, unit, baseValue, units } = createTimeUnitPair($project.authDuration);
     const options = units.map((v) => ({ label: v.name, value: v.name }));
 
     async function updateSessionLength() {
         try {
-            await sdk.forConsole.projects.updateAuthDuration(projectId, $baseValue);
+            await sdk.forConsole.projects.updateAuthDuration($project.$id, $baseValue);
             await invalidate(Dependencies.PROJECT);
 
             addNotification({

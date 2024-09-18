@@ -70,6 +70,7 @@ export function createTimeUnitPair(initialValue = 0) {
         { name: 'Minutes', value: 60 },
         { name: 'Seconds', value: 1 }
     ];
+    if (!initialValue) return { ...createValueUnitPair(0, units), units };
     return { ...createValueUnitPair(initialValue, units), units };
 }
 

@@ -33,11 +33,9 @@
 
 <script lang="ts">
     import { base } from '$app/paths';
-    import { page } from '$app/stores';
     import { Alert, CardGrid, Collapsible, CollapsibleItem, Heading } from '$lib/components';
     import { Container } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
-    import { project } from '../../store';
     import { addNotification } from '$lib/stores/notifications';
     import { onMount } from 'svelte';
     import EmailVerificationTemplate from './emailVerificationTemplate.svelte';
@@ -63,7 +61,7 @@
         EmailTemplateLocale
     } from '@appwrite.io/console';
 
-    const projectId = $page.params.project;
+    export let data;
 
     let emailOpen = 'verification';
     $: emailVerificationOpen = emailOpen === 'verification';
@@ -86,7 +84,7 @@
 
     async function openEmail(type: string) {
         type === emailOpen ? (emailOpen = null) : (emailOpen = type);
-        $emailTemplate = await loadEmailTemplate(projectId, type, 'en');
+        $emailTemplate = await loadEmailTemplate(data.project.$id, type, 'en');
         $baseEmailTemplate = { ...$emailTemplate };
     }
 
@@ -105,7 +103,7 @@
         </div>
     </div>
 
-    {#if !$project.smtpEnabled}
+    {#if !data.project?.smtpEnabled}
         <div class="u-margin-block-start-24">
             <Alert
                 isStandalone
@@ -114,7 +112,7 @@
                 buttons={[
                     {
                         slot: 'SMTP settings',
-                        href: `${base}/project-${$project.$id}/settings/smtp`
+                        href: `${base}/project-${data.project.$id}/settings/smtp`
                     }
                 ]}>
                 <svelte:fragment slot="title">
@@ -216,7 +214,7 @@
             </Collapsible>
         </svelte:fragment>
         <svelte:fragment slot="actions">
-            <Button href={`${base}/project-${$project.$id}/settings/smtp`} secondary>
+            <Button href={`${base}/project-${data.project.$id}/settings/smtp`} secondary>
                 SMTP settings
             </Button>
         </svelte:fragment>

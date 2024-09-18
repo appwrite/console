@@ -8,13 +8,11 @@
     import { sdk } from '$lib/stores/sdk';
     import { project } from '../../store';
 
-    const projectId = $project.$id;
-
     let maxSessions = $project.authSessionsLimit;
 
     async function updateSessionsLimit() {
         try {
-            await sdk.forConsole.projects.updateAuthSessionsLimit(projectId, maxSessions);
+            await sdk.forConsole.projects.updateAuthSessionsLimit($project.$id, maxSessions);
             await invalidate(Dependencies.PROJECT);
 
             addNotification({
@@ -43,7 +41,7 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={maxSessions === $project.authSessionsLimit} submit>Update</Button>
+            <Button disabled={maxSessions === $project?.authSessionsLimit} submit>Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>

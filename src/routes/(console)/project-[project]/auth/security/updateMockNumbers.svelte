@@ -22,7 +22,6 @@
 
     let numbers: Models.MockNumber[] = $project?.authMockNumbers ?? [];
     let initialNumbers = [];
-    let projectId: string = $project.$id;
 
     $: initialNumbers = $project?.authMockNumbers?.map((num) => ({ ...num })) ?? [];
     $: isSubmitDisabled = JSON.stringify(numbers) === JSON.stringify(initialNumbers);
@@ -39,7 +38,7 @@
 
     async function updateMockNumbers() {
         try {
-            await sdk.forConsole.projects.updateMockNumbers(projectId, numbers);
+            await sdk.forConsole.projects.updateMockNumbers($project.$id, numbers);
             await invalidate(Dependencies.PROJECT);
             addNotification({
                 type: 'success',
