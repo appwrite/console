@@ -46,7 +46,7 @@
             event: 'settings',
             disabled: !$canWriteUsers
         }
-    ];
+    ].filter((tab) => !tab.disabled);;
 </script>
 
 <Cover>
