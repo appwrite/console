@@ -41,7 +41,6 @@ export const canWriteTopics = derived(scopes, ($scopes) => $scopes.includes('top
 
 export const canSeeBilling = derived(scopes, ($scopes) => $scopes.includes('billing.read'));
 export const canSeeProjects = derived(scopes, function ($scopes) {
-    console.log($scopes);
     return $scopes.includes('projects.read');
 });
 export const canSeeDatabases = derived(scopes, ($scopes) => $scopes.includes('databases.read'));

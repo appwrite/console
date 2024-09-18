@@ -2,10 +2,15 @@ import { Dependencies } from '$lib/constants';
 import type { Address } from '$lib/sdk/billing';
 import type { Organization } from '$lib/stores/organization';
 import { sdk } from '$lib/stores/sdk';
+import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ parent, depends }) => {
-    const { organization } = await parent();
+    const { organization, scopes } = await parent();
+
+    if(!scopes.includes('billing.read')) {
+        return redirect(301, `/console/organization-${organization.$id}`);
+    }
     depends(Dependencies.PAYMENT_METHODS);
     depends(Dependencies.ORGANIZATION);
     depends(Dependencies.CREDIT);
