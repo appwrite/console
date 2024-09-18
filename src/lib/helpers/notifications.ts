@@ -8,6 +8,12 @@ type NotificationPrefItem = {
     state: 'hidden' | 'shown' | undefined;
 };
 
+export type NotificationCoolOffOptions = {
+    coolOffPeriod?: number;
+    exponentialBackoff?: boolean;
+    exponentialBackoffFactor?: number;
+};
+
 const userPreferences = () => get(user).prefs;
 
 const notificationPrefs = (): Record<string, NotificationPrefItem> => {
@@ -31,14 +37,18 @@ function updateNotificationPrefs(parsedPrefs: Record<string, NotificationPrefIte
  * Supports normal cool-off periods or exponential backoff based on the options passed.
  *
  * @param {string} id - The ID of the notification.
- * @param {number} [coolOffPeriod=24] - Cool-off period in hours, defaults to 24 hours.
- * @param {boolean} [exponentialBackoff=false] - If true, the cool-off period doubles with each hide. Consider using a smaller `coolOffPeriod` when this option is enabled.
+ * @param {NotificationCoolOffOptions} [options] - Configuration for cool-off behavior.
+ * @param {number} [options.coolOffPeriod=24] - Cool-off period in hours, defaults to 24 hours.
+ * @param {boolean} [options.exponentialBackoff=false] - If true, the cool-off period doubles with each hide. Consider using a smaller `coolOffPeriod` when this option is enabled.
+ * @param {number} [options.exponentialBackoffFactor=2] - The factor by which the cool-off period is multiplied with each hide. Default is 2.
  */
-export function hideNotificationBanner(
-    id: string,
-    coolOffPeriod: number = 24,
-    exponentialBackoff: boolean = false
-) {
+export function hideNotificationBanner(id: string, options: NotificationCoolOffOptions = {}) {
+    const {
+        coolOffPeriod = 24,
+        exponentialBackoff = false,
+        exponentialBackoffFactor = 2
+    } = options;
+
     const parsedBannerPrefs = notificationPrefs();
 
     let expiryTime = Date.now() + coolOffPeriod * 3600000;
@@ -47,7 +57,8 @@ export function hideNotificationBanner(
 
     if (exponentialBackoff) {
         hideCount += 1;
-        expiryTime = Date.now() + coolOffPeriod * 3600000 * 2 ** (hideCount - 1);
+        expiryTime =
+            Date.now() + coolOffPeriod * 3600000 * exponentialBackoffFactor ** (hideCount - 1);
     }
 
     parsedBannerPrefs[id] = {
