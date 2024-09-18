@@ -8,7 +8,7 @@ import type { PageLoad } from './$types';
 export const load: PageLoad = async ({ parent, depends }) => {
     const { organization, scopes } = await parent();
 
-    if(!scopes.includes('billing.read')) {
+    if (!scopes.includes('billing.read')) {
         return redirect(301, `/console/organization-${organization.$id}`);
     }
     depends(Dependencies.PAYMENT_METHODS);

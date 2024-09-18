@@ -6,7 +6,7 @@ import type { PageLoad } from './$types';
 import { redirect } from '@sveltejs/kit';
 
 export const load: PageLoad = async ({ params, url, route, depends, parent }) => {
-   const {roles, scopes} = await parent();
+    const { roles, scopes } = await parent();
     depends(Dependencies.ORGANIZATION);
     const page = getPage(url);
     const limit = getLimit(url, route, CARD_LIMIT);

@@ -46,7 +46,7 @@
             event: 'settings',
             disabled: !$canWriteCollections
         }
-    ].filter((tab) => !tab.disabled);;
+    ].filter((tab) => !tab.disabled);
 </script>
 
 <Cover>

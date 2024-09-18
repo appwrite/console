@@ -80,7 +80,7 @@
     }
 
     function handleCreateProject() {
-        if(!$canWriteProjects) return;
+        if (!$canWriteProjects) return;
         if (isCloud) wizard.start(Create);
         else showCreate = true;
     }

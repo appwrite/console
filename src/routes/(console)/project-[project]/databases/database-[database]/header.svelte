@@ -29,7 +29,7 @@
             title: 'Settings',
             disabled: !$canWriteDatabases
         }
-    ].filter((tab) => !tab.disabled);;
+    ].filter((tab) => !tab.disabled);
 </script>
 
 <Cover>

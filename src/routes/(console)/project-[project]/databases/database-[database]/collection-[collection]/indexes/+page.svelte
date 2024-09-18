@@ -140,7 +140,10 @@
                 on:click={() => (showCreateIndex = $canWriteCollections)} />
         {/if}
     {:else}
-        <Empty single target="attribute" on:click={() => (showCreateDropdown = $canWriteCollections)}>
+        <Empty
+            single
+            target="attribute"
+            on:click={() => (showCreateDropdown = $canWriteCollections)}>
             <div class="u-text-center">
                 <Heading size="7" tag="h2">Create an attribute to get started.</Heading>
                 <p class="body-text-2 u-bold u-margin-block-start-4">
@@ -155,19 +158,19 @@
                     event="empty_documentation"
                     ariaLabel={`create {target}`}>Documentation</Button>
                 {#if $canWriteCollections}
-                <CreateAttributeDropdown
-                    bind:showCreateDropdown
-                    bind:showCreate={showCreateAttribute}
-                    bind:selectedOption={selectedAttribute}>
-                    <Button
-                        secondary
-                        event="create_attribute"
-                        on:click={() => {
-                            showCreateDropdown = !showCreateDropdown;
-                        }}>
-                        Create attribute
-                    </Button>
-                </CreateAttributeDropdown>
+                    <CreateAttributeDropdown
+                        bind:showCreateDropdown
+                        bind:showCreate={showCreateAttribute}
+                        bind:selectedOption={selectedAttribute}>
+                        <Button
+                            secondary
+                            event="create_attribute"
+                            on:click={() => {
+                                showCreateDropdown = !showCreateDropdown;
+                            }}>
+                            Create attribute
+                        </Button>
+                    </CreateAttributeDropdown>
                 {/if}
             </div>
         </Empty>

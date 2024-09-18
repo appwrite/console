@@ -22,9 +22,7 @@ export const canWriteTeams = derived(scopes, ($scopes) => $scopes.includes('team
 export const canWriteCollections = derived(scopes, ($scopes) =>
     $scopes.includes('collections.write')
 );
-export const canWriteDocuments = derived(scopes, ($scopes) =>
-    $scopes.includes('documents.write')
-);
+export const canWriteDocuments = derived(scopes, ($scopes) => $scopes.includes('documents.write'));
 export const canWriteExecutions = derived(scopes, ($scopes) =>
     $scopes.includes('executions.write')
 );
