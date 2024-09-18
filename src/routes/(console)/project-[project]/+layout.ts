@@ -21,12 +21,12 @@ export const load: LayoutLoad = async ({ params, depends }) => {
         let roles = [];
         let scopes = [];
         if (isCloud) {
-            if (get(canSeeBilling)) {
-                await failedInvoice.load(project.teamId);
-            }
             const res = await sdk.forConsole.billing.getRoles(project.teamId);
             roles = res.roles;
             scopes = res.scopes;
+            if (scopes.includes('billing.read')) {
+                await failedInvoice.load(project.teamId);
+            }
         }
 
         return {

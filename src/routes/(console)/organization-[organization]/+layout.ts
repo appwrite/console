@@ -11,7 +11,6 @@ import ProjectsAtRisk from '$lib/components/billing/alerts/projectsAtRisk.svelte
 import { get } from 'svelte/store';
 import { preferences } from '$lib/stores/preferences';
 import type { Organization } from '$lib/stores/organization';
-import { canSeeBilling } from '$lib/stores/roles';
 
 export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.ORGANIZATION);
@@ -22,7 +21,10 @@ export const load: LayoutLoad = async ({ params, depends }) => {
 
     try {
         if (isCloud) {
-            if (get(canSeeBilling)) {
+            const res = await sdk.forConsole.billing.getRoles(params.organization);
+            roles = res.roles;
+            scopes = res.scopes;
+            if (scopes.includes('billing.read')) {
                 await failedInvoice.load(params.organization);
                 if (get(failedInvoice)) {
                     headerAlert.add({
@@ -33,10 +35,6 @@ export const load: LayoutLoad = async ({ params, depends }) => {
                     });
                 }
             }
-
-            const res = await sdk.forConsole.billing.getRoles(params.organization);
-            roles = res.roles;
-            scopes = res.scopes;
         }
         const prefs = await sdk.forConsole.account.getPrefs();
         if (prefs.organization !== params.organization) {
