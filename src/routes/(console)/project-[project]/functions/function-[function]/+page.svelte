@@ -16,7 +16,6 @@
     import Create from './create.svelte';
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
     import { readOnly } from '$lib/stores/billing';
-    import { project } from '../../store';
     import { writable } from 'svelte/store';
     import type { Column } from '$lib/helpers/types';
     import Table from './table.svelte';
@@ -196,7 +195,7 @@
                         </Button>
                         <Button
                             secondary
-                            href={`${base}/project-${$project.$id}/functions/function-${$func.$id}/executions/execute-function`}
+                            href={`${base}/project-${$page.params.project}/functions/function-${$func.$id}/executions/execute-function`}
                             disabled={isCloud && $readOnly && !GRACE_PERIOD_OVERRIDE}>
                             Execute
                         </Button>
