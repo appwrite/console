@@ -9,7 +9,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { project } from '../../store';
 
-    let passwordHistory = $project.authPasswordHistory < 1 ? 5 : $project.authPasswordHistory;
+    let passwordHistory = $project?.authPasswordHistory < 1 ? 5 : $project?.authPasswordHistory;
     let passwordHistoryEnabled = ($project?.authPasswordHistory ?? 0) != 0;
     let initialPasswordHistoryEnabled = passwordHistoryEnabled;
 

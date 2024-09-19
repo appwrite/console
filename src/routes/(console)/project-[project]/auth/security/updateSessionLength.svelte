@@ -9,7 +9,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { project } from '../../store';
 
-    const { value, unit, baseValue, units } = createTimeUnitPair($project.authDuration);
+    const { value, unit, baseValue, units } = createTimeUnitPair($project?.authDuration);
     const options = units.map((v) => ({ label: v.name, value: v.name }));
 
     async function updateSessionLength() {

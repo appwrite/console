@@ -8,7 +8,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { project } from '../../store';
 
-    let maxSessions = $project.authSessionsLimit;
+    let maxSessions = $project?.authSessionsLimit;
 
     async function updateSessionsLimit() {
         try {

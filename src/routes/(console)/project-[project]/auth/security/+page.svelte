@@ -12,14 +12,12 @@
 </script>
 
 <Container>
-    {#if $project?.$id}
-        <UpdateUsersLimit />
-        <UpdateSessionLength />
-        <UpdateSessionsLimit />
-        <UpdatePasswordHistory />
-        <UpdatePasswordDictionary />
-        <UpdatePersonalDataCheck />
-        <UpdateSessionAlerts />
-        <UpdateMockNumbers />
-    {/if}
+    <UpdateUsersLimit />
+    <UpdateSessionLength />
+    <UpdateSessionsLimit />
+    <UpdatePasswordHistory />
+    <UpdatePasswordDictionary />
+    <UpdatePersonalDataCheck />
+    <UpdateSessionAlerts />
+    <UpdateMockNumbers />
 </Container>
