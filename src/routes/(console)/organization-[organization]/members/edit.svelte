@@ -67,7 +67,7 @@
 
     $: if (!showEdit) {
         error = null;
-        role = selectedMember?.role ?? 'owner';
+        role = selectedMember?.roles.join(',') ?? 'owner';
     }
 </script>
 
