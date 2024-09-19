@@ -22,6 +22,7 @@
     import EditPaymentModal from '$routes/(console)/account/payments/editPaymentModal.svelte';
     import { tooltip } from '$lib/actions/tooltip';
     import PaymentModal from '$lib/components/billing/paymentModal.svelte';
+    import { user } from '$lib/stores/user';
 
     let showDropdown = false;
     let showDropdownBackup = false;
@@ -112,6 +113,7 @@
                             <span class="icon-dots-horizontal" aria-hidden="true" />
                         </Button>
                         <svelte:fragment slot="list">
+                            {#if defaultPaymentMethod.userId === $user.$id}
                             <DropListItem
                                 icon="pencil"
                                 on:click={() => {
@@ -121,6 +123,7 @@
                                 }}>
                                 Edit
                             </DropListItem>
+                            {/if}
                             <DropListItem
                                 icon="switch-horizontal"
                                 on:click={() => {
@@ -208,6 +211,7 @@
                             <span class="icon-dots-horizontal" aria-hidden="true" />
                         </Button>
                         <svelte:fragment slot="list">
+                            {#if backupPaymentMethod.userId === $user.$id}
                             <DropListItem
                                 icon="pencil"
                                 on:click={() => {
@@ -217,6 +221,7 @@
                                 }}>
                                 Edit
                             </DropListItem>
+                            {/if}
                             <DropListItem
                                 icon="switch-horizontal"
                                 on:click={() => {

@@ -9,6 +9,7 @@ export type PaymentMethodData = {
     $updatedAt: string;
     providerMethodId: string;
     providerUserId: string;
+    userId: string;
     expiryMonth: number;
     expiryYear: number;
     expired: boolean;
@@ -228,6 +229,7 @@ export type Address = {
     city: string;
     state?: string;
     postalCode: string;
+    userId: string;
 };
 
 export type AddressesList = {
