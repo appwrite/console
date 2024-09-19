@@ -101,17 +101,6 @@
                     null
                 );
             } else {
-                // Create free organization if coming from onboarding
-                if (previousPage.includes('/console/onboarding') && !anyOrgFree) {
-                    await sdk.forConsole.billing.createOrganization(
-                        ID.unique(),
-                        'Personal Projects',
-                        BillingPlan.FREE,
-                        null,
-                        null
-                    );
-                }
-
                 org = await sdk.forConsole.billing.createOrganization(
                     ID.unique(),
                     name,
@@ -136,7 +125,7 @@
                     collaborators.forEach(async (collaborator) => {
                         await sdk.forConsole.teams.createMembership(
                             org.$id,
-                            ['owner'],
+                            ['developer'],
                             collaborator,
                             undefined,
                             undefined,
@@ -205,7 +194,7 @@
                     <InputTags
                         bind:tags={collaborators}
                         label="Invite members by email"
-                        tooltip="Invited members will have access to all services and payment data within your organization"
+                        tooltip="By default, all members are assigned a Developer role. You can change this at any time from your organization settings."
                         placeholder="Enter email address(es)"
                         validityRegex={emailRegex}
                         validityMessage="Invalid email address"
