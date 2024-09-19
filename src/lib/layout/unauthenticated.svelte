@@ -40,7 +40,7 @@
     }
 
     function getEndpointOrigin() {
-        const url = URL.parse(VARS.APPWRITE_ENDPOINT);
+        const url = new URL(VARS.APPWRITE_ENDPOINT);
         return url.origin;
     }
 </script>
