@@ -2,7 +2,7 @@ import { sdk } from '$lib/stores/sdk';
 import { get } from 'svelte/store';
 import { user } from '$lib/stores/user';
 
-type NotificationPrefItem = {
+export type NotificationPrefItem = {
     expiry: number;
     hideCount: number;
     state: 'hidden' | 'shown' | undefined;
@@ -18,7 +18,7 @@ const userPreferences = () => get(user).prefs;
 
 const notificationPrefs = (): Record<string, NotificationPrefItem> => {
     const prefs = userPreferences();
-    return prefs.notificationPrefs ? JSON.parse(prefs.notificationPrefs) : {};
+    return prefs.notificationPrefs ? prefs.notificationPrefs : {};
 };
 
 function updateNotificationPrefs(parsedPrefs: Record<string, NotificationPrefItem>) {
