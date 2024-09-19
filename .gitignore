@@ -10,6 +10,8 @@ node_modules
 !.env.example
 test-results/
 playwright-report/
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
 
 .DS_STORE
 .cache
@@ -148,3 +150,9 @@ dist
 
 # SvelteKit build / generate output
 .svelte-kit
+
+# Sentry Config File
+.sentryclirc
+
+# IDE specifics
+.idea

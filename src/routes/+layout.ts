@@ -7,49 +7,51 @@ import { Dependencies } from '$lib/constants';
 import type { LayoutLoad } from './$types';
 import { redirectTo } from './store';
 import { isCloud } from '$lib/system';
+import { base } from '$app/paths';
+import type { Account } from '$lib/stores/user';
+import type { AppwriteException } from '@appwrite.io/console';
 
 export const ssr = false;
 
-export const load: LayoutLoad = async ({ depends, url }) => {
+export const load: LayoutLoad = async ({ depends, url, route }) => {
     depends(Dependencies.ACCOUNT);
+
+    const [account, error] = (await sdk.forConsole.account
+        .get()
+        .then((response) => [response, null])
+        .catch((error) => [null, error])) as [Account, AppwriteException];
 
     if (url.searchParams.has('forceRedirect')) {
         redirectTo.set(url.searchParams.get('forceRedirect') || null);
         url.searchParams.delete('forceRedirect');
     }
 
-    try {
-        const account = await sdk.forConsole.account.get<{ organization?: string }>();
-
+    if (account) {
         return {
             account,
             organizations: isCloud ? await sdk.forConsole.billing.listOrganization() : await sdk.forConsole.teams.list()
         };
-    } catch (error) {
-        const acceptedRoutes = [
-            '/login',
-            '/register',
-            '/recover',
-            '/invite',
-            '/auth/magic-url',
-            '/auth/oauth2/success',
-            '/auth/oauth2/failure',
-            '/card',
-            '/hackathon',
-            '/mfa'
-        ];
+    }
 
-        const redirectUrl = url.pathname && url.pathname !== '/' ? `redirect=${url.pathname}` : '';
-        const path = url.search ? `${url.search}&${redirectUrl}` : `?${redirectUrl}`;
+    const isPublicRoute = route.id?.startsWith('/(public)');
+    if (!isPublicRoute) {
+        url.searchParams.set('redirect', url.pathname);
+    }
 
-        if (error.type === 'user_more_factors_required') {
-            if (url.pathname === '/mfa') return {}; // Ensure any previous account/organizations are cleared
-            redirect(303, `/mfa${path}`);
-        }
+    if (error.type === 'user_more_factors_required') {
+        if (url.pathname === `${base}/mfa`)
+            return {
+                mfaRequired: true
+            };
+        redirect(303, withParams(`${base}/mfa`, url.searchParams));
+    }
 
-        if (!acceptedRoutes.some((n) => url.pathname.startsWith(n))) {
-            redirect(303, `/login${path}`);
-        }
-        return {}; // Ensure any previous account/organizations are cleared
+    if (!isPublicRoute) {
+        redirect(303, withParams(`${base}/login`, url.searchParams));
     }
 };
+
+function withParams(pathname: string, searchParams: URLSearchParams) {
+    if (searchParams.size > 0) return `${pathname}?${searchParams.toString()}`;
+    return pathname;
+}

@@ -1,4 +1,5 @@
 import { goto } from '$app/navigation';
+import { base } from '$app/paths';
 import { sdk } from '$lib/stores/sdk';
 import type { Searcher } from '../commands';
 
@@ -10,7 +11,7 @@ export const orgSearcher = (async (query: string) => {
             return {
                 label: organization.name,
                 callback: () => {
-                    goto(`/console/organization-${organization.$id}`);
+                    goto(`${base}/organization-${organization.$id}`);
                 },
                 group: 'organizations'
             } as const;

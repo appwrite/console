@@ -20,7 +20,7 @@ import PaymentAuthRequired from '$lib/components/billing/alerts/paymentAuthRequi
 import { addNotification, notifications } from './notifications';
 import { goto } from '$app/navigation';
 import { base } from '$app/paths';
-import { activeHeaderAlert, orgMissingPaymentMethod } from '$routes/console/store';
+import { activeHeaderAlert, orgMissingPaymentMethod } from '$routes/(console)/store';
 import MarkedForDeletion from '$lib/components/billing/alerts/markedForDeletion.svelte';
 import { BillingPlan } from '$lib/constants';
 import PaymentMandate from '$lib/components/billing/alerts/paymentMandate.svelte';
@@ -150,7 +150,7 @@ export const tierPro: TierData = {
 };
 export const tierScale: TierData = {
     name: 'Scale',
-    description: 'For scaling teams that need dedicated support.'
+    description: 'For scaling teams and agencies that need dedicated support.'
 };
 
 export const showUsageRatesModal = writable<boolean>(false);
@@ -259,13 +259,13 @@ export async function checkForUsageLimit(org: Organization) {
                 {
                     name: 'View usage',
                     method: () => {
-                        goto(`${base}/console/organization-${org.$id}/usage`);
+                        goto(`${base}/organization-${org.$id}/usage`);
                     }
                 },
                 {
                     name: 'Upgrade plan',
                     method: () => {
-                        goto(`${base}/console/organization-${org.$id}/change-plan`);
+                        goto(`${base}/organization-${org.$id}/change-plan`);
                         trackEvent('click_organization_upgrade', {
                             from: 'button',
                             source: 'limit_reached_notification'
@@ -306,6 +306,8 @@ export async function paymentExpired(org: Organization) {
         org.paymentMethodId
     );
     if (!payment?.expiryYear) return;
+    const sessionStorageNotification = sessionStorage.getItem('expiredPaymentNotification');
+    if (sessionStorageNotification === 'true') return;
     const year = new Date().getFullYear();
     const month = new Date().getMonth();
     const expiredMessage = `The default payment method for <b>${org.name}</b> has expired`;
@@ -323,7 +325,7 @@ export async function paymentExpired(org: Organization) {
                 {
                     name: 'Update payment details',
                     method: () => {
-                        goto(`${base}/console/account/payments`);
+                        goto(`${base}/account/payments`);
                     }
                 }
             ]
@@ -337,12 +339,13 @@ export async function paymentExpired(org: Organization) {
                 {
                     name: 'Update payment details',
                     method: () => {
-                        goto(`${base}/console/account/payments`);
+                        goto(`${base}/account/payments`);
                     }
                 }
             ]
         });
     }
+    sessionStorage.setItem('expiredPaymentNotification', 'true');
 }
 
 export function checkForMarkedForDeletion(org: Organization) {
@@ -417,19 +420,19 @@ export async function checkForNewDevUpgradePro(org: Organization) {
 }
 export const upgradeURL = derived(
     page,
-    ($page) => `${base}/console/organization-${$page.data?.organization?.$id}/change-plan`
+    ($page) => `${base}/organization-${$page.data?.organization?.$id}/change-plan`
 );
 
 export const hideBillingHeaderRoutes = ['/console/create-organization', '/console/account'];
 
-export function calculateExcess(usage: OrganizationUsage, plan: Plan, org: Organization) {
+export function calculateExcess(usage: OrganizationUsage, plan: Plan, members: number) {
     const totBandwidth = usage?.bandwidth?.length > 0 ? last(usage.bandwidth).value : 0;
     return {
         bandwidth: calculateResourceSurplus(totBandwidth, plan.bandwidth),
         storage: calculateResourceSurplus(usage?.storageTotal, plan.storage, 'GB'),
         users: calculateResourceSurplus(usage?.usersTotal, plan.users),
         executions: calculateResourceSurplus(usage?.executionsTotal, plan.executions, 'GB'),
-        members: calculateResourceSurplus(org.total, plan.members)
+        members: calculateResourceSurplus(members, plan.members)
     };
 }
 

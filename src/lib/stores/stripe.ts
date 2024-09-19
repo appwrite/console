@@ -6,6 +6,7 @@ import type { PaymentMethodData } from '$lib/sdk/billing';
 import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
 import { addNotification } from './notifications';
 import { organization } from './organization';
+import { base } from '$app/paths';
 
 export const stripe = writable<Stripe>();
 let paymentMethod: PaymentMethodData;
@@ -121,7 +122,7 @@ export async function confirmPayment(
 ) {
     try {
         const url =
-            window.location.origin + (route ? route : `/console/organization-${orgId}/billing`);
+            window.location.origin + (route ? route : `${base}/organization-${orgId}/billing`);
 
         const paymentMethod = await sdk.forConsole.billing.getPaymentMethod(paymentMethodId);
 

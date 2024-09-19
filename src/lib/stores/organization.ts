@@ -28,7 +28,7 @@ export type Organization = Models.Team<Record<string, unknown>> & {
     billingAddressId?: string;
     amount: number;
     billingTaxId?: string;
-    billingPlanDowngrade?: string;
+    billingPlanDowngrade?: Tier;
 };
 
 export type OrganizationList = {

@@ -79,7 +79,7 @@
     }
 </script>
 
-<li class="tabs-item">
+<li class="tabs-item" role="tab">
     {#if href}
         <a
             class="tabs-button"
@@ -87,8 +87,7 @@
             class:is-selected={selected}
             on:click={handleClick}
             tabindex={selected ? 0 : -1}
-            on:keydown={handleKeyDown}
-            role="tab">
+            on:keydown={handleKeyDown}>
             <span class="text"><slot /></span>
         </a>
     {:else}
@@ -99,8 +98,7 @@
             on:click|preventDefault
             on:click={handleClick}
             tabindex={selected ? 0 : -1}
-            on:keydown={handleKeyDown}
-            role="tab">
+            on:keydown={handleKeyDown}>
             <span class="text"><slot /></span>
         </button>
     {/if}
