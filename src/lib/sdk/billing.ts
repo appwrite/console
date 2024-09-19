@@ -2,6 +2,7 @@ import type { Client, Models } from '@appwrite.io/console';
 import type { Organization, OrganizationList } from '../stores/organization';
 import type { PaymentMethod } from '@stripe/stripe-js';
 import type { Tier } from '$lib/stores/billing';
+import type { Campaign } from '$lib/stores/campaigns';
 
 export type PaymentMethodData = {
     $id: string;
@@ -686,6 +687,14 @@ export class Billing {
             },
             params
         );
+    }
+
+    async getCampaign(campaignId: string): Promise<Campaign> {
+        const path = `/console/campaigns/${campaignId}`;
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call('GET', uri, {
+            'content-type': 'application/json'
+        });
     }
 
     async getCoupon(couponId: string): Promise<Coupon> {
