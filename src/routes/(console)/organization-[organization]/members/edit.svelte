@@ -9,9 +9,10 @@
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
+    import type { Models } from '@appwrite.io/console';
 
     export let showEdit = false;
-    export let selectedMember: any;
+    export let selectedMember: Models.Membership;
 
     const dispatch = createEventDispatcher();
 
