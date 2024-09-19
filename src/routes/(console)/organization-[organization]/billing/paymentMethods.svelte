@@ -114,15 +114,15 @@
                         </Button>
                         <svelte:fragment slot="list">
                             {#if defaultPaymentMethod.userId === $user.$id}
-                            <DropListItem
-                                icon="pencil"
-                                on:click={() => {
-                                    isSelectedBackup = false;
-                                    showEdit = true;
-                                    showDropdown = false;
-                                }}>
-                                Edit
-                            </DropListItem>
+                                <DropListItem
+                                    icon="pencil"
+                                    on:click={() => {
+                                        isSelectedBackup = false;
+                                        showEdit = true;
+                                        showDropdown = false;
+                                    }}>
+                                    Edit
+                                </DropListItem>
                             {/if}
                             <DropListItem
                                 icon="switch-horizontal"
@@ -212,15 +212,15 @@
                         </Button>
                         <svelte:fragment slot="list">
                             {#if backupPaymentMethod.userId === $user.$id}
-                            <DropListItem
-                                icon="pencil"
-                                on:click={() => {
-                                    showEdit = true;
-                                    isSelectedBackup = true;
-                                    showDropdownBackup = false;
-                                }}>
-                                Edit
-                            </DropListItem>
+                                <DropListItem
+                                    icon="pencil"
+                                    on:click={() => {
+                                        showEdit = true;
+                                        isSelectedBackup = true;
+                                        showDropdownBackup = false;
+                                    }}>
+                                    Edit
+                                </DropListItem>
                             {/if}
                             <DropListItem
                                 icon="switch-horizontal"

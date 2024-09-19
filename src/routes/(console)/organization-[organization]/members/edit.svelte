@@ -1,0 +1,95 @@
+<script lang="ts">
+    import { Modal } from '$lib/components';
+    import { InputText, InputEmail, Button, FormList } from '$lib/elements/forms';
+    import { addNotification } from '$lib/stores/notifications';
+    import { sdk } from '$lib/stores/sdk';
+    import { createEventDispatcher } from 'svelte';
+    import { organization } from '$lib/stores/organization';
+    import { invalidate } from '$app/navigation';
+    import { Dependencies } from '$lib/constants';
+    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import InputSelect from '$lib/elements/forms/inputSelect.svelte';
+
+    export let showEdit = false;
+    export let selectedMember: any;
+
+    const dispatch = createEventDispatcher();
+
+    let error: string, role: string;
+
+    const roles = [
+        {
+            label: 'Owner',
+            value: 'owner'
+        },
+        {
+            label: 'Developer',
+            value: 'developer'
+        },
+        {
+            label: 'Editor',
+            value: 'editor'
+        },
+        {
+            label: 'Analyst',
+            value: 'analyst'
+        },
+        {
+            label: 'Billing',
+            value: 'billing'
+        }
+    ];
+
+    async function submit() {
+        try {
+            const membership = await sdk.forConsole.teams.updateMembership(
+                $organization.$id,
+                selectedMember.$id,
+                [role]
+            );
+            await invalidate(Dependencies.ACCOUNT);
+            await invalidate(Dependencies.ORGANIZATION);
+            await invalidate(Dependencies.MEMBERS);
+
+            showEdit = false;
+            addNotification({
+                type: 'success',
+                message: `Membership updated`
+            });
+            trackEvent(Submit.MembershipUpdate);
+            dispatch('updated', membership);
+        } catch (e) {
+            error = e.message;
+            trackError(e, Submit.MembershipUpdate);
+        }
+    }
+
+    $: if (!showEdit) {
+        error = null;
+        role = selectedMember?.role ?? 'owner';
+    }
+</script>
+
+<Modal title="Invite member" {error} size="big" bind:show={showEdit} onSubmit={submit}>
+    <FormList>
+        <InputEmail
+            required
+            id="email"
+            label="Email"
+            placeholder="Enter email"
+            autofocus={true}
+            disabled={true}
+            bind:value={selectedMember.userEmail} />
+        <InputText
+            id="member-name"
+            label="Name (optional)"
+            placeholder="Enter name"
+            disabled={true}
+            bind:value={selectedMember.userName} />
+        <InputSelect id="role" label="Role" options={roles} bind:value={role} />
+    </FormList>
+    <svelte:fragment slot="footer">
+        <Button secondary on:click={() => (showEdit = false)}>Cancel</Button>
+        <Button submit submissionLoader>Update</Button>
+    </svelte:fragment>
+</Modal>

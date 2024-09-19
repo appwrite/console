@@ -62,7 +62,7 @@
                 <TableCellHead width={185}>Project</TableCellHead>
                 <TableCellHead width={100}>Usage</TableCellHead>
                 {#if $canSeeProjects}
-                <TableCellHead width={140} />
+                    <TableCellHead width={140} />
                 {/if}
             </TableHeader>
             <TableBody>
@@ -73,11 +73,11 @@
                         </TableCellText>
                         <TableCellText title="Usage">{format(project.usage)}</TableCellText>
                         {#if $canSeeProjects}
-                        <TableCellLink
-                            title="Go to project usage"
-                            href={getProjectUsageLink(project.projectId)}>
-                            View project usage
-                        </TableCellLink>
+                            <TableCellLink
+                                title="Go to project usage"
+                                href={getProjectUsageLink(project.projectId)}>
+                                View project usage
+                            </TableCellLink>
                         {/if}
                     </TableRow>
                 {/each}

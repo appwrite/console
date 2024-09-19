@@ -83,14 +83,14 @@
                         </Button>
                         <svelte:fragment slot="list">
                             {#if billingAddress.userId === $user.$id}
-                            <DropListItem
-                                icon="pencil"
-                                on:click={() => {
-                                    showEdit = true;
-                                    showBillingAddressDropdown = false;
-                                }}>
-                                Edit
-                            </DropListItem>
+                                <DropListItem
+                                    icon="pencil"
+                                    on:click={() => {
+                                        showEdit = true;
+                                        showBillingAddressDropdown = false;
+                                    }}>
+                                    Edit
+                                </DropListItem>
                             {/if}
                             <DropListItem
                                 icon="switch-horizontal"
