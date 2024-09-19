@@ -44,6 +44,7 @@
      */
     export function clearInputsAndRefocus() {
         value = '';
+        autoSubmitted = false;
 
         if (element) {
             const inputs = element.querySelectorAll('input');
