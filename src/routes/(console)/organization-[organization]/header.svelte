@@ -32,7 +32,13 @@
         organization,
         organizationList
     } from '$lib/stores/organization';
-    import { canSeeBilling, canSeeProjects, canSeeTeams, isOwner } from '$lib/stores/roles';
+    import {
+        canSeeBilling,
+        canSeeProjects,
+        canSeeTeams,
+        isBilling,
+        isOwner
+    } from '$lib/stores/roles';
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
 
     let areMembersLimited: boolean;
@@ -75,7 +81,7 @@
             event: 'usage',
             title: 'Usage',
             hasChildren: true,
-            disabled: !(isCloud && $canSeeTeams)
+            disabled: !(isCloud && ($isOwner || $isBilling))
         },
         {
             href: `${path}/billing`,
