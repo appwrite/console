@@ -32,7 +32,7 @@
         organization,
         organizationList
     } from '$lib/stores/organization';
-    import { canSeeBilling, canSeeProjects, isOwner } from '$lib/stores/roles';
+    import { canSeeBilling, canSeeProjects, canSeeTeams, isOwner } from '$lib/stores/roles';
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
 
     let areMembersLimited: boolean;
@@ -68,14 +68,14 @@
             title: 'Members',
             event: 'members',
             hasChildren: true,
-            disabled: !$isOwner
+            disabled: !$canSeeTeams
         },
         {
             href: `${path}/usage`,
             event: 'usage',
             title: 'Usage',
             hasChildren: true,
-            disabled: !(isCloud && $isOwner)
+            disabled: !(isCloud && $canSeeTeams)
         },
         {
             href: `${path}/billing`,
@@ -142,7 +142,6 @@
                         </ul>
                     </section></svelte:fragment>
             </DropList>
-            {#if $isOwner}
                 <div class="u-margin-inline-start-auto">
                     <div class="u-flex u-gap-16 u-cross-center">
                         <a href={`${path}/members`} class="is-not-mobile">
@@ -158,6 +157,7 @@
                                           } plan`,
                                 disabled: !areMembersLimited
                             }}>
+                            {#if $isOwner}
                             <Button
                                 secondary
                                 on:click={() => newMemberModal.set(true)}
@@ -165,10 +165,10 @@
                                 <span class="icon-plus" aria-hidden="true" />
                                 <span class="text">Invite</span>
                             </Button>
+                            {/if}
                         </div>
                     </div>
                 </div>
-            {/if}
         </svelte:fragment>
         <Tabs>
             {#each tabs as tab}

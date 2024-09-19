@@ -43,5 +43,6 @@ export const canSeeProjects = derived(scopes, function ($scopes) {
 });
 export const canSeeDatabases = derived(scopes, ($scopes) => $scopes.includes('databases.read'));
 export const canSeeFunctions = derived(scopes, ($scopes) => $scopes.includes('functions.read'));
+export const canSeeTeams = derived(scopes, ($scopes) => $scopes.includes('teams.read'));
 export const canSeeBuckets = derived(scopes, ($scopes) => $scopes.includes('buckets.read'));
 export const canSeeMessages = derived(scopes, ($scopes) => $scopes.includes('messages.read'));

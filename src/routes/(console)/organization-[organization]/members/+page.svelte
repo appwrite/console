@@ -21,6 +21,7 @@
     import type { PageData } from './$types';
     import Delete from '../deleteMember.svelte';
     import { base } from '$app/paths';
+    import { isOwner } from '$lib/stores/roles';
 
     export let data: PageData;
 
@@ -58,7 +59,7 @@
         <ContainerHeader
             title="Members"
             total={data.organizationMembers.total}
-            buttonText="Invite"
+            buttonText={ $isOwner ? "Invite" : ""}
             buttonMethod={() => newMemberModal.set(true)}
             showAlert={false} />
 
@@ -68,8 +69,10 @@
                 <TableCellHead width={120}>Email</TableCellHead>
                 <TableCellHead width={120}>Role</TableCellHead>
                 <TableCellHead width={90}>2FA</TableCellHead>
+                {#if $isOwner}
                 <TableCellHead width={60} />
                 <TableCellHead width={30} />
+                {/if}
             </TableHeader>
             <TableBody
                 service="members"
@@ -102,6 +105,7 @@
                                 {/if}
                             </Pill>
                         </TableCellText>
+                        {#if $isOwner}
                         <TableCell>
                             {#if member.invited && !member.joined}
                                 <Button
@@ -122,6 +126,7 @@
                                 <span class="icon-trash" aria-hidden="true" />
                             </button>
                         </TableCell>
+                        {/if}
                     </TableRow>
                 {/each}
             </TableBody>
