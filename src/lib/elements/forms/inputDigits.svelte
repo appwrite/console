@@ -2,8 +2,6 @@
     import { onMount } from 'svelte';
     import { FormItem } from '.';
     import { createPinInput, melt } from '@melt-ui/svelte';
-    import { page } from '$app/stores';
-    import { sleep } from '$lib/helpers/promises';
 
     export let length: number = 6;
     export let value: string = '';
