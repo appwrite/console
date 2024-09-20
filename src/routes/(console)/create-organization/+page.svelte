@@ -20,8 +20,13 @@
     import type { Coupon, PaymentList } from '$lib/sdk/billing';
     import { tierToPlan } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
-    import { organizationList, type Organization } from '$lib/stores/organization';
+    import {
+        organizationList,
+        type OrganizationError,
+        type Organization
+    } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
+    import { confirmPayment } from '$lib/stores/stripe';
     import { ID } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
@@ -81,6 +86,14 @@
         if (anyOrgFree) {
             billingPlan = BillingPlan.PRO;
         }
+        if ($page.url.searchParams.has('type')) {
+            const type = $page.url.searchParams.get('type');
+            if (type === 'payment_confirmed') {
+                const organizationId = $page.url.searchParams.get('id');
+                const invites = $page.url.searchParams.getAll('invites');
+                await validate(organizationId, invites);
+            }
+        }
     });
 
     async function loadPaymentMethods() {
@@ -88,9 +101,33 @@
         paymentMethodId = methods.paymentMethods.find((method) => !!method?.last4)?.$id ?? null;
     }
 
+    function isOrganization(org: Organization | OrganizationError): org is Organization {
+        return (org as Organization).$id !== undefined;
+    }
+
+    async function validate(organizationId: string, invites: string[]) {
+        try {
+            let org = await sdk.forConsole.billing.validateOrganization(organizationId, invites);
+            if (isOrganization(org)) {
+                await preloadData(`${base}/console/organization-${org.$id}`);
+                await goto(`${base}/console/organization-${org.$id}`);
+                addNotification({
+                    type: 'success',
+                    message: `${org.name ?? 'Organization'} has been created`
+                });
+            }
+        } catch (e) {
+            addNotification({
+                type: 'error',
+                message: e.message
+            });
+            trackError(e, Submit.OrganizationCreate);
+        }
+    }
+
     async function create() {
         try {
-            let org: Organization;
+            let org: Organization | OrganizationError;
 
             if (billingPlan === BillingPlan.FREE) {
                 org = await sdk.forConsole.billing.createOrganization(
@@ -101,53 +138,34 @@
                     null
                 );
             } else {
-                // Create free organization if coming from onboarding
-                if (previousPage.includes('/console/onboarding') && !anyOrgFree) {
-                    await sdk.forConsole.billing.createOrganization(
-                        ID.unique(),
-                        'Personal Projects',
-                        BillingPlan.FREE,
-                        null,
-                        null
-                    );
-                }
-
                 org = await sdk.forConsole.billing.createOrganization(
                     ID.unique(),
                     name,
                     billingPlan,
                     paymentMethodId,
-                    null
+                    null,
+                    couponData?.code,
+                    collaborators,
+                    billingBudget,
+                    taxId
                 );
 
-                //Add budget
-                if (billingBudget) {
-                    await sdk.forConsole.billing.updateBudget(org.$id, billingBudget, [75]);
-                }
-
-                //Add coupon
-                if (couponData?.code) {
-                    await sdk.forConsole.billing.addCredit(org.$id, couponData.code);
-                    trackEvent(Submit.CreditRedeem);
-                }
-
-                //Add collaborators
-                if (collaborators?.length) {
-                    collaborators.forEach(async (collaborator) => {
-                        await sdk.forConsole.teams.createMembership(
-                            org.$id,
-                            ['owner'],
-                            collaborator,
-                            undefined,
-                            undefined,
-                            `${$page.url.origin}/${base}/organization-${org.$id}`
-                        );
-                    });
-                }
-
-                // Add tax ID
-                if (taxId) {
-                    await sdk.forConsole.billing.updateTaxId(org.$id, taxId);
+                if (!isOrganization(org) && org.status == 402) {
+                    let clientSecret = org.clientSecret;
+                    let params = new URLSearchParams();
+                    params.append('type', 'payment_confirmed');
+                    params.append('id', org.teamId);
+                    for (let index = 0; index < collaborators.length; index++) {
+                        const invite = collaborators[index];
+                        params.append('invites', invite);
+                    }
+                    await confirmPayment(
+                        '',
+                        clientSecret,
+                        paymentMethodId,
+                        '/console/create-organization?' + params.toString()
+                    );
+                    await validate(org.teamId, collaborators);
                 }
             }
 
@@ -157,13 +175,15 @@
                 members_invited: collaborators?.length
             });
 
-            await invalidate(Dependencies.ACCOUNT);
-            await preloadData(`${base}/organization-${org.$id}`);
-            await goto(`${base}/organization-${org.$id}`);
-            addNotification({
-                type: 'success',
-                message: `${name ?? 'Organization'} has been created`
-            });
+            if (isOrganization(org)) {
+                await invalidate(Dependencies.ACCOUNT);
+                await preloadData(`${base}/organization-${org.$id}`);
+                await goto(`${base}/organization-${org.$id}`);
+                addNotification({
+                    type: 'success',
+                    message: `${org.name ?? 'Organization'} has been created`
+                });
+            }
         } catch (e) {
             addNotification({
                 type: 'error',

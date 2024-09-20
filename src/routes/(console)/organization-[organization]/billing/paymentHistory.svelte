@@ -48,7 +48,6 @@
         invoiceList = await sdk.forConsole.billing.listInvoices($page.params.organization, [
             Query.limit(limit),
             Query.offset(offset),
-            Query.notEqual('from', $organization.billingCurrentInvoiceDate),
             Query.orderDesc('$createdAt')
         ]);
     }
