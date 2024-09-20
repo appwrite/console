@@ -56,7 +56,7 @@ const listOfPromotions: BottomModalAlertItem[] = [
         id: 'memberRoles',
         src: {
             dark: RolesSampleDark,
-            light: RolesSampleLight,
+            light: RolesSampleLight
         },
         title: 'Member roles now available',
         message:

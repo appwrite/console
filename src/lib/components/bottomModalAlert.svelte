@@ -3,7 +3,12 @@
     import { Button } from '$lib/elements/forms/index';
     import { hideNotification, shouldShowNotification } from '$lib/helpers/notifications';
     import { app } from '$lib/stores/app';
-    import { type BottomModalAlertItem, bottomModalAlerts, dismissBottomModalAlert, hideAllModalAlerts } from '$lib/stores/bottom-alerts';
+    import {
+        type BottomModalAlertItem,
+        bottomModalAlerts,
+        dismissBottomModalAlert,
+        hideAllModalAlerts
+    } from '$lib/stores/bottom-alerts';
 
     let currentIndex = 0;
     let openModalOnMobile = false;
@@ -244,8 +249,7 @@
             <button
                 class:showing={!openModalOnMobile}
                 class="card notification-card u-width-full-line"
-                on:click={() => openModalOnMobile = !openModalOnMobile}>
-
+                on:click={() => (openModalOnMobile = !openModalOnMobile)}>
                 <div class="u-flex-vertical u-gap-4">
                     <div class="u-flex u-cross-center u-main-space-between">
                         <h3 class="body-text-2 u-bold">Early access</h3>
@@ -255,8 +259,8 @@
                     </div>
 
                     <span class="u-width-fit-content">
-                    Opt-in to experiments, new features, and more.
-                </span>
+                        Opt-in to experiments, new features, and more.
+                    </span>
                 </div>
             </button>
         {/if}

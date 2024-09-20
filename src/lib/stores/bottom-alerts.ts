@@ -30,8 +30,8 @@ export type BottomModalAlertItem = {
 export const bottomModalAlerts = writable<BottomModalAlertItem[]>([]);
 
 export const hideAllModalAlerts = () => {
-    bottomModalAlerts.update((all) => all.filter((t) => t.show = false));
-}
+    bottomModalAlerts.update((all) => all.filter((t) => (t.show = false)));
+};
 
 export const dismissBottomModalAlert = (id: string) => {
     bottomModalAlerts.update((all) => all.filter((t) => t.id !== id));
