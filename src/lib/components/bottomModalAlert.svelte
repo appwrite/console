@@ -140,9 +140,6 @@
 <style>
     .card {
         padding: 0.5rem;
-        overflow: hidden;
-        position: relative;
-        max-height: 383px;
     }
 
     .main-alert-wrapper {
