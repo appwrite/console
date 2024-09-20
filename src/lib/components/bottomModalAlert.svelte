@@ -1,13 +1,9 @@
 <script lang="ts">
     import { isCloud } from '$lib/system';
     import { Button } from '$lib/elements/forms/index';
-    import { shouldShowNotification, hideNotification } from '$lib/helpers/notifications';
+    import { hideNotification, shouldShowNotification } from '$lib/helpers/notifications';
     import { app } from '$lib/stores/app';
-    import {
-        type BottomModalAlertItem,
-        bottomModalAlerts,
-        dismissBottomModalAlert
-    } from '$lib/stores/bottom-alerts';
+    import { type BottomModalAlertItem, bottomModalAlerts, dismissBottomModalAlert } from '$lib/stores/bottom-alerts';
 
     let currentIndex = 0;
 
@@ -44,12 +40,17 @@
             <article class="card">
                 {#key currentModalAlert.id}
                     <div class="content-wrapper u-flex-vertical u-gap-16">
-                        <img
-                            src={currentModalAlert.src}
-                            alt={currentModalAlert.title}
-                            class:u-only-dark={$app.themeInUse === 'dark'}
-                            class:u-only-light={$app.themeInUse === 'light'}
-                            class="showcase-image u-image-object-fit-contain u-block" />
+                        {#if $app.themeInUse === 'dark'}
+                            <img
+                                src={currentModalAlert.src.dark}
+                                alt={currentModalAlert.title}
+                                class="showcase-image u-image-object-fit-contain u-block u-only-dark" />
+                        {:else}
+                            <img
+                                src={currentModalAlert.src.light}
+                                alt={currentModalAlert.title}
+                                class="showcase-image u-image-object-fit-contain u-block u-only-light" />
+                        {/if}
 
                         <div>
                             <button

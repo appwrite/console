@@ -3,7 +3,10 @@ import type { NotificationCoolOffOptions } from '$lib/helpers/notifications';
 
 export type BottomModalAlertItem = {
     id: string;
-    src: string;
+    src: {
+        dark: string;
+        light: string;
+    };
     title: string;
     message: string;
     cta: {
