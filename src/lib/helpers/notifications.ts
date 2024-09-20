@@ -42,7 +42,7 @@ function updateNotificationPrefs(parsedPrefs: Record<string, NotificationPrefIte
  * @param {boolean} [options.exponentialBackoff=false] - If true, the cool-off period doubles with each hide. Consider using a smaller `coolOffPeriod` when this option is enabled.
  * @param {number} [options.exponentialBackoffFactor=2] - The factor by which the cool-off period is multiplied with each hide. Default is 2.
  */
-export function hideNotificationBanner(id: string, options: NotificationCoolOffOptions = {}) {
+export function hideNotification(id: string, options: NotificationCoolOffOptions = {}) {
     const {
         coolOffPeriod = 24,
         exponentialBackoff = false,
@@ -71,12 +71,27 @@ export function hideNotificationBanner(id: string, options: NotificationCoolOffO
 }
 
 /**
+ * Removes the notification preference for the given ID from the user's preferences.
+ *
+ * @param {string} id - The ID of the notification to remove from preferences.
+ */
+export function removeNotificationFromPrefs(id: string) {
+    const parsedBannerPrefs = notificationPrefs();
+
+    if (!parsedBannerPrefs[id]) return;
+
+    delete parsedBannerPrefs[id];
+
+    updateNotificationPrefs(parsedBannerPrefs);
+}
+
+/**
  * Checks if the notification banner should be shown based on the expiry time.
  *
  * @param {string} id - The ID of the notification.
  * @returns {boolean} - Returns true if the banner should be shown, false otherwise.
  */
-export function shouldShowNotificationBanner(id: string): boolean {
+export function shouldShowNotification(id: string): boolean {
     const parsedBannerPrefs = notificationPrefs();
 
     const notificationPref = parsedBannerPrefs[id];
