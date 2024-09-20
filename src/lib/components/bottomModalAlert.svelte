@@ -21,6 +21,12 @@
         dismissBottomModalAlert(modalAlert.id);
         hideNotification(modalAlert.id);
         if (modalAlert.closed) modalAlert.closed();
+
+        if (currentIndex === filteredModalAlerts.length - 1 && filteredModalAlerts.length > 1) {
+            currentIndex = currentIndex - 1;
+        } else {
+            currentIndex = currentIndex % filteredModalAlerts.length;
+        }
     }
 
     function showNext() {
@@ -32,32 +38,59 @@
     }
 </script>
 
-{#if filteredModalAlerts.length > 0}
-    <div style="max-width: 289px;">
-        <article class="is-not-mobile card promotional-card u-width-fit-content">
-            {#if currentModalAlert}
+{#if filteredModalAlerts.length > 0 && currentModalAlert}
+    <div class="main-alert-wrapper">
+        <div class="alert-container">
+            <article class="card">
                 {#key currentModalAlert.id}
-                    <div class="u-flex-vertical u-gap-16" style="padding-block: 0.5rem;">
-                        <div class="showcase-image-wrapper">
-                            <button
-                                class="inline-tag"
-                                on:click={() => handleClose(currentModalAlert)}>
-                                <span class="icon-x" />
-                            </button>
+                    <div class="content-wrapper u-flex-vertical u-gap-16">
+                        <img
+                            src={currentModalAlert.src}
+                            alt={currentModalAlert.title}
+                            class:u-only-dark={$app.themeInUse === 'dark'}
+                            class:u-only-light={$app.themeInUse === 'light'}
+                            class="showcase-image u-image-object-fit-contain u-block" />
 
-                            <img
-                                height="132px"
-                                src={currentModalAlert.src}
-                                alt={currentModalAlert.title}
-                                class:u-only-dark={$app.themeInUse === 'dark'}
-                                class:u-only-light={$app.themeInUse === 'light'}
-                                class="showcase-image u-image-object-fit-contain u-block" />
+                        <div>
+                            <button
+                                class="icon-inline-tag"
+                                on:click={() => handleClose(currentModalAlert)}>
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="20"
+                                    height="20"
+                                    viewBox="0 0 20 20"
+                                    fill="none">
+                                    <path
+                                        fill-rule="evenodd"
+                                        clip-rule="evenodd"
+                                        d="M4.29289 4.29289C4.68342 3.90237 5.31658 3.90237 5.70711 4.29289L10 8.58579L14.2929 4.29289C14.6834 3.90237 15.3166 3.90237 15.7071 4.29289C16.0976 4.68342 16.0976 5.31658 15.7071 5.70711L11.4142 10L15.7071 14.2929C16.0976 14.6834 16.0976 15.3166 15.7071 15.7071C15.3166 16.0976 14.6834 16.0976 14.2929 15.7071L10 11.4142L5.70711 15.7071C5.31658 16.0976 4.68342 16.0976 4.29289 15.7071C3.90237 15.3166 3.90237 14.6834 4.29289 14.2929L8.58579 10L4.29289 5.70711C3.90237 5.31658 3.90237 4.68342 4.29289 4.29289Z"
+                                        fill="#97979B" />
+                                </svg>
+                            </button>
                         </div>
 
                         {#if filteredModalAlerts.length > 1}
-                            <span class="feature-count-tag">
-                                Feature {currentIndex + 1} of {filteredModalAlerts.length}
-                            </span>
+                            <div class="u-flex u-main-space-between u-cross-center">
+                                <span class="inline-tag feature-count-tag">
+                                    Feature {currentIndex + 1} of {filteredModalAlerts.length}
+                                </span>
+
+                                <div class="u-flex u-gap-10">
+                                    <button
+                                        class="icon-cheveron-left"
+                                        on:click={showPrevious}
+                                        disabled={currentIndex === 0}
+                                        class:active={currentIndex > 0} />
+
+                                    <button
+                                        class="icon-cheveron-right"
+                                        on:click={showNext}
+                                        disabled={currentIndex === filteredModalAlerts.length - 1}
+                                        class:active={currentIndex !==
+                                            filteredModalAlerts.length - 1} />
+                                </div>
+                            </div>
                         {/if}
 
                         <div class="u-flex-vertical u-gap-8 u-padding-inline-8">
@@ -72,134 +105,85 @@
                             </span>
                         </div>
 
-                        <div class="u-flex u-main-space-between u-cross-center">
-                            <div
-                                class="buttons u-flex u-gap-4 u-padding-inline-8 u-padding-block-8">
+                        <div
+                            class="buttons u-flex u-flex-vertical-mobile u-gap-4 u-padding-inline-8 u-padding-block-8">
+                            <Button
+                                secondary
+                                class="button"
+                                href={currentModalAlert.cta.link}
+                                external={!isCloud}
+                                fullWidthMobile
+                                on:click={() => handleClose(currentModalAlert)}>
+                                {currentModalAlert.cta.text}
+                            </Button>
+
+                            {#if currentModalAlert.learnMore && currentModalAlert.learnMore.link}
                                 <Button
-                                    secondary
+                                    text
                                     class="button"
-                                    href={currentModalAlert.cta.link}
-                                    external={!isCloud}
-                                    on:click={() => handleClose(currentModalAlert)}>
-                                    {currentModalAlert.cta.text}
+                                    external
+                                    fullWidthMobile
+                                    href={currentModalAlert.learnMore.link}>
+                                    {currentModalAlert.learnMore.text
+                                        ? currentModalAlert.learnMore.text
+                                        : 'Learn More'}
                                 </Button>
-
-                                {#if currentModalAlert.learnMore && currentModalAlert.learnMore.link}
-                                    <Button
-                                        text
-                                        class="button"
-                                        external
-                                        href={currentModalAlert.learnMore.link}>
-                                        {currentModalAlert.learnMore.text
-                                            ? currentModalAlert.learnMore.text
-                                            : 'Learn More'}
-                                    </Button>
-                                {/if}
-                            </div>
-
-                            <div class="u-flex u-gap-10">
-                                <button
-                                    class="icon-cheveron-left"
-                                    on:click={showPrevious}
-                                    disabled={currentIndex === 0}
-                                    class:active={currentIndex > 0} />
-
-                                <button
-                                    class="icon-cheveron-right"
-                                    on:click={showNext}
-                                    disabled={currentIndex === filteredModalAlerts.length - 1}
-                                    class:active={currentIndex !==
-                                        filteredModalAlerts.length - 1} />
-                            </div>
+                            {/if}
                         </div>
                     </div>
                 {/key}
-            {/if}
-        </article>
+            </article>
+        </div>
     </div>
 {/if}
 
 <style>
     .card {
-        padding: 0.5rem !important;
+        padding: 0.5rem;
+        overflow: hidden;
+        position: relative;
+        max-height: 383px;
     }
 
-    .promotional-card {
+    .main-alert-wrapper {
         left: 1rem;
         z-index: 25;
         bottom: 1rem;
-        max-width: 300px;
         position: fixed;
+        max-width: 289px;
     }
 
     .showcase-image {
-        padding-inline: 1rem;
-        padding-block: 0.5rem;
+        height: 132px;
+        min-width: 273px;
     }
 
-    .showcase-image-wrapper {
-        border-radius: 8px;
-        padding-inline: 0.5rem;
-        backdrop-filter: blur(23.84245491027832px);
-        border: 0.795px solid transparent;
-        background:
-            linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.5) 100%)
-                padding-box,
-            linear-gradient(180deg, rgba(255, 255, 255, 0), rgba(200, 200, 200, 0.1)) border-box;
-        background-clip: padding-box, border-box;
-    }
-
-    :global(.theme-dark) .showcase-image-wrapper {
-        background:
-            linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.5) 100%) padding-box,
-            linear-gradient(180deg, rgba(0, 0, 0, 0), rgba(150, 150, 150, 0.1)) border-box;
-    }
-
-    /* TODO: check against Pink:V1 designs */
     .feature-count-tag {
         width: fit-content;
-        align-items: center;
-        justify-content: center;
         margin-inline-start: 0.5rem;
-        border-radius: var(--border-radius-XS, 6px);
-        padding: var(--space-1, 2px) var(--space-2, 4px);
-        background: var(--color-overlay-on-neutral, rgba(0, 0, 0, 0.06));
-
-        text-align: center;
-
-        font-weight: 400;
-        line-height: 130%;
-        font-style: normal;
-        letter-spacing: -0.12px;
-        font-size: var(--font-size-XS, 12px);
-        font-family: var(--font-family-sansSerif, Inter);
-        color: var(--color-fgColor-neutral-secondary, #56565c);
     }
 
-    /* TODO: check against Pink:V1 designs */
-    :global(.theme-dark) .feature-count-tag {
-        color: #a9a9a3;
-        background: var(--color-overlay-on-neutral, rgba(255, 255, 255, 0.06));
-    }
+    .icon-inline-tag {
+        top: 1rem;
+        right: 1rem;
 
-    .inline-tag {
-        top: 0;
-        right: 0;
+        background: #fff;
         position: absolute;
-        background: unset !important;
+        display: inline-flex;
+        padding: var(--space-2, 4px);
         border-radius: var(--border-radius-S, 8px);
-        border: hsl(var(--p-inline-tag-bg-color-default)) solid 1px;
+        border: hsl(var(--color-neutral-10)) solid 1px;
+    }
+
+    :global(.theme-dark) .icon-inline-tag {
+        background: #1d1d21;
+        border: hsl(var(--color-neutral-80)) solid 1px;
     }
 
     .u-gap-10 {
         gap: 0.625rem;
     }
 
-    .icon-x {
-        font-size: 1.25rem;
-    }
-
-    /* TODO: check against Pink:V1 designs */
     .icon-cheveron-left,
     .icon-cheveron-right {
         opacity: 0.5;
@@ -212,7 +196,22 @@
         opacity: 1;
     }
 
-    :global(.promotional-card .button) {
-        border-radius: 0.75rem !important;
+    @media (max-width: 768px) {
+        .main-alert-wrapper {
+            top: 50%;
+            left: 50%;
+            display: flex;
+            min-width: 100vw;
+            min-height: 100vh;
+
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(6px);
+            transform: translate(-50%, -50%);
+        }
+
+        .alert-container {
+            max-width: 289px;
+        }
     }
 </style>
