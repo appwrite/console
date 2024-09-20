@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { UploadBox } from '$lib/components';
+    import { BottomModalAlert, MigrationBox, UploadBox } from '$lib/components';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { project, stats } from './store';
@@ -14,7 +14,6 @@
         teamSearcher,
         userSearcher
     } from '$lib/commandCenter/searchers';
-    import { MigrationBox } from '$lib/components';
     import { page } from '$app/stores';
     import { base } from '$app/paths';
 
@@ -95,3 +94,5 @@
 
 <UploadBox />
 <MigrationBox />
+
+<BottomModalAlert />
