@@ -34,7 +34,7 @@ export const showBottomModalAlert = (notification: BottomModalAlertItem) => {
     const defaults: Partial<BottomModalAlertItem> = {
         show: true,
         importance: 5,
-        isHtml: false, // TODO: implement this.
+        isHtml: false,
         ...notification
     };
 
