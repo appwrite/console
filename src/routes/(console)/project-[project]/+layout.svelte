@@ -1,8 +1,9 @@
 <script lang="ts">
-    import { MigrationBox, BottomModalAlert, UploadBox } from '$lib/components';
+    import { BottomModalAlert, MigrationBox, UploadBox } from '$lib/components';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import { addBottomModalAlerts, project, stats } from './store';
+    import { project, stats } from './store';
+    import { addBottomModalAlerts } from './bottomAlerts';
 
     import { goto } from '$app/navigation';
     import { registerCommands, registerSearchers } from '$lib/commandCenter';
@@ -17,8 +18,9 @@
     import { page } from '$app/stores';
     import { base } from '$app/paths';
 
+    addBottomModalAlerts();
+
     onMount(() => {
-        addBottomModalAlerts();
         return sdk.forConsole.client.subscribe(['project', 'console'], (response) => {
             if (response.events.includes('stats.connections')) {
                 for (const [projectId, value] of Object.entries(response.payload)) {
