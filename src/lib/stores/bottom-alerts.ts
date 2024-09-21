@@ -3,34 +3,25 @@ import type { NotificationCoolOffOptions } from '$lib/helpers/notifications';
 
 export type BottomModalAlertItem = {
     id: string;
-    src: {
-        dark: string;
-        light: string;
-    };
     title: string;
     message: string;
-    cta: {
-        text: string;
-        link: string;
-    };
-    learnMore?: {
-        text?: string;
-        link?: string;
-    };
 
-    closed?: () => void;
+    src: Record<'dark' | 'light', string>;
+    cta: Record<'text' | 'link', string>;
+    learnMore?: Partial<Record<'text' | 'link', string>>;
 
     show?: boolean;
     isHtml?: boolean;
     importance?: number;
 
+    closed?: () => void;
     notificationHideOptions?: NotificationCoolOffOptions;
 };
 
 export const bottomModalAlerts = writable<BottomModalAlertItem[]>([]);
 
 export const hideAllModalAlerts = () => {
-    bottomModalAlerts.update((all) => all.filter((t) => (t.show = false)));
+    bottomModalAlerts.update((all) => all.map((t) => ({ ...t, show: false })));
 };
 
 export const dismissBottomModalAlert = (id: string) => {
