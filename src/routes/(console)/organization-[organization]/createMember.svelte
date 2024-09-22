@@ -84,7 +84,16 @@
             label="Name (optional)"
             placeholder="Enter name"
             bind:value={name} />
-        <InputSelect id="role" label="Role" options={roles} bind:value={role} />
+        <InputSelect
+            popover={[
+                '<b>Roles</b>',
+                'Owner, Developer, Editor, Analyst, Billing.',
+                '<a href="https://appwrite.io/docs/roles">Learn more</a> about roles.'
+            ]}
+            id="role"
+            label="Role"
+            options={roles}
+            bind:value={role} />
     </FormList>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>

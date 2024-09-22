@@ -28,7 +28,6 @@
     import { base } from '$app/paths';
     import { isOwner } from '$lib/stores/roles';
     import Edit from './edit.svelte';
-    import PopoverContent from '$routes/(console)/project-[project]/messaging/providers/popoverContent.svelte';
     import { getRoleLabel } from '$lib/stores/billing';
 
     export let data: PageData;
@@ -98,12 +97,11 @@
                                 style:text-transform="none"
                                 style:text-wrap="wrap"
                                 style:box-shadow="var(--shadow-large)">
-                                <PopoverContent
-                                    lines={[
-                                        '<b>Roles</b>',
-                                        'Owner, Developer, Editor, Analyst, Billing.',
-                                        '<a href="https://appwrite.io/docs/roles">Learn more</a> about roles.'
-                                    ]} />
+                                <div class="u-flex-vertical u-gap-16">
+                                    {#each ['<b>Roles</b>', 'Owner, Developer, Editor, Analyst, Billing.', '<a href="https://appwrite.io/docs/roles">Learn more</a> about roles.'] as line}
+                                        <p>{@html line}</p>
+                                    {/each}
+                                </div>
                             </div>
                         </svelte:fragment>
                     </Drop>
