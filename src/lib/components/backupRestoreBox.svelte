@@ -5,7 +5,10 @@
     import { isCloud, isSelfHosted } from '$lib/system';
     import { organization } from '$lib/stores/organization';
     import { BillingPlan, Dependencies } from '$lib/constants';
-    import { invalidate } from '$app/navigation';
+    import { goto, invalidate } from '$app/navigation';
+    import { addNotification } from '$lib/stores/notifications';
+    import { base } from '$app/paths';
+    import { page } from '$app/stores';
 
     let backupRestoreItems: {
         archives: Models.BackupArchive[];
@@ -17,6 +20,9 @@
 
     $: showBackupRestoreBox =
         backupRestoreItems.archives.length > 0 || backupRestoreItems.restorations.length > 0;
+
+    // to avoid multiple notifications.
+    let lastDatabaseRestorationId = null;
 
     const fetchBackupRestores = async (fromRealtime: boolean = false) => {
         // fast path: don't fetch if org is on a free plan or is self-hosted.
@@ -43,6 +49,7 @@
             let filteredRestorations = restorationsResponse.restorations;
 
             let invalidateDependencies = false;
+            let showRestorationCompleteNotification = false;
 
             if (fromRealtime) {
                 const backupArchiveIds = new Set(
@@ -68,6 +75,7 @@
                 });
 
                 invalidateDependencies = filteredArchives.length > 0;
+                showRestorationCompleteNotification = filteredRestorations.length > 0;
             }
 
             backupRestoreItems.archives = filteredArchives;
@@ -75,6 +83,37 @@
 
             if (invalidateDependencies) {
                 invalidate(Dependencies.BACKUPS);
+            }
+
+            if (showRestorationCompleteNotification) {
+                const restoration = backupRestoreItems.restorations.find((restoration) => restoration.status === 'completed');
+
+                if (restoration) {
+                    const {
+                        newId: newDatabaseId,
+                        newName: newDatabaseName
+                    } = restoration.options?.['databases']?.['database'][0] || {};
+
+                    if (newDatabaseId && newDatabaseName && lastDatabaseRestorationId !== newDatabaseId) {
+                        const project = $page.params.project;
+                        lastDatabaseRestorationId = newDatabaseId;
+
+                        addNotification({
+                            type: 'success',
+                            isHtml: true,
+                            message: `Restoration complete. <b>${newDatabaseName}</b> has been created.`,
+                            buttons: [
+                                {
+                                    name: 'View restored data',
+                                    method: () => {
+                                        goto(`${base}/project-${project}/databases/database-${newDatabaseId}`);
+                                    }
+                                }
+                            ]
+                        });
+                    }
+                }
+
             }
         } catch (e) {
             // ignore?
