@@ -117,6 +117,10 @@
         showCustomPolicy = false;
     };
 
+    const markPolicyChecked = (event: Event, policy: UserBackupPolicy) => {
+        policy.checked = (event.target as HTMLInputElement).checked;
+    };
+
     $: customPolicyDescription = (policy: UserBackupPolicy) => {
         return backupPolicyDescription(
             policy.plainTextFrequency,
@@ -162,8 +166,7 @@
                             <div class="u-flex u-gap-8 body-text-2">
                                 <InputCheckbox
                                     id={index.toString()}
-                                    on:change={(event) =>
-                                        (policy.checked = event.target.checked)} />
+                                    on:change={(event) => markPolicyChecked(event, policy)} />
 
                                 <div class="u-flex-vertical u-gap-4">
                                     <div class="u-flex u-gap-4">
@@ -391,8 +394,7 @@
                             <div class="u-flex u-gap-8 body-text-2">
                                 <InputCheckbox
                                     id={index.toString()}
-                                    on:change={(event) =>
-                                        (policy.checked = event.target.checked)} />
+                                    on:change={(event) => markPolicyChecked(event, policy)} />
 
                                 <div class="u-flex-vertical u-gap-4">
                                     <div class="u-flex u-gap-4">
@@ -602,9 +604,17 @@
         background: #fafafb;
     }
 
+    /*.policy-default-custom-card.checked {*/
+    /*    border: solid .0625rem hsl(var(--color-neutral-80))*/
+    /*}*/
+
     :global(.theme-dark) .policy-default-custom-card {
         background: #232325;
     }
+
+    /*:global(.theme-dark) .policy-default-custom-card.checked {*/
+    /*    border: solid .0625rem hsl(var(--color-neutral-10))*/
+    /*}*/
 
     .inline-tag {
         text-align: center;
