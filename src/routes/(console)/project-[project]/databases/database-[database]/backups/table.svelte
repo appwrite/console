@@ -76,16 +76,20 @@
         }
     };
 
-    $: cleanBackupName = (backup: Models.BackupArchive) =>
+    const policyName = (policyId: string | null) =>
+        data.policies.policies.find((policy) => policy.$id === policyId)?.name || 'Manual';
+
+    const cleanBackupName = (backup: Models.BackupArchive) =>
         toLocaleDateTime(backup.$createdAt).replaceAll(',', '');
 </script>
 
-<TableScroll class="custom-height-table-column">
+<TableScroll isSticky class="custom-height-table-column">
     <TableHeader>
         <TableCellHead width={192}>Backups</TableCellHead>
         <TableCellHead width={120}>Size</TableCellHead>
         <TableCellHead width={120}>Status</TableCellHead>
         <TableCellHead width={120}>Policy</TableCellHead>
+        <TableCellHead width={48} />
     </TableHeader>
     <TableBody>
         {#each data.backups.archives as backup, index}
@@ -93,7 +97,7 @@
                 <TableCell width={192} title={backup.$createdAt}>
                     {cleanBackupName(backup)}
                 </TableCell>
-                <TableCell width={90} title="Backup Size">
+                <TableCell width={120} title="Backup Size">
                     {#if backup.status === 'completed'}
                         {calculateSize(backup.size)}
                     {:else}
@@ -113,13 +117,13 @@
                         <!--{/if}-->
                     </div>
                 </TableCell>
-                <TableCell width={120} title="Backup Policy">
+                <TableCell width={168} title="Backup Policy">
                     <div class="u-flex u-main-space-between u-cross-baseline">
-                        {backup.policyId ? backup.policyId : 'Manual'}
+                        {policyName(backup.policyId)}
                     </div>
                 </TableCell>
 
-                <TableCell right>
+                <TableCell width={48}>
                     <div class="u-flex u-cross-center">
                         <DropList bind:show={showDropdown[index]} placement="bottom-end">
                             <button

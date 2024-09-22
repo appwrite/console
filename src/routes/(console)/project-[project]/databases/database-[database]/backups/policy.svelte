@@ -91,13 +91,6 @@
             return 'Runs daily';
         }
     };
-
-    // Switches to UTC for non-hourly,
-    // keeps local time for hourly schedules.
-    const isHourlySchedule = (cron: string): boolean => {
-        const [_, hour, dayOfMonth, month, dayOfWeek] = cron.split(' ');
-        return hour === '*' && dayOfMonth === '*' && month === '*' && dayOfWeek === '*';
-    };
 </script>
 
 <div class="u-flex u-flex-vertical u-gap-16">
@@ -112,7 +105,7 @@
                     class:u-padding-block-start-10={index !== 0}
                     class:opacity-gradient-bottom={index === 2}
                     data-show-every={showEveryPolicy}
-                    data-visible={index < 3 || showEveryPolicy}>
+                    data-visible={index <= 3 || showEveryPolicy}>
                     <div class="u-flex-vertical u-gap-2">
                         <div class="u-flex u-main-space-between">
                             <h3 class="body-text-2 u-bold darker-neutral-color">{policy.name}</h3>
@@ -174,7 +167,7 @@
                                 class="u-flex u-gap-4 u-cross-center policy-item-subtitles darker-neutral-color">
                                 {toLocaleDateTime(
                                     parseExpression(policy.schedule, {
-                                        utc: !isHourlySchedule(policy.schedule)
+                                        utc: true
                                     })
                                         .next()
                                         .toString()
@@ -215,7 +208,8 @@
             {/each}
         </div>
 
-        {#if !showEveryPolicy && policies.policies.length > 3}
+        {#if !showEveryPolicy && policies.policies.length >= 3}
+            <!-- TODO: @itznotabug show doesn't show on 3rd item if there are only 3 items. -->
             <div class="is-only-mobile show-more-policy-wrapper">
                 <Button
                     secondary
@@ -367,11 +361,16 @@
 
         .policy-card-item-padding[data-visible='true'][data-show-every='true']:nth-child(3) {
             opacity: 1;
+        }
+
+        .policy-card-item-padding[data-visible='true'][data-show-every='true']:nth-child(3):not(
+                :last-child
+            ) {
             border-block-end: solid 0.0625rem hsl(var(--color-border)) !important;
         }
 
-        .policy-card-item-padding[data-visible='true'][data-show-every='true']:nth-child(3)
-            .policy-cycles {
+        .policy-card-item-padding[data-visible='true'][data-show-every='true']:nth-child(3),
+        .policy-cycles {
             height: auto !important;
             visibility: visible !important;
         }

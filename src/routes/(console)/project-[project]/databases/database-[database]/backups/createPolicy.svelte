@@ -1,6 +1,14 @@
 <script lang="ts">
     import { Modal } from '$lib/components';
-    import { Button, FormList, Helper, InputCheckbox, InputSelect, InputText, InputTime } from '$lib/elements/forms';
+    import {
+        Button,
+        FormList,
+        Helper,
+        InputCheckbox,
+        InputSelect,
+        InputText,
+        InputTime
+    } from '$lib/elements/forms';
     import { ID } from '@appwrite.io/console';
     import { capitalize } from '$lib/helpers/string';
     import { backupRetainingOptions, database } from '../store';
@@ -118,10 +126,12 @@
         resetFormVariables();
         showCustomPolicy = false;
         listOfCustomPolicies = [];
-        presetPolicies.update((all) => all.map((policy) => {
-            policy.checked = false;
-            return policy;
-        }));
+        presetPolicies.update((all) =>
+            all.map((policy) => {
+                policy.checked = false;
+                return policy;
+            })
+        );
     }
 </script>
 
@@ -173,7 +183,8 @@
                                                 policyRetention = policy.retained;
                                                 selectedTime = policy.selectedTime;
                                                 policyFrequency = policy.plainTextFrequency;
-                                                monthlyBackupFrequency = policy.monthlyBackupFrequency;
+                                                monthlyBackupFrequency =
+                                                    policy.monthlyBackupFrequency;
 
                                                 // do not show in the list can cause confusion.
                                                 listOfCustomPolicies = [
@@ -268,8 +279,8 @@
                                 <span>
                                     {#if policyRetention === 365 * 100}
                                         Every backup created under this policy will be retained <b
-                                    >forever</b
-                                    >.
+                                            >forever</b
+                                        >.
                                     {:else}
                                         Every backup created under this policy will be retained for <b>
                                             {backupRetainingOptions.find(
@@ -300,7 +311,7 @@
                                     on:click={() => {
                                         showCustomPolicy = false;
                                     }}
-                                >Cancel
+                                    >Cancel
                                 </Button>
 
                                 <Button
@@ -323,7 +334,7 @@
             {:else}
                 <div class="u-flex u-main-space-between u-padding-inline-4 u-width-full-line">
                     <button class="custom-policy-text" on:click={() => (showCustomPolicy = true)}
-                    >Custom policy
+                        >Custom policy
                     </button>
                     <span>Total: ${totalPolicies.length * policyPricing}.00</span>
                 </div>
