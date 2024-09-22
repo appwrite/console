@@ -8,7 +8,7 @@
     import type { PageData } from './$types';
     import CreatePolicy from './createPolicy.svelte';
     import { Button } from '$lib/elements/forms';
-    import { addNotification } from '$lib/stores/notifications';
+    import { addNotification, dismissAllNotifications } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { invalidate } from '$app/navigation';
     import { BillingPlan, Dependencies } from '$lib/constants';
@@ -20,12 +20,48 @@
     import LockedBackupsLightMobile from '$lib/images/backups/backups-locked-mobile-light.svg';
     import { app } from '$lib/stores/app';
     import { onMount } from 'svelte';
+    import { feedback } from '$lib/stores/feedback';
 
     let showCreatePolicy = false;
     let showCreateManualBackup = false;
     let isDisabled = isSelfHosted || (isCloud && $organization?.billingPlan === BillingPlan.FREE);
 
     export let data: PageData;
+
+    const showFeedbackNotification = () => {
+        let showOnCounts = [2, 4, 8, 10];
+        let counter = localStorage.getItem('createBackupsCounter');
+
+        if (counter) {
+            const parsedCounter = parseInt(counter);
+            if (showOnCounts.includes(parsedCounter)) {
+                addNotification({
+                    type: 'info',
+                    icon: 'question-mark-circle',
+                    message:
+                        'How was your experience with our new Backups feature? Give us your feedback and help us improve!',
+                    timeout: 15000,
+                    buttons: [
+                        {
+                            name: 'Leave Feedback',
+                            method: () => {
+                                feedback.toggleFeedback();
+                                dismissAllNotifications();
+                            }
+                        },
+                        {
+                            name: 'Ask me later',
+                            method: () => dismissAllNotifications()
+                        }
+                    ]
+                });
+            } else {
+                localStorage.setItem('createBackupsCounter', (parsedCounter + 1).toString());
+            }
+        } else {
+            localStorage.setItem('createBackupsCounter', '1');
+        }
+    };
 
     const createManualBackup = async () => {
         try {
@@ -35,6 +71,7 @@
                 message: 'Database backup initiated'
             });
             invalidate(Dependencies.BACKUPS);
+            showFeedbackNotification();
         } catch (error) {
             addNotification({
                 type: 'error',
