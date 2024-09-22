@@ -1,7 +1,13 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { AvatarInitials, DropList, DropListItem, PaginationWithLimit } from '$lib/components';
+    import {
+        AvatarInitials,
+        Drop,
+        DropList,
+        DropListItem,
+        PaginationWithLimit
+    } from '$lib/components';
     import { Pill } from '$lib/elements';
     import {
         TableBody,
@@ -22,6 +28,8 @@
     import { base } from '$app/paths';
     import { isOwner } from '$lib/stores/roles';
     import Edit from './edit.svelte';
+    import PopoverContent from '$routes/(console)/project-[project]/messaging/providers/popoverContent.svelte';
+    import { getRoleLabel } from '$lib/stores/billing';
 
     export let data: PageData;
 
@@ -29,6 +37,7 @@
     let showDelete = false;
     let showEdit = false;
     let showDropdown = [];
+    let showPopover = false;
     const url = `${$page.url.origin}/${base}/`;
     const resend = async (member: Models.Membership) => {
         try {
@@ -69,7 +78,37 @@
             <TableHeader>
                 <TableCellHead width={160}>Name</TableCellHead>
                 <TableCellHead width={120}>Email</TableCellHead>
-                <TableCellHead width={120}>Role</TableCellHead>
+                <TableCellHead width={120}>
+                    <Drop isPopover bind:show={showPopover} display="inline-block">
+                        &nbsp;<button
+                            type="button"
+                            on:click={() => (showPopover = !showPopover)}
+                            class="tooltip"
+                            aria-label="input tooltip">
+                            <span
+                                class="icon-info"
+                                aria-hidden="true"
+                                style="font-size: var(--icon-size-small)" />
+                        </button>
+                        <svelte:fragment slot="list">
+                            <div
+                                class="dropped card u-max-width-250"
+                                style:--card-border-radius="var(--border-radius-small)"
+                                style:--p-card-padding=".75rem"
+                                style:text-transform="none"
+                                style:text-wrap="wrap"
+                                style:box-shadow="var(--shadow-large)">
+                                <PopoverContent
+                                    lines={[
+                                        '<b>Roles</b>',
+                                        'Owner, Developer, Editor, Analyst, Billing.',
+                                        '<a href="https://appwrite.io/docs/roles">Learn more</a> about roles.'
+                                    ]} />
+                            </div>
+                        </svelte:fragment>
+                    </Drop>
+                    Role
+                </TableCellHead>
                 <TableCellHead width={90}>2FA</TableCellHead>
                 {#if $isOwner}
                     <TableCellHead width={30} />
@@ -93,7 +132,10 @@
                             </div>
                         </TableCell>
                         <TableCellText title="Email">{member.userEmail}</TableCellText>
-                        <TableCellText title="Role">{member.roles.join(',')}</TableCellText>
+                        <TableCellText title="Role"
+                            >{member.roles
+                                .map((role) => getRoleLabel(role))
+                                .join(', ')}</TableCellText>
                         <TableCellText title="2FA">
                             <Pill success={member.mfa}>
                                 {#if member.mfa}
@@ -107,7 +149,7 @@
                             </Pill>
                         </TableCellText>
                         {#if $isOwner}
-                            <TableCell showOverflow>
+                            <TableCell showOverflow right>
                                 <DropList
                                     bind:show={showDropdown[index]}
                                     placement="bottom-start"

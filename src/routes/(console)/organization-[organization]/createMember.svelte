@@ -11,7 +11,7 @@
     import { BillingPlan, Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { isCloud } from '$lib/system';
-    import { plansInfo } from '$lib/stores/billing';
+    import { plansInfo, roles } from '$lib/stores/billing';
     import { formatCurrency } from '$lib/helpers/numbers';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
 
@@ -25,30 +25,7 @@
     let email: string,
         name: string,
         error: string,
-        role: string = 'owner';
-
-    const roles = [
-        {
-            label: 'Owner',
-            value: 'owner'
-        },
-        {
-            label: 'Developer',
-            value: 'developer'
-        },
-        {
-            label: 'Editor',
-            value: 'editor'
-        },
-        {
-            label: 'Analyst',
-            value: 'analyst'
-        },
-        {
-            label: 'Billing',
-            value: 'billing'
-        }
-    ];
+        role: string = 'developer';
 
     async function create() {
         try {
