@@ -209,7 +209,6 @@
         </div>
 
         {#if !showEveryPolicy && policies.policies.length >= 3}
-            <!-- TODO: @itznotabug show doesn't show on 3rd item if there are only 3 items. -->
             <div class="is-only-mobile show-more-policy-wrapper">
                 <Button
                     secondary
@@ -369,6 +368,8 @@
             border-block-end: solid 0.0625rem hsl(var(--color-border)) !important;
         }
 
+        .policy-card-item-padding[data-visible='true'][data-show-every='true']:nth-child(3)
+            .policy-cycles,
         .policy-card-item-padding[data-visible='true'][data-show-every='true']:nth-child(3),
         .policy-cycles {
             height: auto !important;
