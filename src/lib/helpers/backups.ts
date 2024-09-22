@@ -12,6 +12,7 @@ export type UserBackupPolicy = {
     checked?: boolean;
     selectedTime?: string;
     plainTextFrequency?: string;
+    monthlyBackupFrequency?: string;
 };
 
 export const cronExpression = (policy: UserBackupPolicy, selectedTime: string) => {
@@ -131,7 +132,7 @@ export const backupPolicyDescription = (
 
         case 'weekly':
             return retained !== null
-                ? `Runs every week on Mondays and is retained for ${retainedText}.`
+                ? `Runs every Monday and is retained for ${retainedText}.`
                 : `A backup will run weekly on Monday at ${timeFormatted}.`;
 
         case 'monthly': {
@@ -140,8 +141,22 @@ export const backupPolicyDescription = (
                     .find((option) => option.value === monthlyBackupFrequency)
                     ?.label.toLowerCase() || '28th';
 
+            let actualDay: string;
+            switch (monthlyBackupFrequency) {
+                case 'first':
+                    actualDay = '1st';
+                    break;
+                case 'middle':
+                    actualDay = '15th';
+                    break;
+                case 'end':
+                default:
+                    actualDay = '28th';
+                    break;
+            }
+
             return retained !== null
-                ? `Runs every month and is retained for ${retainedText}.`
+                ? `Runs every ${actualDay} of the month and is retained for ${retainedText}.`
                 : `A backup will run every month on the ${monthDay} at ${timeFormatted}.`;
         }
 

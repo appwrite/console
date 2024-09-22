@@ -12,7 +12,7 @@ export const presetPolicies = writable<UserBackupPolicy[]>([
         schedule: '{time} * * *',
         selectedTime: '00:00',
         plainTextFrequency: 'hourly',
-        description: 'Runs every hour and is retained for 24 hours'
+        description: 'Runs every hour and is retained for 1 day'
     },
     {
         label: 'Daily',

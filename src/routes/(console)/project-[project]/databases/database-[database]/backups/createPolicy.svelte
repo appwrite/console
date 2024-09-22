@@ -1,14 +1,6 @@
 <script lang="ts">
     import { Modal } from '$lib/components';
-    import {
-        Button,
-        FormList,
-        Helper,
-        InputCheckbox,
-        InputSelect,
-        InputText,
-        InputTime
-    } from '$lib/elements/forms';
+    import { Button, FormList, Helper, InputCheckbox, InputSelect, InputText, InputTime } from '$lib/elements/forms';
     import { ID } from '@appwrite.io/console';
     import { capitalize } from '$lib/helpers/string';
     import { backupRetainingOptions, database } from '../store';
@@ -89,11 +81,12 @@
 
     const handleSavePolicy = () => {
         const userBackupPolicy = {
-            id: policyInEdit ?? ID.unique(),
+            default: false,
+            selectedTime,
+            monthlyBackupFrequency,
             label: backupPolicyName,
             retained: policyRetention,
-            selectedTime,
-            default: false,
+            id: policyInEdit ?? ID.unique(),
             plainTextFrequency: policyFrequency,
             description: `Runs every ${policyFrequency} and is retained for ${policyRetention}`
         };
@@ -109,7 +102,7 @@
             policy.plainTextFrequency,
             null,
             policy.retained,
-            monthlyBackupFrequency
+            policy.monthlyBackupFrequency
         );
     };
 
@@ -119,6 +112,16 @@
 
     $: if (showCustomPolicy) {
         customPolicySection?.scrollIntoView({ behavior: 'auto' });
+    }
+
+    $: if (!showCreate) {
+        resetFormVariables();
+        showCustomPolicy = false;
+        listOfCustomPolicies = [];
+        presetPolicies.update((all) => all.map((policy) => {
+            policy.checked = false;
+            return policy;
+        }));
     }
 </script>
 
@@ -170,6 +173,7 @@
                                                 policyRetention = policy.retained;
                                                 selectedTime = policy.selectedTime;
                                                 policyFrequency = policy.plainTextFrequency;
+                                                monthlyBackupFrequency = policy.monthlyBackupFrequency;
 
                                                 // do not show in the list can cause confusion.
                                                 listOfCustomPolicies = [
@@ -264,8 +268,8 @@
                                 <span>
                                     {#if policyRetention === 365 * 100}
                                         Every backup created under this policy will be retained <b
-                                            >forever</b
-                                        >.
+                                    >forever</b
+                                    >.
                                     {:else}
                                         Every backup created under this policy will be retained for <b>
                                             {backupRetainingOptions.find(
@@ -296,7 +300,7 @@
                                     on:click={() => {
                                         showCustomPolicy = false;
                                     }}
-                                    >Cancel
+                                >Cancel
                                 </Button>
 
                                 <Button
@@ -319,7 +323,7 @@
             {:else}
                 <div class="u-flex u-main-space-between u-padding-inline-4 u-width-full-line">
                     <button class="custom-policy-text" on:click={() => (showCustomPolicy = true)}
-                        >Custom policy
+                    >Custom policy
                     </button>
                     <span>Total: ${totalPolicies.length * policyPricing}.00</span>
                 </div>
