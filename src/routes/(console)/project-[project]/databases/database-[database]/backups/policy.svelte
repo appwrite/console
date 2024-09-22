@@ -60,7 +60,6 @@
     const getPolicyDescription = (cron: string): string => {
         const cronParts = cron.split(' ');
 
-        // A standard cron has 5 parts: minute, hour, day of month, month, day of week
         const [minute, hour, dayOfMonth, month, dayOfWeek] = cronParts;
 
         if (dayOfMonth !== '*' && month === '*' && dayOfWeek === '*') {
@@ -95,17 +94,17 @@
 
 <div class="u-flex u-flex-vertical u-gap-16">
     <Card
-        class="u-margin-block-start-24"
+        class="backups-policy-list-card u-margin-block-start-24"
         style="--card-padding: 0.5rem; --card-padding-mobile: 0.5rem; min-width: 21.5rem;">
         <div class="u-flex-vertical-mobile">
             {#each policies.policies as policy, index (policy.$id)}
                 <div
                     class="policy-card-item-padding u-flex-vertical u-gap-10"
-                    class:u-padding-block-end-10={index === 0}
-                    class:u-padding-block-start-10={index !== 0}
-                    class:opacity-gradient-bottom={index === 2}
                     data-show-every={showEveryPolicy}
-                    data-visible={index <= 3 || showEveryPolicy}>
+                    data-visible={index < 3 || showEveryPolicy}
+                    class:opacity-gradient-bottom={index === 2}
+                    class:u-padding-block-start-10={index !== 0}
+                    class:u-padding-block-end-10={index === 0 && policies.policies.length > 1}>
                     <div class="u-flex-vertical u-gap-2">
                         <div class="u-flex u-main-space-between">
                             <h3 class="body-text-2 u-bold darker-neutral-color">{policy.name}</h3>
@@ -132,7 +131,9 @@
                             </DropList>
                         </div>
 
-                        <div class="policy-item-subtitles u-flex u-gap-6">
+                        <div
+                            class="policy-item-subtitles u-flex u-gap-6"
+                            style="width: fit-content;">
                             {getPolicyDescription(policy.schedule)}
                             <span class="small-ellipse">●</span>
                             {formatRetentionMessage(policy.retention)}
@@ -140,8 +141,8 @@
                     </div>
 
                     <div
-                        class="policy-cycles u-flex u-gap-12 u-cross-start u-padding-block-2 policy-item-subtitles">
-                        <div class="u-flex-vertical policy-item-caption">
+                        class="policy-cycles u-flex u-cross-center u-padding-block-2 policy-item-subtitles">
+                        <div style="width: 128px" class="u-flex-vertical policy-item-caption">
                             <span style="color: #97979B">Previous</span>
                             <div
                                 class="u-flex u-gap-4 u-cross-center policy-item-subtitles darker-neutral-color">
@@ -151,17 +152,19 @@
                                     ]
                                         ? 'hsl(var(--color-success-100))'
                                         : 'inherit'};">●</span>
-                                {#if lastBackupDates[policy.$id]}
-                                    {toLocaleDateTime(lastBackupDates[policy.$id])}
-                                {:else}
-                                    No backups yet
-                                {/if}
+                                <span class="policy-item-subtitles">
+                                    {#if lastBackupDates[policy.$id]}
+                                        {toLocaleDateTime(lastBackupDates[policy.$id])}
+                                    {:else}
+                                        No backups yet
+                                    {/if}
+                                </span>
                             </div>
                         </div>
 
                         <div class="u-border-vertical" />
 
-                        <div class="u-flex-vertical policy-item-caption">
+                        <div style="width: 128px" class="u-flex-vertical policy-item-caption">
                             <span style="color: #97979B">Next</span>
                             <div
                                 class="u-flex u-gap-4 u-cross-center policy-item-subtitles darker-neutral-color">
@@ -178,13 +181,21 @@
                 </div>
             {:else}
                 <div class="u-padding-24 u-flex-vertical u-gap-16 u-cross-center">
-                    <div>
-                        {#if $app.themeInUse === 'dark'}
-                            <img src={EmptyDark} alt="create" aria-hidden="true" height="152" />
-                        {:else}
-                            <img src={EmptyLight} alt="create" aria-hidden="true" height="152" />
-                        {/if}
-                    </div>
+                    {#if $app.themeInUse === 'dark'}
+                        <img
+                            src={EmptyDark}
+                            alt="create"
+                            aria-hidden="true"
+                            height="152"
+                            width="280" />
+                    {:else}
+                        <img
+                            src={EmptyLight}
+                            alt="create"
+                            aria-hidden="true"
+                            height="152"
+                            width="280" />
+                    {/if}
 
                     <div class="u-text-center">
                         <div class="body-text-2 u-bold darker-neutral-color">
@@ -195,7 +206,7 @@
                         </p>
                     </div>
 
-                    <div class="u-flex u-main-center">
+                    <div class="u-flex u-main-center u-padding-block-end-8">
                         <Button
                             event="create_policy"
                             class="small-radius-border-button"
@@ -236,6 +247,7 @@
     bind:show={showDelete}
     headerDivider={false}
     onSubmit={deletePolicy}>
+    <!-- TODO: Add `This will also delete all the backups associated with this backups.` -->
     <p class="text" data-private>
         Are you sure you want to delete <b>{selectedPolicy.name}</b> policy?
         <br />This action is irreversible.
@@ -255,15 +267,15 @@
     }
 
     :global(.small-ellipse) {
-        font-size: 0.5rem !important;
+        font-size: 0.25rem;
     }
 
     :global(.u-gap-6) {
-        gap: 0.375rem !important;
+        gap: 0.375rem;
     }
 
     .u-gap-10 {
-        gap: 0.625rem !important;
+        gap: 0.625rem;
     }
 
     .policy-card-item-padding {
@@ -272,7 +284,7 @@
     }
 
     .policy-card-item-padding:last-child {
-        border-block-end: none !important;
+        border-block-end: none;
     }
 
     .policy-addon-fee-alert {
@@ -284,11 +296,11 @@
     }
 
     .u-padding-block-start-10 {
-        padding-block-start: 10px !important;
+        padding-block-start: 10px;
     }
 
     .u-padding-block-end-10 {
-        padding-block-end: 10px !important;
+        padding-block-end: 10px;
     }
 
     .policy-item-subtitles {
@@ -300,7 +312,7 @@
     }
 
     .policy-cycles {
-        margin-block-start: 0.625rem !important;
+        margin-block: 0.125rem;
     }
 
     :global(.theme-light .policy-item-subtitles) {
@@ -317,7 +329,7 @@
 
     :global(.show-more-policy-button) {
         background: transparent;
-        border-radius: 1rem !important;
+        border-radius: 1rem;
     }
 
     .show-more-policy-wrapper {
@@ -326,36 +338,37 @@
     }
 
     @media (max-width: 768px) {
-        .policy-cycles.u-cross-start {
-            justify-content: space-between !important;
+        :global(.backups-policy-list-card) {
+            min-width: unset !important;
         }
 
         .policy-card-item-padding {
-            display: none !important;
-            visibility: hidden !important;
+            display: none;
+            visibility: hidden;
         }
 
         .policy-card-item-padding[data-visible='true'] {
-            display: block !important;
-            visibility: visible !important;
+            display: block;
+            visibility: visible;
         }
 
         .policy-card-item-padding[data-visible='true']:nth-child(3) {
             opacity: 0.25;
-            border-block-end: none !important;
+            border-block-end: none;
         }
 
         .policy-card-item-padding[data-visible='true']:nth-child(3) .policy-cycles {
-            height: 0 !important;
-            margin: unset !important;
-            padding: unset !important;
-            visibility: hidden !important;
+            height: 0;
+            margin: unset;
+            padding: unset;
+            visibility: hidden;
         }
 
         .policy-card-item-padding[data-visible='false']:nth-child(n + 4) {
-            height: 0 !important;
-            padding: unset !important;
-            border-block-end: none !important;
+            opacity: 0;
+            height: 0;
+            padding: unset;
+            border-block-end: none;
         }
 
         .policy-card-item-padding[data-visible='true'][data-show-every='true']:nth-child(3) {
@@ -365,15 +378,15 @@
         .policy-card-item-padding[data-visible='true'][data-show-every='true']:nth-child(3):not(
                 :last-child
             ) {
-            border-block-end: solid 0.0625rem hsl(var(--color-border)) !important;
+            border-block-end: solid 0.0625rem hsl(var(--color-border));
         }
 
         .policy-card-item-padding[data-visible='true'][data-show-every='true']:nth-child(3)
             .policy-cycles,
         .policy-card-item-padding[data-visible='true'][data-show-every='true']:nth-child(3),
         .policy-cycles {
-            height: auto !important;
-            visibility: visible !important;
+            height: auto;
+            visibility: visible;
         }
 
         .opacity-gradient-bottom {
@@ -398,7 +411,7 @@
         .opacity-gradient-bottom[data-visible='true'][data-show-every='true']::after,
         :global(.theme-dark)
             .opacity-gradient-bottom[data-visible='true'][data-show-every='true']::after {
-            background: transparent !important;
+            background: transparent;
         }
     }
 </style>

@@ -75,14 +75,20 @@
         try {
             await Promise.all(totalPoliciesPromise);
 
+            const message =
+                totalPolicies.length > 1
+                    ? `Backup policies have been created`
+                    : `<b>${totalPolicies[0].label}</b> has been created`;
+
             addNotification({
                 isHtml: true,
                 type: 'success',
-                message: `Backup  ${totalPoliciesPromise.length > 1 ? 'policies' : 'policy'} created`
+                message
             });
 
             showCreate = false;
             resetFormVariables();
+            totalPolicies = [];
             listOfCustomPolicies = [];
             invalidate(Dependencies.BACKUPS);
         } catch (err) {
@@ -178,7 +184,10 @@
                             <div class="card policy-default-custom-card">
                                 <div class="u-flex-vertical u-gap-4 body-text-2">
                                     <div class="u-flex u-main-space-between">
-                                        <h3 class="body-text-2 u-bold">{policy.label}</h3>
+                                        <div class="u-flex u-cross-center u-gap-4">
+                                            <h3 class="u-bold">{policy.label}</h3>
+                                            <span class="inline-tag">$20.00</span>
+                                        </div>
 
                                         <div class="u-flex u-gap-8">
                                             <Button

@@ -9,6 +9,7 @@
         TableRow,
         TableScroll
     } from '$lib/elements/table';
+    import { tooltip } from '$lib/actions/tooltip';
     import RestoreModal from './restoreModal.svelte';
     import type { PageData } from './$types';
     import { timeFromNow, toLocaleDateTime } from '$lib/helpers/date';
@@ -76,8 +77,8 @@
         }
     };
 
-    const policyName = (policyId: string | null) =>
-        data.policies.policies.find((policy) => policy.$id === policyId)?.name || 'Manual';
+    const policyDetails = (policyId: string | null) =>
+        data.policies.policies.find((policy) => policy.$id === policyId);
 
     const cleanBackupName = (backup: Models.BackupArchive) =>
         toLocaleDateTime(backup.$createdAt).replaceAll(',', '');
@@ -93,6 +94,10 @@
     </TableHeader>
     <TableBody>
         {#each data.backups.archives as backup, index}
+            {@const policy = policyDetails(backup.policyId)}
+            {@const retainedUntil = new Date(
+                new Date(policy?.$createdAt).getTime() + policy?.retention * 24 * 60 * 60 * 1000
+            )}
             <TableRow>
                 <TableCell width={192} title={backup.$createdAt}>
                     {cleanBackupName(backup)}
@@ -119,7 +124,14 @@
                 </TableCell>
                 <TableCell width={168} title="Backup Policy">
                     <div class="u-flex u-main-space-between u-cross-baseline">
-                        {policyName(backup.policyId)}
+                        <span
+                            use:tooltip={{
+                                content: policy
+                                    ? `Retained until: ${retainedUntil}`
+                                    : `Retained forever`
+                            }}>
+                            {policy?.name || 'Manual'}
+                        </span>
                     </div>
                 </TableCell>
 

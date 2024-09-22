@@ -23,7 +23,7 @@
     const message = isFreePlan
         ? 'Schedule automatic or manual backups to protect your data and ensure quick recovery.'
         : isCloud
-          ? 'Protect your data and ensure quick recovery with our new backups.<br/><br/><b>Try it now for free until Nov 2024.</b>'
+          ? 'Protect your data and ensure quick recovery with our new backups.<br/><b>Try it now for free until Nov 2024.</b>'
           : 'Protect your data and ensure quick recovery with Appwrite backups. Sign up now.';
 
     const ctaText = isFreePlan ? 'Upgrade plan' : isCloud ? 'Try now' : 'Sign up';
