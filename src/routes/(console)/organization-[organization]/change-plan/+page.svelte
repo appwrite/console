@@ -286,7 +286,7 @@
                     <InputTags
                         bind:tags={collaborators}
                         label="Invite members by email"
-                        tooltip="Invited members will have access to all services and payment data within your organization"
+                        tooltip="By default, all members are assigned a Developer role. You can change this at any time from your organization settings."
                         placeholder="Enter email address(es)"
                         validityRegex={emailRegex}
                         validityMessage="Invalid email address"
