@@ -15,8 +15,9 @@ export type UserBackupPolicy = {
     monthlyBackupFrequency?: string;
 };
 
-export const cronExpression = (policy: UserBackupPolicy, selectedTime: string) => {
+export const cronExpression = (policy: UserBackupPolicy) => {
     const now = new Date();
+    if (!policy.id) policy.id = ID.unique();
 
     if (policy.plainTextFrequency === 'hourly') {
         const utcMinute = now.getUTCMinutes();
@@ -40,7 +41,7 @@ export const cronExpression = (policy: UserBackupPolicy, selectedTime: string) =
 
         cronExpression = policy.schedule.replace('{time}', `${utcMinute} ${utcHour}`);
     } else {
-        const [localHour, localMinute] = selectedTime.split(':');
+        const [localHour, localMinute] = policy.selectedTime.split(':');
         now.setHours(parseInt(localHour), parseInt(localMinute), 0);
 
         const utcHour = now.getUTCHours();
@@ -56,7 +57,6 @@ export const cronExpression = (policy: UserBackupPolicy, selectedTime: string) =
     }
 
     policy.schedule = cronExpression;
-    if (!policy.id) policy.id = ID.unique();
 };
 
 const generateHourlyOptions = (start: number, end: number) =>
