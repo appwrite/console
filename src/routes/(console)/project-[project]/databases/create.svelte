@@ -1,8 +1,8 @@
 <script lang="ts">
-    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { Modal, CustomId, Alert } from '$lib/components';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { Alert, CustomId, Modal } from '$lib/components';
     import { Pill } from '$lib/elements';
-    import { Button, InputText, FormList } from '$lib/elements/forms';
+    import { Button, FormList, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { ID } from '@appwrite.io/console';
@@ -11,8 +11,11 @@
     import { BillingPlan } from '$lib/constants';
     import { organization } from '$lib/stores/organization';
     import { upgradeURL } from '$lib/stores/billing';
+    import CreatePolicy from './database-[database]/backups/createPolicy.svelte';
+    import { cronExpression, type UserBackupPolicy } from '$lib/helpers/backups';
 
     export let showCreate = false;
+    let totalPolicies: UserBackupPolicy[] = [];
 
     const dispatch = createEventDispatcher();
 
@@ -21,9 +24,30 @@
     let showCustomId = false;
     let showPlanUpgradeAlert = true;
 
+    const createPolicies = async () => {
+        if (!totalPolicies.length) return;
+
+        const totalPoliciesPromise = totalPolicies.map((policy) => {
+            cronExpression(policy);
+
+            return sdk.forProject.backups.createPolicy(
+                policy.id,
+                ['databases'],
+                policy.retained,
+                policy.schedule,
+                policy.label,
+                id
+            );
+        });
+
+        await Promise.all(totalPoliciesPromise);
+    };
+
     const create = async () => {
         try {
             const database = await sdk.forProject.databases.create(id ? id : ID.unique(), name);
+            await createPolicies();
+
             showCreate = false;
             dispatch('created', database);
             addNotification({
@@ -80,7 +104,11 @@
                 </Alert>
             {/if}
         {:else}
-            Backup Policies Tabs here
+            <CreatePolicy
+                isModal={false}
+                title="Backup policies"
+                bind:totalPolicies
+                subtitle="Protect your data and ensure quick recovery by adding backup policies." />
         {/if}
     </FormList>
     <svelte:fragment slot="footer">
