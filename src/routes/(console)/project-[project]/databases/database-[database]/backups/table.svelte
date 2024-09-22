@@ -82,6 +82,12 @@
 
     const cleanBackupName = (backup: Models.BackupArchive) =>
         toLocaleDateTime(backup.$createdAt).replaceAll(',', '');
+
+    $: if (!showRestore && !showDelete) {
+        showCustomId = false;
+        selectedBackup = null;
+        newDatabaseInfo = { name: null, id: null };
+    }
 </script>
 
 <TableScroll isSticky class="custom-height-table-column">

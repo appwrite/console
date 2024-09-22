@@ -86,15 +86,19 @@
             }
 
             if (showRestorationCompleteNotification) {
-                const restoration = backupRestoreItems.restorations.find((restoration) => restoration.status === 'completed');
+                const restoration = backupRestoreItems.restorations.find(
+                    (restoration) => restoration.status === 'completed'
+                );
 
                 if (restoration) {
-                    const {
-                        newId: newDatabaseId,
-                        newName: newDatabaseName
-                    } = restoration.options?.['databases']?.['database'][0] || {};
+                    const { newId: newDatabaseId, newName: newDatabaseName } =
+                        restoration.options?.['databases']?.['database'][0] || {};
 
-                    if (newDatabaseId && newDatabaseName && lastDatabaseRestorationId !== newDatabaseId) {
+                    if (
+                        newDatabaseId &&
+                        newDatabaseName &&
+                        lastDatabaseRestorationId !== newDatabaseId
+                    ) {
                         const project = $page.params.project;
                         lastDatabaseRestorationId = newDatabaseId;
 
@@ -106,14 +110,15 @@
                                 {
                                     name: 'View restored data',
                                     method: () => {
-                                        goto(`${base}/project-${project}/databases/database-${newDatabaseId}`);
+                                        goto(
+                                            `${base}/project-${project}/databases/database-${newDatabaseId}`
+                                        );
                                     }
                                 }
                             ]
                         });
                     }
                 }
-
             }
         } catch (e) {
             // ignore?
