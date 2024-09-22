@@ -4,7 +4,8 @@
     import { onMount } from 'svelte';
     import { isCloud, isSelfHosted } from '$lib/system';
     import { organization } from '$lib/stores/organization';
-    import { BillingPlan } from '$lib/constants';
+    import { BillingPlan, Dependencies } from '$lib/constants';
+    import { invalidate } from '$app/navigation';
 
     let backupRestoreItems: {
         archives: Models.BackupArchive[];
@@ -41,6 +42,8 @@
             let filteredArchives = archivesResponse.archives;
             let filteredRestorations = restorationsResponse.restorations;
 
+            let invalidateDependencies = false;
+
             if (fromRealtime) {
                 const backupArchiveIds = new Set(
                     backupRestoreItems.archives.map((item) => item.$id)
@@ -63,10 +66,16 @@
                         backupRestorationIds.has(restoration.$id)
                     );
                 });
+
+                invalidateDependencies = filteredArchives.length > 0;
             }
 
             backupRestoreItems.archives = filteredArchives;
             backupRestoreItems.restorations = filteredRestorations;
+
+            if (invalidateDependencies) {
+                invalidate(Dependencies.BACKUPS);
+            }
         } catch (e) {
             // ignore?
         }
