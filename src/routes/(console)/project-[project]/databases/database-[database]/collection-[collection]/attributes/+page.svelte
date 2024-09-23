@@ -159,7 +159,7 @@
                                             showEdit = true;
                                             showDropdown[index] = false;
                                         }}>
-                                        Edit
+                                        Update
                                     </DropListItem>
                                     {#if !isRelationship(attribute)}
                                         <DropListItem

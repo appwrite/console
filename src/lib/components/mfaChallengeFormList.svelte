@@ -1,4 +1,6 @@
 <script context="module" lang="ts">
+    let inputDigitFields: InputDigits;
+
     export async function verify(challenge: Models.MfaChallenge, code: string) {
         try {
             if (challenge == null) {
@@ -10,6 +12,7 @@
             await invalidate(Dependencies.ACCOUNT);
             trackEvent(Submit.AccountCreate);
         } catch (error) {
+            inputDigitFields?.clearInputsAndRefocus();
             trackError(error, Submit.AccountCreate);
             throw error;
         }
@@ -81,7 +84,12 @@
         {:else if challengeType == AuthenticationFactor.Phone}
             <p>A 6-digit verification code was sent to your phone, enter it below.</p>
         {/if}
-        <InputDigits bind:value={code} required autofocus {autoSubmit} />
+        <InputDigits
+            bind:value={code}
+            required
+            autofocus
+            {autoSubmit}
+            bind:this={inputDigitFields} />
     {/if}
     {#if showVerifyButton}
         <FormItem>
