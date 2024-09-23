@@ -178,6 +178,9 @@ export type OrganizationUsage = {
     bandwidth: Array<Models.Metric>;
     executions: Array<Models.Metric>;
     executionsTotal: number;
+    filesStorageTotal: number;
+    buildsStorageTotal: number;
+    deploymentsStorageTotal: number;
     storageTotal: number;
     users: Array<Models.Metric>;
     usersTotal: number;
