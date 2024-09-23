@@ -7,7 +7,7 @@
     export let search = '';
 </script>
 
-<Card.Base padding="none" class="common-section">
+<Card.Base padding="none">
     <Empty
         title={`Sorry, we couldn't find ‘${search}’`}
         description={`There are no ${target} that match your search.`}

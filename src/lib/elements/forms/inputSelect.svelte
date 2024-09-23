@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { FormItem, FormItemPart, Helper, Label } from '.';
+    import { Input } from '@appwrite.io/pink-svelte';
     import type { FormItemTag } from './formItem.svelte';
 
     export let id: string;
@@ -46,42 +46,16 @@
     $: if (isNotEmpty(value)) {
         error = null;
     }
-
-    $: hasNullOption = options.some((option) => option.value === null);
-    $: wrapper = isMultiple ? FormItemPart : FormItem;
 </script>
 
-<svelte:component this={wrapper} {fullWidth} tag={wrapperTag}>
-    {#if label}
-        <Label {required} {hideRequired} {optionalText} hide={!showLabel} for={id}>
-            {label}
-        </Label>
-    {/if}
-
-    <div class="select">
-        <select
-            {id}
-            {required}
-            {disabled}
-            aria-label={ariaLabel}
-            bind:this={element}
-            bind:value
-            on:invalid={handleInvalid}
-            on:change>
-            {#if placeholder && !hasNullOption}
-                <option value={null} disabled selected hidden>{placeholder}</option>
-            {/if}
-            {#each options as option}
-                <option value={option.value} selected={option.value === value}>
-                    {option.label}
-                </option>
-            {/each}
-        </select>
-        <span class="icon-cheveron-down" aria-hidden="true" />
-    </div>
-    {#if error}
-        <Helper type="warning">{error}</Helper>
-    {:else}
-        <slot name="helper" />
-    {/if}
-</svelte:component>
+<Input.Select
+    {label}
+    {options}
+    {placeholder}
+    {disabled}
+    helper={error}
+    state={error ? 'error' : 'default'}
+    on:invalid={handleInvalid}
+    on:input
+    on:change
+    bind:value />

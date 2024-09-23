@@ -14,7 +14,6 @@
         PaginationWithLimit,
         SearchQuery
     } from '$lib/components';
-    import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
     import { Container, ContainerHeader } from '$lib/layout';
@@ -23,7 +22,7 @@
     import type { PageData } from './$types';
     import Create from './createUser.svelte';
     import { tooltip } from '$lib/actions/tooltip';
-    import { Badge, Icon, Table } from '@appwrite.io/pink-svelte';
+    import { Badge, Icon, Table, Layout } from '@appwrite.io/pink-svelte';
     import { Tag } from '@appwrite.io/pink-svelte';
     import { IconDuplicate } from '@appwrite.io/pink-icons-svelte';
 
@@ -57,17 +56,17 @@
         <Table.Root>
             <svelte:fragment slot="header">
                 <Table.Header.Cell>Name</Table.Header.Cell>
-                <Table.Header.Cell onlyDesktop>Identifiers</Table.Header.Cell>
-                <Table.Header.Cell onlyDesktop width={130}>Status</Table.Header.Cell>
-                <Table.Header.Cell onlyDesktop width={100}>ID</Table.Header.Cell>
-                <Table.Header.Cell onlyDesktop width={100}>Labels</Table.Header.Cell>
-                <Table.Header.Cell onlyDesktop>Joined</Table.Header.Cell>
-                <Table.Header.Cell onlyDesktop>Last Activity</Table.Header.Cell>
+                <Table.Header.Cell>Identifiers</Table.Header.Cell>
+                <Table.Header.Cell width="130px">Status</Table.Header.Cell>
+                <Table.Header.Cell width="100px">ID</Table.Header.Cell>
+                <Table.Header.Cell width="100px">Labels</Table.Header.Cell>
+                <Table.Header.Cell>Joined</Table.Header.Cell>
+                <Table.Header.Cell>Last Activity</Table.Header.Cell>
             </svelte:fragment>
             {#each data.users.users as user}
                 <Table.Link href={`${base}/project-${projectId}/auth/user-${user.$id}`}>
-                    <Table.Cell title="Name">
-                        <div class="u-flex u-gap-12 u-cross-center">
+                    <Table.Cell>
+                        <Layout.Stack direction="row" alignItems="center">
                             {#if user.email || user.phone}
                                 {#if user.name}
                                     <AvatarInitials size={32} name={user.name} />
@@ -83,14 +82,14 @@
                                 </div>
                                 <span class="text u-trim">{user.name}</span>
                             {/if}
-                        </div>
+                        </Layout.Stack>
                     </Table.Cell>
-                    <Table.Cell onlyDesktop title="Identifiers">
+                    <Table.Cell>
                         {user.email && user.phone
                             ? [user.email, user.phone].join(',')
                             : user.email || user.phone}
                     </Table.Cell>
-                    <Table.Cell onlyDesktop title="Status">
+                    <Table.Cell>
                         {#if user.status}
                             {@const success = user.emailVerification || user.phoneVerification}
                             <Badge
@@ -112,7 +111,7 @@
                                 content="blocked" />
                         {/if}
                     </Table.Cell>
-                    <Table.Cell onlyDesktop showOverflow title="ID">
+                    <Table.Cell>
                         <Copy value={user.$id} event="user">
                             <Tag size="small">
                                 <Icon size="small" icon={IconDuplicate} />
@@ -120,13 +119,13 @@
                             </Tag>
                         </Copy>
                     </Table.Cell>
-                    <Table.Cell onlyDesktop title="Labels">
+                    <Table.Cell>
                         {user.labels.join(', ')}
                     </Table.Cell>
-                    <Table.Cell onlyDesktop title="Joined">
+                    <Table.Cell>
                         {toLocaleDateTime(user.registration)}
                     </Table.Cell>
-                    <Table.Cell onlyDesktop title="Last Activity">
+                    <Table.Cell>
                         {user.accessedAt ? toLocaleDate(user.accessedAt) : 'never'}
                     </Table.Cell>
                 </Table.Link>
@@ -139,12 +138,8 @@
             offset={data.offset}
             total={data.users.total} />
     {:else if data.search}
-        <EmptySearch>
-            <div class="u-text-center">
-                <b>Sorry, we couldn't find '{data.search}'</b>
-                <p>There are no users that match your search.</p>
-            </div>
-            <Button href={`${base}/project-${projectId}/auth`} secondary>Clear Search</Button>
+        <EmptySearch target="users" hidePagination>
+            <Button href={`${base}/project-${projectId}/auth`} size="small" secondary>Clear Search</Button>
         </EmptySearch>
     {:else}
         <Empty

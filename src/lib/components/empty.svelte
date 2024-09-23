@@ -18,7 +18,7 @@
 </script>
 
 {#if single}
-    <Card.Base padding="none" class="common-section">
+    <Card.Base padding="none">
         <Empty
             title={`Create your first ${target}`}
             description="Need a hand? Learn more in our documentation.">

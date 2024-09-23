@@ -3,6 +3,7 @@
     import { page as pageStore } from '$app/stores';
     import { InputSelect } from '$lib/elements/forms';
     import { preferences } from '$lib/stores/preferences';
+    import { Layout } from '@appwrite.io/pink-svelte';
 
     export let sum: number;
     export let limit: number;
@@ -32,14 +33,7 @@
     }
 </script>
 
-<div class="u-flex u-gap-12 u-cross-center">
-    <InputSelect
-        wrapperTag="div"
-        id="rows"
-        label={`${name} per page`}
-        showLabel={false}
-        {options}
-        bind:value={limit}
-        on:change={limitChange} />
-    <p class="text">{name} per page. Total results: {sum >= 5000 ? `${sum}+` : sum}</p>
-</div>
+<Layout.Stack direction="row" alignItems="center" inline>
+    <InputSelect id="rows" {options} bind:value={limit} on:change={limitChange} />
+    <p class="text" style:white-space="nowrap">{name} per page. Total results: {sum >= 5000 ? `${sum}+` : sum}</p>
+</Layout.Stack>

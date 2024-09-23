@@ -4,7 +4,7 @@
     import { trackEvent } from '$lib/actions/analytics';
     import { onMount } from 'svelte';
     import { onDestroy } from 'svelte';
-    import { Input } from '@appwrite.io/pink-svelte';
+    import { Input, Layout } from '@appwrite.io/pink-svelte';
     import { IconX } from '@appwrite.io/pink-icons-svelte';
 
     export let search = '';
@@ -60,7 +60,7 @@
     }
 </script>
 
-<div class="u-flex u-gap-12 common-section u-main-space-between">
+<Layout.Stack direction="row" justifyContent="space-between">
     <div class={fullWidth ? 'u-width-full-line' : 'u-flex-basis-50-percent'}>
         <Input.Text {placeholder} {disabled} {required} type="search" bind:value={search}>
             <svelte:fragment slot="end">
@@ -71,4 +71,4 @@
         </Input.Text>
     </div>
     <slot />
-</div>
+</Layout.Stack>
