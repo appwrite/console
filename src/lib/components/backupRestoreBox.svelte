@@ -230,7 +230,7 @@
     }
 
     .is-float {
-        position: static;
+        position: relative;
     }
 
     .backup-name {
