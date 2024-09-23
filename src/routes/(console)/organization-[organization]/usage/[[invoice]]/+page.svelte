@@ -183,8 +183,8 @@
                 <ProgressBarBig
                     currentUnit="Users"
                     currentValue={formatNum(current)}
-                    maxUnit="Users"
-                    maxValue={formatNum(max)}
+                    maxUnit="users"
+                    maxValue={`out of ${formatNum(max)}`}
                     progressValue={current}
                     progressMax={max}
                     showBar={false} />
