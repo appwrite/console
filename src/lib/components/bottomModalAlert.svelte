@@ -74,7 +74,7 @@
                         {/if}
 
                         {#if filteredModalAlerts.length > 1}
-                            <div class="u-flex u-main-space-between u-cross-center">
+                            <div class="u-flex u-main-space-between u-cross-baseline">
                                 <span class="inline-tag feature-count-tag">
                                     Feature {currentIndex + 1} of {filteredModalAlerts.length}
                                 </span>
@@ -326,6 +326,7 @@
             display: flex;
             min-width: 100%;
             min-height: 100%;
+            max-width: 100vw;
 
             align-items: center;
             justify-content: center;

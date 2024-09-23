@@ -12,9 +12,9 @@ const listOfPromotions: BottomModalAlertItem[] = [
             dark: RolesSampleDark,
             light: RolesSampleLight
         },
-        title: 'Member roles now available',
+        title: 'Member roles now on Pro plans',
         message:
-            'Enhance your workflow and security by assigning roles to members. Try it now for free until Dec 2024.',
+            'Enhance your workflow and security by assigning roles to members. <b>Try it now for free until Dec 2024.</b>',
 
         cta: {
             text: 'Try Now',
@@ -31,7 +31,7 @@ const listOfPromotions: BottomModalAlertItem[] = [
             dark: BackupsSampleDark,
             light: BackupsSampleLight
         },
-        title: 'Database backups are now available',
+        title: 'Database backups now on Pro plans',
         message:
             'Protect your data and ensure quick recovery with our new backups. <br/><b>Try it now for free until Nov 2024</b>.',
 
