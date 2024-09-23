@@ -20,5 +20,12 @@ export const backupRetainingOptions = [
     { label: '1 Month', value: 30 },
     { label: '3 Months', value: 90 },
     { label: '1 Year', value: 365 },
-    { label: 'Forever', value: 365 * 100 }
+    { label: 'Forever', value: 365 * 100 },
+    { label: 'Custom', value: -1 }
+];
+
+export const customRetainingOptions = [
+    { label: 'Days', value: 1, max: 30 },
+    { label: 'Weeks', value: 7, max: 4 },
+    { label: 'Months', value: 30, max: 12 }
 ];

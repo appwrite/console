@@ -10,13 +10,14 @@
     } from '$lib/elements/forms';
     import { ID } from '@appwrite.io/console';
     import { capitalize } from '$lib/helpers/string';
-    import { backupRetainingOptions } from '../store';
+    import { backupRetainingOptions, customRetainingOptions } from '../store';
     import { policyPricing, presetPolicies } from './store';
     import {
         backupFrequencies,
         backupPolicyDescription,
         type UserBackupPolicy
     } from '$lib/helpers/backups';
+    import { InputNumber } from '$lib/elements/forms/index.js';
 
     export let isShowing: boolean;
     export let title: string | undefined = undefined;
@@ -43,6 +44,9 @@
     let policyFrequency = 'monthly';
     let monthlyBackupFrequency = 'end';
 
+    $: customRetentionEnabled = policyRetention === -1;
+    let customRetention = { ...customRetainingOptions[2], number: null };
+
     const resetFormVariables = () => {
         policyInEdit = null;
         policyRetention = 30;
@@ -50,9 +54,18 @@
         backupPolicyName = null;
         policyFrequency = 'monthly';
         monthlyBackupFrequency = 'end';
+
+        customRetentionEnabled = false;
     };
 
     const handleSavePolicy = () => {
+        if (customRetentionEnabled) {
+            policyRetention =
+                customRetention.number *
+                customRetainingOptions.find((option) => option.value === customRetention.value)
+                    .value;
+        }
+
         const userBackupPolicy = {
             default: false,
             selectedTime,
@@ -110,6 +123,15 @@
                 return policy;
             })
         );
+    }
+
+    $: {
+        const selectedOption = customRetainingOptions.find(
+            (option) => option.value === customRetention.value
+        );
+        if (selectedOption) {
+            customRetention = { ...selectedOption, number: customRetention.number };
+        }
     }
 </script>
 
@@ -265,6 +287,26 @@
                                     bind:value={policyRetention}
                                     options={backupRetainingOptions} />
                                 <span>
+                                    {#if customRetentionEnabled}
+                                        <div class="u-flex u-gap-8 u-padding-block-start-12">
+                                            <div class="u-width-150">
+                                                <InputNumber
+                                                    min={1}
+                                                    id="number"
+                                                    placeholder="08"
+                                                    max={customRetention.max}
+                                                    bind:value={customRetention.number} />
+                                            </div>
+
+                                            <InputSelect
+                                                fullWidth
+                                                id="retention"
+                                                placeholder="Months"
+                                                options={customRetainingOptions}
+                                                bind:value={customRetention.value} />
+                                        </div>
+                                    {/if}
+
                                     {#if policyRetention === 365 * 100}
                                         Every backup created under this policy will be retained <b
                                             >forever</b
