@@ -16,7 +16,7 @@ export const load: PageLoad = async ({ params, url, route, depends }) => {
 
     try {
         [backups, policies] = await Promise.all([
-            await sdk.forProject.backups.listArchives([
+            sdk.forProject.backups.listArchives([
                 Query.limit(limit),
                 Query.offset(offset),
                 Query.orderDesc(''),
@@ -24,7 +24,7 @@ export const load: PageLoad = async ({ params, url, route, depends }) => {
                 Query.equal('resourceId', params.database)
             ]),
 
-            await sdk.forProject.backups.listPolicies([
+            sdk.forProject.backups.listPolicies([
                 Query.limit(limit),
                 Query.offset(offset),
                 Query.orderDesc(''),
@@ -36,14 +36,8 @@ export const load: PageLoad = async ({ params, url, route, depends }) => {
         // ignore
     }
 
-    const lastBackupDates: Record<string, string | null> = policies.policies.reduce(
-        (acc, policy) => {
-            const lastBackup = getPreviousBackup(policy, backups.archives);
-            if (lastBackup) acc[policy.$id] = lastBackup;
-            return acc;
-        },
-        {}
-    );
+    const archivesByPolicy = groupArchivesByPolicy(backups.archives);
+    const lastBackupDates = Object.fromEntries(getLatestBackupForPolicies(archivesByPolicy));
 
     return {
         offset,
@@ -55,16 +49,24 @@ export const load: PageLoad = async ({ params, url, route, depends }) => {
     };
 };
 
-// TODO: would be best if we could get the last backup from the database model itself.
-const getPreviousBackup = (
-    policy: Models.BackupPolicy,
-    archives: Models.BackupArchive[]
-): string | null => {
-    const latestBackup = archives
-        .filter((archive) => archive.policyId === policy.$id)
-        .sort((a, b) => new Date(b.$createdAt).getTime() - new Date(a.$createdAt).getTime())[0];
+const groupArchivesByPolicy = (archives: Models.BackupArchive[]) => {
+    return archives.reduce((acc, archive) => {
+        if (!acc.has(archive.policyId)) {
+            acc.set(archive.policyId, []);
+        }
+        acc.get(archive.policyId)!.push(archive);
+        return acc;
+    }, new Map<string, Models.BackupArchive[]>());
+};
 
-    return latestBackup && new Date(latestBackup.$createdAt).getTime() < Date.now()
-        ? latestBackup.$createdAt
-        : null;
+const getLatestBackupForPolicies = (policyIdMap: Map<string, Models.BackupArchive[]>) => {
+    const latestBackups = new Map<string, string | null>();
+    for (const [policyId, archives] of policyIdMap) {
+        const latestBackup = archives
+            .sort((a, b) => new Date(b.$createdAt).getTime() - new Date(a.$createdAt).getTime())[0];
+        if (latestBackup && new Date(latestBackup.$createdAt).getTime() < Date.now()) {
+            latestBackups.set(policyId, latestBackup.$createdAt);
+        }
+    }
+    return latestBackups;
 };
