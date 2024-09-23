@@ -119,36 +119,41 @@
                 <ProgressBarBig
                     currentUnit={currentHumanized.unit}
                     currentValue={currentHumanized.value}
-                    maxUnit="GB"
-                    maxValue={max.toString()}
+                    maxUnit=""
+                    maxValue={`of ${max.toString()} GB used`}
                     progressValue={bytesToSize(current, 'GB')}
                     progressMax={max}
                     showBar={false} />
-                <BarChart
-                    options={{
-                        yAxis: {
-                            axisLabel: {
-                                formatter: (value) =>
-                                    value
-                                        ? `${humanFileSize(+value).value} ${
-                                              humanFileSize(+value).unit
-                                          }`
-                                        : '0'
+                <div style:margin-top="-1.5em">
+                    <BarChart
+                        options={{
+                            yAxis: {
+                                axisLabel: {
+                                    formatter: (value) =>
+                                        value
+                                            ? `${humanFileSize(+value).value} ${
+                                                  humanFileSize(+value).unit
+                                              }`
+                                            : '0'
+                                }
                             }
-                        }
-                    }}
-                    series={[
-                        {
-                            name: 'Bandwidth',
-                            data: [
-                                ...data.organizationUsage.bandwidth.map((e) => [e.date, e.value])
-                            ],
-                            tooltip: {
-                                valueFormatter: (value) =>
-                                    `${humanFileSize(+value).value} ${humanFileSize(+value).unit}`
+                        }}
+                        series={[
+                            {
+                                name: 'Bandwidth',
+                                data: [
+                                    ...data.organizationUsage.bandwidth.map((e) => [
+                                        e.date,
+                                        e.value
+                                    ])
+                                ],
+                                tooltip: {
+                                    valueFormatter: (value) =>
+                                        `${humanFileSize(+value).value} ${humanFileSize(+value).unit}`
+                                }
                             }
-                        }
-                    ]} />
+                        ]} />
+                </div>
                 {#if project?.length > 0}
                     <ProjectBreakdown projects={project} metric="bandwidth" {data} />
                 {/if}
@@ -183,23 +188,25 @@
                     progressValue={current}
                     progressMax={max}
                     showBar={false} />
-                <BarChart
-                    options={{
-                        yAxis: {
-                            axisLabel: {
-                                formatter: formatNum
+                <div style:margin-top="-1.5em">
+                    <BarChart
+                        options={{
+                            yAxis: {
+                                axisLabel: {
+                                    formatter: formatNum
+                                }
                             }
-                        }
-                    }}
-                    series={[
-                        {
-                            name: 'Users',
-                            data: accumulateFromEndingTotal(
-                                data.organizationUsage.users,
-                                data.organizationUsage.usersTotal
-                            )
-                        }
-                    ]} />
+                        }}
+                        series={[
+                            {
+                                name: 'Users',
+                                data: accumulateFromEndingTotal(
+                                    data.organizationUsage.users,
+                                    data.organizationUsage.usersTotal
+                                )
+                            }
+                        ]} />
+                </div>
                 {#if project?.length > 0}
                     <ProjectBreakdown projects={project} metric="users" {data} />
                 {/if}
@@ -231,27 +238,32 @@
                 <ProgressBarBig
                     currentUnit="Executions"
                     currentValue={formatNum(current)}
-                    maxUnit="Executions"
-                    maxValue={formatNum(max)}
+                    maxUnit=""
+                    maxValue={`of ${formatNum(max)} Executions used`}
                     progressValue={current}
                     progressMax={max}
                     showBar={false} />
-                <BarChart
-                    options={{
-                        yAxis: {
-                            axisLabel: {
-                                formatter: formatNum
+                <div style:margin-top="-1.5em">
+                    <BarChart
+                        options={{
+                            yAxis: {
+                                axisLabel: {
+                                    formatter: formatNum
+                                }
                             }
-                        }
-                    }}
-                    series={[
-                        {
-                            name: 'Executions',
-                            data: [
-                                ...data.organizationUsage.executions.map((e) => [e.date, e.value])
-                            ]
-                        }
-                    ]} />
+                        }}
+                        series={[
+                            {
+                                name: 'Executions',
+                                data: [
+                                    ...data.organizationUsage.executions.map((e) => [
+                                        e.date,
+                                        e.value
+                                    ])
+                                ]
+                            }
+                        ]} />
+                </div>
                 {#if project?.length > 0}
                     <ProjectBreakdown projects={project} metric="executions" {data} />
                 {/if}
@@ -311,8 +323,8 @@
                 <ProgressBarBig
                     currentUnit={currentHumanized.unit}
                     currentValue={currentHumanized.value}
-                    maxUnit="GB"
-                    maxValue={max.toString()}
+                    maxUnit=""
+                    maxValue={`of ${max.toString()} GB used`}
                     progressValue={bytesToSize(current, 'GB')}
                     progressMax={max}
                     progressBarData={progressBarStorageDate} />
@@ -336,12 +348,16 @@
         <Heading tag="h6" size="7">GB hours</Heading>
 
         <p class="text">
-            GB hours represent the memory usage (in gigabytes) of your function executions and builds, multiplied by the total execution time (in hours).
+            GB hours represent the memory usage (in gigabytes) of your function executions and
+            builds, multiplied by the total execution time (in hours).
         </p>
 
         <svelte:fragment slot="aside">
             {#if data.organizationUsage.storageTotal}
-                {@const totalGbHours = mbSecondsToGBHours(data.organizationUsage.executionsMBSecondsTotal + data.organizationUsage.buildsMBSecondsTotal)}
+                {@const totalGbHours = mbSecondsToGBHours(
+                    data.organizationUsage.executionsMBSecondsTotal +
+                        data.organizationUsage.buildsMBSecondsTotal
+                )}
                 {@const progressBarStorageDate = [
                     {
                         size: mbSecondsToGBHours(data.organizationUsage.executionsMBSecondsTotal),
@@ -363,7 +379,8 @@
                 <div class="u-flex u-flex-vertical">
                     <div class="u-flex u-main-space-between">
                         <p>
-                            <span class="heading-level-4">{Math.round(totalGbHours).toLocaleString('en-US')}</span>
+                            <span class="heading-level-4"
+                                >{Math.round(totalGbHours).toLocaleString('en-US')}</span>
                             <span class="body-text-1 u-bold">{`GB hours`}</span>
                         </p>
                     </div>
