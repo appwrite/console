@@ -62,8 +62,9 @@ const groupArchivesByPolicy = (archives: Models.BackupArchive[]) => {
 const getLatestBackupForPolicies = (policyIdMap: Map<string, Models.BackupArchive[]>) => {
     const latestBackups = new Map<string, string | null>();
     for (const [policyId, archives] of policyIdMap) {
-        const latestBackup = archives
-            .sort((a, b) => new Date(b.$createdAt).getTime() - new Date(a.$createdAt).getTime())[0];
+        const latestBackup = archives.sort(
+            (a, b) => new Date(b.$createdAt).getTime() - new Date(a.$createdAt).getTime()
+        )[0];
         if (latestBackup && new Date(latestBackup.$createdAt).getTime() < Date.now()) {
             latestBackups.set(policyId, latestBackup.$createdAt);
         }
