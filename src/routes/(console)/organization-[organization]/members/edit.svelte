@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Modal } from '$lib/components';
-    import { InputText, InputEmail, Button, FormList } from '$lib/elements/forms';
+    import { Button, FormList } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { createEventDispatcher } from 'svelte';
@@ -16,7 +16,8 @@
 
     const dispatch = createEventDispatcher();
 
-    let error: string, role: string;
+    let error: string;
+    let role = selectedMember?.roles?.[0];
 
     const roles = [
         {
@@ -67,27 +68,17 @@
 
     $: if (!showEdit) {
         error = null;
-        role = selectedMember?.roles.join(',') ?? 'owner';
+        role = null;
+    }
+
+    $: if (showEdit && !role) {
+        role = selectedMember.roles?.[0];
     }
 </script>
 
-<Modal title="Invite member" {error} size="big" bind:show={showEdit} onSubmit={submit}>
+<Modal title="Edit role" {error} size="big" bind:show={showEdit} onSubmit={submit}>
     <FormList>
-        <InputEmail
-            required
-            id="email"
-            label="Email"
-            placeholder="Enter email"
-            autofocus={true}
-            disabled={true}
-            bind:value={selectedMember.userEmail} />
-        <InputText
-            id="member-name"
-            label="Name (optional)"
-            placeholder="Enter name"
-            disabled={true}
-            bind:value={selectedMember.userName} />
-        <InputSelect id="role" label="Role" options={roles} bind:value={role} />
+        <InputSelect id="role" label="Role" required options={roles} bind:value={role} />
     </FormList>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (showEdit = false)}>Cancel</Button>

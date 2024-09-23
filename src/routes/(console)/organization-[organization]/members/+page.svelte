@@ -1,13 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import {
-        AvatarInitials,
-        Drop,
-        DropList,
-        DropListItem,
-        PaginationWithLimit
-    } from '$lib/components';
+    import { AvatarInitials, DropList, DropListItem, PaginationWithLimit } from '$lib/components';
     import { Pill } from '$lib/elements';
     import {
         TableBody,
@@ -77,36 +71,36 @@
             <TableHeader>
                 <TableCellHead width={160}>Name</TableCellHead>
                 <TableCellHead width={120}>Email</TableCellHead>
-                <TableCellHead width={120}>
-                    <Drop isPopover bind:show={showPopover} display="inline-block">
-                        &nbsp;<button
-                            type="button"
-                            on:click={() => (showPopover = !showPopover)}
-                            class="tooltip"
-                            aria-label="input tooltip">
-                            <span
-                                class="icon-info"
-                                aria-hidden="true"
-                                style="font-size: var(--icon-size-small)" />
-                        </button>
-                        <svelte:fragment slot="list">
-                            <div
-                                class="dropped card u-max-width-250"
-                                style:--card-border-radius="var(--border-radius-small)"
-                                style:--p-card-padding=".75rem"
-                                style:text-transform="none"
-                                style:text-wrap="wrap"
-                                style:box-shadow="var(--shadow-large)">
-                                <div class="u-flex-vertical u-gap-16">
-                                    {#each ['<b>Roles</b>', 'Owner, Developer, Editor, Analyst, Billing.', '<a href="https://appwrite.io/docs/roles">Learn more</a> about roles.'] as line}
-                                        <p>{@html line}</p>
-                                    {/each}
+                <div style:--p-col-width={120} class="table-thead-col" role="columnheader">
+                    <span class="u-flex u-gap-8 u-cross-center">
+                        <span class="eyebrow-heading-3"> Role </span>
+                        <DropList bind:show={showPopover} width="20" scrollable>
+                            <button type="button" on:click={() => (showPopover = !showPopover)}>
+                                <span
+                                    class="icon-info"
+                                    aria-hidden="true"
+                                    style="font-size: var(--icon-size-small)" />
+                            </button>
+                            <svelte:fragment slot="list">
+                                <div class="u-flex u-flex-vertical u-gap-8 u-break-word">
+                                    <p class="u-bold">Roles</p>
+                                    <p>
+                                        Owner, Developer <span class="inline-tag">Default</span>,
+                                        Editor, Analyst, Billing.
+                                    </p>
+                                    <p>
+                                        <a
+                                            class="link"
+                                            href="http://appwrite.io/docs/roles"
+                                            target="_blank"
+                                            rel="noopener noreferrer">Learn more</a> about roles.
+                                    </p>
                                 </div>
-                            </div>
-                        </svelte:fragment>
-                    </Drop>
-                    Role
-                </TableCellHead>
+                            </svelte:fragment>
+                        </DropList>
+                    </span>
+                </div>
+
                 <TableCellHead width={90}>2FA</TableCellHead>
                 {#if $isOwner}
                     <TableCellHead width={30} />
@@ -168,7 +162,7 @@
                                                 showEdit = true;
                                                 showDropdown[index] = false;
                                             }}>
-                                            Edit
+                                            Edit role
                                         </DropListItem>
                                         {#if member.invited && !member.joined}
                                             <DropListItem
