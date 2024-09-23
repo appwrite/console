@@ -209,8 +209,8 @@
             <span class="body-text-2 u-bold darker-neutral-color">
                 {cleanBackupName(selectedBackup)}
             </span>
-            <div class="u-flex u-cross-center u-gap-6">
-                <span>
+            <div class="u-flex u-cross-center u-gap-6 u-width-full-line">
+                <span class="u-flex u-cross-center u-gap-4">
                     <span class="u-color-text-success u-font-size-12">●</span> Completed
                 </span>
                 <span class="small-ellipse">●</span>
