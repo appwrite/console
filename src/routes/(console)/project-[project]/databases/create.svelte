@@ -24,7 +24,7 @@
     let showCustomId = false;
     let showPlanUpgradeAlert = true;
 
-    const createPolicies = async () => {
+    const createPolicies = async (resourceId: string) => {
         if (!totalPolicies.length) return;
 
         const totalPoliciesPromise = totalPolicies.map((policy) => {
@@ -36,7 +36,7 @@
                 policy.retained,
                 policy.schedule,
                 policy.label,
-                id
+                resourceId
             );
         });
 
@@ -45,8 +45,9 @@
 
     const create = async () => {
         try {
-            const database = await sdk.forProject.databases.create(id ? id : ID.unique(), name);
-            await createPolicies();
+            const databaseId = id ? id : ID.unique();
+            const database = await sdk.forProject.databases.create(databaseId, name);
+            await createPolicies(databaseId);
 
             showCreate = false;
             dispatch('created', database);
@@ -85,7 +86,7 @@
         {#if !showCustomId}
             <div>
                 <Pill button on:click={() => (showCustomId = !showCustomId)}
-                    ><span class="icon-pencil" aria-hidden="true" /><span class="text">
+                ><span class="icon-pencil" aria-hidden="true" /><span class="text">
                         Database ID
                     </span></Pill>
             </div>
@@ -105,9 +106,9 @@
             {/if}
         {:else}
             <CreatePolicy
-                isModal={false}
-                title="Backup policies"
                 bind:totalPolicies
+                isShowing={showCreate}
+                title="Backup policies"
                 subtitle="Protect your data and ensure quick recovery by adding backup policies." />
         {/if}
     </FormList>

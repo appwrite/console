@@ -21,9 +21,12 @@
     import { app } from '$lib/stores/app';
     import { onMount } from 'svelte';
     import { feedback } from '$lib/stores/feedback';
+    import { cronExpression, type UserBackupPolicy } from '$lib/helpers/backups';
 
     let showCreatePolicy = false;
+    let policyCreateError: string;
     let showCreateManualBackup = false;
+    let totalPolicies: UserBackupPolicy[] = [];
     let isDisabled = isSelfHosted || (isCloud && $organization?.billingPlan === BillingPlan.FREE);
 
     export let data: PageData;
@@ -79,6 +82,46 @@
             });
         } finally {
             showCreateManualBackup = false;
+        }
+    };
+
+    const createPolicies = async () => {
+        const totalPoliciesPromise = totalPolicies.map((policy) => {
+            cronExpression(policy);
+
+            return sdk.forProject.backups.createPolicy(
+                policy.id,
+                ['databases'],
+                policy.retained,
+                policy.schedule,
+                policy.label,
+                data.database.$id
+            );
+        });
+
+        try {
+            await Promise.all(totalPoliciesPromise);
+
+            const message =
+                totalPolicies.length > 1
+                    ? `Backup policies have been created`
+                    : `<b>${totalPolicies[0].label}</b> policy has been created`;
+
+            addNotification({
+                isHtml: true,
+                type: 'success',
+                message
+            });
+
+            invalidate(Dependencies.BACKUPS);
+        } catch (err) {
+            addNotification({
+                type: 'error',
+                message: err.message
+            });
+        } finally {
+            totalPolicies = [];
+            showCreatePolicy = false;
         }
     };
 
@@ -165,7 +208,20 @@
     </div>
 </Container>
 
-<CreatePolicy bind:showCreate={showCreatePolicy} />
+<Modal
+    title="Create backup policy"
+    size="big"
+    onSubmit={createPolicies}
+    bind:show={showCreatePolicy}
+    bind:error={policyCreateError}>
+
+    <CreatePolicy bind:totalPolicies isShowing={showCreatePolicy} />
+
+    <svelte:fragment slot="footer">
+        <Button secondary on:click={() => (showCreatePolicy = false)}>Cancel</Button>
+        <Button submit disabled={!totalPolicies.length}>Create</Button>
+    </svelte:fragment>
+</Modal>
 
 <Modal
     title="Create manual backup"

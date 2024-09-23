@@ -1,5 +1,3 @@
-import { ID } from '@appwrite.io/console';
-
 export type UserBackupPolicy = {
     id?: string;
     label: string;
@@ -17,7 +15,6 @@ export type UserBackupPolicy = {
 
 export const cronExpression = (policy: UserBackupPolicy) => {
     const now = new Date();
-    if (!policy.id) policy.id = ID.unique();
 
     if (policy.plainTextFrequency === 'hourly') {
         const utcMinute = now.getUTCMinutes();
