@@ -45,9 +45,7 @@
         <div class="alert-container">
             <article class="card">
                 {#key currentModalAlert.id}
-                    <button
-                        class="icon-inline-tag"
-                        on:click={() => handleClose(currentModalAlert)}>
+                    <button class="icon-inline-tag" on:click={() => handleClose(currentModalAlert)}>
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="20"
