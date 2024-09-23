@@ -9,7 +9,7 @@
     } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { Button } from '$lib/elements/forms';
-    import { bytesToSize, humanFileSize } from '$lib/helpers/sizeConvertion';
+    import { bytesToSize, humanFileSize, mbSecondsToGBHours } from '$lib/helpers/sizeConvertion';
     import { BarChart } from '$lib/charts';
     import ProjectBreakdown from './ProjectBreakdown.svelte';
     import { formatNum } from '$lib/helpers/string';
@@ -319,6 +319,59 @@
                 {#if project?.length > 0}
                     <ProjectBreakdown projects={project} metric="storage" {data} />
                 {/if}
+            {:else}
+                <Card isDashed>
+                    <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
+                        <span
+                            class="icon-chart-square-bar text-large"
+                            aria-hidden="true"
+                            style="font-size: 32px;" />
+                        <p class="u-bold">No data to show</p>
+                    </div>
+                </Card>
+            {/if}
+        </svelte:fragment>
+    </CardGrid>
+    <CardGrid>
+        <Heading tag="h6" size="7">GB hours</Heading>
+
+        <p class="text">
+            GB hours represent the memory usage (in gigabytes) of your function executions and builds, multiplied by the total execution time (in hours).
+        </p>
+
+        <svelte:fragment slot="aside">
+            {#if data.organizationUsage.storageTotal}
+                {@const totalGbHours = mbSecondsToGBHours(data.organizationUsage.executionsMBSecondsTotal + data.organizationUsage.buildsMBSecondsTotal)}
+                {@const progressBarStorageDate = [
+                    {
+                        size: mbSecondsToGBHours(data.organizationUsage.executionsMBSecondsTotal),
+                        color: '#85DBD8',
+                        tooltip: {
+                            title: 'Executions',
+                            label: `${Math.round(mbSecondsToGBHours(data.organizationUsage.executionsMBSecondsTotal)).toLocaleString('en-US')} GB hours`
+                        }
+                    },
+                    {
+                        size: mbSecondsToGBHours(data.organizationUsage.buildsMBSecondsTotal),
+                        color: '#FE9567',
+                        tooltip: {
+                            title: 'Deployments',
+                            label: `${Math.round(mbSecondsToGBHours(data.organizationUsage.buildsMBSecondsTotal)).toLocaleString('en-US')} GB hours`
+                        }
+                    }
+                ]}
+                <div class="u-flex u-flex-vertical">
+                    <div class="u-flex u-main-space-between">
+                        <p>
+                            <span class="heading-level-4">{Math.round(totalGbHours).toLocaleString('en-US')}</span>
+                            <span class="body-text-1 u-bold">{`GB hours`}</span>
+                        </p>
+                    </div>
+                </div>
+                <ProgressBarBig
+                    progressMax={totalGbHours}
+                    progressValue={totalGbHours}
+                    progressBarData={progressBarStorageDate} />
             {:else}
                 <Card isDashed>
                     <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
