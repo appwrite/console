@@ -214,7 +214,6 @@
     onSubmit={createPolicies}
     bind:show={showCreatePolicy}
     bind:error={policyCreateError}>
-
     <CreatePolicy bind:totalPolicies isShowing={showCreatePolicy} />
 
     <svelte:fragment slot="footer">

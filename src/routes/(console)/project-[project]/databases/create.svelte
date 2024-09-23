@@ -86,7 +86,7 @@
         {#if !showCustomId}
             <div>
                 <Pill button on:click={() => (showCustomId = !showCustomId)}
-                ><span class="icon-pencil" aria-hidden="true" /><span class="text">
+                    ><span class="icon-pencil" aria-hidden="true" /><span class="text">
                         Database ID
                     </span></Pill>
             </div>

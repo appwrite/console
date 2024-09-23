@@ -1,10 +1,22 @@
 <script lang="ts">
-    import { Button, FormList, Helper, InputCheckbox, InputSelect, InputText, InputTime } from '$lib/elements/forms';
+    import {
+        Button,
+        FormList,
+        Helper,
+        InputCheckbox,
+        InputSelect,
+        InputText,
+        InputTime
+    } from '$lib/elements/forms';
     import { ID } from '@appwrite.io/console';
     import { capitalize } from '$lib/helpers/string';
     import { backupRetainingOptions } from '../store';
     import { policyPricing, presetPolicies } from './store';
-    import { backupFrequencies, backupPolicyDescription, type UserBackupPolicy } from '$lib/helpers/backups';
+    import {
+        backupFrequencies,
+        backupPolicyDescription,
+        type UserBackupPolicy
+    } from '$lib/helpers/backups';
 
     export let isShowing: boolean;
     export let title: string | undefined = undefined;
@@ -154,33 +166,33 @@
                                             noMargin
                                             class="icon-pencil height-fit-content"
                                             on:click={() => {
-                                                    policyInEdit = policy.id;
-                                                    backupPolicyName = policy.label;
-                                                    policyRetention = policy.retained;
-                                                    selectedTime = policy.selectedTime;
-                                                    policyFrequency = policy.plainTextFrequency;
-                                                    monthlyBackupFrequency =
-                                                        policy.monthlyBackupFrequency;
+                                                policyInEdit = policy.id;
+                                                backupPolicyName = policy.label;
+                                                policyRetention = policy.retained;
+                                                selectedTime = policy.selectedTime;
+                                                policyFrequency = policy.plainTextFrequency;
+                                                monthlyBackupFrequency =
+                                                    policy.monthlyBackupFrequency;
 
-                                                    // do not show in the list can cause confusion.
-                                                    listOfCustomPolicies = [
-                                                        ...listOfCustomPolicies.filter(
-                                                            (p) => policy.id !== p.id
-                                                        )
-                                                    ];
-                                                }} />
+                                                // do not show in the list can cause confusion.
+                                                listOfCustomPolicies = [
+                                                    ...listOfCustomPolicies.filter(
+                                                        (p) => policy.id !== p.id
+                                                    )
+                                                ];
+                                            }} />
 
                                         <Button
                                             text
                                             noMargin
                                             class="icon-trash height-fit-content"
                                             on:click={() => {
-                                                    listOfCustomPolicies = [
-                                                        ...listOfCustomPolicies.filter(
-                                                            (p) => policy.id !== p.id
-                                                        )
-                                                    ];
-                                                }} />
+                                                listOfCustomPolicies = [
+                                                    ...listOfCustomPolicies.filter(
+                                                        (p) => policy.id !== p.id
+                                                    )
+                                                ];
+                                            }} />
                                     </div>
                                 </div>
 
@@ -204,11 +216,11 @@
                                     placeholder="Select runtime"
                                     bind:value={policyFrequency}
                                     options={['hourly', 'daily', 'weekly', 'monthly'].map(
-                                            (freq) => ({
-                                                value: freq,
-                                                label: freq.charAt(0).toUpperCase() + freq.slice(1)
-                                            })
-                                        )}
+                                        (freq) => ({
+                                            value: freq,
+                                            label: freq.charAt(0).toUpperCase() + freq.slice(1)
+                                        })
+                                    )}
                                     required />
                                 {#if policyFrequency === 'hourly'}
                                     <span>{formPolicyDescription()}</span>
@@ -230,15 +242,13 @@
 
                                         <div
                                             class:u-margin-block-start-4={policyFrequency ===
-                                                    'monthly'}>
+                                                'monthly'}>
                                             <InputTime
                                                 id="time"
                                                 bind:value={selectedTime}
-                                                label={['daily', 'weekly'].includes(
-                                                        policyFrequency
-                                                    )
-                                                        ? 'Timing'
-                                                        : ''} />
+                                                label={['daily', 'weekly'].includes(policyFrequency)
+                                                    ? 'Timing'
+                                                    : ''} />
                                         </div>
                                     </div>
 
@@ -255,19 +265,18 @@
                                     bind:value={policyRetention}
                                     options={backupRetainingOptions} />
                                 <span>
-                                        {#if policyRetention === 365 * 100}
-                                            Every backup created under this policy will be retained <b
-                                        >forever</b
+                                    {#if policyRetention === 365 * 100}
+                                        Every backup created under this policy will be retained <b
+                                            >forever</b
                                         >.
-                                        {:else}
-                                            Every backup created under this policy will be retained
-                                            for <b>
-                                                {backupRetainingOptions.find(
-                                                    (option) => option.value === policyRetention
-                                                )?.label ?? '3 months'}
-                                            </b> before being automatically deleted.
-                                        {/if}
-                                    </span>
+                                    {:else}
+                                        Every backup created under this policy will be retained for <b>
+                                            {backupRetainingOptions.find(
+                                                (option) => option.value === policyRetention
+                                            )?.label ?? '3 months'}
+                                        </b> before being automatically deleted.
+                                    {/if}
+                                </span>
                             </div>
 
                             <div>
@@ -288,22 +297,22 @@
                                 <Button
                                     text
                                     on:click={() => {
-                                            showCustomPolicy = false;
-                                        }}
-                                >Cancel
+                                        showCustomPolicy = false;
+                                    }}
+                                    >Cancel
                                 </Button>
 
                                 <Button
                                     secondary
                                     on:click={() => {
-                                            if (!backupPolicyName) {
-                                                policyNameError = true;
-                                                return;
-                                            }
+                                        if (!backupPolicyName) {
+                                            policyNameError = true;
+                                            return;
+                                        }
 
-                                            policyNameError = false;
-                                            handleSavePolicy();
-                                        }}>
+                                        policyNameError = false;
+                                        handleSavePolicy();
+                                    }}>
                                     {policyInEdit ? 'Update' : 'Save'}
                                 </Button>
                             </div>
@@ -312,10 +321,8 @@
                 </section>
             {:else}
                 <div class="u-flex u-main-space-between u-padding-inline-4 u-width-full-line">
-                    <button
-                        class="custom-policy-text"
-                        on:click={() => (showCustomPolicy = true)}
-                    >Custom policy
+                    <button class="custom-policy-text" on:click={() => (showCustomPolicy = true)}
+                        >Custom policy
                     </button>
                     <span>Total: ${totalPolicies.length * policyPricing}.00</span>
                 </div>
