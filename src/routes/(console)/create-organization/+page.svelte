@@ -10,6 +10,7 @@
         SelectPaymentMethod
     } from '$lib/components/billing';
     import ValidateCreditModal from '$lib/components/billing/validateCreditModal.svelte';
+    import Default from '$lib/components/roles/default.svelte';
     import { BillingPlan, Dependencies } from '$lib/constants';
     import { Button, Form, FormList, InputTags, InputText, Label } from '$lib/elements/forms';
     import {
@@ -194,9 +195,7 @@
                     <InputTags
                         bind:tags={collaborators}
                         label="Invite members by email"
-                        popover={[
-                            'By default, all members are assigned a <span class="u-bold">Developer</span> role. You can change this at any time from your organization settings. <a class="link" target="_blank" rel="noopener noreferrer" href="https://appwrite.io/docs/roles">Learn more.</a>'
-                        ]}
+                        popover={Default}
                         placeholder="Enter email address(es)"
                         validityRegex={emailRegex}
                         validityMessage="Invalid email address"

@@ -13,6 +13,7 @@
     import { isCloud } from '$lib/system';
     import { roles } from '$lib/stores/billing';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
+    import Roles from '$lib/components/roles/roles.svelte';
 
     export let showCreate = false;
 
@@ -90,16 +91,7 @@
             label="Name (optional)"
             placeholder="Enter name"
             bind:value={name} />
-        <InputSelect
-            popover={[
-                '<span class="u-bold">Roles</span>',
-                'Owner, Developer <span class="inline-tag u-normal u-x-small">Default</span>, Editor, Analyst, Billing.',
-                '<a class="link" target="_blank" rel="noopener noreferrer" href="https://appwrite.io/docs/roles">Learn more</a> about roles.'
-            ]}
-            id="role"
-            label="Role"
-            options={roles}
-            bind:value={role} />
+        <InputSelect popover={Roles} id="role" label="Role" options={roles} bind:value={role} />
     </FormList>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>

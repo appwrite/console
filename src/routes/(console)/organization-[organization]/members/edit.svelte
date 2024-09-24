@@ -10,6 +10,7 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
     import type { Models } from '@appwrite.io/console';
+    import Roles from '$lib/components/roles/roles.svelte';
 
     export let showEdit = false;
     export let selectedMember: Models.Membership;
@@ -79,11 +80,7 @@
 <Modal title="Edit role" {error} size="big" bind:show={showEdit} onSubmit={submit}>
     <FormList>
         <InputSelect
-            popover={[
-                '<span class="u-bold">Roles</span>',
-                'Owner, Developer <span class="inline-tag u-normal u-x-small">Default</span>, Editor, Analyst, Billing.',
-                '<a class="link" target="_blank" rel="noopener noreferrer" href="https://appwrite.io/docs/roles">Learn more</a> about roles.'
-            ]}
+            popover={Roles}
             id="role"
             label="Role"
             required

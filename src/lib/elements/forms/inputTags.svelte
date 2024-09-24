@@ -1,6 +1,6 @@
 <script lang="ts">
     import { last } from '$lib/helpers/array';
-    import { onMount } from 'svelte';
+    import { onMount, SvelteComponent } from 'svelte';
     import { FormItem, Helper, Label } from '.';
     import { Drop } from '$lib/components';
 
@@ -16,7 +16,8 @@
     export let tooltip: string = null;
     export let validityRegex: RegExp = null;
     export let validityMessage: string = null;
-    export let popover: string[] | null = null;
+    export let popover: typeof SvelteComponent<unknown> = null;
+    export let popoverProps: Record<string, unknown> = {};
 
     let value = '';
     let element: HTMLInputElement;
@@ -103,19 +104,15 @@
                     <span
                         class="icon-info"
                         aria-hidden="true"
-                        style:font-size="var(--icon-size-small)" />
+                        style="font-size: var(--icon-size-small)" />
                 </button>
                 <svelte:fragment slot="list">
                     <div
                         class="dropped card u-max-width-250"
-                        style:--p-card-padding=".75rem"
                         style:--card-border-radius="var(--border-radius-small)"
+                        style:--p-card-padding=".75rem"
                         style:box-shadow="var(--shadow-large)">
-                        <div class="u-flex-vertical u-gap-16">
-                            {#each popover as line}
-                                <p>{@html line}</p>
-                            {/each}
-                        </div>
+                        <svelte:component this={popover} {...popoverProps} />
                     </div>
                 </svelte:fragment>
             </Drop>
