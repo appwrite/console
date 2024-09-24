@@ -273,7 +273,6 @@
 
         <svelte:fragment slot="aside">
             {#if storage}
-                {console.log(data.usage)}
                 {@const humanized = humanFileSize(storage)}
                 {@const progressBarStorageDate = [
                     {
