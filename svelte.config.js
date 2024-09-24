@@ -7,7 +7,6 @@ const config = {
     preprocess: sequence([
         sveltePreprocess({
             scss: {
-                // Disable warnings for legacy SCSS syntax
                 silenceDeprecations: ['legacy-js-api']
             }
         }),
@@ -16,6 +15,7 @@ const config = {
     compilerOptions: {
         accessors: !!process.env.VITEST
     },
+
     kit: {
         alias: {
             $routes: './src/routes'
