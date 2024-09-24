@@ -93,7 +93,7 @@
         <InputSelect
             popover={[
                 '<span class="u-bold">Roles</span>',
-                'Owner, Developer, Editor, Analyst, Billing.',
+                'Owner, Developer <span class="inline-tag u-normal u-x-small">Default</span>, Editor, Analyst, Billing.',
                 '<a class="link" target="_blank" rel="noopener noreferrer" href="https://appwrite.io/docs/roles">Learn more</a> about roles.'
             ]}
             id="role"
