@@ -52,7 +52,9 @@
             case 'pro':
                 return organizationPlan === BillingPlan.FREE;
             case 'scale':
-                return organizationPlan === BillingPlan.FREE || organizationPlan === BillingPlan.PRO;
+                return (
+                    organizationPlan === BillingPlan.FREE || organizationPlan === BillingPlan.PRO
+                );
         }
     }
 </script>
@@ -134,8 +136,7 @@
                                 href={shouldShowUpgrade ? $upgradeURL : currentModalAlert.cta.link}
                                 external={!isCloud}
                                 fullWidthMobile
-                                on:click={() => handleClose()}
-                            >
+                                on:click={() => handleClose()}>
                                 {shouldShowUpgrade ? 'Upgrade plan' : currentModalAlert.cta.text}
                             </Button>
 
@@ -177,9 +178,7 @@
                             {/if}
 
                             <div>
-                                <button
-                                    class="icon-inline-tag"
-                                    on:click={() => handleClose()}>
+                                <button class="icon-inline-tag" on:click={() => handleClose()}>
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         width="20"
@@ -236,11 +235,15 @@
                                 <Button
                                     secondary
                                     class="button"
-                                    href={shouldShowUpgrade ? $upgradeURL : currentModalAlert.cta.link}
+                                    href={shouldShowUpgrade
+                                        ? $upgradeURL
+                                        : currentModalAlert.cta.link}
                                     external={!isCloud}
                                     fullWidthMobile
                                     on:click={() => handleClose()}>
-                                    {shouldShowUpgrade ? 'Upgrade plan' : currentModalAlert.cta.text}
+                                    {shouldShowUpgrade
+                                        ? 'Upgrade plan'
+                                        : currentModalAlert.cta.text}
                                 </Button>
 
                                 {#if currentModalAlert.learnMore && currentModalAlert.learnMore.link}
