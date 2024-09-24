@@ -9,9 +9,11 @@
         dismissBottomModalAlert,
         hideAllModalAlerts
     } from '$lib/stores/bottom-alerts';
+    import { onMount } from 'svelte';
     import { organization } from '$lib/stores/organization';
     import { BillingPlan } from '$lib/constants';
     import { upgradeURL } from '$lib/stores/billing';
+    import { addBottomModalAlerts } from '$routes/(console)/project-[project]/bottomAlerts';
 
     let currentIndex = 0;
     let openModalOnMobile = false;
@@ -57,6 +59,11 @@
                 );
         }
     }
+
+    onMount(() => {
+        addBottomModalAlerts();
+    });
+
 </script>
 
 {#if filteredModalAlerts.length > 0 && currentModalAlert}

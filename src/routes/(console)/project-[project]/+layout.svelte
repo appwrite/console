@@ -3,7 +3,6 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { project, stats } from './store';
-    import { addBottomModalAlerts } from './bottomAlerts';
 
     import { goto } from '$app/navigation';
     import { registerCommands, registerSearchers } from '$lib/commandCenter';
@@ -17,8 +16,6 @@
     } from '$lib/commandCenter/searchers';
     import { page } from '$app/stores';
     import { base } from '$app/paths';
-
-    addBottomModalAlerts();
 
     onMount(() => {
         return sdk.forConsole.client.subscribe(['project', 'console'], (response) => {
