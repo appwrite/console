@@ -27,7 +27,7 @@
         await sdk.forProject.databases.updateDatetimeAttribute(
             databaseId,
             collectionId,
-            data.key,
+            originalKey,
             data.required,
             data.default,
             data.key !== originalKey ? data.key : undefined
