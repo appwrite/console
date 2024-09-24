@@ -136,7 +136,7 @@
                                 fullWidthMobile
                                 on:click={() => handleClose()}
                             >
-                                {shouldShowUpgrade ? 'Upgrade' : currentModalAlert.cta.text}
+                                {shouldShowUpgrade ? 'Upgrade plan' : currentModalAlert.cta.text}
                             </Button>
 
                             {#if currentModalAlert.learnMore && currentModalAlert.learnMore.link}
@@ -240,7 +240,7 @@
                                     external={!isCloud}
                                     fullWidthMobile
                                     on:click={() => handleClose()}>
-                                    {shouldShowUpgrade ? 'Upgrade' : currentModalAlert.cta.text}
+                                    {shouldShowUpgrade ? 'Upgrade plan' : currentModalAlert.cta.text}
                                 </Button>
 
                                 {#if currentModalAlert.learnMore && currentModalAlert.learnMore.link}
