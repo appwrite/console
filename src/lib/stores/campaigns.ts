@@ -1,8 +1,4 @@
-//campaign welcome and startup
-
-import { page } from '$app/stores';
-import { BillingPlan } from '$lib/constants';
-import { derived } from 'svelte/store';
+import type { BillingPlan } from '$lib/constants';
 
 export type Campaign = {
     $id: string;
@@ -28,5 +24,3 @@ export type Review = {
     description: string;
     review: string;
 };
-
-export const campaign = derived(page, ($page) => $page.data.aggregationList as Campaign);
