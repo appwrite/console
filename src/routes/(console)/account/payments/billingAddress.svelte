@@ -35,8 +35,6 @@
     });
 
     $: orgList = $organizationList.teams as unknown as Organization[];
-
-    $: console.log(orgList);
 </script>
 
 <CardGrid>
