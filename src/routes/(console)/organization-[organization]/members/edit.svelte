@@ -56,7 +56,7 @@
             showEdit = false;
             addNotification({
                 type: 'success',
-                message: `Membership updated`
+                message: `Role updated`
             });
             trackEvent(Submit.MembershipUpdate);
             dispatch('updated', membership);
@@ -78,7 +78,17 @@
 
 <Modal title="Edit role" {error} size="big" bind:show={showEdit} onSubmit={submit}>
     <FormList>
-        <InputSelect id="role" label="Role" required options={roles} bind:value={role} />
+        <InputSelect
+            popover={[
+                '<span class="u-bold">Roles</span>',
+                'Owner, Developer <span class="inline-tag u-normal u-x-small">Default</span>, Editor, Analyst, Billing.',
+                '<a class="link" target="_blank" rel="noopener noreferrer" href="https://appwrite.io/docs/roles">Learn more</a> about roles.'
+            ]}
+            id="role"
+            label="Role"
+            required
+            options={roles}
+            bind:value={role} />
     </FormList>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (showEdit = false)}>Cancel</Button>

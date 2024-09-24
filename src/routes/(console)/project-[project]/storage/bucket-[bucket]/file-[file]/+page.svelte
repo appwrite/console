@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { CardGrid, BoxAvatar, Heading, Alert, Id } from '$lib/components';
+    import { CardGrid, BoxAvatar, Heading, Alert, CopyInput } from '$lib/components';
     import { Container } from '$lib/layout';
     import { Button } from '$lib/elements/forms';
     import { file } from './store';
@@ -92,18 +92,22 @@
                         </div>
                     </div>
                 </a>
-                <div class="u-flex u-flex-vertical u-gap-16">
-                    <Heading tag="h2" size="7">{$file.name}</Heading>
-                    <Id value={getView($file.$id)}>File URL</Id>
+                <div class="u-flex u-flex-vertical u-gap-4">
+                    <Heading tag="h2" size="7" trimmed={false} trimmedSecondLine={true}
+                        >{$file.name}</Heading>
+                    <p>{$file.mimeType}</p>
                 </div>
             </div>
             <svelte:fragment slot="aside">
                 <div>
-                    <p>MIME Type: {$file.mimeType}</p>
-                    <p>Size: {calculateSize($file.sizeOriginal)}</p>
-                    <p>Created: {toLocaleDate($file.$createdAt)}</p>
-                    <p>Last updated: {toLocaleDate($file.$updatedAt)}</p>
+                    <p><span class="u-bold">Size:</span> {calculateSize($file.sizeOriginal)}</p>
+                    <p><span class="u-bold">Created:</span> {toLocaleDate($file.$createdAt)}</p>
+                    <p>
+                        <span class="u-bold">Last updated:</span>
+                        {toLocaleDate($file.$updatedAt)}
+                    </p>
                 </div>
+                <CopyInput label="File URL" showLabel={true} value={getView($file.$id)} />
             </svelte:fragment>
 
             <svelte:fragment slot="actions">

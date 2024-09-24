@@ -22,8 +22,9 @@
     import { base } from '$app/paths';
     import { isOwner } from '$lib/stores/roles';
     import Edit from './edit.svelte';
-    import { getRoleLabel } from '$lib/stores/billing';
+    import { getRoleLabel, upgradeURL } from '$lib/stores/billing';
     import { BillingPlan } from '$lib/constants';
+    import { isCloud } from '$lib/system';
 
     export let data: PageData;
 
@@ -84,37 +85,63 @@
                             </button>
                             <svelte:fragment slot="list">
                                 <div class="u-flex u-flex-vertical u-gap-8 u-break-word">
-                                    <p>
-                                        <span class="u-bold">Roles</span>
-                                        {#if $organization?.billingPlan === BillingPlan.FREE}
-                                            <span class="inline-tag">Pro plan</span>
+                                    {#if isCloud}
+                                        <p>
+                                            <span class="u-bold">Roles</span>
+                                            {#if $organization?.billingPlan === BillingPlan.FREE}
+                                                <span class="inline-tag u-normal u-x-small"
+                                                    >Pro plan</span>
+                                            {/if}
+                                        </p>
+                                        {#if $organization?.billingPlan != BillingPlan.FREE}
+                                            <p>
+                                                Owner, Developer <span
+                                                    class="inline-tag u-normal u-x-small"
+                                                    >Default</span
+                                                >, Editor, Analyst, Billing.
+                                            </p>
+                                            <p class="">
+                                                <a
+                                                    class="link"
+                                                    href="http://appwrite.io/docs/roles"
+                                                    target="_blank"
+                                                    rel="noopener noreferrer">Learn more</a> about roles.
+                                            </p>
+                                        {:else}
+                                            <p>
+                                                Owner, <span class="u-color-text-disabled"
+                                                    >Developer, Editor, Analyst.</span>
+                                            </p>
+                                            <p class="u-flex u-main-end u-cross-center u-gap-12">
+                                                <a
+                                                    class="button is-text"
+                                                    href="http://appwrite.io/docs/roles"
+                                                    target="_blank"
+                                                    rel="noopener noreferrer">Learn more</a>
+                                                <a class="button is-secondary" href={$upgradeURL}
+                                                    >Upgrade plan</a>
+                                            </p>
                                         {/if}
-                                    </p>
-                                    {#if $organization?.billingPlan != BillingPlan.FREE}
-                                        <p>
-                                            Owner, Developer <span class="inline-tag">Default</span
-                                            >, Editor, Analyst, Billing.
-                                        </p>
-                                        <p>
-                                            <a
-                                                class="link"
-                                                href="http://appwrite.io/docs/roles"
-                                                target="_blank"
-                                                rel="noopener noreferrer">Learn more</a> about roles.
-                                        </p>
                                     {:else}
                                         <p>
-                                            Owner, <span class="u-color-text-disabled"
-                                                >Developer, Editor, Analyst.</span>
+                                            <span class="u-bold">Roles</span>
+                                            <span class="inline-tag u-normal u-x-small"
+                                                >Appwrite Cloud</span>
+                                        </p>
+                                        <p>
+                                            Upgrade to Cloud to assign new roles to members or ask
+                                            us about our entriprise self hosted offering.
                                         </p>
                                         <p class="u-flex u-main-end u-cross-center u-gap-12">
                                             <a
-                                                class="link"
+                                                class="button is-text"
                                                 href="http://appwrite.io/docs/roles"
                                                 target="_blank"
                                                 rel="noopener noreferrer">Learn more</a>
-                                            <a class="button is-secondary" href="upgrade"
-                                                >Upgrade plan</a>
+                                            <a
+                                                class="button is-secondary"
+                                                href="https://cloud.appwrite.io"
+                                                >Upgrade to Cloud</a>
                                         </p>
                                     {/if}
                                 </div>

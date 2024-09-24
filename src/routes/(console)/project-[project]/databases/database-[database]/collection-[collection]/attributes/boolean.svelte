@@ -20,15 +20,16 @@
     export async function updateBoolean(
         databaseId: string,
         collectionId: string,
-
-        data: Partial<Models.AttributeBoolean>
+        data: Partial<Models.AttributeBoolean>,
+        originalKey?: string
     ) {
         await sdk.forProject.databases.updateBooleanAttribute(
             databaseId,
             collectionId,
-            data.key,
+            originalKey,
             data.required,
-            data.default
+            data.default,
+            data.key !== originalKey ? data.key : undefined
         );
     }
 </script>
