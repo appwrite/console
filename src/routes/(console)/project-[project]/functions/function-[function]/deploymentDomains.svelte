@@ -8,14 +8,17 @@
 </script>
 
 <div class="u-flex u-gap-4 u-cross-center">
-    <Trim alternativeTrim>
-        <a href={`http://${domain.rules[0].domain}`} target="_blank">
+    <a
+        href={`http://${domain.rules[0].domain}`}
+        target="_blank"
+        class="u-flex u-gap-4 u-cross-center">
+        <Trim alternativeTrim>
             <span class="link">
                 {domain.rules[0].domain}
             </span>
-        </a>
-    </Trim>
-    <span class="icon-external-link" aria-hidden="true" />
+        </Trim>
+        <span class="icon-external-link" aria-hidden="true" />
+    </a>
     {#if domain.rules.length > 1}
         <DropList bind:show={showDropdown} scrollable>
             <Pill button on:click={() => (showDropdown = !showDropdown)}>

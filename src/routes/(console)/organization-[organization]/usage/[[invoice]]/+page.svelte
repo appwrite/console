@@ -149,7 +149,9 @@
                             }
                         }
                     ]} />
-                <ProjectBreakdown projects={project} metric="bandwidth" {data} />
+                {#if project?.length > 0}
+                    <ProjectBreakdown projects={project} metric="bandwidth" {data} />
+                {/if}
             {:else}
                 <Card isDashed>
                     <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
@@ -198,7 +200,9 @@
                             )
                         }
                     ]} />
-                <ProjectBreakdown projects={project} metric="users" {data} />
+                {#if project?.length > 0}
+                    <ProjectBreakdown projects={project} metric="users" {data} />
+                {/if}
             {:else}
                 <Card isDashed>
                     <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
@@ -248,7 +252,9 @@
                             ]
                         }
                     ]} />
-                <ProjectBreakdown projects={project} metric="executions" {data} />
+                {#if project?.length > 0}
+                    <ProjectBreakdown projects={project} metric="executions" {data} />
+                {/if}
             {:else}
                 <Card isDashed>
                     <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
@@ -276,6 +282,32 @@
                 {@const current = data.organizationUsage.storageTotal}
                 {@const currentHumanized = humanFileSize(current)}
                 {@const max = getServiceLimit('storage', tier)}
+                {@const progressBarStorageDate = [
+                    {
+                        size: bytesToSize(data.organizationUsage.filesStorageTotal, 'GB'),
+                        color: '#85DBD8',
+                        tooltip: {
+                            title: 'File storage',
+                            label: `${Math.round(bytesToSize(data.organizationUsage.filesStorageTotal, 'GB') * 100) / 100}GB`
+                        }
+                    },
+                    {
+                        size: bytesToSize(data.organizationUsage.deploymentsStorageTotal, 'GB'),
+                        color: '#7C67FE',
+                        tooltip: {
+                            title: 'Deployments storage',
+                            label: `${Math.round(bytesToSize(data.organizationUsage.deploymentsStorageTotal, 'GB') * 100) / 100}GB`
+                        }
+                    },
+                    {
+                        size: bytesToSize(data.organizationUsage.buildsStorageTotal, 'GB'),
+                        color: '#FE9567',
+                        tooltip: {
+                            title: 'Builds storage',
+                            label: `${Math.round(bytesToSize(data.organizationUsage.buildsStorageTotal, 'GB') * 100) / 100}GB`
+                        }
+                    }
+                ]}
                 <ProgressBarBig
                     currentUnit={currentHumanized.unit}
                     currentValue={currentHumanized.value}
@@ -283,8 +315,10 @@
                     maxValue={max.toString()}
                     progressValue={bytesToSize(current, 'GB')}
                     progressMax={max}
-                    minimum={1} />
-                <ProjectBreakdown projects={project} metric="storage" {data} />
+                    progressBarData={progressBarStorageDate} />
+                {#if project?.length > 0}
+                    <ProjectBreakdown projects={project} metric="storage" {data} />
+                {/if}
             {:else}
                 <Card isDashed>
                     <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">

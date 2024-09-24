@@ -50,7 +50,6 @@
     import Create from './create-file/create.svelte';
     import DeleteFile from './deleteFile.svelte';
     import { isCloud } from '$lib/system';
-    import { onMount } from 'svelte';
 
     export let data;
 
@@ -91,30 +90,6 @@
     $: maxFileSize = isCloud
         ? humanFileSize(sizeToBytes(getServiceLimit('fileSize'), 'MB', 1000))
         : null;
-
-    let isUploading = false;
-
-    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-        if (isUploading) {
-            event.preventDefault();
-            event.returnValue = 'An upload is in progress. Are you sure you want to leave?';
-        }
-    };
-
-    onMount(() => {
-        const unsubscribe = uploader.subscribe(() => {
-            isUploading = $uploader.files.some(
-                (file) => (!file.completed || file.progress < 100) && !file.failed
-            );
-        });
-
-        window.addEventListener('beforeunload', handleBeforeUnload);
-
-        return () => {
-            unsubscribe();
-            window.removeEventListener('beforeunload', handleBeforeUnload);
-        };
-    });
 </script>
 
 <Container>
@@ -172,14 +147,14 @@
                 <TableCellHead onlyDesktop width={140}>Type</TableCellHead>
                 <TableCellHead onlyDesktop width={100}>Size</TableCellHead>
                 <TableCellHead onlyDesktop width={120}>Created</TableCellHead>
-                <TableCellHead width={30} />
+                <TableCellHead width={40} />
             </TableHeader>
             <TableBody>
                 {#each data.files.files as file, index}
                     {#if file.chunksTotal / file.chunksUploaded !== 1}
                         <TableRow>
                             <TableCell title="Name">
-                                <div class="u-flex u-gap-12 u-main-space-between u-cross-center">
+                                <div class="u-flex u-gap-12 u-cross-center">
                                     <span class="avatar is-size-small is-color-empty" />
 
                                     <span class="text u-trim">{file.name}</span>
@@ -197,12 +172,6 @@
                             </TableCellText>
                             <TableCell>
                                 <div class="u-flex u-main-center">
-                                    <button
-                                        class="button is-only-icon is-text"
-                                        aria-label="Delete item"
-                                        on:click|preventDefault>
-                                        <span class="icon-refresh" aria-hidden="true" />
-                                    </button>
                                     <button
                                         class="button is-only-icon is-text"
                                         aria-label="Delete item"

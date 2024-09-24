@@ -1,6 +1,7 @@
 <script lang="ts">
     import { Box, CardGrid, Heading } from '$lib/components';
     import { Button } from '$lib/elements/forms';
+    import { base } from '$app/paths';
     import { sdk } from '$lib/stores/sdk';
     import { Submit, trackEvent } from '$lib/actions/analytics';
 
@@ -43,7 +44,7 @@
                 external
                 class="u-margin-block-start-16"
                 on:click={downloadPdf}
-                href="/legal/dpa.pdf"
+                href="{base}/legal/dpa.pdf"
                 event="download_dpa">
                 <span class="icon-download" aria-hidden="true" />
                 <span class="text">Download</span>

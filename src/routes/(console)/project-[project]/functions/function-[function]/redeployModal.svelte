@@ -11,6 +11,7 @@
 
     export let show = false;
     export let selectedDeployment: Models.Deployment = null;
+    let error: string;
 
     async function redeploy() {
         try {
@@ -28,17 +29,21 @@
             invalidate(Dependencies.FUNCTION);
             invalidate(Dependencies.DEPLOYMENTS);
             show = false;
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
-            trackError(error, Submit.FunctionRedeploy);
+        } catch (e) {
+            error = e.message;
+
+            trackError(e, Submit.FunctionRedeploy);
         }
     }
 </script>
 
-<Modal title="Redeploy function" size="big" bind:show onSubmit={redeploy} headerDivider={false}>
+<Modal
+    title="Redeploy function"
+    size="big"
+    bind:show
+    bind:error
+    onSubmit={redeploy}
+    headerDivider={false}>
     <p class="text">
         Are you sure you want to redeploy <b>{$func.name}</b>? Redeploying may affect your
         production code.
