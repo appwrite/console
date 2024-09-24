@@ -26,7 +26,7 @@
         await sdk.forProject.databases.updateIpAttribute(
             databaseId,
             collectionId,
-            data.key,
+            originalKey,
             data.required,
             data.default,
             data.key !== originalKey ? data.key : undefined

@@ -28,7 +28,7 @@
         await sdk.forProject.databases.updateEnumAttribute(
             databaseId,
             collectionId,
-            data.key,
+            originalKey,
             data.elements,
             data.required,
             data.default,

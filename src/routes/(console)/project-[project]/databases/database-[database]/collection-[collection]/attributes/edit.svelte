@@ -52,12 +52,16 @@
         }
     }
 
-    $: if (showEdit) {
-        currentAttr ??= { ...selectedAttribute };
-        originalKey = currentAttr.key;
-        error = null;
-    } else {
-        currentAttr = null;
+    $: onShow(showEdit);
+
+    function onShow(show: boolean) {
+        if (show) {
+            currentAttr ??= { ...selectedAttribute };
+            originalKey = currentAttr.key;
+            error = null;
+        } else {
+            currentAttr = null;
+        }
     }
 </script>
 
