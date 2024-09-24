@@ -39,9 +39,9 @@
         }
     }
 
-    function getEndpointOrigin() {
-        const url = new URL(VARS.APPWRITE_ENDPOINT);
-        return url.origin;
+    function getImage(image: string) {
+        const url = new URL(image, VARS.APPWRITE_ENDPOINT);
+        return url.toString();
     }
 </script>
 
@@ -85,7 +85,7 @@
             <section
                 class="u-flex u-flex-vertical u-main-center u-cross-center u-height-100-percent u-width-full-line">
                 <img
-                    src={getEndpointOrigin() + campaign?.image[$app.themeInUse]}
+                    src={getImage(campaign?.image[$app.themeInUse])}
                     class="u-block u-image-object-fit-cover side-bg-img"
                     alt="promo" />
 
@@ -150,7 +150,7 @@
                         <div class="u-margin-block-start-16 u-flex u-gap-16">
                             {#if currentReview?.image}
                                 <Avatar
-                                    src={getEndpointOrigin() + currentReview?.image}
+                                    src={getImage(currentReview?.image)}
                                     name={currentReview.name}
                                     size={40} />
                             {:else}
@@ -169,7 +169,7 @@
                         <p class="u-bold" style:text-transform="uppercase">provided to you by</p>
                         <img
                             style:max-block-size="2.5rem"
-                            src={getEndpointOrigin() + campaign?.image[$app.themeInUse]}
+                            src={getImage(campaign?.image[$app.themeInUse])}
                             alt={coupon?.campaign ?? campaign.$id} />
                     </div>
                 {/if}
