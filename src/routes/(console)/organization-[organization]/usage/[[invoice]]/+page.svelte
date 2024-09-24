@@ -364,7 +364,7 @@
                         color: '#85DBD8',
                         tooltip: {
                             title: 'Executions',
-                            label: `${Math.round(mbSecondsToGBHours(data.organizationUsage.executionsMBSecondsTotal)).toLocaleString('en-US')} GB hours`
+                            label: `${(Math.round(mbSecondsToGBHours(data.organizationUsage.executionsMBSecondsTotal) * 100) / 100).toLocaleString('en-US')} GB hours`
                         }
                     },
                     {
@@ -372,7 +372,7 @@
                         color: '#FE9567',
                         tooltip: {
                             title: 'Deployments',
-                            label: `${Math.round(mbSecondsToGBHours(data.organizationUsage.buildsMBSecondsTotal)).toLocaleString('en-US')} GB hours`
+                            label: `${(Math.round(mbSecondsToGBHours(data.organizationUsage.buildsMBSecondsTotal) * 100) / 100).toLocaleString('en-US')} GB hours`
                         }
                     }
                 ]}
@@ -380,7 +380,7 @@
                     <div class="u-flex u-main-space-between">
                         <p>
                             <span class="heading-level-4"
-                                >{Math.round(totalGbHours).toLocaleString('en-US')}</span>
+                                >{(Math.ceil(totalGbHours * 100) / 100).toLocaleString('en-US')}</span>
                             <span class="body-text-1 u-bold">{`GB hours`}</span>
                         </p>
                     </div>
