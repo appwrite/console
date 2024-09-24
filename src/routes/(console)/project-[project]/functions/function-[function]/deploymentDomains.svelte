@@ -28,7 +28,10 @@
                 <svelte:fragment slot="list">
                     {#each domain.rules as rule, i}
                         {#if i !== 0}
-                            <DropListLink href={`http://${rule.domain}`} external icon="external-link">
+                            <DropListLink
+                                href={`http://${rule.domain}`}
+                                external
+                                icon="external-link">
                                 {rule.domain}
                             </DropListLink>
                         {/if}
