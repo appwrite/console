@@ -1,7 +1,7 @@
-import RolesSampleDark from '$lib/images/samples/roles-sample-dark.svg';
-import RolesSampleLight from '$lib/images/samples/roles-sample-light.svg';
-import BackupsSampleDark from '$lib/images/samples/backups-sample-dark.svg';
-import BackupsSampleLight from '$lib/images/samples/backups-sample-light.svg';
+import RolesSampleDark from '$lib/images/samples/roles-dark.png';
+import RolesSampleLight from '$lib/images/samples/roles-light.png';
+import BackupsSampleDark from '$lib/images/samples/backups-dark.png';
+import BackupsSampleLight from '$lib/images/samples/backups-light.png';
 
 import { type BottomModalAlertItem, showBottomModalAlert } from '$lib/stores/bottom-alerts';
 
@@ -14,8 +14,10 @@ const listOfPromotions: BottomModalAlertItem[] = [
         },
         title: 'Member roles now on Pro plans',
         message:
-            'Enhance your workflow and security by assigning roles to members. <b>Try it now for free until Dec 2024.</b>',
+            'Enhance your workflow and security by assigning roles to members. <br/><b>Try it now for free until Dec 2024.</b>',
 
+        isHtml: true,
+        plan: 'pro',
         cta: {
             text: 'Try Now',
             link: 'https://appwrite.io'
@@ -37,7 +39,7 @@ const listOfPromotions: BottomModalAlertItem[] = [
 
         isHtml: true,
         importance: 10,
-
+        plan: 'pro',
         cta: {
             text: 'Try Now',
             link: 'https://appwrite.io'

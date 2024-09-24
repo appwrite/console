@@ -9,6 +9,9 @@
         dismissBottomModalAlert,
         hideAllModalAlerts
     } from '$lib/stores/bottom-alerts';
+    import { organization } from '$lib/stores/organization';
+    import { BillingPlan } from '$lib/constants';
+    import { upgradeURL } from '$lib/stores/billing';
 
     let currentIndex = 0;
     let openModalOnMobile = false;
@@ -19,7 +22,8 @@
 
     $: currentModalAlert = filteredModalAlerts[currentIndex] as BottomModalAlertItem;
 
-    function handleClose(modalAlert: BottomModalAlertItem) {
+    function handleClose() {
+        const modalAlert = currentModalAlert;
         dismissBottomModalAlert(modalAlert.id);
         hideNotification(modalAlert.id);
         if (modalAlert.closed) modalAlert.closed();
@@ -38,14 +42,28 @@
     function showPrevious() {
         currentIndex = (currentIndex - 1 + filteredModalAlerts.length) % filteredModalAlerts.length;
     }
+
+    function showUpgrade() {
+        const plan = currentModalAlert.plan;
+        const organizationPlan = $organization.billingPlan;
+        switch (plan) {
+            case 'free':
+                return false;
+            case 'pro':
+                return organizationPlan === BillingPlan.FREE;
+            case 'scale':
+                return organizationPlan === BillingPlan.FREE || organizationPlan === BillingPlan.PRO;
+        }
+    }
 </script>
 
 {#if filteredModalAlerts.length > 0 && currentModalAlert}
+    {@const shouldShowUpgrade = showUpgrade()}
     <div class="main-alert-wrapper is-not-mobile">
         <div class="alert-container">
             <article class="card">
                 {#key currentModalAlert.id}
-                    <button class="icon-inline-tag" on:click={() => handleClose(currentModalAlert)}>
+                    <button class="icon-inline-tag" on:click={() => handleClose()}>
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="20"
@@ -113,11 +131,12 @@
                             <Button
                                 secondary
                                 class="button"
-                                href={currentModalAlert.cta.link}
+                                href={shouldShowUpgrade ? $upgradeURL : currentModalAlert.cta.link}
                                 external={!isCloud}
                                 fullWidthMobile
-                                on:click={() => handleClose(currentModalAlert)}>
-                                {currentModalAlert.cta.text}
+                                on:click={() => handleClose()}
+                            >
+                                {shouldShowUpgrade ? 'Upgrade' : currentModalAlert.cta.text}
                             </Button>
 
                             {#if currentModalAlert.learnMore && currentModalAlert.learnMore.link}
@@ -160,7 +179,7 @@
                             <div>
                                 <button
                                     class="icon-inline-tag"
-                                    on:click={() => handleClose(currentModalAlert)}>
+                                    on:click={() => handleClose()}>
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         width="20"
@@ -177,7 +196,7 @@
                             </div>
 
                             {#if filteredModalAlerts.length > 1}
-                                <div class="u-flex u-main-space-between u-cross-center">
+                                <div class="u-flex u-main-space-between u-cross-baseline">
                                     <span class="inline-tag feature-count-tag">
                                         Feature {currentIndex + 1} of {filteredModalAlerts.length}
                                     </span>
@@ -217,11 +236,11 @@
                                 <Button
                                     secondary
                                     class="button"
-                                    href={currentModalAlert.cta.link}
+                                    href={shouldShowUpgrade ? $upgradeURL : currentModalAlert.cta.link}
                                     external={!isCloud}
                                     fullWidthMobile
-                                    on:click={() => handleClose(currentModalAlert)}>
-                                    {currentModalAlert.cta.text}
+                                    on:click={() => handleClose()}>
+                                    {shouldShowUpgrade ? 'Upgrade' : currentModalAlert.cta.text}
                                 </Button>
 
                                 {#if currentModalAlert.learnMore && currentModalAlert.learnMore.link}
@@ -245,7 +264,7 @@
             <button
                 class:showing={!openModalOnMobile}
                 class="card notification-card u-width-full-line"
-                on:click={() => (openModalOnMobile = !openModalOnMobile)}>
+                on:click={() => (openModalOnMobile = true)}>
                 <div class="u-flex-vertical u-gap-4">
                     <div class="u-flex u-cross-center u-main-space-between">
                         <h3 class="body-text-2 u-bold">Early access</h3>

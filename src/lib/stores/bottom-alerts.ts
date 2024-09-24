@@ -8,6 +8,7 @@ export type BottomModalAlertItem = {
 
     src: Record<'dark' | 'light', string>;
     cta: Record<'text' | 'link', string>;
+    plan: 'free' | 'pro' | 'scale' /*| 'enterprise'*/;
     learnMore?: Partial<Record<'text' | 'link', string>>;
 
     show?: boolean;
