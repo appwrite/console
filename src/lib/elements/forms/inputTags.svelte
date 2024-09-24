@@ -2,6 +2,7 @@
     import { last } from '$lib/helpers/array';
     import { onMount } from 'svelte';
     import { FormItem, Helper, Label } from '.';
+    import { Drop } from '$lib/components';
 
     export let id: string;
     export let label: string;
@@ -15,11 +16,13 @@
     export let tooltip: string = null;
     export let validityRegex: RegExp = null;
     export let validityMessage: string = null;
+    export let popover: string[] | null = null;
 
     let value = '';
     let element: HTMLInputElement;
     let hiddenEl: HTMLInputElement;
     let error: string;
+    let show: boolean = false;
 
     onMount(() => {
         if (element && autofocus) {
@@ -90,7 +93,33 @@
         {required}
         on:invalid={handleInvalid} />
     <Label {required} {tooltip} hide={!showLabel} for={id}>
-        {label}
+        {label}{#if popover}
+        <Drop isPopover bind:show display="inline-block">
+            &nbsp;<button
+                type="button"
+                on:click={() => (show = !show)}
+                class="tooltip"
+                aria-label="input tooltip">
+                <span
+                    class="icon-info"
+                    aria-hidden="true"
+                    style:font-size="var(--icon-size-small)" />
+            </button>
+            <svelte:fragment slot="list">
+                <div
+                    class="dropped card u-max-width-250"
+                    style:--p-card-padding=".75rem"
+                    style:--card-border-radius="var(--border-radius-small)"
+                    style:box-shadow="var(--shadow-large)">
+                    <div class="u-flex-vertical u-gap-16">
+                        {#each popover as line}
+                            <p>{@html line}</p>
+                        {/each}
+                    </div>
+                </div>
+            </svelte:fragment>
+        </Drop>
+    {/if}
     </Label>
 
     <div class="input-text-wrapper">
