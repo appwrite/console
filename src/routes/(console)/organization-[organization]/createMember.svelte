@@ -65,9 +65,12 @@
 <Modal title="Invite member" {error} size="big" bind:show={showCreate} onSubmit={create}>
     {#if isCloud}
         {#if $organization?.billingPlan === BillingPlan.PRO}
-            <Alert type="info">
+            <!-- <Alert type="info">
                 You can add unlimited organization members on the {plan.name} plan for
                 <b>{formatCurrency(plan.addons.member.price)} each per billing period</b>.
+            </Alert> -->
+            <Alert type="info">
+                New members are free until 01 December 2024. <a class="link" href="https://appwrite.io/docs/roles" target="_blank" rel="noopener noreferrer">Learn more</a>.
             </Alert>
         {/if}
     {/if}
@@ -86,9 +89,9 @@
             bind:value={name} />
         <InputSelect
             popover={[
-                '<b>Roles</b>',
+                '<span class="u-bold">Roles</span>',
                 'Owner, Developer, Editor, Analyst, Billing.',
-                '<a href="https://appwrite.io/docs/roles">Learn more</a> about roles.'
+                '<a class="link" target="_blank" rel="noopener noreferrer" href="https://appwrite.io/docs/roles">Learn more</a> about roles.'
             ]}
             id="role"
             label="Role"
