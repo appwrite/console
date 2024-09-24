@@ -13,6 +13,7 @@
     import { Dependencies } from '$lib/constants';
     import { parseExpression } from 'cron-parser';
     import { toLocaleDateTime } from '$lib/helpers/date';
+    import { FormList, InputCheckbox } from '$lib/elements/forms/index.js';
 
     let showDropdown = [];
     let showDelete = false;
@@ -247,11 +248,25 @@
     bind:show={showDelete}
     headerDivider={false}
     onSubmit={deletePolicy}>
-    <!-- TODO: Add `This will also delete all the backups associated with this backups.` -->
-    <p class="text" data-private>
-        Are you sure you want to delete <b>{selectedPolicy.name}</b> policy?
-        <br />This action is irreversible.
-    </p>
+    <FormList>
+        <div class="u-flex-vertical u-gap-16">
+            <p class="text" data-private>
+                Are you sure you want to delete the <b>{selectedPolicy.name}</b> policy?
+            </p>
+
+            <p class="text" data-private>
+                <b
+                    >This will also delete all backups associated with this policy. This action is
+                    irreversible.</b>
+            </p>
+
+            <InputCheckbox
+                required
+                size="small"
+                id="delete_policy"
+                label="I understand and confirm" />
+        </div>
+    </FormList>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)}>Cancel</Button>
         <Button secondary submit>Delete</Button>
