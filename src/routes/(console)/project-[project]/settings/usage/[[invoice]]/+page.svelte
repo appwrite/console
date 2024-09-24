@@ -333,56 +333,56 @@
             GB hours represent the memory usage (in gigabytes) of your function executions and
             builds, multiplied by the total execution time (in hours).
         </p>
-    <svelte:fragment slot="aside">
-        {#if data.usage.executionsMbSecondsTotal}
-            {@const totalGbHours = mbSecondsToGBHours(
-                data.usage.executionsMbSecondsTotal +
-                data.usage.buildsMbSecondsTotal
-
-            )}
-            {@const progressBarStorageDate = [
-                {
-                    size: mbSecondsToGBHours(data.usage.executionsMbSecondsTotal),
-                    color: '#85DBD8',
-                    tooltip: {
-                        title: 'Executions',
-                        label: `${(Math.round(mbSecondsToGBHours(data.usage.executionsMbSecondsTotal) * 100) / 100).toLocaleString('en-US')} GB hours`
+        <svelte:fragment slot="aside">
+            {#if data.usage.executionsMbSecondsTotal}
+                {@const totalGbHours = mbSecondsToGBHours(
+                    data.usage.executionsMbSecondsTotal + data.usage.buildsMbSecondsTotal
+                )}
+                {@const progressBarStorageDate = [
+                    {
+                        size: mbSecondsToGBHours(data.usage.executionsMbSecondsTotal),
+                        color: '#85DBD8',
+                        tooltip: {
+                            title: 'Executions',
+                            label: `${(Math.round(mbSecondsToGBHours(data.usage.executionsMbSecondsTotal) * 100) / 100).toLocaleString('en-US')} GB hours`
+                        }
+                    },
+                    {
+                        size: mbSecondsToGBHours(data.usage.buildsMbSecondsTotal),
+                        color: '#FE9567',
+                        tooltip: {
+                            title: 'Deployments',
+                            label: `${(Math.round(mbSecondsToGBHours(data.usage.buildsMbSecondsTotal) * 100) / 100).toLocaleString('en-US')} GB hours`
+                        }
                     }
-                },
-                {
-                    size: mbSecondsToGBHours(data.usage.buildsMbSecondsTotal),
-                    color: '#FE9567',
-                    tooltip: {
-                        title: 'Deployments',
-                        label: `${(Math.round(mbSecondsToGBHours(data.usage.buildsMbSecondsTotal) * 100) / 100).toLocaleString('en-US')} GB hours`
-                    }
-                }
-            ]}
-            <div class="u-flex u-flex-vertical">
-                <div class="u-flex u-main-space-between">
-                    <p>
+                ]}
+                <div class="u-flex u-flex-vertical">
+                    <div class="u-flex u-main-space-between">
+                        <p>
                             <span class="heading-level-4"
-                            >{(Math.ceil(totalGbHours * 100) / 100).toLocaleString('en-US')}</span>
-                        <span class="body-text-1 u-bold">{`GB hours`}</span>
-                    </p>
+                                >{(Math.ceil(totalGbHours * 100) / 100).toLocaleString(
+                                    'en-US'
+                                )}</span>
+                            <span class="body-text-1 u-bold">{`GB hours`}</span>
+                        </p>
+                    </div>
                 </div>
-            </div>
-            <ProgressBarBig
-                progressMax={totalGbHours}
-                progressValue={totalGbHours}
-                progressBarData={progressBarStorageDate} />
-        {:else}
-            <Card isDashed>
-                <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
+                <ProgressBarBig
+                    progressMax={totalGbHours}
+                    progressValue={totalGbHours}
+                    progressBarData={progressBarStorageDate} />
+            {:else}
+                <Card isDashed>
+                    <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
                         <span
                             class="icon-chart-square-bar text-large"
                             aria-hidden="true"
                             style="font-size: 32px;" />
-                    <p class="u-bold">No data to show</p>
-                </div>
-            </Card>
-        {/if}
-    </svelte:fragment>
+                        <p class="u-bold">No data to show</p>
+                    </div>
+                </Card>
+            {/if}
+        </svelte:fragment>
     </CardGrid>
     <p class="text u-text-color-gray u-margin-block-start-16">
         Metrics are estimates updated every 24 hours and may not accurately reflect your invoice.

@@ -24,7 +24,7 @@ export function bytesToSize(value: number, unit: Size, base = 1000) {
 }
 
 export function mbSecondsToGBHours(value: number, base: 1000 | 1024 = 1000) {
-    return (value / base) / (60 * 60);
+    return value / base / (60 * 60);
 }
 
 export function humanFileSize(

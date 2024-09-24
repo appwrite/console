@@ -380,7 +380,9 @@
                     <div class="u-flex u-main-space-between">
                         <p>
                             <span class="heading-level-4"
-                                >{(Math.ceil(totalGbHours * 100) / 100).toLocaleString('en-US')}</span>
+                                >{(Math.ceil(totalGbHours * 100) / 100).toLocaleString(
+                                    'en-US'
+                                )}</span>
                             <span class="body-text-1 u-bold">{`GB hours`}</span>
                         </p>
                     </div>
