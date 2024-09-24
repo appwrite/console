@@ -119,7 +119,6 @@
                 <ProgressBarBig
                     currentUnit={currentHumanized.unit}
                     currentValue={currentHumanized.value}
-                    maxUnit=""
                     maxValue={`of ${max.toString()} GB used`}
                     progressValue={bytesToSize(current, 'GB')}
                     progressMax={max}
@@ -238,7 +237,6 @@
                 <ProgressBarBig
                     currentUnit="Executions"
                     currentValue={formatNum(current)}
-                    maxUnit=""
                     maxValue={`of ${formatNum(max)} Executions used`}
                     progressValue={current}
                     progressMax={max}
@@ -323,7 +321,6 @@
                 <ProgressBarBig
                     currentUnit={currentHumanized.unit}
                     currentValue={currentHumanized.value}
-                    maxUnit=""
                     maxValue={`of ${max.toString()} GB used`}
                     progressValue={bytesToSize(current, 'GB')}
                     progressMax={max}
