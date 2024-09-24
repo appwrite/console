@@ -63,7 +63,6 @@
     onMount(() => {
         addBottomModalAlerts();
     });
-
 </script>
 
 {#if filteredModalAlerts.length > 0 && currentModalAlert}
