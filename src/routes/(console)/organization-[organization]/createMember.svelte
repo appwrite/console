@@ -11,8 +11,7 @@
     import { BillingPlan, Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { isCloud } from '$lib/system';
-    import { plansInfo, roles } from '$lib/stores/billing';
-    import { formatCurrency } from '$lib/helpers/numbers';
+    import { roles } from '$lib/stores/billing';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
 
     export let showCreate = false;
@@ -20,7 +19,6 @@
     const dispatch = createEventDispatcher();
 
     const url = `${$page.url.origin}${base}/invite`;
-    $: plan = $plansInfo?.get($organization?.billingPlan);
 
     let email: string,
         name: string,
