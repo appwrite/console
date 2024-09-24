@@ -8,6 +8,7 @@
     import { sdk } from '$lib/stores/sdk';
 
     export let showDelete = false;
+    let error: string;
 
     async function deleteAccount() {
         try {
@@ -19,12 +20,9 @@
                 message: `Account was deleted `
             });
             trackEvent(Submit.AccountDelete);
-        } catch (error) {
-            addNotification({
-                type: 'error',
-                message: error.message
-            });
-            trackError(error, Submit.AccountDelete);
+        } catch (e) {
+            error = e.message;
+            trackError(e, Submit.AccountDelete);
         }
     }
 </script>
@@ -32,6 +30,7 @@
 <Modal
     title="Delete account"
     bind:show={showDelete}
+    bind:error
     onSubmit={deleteAccount}
     icon="exclamation"
     state="warning"

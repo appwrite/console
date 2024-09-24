@@ -32,7 +32,12 @@ export type Option = {
         key: string,
         data: Partial<Attributes>
     ) => Promise<void>;
-    update: (databaseId: string, collectionId: string, data: Partial<Attributes>) => Promise<void>;
+    update: (
+        databaseId: string,
+        collectionId: string,
+        data: Partial<Attributes>,
+        originalKey: string
+    ) => Promise<void>;
     format?: 'email' | 'ip' | 'url' | 'enum';
     icon: string;
 };

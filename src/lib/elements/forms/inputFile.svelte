@@ -37,6 +37,13 @@
         }
         return true;
     }
+
+    function isFileOverSize(file: File) {
+        if (maxSize && file.size > maxSize) {
+            return true;
+        }
+        return false;
+    }
     function dropHandler(ev: DragEvent) {
         ev.dataTransfer.dropEffect = 'move';
         hovering = false;
@@ -45,6 +52,10 @@
             const fileExtension = ev.dataTransfer.items[i].getAsFile().name.split('.').pop();
             if (!isFileExtensionAllowed(fileExtension)) {
                 error = 'Invalid file extension';
+                return;
+            }
+            if (isFileOverSize(ev.dataTransfer.items[i].getAsFile())) {
+                error = 'File size exceeds the limit';
                 return;
             }
             if (ev.dataTransfer.items[i].kind === 'file') {
@@ -86,9 +97,15 @@
             const fileExtension = file.name.split('.').pop();
             return isFileExtensionAllowed(fileExtension);
         });
+        const isOverSize = maxSize && Array.from(target.files).some((file) => isFileOverSize(file));
 
         if (!isValidFiles) {
             error = 'Invalid file extension';
+            target.value = '';
+            return;
+        }
+        if (isOverSize) {
+            error = 'File size exceeds the limit';
             target.value = '';
             return;
         }
