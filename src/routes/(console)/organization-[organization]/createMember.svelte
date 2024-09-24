@@ -70,7 +70,12 @@
                 <b>{formatCurrency(plan.addons.member.price)} each per billing period</b>.
             </Alert> -->
             <Alert type="info">
-                New roles are free until 01 December 2024. <a class="link" href="https://appwrite.io/docs/roles" target="_blank" rel="noopener noreferrer">Learn more</a>.
+                New roles are free until 01 December 2024. <a
+                    class="link"
+                    href="https://appwrite.io/docs/roles"
+                    target="_blank"
+                    rel="noopener noreferrer">Learn more</a
+                >.
             </Alert>
         {/if}
     {/if}

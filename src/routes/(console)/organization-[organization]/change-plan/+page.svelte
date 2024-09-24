@@ -286,7 +286,9 @@
                     <InputTags
                         bind:tags={collaborators}
                         label="Invite members by email"
-                        popover={['By default, all members are assigned a <span class="u-bold">Developer</span> role. You can change this at any time from your organization settings. <a class="link" target="_blank" rel="noopener noreferrer" href="https://appwrite.io/docs/roles">Learn more.</a>']}
+                        popover={[
+                            'By default, all members are assigned a <span class="u-bold">Developer</span> role. You can change this at any time from your organization settings. <a class="link" target="_blank" rel="noopener noreferrer" href="https://appwrite.io/docs/roles">Learn more.</a>'
+                        ]}
                         placeholder="Enter email address(es)"
                         validityRegex={emailRegex}
                         validityMessage="Invalid email address"
