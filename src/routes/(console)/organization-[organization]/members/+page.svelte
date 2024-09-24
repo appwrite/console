@@ -100,9 +100,9 @@
                                                     >Default</span
                                                 >, Editor, Analyst, Billing.
                                             </p>
-                                            <p>
+                                            <p class="">
                                                 <a
-                                                    class="button"
+                                                    class="link"
                                                     href="http://appwrite.io/docs/roles"
                                                     target="_blank"
                                                     rel="noopener noreferrer">Learn more</a> about roles.
