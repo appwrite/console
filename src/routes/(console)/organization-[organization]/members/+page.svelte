@@ -25,6 +25,7 @@
     import { getRoleLabel, upgradeURL } from '$lib/stores/billing';
     import { BillingPlan } from '$lib/constants';
     import { isCloud } from '$lib/system';
+    import { Button } from '$lib/elements/forms';
 
     export let data: PageData;
 
@@ -93,7 +94,7 @@
                                                     >Pro plan</span>
                                             {/if}
                                         </p>
-                                        {#if $organization?.billingPlan != BillingPlan.FREE}
+                                        {#if $organization?.billingPlan !== BillingPlan.FREE}
                                             <p>
                                                 Owner, Developer <span
                                                     class="inline-tag u-normal u-x-small"
@@ -101,26 +102,28 @@
                                                 >, Editor, Analyst, Billing.
                                             </p>
                                             <p class="">
-                                                <a
-                                                    class="link"
+                                                <Button
+                                                    link
                                                     href="http://appwrite.io/docs/roles"
-                                                    target="_blank"
-                                                    rel="noopener noreferrer">Learn more</a> about roles.
+                                                    external>Learn more</Button> about roles.
                                             </p>
                                         {:else}
                                             <p>
                                                 Owner, <span class="u-color-text-disabled"
                                                     >Developer, Editor, Analyst.</span>
                                             </p>
-                                            <p class="u-flex u-main-end u-cross-center u-gap-12">
-                                                <a
-                                                    class="button is-text"
+                                            <div
+                                                class="u-flex u-main-end u-cross-center u-gap-12 u-margin-block-start-16">
+                                                <Button
+                                                    text
                                                     href="http://appwrite.io/docs/roles"
-                                                    target="_blank"
-                                                    rel="noopener noreferrer">Learn more</a>
-                                                <a class="button is-secondary" href={$upgradeURL}
-                                                    >Upgrade plan</a>
-                                            </p>
+                                                    external>
+                                                    Learn more
+                                                </Button>
+                                                <Button secondary href={$upgradeURL}>
+                                                    Upgrade plan
+                                                </Button>
+                                            </div>
                                         {/if}
                                     {:else}
                                         <p>
@@ -132,17 +135,18 @@
                                             Upgrade to Cloud to assign new roles to members or ask
                                             us about our entriprise self hosted offering.
                                         </p>
-                                        <p class="u-flex u-main-end u-cross-center u-gap-12">
-                                            <a
-                                                class="button is-text"
+                                        <div
+                                            class="u-flex u-main-end u-cross-center u-gap-12 u-margin-block-start-16">
+                                            <Button
+                                                text
                                                 href="http://appwrite.io/docs/roles"
-                                                target="_blank"
-                                                rel="noopener noreferrer">Learn more</a>
-                                            <a
-                                                class="button is-secondary"
-                                                href="https://cloud.appwrite.io"
-                                                >Upgrade to Cloud</a>
-                                        </p>
+                                                external>
+                                                Learn more
+                                            </Button>
+                                            <Button secondary href="https://cloud.appwrite.io">
+                                                Upgrade to Cloud
+                                            </Button>
+                                        </div>
                                     {/if}
                                 </div>
                             </svelte:fragment>
