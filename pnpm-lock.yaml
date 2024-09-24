@@ -9,8 +9,8 @@ overrides:
 
 dependencies:
   '@appwrite.io/console':
-    specifier: 1.0.1
-    version: 1.0.1
+    specifier: ^1.2.0
+    version: 1.2.0
   '@appwrite.io/pink':
     specifier: 0.25.0
     version: 0.25.0
@@ -225,8 +225,8 @@ packages:
     resolution: {integrity: sha512-TD+xbmsBLyYy/IxFimW/YL/9L2IEnM7/EoV9Aeh56U64Ify8o27HJcKjo38XY9Tcn0uOq1AX3thkKgvtWvwFQg==}
     dev: false
 
-  /@appwrite.io/console@1.0.1:
-    resolution: {integrity: sha512-9U7jG0XnRcxDhuma308z8XD/BF9cK6OpukxN87Tk0N/QGsNJBbH1it0LLCt6X7rPzNpOALT0LLTeMa0VEsQBow==}
+  /@appwrite.io/console@1.2.0:
+    resolution: {integrity: sha512-VglATKgjuhr9jYihz500VbqghOY/695aDwhXtx3beLMzvjjFK+eN+5BOgcNMTj01COl3kBu4wrvbXpDmVemStA==}
     dev: false
 
   /@appwrite.io/pink-icons@0.25.0:
