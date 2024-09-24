@@ -335,6 +335,8 @@ export async function paymentExpired(org: Organization) {
         org.paymentMethodId
     );
     if (!payment?.expiryYear) return;
+    const sessionStorageNotification = sessionStorage.getItem('expiredPaymentNotification');
+    if (sessionStorageNotification === 'true') return;
     const year = new Date().getFullYear();
     const month = new Date().getMonth();
     const expiredMessage = `The default payment method for <b>${org.name}</b> has expired`;
@@ -372,6 +374,7 @@ export async function paymentExpired(org: Organization) {
             ]
         });
     }
+    sessionStorage.setItem('expiredPaymentNotification', 'true');
 }
 
 export function checkForMarkedForDeletion(org: Organization) {

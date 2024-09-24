@@ -20,14 +20,16 @@
     export async function updateIp(
         databaseId: string,
         collectionId: string,
-        data: Partial<Models.AttributeIp>
+        data: Partial<Models.AttributeIp>,
+        originalKey?: string
     ) {
         await sdk.forProject.databases.updateIpAttribute(
             databaseId,
             collectionId,
-            data.key,
+            originalKey,
             data.required,
-            data.default
+            data.default,
+            data.key !== originalKey ? data.key : undefined
         );
     }
 </script>

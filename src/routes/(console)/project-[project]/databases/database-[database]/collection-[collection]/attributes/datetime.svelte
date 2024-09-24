@@ -21,14 +21,16 @@
     export async function updateDatetime(
         databaseId: string,
         collectionId: string,
-        data: Partial<Models.AttributeDatetime>
+        data: Partial<Models.AttributeDatetime>,
+        originalKey?: string
     ) {
         await sdk.forProject.databases.updateDatetimeAttribute(
             databaseId,
             collectionId,
-            data.key,
+            originalKey,
             data.required,
-            data.default
+            data.default,
+            data.key !== originalKey ? data.key : undefined
         );
     }
 </script>
