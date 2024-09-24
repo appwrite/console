@@ -1,7 +1,7 @@
 import { Client, type Models, Storage } from '@appwrite.io/console';
 import { writable } from 'svelte/store';
 import { getProjectId } from '$lib/helpers/project';
-import { VARS } from '$lib/system';
+import { getApiEndpoint } from '$lib/stores/sdk';
 
 type UploaderFile = {
     $id: string;
@@ -19,10 +19,8 @@ export type Uploader = {
 };
 
 const temporaryStorage = () => {
-    const endpoint = VARS.APPWRITE_ENDPOINT ?? `${globalThis?.location?.origin}/v1`;
-
     const clientProject = new Client()
-        .setEndpoint(endpoint)
+        .setEndpoint(getApiEndpoint())
         .setMode('admin')
         .setProject(getProjectId());
 
