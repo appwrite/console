@@ -21,7 +21,6 @@
     export let isMultiple = false;
     export let fullWidth = false;
     export let popover: string[] | null = null;
-    export let popoverProps: Record<string, unknown> = {};
 
     let element: HTMLSelectElement;
     let error: string;
