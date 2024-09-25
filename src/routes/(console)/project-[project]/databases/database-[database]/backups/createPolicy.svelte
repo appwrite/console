@@ -159,11 +159,7 @@
                                 on:change={(event) => markPolicyChecked(event, policy)} />
 
                             <div class="u-flex-vertical u-gap-4">
-                                <div class="u-flex u-gap-4">
-                                    <h3 class="u-bold">{policy.label}</h3>
-                                    <span class="inline-tag">$20.00</span>
-                                </div>
-
+                                <h3 class="u-bold">{policy.label}</h3>
                                 {policy.description}
                             </div>
                         </div>
@@ -177,10 +173,7 @@
                         <div class="card policy-default-custom-card">
                             <div class="u-flex-vertical u-gap-4 body-text-2">
                                 <div class="u-flex u-main-space-between">
-                                    <div class="u-flex u-cross-center u-gap-4">
-                                        <h3 class="u-bold">{policy.label}</h3>
-                                        <span class="inline-tag">$20.00</span>
-                                    </div>
+                                    <h3 class="u-bold">{policy.label}</h3>
 
                                     <div class="u-flex u-gap-8">
                                         <Button
@@ -364,9 +357,18 @@
             {:else}
                 <div class="u-flex u-main-space-between u-padding-inline-4 u-width-full-line">
                     <button class="custom-policy-text" on:click={() => (showCustomPolicy = true)}
-                        >Custom policy
+                        >Create custom policy
                     </button>
-                    <span>Total: ${totalPolicies.length * policyPricing}.00</span>
+
+                    <div>
+                        <span>Total:</span>
+                        {#if totalPolicies.length}
+                            <span style="text-decoration: line-through;"
+                                >${totalPolicies.length * policyPricing}
+                                .00</span>
+                        {/if}
+                        <span>$0.00 until Nov 2024</span>
+                    </div>
                 </div>
             {/if}
         </div>
@@ -394,17 +396,6 @@
     /*:global(.theme-dark) .policy-default-custom-card.checked {*/
     /*    border: solid .0625rem hsl(var(--color-neutral-10))*/
     /*}*/
-
-    .inline-tag {
-        text-align: center;
-        font-style: normal;
-        font-weight: 400;
-        line-height: 140%;
-        letter-spacing: -0.063px;
-        text-decoration-line: line-through;
-        font-size: var(--font-size-S, 14px);
-        font-family: var(--font-family-sansSerif, Inter);
-    }
 
     .custom-policy-text {
         color: #19191c;
