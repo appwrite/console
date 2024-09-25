@@ -386,7 +386,7 @@
             height: auto;
         }
     }
-    
+
     @media (min-width: 460px) and (max-width: 768px) {
         .alert-container {
             max-width: 75vw;
