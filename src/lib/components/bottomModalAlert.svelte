@@ -12,15 +12,29 @@
     import { organization } from '$lib/stores/organization';
     import { BillingPlan } from '$lib/constants';
     import { upgradeURL } from '$lib/stores/billing';
-    import { addBottomModalAlerts } from '$routes/(console)/project-[project]/bottomAlerts';
+    import { addBottomModalAlerts } from '$routes/(console)/bottomAlerts';
     import { project } from '$routes/(console)/project-[project]/store';
+    import { page } from '$app/stores';
 
     let currentIndex = 0;
     let openModalOnMobile = false;
 
+    $: pagePathName = $page.url.pathname;
+
     $: filteredModalAlerts = $bottomModalAlerts
         .sort((a, b) => b.importance - a.importance)
-        .filter((alert) => alert.show && shouldShowNotification(alert.id));
+        .filter((alert) => {
+            const isProjectPage = pagePathName.includes('project-');
+            const isOrganizationPage = pagePathName.includes('organization-');
+
+            return (
+                alert.show &&
+                shouldShowNotification(alert.id) &&
+                (alert.scope === 'everywhere' ||
+                    (isProjectPage && alert.scope === 'project') ||
+                    (isOrganizationPage && alert.scope === 'organization'))
+            );
+        });
 
     $: currentModalAlert = filteredModalAlerts[currentIndex] as BottomModalAlertItem;
 

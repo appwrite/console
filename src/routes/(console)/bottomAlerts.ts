@@ -5,7 +5,7 @@ import { type BottomModalAlertItem, showBottomModalAlert } from '$lib/stores/bot
 
 const listOfPromotions: BottomModalAlertItem[] = [
     {
-        id: 'memberRolesssssss',
+        id: 'memberRoles',
         src: {
             dark: RolesDark,
             light: RolesLight
@@ -15,6 +15,7 @@ const listOfPromotions: BottomModalAlertItem[] = [
             'Enhance your workflow and security by assigning roles to members. <br/><b>Try it now for free until Dec 2024.</b>',
 
         isHtml: true,
+        scope: 'organization',
         plan: 'pro',
         cta: {
             text: 'Try Now',

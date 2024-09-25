@@ -15,16 +15,16 @@
     import { requestedMigration } from '../store';
     import Create from './createOrganization.svelte';
     import {
-        showUsageRatesModal,
-        checkForUsageLimit,
-        checkPaymentAuthorizationRequired,
         calculateTrialDay,
-        paymentExpired,
-        checkForMarkedForDeletion,
         checkForMandate,
+        checkForMarkedForDeletion,
         checkForMissingPaymentMethod,
         checkForNewDevUpgradePro,
-        plansInfo
+        checkForUsageLimit,
+        checkPaymentAuthorizationRequired,
+        paymentExpired,
+        plansInfo,
+        showUsageRatesModal
     } from '$lib/stores/billing';
     import { goto } from '$app/navigation';
     import { CommandCenter, registerCommands, registerSearchers } from '$lib/commandCenter';
@@ -35,7 +35,7 @@
     import { openMigrationWizard } from './(migration-wizard)';
     import { project } from './project-[project]/store';
     import { feedback } from '$lib/stores/feedback';
-    import { VARS, hasStripePublicKey, isCloud } from '$lib/system';
+    import { hasStripePublicKey, isCloud, VARS } from '$lib/system';
     import { stripe } from '$lib/stores/stripe';
     import MobileSupportModal from './wizard/support/mobileSupportModal.svelte';
     import { showSupportModal } from './wizard/support/store';
@@ -44,6 +44,7 @@
     import { UsageRates } from '$lib/components/billing';
     import { base } from '$app/paths';
     import { canSeeProjects } from '$lib/stores/roles';
+    import { BottomModalAlert } from '$lib/components';
 
     function kebabToSentenceCase(str: string) {
         return str
@@ -337,3 +338,5 @@
 {#if isCloud && $showUsageRatesModal}
     <UsageRates bind:show={$showUsageRatesModal} org={$organization} />
 {/if}
+
+<BottomModalAlert />
