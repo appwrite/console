@@ -10,19 +10,18 @@ const listOfPromotions: BottomModalAlertItem[] = [
             dark: RolesDark,
             light: RolesLight
         },
-        title: 'Member roles now on Pro plans',
+        title: 'Roles are available now',
         message:
-            'Enhance your workflow and security by assigning roles to members. <br/><b>Try it now for free until 1st January 2025.</b>',
+            'Enhance your workflow and security by assigning roles to members. <br/><b>Try for free until Jan 1st 2025 on paid plans.</b>',
 
         isHtml: true,
-        scope: 'organization',
         plan: 'pro',
         cta: {
-            text: 'Try Now',
+            text: 'Try now',
             link: ({ organization }) => `${base}/organization-${organization.$id}/members`
         },
         learnMore: {
-            text: 'Learn More',
+            text: 'Learn more',
             link: () => 'https://appwrite.io/docs/advanced/platform/roles'
         }
     }

@@ -19,22 +19,30 @@
     let currentIndex = 0;
     let openModalOnMobile = false;
 
-    $: pagePathName = $page.url.pathname;
+    function getPageScope(pathname: string) {
+        const isProjectPage = pathname.includes('project-[project]');
+        const isOrganizationPage = pathname.includes('organization-[organization]');
 
-    $: filteredModalAlerts = $bottomModalAlerts
-        .sort((a, b) => b.importance - a.importance)
-        .filter((alert) => {
-            const isProjectPage = pagePathName.includes('project-');
-            const isOrganizationPage = pagePathName.includes('organization-');
+        return { isProjectPage, isOrganizationPage };
+    }
 
-            return (
-                alert.show &&
-                shouldShowNotification(alert.id) &&
-                (alert.scope === 'everywhere' ||
-                    (isProjectPage && alert.scope === 'project') ||
-                    (isOrganizationPage && alert.scope === 'organization'))
-            );
-        });
+    function filterModalAlerts(alerts: BottomModalAlertItem[], pathname: string) {
+        const { isProjectPage, isOrganizationPage } = getPageScope(pathname);
+
+        return alerts
+            .sort((a, b) => b.importance - a.importance)
+            .filter((alert) => {
+                return (
+                    alert.show &&
+                    shouldShowNotification(alert.id) &&
+                    (!alert.scope ||
+                        (isProjectPage && alert.scope === 'project') ||
+                        (isOrganizationPage && alert.scope === 'organization'))
+                );
+            });
+    }
+
+    $: filteredModalAlerts = filterModalAlerts($bottomModalAlerts, $page.route.id);
 
     $: currentModalAlert = filteredModalAlerts[currentIndex] as BottomModalAlertItem;
 
@@ -161,7 +169,7 @@
                                       })}
                                 external={!!currentModalAlert.cta.external}
                                 fullWidthMobile>
-                                {shouldShowUpgrade ? 'Upgrade plan' : currentModalAlert.cta.text}
+                                {currentModalAlert.cta.text}
                             </Button>
 
                             {#if currentModalAlert.learnMore}

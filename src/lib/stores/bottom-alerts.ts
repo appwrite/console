@@ -23,7 +23,7 @@ export type BottomModalAlertItem = {
     importance?: number;
 
     closed?: () => void;
-    scope?: 'organization' | 'project' | 'everywhere';
+    scope?: 'organization' | 'project';
     notificationHideOptions?: NotificationCoolOffOptions;
 };
 
@@ -42,11 +42,11 @@ export const showBottomModalAlert = (notification: BottomModalAlertItem) => {
         show: true,
         importance: 5,
         isHtml: false,
-        scope: 'project',
         ...notification
     };
 
     bottomModalAlerts.update((all) => {
+        if (all.some((t) => t.id === notification.id)) return all;
         return [...all, defaults as BottomModalAlertItem];
     });
 };
