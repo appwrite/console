@@ -1,5 +1,5 @@
 import { base } from '$app/paths';
-import { campaigns } from '$lib/stores/campaigns';
+import type { Campaign } from '$lib/stores/campaigns';
 import { sdk } from '$lib/stores/sdk';
 import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
@@ -7,11 +7,14 @@ import type { PageLoad } from './$types';
 export const load: PageLoad = async ({ url }) => {
     if (url.searchParams.has('code')) {
         const code = url.searchParams.get('code');
+        let campaign: Campaign;
         try {
             const couponData = await sdk.forConsole.billing.getCoupon(code);
-            if (couponData?.campaign && campaigns.has(couponData.campaign)) {
+            if (couponData.campaign) {
+                campaign = await sdk.forConsole.billing.getCampaign(couponData.campaign);
                 return {
-                    couponData
+                    couponData,
+                    campaign
                 };
             } else redirect(303, `${base}/login`);
         } catch (e) {
@@ -19,12 +22,14 @@ export const load: PageLoad = async ({ url }) => {
         }
     }
     if (url.searchParams.has('campaign')) {
-        const campaign = url.searchParams.get('campaign');
-        if (campaigns.has(campaign)) {
-            return {
-                campaign
-            };
-        } else redirect(303, `${base}/login`);
+        const campaignId = url.searchParams.get('campaign');
+        let campaign: Campaign;
+        try {
+            campaign = await sdk.forConsole.billing.getCampaign(campaignId);
+            return { campaign };
+        } catch (e) {
+            redirect(303, `${base}/login`);
+        }
     }
     return;
 };

@@ -47,8 +47,8 @@
                 await goto(`${base}/apply-credit?code=${data?.couponData?.code}`);
                 return;
             }
-            if (data?.campaign) {
-                await goto(`${base}/apply-credit?campaign=${data.campaign}`);
+            if (data?.campaign?.$id) {
+                await goto(`${base}/apply-credit?campaign=${data.campaign?.$id}`);
                 return;
             }
         } catch (error) {
