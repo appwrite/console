@@ -276,7 +276,8 @@
                                               project: $project
                                           })}
                                     external={!!currentModalAlert.cta.external}
-                                    fullWidthMobile>
+                                    fullWidthMobile
+                                    on:click={() => (openModalOnMobile = false)}>
                                     {shouldShowUpgrade
                                         ? 'Upgrade plan'
                                         : currentModalAlert.cta.text}
@@ -288,6 +289,7 @@
                                         class="button"
                                         external
                                         fullWidthMobile
+                                        on:click={() => (openModalOnMobile = false)}
                                         href={currentModalAlert.learnMore.link({
                                             organization: $organization,
                                             project: $project
