@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { isCloud } from '$lib/system';
     import { Button } from '$lib/elements/forms/index';
     import { hideNotification, shouldShowNotification } from '$lib/helpers/notifications';
     import { app } from '$lib/stores/app';
@@ -146,9 +145,8 @@
                                           organization: $organization,
                                           project: $project
                                       })}
-                                external={!isCloud}
-                                fullWidthMobile
-                                on:click={() => handleClose()}>
+                                external={!!currentModalAlert.cta.external}
+                                fullWidthMobile>
                                 {shouldShowUpgrade ? 'Upgrade plan' : currentModalAlert.cta.text}
                             </Button>
 
@@ -252,9 +250,8 @@
                                               organization: $organization,
                                               project: $project
                                           })}
-                                    external={!isCloud}
-                                    fullWidthMobile
-                                    on:click={() => handleClose()}>
+                                    external={!!currentModalAlert.cta.external}
+                                    fullWidthMobile>
                                     {shouldShowUpgrade
                                         ? 'Upgrade plan'
                                         : currentModalAlert.cta.text}
@@ -285,14 +282,14 @@
                 on:click={() => (openModalOnMobile = true)}>
                 <div class="u-flex-vertical u-gap-4">
                     <div class="u-flex u-cross-center u-main-space-between">
-                        <h3 class="body-text-2 u-bold">Early access</h3>
+                        <h3 class="body-text-2 u-bold">New features available</h3>
                         <button on:click={hideAllModalAlerts}>
                             <span class="icon-x" />
                         </button>
                     </div>
 
                     <span class="u-width-fit-content">
-                        Opt-in to experiments, new features, and more.
+                        Explore new features to enhance your projects and improve security.
                     </span>
                 </div>
             </button>
@@ -311,11 +308,6 @@
         bottom: 1rem;
         position: fixed;
         max-width: 289px;
-    }
-
-    .showcase-image {
-        height: 132px;
-        min-width: 273px;
     }
 
     .feature-count-tag {
@@ -389,7 +381,7 @@
         }
 
         .alert-container {
-            max-width: 289px;
+            max-width: 90vw;
         }
     }
 </style>

@@ -74,7 +74,7 @@
                 <TableCellHead width={160}>Name</TableCellHead>
                 <TableCellHead width={120}>Email</TableCellHead>
                 <div style:--p-col-width={120} class="table-thead-col" role="columnheader">
-                    <span class="u-flex u-gap-8 u-cross-baseline">
+                    <span class="u-flex u-cross-baseline">
                         <span class="eyebrow-heading-3"> Role </span>
                         <Drop isPopover bind:show={showPopover} display="inline-block">
                             &nbsp;<button
@@ -89,7 +89,7 @@
                             </button>
                             <svelte:fragment slot="list">
                                 <div
-                                    class="dropped card u-max-width-250 u-break-word"
+                                    class="dropped card u-max-width-300 u-break-word"
                                     style:--card-border-radius="var(--border-radius-small)"
                                     style:--p-card-padding=".75rem"
                                     style:box-shadow="var(--shadow-large)">

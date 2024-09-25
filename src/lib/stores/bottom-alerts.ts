@@ -6,6 +6,7 @@ import type { Models } from '@appwrite.io/console';
 type BottomModalAlertAction = {
     text: string;
     link: (ctx: { organization: Organization; project: Models.Project }) => string;
+    external?: boolean;
 };
 
 export type BottomModalAlertItem = {

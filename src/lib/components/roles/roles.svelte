@@ -3,16 +3,15 @@
 </script>
 
 <Base>
-    <p class="u-bold">Roles</p>
-    <p>
-        Owner, Developer <span class="inline-tag u-normal u-x-small">Default</span>, Editor,
-        Analyst, Billing.
-    </p>
-    <p>
-        <a
-            class="link"
-            target="_blank"
-            rel="noopener noreferrer"
-            href="https://appwrite.io/docs/roles">Learn more</a> about roles.
-    </p>
+    <div class="u-flex-vertical u-gap-8">
+        <p class="u-bold">Roles</p>
+        <p>Owner, Developer, Editor, Analyst and Billing.</p>
+        <p>
+            <a
+                class="link"
+                target="_blank"
+                rel="noopener noreferrer"
+                href="https://appwrite.io/docs/roles">Learn more</a> about roles.
+        </p>
+    </div>
 </Base>

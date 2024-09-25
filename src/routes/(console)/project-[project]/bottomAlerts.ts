@@ -1,11 +1,11 @@
 import { base } from '$app/paths';
 import RolesDark from '$lib/images/roles-dark.png';
-import RolesLight from '$lib/images/roles-dark.png';
+import RolesLight from '$lib/images/roles-light.png';
 import { type BottomModalAlertItem, showBottomModalAlert } from '$lib/stores/bottom-alerts';
 
 const listOfPromotions: BottomModalAlertItem[] = [
     {
-        id: 'memberRoles',
+        id: 'memberRolesssssss',
         src: {
             dark: RolesDark,
             light: RolesLight
