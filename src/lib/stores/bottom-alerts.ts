@@ -1,5 +1,12 @@
 import { writable } from 'svelte/store';
 import type { NotificationCoolOffOptions } from '$lib/helpers/notifications';
+import type { Organization } from '$lib/stores/organization';
+import type { Models } from '@appwrite.io/console';
+
+type BottomModalAlertAction = {
+    text: string;
+    link: (ctx: { organization: Organization; project: Models.Project }) => string;
+};
 
 export type BottomModalAlertItem = {
     id: string;
@@ -7,10 +14,9 @@ export type BottomModalAlertItem = {
     message: string;
 
     src: Record<'dark' | 'light', string>;
-    cta: Record<'text' | 'link', string>;
+    cta: BottomModalAlertAction;
+    learnMore?: BottomModalAlertAction;
     plan: 'free' | 'pro' | 'scale' /*| 'enterprise'*/;
-    learnMore?: Partial<Record<'text' | 'link', string>>;
-
     show?: boolean;
     isHtml?: boolean;
     importance?: number;

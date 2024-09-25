@@ -14,6 +14,7 @@
     import { BillingPlan } from '$lib/constants';
     import { upgradeURL } from '$lib/stores/billing';
     import { addBottomModalAlerts } from '$routes/(console)/project-[project]/bottomAlerts';
+    import { project } from '$routes/(console)/project-[project]/store';
 
     let currentIndex = 0;
     let openModalOnMobile = false;
@@ -139,23 +140,29 @@
                             <Button
                                 secondary
                                 class="button"
-                                href={shouldShowUpgrade ? $upgradeURL : currentModalAlert.cta.link}
+                                href={shouldShowUpgrade
+                                    ? $upgradeURL
+                                    : currentModalAlert.cta.link({
+                                          organization: $organization,
+                                          project: $project
+                                      })}
                                 external={!isCloud}
                                 fullWidthMobile
                                 on:click={() => handleClose()}>
                                 {shouldShowUpgrade ? 'Upgrade plan' : currentModalAlert.cta.text}
                             </Button>
 
-                            {#if currentModalAlert.learnMore && currentModalAlert.learnMore.link}
+                            {#if currentModalAlert.learnMore}
                                 <Button
                                     text
                                     class="button"
                                     external
                                     fullWidthMobile
-                                    href={currentModalAlert.learnMore.link}>
-                                    {currentModalAlert.learnMore.text
-                                        ? currentModalAlert.learnMore.text
-                                        : 'Learn More'}
+                                    href={currentModalAlert.learnMore.link({
+                                        organization: $organization,
+                                        project: $project
+                                    })}>
+                                    {currentModalAlert.learnMore.text}
                                 </Button>
                             {/if}
                         </div>
@@ -241,7 +248,10 @@
                                     class="button"
                                     href={shouldShowUpgrade
                                         ? $upgradeURL
-                                        : currentModalAlert.cta.link}
+                                        : currentModalAlert.cta.link({
+                                              organization: $organization,
+                                              project: $project
+                                          })}
                                     external={!isCloud}
                                     fullWidthMobile
                                     on:click={() => handleClose()}>
@@ -250,16 +260,17 @@
                                         : currentModalAlert.cta.text}
                                 </Button>
 
-                                {#if currentModalAlert.learnMore && currentModalAlert.learnMore.link}
+                                {#if currentModalAlert.learnMore}
                                     <Button
                                         text
                                         class="button"
                                         external
                                         fullWidthMobile
-                                        href={currentModalAlert.learnMore.link}>
-                                        {currentModalAlert.learnMore.text
-                                            ? currentModalAlert.learnMore.text
-                                            : 'Learn More'}
+                                        href={currentModalAlert.learnMore.link({
+                                            organization: $organization,
+                                            project: $project
+                                        })}>
+                                        {currentModalAlert.learnMore.text}
                                     </Button>
                                 {/if}
                             </div>

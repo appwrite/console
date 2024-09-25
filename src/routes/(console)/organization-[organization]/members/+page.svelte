@@ -25,6 +25,8 @@
     import { getRoleLabel, upgradeURL } from '$lib/stores/billing';
     import { BillingPlan } from '$lib/constants';
     import { isCloud } from '$lib/system';
+    import { Drop } from '$lib/components';
+    import Upgrade from '$lib/components/roles/upgrade.svelte';
 
     export let data: PageData;
 
@@ -74,79 +76,29 @@
                 <TableCellHead width={160}>Name</TableCellHead>
                 <TableCellHead width={120}>Email</TableCellHead>
                 <div style:--p-col-width={120} class="table-thead-col" role="columnheader">
-                    <span class="u-flex u-gap-8 u-cross-center">
+                    <span class="u-flex u-gap-8 u-cross-baseline">
                         <span class="eyebrow-heading-3"> Role </span>
-                        <DropList bind:show={showPopover} width="20" scrollable>
-                            <button type="button" on:click={() => (showPopover = !showPopover)}>
+                        <Drop isPopover bind:show={showPopover} display="inline-block">
+                            &nbsp;<button
+                                type="button"
+                                on:click={() => (showPopover = !showPopover)}
+                                class="tooltip"
+                                aria-label="input tooltip">
                                 <span
                                     class="icon-info"
                                     aria-hidden="true"
                                     style="font-size: var(--icon-size-small)" />
                             </button>
                             <svelte:fragment slot="list">
-                                <div class="u-flex u-flex-vertical u-gap-8 u-break-word">
-                                    {#if isCloud}
-                                        <p>
-                                            <span class="u-bold">Roles</span>
-                                            {#if $organization?.billingPlan === BillingPlan.FREE}
-                                                <span class="inline-tag u-normal u-x-small"
-                                                    >Pro plan</span>
-                                            {/if}
-                                        </p>
-                                        {#if $organization?.billingPlan != BillingPlan.FREE}
-                                            <p>
-                                                Owner, Developer <span
-                                                    class="inline-tag u-normal u-x-small"
-                                                    >Default</span
-                                                >, Editor, Analyst, Billing.
-                                            </p>
-                                            <p class="">
-                                                <a
-                                                    class="link"
-                                                    href="http://appwrite.io/docs/roles"
-                                                    target="_blank"
-                                                    rel="noopener noreferrer">Learn more</a> about roles.
-                                            </p>
-                                        {:else}
-                                            <p>
-                                                Owner, <span class="u-color-text-disabled"
-                                                    >Developer, Editor, Analyst.</span>
-                                            </p>
-                                            <p class="u-flex u-main-end u-cross-center u-gap-12">
-                                                <a
-                                                    class="button is-text"
-                                                    href="http://appwrite.io/docs/roles"
-                                                    target="_blank"
-                                                    rel="noopener noreferrer">Learn more</a>
-                                                <a class="button is-secondary" href={$upgradeURL}
-                                                    >Upgrade plan</a>
-                                            </p>
-                                        {/if}
-                                    {:else}
-                                        <p>
-                                            <span class="u-bold">Roles</span>
-                                            <span class="inline-tag u-normal u-x-small"
-                                                >Appwrite Cloud</span>
-                                        </p>
-                                        <p>
-                                            Upgrade to Cloud to assign new roles to members or ask
-                                            us about our entriprise self hosted offering.
-                                        </p>
-                                        <p class="u-flex u-main-end u-cross-center u-gap-12">
-                                            <a
-                                                class="button is-text"
-                                                href="http://appwrite.io/docs/roles"
-                                                target="_blank"
-                                                rel="noopener noreferrer">Learn more</a>
-                                            <a
-                                                class="button is-secondary"
-                                                href="https://cloud.appwrite.io"
-                                                >Upgrade to Cloud</a>
-                                        </p>
-                                    {/if}
+                                <div
+                                    class="dropped card u-max-width-250 u-break-word"
+                                    style:--card-border-radius="var(--border-radius-small)"
+                                    style:--p-card-padding=".75rem"
+                                    style:box-shadow="var(--shadow-large)">
+                                    <svelte:component this={Upgrade} />
                                 </div>
                             </svelte:fragment>
-                        </DropList>
+                        </Drop>
                     </span>
                 </div>
 

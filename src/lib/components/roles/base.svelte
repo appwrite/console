@@ -5,7 +5,7 @@
 <style>
     div {
         color: hsl(var(--color-neutral-50));
-
+        line-height: 1.25rem;
         &:first-child {
             color: hsl(var(--color-neutral-70));
         }
