@@ -20,8 +20,8 @@
                 <p>Owner, Developer, Editor, Analyst and Billing.</p>
             </div>
             <p>
-                <Button link external href="https://appwrite.io/docs/roles">Learn more</Button> about
-                roles.
+                <Button link external href="https://appwrite.io/docs/advanced/platform/roles"
+                    >Learn more</Button> about roles.
             </p>
         {:else}
             <div class="u-flex-vertical u-gap-8">
@@ -37,7 +37,8 @@
                 </p>
             </div>
             <p class="u-flex u-main-end u-cross-center u-gap-4">
-                <Button text external href="https://appwrite.io/docs/roles">Learn more</Button>
+                <Button text external href="https://appwrite.io/docs/advanced/platform/roles"
+                    >Learn more</Button>
                 <Button secondary external href={$upgradeURL}>Upgrade plan</Button>
             </p>
         {/if}
@@ -53,7 +54,8 @@
             </p>
         </div>
         <p class="u-flex u-main-end u-cross-center u-gap-4">
-            <Button text external href="https://appwrite.io/docs/roles">Learn more</Button>
+            <Button text external href="https://appwrite.io/docs/advanced/platform/roles"
+                >Learn more</Button>
             <Button secondary external href={$upgradeURL}>Upgrade to Cloud</Button>
         </p>
     {/if}

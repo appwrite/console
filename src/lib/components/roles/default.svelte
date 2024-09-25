@@ -13,7 +13,7 @@
                 class="link"
                 target="_blank"
                 rel="noopener noreferrer"
-                href="https://appwrite.io/docs/roles">Learn more</a> about roles.
+                href="https://appwrite.io/docs/advanced/platform/roles">Learn more</a> about roles.
         </p>
     </div>
 </Base>
