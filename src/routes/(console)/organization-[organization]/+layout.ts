@@ -11,13 +11,14 @@ import ProjectsAtRisk from '$lib/components/billing/alerts/projectsAtRisk.svelte
 import { get } from 'svelte/store';
 import { preferences } from '$lib/stores/preferences';
 import type { Organization } from '$lib/stores/organization';
+import { defaultRoles, defaultScopes } from '../../../lib/constants';
 
 export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.ORGANIZATION);
     depends(Dependencies.MEMBERS);
     depends(Dependencies.PAYMENT_METHODS);
-    let roles = [];
-    let scopes = [];
+    let roles = isCloud ? [] : defaultScopes;
+    let scopes = isCloud ? [] : defaultRoles;
 
     try {
         if (isCloud) {

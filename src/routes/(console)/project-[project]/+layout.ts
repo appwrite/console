@@ -6,6 +6,7 @@ import { preferences } from '$lib/stores/preferences';
 import { failedInvoice } from '$lib/stores/billing';
 import { isCloud } from '$lib/system';
 import type { Organization } from '$lib/stores/organization';
+import { defaultRoles, defaultScopes } from '../../../lib/constants';
 
 export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.PROJECT);
@@ -16,8 +17,8 @@ export const load: LayoutLoad = async ({ params, depends }) => {
         const newPrefs = { ...prefs, organization: project.teamId };
         sdk.forConsole.account.updatePrefs(newPrefs);
         preferences.loadTeamPrefs(project.teamId);
-        let roles = [];
-        let scopes = [];
+        let roles = isCloud ? [] : defaultScopes;
+        let scopes = isCloud ? [] : defaultRoles;
         if (isCloud) {
             const res = await sdk.forConsole.billing.getRoles(project.teamId);
             roles = res.roles;
