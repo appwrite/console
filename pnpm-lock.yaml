@@ -4,9 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-overrides:
-  rollup: ^4.22.4
-
 dependencies:
   '@appwrite.io/console':
     specifier: ^1.2.0
