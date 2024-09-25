@@ -4,6 +4,7 @@
     import { isCloud } from '$lib/system';
     import { organization } from '$lib/stores/organization';
     import { BillingPlan } from '$lib/constants';
+    import Button from '$lib/elements/forms/button.svelte';
 </script>
 
 <Base>
@@ -20,22 +21,15 @@
                 Analyst, Billing.
             </p>
             <p>
-                <a
-                    class="link"
-                    href="http://appwrite.io/docs/roles"
-                    target="_blank"
-                    rel="noopener noreferrer">Learn more</a> about roles.
+                <Button link external href="https://appwrite.io/docs/roles">Learn more</Button> about
+                roles.
             </p>
         {:else}
             <p>
                 Owner, <span class="u-color-text-disabled">Developer, Editor, Analyst.</span>
             </p>
             <p class="u-flex u-main-end u-cross-center u-gap-12">
-                <a
-                    class="button is-text"
-                    href="http://appwrite.io/docs/roles"
-                    target="_blank"
-                    rel="noopener noreferrer">Learn more</a>
+                <Button text link external href="https://appwrite.io/docs/roles">Learn more</Button>
                 <a class="button is-secondary" href={$upgradeURL}>Upgrade plan</a>
             </p>
         {/if}
@@ -49,12 +43,8 @@
             hosted offering.
         </p>
         <p class="u-flex u-main-end u-cross-center u-gap-12">
-            <a
-                class="button is-text"
-                href="http://appwrite.io/docs/roles"
-                target="_blank"
-                rel="noopener noreferrer">Learn more</a>
-            <a class="button is-secondary" href="https://cloud.appwrite.io">Upgrade to Cloud</a>
+            <Button text link external href="https://appwrite.io/docs/roles">Learn more</Button>
+            <Button secondary link external href={$upgradeURL}>Upgrade to Cloud</Button>
         </p>
     {/if}
 </Base>
