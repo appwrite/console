@@ -12,15 +12,40 @@
     import { organization } from '$lib/stores/organization';
     import { BillingPlan } from '$lib/constants';
     import { upgradeURL } from '$lib/stores/billing';
-    import { addBottomModalAlerts } from '$routes/(console)/project-[project]/bottomAlerts';
+    import { addBottomModalAlerts } from '$routes/(console)/bottomAlerts';
     import { project } from '$routes/(console)/project-[project]/store';
+    import { page } from '$app/stores';
 
     let currentIndex = 0;
     let openModalOnMobile = false;
 
-    $: filteredModalAlerts = $bottomModalAlerts
-        .sort((a, b) => b.importance - a.importance)
-        .filter((alert) => alert.show && shouldShowNotification(alert.id));
+    function getPageScope(pathname: string) {
+        const isProjectPage = pathname.includes('project-[project]');
+        const isOrganizationPage = pathname.includes('organization-[organization]');
+
+        return { isProjectPage, isOrganizationPage };
+    }
+
+    function filterModalAlerts(alerts: BottomModalAlertItem[], pathname: string) {
+        const { isProjectPage, isOrganizationPage } = getPageScope(pathname);
+
+        return alerts
+            .sort((a, b) => b.importance - a.importance)
+            .filter((alert) => {
+                return (
+                    alert.show &&
+                    shouldShowNotification(alert.id) &&
+                    // if no scope > show in projects & org pages.
+                    ((!alert.scope && (isProjectPage || isOrganizationPage)) ||
+                        // project scope, show only in project pages
+                        (isProjectPage && alert.scope === 'project') ||
+                        // organization scope, show only in organization pages
+                        (isOrganizationPage && alert.scope === 'organization'))
+                );
+            });
+    }
+
+    $: filteredModalAlerts = filterModalAlerts($bottomModalAlerts, $page.route.id);
 
     $: currentModalAlert = filteredModalAlerts[currentIndex] as BottomModalAlertItem;
 
@@ -147,7 +172,7 @@
                                       })}
                                 external={!!currentModalAlert.cta.external}
                                 fullWidthMobile>
-                                {shouldShowUpgrade ? 'Upgrade plan' : currentModalAlert.cta.text}
+                                {currentModalAlert.cta.text}
                             </Button>
 
                             {#if currentModalAlert.learnMore}

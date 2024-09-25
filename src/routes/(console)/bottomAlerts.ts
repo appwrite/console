@@ -5,23 +5,23 @@ import { type BottomModalAlertItem, showBottomModalAlert } from '$lib/stores/bot
 
 const listOfPromotions: BottomModalAlertItem[] = [
     {
-        id: 'memberRolesssssss',
+        id: 'memberRoles',
         src: {
             dark: RolesDark,
             light: RolesLight
         },
-        title: 'Member roles now on Pro plans',
+        title: 'Roles are available now',
         message:
-            'Enhance your workflow and security by assigning roles to members. <br/><b>Try it now for free until Dec 2024.</b>',
+            'Enhance your workflow and security by assigning roles to members. <br/><b>Try for free until Jan 1st 2025 on paid plans.</b>',
 
         isHtml: true,
         plan: 'pro',
         cta: {
-            text: 'Try Now',
+            text: 'Try now',
             link: ({ organization }) => `${base}/organization-${organization.$id}/members`
         },
         learnMore: {
-            text: 'Learn More',
+            text: 'Learn more',
             link: () => 'https://appwrite.io/docs/advanced/platform/roles'
         }
     }
