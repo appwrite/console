@@ -71,7 +71,7 @@
             <Alert type="info">
                 New roles are free until 01 December 2024. <a
                     class="link"
-                    href="https://appwrite.io/docs/roles"
+                    href="https://appwrite.io/docs/advanced/platform/roles"
                     target="_blank"
                     rel="noopener noreferrer">Learn more</a
                 >.

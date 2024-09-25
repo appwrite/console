@@ -22,7 +22,7 @@ const listOfPromotions: BottomModalAlertItem[] = [
         },
         learnMore: {
             text: 'Learn More',
-            link: () => 'https://appwrite.io/docs/roles'
+            link: () => 'https://appwrite.io/docs/advanced/platform/roles'
         }
     }
 ];
