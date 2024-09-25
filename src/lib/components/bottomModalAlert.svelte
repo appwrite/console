@@ -35,8 +35,11 @@
                 return (
                     alert.show &&
                     shouldShowNotification(alert.id) &&
-                    (!alert.scope ||
+                    // if no scope > show in projects & org pages.
+                    ((!alert.scope && (isProjectPage || isOrganizationPage)) ||
+                        // project scope, show only in project pages
                         (isProjectPage && alert.scope === 'project') ||
+                        // organization scope, show only in organization pages
                         (isOrganizationPage && alert.scope === 'organization'))
                 );
             });
