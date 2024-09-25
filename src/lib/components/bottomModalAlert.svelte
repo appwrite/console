@@ -378,7 +378,25 @@
         }
 
         .alert-container {
-            max-width: 289px;
+            width: 100vw;
+            padding-inline: 1.25rem;
+        }
+
+        .showcase-image {
+            height: auto;
+        }
+    }
+    
+    @media (min-width: 460px) and (max-width: 768px) {
+        .alert-container {
+            max-width: 75vw;
+            padding-inline: 1.25rem;
+        }
+    }
+
+    @media (min-width: 525px) and (max-width: 768px) {
+        .alert-container {
+            max-width: 70vw;
         }
     }
 </style>
