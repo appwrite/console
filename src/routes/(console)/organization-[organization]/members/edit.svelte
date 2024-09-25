@@ -57,7 +57,7 @@
             showEdit = false;
             addNotification({
                 type: 'success',
-                message: `Role updated`
+                message: `Role has been updated`
             });
             trackEvent(Submit.MembershipUpdate);
             dispatch('updated', membership);

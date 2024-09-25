@@ -25,8 +25,12 @@
     import { getRoleLabel, upgradeURL } from '$lib/stores/billing';
     import { BillingPlan } from '$lib/constants';
     import { isCloud } from '$lib/system';
+<<<<<<< HEAD
     import { Drop } from '$lib/components';
     import Upgrade from '$lib/components/roles/upgrade.svelte';
+=======
+    import { Button } from '$lib/elements/forms';
+>>>>>>> 8777904fabe7e84099a19823a863170d08a3bfb0
 
     export let data: PageData;
 
