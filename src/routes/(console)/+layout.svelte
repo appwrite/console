@@ -43,6 +43,7 @@
     import { headerAlert } from '$lib/stores/headerAlert';
     import { UsageRates } from '$lib/components/billing';
     import { base } from '$app/paths';
+    import { canSeeProjects } from '$lib/stores/roles';
 
     function kebabToSentenceCase(str: string) {
         return str
@@ -66,9 +67,10 @@
             keys: ['g', 'p'],
             group: 'navigation',
             disabled:
-                $page.url.pathname.includes('/console/organization-') &&
-                !$page.url.pathname.endsWith('/members') &&
-                !$page.url.pathname.endsWith('/settings'),
+                ($page.url.pathname.includes('/console/organization-') &&
+                    !$page.url.pathname.endsWith('/members') &&
+                    !$page.url.pathname.endsWith('/settings')) ||
+                !$canSeeProjects,
             rank: -1
         },
         {

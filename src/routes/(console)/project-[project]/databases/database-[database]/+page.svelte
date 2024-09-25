@@ -6,6 +6,7 @@
     import Table from './table.svelte';
     import Grid from './grid.svelte';
     import type { PageData } from './$types';
+    import { canWriteCollections } from '$lib/stores/roles';
 
     export let data: PageData;
 </script>
@@ -17,10 +18,12 @@
         view={data.view}
         hideColumns={!data.collections.total}
         hideView={!data.collections.total}>
-        <Button on:click={() => ($showCreate = true)} event="create_collection">
-            <span class="icon-plus" aria-hidden="true" />
-            <span class="text">Create collection</span>
-        </Button>
+        {#if $canWriteCollections}
+            <Button on:click={() => ($showCreate = true)} event="create_collection">
+                <span class="icon-plus" aria-hidden="true" />
+                <span class="text">Create collection</span>
+            </Button>
+        {/if}
     </GridHeader>
 
     {#if data.collections.total}

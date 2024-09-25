@@ -26,6 +26,7 @@
     import { parseExpression } from 'cron-parser';
     import { onMount } from 'svelte';
     import { functionsList } from './store';
+    import { canWriteFunctions } from '$lib/stores/roles';
     import type { Models } from '@appwrite.io/console';
 
     export let data;
@@ -73,7 +74,8 @@
             keys: ['c'],
             disabled:
                 $wizard.show ||
-                isServiceLimited('functions', $organization?.billingPlan, $functionsList?.total),
+                isServiceLimited('functions', $organization?.billingPlan, $functionsList?.total) ||
+                !$canWriteFunctions,
             icon: 'plus',
             group: 'functions'
         }
@@ -85,7 +87,7 @@
 <Container>
     <ContainerHeader
         title="Functions"
-        buttonText="Create function"
+        buttonText={$canWriteFunctions ? 'Create function' : ''}
         buttonEvent="create_function"
         buttonMethod={openWizard}
         total={data.functions.total} />
@@ -93,6 +95,7 @@
     {#if data.functions.total}
         <CardContainer
             {offset}
+            showEmpty={$canWriteFunctions}
             event="functions"
             total={data.functions.total}
             on:click={openWizard}

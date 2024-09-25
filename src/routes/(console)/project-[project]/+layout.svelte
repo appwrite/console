@@ -16,6 +16,13 @@
     } from '$lib/commandCenter/searchers';
     import { page } from '$app/stores';
     import { base } from '$app/paths';
+    import {
+        canSeeBuckets,
+        canSeeDatabases,
+        canSeeFunctions,
+        canSeeMessages,
+        canWriteProjects
+    } from '$lib/stores/roles';
 
     onMount(() => {
         return sdk.forConsole.client.subscribe(['project', 'console'], (response) => {
@@ -42,7 +49,8 @@
                 goto(`${base}/project-${$project.$id}/databases`);
             },
             keys: ['g', 'd'],
-            group: 'navigation'
+            group: 'navigation',
+            disabled: !$canSeeDatabases
         },
         {
             label: 'Go to Functions',
@@ -50,7 +58,8 @@
                 goto(`${base}/project-${$project.$id}/functions`);
             },
             keys: ['g', 'f'],
-            group: 'navigation'
+            group: 'navigation',
+            disabled: !$canSeeFunctions
         },
         {
             label: 'Go to Messaging',
@@ -58,7 +67,7 @@
                 goto(`${base}/project-${$project.$id}/messaging`);
             },
             keys: ['g', 'm'],
-            disabled: $page.url.pathname.endsWith('messaging'),
+            disabled: $page.url.pathname.endsWith('messaging') || !$canSeeMessages,
             group: 'navigation'
         },
         {
@@ -67,7 +76,8 @@
                 goto(`${base}/project-${$project.$id}/storage`);
             },
             keys: ['g', 's'],
-            group: 'navigation'
+            group: 'navigation',
+            disabled: !$canSeeBuckets
         },
         {
             label: 'Go to Settings',
@@ -75,7 +85,8 @@
                 goto(`${base}/project-${$project.$id}/settings`);
             },
             keys: ['g', 'e'],
-            group: 'navigation'
+            group: 'navigation',
+            disabled: !$canWriteProjects
         },
         {
             label: 'Go to Overview',

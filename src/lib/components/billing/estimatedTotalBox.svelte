@@ -19,7 +19,7 @@
     let budgetEnabled = false;
 
     $: currentPlan = $plansInfo.get(billingPlan);
-    $: extraSeatsCost = (collaborators?.length ?? 0) * (currentPlan?.addons?.member?.price ?? 0);
+    $: extraSeatsCost = 0; // 0 untile trial period later replace (collaborators?.length ?? 0) * (currentPlan?.addons?.member?.price ?? 0);
     $: grossCost = currentPlan.price + extraSeatsCost;
     $: estimatedTotal =
         couponData?.status === 'active'

@@ -21,3 +21,9 @@
     data-private>
     <slot />
 </svelte:element>
+
+<style>
+    :global(.table .button.is-text) {
+        --p-text-color-default: initial !important;
+    }
+</style>
