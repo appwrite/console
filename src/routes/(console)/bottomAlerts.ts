@@ -12,7 +12,7 @@ const listOfPromotions: BottomModalAlertItem[] = [
         },
         title: 'Member roles now on Pro plans',
         message:
-            'Enhance your workflow and security by assigning roles to members. <br/><b>Try it now for free until Dec 2024.</b>',
+            'Enhance your workflow and security by assigning roles to members. <br/><b>Try it now for free until 1st January 2025.</b>',
 
         isHtml: true,
         scope: 'organization',
