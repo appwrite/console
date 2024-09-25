@@ -11,7 +11,7 @@ import ProjectsAtRisk from '$lib/components/billing/alerts/projectsAtRisk.svelte
 import { get } from 'svelte/store';
 import { preferences } from '$lib/stores/preferences';
 import type { Organization } from '$lib/stores/organization';
-import { defaultRoles, defaultScopes } from '../../../lib/constants';
+import { defaultRoles, defaultScopes } from '$lib/constants';
 
 export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.ORGANIZATION);
