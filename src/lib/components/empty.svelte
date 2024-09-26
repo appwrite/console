@@ -24,6 +24,9 @@
     }
 
     function track() {
+        if (!allowCreate) {
+            return;
+        }
         if (target) {
             trackEvent(`click_create_${target}`, {
                 from: 'empty'
@@ -37,7 +40,11 @@
         <div
             class="u-flex u-flex-vertical u-cross-center u-gap-24 u-width-full-line u-overflow-hidden u-padding-block-8">
             {#if !noMedia}
-                <button type="button" on:click={onClick} aria-label="create {target}">
+                <button
+                    type="button"
+                    on:click={track}
+                    on:click={onClick}
+                    aria-label="create {target}">
                     {#if $app.themeInUse === 'dark'}
                         <img src={EmptyDark} alt="create" aria-hidden="true" height="242" />
                     {:else}
