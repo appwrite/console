@@ -16,11 +16,11 @@
 
     const dispatch = createEventDispatcher();
 
-    function onClick() {
+    function onClick(event) {
         if (!allowCreate) {
             return;
         }
-        dispatch('click');
+        dispatch('click', event);
     }
 
     function track() {
