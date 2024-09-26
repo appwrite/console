@@ -5,10 +5,11 @@
 
     export let domain: Models.ProxyRuleList;
     let showDropdown = false;
+    $: rulesLength = domain?.rules?.length ?? 0;
 </script>
 
 <div class="u-flex u-gap-4 u-cross-center">
-    {#if domain && domain.rules && domain.rules.length > 0}
+    {#if rulesLength > 0}
         <a
             href={`http://${domain.rules[0].domain}`}
             target="_blank"
@@ -22,10 +23,10 @@
         </a>
     {/if}
 
-    {#if domain && domain.rules && domain.rules.length > 1}
+    {#if rulesLength > 1}
         <DropList bind:show={showDropdown} scrollable>
             <Pill button on:click={() => (showDropdown = !showDropdown)}>
-                +{domain.rules.length - 1}
+                +{rulesLength - 1}
             </Pill>
             <svelte:fragment slot="list">
                 {#each domain.rules as rule, i}
@@ -39,7 +40,7 @@
         </DropList>
     {/if}
 
-    {#if !(domain && domain.rules && domain.rules.length > 0)}
+    {#if rulesLength === 0}
         <p>No domains available</p>
     {/if}
 </div>
