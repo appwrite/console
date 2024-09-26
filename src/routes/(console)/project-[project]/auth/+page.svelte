@@ -156,7 +156,7 @@
             href="https://appwrite.io/docs/references/cloud/server-nodejs/users"
             target="user"
             allowCreate={$canWriteUsers}
-            on:click={() => showCreateUser.set(true)} />
+            on:click={() => showCreateUser.set($canWriteUsers)} />
     {/if}
 </Container>
 

@@ -41,8 +41,9 @@
     {:else}
         <Empty
             single
+            allowCreate={$canWriteCollections}
             href="https://appwrite.io/docs/products/databases/collections"
             target="collection"
-            on:click={() => ($showCreate = true)} />
+            on:click={() => ($showCreate = $canWriteCollections)} />
     {/if}
 </Container>
