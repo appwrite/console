@@ -4,18 +4,17 @@ import { type Models, Query } from '@appwrite.io/console';
 import { sdk } from '$lib/stores/sdk';
 import { headerAlert } from '$lib/stores/headerAlert';
 import BackupDatabase from '$lib/components/backupDatabaseAlert.svelte';
-import { shouldShowNotificationBanner } from '$lib/helpers/notifications';
+import { shouldShowNotification } from '$lib/helpers/notifications';
 
 export const database = derived(page, ($page) => $page.data?.database as Models.Database);
 
 export const backupsBannerId = 'databasesBackup';
 
 export const showPolicyAlert = writable<boolean>(false);
-export const userHidBackupsPromotion = writable<boolean>(false);
 
 export async function checkForDatabaseBackupPolicies(database: Models.Database) {
     // fast path: return if user dismissed the banner
-    if (!shouldShowNotificationBanner(backupsBannerId)) return;
+    if (!shouldShowNotification(backupsBannerId)) return;
 
     let total = 0;
 
