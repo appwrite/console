@@ -207,7 +207,7 @@
 
     input[type='checkbox'][role='switch'] {
         .theme-dark &:not(:checked) {
-            background-color: #56565c;
+            background-color: var(--color-mid-neutral-70, #56565c);
         }
     }
 </style>
