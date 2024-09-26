@@ -197,11 +197,17 @@
 
     /* TODO: remove this block once Pink V2 is incorporated */
     input[type='radio'],
-    input[type='checkbox'],
+    input[type='checkbox']:not([role='switch']),
     input[type='switchbox'] {
         .theme-dark &:not(:checked) {
             background-color: transparent; /* take whatever color is behind */
             border: 1px solid var(--color-mid-neutral-70, #56565c);
+        }
+    }
+
+    input[type='checkbox'][role='switch'] {
+        .theme-dark &:not(:checked) {
+            background-color: #56565c;
         }
     }
 </style>
