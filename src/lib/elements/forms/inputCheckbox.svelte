@@ -65,3 +65,11 @@
         <Helper type="warning">{error}</Helper>
     {/if}
 </FormItem>
+
+<style>
+    /* TODO: remove this block once Pink V2 is incorporated */
+    :global(.theme-dark) input[type='checkbox']:not(:checked) {
+        background-color: transparent; /* take whatever color is behind*/
+        border: 1px solid var(--color-mid-neutral-70, #56565c);
+    }
+</style>
