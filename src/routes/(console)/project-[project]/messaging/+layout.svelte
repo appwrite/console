@@ -12,6 +12,7 @@
     import { messagesSearcher } from '$lib/commandCenter/searchers/messages';
     import { providersSearcher } from '$lib/commandCenter/searchers/providers';
     import { topicsSearcher } from '$lib/commandCenter/searchers/topics';
+    import { canWriteMessages } from '$lib/stores/roles';
     import { project } from '../store';
 
     // TODO: finalize the commands
@@ -23,7 +24,8 @@
                 addSubPanel(CreateMessagePanel);
             },
             icon: 'plus',
-            group: 'messaging'
+            group: 'messaging',
+            disabled: !$canWriteMessages
         },
         {
             label: 'Go to Topics',

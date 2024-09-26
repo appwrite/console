@@ -55,7 +55,7 @@
             await feedback.submitFeedback(`feedback-${$feedback.type}`, message);
         } catch (error) {
             console.error(
-                'Feedback cound bot be submitted, but we continue to reditect to do export.'
+                'Feedback could not be submitted, but we continue to redirect to do export.'
             );
             console.error(error);
         }

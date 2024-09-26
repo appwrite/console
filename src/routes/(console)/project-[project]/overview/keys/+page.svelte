@@ -1,5 +1,8 @@
 <script lang="ts" context="module">
     export function createApiKey() {
+        if (!get(canWriteKeys)) {
+            return;
+        }
         wizard.start(Wizard);
     }
 </script>
@@ -16,7 +19,9 @@
         TableRowLink
     } from '$lib/elements/table';
     import { toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
+    import { canWriteKeys } from '$lib/stores/roles';
     import { wizard } from '$lib/stores/wizard';
+    import { get } from 'svelte/store';
     import type { PageData } from './$types';
     import Wizard from './wizard.svelte';
 
@@ -25,12 +30,14 @@
 
 <div class="common-section u-flex u-gap-12">
     <Heading tag="h3" size="7">API keys</Heading>
-    <span class="u-margin-inline-start-auto">
-        <Button on:click={createApiKey}>
-            <span class="icon-plus" aria-hidden="true" />
-            <span class="text">Create API key</span>
-        </Button>
-    </span>
+    {#if $canWriteKeys}
+        <span class="u-margin-inline-start-auto">
+            <Button on:click={createApiKey}>
+                <span class="icon-plus" aria-hidden="true" />
+                <span class="text">Create API key</span>
+            </Button>
+        </span>
+    {/if}
 </div>
 
 {#if data.keys.total}
@@ -63,7 +70,8 @@
 {:else}
     <Empty
         single
+        allowCreate={$canWriteKeys}
         href="https://appwrite.io/docs/advanced/platform/api-keys"
         target="API key"
-        on:click={createApiKey} />
+        on:click={$canWriteKeys ? createApiKey : null} />
 {/if}

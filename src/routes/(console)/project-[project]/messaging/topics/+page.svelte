@@ -22,6 +22,7 @@
     import Table from './table.svelte';
     import type { Column } from '$lib/helpers/types';
     import { writable } from 'svelte/store';
+    import { canWriteTopics } from '$lib/stores/roles';
 
     export let data: PageData;
 
@@ -52,12 +53,14 @@
     <div class="u-flex u-flex-vertical">
         <div class="u-flex u-main-space-between">
             <Heading tag="h2" size="5">Topics</Heading>
-            <div class="is-only-mobile">
-                <Button on:click={() => ($showCreate = true)} event="create_topic">
-                    <span class="icon-plus" aria-hidden="true" />
-                    <span class="text">Create topic</span>
-                </Button>
-            </div>
+            {#if $canWriteTopics}
+                <div class="is-only-mobile">
+                    <Button on:click={() => ($showCreate = true)} event="create_topic">
+                        <span class="icon-plus" aria-hidden="true" />
+                        <span class="text">Create topic</span>
+                    </Button>
+                </div>
+            {/if}
         </div>
         <!-- TODO: fix width of search input in mobile -->
         <SearchQuery search={data.search} placeholder="Search by name or ID">
@@ -69,10 +72,12 @@
                     hideView
                     allowNoColumns
                     showColsTextMobile />
-                <Button on:click={() => ($showCreate = true)} event="create_topic">
-                    <span class="icon-plus" aria-hidden="true" />
-                    <span class="text">Create topic</span>
-                </Button>
+                {#if $canWriteTopics}
+                    <Button on:click={() => ($showCreate = true)} event="create_topic">
+                        <span class="icon-plus" aria-hidden="true" />
+                        <span class="text">Create topic</span>
+                    </Button>
+                {/if}
             </div>
         </SearchQuery>
         <div class="u-flex u-gap-16 is-only-mobile u-margin-block-start-16">
@@ -114,7 +119,7 @@
     {:else}
         <Empty
             single
-            on:click={() => ($showCreate = true)}
+            on:click={() => $canWriteTopics && ($showCreate = true)}
             href="https://appwrite.io/docs/products/messaging/topics"
             target="topic" />
     {/if}

@@ -16,6 +16,7 @@
     import { app } from '$lib/stores/app';
     import { isServiceLimited } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
+    import { canWriteFunctions } from '$lib/stores/roles';
     import { connectTemplate } from '$lib/wizards/functions/cover.svelte';
     import type { Models } from '@appwrite.io/console';
     import { functionsList } from '../store';
@@ -226,15 +227,16 @@
                                         text>
                                         <span class="text">View details</span>
                                     </Button>
-
-                                    <ContainerButton
-                                        title="functions"
-                                        disabled={buttonDisabled}
-                                        buttonType="secondary"
-                                        buttonMethod={() => connectTemplate(template)}
-                                        showIcon={false}
-                                        buttonText="Create function"
-                                        buttonEvent="create_function" />
+                                    {#if $canWriteFunctions}
+                                        <ContainerButton
+                                            title="functions"
+                                            disabled={buttonDisabled}
+                                            buttonType="secondary"
+                                            buttonMethod={() => connectTemplate(template)}
+                                            showIcon={false}
+                                            buttonText="Create function"
+                                            buttonEvent="create_function" />
+                                    {/if}
                                 </div>
                             </article>
                         </li>

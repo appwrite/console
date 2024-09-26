@@ -42,6 +42,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import type { Column } from '$lib/helpers/types';
     import { writable } from 'svelte/store';
+    import { canWriteMessages } from '$lib/stores/roles';
 
     export let data: PageData;
     let selected: string[] = [];
@@ -93,9 +94,11 @@
 
 <Container>
     <ContainerHeader title="Messages">
-        <div class="is-only-mobile">
-            <CreateMessageDropdown bind:showCreateDropdown={showCreateDropdownMobile} />
-        </div>
+        {#if $canWriteMessages}
+            <div class="is-only-mobile">
+                <CreateMessageDropdown bind:showCreateDropdown={showCreateDropdownMobile} />
+            </div>
+        {/if}
     </ContainerHeader>
     <div class="u-flex u-flex-vertical u-gap-16 u-margin-block-start-16">
         <SearchQuery
@@ -111,7 +114,10 @@
                         hideView
                         allowNoColumns
                         showColsTextMobile />
-                    <CreateMessageDropdown bind:showCreateDropdown={showCreateDropdownDesktop} />
+                    {#if $canWriteMessages}
+                        <CreateMessageDropdown
+                            bind:showCreateDropdown={showCreateDropdownDesktop} />
+                    {/if}
                 </div>
             </div>
         </SearchQuery>
@@ -133,9 +139,11 @@
     {#if data.messages.total}
         <TableScroll>
             <TableHeader>
-                <TableCellHeadCheck
-                    bind:selected
-                    pageItemsIds={data.messages.messages.map((d) => d.$id)} />
+                {#if $canWriteMessages}
+                    <TableCellHeadCheck
+                        bind:selected
+                        pageItemsIds={data.messages.messages.map((d) => d.$id)} />
+                {/if}
                 {#each $columns as column}
                     {#if column.show}
                         <TableCellHead width={column.width}>{column.title}</TableCellHead>
@@ -146,11 +154,12 @@
                 {#each data.messages.messages as message (message.$id)}
                     <TableRowLink
                         href={`${base}/project-${project}/messaging/message-${message.$id}`}>
-                        <TableCellCheck
-                            bind:selectedIds={selected}
-                            id={message.$id}
-                            disabled={message.status === 'processing'} />
-
+                        {#if $canWriteMessages}
+                            <TableCellCheck
+                                bind:selectedIds={selected}
+                                id={message.$id}
+                                disabled={message.status === 'processing'} />
+                        {/if}
                         {#each $columns as column (column.id)}
                             {#if column.show}
                                 {#if column.id === '$id'}
@@ -272,14 +281,16 @@
                     ariaLabel={`create message`}>
                     Documentation
                 </Button>
-                <CreateMessageDropdown bind:showCreateDropdown={showCreateDropdownEmpty}>
-                    <Button
-                        secondary
-                        on:click={() => (showCreateDropdownEmpty = !showCreateDropdownEmpty)}
-                        event="create_message">
-                        <span class="text">Create message</span>
-                    </Button>
-                </CreateMessageDropdown>
+                {#if $canWriteMessages}
+                    <CreateMessageDropdown bind:showCreateDropdown={showCreateDropdownEmpty}>
+                        <Button
+                            secondary
+                            on:click={() => (showCreateDropdownEmpty = !showCreateDropdownEmpty)}
+                            event="create_message">
+                            <span class="text">Create message</span>
+                        </Button>
+                    </CreateMessageDropdown>
+                {/if}
             </div>
         </Empty>
     {/if}

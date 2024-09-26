@@ -25,6 +25,7 @@
     import { capitalize } from '$lib/helpers/string';
     import { readOnly } from '$lib/stores/billing';
     import type { Models } from '@appwrite.io/console';
+    import { canWriteProjects } from '$lib/stores/roles';
 
     export let data;
     let migration: Models.Migration = null;
@@ -57,7 +58,8 @@
             icon: 'download',
             keys: ['i', 'd'],
             callback: openImportWizard,
-            group: 'migrations'
+            group: 'migrations',
+            disabled: !$canWriteProjects
         },
         isSelfHosted
             ? {

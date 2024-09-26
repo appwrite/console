@@ -26,7 +26,7 @@
         await sdk.forProject.databases.updateBooleanAttribute(
             databaseId,
             collectionId,
-            data.key,
+            originalKey,
             data.required,
             data.default,
             data.key !== originalKey ? data.key : undefined
