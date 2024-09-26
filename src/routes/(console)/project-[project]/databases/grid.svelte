@@ -2,6 +2,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { CardContainer, GridItem1, Id } from '$lib/components';
+    import { canWriteDatabases } from '$lib/stores/roles';
     import type { PageData } from './$types';
     export let data: PageData;
     export let showCreate = false;
@@ -9,6 +10,7 @@
 </script>
 
 <CardContainer
+    showEmpty={$canWriteDatabases}
     total={data.databases.total}
     on:click={() => (showCreate = true)}
     event="database"

@@ -5,6 +5,7 @@
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import { TeamsPanel, UsersPanel } from '$lib/commandCenter/panels';
     import { readOnly } from '$lib/stores/billing';
+    import { canWriteTeams, canWriteUsers } from '$lib/stores/roles';
     import { GRACE_PERIOD_OVERRIDE } from '$lib/system';
     import { project } from '../store';
     import { showCreateUser } from './+page.svelte';
@@ -23,7 +24,7 @@
             group: 'users',
             icon: 'plus',
             rank: $page.url.pathname.endsWith('auth') ? 10 : 0,
-            disabled: $readOnly && !GRACE_PERIOD_OVERRIDE
+            disabled: ($readOnly && !GRACE_PERIOD_OVERRIDE) || !$canWriteUsers
         },
         {
             label: 'Create team',
@@ -38,7 +39,7 @@
             group: 'teams',
             icon: 'plus',
             rank: $page.url.pathname.endsWith('teams') ? 10 : 0,
-            disabled: $readOnly && !GRACE_PERIOD_OVERRIDE
+            disabled: ($readOnly && !GRACE_PERIOD_OVERRIDE) || !$canWriteTeams
         },
         {
             label: 'Go to teams',
@@ -68,7 +69,7 @@
             },
             group: 'navigation',
             rank: 1,
-            disabled: $page.url.pathname.endsWith('security')
+            disabled: $page.url.pathname.endsWith('security') || !$canWriteUsers
         },
         {
             label: 'Go to settings',
@@ -78,7 +79,7 @@
             },
             group: 'navigation',
             rank: 1,
-            disabled: $page.url.pathname.endsWith('settings')
+            disabled: $page.url.pathname.endsWith('settings') || !$canWriteUsers
         },
         {
             label: 'Find users',

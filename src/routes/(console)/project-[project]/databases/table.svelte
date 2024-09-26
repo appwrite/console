@@ -21,6 +21,7 @@
     } from '$lib/elements/table';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
+    import { canWriteDatabases } from '$lib/stores/roles';
     import { sdk } from '$lib/stores/sdk';
     import type { PageData } from './$types';
     import { columns } from './store';
@@ -68,9 +69,11 @@
 
 <TableScroll>
     <TableHeader>
-        <TableCellHeadCheck
-            bind:selected
-            pageItemsIds={data.databases.databases.map((c) => c.$id)} />
+        {#if $canWriteDatabases}
+            <TableCellHeadCheck
+                bind:selected
+                pageItemsIds={data.databases.databases.map((c) => c.$id)} />
+        {/if}
         {#each $columns as column}
             {#if column.show}
                 <TableCellHead width={column.width}>{column.title}</TableCellHead>
@@ -80,7 +83,9 @@
     <TableBody>
         {#each data.databases.databases as database}
             <TableRowLink href={`${base}/project-${projectId}/databases/database-${database.$id}`}>
-                <TableCellCheck bind:selectedIds={selected} id={database.$id} />
+                {#if $canWriteDatabases}
+                    <TableCellCheck bind:selectedIds={selected} id={database.$id} />
+                {/if}
                 {#each $columns as column}
                     {#if column.show}
                         {#if column.id === '$id'}

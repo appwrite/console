@@ -24,6 +24,7 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { sdk } from '$lib/stores/sdk';
+    import { canWriteProviders } from '$lib/stores/roles';
 
     export let data: PageData;
 
@@ -63,9 +64,11 @@
 
 <TableScroll>
     <TableHeader>
-        <TableCellHeadCheck
-            bind:selected={selectedIds}
-            pageItemsIds={data.providers.providers.map((d) => d.$id)} />
+        {#if $canWriteProviders}
+            <TableCellHeadCheck
+                bind:selected={selectedIds}
+                pageItemsIds={data.providers.providers.map((d) => d.$id)} />
+        {/if}
         {#each $columns as column}
             {#if column.show}
                 <TableCellHead width={column.width}>{column.title}</TableCellHead>
@@ -75,8 +78,12 @@
     <TableBody>
         {#each data.providers.providers as provider (provider.$id)}
             <TableRowLink
-                href={`${base}/project-${$project.$id}/messaging/providers/provider-${provider.$id}`}>
-                <TableCellCheck bind:selectedIds id={provider.$id} />
+                href={$canWriteProviders
+                    ? `${base}/project-${$project.$id}/messaging/providers/provider-${provider.$id}`
+                    : '#'}>
+                {#if $canWriteProviders}
+                    <TableCellCheck bind:selectedIds id={provider.$id} />
+                {/if}
                 {#each $columns as column}
                     {#if column.show}
                         {#if column.id === '$id'}

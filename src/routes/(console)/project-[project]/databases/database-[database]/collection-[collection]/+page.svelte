@@ -7,6 +7,7 @@
     import type { ColumnType } from '$lib/helpers/types';
     import { Container } from '$lib/layout';
     import { preferences } from '$lib/stores/preferences';
+    import { canWriteCollections, canWriteDocuments } from '$lib/stores/roles';
     import { wizard } from '$lib/stores/wizard';
     import type { PageData } from './$types';
     import CreateAttributeDropdown from './attributes/createAttributeDropdown.svelte';
@@ -36,6 +37,7 @@
     );
 
     function openWizard() {
+        if (!$canWriteDocuments) return;
         wizard.start(Create);
     }
 
@@ -113,13 +115,18 @@
                 </EmptySearch>
             {:else}
                 <Empty
+                    allowCreate={$canWriteDocuments}
                     single
                     href="https://appwrite.io/docs/products/databases/documents"
                     target="document"
                     on:click={openWizard} />
             {/if}
         {:else}
-            <Empty single target="attribute" on:click={() => (showCreateDropdown = true)}>
+            <Empty
+                allowCreate={$canWriteCollections}
+                single
+                target="attribute"
+                on:click={() => (showCreateDropdown = true)}>
                 <div class="u-text-center">
                     <Heading size="7" tag="h2">Create an attribute to get started.</Heading>
                     <p class="body-text-2 u-bold u-margin-block-start-4">
@@ -133,19 +140,21 @@
                         text
                         event="empty_documentation"
                         ariaLabel={`create {target}`}>Documentation</Button>
-                    <CreateAttributeDropdown
-                        bind:showCreateDropdown
-                        bind:showCreate={showCreateAttribute}
-                        bind:selectedOption={selectedAttribute}>
-                        <Button
-                            secondary
-                            event="create_attribute"
-                            on:click={() => {
-                                showCreateDropdown = !showCreateDropdown;
-                            }}>
-                            Create attribute
-                        </Button>
-                    </CreateAttributeDropdown>
+                    {#if $canWriteCollections}
+                        <CreateAttributeDropdown
+                            bind:showCreateDropdown
+                            bind:showCreate={showCreateAttribute}
+                            bind:selectedOption={selectedAttribute}>
+                            <Button
+                                secondary
+                                event="create_attribute"
+                                on:click={() => {
+                                    showCreateDropdown = !showCreateDropdown;
+                                }}>
+                                Create attribute
+                            </Button>
+                        </CreateAttributeDropdown>
+                    {/if}
                 </div>
             </Empty>
         {/if}
