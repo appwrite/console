@@ -139,6 +139,7 @@
     {:else}
         <Empty
             single
+            allowCreate={$canWriteFunctions}
             href="https://appwrite.io/docs/products/functions"
             target="function"
             on:click={openWizard} />
