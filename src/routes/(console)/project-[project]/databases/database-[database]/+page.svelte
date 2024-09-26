@@ -44,6 +44,6 @@
             allowCreate={$canWriteCollections}
             href="https://appwrite.io/docs/products/databases/collections"
             target="collection"
-            on:click={() => ($showCreate = $canWriteCollections)} />
+            on:click={() => ($showCreate = true)} />
     {/if}
 </Container>

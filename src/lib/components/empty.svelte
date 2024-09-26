@@ -5,6 +5,7 @@
     import EmptyDark from '$lib/images/empty-dark.svg';
     import { Heading } from '.';
     import { trackEvent } from '$lib/actions/analytics';
+    import { createEventDispatcher } from 'svelte';
 
     export let single = false;
     export let noMedia = false;
@@ -12,6 +13,15 @@
     export let href: string = null;
     export let marginTop = false;
     export let allowCreate = true;
+
+    const dispatch = createEventDispatcher();
+
+    function onClick() {
+        if (!allowCreate) {
+            return;
+        }
+        dispatch('click');
+    }
 
     function track() {
         if (target) {
@@ -27,11 +37,7 @@
         <div
             class="u-flex u-flex-vertical u-cross-center u-gap-24 u-width-full-line u-overflow-hidden u-padding-block-8">
             {#if !noMedia}
-                <button
-                    type="button"
-                    on:click|preventDefault
-                    on:click={track}
-                    aria-label="create {target}">
+                <button type="button" on:click={onClick} aria-label="create {target}">
                     {#if $app.themeInUse === 'dark'}
                         <img src={EmptyDark} alt="create" aria-hidden="true" height="242" />
                     {:else}

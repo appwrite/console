@@ -126,7 +126,7 @@
                 allowCreate={$canWriteCollections}
                 single
                 target="attribute"
-                on:click={() => (showCreateDropdown = $canWriteCollections)}>
+                on:click={() => (showCreateDropdown = true)}>
                 <div class="u-text-center">
                     <Heading size="7" tag="h2">Create an attribute to get started.</Heading>
                     <p class="body-text-2 u-bold u-margin-block-start-4">

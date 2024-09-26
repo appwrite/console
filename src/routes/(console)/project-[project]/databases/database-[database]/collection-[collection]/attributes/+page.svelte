@@ -201,7 +201,7 @@
             allowCreate={$canWriteCollections}
             single
             target="attribute"
-            on:click={() => (showEmptyCreateDropdown = $canWriteCollections)}>
+            on:click={() => (showEmptyCreateDropdown = true)}>
             <div class="u-text-center">
                 <Heading size="7" tag="h2">Create your first attribute to get started.</Heading>
                 <p class="body-text-2 u-bold u-margin-block-start-4">

@@ -113,7 +113,7 @@
         <Empty
             single
             allowCreate={$canWriteTeams}
-            on:click={() => ($showCreateTeam = $canWriteTeams)}
+            on:click={() => ($showCreateTeam = true)}
             href="https://appwrite.io/docs/references/cloud/client-web/teams"
             target="team" />
     {/if}
