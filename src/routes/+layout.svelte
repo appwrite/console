@@ -199,9 +199,9 @@
     input[type='radio'],
     input[type='checkbox'],
     input[type='switchbox'] {
-      .theme-dark &:not(:checked) {
-        background-color: transparent; /* take whatever color is behind */
-        border: 1px solid var(--color-mid-neutral-70, #56565c);
-      }
+        .theme-dark &:not(:checked) {
+            background-color: transparent; /* take whatever color is behind */
+            border: 1px solid var(--color-mid-neutral-70, #56565c);
+        }
     }
 </style>
