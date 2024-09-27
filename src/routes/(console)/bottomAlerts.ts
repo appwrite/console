@@ -47,7 +47,7 @@ const listOfPromotions: BottomModalAlertItem[] = [
         },
         learnMore: {
             text: 'Learn more',
-            link: () => 'https://appwrite.io/docs/advanced/platform/roles'
+            link: () => 'http://1371.gkswsco.37.27.92.31.sslip.io/docs/products/databases/backups'
         }
     }
 ];
