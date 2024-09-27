@@ -103,7 +103,7 @@
         </div>
     </div>
 
-    {#if !data.project?.smtpEnabled}
+    {#if !data.project.smtpEnabled}
         <div class="u-margin-block-start-24">
             <Alert
                 isStandalone

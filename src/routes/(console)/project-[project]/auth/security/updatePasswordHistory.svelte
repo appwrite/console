@@ -10,7 +10,7 @@
     import { project } from '../../store';
 
     let passwordHistory = $project?.authPasswordHistory < 1 ? 5 : $project?.authPasswordHistory;
-    let passwordHistoryEnabled = ($project?.authPasswordHistory ?? 0) != 0;
+    let passwordHistoryEnabled = ($project?.authPasswordHistory ?? 0) !== 0;
     let initialPasswordHistoryEnabled = passwordHistoryEnabled;
 
     async function updatePasswordHistoryLimit() {
