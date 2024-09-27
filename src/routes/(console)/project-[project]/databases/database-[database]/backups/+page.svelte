@@ -23,10 +23,9 @@
     import { feedback } from '$lib/stores/feedback';
     import { cronExpression, type UserBackupPolicy } from '$lib/helpers/backups';
     import { ID } from '@appwrite.io/console';
+    import { showCreateBackup, showCreatePolicy } from './store';
 
-    let showCreatePolicy = false;
     let policyCreateError: string;
-    let showCreateManualBackup = false;
     let totalPolicies: UserBackupPolicy[] = [];
     let isDisabled = isSelfHosted || (isCloud && $organization?.billingPlan === BillingPlan.FREE);
 
@@ -80,7 +79,7 @@
                 message: error.message
             });
         } finally {
-            showCreateManualBackup = false;
+            $showCreateBackup = false;
         }
     };
 
@@ -120,7 +119,7 @@
             });
         } finally {
             totalPolicies = [];
-            showCreatePolicy = false;
+            $showCreatePolicy = false;
         }
     };
 
@@ -143,10 +142,10 @@
                     buttonEvent="create_backup"
                     buttonType="secondary"
                     buttonDisabled={isDisabled}
-                    buttonMethod={() => (showCreatePolicy = true)} />
+                    buttonMethod={() => ($showCreatePolicy = true)} />
 
                 <BackupPolicy
-                    bind:showCreatePolicy
+                    bind:showCreatePolicy={$showCreatePolicy}
                     policies={data.policies}
                     lastBackupDates={data.lastBackupDates} />
             </div>
@@ -158,7 +157,7 @@
                     buttonEvent="create_backup"
                     buttonType="secondary"
                     buttonDisabled={isDisabled}
-                    buttonMethod={() => (showCreateManualBackup = true)} />
+                    buttonMethod={() => ($showCreateBackup = true)} />
 
                 {#if data.backups.total}
                     <div class="u-padding-block-start-8">
@@ -211,20 +210,17 @@
     title="Create backup policy"
     size="big"
     onSubmit={createPolicies}
-    bind:show={showCreatePolicy}
+    bind:show={$showCreatePolicy}
     bind:error={policyCreateError}>
-    <CreatePolicy bind:totalPolicies isShowing={showCreatePolicy} />
+    <CreatePolicy bind:totalPolicies isShowing={$showCreatePolicy} />
 
     <svelte:fragment slot="footer">
-        <Button secondary on:click={() => (showCreatePolicy = false)}>Cancel</Button>
+        <Button secondary on:click={() => ($showCreatePolicy = false)}>Cancel</Button>
         <Button submit disabled={!totalPolicies.length}>Create</Button>
     </svelte:fragment>
 </Modal>
 
-<Modal
-    title="Create manual backup"
-    bind:show={showCreateManualBackup}
-    onSubmit={createManualBackup}>
+<Modal title="Create manual backup" bind:show={$showCreateBackup} onSubmit={createManualBackup}>
     <p class="text" data-private>
         Manual backups are <b>retained forever</b> unless manually deleted. Use them when making significant
         changes to your data structure or as a safeguard for future rollbacks.
@@ -235,7 +231,7 @@
         </svelte:fragment>
     </Alert>
     <svelte:fragment slot="footer">
-        <Button text on:click={() => (showCreateManualBackup = false)}>Cancel</Button>
+        <Button text on:click={() => ($showCreateBackup = false)}>Cancel</Button>
         <Button submit>Create</Button>
     </svelte:fragment>
 </Modal>

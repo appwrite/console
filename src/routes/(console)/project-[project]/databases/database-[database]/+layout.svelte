@@ -15,6 +15,7 @@
     import { showCreate } from './store';
     import { CollectionsPanel } from '$lib/commandCenter/panels';
     import { canWriteCollections, canWriteDatabases } from '$lib/stores/roles';
+    import { showCreatePolicy } from './backups/store';
 
     const project = $page.params.project;
     const databaseId = $page.params.database;
@@ -40,6 +41,32 @@
             disabled: $page.url.pathname.includes('collection-') || !$canWriteCollections,
             group: 'databases',
             icon: 'plus'
+        },
+        {
+            label: 'Create backup policy',
+            callback: async () => {
+                if (!$page.url.pathname.endsWith('backups')) {
+                    goto(`${base}/project-${project}/databases/database-${databaseId}/backups`);
+                }
+                showCreatePolicy.set(true);
+            },
+            keys: $page.url.pathname.endsWith('backups') ? ['c'] : ['c', 'p'],
+            group: 'databases',
+            icon: 'plus',
+            rank: $page.url.pathname.endsWith('backups') ? 10 : 0
+        },
+        {
+            label: 'Create manual backup',
+            callback: async () => {
+                if (!$page.url.pathname.endsWith('backups')) {
+                    goto(`${base}/project-${project}/databases/database-${databaseId}/backups`);
+                }
+                showCreatePolicy.set(true);
+            },
+            keys: $page.url.pathname.endsWith('backups') ? ['c'] : ['c', 'b'],
+            group: 'databases',
+            icon: 'plus',
+            rank: $page.url.pathname.endsWith('backups') ? 10 : 0
         },
         {
             label: 'Go to collections',
