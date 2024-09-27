@@ -1,8 +1,8 @@
 import { base } from '$app/paths';
 import RolesDark from '$lib/images/roles-dark.png';
 import RolesLight from '$lib/images/roles-light.png';
-import BackupsDark from '$lib/images/backups/backups-empty-dark.svg';
-import BackupsLight from '$lib/images/backups/backups-empty-light.svg';
+import BackupsDark from '$lib/images/backups/promo/backups-dark.png';
+import BackupsLight from '$lib/images/backups/promo/backups-light.png';
 
 import { type BottomModalAlertItem, showBottomModalAlert } from '$lib/stores/bottom-alerts';
 

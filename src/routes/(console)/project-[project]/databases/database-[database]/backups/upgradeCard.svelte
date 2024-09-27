@@ -2,11 +2,11 @@
     import { Button } from '$lib/elements/forms';
     import { app } from '$lib/stores/app';
 
-    import EmptyDark from '$lib/images/backups/backups-placeholder-dark.svg';
-    import EmptyLight from '$lib/images/backups/backups-placeholder-light.svg';
+    import EmptyDark from '$lib/images/backups/upgrade/backups-dark.png';
+    import EmptyLight from '$lib/images/backups/upgrade/backups-light.png';
 
-    import EmptyDarkMobile from '$lib/images/backups/backups-empty-dark.svg';
-    import EmptyLightMobile from '$lib/images/backups/backups-empty-light.svg';
+    import EmptyDarkMobile from '$lib/images/backups/upgrade/backups-mobile-dark.png';
+    import EmptyLightMobile from '$lib/images/backups/upgrade/backups-mobile-light.png';
 
     import { upgradeURL } from '$lib/stores/billing';
     import { Card } from '$lib/components';
@@ -30,11 +30,13 @@
                 <div class="is-only-mobile u-width-full-line u-height-100-percent">
                     {#if $app.themeInUse === 'dark'}
                         <img
+                            height="137px"
                             src={EmptyDarkMobile}
                             class="placeholder u-image-object-fit-contain u-only-dark u-width-full-line u-height-100-percent"
                             alt="Mock Numbers Example" />
                     {:else}
                         <img
+                            height="137px"
                             src={EmptyLightMobile}
                             class="placeholder u-image-object-fit-contain u-only-light u-width-full-line u-height-100-percent"
                             alt="Mock Numbers Example" />
@@ -45,11 +47,13 @@
                     {#if $app.themeInUse === 'dark'}
                         <img
                             src={EmptyDark}
+                            height="102px"
                             class="u-image-object-fit-contain u-block u-only-dark"
                             alt="Backups Example" />
                     {:else}
                         <img
                             src={EmptyLight}
+                            height="102px"
                             class="u-image-object-fit-contain u-only-light"
                             alt="Backups Example" />
                     {/if}
