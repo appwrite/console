@@ -1,6 +1,6 @@
 <script lang="ts">
     import { sdk } from '$lib/stores/sdk';
-    import { type Models, Query } from '@appwrite.io/console';
+    import { Query } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { isCloud, isSelfHosted } from '$lib/system';
     import { organization } from '$lib/stores/organization';
@@ -9,10 +9,11 @@
     import { addNotification } from '$lib/stores/notifications';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
+    import type { BackupArchive, BackupRestoration } from '$lib/sdk/backups';
 
     let backupRestoreItems: {
-        archives: Models.BackupArchive[];
-        restorations: Models.BackupRestoration[];
+        archives: BackupArchive[];
+        restorations: BackupRestoration[];
     } = {
         archives: [],
         restorations: []
@@ -147,7 +148,7 @@
     };
 
     // TODO: `startedAt` is probably not correct here. need more info.
-    const backupName = (item: Models.BackupArchive | Models.BackupRestoration, key: string) => {
+    const backupName = (item: BackupArchive | BackupRestoration, key: string) => {
         const attribute = key === 'archives' ? '$createdAt' : 'startedAt';
         const date = new Date(item[attribute]);
         return `${date.toDateString().slice(4, 10)}, ${date.toTimeString().slice(0, 5)}`;
