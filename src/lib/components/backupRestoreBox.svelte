@@ -48,8 +48,6 @@
 
     const updateOrAddItem = (payload) => {
         const { $id, status, $collection } = payload;
-        console.log(status);
-
         if ($collection in backupRestoreItems) {
             const collectionMap = backupRestoreItems[$collection];
 
