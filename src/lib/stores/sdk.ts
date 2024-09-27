@@ -4,7 +4,6 @@ import {
     Account,
     Assistant,
     Avatars,
-    Backups,
     Client,
     Console,
     Databases,
@@ -23,6 +22,7 @@ import {
     Vcs
 } from '@appwrite.io/console';
 import { Billing } from '../sdk/billing';
+import { Backups } from '../sdk/backups';
 import { Sources } from '$lib/sdk/sources';
 
 export function getApiEndpoint(): string {
