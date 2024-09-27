@@ -372,12 +372,48 @@ export class Billing {
         );
     }
 
+    // TODO: remove hack after console sdk updates.
+    //  And yeah, I dont like it either :(
     async getRoles(organizationId: string): Promise<Roles> {
-        const path = `/organizations/${organizationId}/roles`;
-        const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call('get', uri, {
-            'content-type': 'application/json'
-        });
+        console.log(organizationId); // to silence var not used
+        return {
+            roles: ['owner'],
+            scopes: [
+                'databases.write',
+                'projects.write',
+                'functions.write',
+                'buckets.write',
+                'providers.write',
+                'messages.write',
+                'webhooks.write',
+                'platforms.write',
+                'targets.write',
+                'users.write',
+                'teams.write',
+                'collections.write',
+                'documents.write',
+                'executions.write',
+                'subscribers.write',
+                'keys.write',
+                'rules.write',
+                'migrations.write',
+                'vcs.write',
+                'topics.write',
+                'billing.read',
+                'projects.read',
+                'databases.read',
+                'functions.read',
+                'teams.read',
+                'buckets.read',
+                'messages.read'
+            ]
+        };
+
+        // const path = `/organizations/${organizationId}/roles`;
+        // const uri = new URL(this.client.config.endpoint + path);
+        // return await this.client.call('get', uri, {
+        //     'content-type': 'application/json'
+        // });
     }
 
     async updatePlan(

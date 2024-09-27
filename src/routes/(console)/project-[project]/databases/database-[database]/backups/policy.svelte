@@ -1,7 +1,7 @@
 <script lang="ts">
     import Card from '$lib/components/card.svelte';
     import { DropList, DropListItem, Modal } from '$lib/components';
-    import { Button } from '$lib/elements/forms/index';
+    import { Button, FormList, InputCheckbox } from '$lib/elements/forms/index';
     import { type Models } from '@appwrite.io/console';
 
     import { app } from '$lib/stores/app';
@@ -13,7 +13,6 @@
     import { Dependencies } from '$lib/constants';
     import { parseExpression } from 'cron-parser';
     import { toLocaleDateTime } from '$lib/helpers/date';
-    import { FormList, InputCheckbox } from '$lib/elements/forms/index.js';
 
     let showDropdown = [];
     let showDelete = false;
@@ -260,11 +259,13 @@
                     irreversible.</b>
             </p>
 
-            <InputCheckbox
-                required
-                size="small"
-                id="delete_policy"
-                label="I understand and confirm" />
+            <div class="input-check-box-friction">
+                <InputCheckbox
+                    required
+                    size="small"
+                    id="delete_policy"
+                    label="I understand and confirm" />
+            </div>
         </div>
     </FormList>
     <svelte:fragment slot="footer">
@@ -328,6 +329,10 @@
 
     .policy-cycles {
         margin-block: 0.125rem;
+    }
+
+    :global(.input-check-box-friction .choice-item-title) {
+        margin-block-start: 1px;
     }
 
     :global(.theme-light .policy-item-subtitles) {

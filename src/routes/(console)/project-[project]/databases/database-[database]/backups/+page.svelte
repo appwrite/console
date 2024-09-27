@@ -32,38 +32,36 @@
     export let data: PageData;
 
     const showFeedbackNotification = () => {
-        let showOnCounts = [2, 4, 8, 10];
         let counter = localStorage.getItem('createBackupsCounter');
+        const parsedCounter = counter ? parseInt(counter, 10) : 0;
 
-        if (counter) {
-            const parsedCounter = parseInt(counter);
-            if (showOnCounts.includes(parsedCounter)) {
-                addNotification({
-                    type: 'info',
-                    icon: 'question-mark-circle',
-                    message:
-                        'How was your experience with our new Backups feature? Give us your feedback and help us improve!',
-                    timeout: 15000,
-                    buttons: [
-                        {
-                            name: 'Leave Feedback',
-                            method: () => {
-                                feedback.toggleFeedback();
-                                dismissAllNotifications();
-                            }
-                        },
-                        {
-                            name: 'Ask me later',
-                            method: () => dismissAllNotifications()
+        // Exponential growth: Show after 1, 2, 4, 8, 16 uses
+        const showOnCount = Math.pow(2, Math.floor(Math.log2(parsedCounter)) || 0);
+
+        if (parsedCounter === showOnCount || !counter) {
+            addNotification({
+                type: 'info',
+                icon: 'question-mark-circle',
+                message:
+                    'How was your experience with our new Backups feature? Give us your feedback and help us improve!',
+                timeout: 15000,
+                buttons: [
+                    {
+                        name: 'Leave Feedback',
+                        method: () => {
+                            feedback.toggleFeedback();
+                            dismissAllNotifications();
                         }
-                    ]
-                });
-            } else {
-                localStorage.setItem('createBackupsCounter', (parsedCounter + 1).toString());
-            }
-        } else {
-            localStorage.setItem('createBackupsCounter', '1');
+                    },
+                    {
+                        name: 'Ask me later',
+                        method: () => dismissAllNotifications()
+                    }
+                ]
+            });
         }
+
+        localStorage.setItem('createBackupsCounter', ((parsedCounter ?? 0) + 1).toString());
     };
 
     const createManualBackup = async () => {
@@ -246,5 +244,11 @@
         block-size: 365px;
         text-align: center;
         align-content: center;
+    }
+
+    @media (min-width: 768px) {
+        .empty {
+            min-width: 802px; /* match with the table width with items */
+        }
     }
 </style>

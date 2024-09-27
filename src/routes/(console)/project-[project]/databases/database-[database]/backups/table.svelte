@@ -38,6 +38,10 @@
     let newDatabaseInfo: { name: string; id: string } = { name: null, id: null };
 
     const deleteBackups = async () => {
+        if (!selectedBackups.length && selectedBackup) {
+            selectedBackups.push(selectedBackup.$id);
+        }
+
         const message = `${selectedBackups.length} backup${selectedBackups.length > 1 ? 's' : ''} deleted`;
 
         const promises = selectedBackups.map((archiveId) =>
@@ -58,6 +62,7 @@
             });
         } finally {
             showDelete = false;
+            selectedBackup = null;
             selectedBackups = [];
         }
     };
