@@ -4,6 +4,7 @@
     import { Id, Tab, Tabs } from '$lib/components';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover, CoverTitle } from '$lib/layout';
+    import { canWriteCollections } from '$lib/stores/roles';
     import { collection } from './store';
 
     $: projectId = $page.params.project;
@@ -42,9 +43,10 @@
         {
             href: `${path}/settings`,
             title: 'Settings',
-            event: 'settings'
+            event: 'settings',
+            disabled: !$canWriteCollections
         }
-    ];
+    ].filter((tab) => !tab.disabled);
 </script>
 
 <Cover>

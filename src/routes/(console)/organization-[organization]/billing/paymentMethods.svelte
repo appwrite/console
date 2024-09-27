@@ -22,6 +22,7 @@
     import EditPaymentModal from '$routes/(console)/account/payments/editPaymentModal.svelte';
     import { tooltip } from '$lib/actions/tooltip';
     import PaymentModal from '$lib/components/billing/paymentModal.svelte';
+    import { user } from '$lib/stores/user';
 
     let showDropdown = false;
     let showDropdownBackup = false;
@@ -112,15 +113,17 @@
                             <span class="icon-dots-horizontal" aria-hidden="true" />
                         </Button>
                         <svelte:fragment slot="list">
-                            <DropListItem
-                                icon="pencil"
-                                on:click={() => {
-                                    isSelectedBackup = false;
-                                    showEdit = true;
-                                    showDropdown = false;
-                                }}>
-                                Edit
-                            </DropListItem>
+                            {#if defaultPaymentMethod.userId === $user.$id}
+                                <DropListItem
+                                    icon="pencil"
+                                    on:click={() => {
+                                        isSelectedBackup = false;
+                                        showEdit = true;
+                                        showDropdown = false;
+                                    }}>
+                                    Edit
+                                </DropListItem>
+                            {/if}
                             <DropListItem
                                 icon="switch-horizontal"
                                 on:click={() => {
@@ -208,15 +211,17 @@
                             <span class="icon-dots-horizontal" aria-hidden="true" />
                         </Button>
                         <svelte:fragment slot="list">
-                            <DropListItem
-                                icon="pencil"
-                                on:click={() => {
-                                    showEdit = true;
-                                    isSelectedBackup = true;
-                                    showDropdownBackup = false;
-                                }}>
-                                Edit
-                            </DropListItem>
+                            {#if backupPaymentMethod.userId === $user.$id}
+                                <DropListItem
+                                    icon="pencil"
+                                    on:click={() => {
+                                        showEdit = true;
+                                        isSelectedBackup = true;
+                                        showDropdownBackup = false;
+                                    }}>
+                                    Edit
+                                </DropListItem>
+                            {/if}
                             <DropListItem
                                 icon="switch-horizontal"
                                 on:click={() => {

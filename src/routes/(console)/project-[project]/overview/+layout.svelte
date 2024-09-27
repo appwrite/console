@@ -26,6 +26,7 @@
     import { total } from '$lib/helpers/array';
     import type { Metric } from '$lib/sdk/usage';
     import { periodToDates } from '$lib/layout/usage.svelte';
+    import { canWriteProjects } from '$lib/stores/roles';
 
     $: projectId = $page.params.project;
     $: path = `${base}/project-${projectId}/overview`;
@@ -56,7 +57,8 @@
                 addSubPanel(PlatformsPanel);
             },
             icon: 'plus',
-            group: 'integrations'
+            group: 'integrations',
+            disabled: !$canWriteProjects
         },
         {
             label: 'Create API Key',
@@ -65,7 +67,8 @@
                 createApiKey();
             },
             keys: ['c', 'k'],
-            group: 'integrations'
+            group: 'integrations',
+            disabled: !$canWriteProjects
         }
     ]);
 

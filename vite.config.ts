@@ -16,6 +16,13 @@ const config = defineConfig({
     optimizeDeps: {
         include: ['echarts', 'prismjs']
     },
+    css: {
+        preprocessorOptions: {
+            scss: {
+                silenceDeprecations: ['legacy-js-api']
+            }
+        }
+    },
     ssr: {
         noExternal: [
             '@analytics/google-analytics',

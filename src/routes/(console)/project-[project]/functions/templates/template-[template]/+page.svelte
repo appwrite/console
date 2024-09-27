@@ -12,6 +12,7 @@
     import { isServiceLimited } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { functionsList } from '../../store';
+    import { canWriteFunctions } from '$lib/stores/roles';
 
     $: buttonDisabled =
         isCloud && isServiceLimited('functions', $organization?.billingPlan, $functionsList?.total);
@@ -77,13 +78,15 @@
                         View source
                         <span class="icon-external-link" />
                     </Button>
-                    <ContainerButton
-                        title="functions"
-                        disabled={buttonDisabled}
-                        buttonMethod={() => connectTemplate($template)}
-                        showIcon={false}
-                        buttonText="Create function"
-                        buttonEvent="create_function" />
+                    {#if $canWriteFunctions}
+                        <ContainerButton
+                            title="functions"
+                            disabled={buttonDisabled}
+                            buttonMethod={() => connectTemplate($template)}
+                            showIcon={false}
+                            buttonText="Create function"
+                            buttonEvent="create_function" />
+                    {/if}
                 </div>
             </Card>
         </section>

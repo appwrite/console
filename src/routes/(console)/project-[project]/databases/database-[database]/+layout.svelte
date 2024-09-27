@@ -14,6 +14,7 @@
     import CreateCollection from './createCollection.svelte';
     import { showCreate } from './store';
     import { CollectionsPanel } from '$lib/commandCenter/panels';
+    import { canWriteCollections, canWriteDatabases } from '$lib/stores/roles';
 
     const project = $page.params.project;
     const databaseId = $page.params.database;
@@ -36,7 +37,7 @@
                 }
             },
             keys: $page.url.pathname.endsWith(databaseId) ? ['c'] : ['c', 'c'],
-            disabled: $page.url.pathname.includes('collection-'),
+            disabled: $page.url.pathname.includes('collection-') || !$canWriteCollections,
             group: 'collections',
             icon: 'plus'
         },
@@ -68,7 +69,8 @@
             },
             disabled:
                 $page.url.pathname.includes('/settings') ||
-                $page.url.pathname.includes('collection-'),
+                $page.url.pathname.includes('collection-') ||
+                !$canWriteDatabases,
             keys: ['g', 's'],
             group: 'collections'
         },

@@ -1,9 +1,8 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { AvatarInitials, PaginationWithLimit } from '$lib/components';
+    import { AvatarInitials, DropList, DropListItem, PaginationWithLimit } from '$lib/components';
     import { Pill } from '$lib/elements';
-    import { Button } from '$lib/elements/forms';
     import {
         TableBody,
         TableCell,
@@ -15,17 +14,25 @@
     } from '$lib/elements/table';
     import { Container, ContainerHeader } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
-    import { members, newMemberModal, organization } from '$lib/stores/organization';
+    import { newMemberModal, organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
     import type { PageData } from './$types';
     import Delete from '../deleteMember.svelte';
     import { base } from '$app/paths';
+    import { isOwner } from '$lib/stores/roles';
+    import Edit from './edit.svelte';
+    import { getRoleLabel } from '$lib/stores/billing';
+    import { Drop } from '$lib/components';
+    import Upgrade from '$lib/components/roles/upgrade.svelte';
 
     export let data: PageData;
 
     let selectedMember: Models.Membership;
     let showDelete = false;
+    let showEdit = false;
+    let showDropdown = [];
+    let showPopover = false;
     const url = `${$page.url.origin}/${base}/`;
     const resend = async (member: Models.Membership) => {
         try {
@@ -58,7 +65,7 @@
         <ContainerHeader
             title="Members"
             total={data.organizationMembers.total}
-            buttonText="Invite"
+            buttonText={$isOwner ? 'Invite' : ''}
             buttonMethod={() => newMemberModal.set(true)}
             showAlert={false} />
 
@@ -66,15 +73,43 @@
             <TableHeader>
                 <TableCellHead width={160}>Name</TableCellHead>
                 <TableCellHead width={120}>Email</TableCellHead>
+                <div style:--p-col-width={120} class="table-thead-col" role="columnheader">
+                    <span class="u-flex u-cross-baseline">
+                        <span class="eyebrow-heading-3"> Role </span>
+                        <Drop isPopover bind:show={showPopover} display="inline-block">
+                            &nbsp;<button
+                                type="button"
+                                on:click={() => (showPopover = !showPopover)}
+                                class="tooltip"
+                                aria-label="input tooltip">
+                                <span
+                                    class="icon-info"
+                                    aria-hidden="true"
+                                    style="font-size: var(--icon-size-small)" />
+                            </button>
+                            <svelte:fragment slot="list">
+                                <div
+                                    class="dropped card u-max-width-300 u-break-word"
+                                    style:--card-border-radius="var(--border-radius-small)"
+                                    style:--p-card-padding=".75rem"
+                                    style:box-shadow="var(--shadow-large)">
+                                    <svelte:component this={Upgrade} />
+                                </div>
+                            </svelte:fragment>
+                        </Drop>
+                    </span>
+                </div>
+
                 <TableCellHead width={90}>2FA</TableCellHead>
-                <TableCellHead width={60} />
-                <TableCellHead width={30} />
+                {#if $isOwner}
+                    <TableCellHead width={30} />
+                {/if}
             </TableHeader>
             <TableBody
                 service="members"
                 total={data.organizationMembers.total}
                 event="members_list">
-                {#each data.organizationMembers.memberships as member}
+                {#each data.organizationMembers.memberships as member, index}
                     <TableRow>
                         <TableCell title="Name">
                             <div class="u-flex u-gap-12 u-cross-center">
@@ -88,6 +123,10 @@
                             </div>
                         </TableCell>
                         <TableCellText title="Email">{member.userEmail}</TableCellText>
+                        <TableCellText title="Role"
+                            >{member.roles
+                                .map((role) => getRoleLabel(role))
+                                .join(', ')}</TableCellText>
                         <TableCellText title="2FA">
                             <Pill success={member.mfa}>
                                 {#if member.mfa}
@@ -100,26 +139,53 @@
                                 {/if}
                             </Pill>
                         </TableCellText>
-                        <TableCell>
-                            {#if member.invited && !member.joined}
-                                <Button
-                                    secondary
-                                    event="invite_resend"
-                                    on:click={() => resend(member)}>Resend</Button>
-                            {/if}
-                        </TableCell>
-                        <TableCell right>
-                            <button
-                                class="button is-only-icon is-text"
-                                aria-label="Delete item"
-                                disabled={$members.total === 1}
-                                on:click={() => {
-                                    selectedMember = member;
-                                    showDelete = true;
-                                }}>
-                                <span class="icon-trash" aria-hidden="true" />
-                            </button>
-                        </TableCell>
+                        {#if $isOwner}
+                            <TableCell showOverflow right>
+                                <DropList
+                                    bind:show={showDropdown[index]}
+                                    placement="bottom-start"
+                                    noArrow>
+                                    <button
+                                        class="button is-only-icon is-text"
+                                        aria-label="More options"
+                                        on:click|preventDefault={() => {
+                                            showDropdown[index] = !showDropdown[index];
+                                        }}>
+                                        <span class="icon-dots-horizontal" aria-hidden="true" />
+                                    </button>
+                                    <svelte:fragment slot="list">
+                                        <DropListItem
+                                            icon="pencil"
+                                            on:click={() => {
+                                                selectedMember = member;
+                                                showEdit = true;
+                                                showDropdown[index] = false;
+                                            }}>
+                                            Edit role
+                                        </DropListItem>
+                                        {#if member.invited && !member.joined}
+                                            <DropListItem
+                                                icon="refresh"
+                                                on:click={() => {
+                                                    resend(member);
+                                                    showDropdown[index] = false;
+                                                }}>
+                                                Resend
+                                            </DropListItem>
+                                        {/if}
+                                        <DropListItem
+                                            icon="trash"
+                                            on:click={() => {
+                                                selectedMember = member;
+                                                showDelete = true;
+                                                showDropdown[index] = false;
+                                            }}>
+                                            Remove
+                                        </DropListItem>
+                                    </svelte:fragment>
+                                </DropList>
+                            </TableCell>
+                        {/if}
                     </TableRow>
                 {/each}
             </TableBody>
@@ -134,3 +200,4 @@
 </Container>
 
 <Delete {selectedMember} bind:showDelete />
+<Edit {selectedMember} bind:showEdit />

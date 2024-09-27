@@ -31,6 +31,7 @@
     import type { RegionList } from '$lib/sdk/billing';
     import { onMount } from 'svelte';
     import { organization } from '$lib/stores/organization';
+    import { canWriteProjects } from '$lib/stores/roles';
 
     export let data;
 
@@ -79,6 +80,7 @@
     }
 
     function handleCreateProject() {
+        if (!$canWriteProjects) return;
         if (isCloud) wizard.start(Create);
         else showCreate = true;
     }
@@ -89,7 +91,7 @@
                 showCreate = true;
             },
             keys: ['c'],
-            disabled: $readOnly && !GRACE_PERIOD_OVERRIDE,
+            disabled: ($readOnly && !GRACE_PERIOD_OVERRIDE) || !$canWriteProjects,
             group: 'projects',
             icon: 'plus'
         }
@@ -142,13 +144,15 @@
             <Heading tag="h2" size="5">Projects</Heading>
 
             <DropList bind:show={showDropdown} placement="bottom-end">
-                <Button
-                    on:click={handleCreateProject}
-                    event="create_project"
-                    disabled={$readOnly && !GRACE_PERIOD_OVERRIDE}>
-                    <span class="icon-plus" aria-hidden="true" />
-                    <span class="text">Create project</span>
-                </Button>
+                {#if $canWriteProjects}
+                    <Button
+                        on:click={handleCreateProject}
+                        event="create_project"
+                        disabled={$readOnly && !GRACE_PERIOD_OVERRIDE}>
+                        <span class="icon-plus" aria-hidden="true" />
+                        <span class="text">Create project</span>
+                    </Button>
+                {/if}
                 <svelte:fragment slot="list">
                     <DropListItem on:click={() => (showCreate = true)}>Empty project</DropListItem>
                     <DropListItem on:click={importProject}>
@@ -162,6 +166,7 @@
 
         {#if data.projects.total}
             <CardContainer
+                showEmpty={$canWriteProjects}
                 total={data.projects.total}
                 offset={data.offset}
                 on:click={handleCreateProject}>
@@ -214,6 +219,7 @@
         {:else}
             <Empty
                 single
+                allowCreate={$canWriteProjects}
                 on:click={handleCreateProject}
                 target="project"
                 href="https://appwrite.io/docs/quick-starts"></Empty>
