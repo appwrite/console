@@ -273,7 +273,7 @@
     <FormList>
         <InputText
             id="name"
-            label="Name"
+            label="Database name"
             placeholder="Enter database name"
             bind:value={newDatabaseInfo.name}
             autofocus

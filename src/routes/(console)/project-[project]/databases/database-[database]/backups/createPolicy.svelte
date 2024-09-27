@@ -248,7 +248,7 @@
                                         {#if policyFrequency === 'monthly'}
                                             <InputSelect
                                                 id="monthly"
-                                                label="Monthly Timing"
+                                                label="Monthly timing"
                                                 bind:value={monthlyBackupFrequency}
                                                 placeholder="End of month (28th)"
                                                 fullWidth
