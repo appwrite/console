@@ -1,10 +1,12 @@
 <script lang="ts">
-    import { Card, DropList, DropListItem, Modal } from '$lib/components';
+    import { Card, DropList, DropListItem, FloatingActionBar, Modal } from '$lib/components';
     import { Button, FormList, InputText } from '$lib/elements/forms';
     import {
         TableBody,
         TableCell,
+        TableCellCheck,
         TableCellHead,
+        TableCellHeadCheck,
         TableHeader,
         TableRow,
         TableScroll
@@ -29,19 +31,25 @@
     let selectedBackup: Models.BackupArchive = null;
 
     let showDropdown = [];
+    let selectedBackups: string[] = [];
 
     let showRestore = false;
     let showCustomId = false;
     let newDatabaseInfo: { name: string; id: string } = { name: null, id: null };
 
-    const deleteBackup = async () => {
-        try {
-            await sdk.forProject.backups.deleteArchive(selectedBackup.$id);
-            addNotification({
-                type: 'success',
-                message: 'Backup deleted'
-            });
+    const deleteBackups = async () => {
+        const message = `${selectedBackups.length} backup${selectedBackups.length > 1 ? 's' : ''} deleted`;
 
+        const promises = selectedBackups.map((archiveId) =>
+            sdk.forProject.backups.deleteArchive(archiveId)
+        );
+
+        try {
+            await Promise.all(promises);
+            addNotification({
+                message,
+                type: 'success'
+            });
             invalidate(Dependencies.BACKUPS);
         } catch (error) {
             addNotification({
@@ -50,6 +58,7 @@
             });
         } finally {
             showDelete = false;
+            selectedBackups = [];
         }
     };
 
@@ -90,8 +99,12 @@
     }
 </script>
 
-<TableScroll isSticky class="custom-height-table-column">
+<TableScroll class="custom-height-table-column">
     <TableHeader>
+        <TableCellHeadCheck
+            bind:selected={selectedBackups}
+            pageItemsIds={data.backups.archives.map((b) => b.$id)} />
+
         <TableCellHead width={192}>Backups</TableCellHead>
         <TableCellHead width={120}>Size</TableCellHead>
         <TableCellHead width={120}>Status</TableCellHead>
@@ -105,6 +118,11 @@
                 new Date(policy?.$createdAt).getTime() + policy?.retention * 24 * 60 * 60 * 1000
             )}
             <TableRow>
+                <TableCellCheck
+                    bind:selectedIds={selectedBackups}
+                    disabled={backup.status !== 'completed'}
+                    id={backup.status !== 'completed' ? null : backup.$id} />
+
                 <TableCell width={192} title={backup.$createdAt}>
                     {cleanBackupName(backup)}
                 </TableCell>
@@ -181,17 +199,44 @@
     </TableBody>
 </TableScroll>
 
+<FloatingActionBar show={selectedBackups.length > 0}>
+    <div class="u-flex u-cross-center u-main-space-between actions">
+        <div class="u-flex u-cross-center u-gap-8">
+            <span class="indicator body-text-2 u-bold">{selectedBackups.length}</span>
+            <p>
+                <span class="is-only-desktop">
+                    {selectedBackups.length > 1 ? 'backups' : 'backup'}
+                </span>
+                selected
+            </p>
+        </div>
+
+        <div class="u-flex u-cross-center u-gap-8">
+            <Button text on:click={() => (selectedBackups = [])}>Cancel</Button>
+            <Button secondary on:click={() => (showDelete = true)}>
+                <p>Delete</p>
+            </Button>
+        </div>
+    </div>
+</FloatingActionBar>
+
 <Modal
-    title="Delete backup"
+    title="Delete {selectedBackups.length ? 'backups' : 'backup'}"
     icon="exclamation"
     state="warning"
     bind:show={showDelete}
     headerDivider={false}
-    onSubmit={deleteBackup}>
+    onSubmit={deleteBackups}>
     <p class="text" data-private>
-        Are you sure you want to delete <b>{cleanBackupName(selectedBackup)}</b>?
-        <br />This action is irreversible.
+        Are you sure you want to delete
+        {#if selectedBackups.length}
+            <b>{selectedBackups.length}</b> {selectedBackups.length > 1 ? 'backups' : 'backup'}?
+        {:else}
+            <b>{cleanBackupName(selectedBackup)}</b>?
+            <br />This action is irreversible.
+        {/if}
     </p>
+
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)}>Cancel</Button>
         <Button secondary submit>Delete</Button>
@@ -261,6 +306,17 @@
     }
 
     :global(.custom-height-table-column .table-col) {
-        height: 54px;
+        height: 38px;
+    }
+
+    .actions {
+        .indicator {
+            border-radius: 0.25rem;
+            background: hsl(var(--color-information-100));
+            color: hsl(var(--color-neutral-0));
+
+            padding: 0rem 0.375rem;
+            display: inline-block;
+        }
     }
 </style>
