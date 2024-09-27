@@ -4,123 +4,40 @@
     import { onMount } from 'svelte';
     import { isCloud, isSelfHosted } from '$lib/system';
     import { organization } from '$lib/stores/organization';
-    import { BillingPlan, Dependencies } from '$lib/constants';
-    import { goto, invalidate } from '$app/navigation';
-    import { addNotification } from '$lib/stores/notifications';
-    import { base } from '$app/paths';
-    import { page } from '$app/stores';
+    import { BillingPlan } from '$lib/constants';
     import type { BackupArchive, BackupRestoration } from '$lib/sdk/backups';
 
     let backupRestoreItems: {
-        archives: BackupArchive[];
-        restorations: BackupRestoration[];
+        archives: Map<string, BackupArchive>;
+        restorations: Map<string, BackupRestoration>;
     } = {
-        archives: [],
-        restorations: []
+        archives: new Map(),
+        restorations: new Map()
     };
 
     $: showBackupRestoreBox =
-        backupRestoreItems.archives.length > 0 || backupRestoreItems.restorations.length > 0;
+        backupRestoreItems.archives.size > 0 || backupRestoreItems.restorations.size > 0;
 
-    // to avoid multiple notifications.
-    let lastDatabaseRestorationId = null;
-
-    const fetchBackupRestores = async (fromRealtime: boolean = false) => {
-        // fast path: don't fetch if org is on a free plan or is self-hosted.
-        if (isSelfHosted || (isCloud && $organization.billingPlan === BillingPlan.FREE)) return;
-
+    const fetchBackupRestores = async () => {
         try {
-            const query = [Query.orderDesc('')];
-
-            if (!fromRealtime) {
-                query.push(
-                    Query.notEqual('status', 'failed'),
-                    Query.notEqual('status', 'completed')
-                );
-            }
+            const query = [
+                Query.notEqual('status', ['failed']),
+                Query.notEqual('status', ['completed'])
+            ];
 
             const [archivesResponse, restorationsResponse] = await Promise.all([
                 sdk.forProject.backups.listArchives(query),
                 sdk.forProject.backups.listRestorations(query)
             ]);
 
-            // TODO: @itznotabug
-            //  we should move to realtime after the cross org bug is taken care of.
-            let filteredArchives = archivesResponse.archives;
-            let filteredRestorations = restorationsResponse.restorations;
+            // this is a one time op.
+            backupRestoreItems.archives = new Map(
+                archivesResponse.archives.map((item) => [item.$id, item])
+            );
 
-            let invalidateDependencies = false;
-            let showRestorationCompleteNotification = false;
-
-            if (fromRealtime) {
-                const backupArchiveIds = new Set(
-                    backupRestoreItems.archives.map((item) => item.$id)
-                );
-
-                const backupRestorationIds = new Set(
-                    backupRestoreItems.restorations.map((item) => item.$id)
-                );
-
-                filteredArchives = archivesResponse.archives.filter((archive) => {
-                    return (
-                        (archive.status !== 'completed' && archive.status !== 'failed') ||
-                        backupArchiveIds.has(archive.$id)
-                    );
-                });
-
-                filteredRestorations = restorationsResponse.restorations.filter((restoration) => {
-                    return (
-                        (restoration.status !== 'completed' && restoration.status !== 'failed') ||
-                        backupRestorationIds.has(restoration.$id)
-                    );
-                });
-
-                invalidateDependencies = filteredArchives.length > 0;
-                showRestorationCompleteNotification = filteredRestorations.length > 0;
-            }
-
-            backupRestoreItems.archives = filteredArchives;
-            backupRestoreItems.restorations = filteredRestorations;
-
-            if (invalidateDependencies) {
-                invalidate(Dependencies.BACKUPS);
-            }
-
-            if (showRestorationCompleteNotification) {
-                const restoration = backupRestoreItems.restorations.find(
-                    (restoration) => restoration.status === 'completed'
-                );
-
-                if (restoration) {
-                    const { newId: newDatabaseId, newName: newDatabaseName } =
-                        restoration.options?.['databases']?.['database'][0] || {};
-
-                    if (
-                        newDatabaseId &&
-                        newDatabaseName &&
-                        lastDatabaseRestorationId !== newDatabaseId
-                    ) {
-                        const project = $page.params.project;
-                        lastDatabaseRestorationId = newDatabaseId;
-
-                        addNotification({
-                            type: 'success',
-                            isHtml: true,
-                            message: `Restoration complete. <b>${newDatabaseName}</b> has been created.`,
-                            buttons: [
-                                {
-                                    name: 'View restored data',
-                                    method: () => {
-                                        goto(
-                                            `${base}/project-${project}/databases/database-${newDatabaseId}`
-                                        );
-                                    }
-                                }
-                            ]
-                        });
-                    }
-                }
-            }
+            backupRestoreItems.restorations = new Map(
+                restorationsResponse.restorations.map((item) => [item.$id, item])
+            );
         } catch (e) {
             // ignore?
         }
@@ -128,6 +45,22 @@
 
     // fresh fetch.
     fetchBackupRestores();
+
+    const updateOrAddItem = (payload) => {
+        const { $id, status, $collection } = payload;
+        console.log(status);
+
+        if ($collection in backupRestoreItems) {
+            const collectionMap = backupRestoreItems[$collection];
+
+            if (collectionMap.has($id)) {
+                collectionMap.get($id).status = status;
+            } else if (status === 'pending' || status === 'processing' || status === 'uploading') {
+                collectionMap.set($id, payload);
+            }
+            backupRestoreItems[$collection] = collectionMap;
+        }
+    };
 
     const graphSize = (status: string) => {
         switch (status) {
@@ -163,7 +96,7 @@
                 response.events.includes('archives.*') ||
                 response.events.includes('restorations.*')
             ) {
-                fetchBackupRestores(true);
+                updateOrAddItem(response.payload);
             }
         });
     });
@@ -176,7 +109,7 @@
             {@const items = backupRestoreItems[key]}
             {@const titleText = isBackup ? 'Creating Backup' : 'Creating Restoration'}
 
-            {#if items.length > 0}
+            {#if items.size > 0}
                 <section class="upload-box is-float">
                     <header class="upload-box-header">
                         <h4 class="upload-box-title">
@@ -191,10 +124,10 @@
                     </header>
 
                     <div class="upload-box-content is-open">
-                        {#each items as item, index (item.$id)}
+                        {#each [...items.values()] as item, index (item.$id)}
                             <section
                                 class="progress-bar"
-                                class:u-padding-block-end-32={index !== items.length - 1}>
+                                class:u-padding-block-end-32={index !== items.size - 1}>
                                 <div
                                     class="progress-bar-top-line u-flex u-gap-8 u-main-space-between">
                                     <span class="body-text-2"> Preparing database... </span>
