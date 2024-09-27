@@ -22,6 +22,7 @@
     import { onMount } from 'svelte';
     import { feedback } from '$lib/stores/feedback';
     import { cronExpression, type UserBackupPolicy } from '$lib/helpers/backups';
+    import { ID } from '@appwrite.io/console';
 
     let showCreatePolicy = false;
     let policyCreateError: string;
@@ -88,7 +89,7 @@
             cronExpression(policy);
 
             return sdk.forProject.backups.createPolicy(
-                policy.id,
+                ID.unique(),
                 ['databases'],
                 policy.retained,
                 policy.schedule,
@@ -153,7 +154,7 @@
             <div class="u-flex-vertical u-width-full-line">
                 <ContainerHeader
                     title="Backups"
-                    buttonText="Manual Backup"
+                    buttonText="Manual backup"
                     buttonEvent="create_backup"
                     buttonType="secondary"
                     buttonDisabled={isDisabled}

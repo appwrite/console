@@ -21,10 +21,9 @@
         on:click={buttonMethod}
         disabled={buttonDisabled}
         text={buttonType === 'text'}
-        class="small-radius-border-button"
         secondary={buttonType === 'secondary'}>
         <span class="icon-plus" aria-hidden="true" />
-        <span class="body-text-1">{buttonText}</span>
+        {buttonText}
     </Button>
 </header>
 
