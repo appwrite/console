@@ -151,10 +151,10 @@
                     lastBackupDates={data.lastBackupDates} />
             </div>
 
-            <div class="u-flex-vertical u-width-full-line">
+            <div class="u-flex-vertical u-width-full-line u-overflow-x-auto">
                 <ContainerHeader
                     title="Backups"
-                    buttonText="Manual Backup"
+                    buttonText="Manual backup"
                     buttonEvent="create_backup"
                     buttonType="secondary"
                     buttonDisabled={isDisabled}
@@ -242,14 +242,8 @@
 
 <style>
     .empty {
-        block-size: 365px;
+        /* block-size: 365px; TODO: check with design */
         text-align: center;
         align-content: center;
-    }
-
-    @media (min-width: 768px) {
-        .empty {
-            min-width: 802px; /* match with the table width with items */
-        }
     }
 </style>

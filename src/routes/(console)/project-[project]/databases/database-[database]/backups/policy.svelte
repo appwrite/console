@@ -213,7 +213,7 @@
                             class="small-radius-border-button"
                             on:click={() => (showCreatePolicy = true)}>
                             <span class="icon-plus" aria-hidden="true" />
-                            <span class="text">Create Policy</span>
+                            <span class="text">Create policy</span>
                         </Button>
                     </div>
                 </div>

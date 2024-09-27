@@ -109,11 +109,10 @@
         <TableCellHeadCheck
             bind:selected={selectedBackups}
             pageItemsIds={data.backups.archives.map((b) => b.$id)} />
-
         <TableCellHead width={192}>Backups</TableCellHead>
-        <TableCellHead width={120}>Size</TableCellHead>
+        <TableCellHead width={80}>Size</TableCellHead>
         <TableCellHead width={120}>Status</TableCellHead>
-        <TableCellHead width={120}>Policy</TableCellHead>
+        <TableCellHead width={80}>Policy</TableCellHead>
         <TableCellHead width={48} />
     </TableHeader>
     <TableBody>
@@ -127,18 +126,17 @@
                     bind:selectedIds={selectedBackups}
                     disabled={backup.status !== 'completed'}
                     id={backup.status !== 'completed' ? null : backup.$id} />
-
-                <TableCell width={192} title={backup.$createdAt}>
+                <TableCell title={backup.$createdAt}>
                     {cleanBackupName(backup)}
                 </TableCell>
-                <TableCell width={120} title="Backup Size">
+                <TableCell title="Backup Size">
                     {#if backup.status === 'completed'}
                         {calculateSize(backup.size)}
                     {:else}
                         -
                     {/if}
                 </TableCell>
-                <TableCell width={120} title="Backup Status">
+                <TableCell title="Backup Status">
                     <div class="u-flex u-gap-8 u-cross-baseline">
                         <Pill
                             warning={backup.status === 'pending'}
@@ -151,7 +149,7 @@
                         <!--{/if}-->
                     </div>
                 </TableCell>
-                <TableCell width={168} title="Backup Policy">
+                <TableCell title="Backup Policy">
                     <div class="u-flex u-main-space-between u-cross-baseline">
                         <span
                             use:tooltip={{
@@ -164,7 +162,7 @@
                     </div>
                 </TableCell>
 
-                <TableCell width={48}>
+                <TableCell>
                     <div class="u-flex u-cross-center">
                         <DropList bind:show={showDropdown[index]} placement="bottom-end">
                             <button
