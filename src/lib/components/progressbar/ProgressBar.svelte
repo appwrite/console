@@ -64,6 +64,7 @@
             display: flex;
             flex-direction: row;
             gap: 2px;
+            margin-top: 1rem;
         }
 
         &__content {

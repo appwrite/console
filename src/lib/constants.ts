@@ -61,6 +61,65 @@ export enum Dependencies {
     MESSAGING_TOPIC_SUBSCRIBERS = 'dependency:messaging_topic_subscribers'
 }
 
+export const defaultScopes: string[] = [
+    'global',
+    'public',
+    'home',
+    'console',
+    'graphql',
+    'sessions.write',
+    'account',
+    'teams.read',
+    'teams.write',
+    'documents.read',
+    'documents.write',
+    'files.read',
+    'files.write',
+    'projects.read',
+    'projects.write',
+    'locale.read',
+    'avatars.read',
+    'execution.read',
+    'execution.write',
+    'targets.read',
+    'targets.write',
+    'subscribers.write',
+    'subscribers.read',
+    'assistant.read',
+    'users.read',
+    'users.write',
+    'databases.read',
+    'databases.write',
+    'collections.read',
+    'collections.write',
+    'buckets.read',
+    'buckets.write',
+    'functions.read',
+    'functions.write',
+    'platforms.read',
+    'platforms.write',
+    'keys.read',
+    'keys.write',
+    'webhooks.read',
+    'webhooks.write',
+    'rules.read',
+    'rules.write',
+    'migrations.read',
+    'migrations.write',
+    'vcs.read',
+    'vcs.write',
+    'providers.read',
+    'providers.write',
+    'messages.read',
+    'messages.write',
+    'topics.read',
+    'topics.write',
+    'billing.read',
+    'billing.write'
+];
+
+export const defaultRoles: string[] = ['owner'];
+
 export const scopes: {
     scope: string;
     description: string;

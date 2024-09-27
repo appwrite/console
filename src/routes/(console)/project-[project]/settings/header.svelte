@@ -5,6 +5,7 @@
     import { isTabSelected } from '$lib/helpers/load';
     import type { TabElement } from '$lib/helpers/load';
     import { Cover, CoverTitle } from '$lib/layout';
+    import { canWriteProjects } from '$lib/stores/roles';
     import { isCloud } from '$lib/system';
 
     const projectId = $page.params.project;
@@ -28,23 +29,23 @@
         {
             href: `${path}/migrations`,
             title: 'Migrations',
-            event: 'migrations'
+            event: 'migrations',
+            disabled: !$canWriteProjects
         },
         {
             href: `${path}/smtp`,
             title: 'SMTP',
-            event: 'smtp'
-        }
-    ];
-
-    if (isCloud) {
-        tabs.push({
+            event: 'smtp',
+            disabled: !$canWriteProjects
+        },
+        {
             href: `${path}/usage`,
             title: 'Usage',
             event: 'usage',
-            hasChildren: true
-        });
-    }
+            hasChildren: true,
+            disabled: !isCloud
+        }
+    ].filter((tab) => !tab.disabled);
 </script>
 
 <Cover>
