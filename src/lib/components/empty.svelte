@@ -5,6 +5,7 @@
     import EmptyDark from '$lib/images/empty-dark.svg';
     import { Heading } from '.';
     import { trackEvent } from '$lib/actions/analytics';
+    import { createEventDispatcher } from 'svelte';
 
     export let single = false;
     export let isCard = true;
@@ -14,7 +15,19 @@
     export let marginTop = false;
     export let allowCreate = true;
 
+    const dispatch = createEventDispatcher();
+
+    function onClick(event) {
+        if (!allowCreate) {
+            return;
+        }
+        dispatch('click', event);
+    }
+
     function track() {
+        if (!allowCreate) {
+            return;
+        }
         if (target) {
             trackEvent(`click_create_${target}`, {
                 from: 'empty'
@@ -30,8 +43,8 @@
             {#if !noMedia}
                 <button
                     type="button"
-                    on:click|preventDefault
                     on:click={track}
+                    on:click={onClick}
                     aria-label="create {target}">
                     <slot name="empty-media">
                         {#if $app.themeInUse === 'dark'}
