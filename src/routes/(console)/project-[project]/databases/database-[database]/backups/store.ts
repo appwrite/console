@@ -6,7 +6,7 @@ export const policyPricing = 20;
 export const presetPolicies = writable<UserBackupPolicy[]>([
     {
         label: 'Hourly',
-        retained: 1, // 8 hours isn't a valid param because 0.33 < 1, defaulting to 24 hours for now!
+        retained: 1,
         default: true,
         checked: false,
         schedule: '{time} * * *',

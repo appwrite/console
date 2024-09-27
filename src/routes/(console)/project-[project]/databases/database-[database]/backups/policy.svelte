@@ -2,7 +2,6 @@
     import Card from '$lib/components/card.svelte';
     import { DropList, DropListItem, Modal } from '$lib/components';
     import { Button, FormList, InputCheckbox } from '$lib/elements/forms/index';
-    import { type Models } from '@appwrite.io/console';
 
     import { app } from '$lib/stores/app';
     import { sdk } from '$lib/stores/sdk';
@@ -14,15 +13,16 @@
 
     import EmptyDark from '$lib/images/backups/backups-dark.png';
     import EmptyLight from '$lib/images/backups/backups-light.png';
+    import type { BackupPolicy, BackupPolicyList } from '$lib/sdk/backups';
 
     let showDropdown = [];
     let showDelete = false;
-    let selectedPolicy: Models.BackupPolicy = null;
+    let selectedPolicy: BackupPolicy = null;
 
     let showEveryPolicy = false;
 
     export let showCreatePolicy = false;
-    export let policies: Models.BackupPolicyList;
+    export let policies: BackupPolicyList;
     export let lastBackupDates: Record<string, string>;
 
     async function deletePolicy() {
