@@ -21,14 +21,15 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { calculateSize } from '$lib/helpers/sizeConvertion';
-    import { ID, type Models } from '@appwrite.io/console';
+    import { ID } from '@appwrite.io/console';
     import { page } from '$app/stores';
+    import type { BackupArchive } from '$lib/sdk/backups';
 
     export let data: PageData;
     const databaseId = $page.params.database;
 
     let showDelete = false;
-    let selectedBackup: Models.BackupArchive = null;
+    let selectedBackup: BackupArchive = null;
 
     let showDropdown = [];
     let selectedBackups: string[] = [];
@@ -94,7 +95,7 @@
     const policyDetails = (policyId: string | null) =>
         data.policies.policies.find((policy) => policy.$id === policyId);
 
-    const cleanBackupName = (backup: Models.BackupArchive) =>
+    const cleanBackupName = (backup: BackupArchive) =>
         toLocaleDateTime(backup.$createdAt).replaceAll(',', '');
 
     $: if (!showRestore && !showDelete) {

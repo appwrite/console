@@ -4,6 +4,7 @@ import { sdk } from '$lib/stores/sdk';
 import { type Models, Query } from '@appwrite.io/console';
 import { timeFromNow } from '$lib/helpers/date';
 import type { PageLoad } from './$types';
+import type { BackupPolicy } from '$lib/sdk/backups';
 
 export const load: PageLoad = async ({ url, route, depends }) => {
     depends(Dependencies.DATABASES);
@@ -40,7 +41,7 @@ async function fetchDatabasesAndBackups(limit: number, offset: number) {
 }
 
 async function fetchPolicies(databases: Models.DatabaseList) {
-    const databasePolicies: Record<string, Models.BackupPolicy[]> = {};
+    const databasePolicies: Record<string, BackupPolicy[]> = {};
 
     await Promise.all(
         databases.databases.map(async (database) => {
