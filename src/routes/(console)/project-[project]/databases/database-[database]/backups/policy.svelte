@@ -20,6 +20,7 @@
     let selectedPolicy: BackupPolicy = null;
 
     let showEveryPolicy = false;
+    let confirmedDeletion = false;
 
     export let showCreatePolicy = false;
     export let policies: BackupPolicyList;
@@ -265,13 +266,14 @@
                     required
                     size="small"
                     id="delete_policy"
+                    bind:checked={confirmedDeletion}
                     label="I understand and confirm" />
             </div>
         </div>
     </FormList>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-        <Button secondary submit>Delete</Button>
+        <Button secondary submit disabled={!confirmedDeletion}>Delete</Button>
     </svelte:fragment>
 </Modal>
 
