@@ -27,6 +27,7 @@
     import QuickFilters from './quickFilters.svelte';
     import { Pill } from '$lib/elements';
     import { onMount } from 'svelte';
+    import { canWriteFunctions } from '$lib/stores/roles';
 
     export let data;
 
@@ -184,15 +185,17 @@
                             href={`${base}/project-${$page.params.project}/functions/function-${$page.params.function}/deployment-${activeDeployment.$id}`}>
                             Build logs
                         </Button>
-                        <Button
-                            text
-                            class="u-margin-inline-end-16"
-                            on:click={() => {
-                                selectedDeployment = activeDeployment;
-                                showRedeploy = true;
-                            }}>
-                            Redeploy
-                        </Button>
+                        {#if $canWriteFunctions}
+                            <Button
+                                text
+                                class="u-margin-inline-end-16"
+                                on:click={() => {
+                                    selectedDeployment = activeDeployment;
+                                    showRedeploy = true;
+                                }}>
+                                Redeploy
+                            </Button>
+                        {/if}
                         <Button
                             secondary
                             href={`${base}/project-${$page.params.project}/functions/function-${$func.$id}/executions/execute-function`}

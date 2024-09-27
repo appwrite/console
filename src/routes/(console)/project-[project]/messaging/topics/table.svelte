@@ -22,6 +22,7 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import type { Column } from '$lib/helpers/types';
     import { page } from '$app/stores';
+    import { canWriteTopics } from '$lib/stores/roles';
 
     export let columns: Column[];
     export let data: PageData;
@@ -60,9 +61,11 @@
 
 <TableScroll>
     <TableHeader>
-        <TableCellHeadCheck
-            bind:selected={selectedIds}
-            pageItemsIds={data.topics.topics.map((d) => d.$id)} />
+        {#if $canWriteTopics}
+            <TableCellHeadCheck
+                bind:selected={selectedIds}
+                pageItemsIds={data.topics.topics.map((d) => d.$id)} />
+        {/if}
         {#each columns as column}
             {#if column.show}
                 <TableCellHead width={column.width}>{column.title}</TableCellHead>
@@ -73,8 +76,9 @@
         {#each data.topics.topics as topic (topic.$id)}
             <TableRowLink
                 href={`${base}/project-${$page.params.project}/messaging/topics/topic-${topic.$id}`}>
-                <TableCellCheck bind:selectedIds id={topic.$id} />
-
+                {#if $canWriteTopics}
+                    <TableCellCheck bind:selectedIds id={topic.$id} />
+                {/if}
                 {#each columns as column (column.id)}
                     {#if column.show}
                         {#if column.id === '$id'}

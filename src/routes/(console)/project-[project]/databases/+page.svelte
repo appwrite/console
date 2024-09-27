@@ -14,6 +14,7 @@
     import Table from './table.svelte';
     import { registerCommands } from '$lib/commandCenter';
     import { tooltip } from '$lib/actions/tooltip';
+    import { canWriteDatabases } from '$lib/stores/roles';
 
     export let data: PageData;
 
@@ -33,7 +34,7 @@
                 showCreate = true;
             },
             keys: ['c'],
-            disabled: showCreate || isCreationDisabled,
+            disabled: showCreate || isCreationDisabled || !$canWriteDatabases,
             icon: 'plus',
             group: 'databases',
             rank: 10
@@ -55,19 +56,21 @@
                     view={data.view}
                     hideColumns={!data.databases.total}
                     hideView={!data.databases.total} />
-                <div
-                    use:tooltip={{
-                        content: `Upgrade to add more databases`,
-                        disabled: !isCreationDisabled
-                    }}>
-                    <Button
-                        on:click={() => (showCreate = true)}
-                        event="create_database"
-                        disabled={isCreationDisabled}>
-                        <span class="icon-plus" aria-hidden="true" />
-                        <span class="text">Create database</span>
-                    </Button>
-                </div>
+                {#if $canWriteDatabases}
+                    <div
+                        use:tooltip={{
+                            content: `Upgrade to add more databases`,
+                            disabled: !isCreationDisabled
+                        }}>
+                        <Button
+                            on:click={() => (showCreate = true)}
+                            event="create_database"
+                            disabled={isCreationDisabled}>
+                            <span class="icon-plus" aria-hidden="true" />
+                            <span class="text">Create database</span>
+                        </Button>
+                    </div>
+                {/if}
             </div>
         </svelte:fragment>
     </ContainerHeader>
@@ -89,6 +92,7 @@
             single
             href="https://appwrite.io/docs/products/databases/databases"
             target="database"
+            allowCreate={$canWriteDatabases}
             on:click={() => (showCreate = true)} />
     {/if}
 </Container>
