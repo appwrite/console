@@ -43,6 +43,7 @@
         } finally {
             showDelete = false;
             selectedPolicy = null;
+            confirmedDeletion = false;
         }
     }
 
