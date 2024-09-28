@@ -146,7 +146,7 @@ export type Aggregation = {
      */
     amount: number;
     /**
-     * Price for addional members
+     * Price for additional members
      */
     additionalMembers: number;
     /**
