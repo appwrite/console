@@ -4,8 +4,9 @@
     import { onMount } from 'svelte';
     import { isCloud, isSelfHosted } from '$lib/system';
     import { organization } from '$lib/stores/organization';
-    import { BillingPlan } from '$lib/constants';
+    import { BillingPlan, Dependencies } from '$lib/constants';
     import type { BackupArchive, BackupRestoration } from '$lib/sdk/backups';
+    import { invalidate } from '$app/navigation';
 
     let backupRestoreItems: {
         archives: Map<string, BackupArchive>;
@@ -53,6 +54,7 @@
 
             if (collectionMap.has($id)) {
                 collectionMap.get($id).status = status;
+                if (status === 'completed') invalidate(Dependencies.BACKUPS);
             } else if (status === 'pending' || status === 'processing' || status === 'uploading') {
                 collectionMap.set($id, payload);
             }
@@ -66,6 +68,8 @@
                 return 10;
             case 'processing':
                 return 30;
+            case 'uploading':
+                return 60;
             case 'completed':
             case 'failed':
                 return 100;
@@ -75,7 +79,7 @@
     };
 
     const handleClose = (which: string) => {
-        backupRestoreItems[which] = [];
+        backupRestoreItems[which] = new Map();
     };
 
     // TODO: `startedAt` is probably not correct here. need more info.
