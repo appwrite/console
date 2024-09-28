@@ -367,7 +367,7 @@
                                 >${totalPolicies.length * policyPricing}
                                 .00</span>
                         {/if}
-                        <span>$0.00 until Nov 2024</span>
+                        <span>$0.00 until Jan 1st 2025</span>
                     </div>
                 </div>
             {/if}
