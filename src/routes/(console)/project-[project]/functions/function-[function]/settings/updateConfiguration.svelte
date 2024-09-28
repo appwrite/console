@@ -326,7 +326,7 @@
                     <FormList>
                         <InputTextarea
                             label="Commands"
-                            placeholder="Enter an install commad (e.g. 'npm install')"
+                            placeholder="Enter an install command (e.g. 'npm install')"
                             id="install"
                             tooltip="Enter a single command or chain multiple commands with the && operator"
                             bind:value={commands} />
