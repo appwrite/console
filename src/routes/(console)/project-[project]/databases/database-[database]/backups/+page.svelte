@@ -135,7 +135,7 @@
 <Container size="xxl">
     <div class="u-flex u-gap-32 u-flex-vertical-mobile">
         {#if !isDisabled}
-            <div class="u-flex-vertical">
+            <div class="u-flex-vertical policies-holder-card">
                 <ContainerHeader
                     title="Policies"
                     buttonText="Create policy"
@@ -241,5 +241,11 @@
         /* block-size: 365px; TODO: check with design */
         text-align: center;
         align-content: center;
+    }
+
+    @media (min-width: 768px) {
+        .policies-holder-card {
+            max-width: 21.5rem;
+        }
     }
 </style>

@@ -98,8 +98,8 @@
 <div class="u-flex u-flex-vertical u-gap-16">
     <Card
         class="backups-policy-list-card u-margin-block-start-24"
-        style="--card-padding: 0.5rem; --card-padding-mobile: 0.5rem; min-width: 21.5rem;">
-        <div class="u-flex-vertical-mobile">
+        style="padding: 0; min-width: 21.5rem;">
+        <div class="inner-card u-flex-vertical-mobile">
             {#each policies.policies as policy, index (policy.$id)}
                 <div
                     class="policy-card-item-padding u-flex-vertical u-gap-10"
@@ -144,7 +144,7 @@
                     </div>
 
                     <div
-                        class="policy-cycles u-flex u-cross-center u-padding-block-2 policy-item-subtitles">
+                        class="policy-cycles u-flex u-main-space-between u-padding-block-2 policy-item-subtitles">
                         <div style="width: 128px" class="u-flex-vertical policy-item-caption">
                             <span style="color: #97979B">Previous</span>
                             <div
@@ -279,10 +279,14 @@
 </Modal>
 
 <style>
+    .inner-card {
+        margin: 0 -1px;
+        padding: 0.5rem;
+    }
+
     .u-border-vertical {
         width: 1px;
         height: 34px;
-        margin: 0 1.5rem;
         background-color: hsl(var(--color-border));
     }
 
@@ -329,10 +333,6 @@
         line-height: 150%;
         font-style: normal;
         font-family: Inter;
-    }
-
-    .policy-cycles {
-        margin-block: 0.125rem;
     }
 
     :global(.input-check-box-friction .choice-item-title) {
