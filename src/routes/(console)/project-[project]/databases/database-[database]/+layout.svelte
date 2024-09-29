@@ -15,7 +15,7 @@
     import { showCreate } from './store';
     import { CollectionsPanel } from '$lib/commandCenter/panels';
     import { canWriteCollections, canWriteDatabases } from '$lib/stores/roles';
-    import { showCreatePolicy } from './backups/store';
+    import { showCreateBackup, showCreatePolicy } from './backups/store';
 
     const project = $page.params.project;
     const databaseId = $page.params.database;
@@ -61,7 +61,7 @@
                 if (!$page.url.pathname.endsWith('backups')) {
                     goto(`${base}/project-${project}/databases/database-${databaseId}/backups`);
                 }
-                showCreatePolicy.set(true);
+                showCreateBackup.set(true);
             },
             keys: $page.url.pathname.endsWith('backups') ? ['c'] : ['c', 'b'],
             group: 'databases',
