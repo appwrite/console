@@ -171,7 +171,7 @@
 
                 <TableCell>
                     <div class="u-flex u-cross-center">
-                        <DropList bind:show={showDropdown[index]} placement="bottom-end">
+                        <DropList noArrow bind:show={showDropdown[index]} placement="bottom-end">
                             <button
                                 class="button is-only-icon is-text"
                                 aria-label="More options"
