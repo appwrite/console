@@ -47,7 +47,7 @@
                 timeout: 15000,
                 buttons: [
                     {
-                        name: 'Leave Feedback',
+                        name: 'Leave feedback',
                         method: () => {
                             feedback.toggleFeedback();
                             dismissAllNotifications();
@@ -225,11 +225,7 @@
         Manual backups are <b>retained forever</b> unless manually deleted. Use them when making significant
         changes to your data structure or as a safeguard for future rollbacks.
     </p>
-    <Alert type="info">
-        <svelte:fragment slot="title">
-            Depending on the size of your data, this may take a while.
-        </svelte:fragment>
-    </Alert>
+    <Alert type="info">Depending on the size of your data, this may take a while.</Alert>
     <svelte:fragment slot="footer">
         <Button text on:click={() => ($showCreateBackup = false)}>Cancel</Button>
         <Button submit>Create</Button>

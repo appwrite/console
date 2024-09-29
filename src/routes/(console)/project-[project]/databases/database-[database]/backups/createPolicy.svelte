@@ -39,10 +39,10 @@
     let policyInEdit = null;
     let policyRetention = 30;
     let selectedTime = '00:00';
-    let backupPolicyName = null;
     let policyNameError: boolean;
     let policyFrequency = 'monthly';
     let monthlyBackupFrequency = 'end';
+    $: backupPolicyName = `${capitalize(policyFrequency)} backup`;
 
     $: customRetentionEnabled = policyRetention === -1;
     let customRetention = { ...customRetainingOptions[2], number: null };
@@ -51,7 +51,6 @@
         policyInEdit = null;
         policyRetention = 30;
         selectedTime = '00:00';
-        backupPolicyName = null;
         policyFrequency = 'monthly';
         monthlyBackupFrequency = 'end';
 
@@ -228,7 +227,7 @@
                                 <InputSelect
                                     label="Frequency"
                                     id="policyFrequency"
-                                    placeholder="Select runtime"
+                                    placeholder="Select frequency"
                                     bind:value={policyFrequency}
                                     options={['hourly', 'daily', 'weekly', 'monthly'].map(
                                         (freq) => ({
@@ -355,7 +354,8 @@
                     </div>
                 </section>
             {:else}
-                <div class="u-flex u-main-space-between u-padding-inline-4 u-width-full-line">
+                <div
+                    class="custom-policy-wrapper u-flex flex-vertical-mobile u-gap-16 u-main-space-between u-padding-inline-4 u-width-full-line">
                     <button class="custom-policy-text" on:click={() => (showCustomPolicy = true)}
                         >Create custom policy
                     </button>
@@ -364,8 +364,7 @@
                         <span>Total:</span>
                         {#if totalPolicies.length}
                             <span style="text-decoration: line-through;"
-                                >${totalPolicies.length * policyPricing}
-                                .00</span>
+                                >${totalPolicies.length * policyPricing}.00</span>
                         {/if}
                         <span>$0.00 until Jan 1st 2025</span>
                     </div>
@@ -408,5 +407,11 @@
 
     :global(.height-fit-content) {
         height: fit-content;
+    }
+
+    @media (max-width: 767.99px) {
+        .flex-vertical-mobile {
+            flex-direction: column-reverse !important;
+        }
     }
 </style>

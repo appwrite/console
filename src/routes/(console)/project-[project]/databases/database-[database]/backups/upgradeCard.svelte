@@ -65,7 +65,7 @@
                         {title}
                     </h3>
 
-                    <span class="u-padding-inline-end-32">
+                    <span class="upgrade-description">
                         {message} Schedule automatic or manual backups to protect your data and ensure
                         quick recovery.
                     </span>
@@ -89,3 +89,11 @@
         </div>
     </Card>
 </div>
+
+<style>
+    @media (min-width: 768px) {
+        .upgrade-description {
+            padding-inline-end: 16ch;
+        }
+    }
+</style>

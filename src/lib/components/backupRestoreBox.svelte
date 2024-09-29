@@ -6,7 +6,10 @@
     import { organization } from '$lib/stores/organization';
     import { BillingPlan, Dependencies } from '$lib/constants';
     import type { BackupArchive, BackupRestoration } from '$lib/sdk/backups';
-    import { invalidate } from '$app/navigation';
+    import { goto, invalidate } from '$app/navigation';
+    import { page } from '$app/stores';
+    import { addNotification } from '$lib/stores/notifications';
+    import { base } from '$app/paths';
 
     let backupRestoreItems: {
         archives: Map<string, BackupArchive>;
@@ -16,8 +19,36 @@
         restorations: new Map()
     };
 
+    let openStates = {
+        archives: true,
+        restorations: true
+    };
+
     $: showBackupRestoreBox =
         backupRestoreItems.archives.size > 0 || backupRestoreItems.restorations.size > 0;
+
+    let lastDatabaseRestorationId = null;
+
+    const showRestoreNotification = (newDatabaseId: string, newDatabaseName: string) => {
+        if (newDatabaseId && newDatabaseName && lastDatabaseRestorationId !== newDatabaseId) {
+            const project = $page.params.project;
+            lastDatabaseRestorationId = newDatabaseId;
+
+            addNotification({
+                type: 'success',
+                isHtml: true,
+                message: `Restoration complete. <b>${newDatabaseName}</b> has been created.`,
+                buttons: [
+                    {
+                        name: 'View restored data',
+                        method: () => {
+                            goto(`${base}/project-${project}/databases/database-${newDatabaseId}`);
+                        }
+                    }
+                ]
+            });
+        }
+    };
 
     const fetchBackupRestores = async () => {
         try {
@@ -54,7 +85,16 @@
 
             if (collectionMap.has($id)) {
                 collectionMap.get($id).status = status;
-                if (status === 'completed') invalidate(Dependencies.BACKUPS);
+                if (status === 'completed') {
+                    invalidate(Dependencies.BACKUPS);
+
+                    if ($collection === 'restorations') {
+                        const { newId, newName } =
+                            collectionMap.get($id).options?.['databases']?.['database'][0] || {};
+
+                        showRestoreNotification(newId, newName);
+                    }
+                }
             } else if (status === 'pending' || status === 'processing' || status === 'uploading') {
                 collectionMap.set($id, payload);
             }
@@ -78,8 +118,20 @@
         }
     };
 
+    const text = (status: string, key: string) => {
+        const service = key === 'archives' ? 'backup' : 'restore';
+        if (status === 'completed') {
+            return `Database ${service} complete`;
+        } else if (status === 'failed') {
+            return `Database ${service} failed`;
+        } else {
+            return 'Preparing database...';
+        }
+    };
+
     const handleClose = (which: string) => {
         backupRestoreItems[which] = new Map();
+        if (which === 'restorations') lastDatabaseRestorationId = null;
     };
 
     // TODO: `startedAt` is probably not correct here. need more info.
@@ -119,31 +171,46 @@
                         </h4>
                         <button
                             class="upload-box-button"
+                            class:is-open={!openStates[key]}
+                            aria-label="toggle upload box"
+                            on:click={() => {
+                                openStates[key] = !openStates[key];
+                            }}>
+                            <span class="icon-cheveron-up" aria-hidden="true" />
+                        </button>
+                        <button
+                            class="upload-box-button"
                             aria-label="close backup restore box"
                             on:click={() => handleClose(key)}>
                             <span class="icon-x" aria-hidden="true" />
                         </button>
                     </header>
 
-                    <div class="upload-box-content is-open">
-                        {#each [...items.values()] as item, index (item.$id)}
-                            <section
-                                class="progress-bar"
-                                class:u-padding-block-end-32={index !== items.size - 1}>
-                                <div
-                                    class="progress-bar-top-line u-flex u-gap-8 u-main-space-between">
-                                    <span class="body-text-2"> Preparing database... </span>
+                    <div class="upload-box-content" class:is-open={openStates[key]}>
+                        <ul class="upload-box-list">
+                            {#each [...items.values()] as item, index (item.$id)}
+                                <li class="upload-box-item">
+                                    <section
+                                        class="progress-bar u-width-full-line"
+                                        class:u-padding-block-end-32={index !== items.size - 1}>
+                                        <div
+                                            class="progress-bar-top-line u-flex u-gap-8 u-main-space-between">
+                                            <span class="body-text-2">
+                                                {text(item.status, key)}
+                                            </span>
 
-                                    <span class="backup-name">
-                                        {backupName(item, key)}
-                                    </span>
-                                </div>
-                                <div
-                                    class="progress-bar-container"
-                                    class:is-danger={item.status === 'failed'}
-                                    style="--graph-size:{graphSize(item.status)}%" />
-                            </section>
-                        {/each}
+                                            <span class="backup-name">
+                                                {backupName(item, key)}
+                                            </span>
+                                        </div>
+                                        <div
+                                            class="progress-bar-container"
+                                            class:is-danger={item.status === 'failed'}
+                                            style="--graph-size:{graphSize(item.status)}%" />
+                                    </section>
+                                </li>
+                            {/each}
+                        </ul>
                     </div>
                 </section>
             {/if}
@@ -152,8 +219,11 @@
 {/if}
 
 <style>
+    .upload-box-title {
+        font-size: 10px;
+    }
+
     .upload-box-content {
-        padding: 1.5rem;
         min-width: 400px;
         max-width: 100vw;
     }

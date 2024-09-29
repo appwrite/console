@@ -43,7 +43,7 @@
             selectedBackups.push(selectedBackup.$id);
         }
 
-        const message = `${selectedBackups.length} backup${selectedBackups.length > 1 ? 's' : ''} deleted`;
+        const message = `${selectedBackups.length} backup${selectedBackups.length > 1 ? 's have been' : ''} deleted`;
 
         const promises = selectedBackups.map((archiveId) =>
             sdk.forProject.backups.deleteArchive(archiveId)
@@ -122,13 +122,19 @@
             {@const retainedUntil = new Date(
                 new Date(policy?.$createdAt).getTime() + policy?.retention * 24 * 60 * 60 * 1000
             )}
+            {@const formattedRetainedUntil = `${retainedUntil.getDate()} ${retainedUntil.toLocaleString('en-US', { month: 'short' })}, ${retainedUntil.getFullYear()} ${retainedUntil.toLocaleTimeString('en-US', { hour12: false })}`}
             <TableRow>
                 <TableCellCheck
                     bind:selectedIds={selectedBackups}
                     disabled={backup.status !== 'completed'}
                     id={backup.status !== 'completed' ? null : backup.$id} />
                 <TableCell title={backup.$createdAt}>
-                    {cleanBackupName(backup)}
+                    <span
+                        use:tooltip={{
+                            content: timeFromNow(backup.$createdAt)
+                        }}>
+                        {cleanBackupName(backup)}
+                    </span>
                 </TableCell>
                 <TableCell title="Backup Size">
                     {#if backup.status === 'completed'}
@@ -155,7 +161,7 @@
                         <span
                             use:tooltip={{
                                 content: policy
-                                    ? `Retained until: ${retainedUntil}`
+                                    ? `Retained until: ${formattedRetainedUntil}`
                                     : `Retained forever`
                             }}>
                             {policy?.name || 'Manual'}
@@ -237,8 +243,8 @@
             <b>{selectedBackups.length}</b> {selectedBackups.length > 1 ? 'backups' : 'backup'}?
         {:else}
             <b>{cleanBackupName(selectedBackup)}</b>?
-            <br />This action is irreversible.
         {/if}
+        <br />This action is irreversible.
     </p>
 
     <svelte:fragment slot="footer">
@@ -248,12 +254,15 @@
 </Modal>
 
 <Modal title="Restore backup" bind:show={showRestore} onSubmit={restoreBackup}>
-    <p class="text" data-private>
+    <p class="text" data-private style="padding-inline-end: 2rem;">
         Restoring this backup will duplicate the database from the selected backup version. This
         action may take a while.
     </p>
 
-    <Card isTile style="border-radius: var(--border-radius-small, 8px); padding: 1rem;">
+    <Card
+        isTile
+        class="restore-modal-inner-card"
+        style="border-radius: var(--border-radius-small, 8px); padding: 1rem;">
         <div class="u-flex u-flex-vertical u-gap-4">
             <span class="body-text-2 u-bold darker-neutral-color">
                 {cleanBackupName(selectedBackup)}
@@ -270,7 +279,7 @@
         </div>
     </Card>
 
-    <FormList>
+    <FormList gap={8}>
         <InputText
             id="name"
             label="Database name"
@@ -305,12 +314,19 @@
 </Modal>
 
 <style lang="scss">
-    .icon-dots-horizontal {
-        font-size: 1.5rem;
+    :global(.custom-height-table-column .table-col) {
+        height: 54px;
+        padding: 0 1rem; /* removes vertical padding for constrained height */
     }
 
-    :global(.custom-height-table-column .table-col) {
-        height: 38px;
+    :global(.restore-modal-inner-card) {
+        background: hsl(var(--color-neutral-5));
+        border: 1px solid hsl(var(--color-neutral-10));
+    }
+
+    :global(.theme-dark .restore-modal-inner-card) {
+        background: hsl(var(--color-neutral-85));
+        border: 1px solid hsl(var(--color-neutral-80));
     }
 
     .actions {

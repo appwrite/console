@@ -150,9 +150,8 @@
                             <div
                                 class="u-flex u-gap-4 u-cross-center policy-item-subtitles darker-neutral-color">
                                 <span
-                                    style="font-size: 1rem; margin-bottom: 2px; color: {lastBackupDates[
-                                        policy.$id
-                                    ]
+                                    class="medium-ellipse"
+                                    style="color: {lastBackupDates[policy.$id]
                                         ? 'hsl(var(--color-success-100))'
                                         : 'inherit'};">●</span>
                                 <span class="policy-item-subtitles">
@@ -247,6 +246,7 @@
     title="Delete policy"
     icon="exclamation"
     state="warning"
+    size="small"
     bind:show={showDelete}
     headerDivider={false}
     onSubmit={deletePolicy}>
@@ -292,6 +292,11 @@
 
     :global(.small-ellipse) {
         font-size: 0.25rem;
+    }
+
+    :global(.medium-ellipse) {
+        font-size: 0.5rem;
+        color: hsl(var(--color-neutral-20));
     }
 
     :global(.u-gap-6) {
@@ -352,13 +357,13 @@
     }
 
     :global(.show-more-policy-button) {
-        background: transparent;
         border-radius: 1rem;
+        background: transparent;
     }
 
     .show-more-policy-wrapper {
         padding-inline: 13px;
-        padding-block-end: 4px;
+        padding-block-end: 0.875rem;
     }
 
     @media (max-width: 768px) {

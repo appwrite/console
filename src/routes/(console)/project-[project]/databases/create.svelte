@@ -98,7 +98,7 @@
             {#if showPlanUpgradeAlert}
                 <Alert type="warning" dismissible on:dismiss={() => (showPlanUpgradeAlert = false)}>
                     <svelte:fragment slot="title">This database won't be backed up</svelte:fragment>
-                    Upgrade your plan to manage database backup policies
+                    Upgrade your plan to ensure your data stays safe with advanced backup policies.
                     <svelte:fragment slot="buttons">
                         <Button href={$upgradeURL} text>Upgrade plan</Button>
                     </svelte:fragment>

@@ -47,7 +47,8 @@ async function fetchPolicies(databases: Models.DatabaseList) {
         databases.databases.map(async (database) => {
             try {
                 const { policies } = await sdk.forProject.backups.listPolicies([
-                    Query.limit(3), // not all fit in the table so 3 should be enough.
+                    // TODO: are all needed!?
+                    // Query.limit(3),
                     Query.equal('resourceType', 'database'),
                     Query.equal('resourceId', database.$id)
                 ]);
