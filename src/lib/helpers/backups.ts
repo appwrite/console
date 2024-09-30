@@ -131,7 +131,7 @@ export const backupPolicyDescription = (
                 : `A backup will run daily at ${timeFormatted}.`;
 
         case 'weekly': {
-            const daysArray = weeklySelectedDays || ['Monday'];
+            const daysArray = weeklySelectedDays.length ? weeklySelectedDays : ['Monday'];
             const dayString =
                 daysArray.length > 1
                     ? daysArray.slice(0, -1).join(', ') + ' and ' + daysArray.slice(-1)
