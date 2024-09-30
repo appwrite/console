@@ -288,6 +288,8 @@
 
                                         <div
                                             class="input-time"
+                                            class:hide={policyFrequency === 'monthly' ||
+                                                policyFrequency === 'weekly'}
                                             class:u-margin-block-start-4={policyFrequency ===
                                                 'monthly' || policyFrequency === 'weekly'}>
                                             <InputTime
@@ -457,8 +459,8 @@
             flex-direction: column;
         }
 
-        .time-holder .input-time {
-            margin-block-start: unset !important;
+        :global(.time-holder .input-time.hide > li label) {
+            display: none;
         }
     }
 </style>
