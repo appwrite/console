@@ -111,7 +111,10 @@
                     <div class="u-flex-vertical u-gap-2">
                         <div class="u-flex u-main-space-between">
                             <h3 class="body-text-2 u-bold darker-neutral-color">{policy.name}</h3>
-                            <DropList noArrow bind:show={showDropdown[index]} placement="bottom-end">
+                            <DropList
+                                noArrow
+                                bind:show={showDropdown[index]}
+                                placement="bottom-end">
                                 <button
                                     class="is-only-icon is-text"
                                     aria-label="More options"
