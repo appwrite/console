@@ -74,7 +74,7 @@
                                                     allowHTML: true,
                                                     trigger: 'click',
                                                     content: `
-                                                        <div class="u-flex u-flex-vertical u-gap-8">
+                                                        <div class="u-flex u-flex-vertical u-gap-4">
                                                             <p class="text">This payment method is linked to the following organizations:</p>
                                                             ${linkedOrgs
                                                                 .map(
