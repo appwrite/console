@@ -184,7 +184,7 @@
             {#if listOfCustomPolicies.length}
                 <div class="u-flex-vertical u-gap-8">
                     {#each listOfCustomPolicies as policy}
-                        <div class="card">
+                        <div class="card is-allow-focus">
                             <div class="u-flex-vertical u-gap-4 body-text-2">
                                 <div class="u-flex u-main-space-between">
                                     <h3 class="u-bold">{policy.label}</h3>
