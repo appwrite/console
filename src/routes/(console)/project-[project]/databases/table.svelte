@@ -109,19 +109,17 @@
                                 .join(', ')}
 
                             <Cell title={column.title} width={column.width}>
-                                <span class="u-trim">
+                                <span
+                                    class="u-trim"
+                                    use:tooltip={{
+                                        placement: 'bottom',
+                                        disabled: !policies || !lastBackup,
+                                        content: `Last backup: ${lastBackup}`
+                                    }}>
                                     {#if !policies}
                                         <span class="icon-exclamation" /> No backup policies
-                                    {:else if lastBackup}
-                                        <span
-                                            use:tooltip={{
-                                                placement: 'bottom',
-                                                content: `Last backup: ${lastBackup}`
-                                            }}>
-                                            {description}
-                                        </span>
                                     {:else}
-                                        <span>{description}</span>
+                                        {description}
                                     {/if}
                                 </span>
                             </Cell>
