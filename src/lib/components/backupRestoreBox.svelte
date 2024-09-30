@@ -188,11 +188,9 @@
 
                     <div class="upload-box-content" class:is-open={openStates[key]}>
                         <ul class="upload-box-list">
-                            {#each [...items.values()] as item, index (item.$id)}
+                            {#each [...items.values()] as item (item.$id)}
                                 <li class="upload-box-item">
-                                    <section
-                                        class="progress-bar u-width-full-line"
-                                        class:u-padding-block-end-32={index !== items.size - 1}>
+                                    <section class="progress-bar u-width-full-line">
                                         <div
                                             class="progress-bar-top-line u-flex u-gap-8 u-main-space-between">
                                             <span class="body-text-2">
