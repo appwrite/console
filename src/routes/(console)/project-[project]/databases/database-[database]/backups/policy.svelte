@@ -34,7 +34,7 @@
             await sdk.forProject.backups.deletePolicy(selectedPolicy.$id);
             addNotification({
                 type: 'success',
-                message: 'Backup policy deleted'
+                message: 'Backup policy has been deleted'
             });
 
             invalidate(Dependencies.BACKUPS);

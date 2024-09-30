@@ -169,40 +169,42 @@
                     </div>
                 </TableCell>
 
-                <TableCell>
-                    <div class="u-flex u-cross-center">
-                        <DropList noArrow bind:show={showDropdown[index]} placement="bottom-end">
-                            <button
-                                class="button is-only-icon is-text"
-                                aria-label="More options"
-                                on:click|preventDefault={() => {
-                                    showDropdown[index] = !showDropdown[index];
-                                }}>
-                                <span class="icon-dots-horizontal" aria-hidden="true" />
-                            </button>
+                <TableCell class="last-dropdown-item">
+                    <DropList
+                        class="drop-list-menu"
+                        noArrow
+                        bind:show={showDropdown[index]}
+                        placement="bottom-end">
+                        <button
+                            class="button is-only-icon is-text"
+                            aria-label="More options"
+                            on:click|preventDefault={() => {
+                                showDropdown[index] = !showDropdown[index];
+                            }}>
+                            <span class="icon-dots-horizontal" aria-hidden="true" />
+                        </button>
 
-                            <svelte:fragment slot="list">
-                                {#if backup.status === 'completed'}
-                                    <DropListItem
-                                        on:click={() => {
-                                            showRestore = true;
-                                            selectedBackup = backup;
-                                            showDropdown[index] = false;
-                                        }}>
-                                        Restore
-                                    </DropListItem>
-                                {/if}
+                        <svelte:fragment slot="list">
+                            {#if backup.status === 'completed'}
                                 <DropListItem
                                     on:click={() => {
-                                        showDelete = true;
+                                        showRestore = true;
                                         selectedBackup = backup;
                                         showDropdown[index] = false;
                                     }}>
-                                    Delete
+                                    Restore
                                 </DropListItem>
-                            </svelte:fragment>
-                        </DropList>
-                    </div>
+                            {/if}
+                            <DropListItem
+                                on:click={() => {
+                                    showDelete = true;
+                                    selectedBackup = backup;
+                                    showDropdown[index] = false;
+                                }}>
+                                Delete
+                            </DropListItem>
+                        </svelte:fragment>
+                    </DropList>
                 </TableCell>
             </TableRow>
         {/each}
@@ -253,7 +255,11 @@
     </svelte:fragment>
 </Modal>
 
-<Modal title="Restore backup" bind:show={showRestore} onSubmit={restoreBackup}>
+<Modal
+    headerDivider={false}
+    title="Restore backup"
+    bind:show={showRestore}
+    onSubmit={restoreBackup}>
     <p class="text" data-private style="padding-inline-end: 2rem;">
         Restoring this backup will duplicate the database from the selected backup version. This
         action may take a while.
@@ -327,6 +333,11 @@
     :global(.theme-dark .restore-modal-inner-card) {
         background: hsl(var(--color-neutral-85));
         border: 1px solid hsl(var(--color-neutral-80));
+    }
+
+    // centers item horizontally!
+    :global(.last-dropdown-item div) {
+        margin: auto;
     }
 
     .actions {

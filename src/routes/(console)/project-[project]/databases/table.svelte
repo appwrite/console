@@ -25,6 +25,7 @@
     import { sdk } from '$lib/stores/sdk';
     import type { PageData } from './$types';
     import { columns } from './store';
+    import Cell from '$lib/elements/table/cell.svelte';
 
     export let data: PageData;
     const projectId = $page.params.project;
@@ -101,27 +102,29 @@
                                 {database.name}
                             </TableCellText>
                         {:else if column.id === 'backup'}
-                            <TableCellText width={column.width} title={column.title}>
-                                {@const policies = data.policies?.[database.$id] ?? null}
-                                {@const lastBackup = data.lastBackups?.[database.$id] ?? null}
-                                {@const description = policies
-                                    ?.map((policy) => getPolicyDescription(policy.schedule))
-                                    .join(', ')}
+                            {@const policies = data.policies?.[database.$id] ?? null}
+                            {@const lastBackup = data.lastBackups?.[database.$id] ?? null}
+                            {@const description = policies
+                                ?.map((policy) => getPolicyDescription(policy.schedule))
+                                .join(', ')}
 
-                                {#if !policies}
-                                    <span class="icon-exclamation" /> No backup policies
-                                {:else if lastBackup}
-                                    <span
-                                        use:tooltip={{
-                                            placement: 'bottom',
-                                            content: `Last backup: ${lastBackup}`
-                                        }}>
-                                        {description}
-                                    </span>
-                                {:else}
-                                    <span>{description}</span>
-                                {/if}
-                            </TableCellText>
+                            <Cell title={column.title} width={column.width}>
+                                <span class="u-trim">
+                                    {#if !policies}
+                                        <span class="icon-exclamation" /> No backup policies
+                                    {:else if lastBackup}
+                                        <span
+                                            use:tooltip={{
+                                                placement: 'bottom',
+                                                content: `Last backup: ${lastBackup}`
+                                            }}>
+                                            {description}
+                                        </span>
+                                    {:else}
+                                        <span>{description}</span>
+                                    {/if}
+                                </span>
+                            </Cell>
                         {:else}
                             <TableCellText width={column.width} title={column.title}>
                                 {toLocaleDateTime(database[column.id])}

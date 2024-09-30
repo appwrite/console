@@ -221,12 +221,18 @@
 
 <style>
     .upload-box-title {
-        font-size: 10px;
+        font-size: 11px;
     }
 
     .upload-box-content {
         min-width: 400px;
         max-width: 100vw;
+    }
+
+    .upload-box-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .box-holder {

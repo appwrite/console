@@ -166,7 +166,7 @@
         <div class="u-flex-vertical u-gap-12">
             <div class="grid-1-1 u-gap-12">
                 {#each $presetPolicies as policy, index (index)}
-                    <label for={index.toString()} class="card is-allow-focus">
+                    <label for={index.toString()} class="card preset-label-card is-allow-focus">
                         <div class="u-flex u-gap-8 body-text-2">
                             <InputCheckbox
                                 id={index.toString()}
@@ -259,7 +259,7 @@
 
                             {#if policyFrequency !== 'hourly'}
                                 <div class="u-flex-vertical u-gap-8">
-                                    <div class="u-flex u-gap-8 time-holder">
+                                    <div class="time-holder">
                                         {#if policyFrequency === 'monthly'}
                                             <InputSelect
                                                 id="monthly"
@@ -274,7 +274,7 @@
                                                 <InputSelectCheckbox
                                                     name="Timing"
                                                     bind:tags={daysSelectionArray}
-                                                    placeholder="Select the weekdays for backup"
+                                                    placeholder="Select weekdays"
                                                     options={backupFrequencies[policyFrequency].map(
                                                         (option) => ({
                                                             ...option,
@@ -287,6 +287,7 @@
                                         {/if}
 
                                         <div
+                                            class="input-time"
                                             class:u-margin-block-start-4={policyFrequency ===
                                                 'monthly' || policyFrequency === 'weekly'}>
                                             <InputTime
@@ -412,9 +413,30 @@
         border-radius: 0.5rem;
     }
 
+    .time-holder {
+        gap: 8px;
+        display: flex;
+    }
+
+    .preset-label-card {
+        border: solid 0.0625rem #eeeef1;
+    }
+
+    .preset-label-card:hover {
+        border: solid 0.0625rem #d7d7da;
+    }
+
     .custom-policy-text {
         color: #19191c;
         text-decoration: underline;
+    }
+
+    :global(.theme-dark) .preset-label-card {
+        border: solid 0.0625rem #2c2c30;
+    }
+
+    :global(.theme-dark) .preset-label-card:hover {
+        border: solid 0.0625rem #424248;
     }
 
     :global(.theme-dark) .custom-policy-text {
@@ -428,6 +450,15 @@
     @media (max-width: 767.99px) {
         .flex-vertical-mobile {
             flex-direction: column-reverse !important;
+        }
+
+        .time-holder {
+            gap: 0;
+            flex-direction: column;
+        }
+
+        .time-holder .input-time {
+            margin-block-start: unset !important;
         }
     }
 </style>

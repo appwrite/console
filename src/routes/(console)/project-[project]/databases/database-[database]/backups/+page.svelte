@@ -112,6 +112,7 @@
             });
 
             invalidate(Dependencies.BACKUPS);
+            showFeedbackNotification();
         } catch (err) {
             addNotification({
                 type: 'error',
