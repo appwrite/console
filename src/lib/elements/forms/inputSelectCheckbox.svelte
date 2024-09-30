@@ -68,7 +68,7 @@
         <span
             class:icon-cheveron-up={show}
             class:icon-cheveron-down={!show}
-            class="u-position-absolute u-inset-block-start-4 u-inset-inline-end-12"
+            class="u-position-absolute u-inset-inline-end-12"
             aria-hidden="true"></span>
     </button>
 
