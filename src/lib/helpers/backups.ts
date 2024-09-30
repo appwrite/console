@@ -92,14 +92,6 @@ export const backupFrequencies = {
     hourly: generateHourlyOptions(1, 12)
 };
 
-const formatTime24to12 = (time24: string) => {
-    const [hour, minute] = time24.split(':');
-    const hourInt = parseInt(hour, 10);
-    const suffix = hourInt >= 12 ? 'PM' : 'AM';
-    const hour12 = ((hourInt + 11) % 12) + 1;
-    return `${hour12}:${minute} ${suffix}`;
-};
-
 export const backupPolicyDescription = (
     frequency: string,
     time: string | null = null,
@@ -107,8 +99,8 @@ export const backupPolicyDescription = (
     monthlyBackupFrequency: string,
     weeklySelectedDays: string[] | null = null
 ) => {
-    const timeFormatted = time ? formatTime24to12(time) : '';
     let retainedText = '';
+    const timeFormatted = time ?? '';
 
     if (retained !== null) {
         if (retained === 365 * 100) {
