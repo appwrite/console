@@ -5,8 +5,10 @@
         Helper,
         InputCheckbox,
         InputSelect,
+        InputSelectCheckbox,
         InputText,
-        InputTime
+        InputTime,
+        Label
     } from '$lib/elements/forms';
     import { ID } from '@appwrite.io/console';
     import { capitalize } from '$lib/helpers/string';
@@ -42,6 +44,8 @@
     let policyNameError: boolean;
     let policyFrequency = 'monthly';
     let monthlyBackupFrequency = 'end';
+
+    $: daysSelectionArray = [];
     $: backupPolicyName = `${capitalize(policyFrequency)} backup`;
 
     $: customRetentionEnabled = policyRetention === -1;
@@ -51,9 +55,9 @@
         policyInEdit = null;
         policyRetention = 30;
         selectedTime = '00:00';
+        daysSelectionArray = [];
         policyFrequency = 'monthly';
         monthlyBackupFrequency = 'end';
-
         customRetentionEnabled = false;
     };
 
@@ -73,8 +77,12 @@
             retained: policyRetention,
             id: policyInEdit ?? ID.unique(),
             plainTextFrequency: policyFrequency,
+            weeklySelectedDays: daysSelectionArray,
+            // placeholder description.
             description: `Runs every ${policyFrequency} and is retained for ${policyRetention}`
         };
+
+        userBackupPolicy.description = customPolicyDescription(userBackupPolicy);
 
         listOfCustomPolicies = [...listOfCustomPolicies, userBackupPolicy];
 
@@ -100,12 +108,19 @@
             policy.plainTextFrequency,
             null,
             policy.retained,
-            policy.monthlyBackupFrequency
+            policy.monthlyBackupFrequency,
+            policy.weeklySelectedDays
         );
     };
 
     $: formPolicyDescription = () => {
-        return backupPolicyDescription(policyFrequency, selectedTime, null, monthlyBackupFrequency);
+        return backupPolicyDescription(
+            policyFrequency,
+            selectedTime,
+            null,
+            monthlyBackupFrequency,
+            daysSelectionArray
+        );
     };
 
     $: if (showCustomPolicy) {
@@ -187,6 +202,7 @@
                                                 policyFrequency = policy.plainTextFrequency;
                                                 monthlyBackupFrequency =
                                                     policy.monthlyBackupFrequency;
+                                                daysSelectionArray = policy.weeklySelectedDays;
 
                                                 // do not show in the list can cause confusion.
                                                 listOfCustomPolicies = [
@@ -252,15 +268,31 @@
                                                 placeholder="End of month (28th)"
                                                 fullWidth
                                                 options={backupFrequencies[policyFrequency]} />
+                                        {:else if policyFrequency === 'weekly'}
+                                            <div class="u-flex-vertical u-width-full-line">
+                                                <Label>Timing</Label>
+                                                <InputSelectCheckbox
+                                                    name="Timing"
+                                                    bind:tags={daysSelectionArray}
+                                                    placeholder="Select the weekdays for backup"
+                                                    options={backupFrequencies[policyFrequency].map(
+                                                        (option) => ({
+                                                            ...option,
+                                                            checked: daysSelectionArray.includes(
+                                                                option.value
+                                                            )
+                                                        })
+                                                    )} />
+                                            </div>
                                         {/if}
 
                                         <div
                                             class:u-margin-block-start-4={policyFrequency ===
-                                                'monthly'}>
+                                                'monthly' || policyFrequency === 'weekly'}>
                                             <InputTime
                                                 id="time"
                                                 bind:value={selectedTime}
-                                                label={['daily', 'weekly'].includes(policyFrequency)
+                                                label={['daily'].includes(policyFrequency)
                                                     ? 'Timing'
                                                     : ''} />
                                         </div>

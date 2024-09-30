@@ -10,6 +10,7 @@ export type UserBackupPolicy = {
     checked?: boolean;
     selectedTime?: string;
     plainTextFrequency?: string;
+    weeklySelectedDays?: string[];
     monthlyBackupFrequency?: string;
 };
 
@@ -47,7 +48,16 @@ export const cronExpression = (policy: UserBackupPolicy) => {
         if (policy.plainTextFrequency === 'daily') {
             cronExpression = `${utcMinute} ${utcHour} * * *`;
         } else if (policy.plainTextFrequency === 'weekly') {
-            cronExpression = `${utcMinute} ${utcHour} * * 1`;
+            const selectedDays = policy.weeklySelectedDays
+                ?.map(
+                    (dayLabel) =>
+                        backupFrequencies.weekly.find((option) => option.label === dayLabel)?.index
+                )
+                .filter((index) => index !== undefined)
+                .join(',');
+
+            // Default to Monday (1)
+            cronExpression = `${utcMinute} ${utcHour} * * ${selectedDays || '1'}`;
         } else if (policy.plainTextFrequency === 'monthly') {
             cronExpression = `${utcMinute} ${utcHour} 28 * *`;
         }
@@ -94,7 +104,8 @@ export const backupPolicyDescription = (
     frequency: string,
     time: string | null = null,
     retained: number | null = null,
-    monthlyBackupFrequency: string
+    monthlyBackupFrequency: string,
+    weeklySelectedDays: string[] | null = null
 ) => {
     const timeFormatted = time ? formatTime24to12(time) : '';
     let retainedText = '';
@@ -127,10 +138,16 @@ export const backupPolicyDescription = (
                 ? `Runs every day and is retained for ${retainedText}.`
                 : `A backup will run daily at ${timeFormatted}.`;
 
-        case 'weekly':
+        case 'weekly': {
+            const daysArray = weeklySelectedDays || ['Monday'];
+            const dayString =
+                daysArray.length > 1
+                    ? daysArray.slice(0, -1).join(', ') + ' and ' + daysArray.slice(-1)
+                    : daysArray[0];
             return retained !== null
-                ? `Runs every Monday and is retained for ${retainedText}.`
-                : `A backup will run weekly on Monday at ${timeFormatted}.`;
+                ? `Runs every ${dayString} and is retained for ${retainedText}.`
+                : `A backup will run weekly on ${dayString} at ${timeFormatted}.`;
+        }
 
         case 'monthly': {
             const monthDay =

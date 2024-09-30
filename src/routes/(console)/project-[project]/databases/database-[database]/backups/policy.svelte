@@ -11,9 +11,12 @@
     import { parseExpression } from 'cron-parser';
     import { toLocaleDateTime } from '$lib/helpers/date';
 
+    import { tooltip } from '$lib/actions/tooltip';
+
     import EmptyDark from '$lib/images/backups/backups-dark.png';
     import EmptyLight from '$lib/images/backups/backups-light.png';
     import type { BackupPolicy, BackupPolicyList } from '$lib/sdk/backups';
+    import { backupFrequencies } from '$lib/helpers/backups';
 
     let showDropdown = [];
     let showDelete = false;
@@ -70,7 +73,14 @@
         }
 
         if (dayOfMonth === '*' && month === '*' && dayOfWeek !== '*') {
-            return `Runs weekly on Monday`;
+            const days = dayOfWeek
+                .split(',')
+                .map((day) => backupFrequencies.weekly[parseInt(day, 10)].label);
+
+            const dayString =
+                days.length > 1 ? days.slice(0, -1).join(', ') + ' and ' + days.slice(-1) : days[0];
+
+            return `Runs weekly on ${dayString}`;
         }
 
         if (
@@ -93,6 +103,29 @@
             return 'Runs daily';
         }
     };
+
+    const getTruncatedPolicyDescription = (policyDescription: string): string => {
+        let firstDayIndex = -1;
+        let secondDayIndex = -1;
+
+        for (const day of backupFrequencies.weekly.map((item) => item.label)) {
+            const dayIndex = policyDescription.indexOf(day);
+            if (dayIndex !== -1) {
+                if (firstDayIndex === -1) {
+                    firstDayIndex = dayIndex;
+                } else {
+                    secondDayIndex = dayIndex;
+                    break;
+                }
+            }
+        }
+
+        if (firstDayIndex === -1 || secondDayIndex === -1) {
+            return policyDescription;
+        }
+
+        return `${policyDescription.substring(0, secondDayIndex).trim().replace(',', '')}...`;
+    };
 </script>
 
 <div class="u-flex u-flex-vertical u-gap-16">
@@ -101,6 +134,10 @@
         style="padding: 0; min-width: 21.5rem;">
         <div class="inner-card u-flex-vertical-mobile">
             {#each policies.policies as policy, index (policy.$id)}
+                {@const policyDescription = getPolicyDescription(policy.schedule)}
+                {@const policyDescriptionShort = getTruncatedPolicyDescription(policyDescription)}
+                {@const shouldUseTooltip = policyDescription.length > policyDescriptionShort.length}
+
                 <div
                     class="policy-card-item-padding u-flex-vertical u-gap-10"
                     data-show-every={showEveryPolicy}
@@ -140,8 +177,16 @@
                         <div
                             class="policy-item-subtitles u-flex u-gap-6"
                             style="width: fit-content;">
-                            {getPolicyDescription(policy.schedule)}
+                            {#if shouldUseTooltip}
+                                <span use:tooltip={{ content: policyDescription }}>
+                                    {policyDescriptionShort}
+                                </span>
+                            {:else}
+                                {policyDescription}
+                            {/if}
+
                             <span class="small-ellipse">●</span>
+
                             {formatRetentionMessage(policy.retention)}
                         </div>
                     </div>
