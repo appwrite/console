@@ -166,7 +166,7 @@
         <div class="u-flex-vertical u-gap-12">
             <div class="grid-1-1 u-gap-12">
                 {#each $presetPolicies as policy, index (index)}
-                    <div class="card policy-default-custom-card">
+                    <label for={index.toString()} class="card is-allow-focus">
                         <div class="u-flex u-gap-8 body-text-2">
                             <InputCheckbox
                                 id={index.toString()}
@@ -177,14 +177,14 @@
                                 {policy.description}
                             </div>
                         </div>
-                    </div>
+                    </label>
                 {/each}
             </div>
 
             {#if listOfCustomPolicies.length}
                 <div class="u-flex-vertical u-gap-8">
                     {#each listOfCustomPolicies as policy}
-                        <div class="card policy-default-custom-card">
+                        <div class="card">
                             <div class="u-flex-vertical u-gap-4 body-text-2">
                                 <div class="u-flex u-main-space-between">
                                     <h3 class="u-bold">{policy.label}</h3>
@@ -411,22 +411,6 @@
         padding: 1rem;
         border-radius: 0.5rem;
     }
-
-    .policy-default-custom-card {
-        background: #fafafb;
-    }
-
-    /*.policy-default-custom-card.checked {*/
-    /*    border: solid .0625rem hsl(var(--color-neutral-80))*/
-    /*}*/
-
-    :global(.theme-dark) .policy-default-custom-card {
-        background: #232325;
-    }
-
-    /*:global(.theme-dark) .policy-default-custom-card.checked {*/
-    /*    border: solid .0625rem hsl(var(--color-neutral-10))*/
-    /*}*/
 
     .custom-policy-text {
         color: #19191c;
