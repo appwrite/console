@@ -68,7 +68,7 @@
         <span
             class:icon-cheveron-up={show}
             class:icon-cheveron-down={!show}
-            class="u-position-absolute u-inset-inline-end-12"
+            class="chevron-icon u-position-absolute u-inset-inline-end-12"
             aria-hidden="true"></span>
     </button>
 
@@ -86,3 +86,11 @@
         {/each}
     </svelte:fragment>
 </DropList>
+
+<style>
+    @media (max-width: 768px) {
+        .chevron-icon {
+            inset-block-start: 0.25rem !important;
+        }
+    }
+</style>
