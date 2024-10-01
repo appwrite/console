@@ -14,6 +14,7 @@ export function calculateSize(bytes: number, decimals = 1, base: 1000 | 1024 = 1
 }
 
 export function sizeToBytes(value: number, unit: Size, base = 1000) {
+    if (typeof value !== 'number') return 0;
     const index = sizes.indexOf(unit);
     return value * Math.pow(base, index);
 }
