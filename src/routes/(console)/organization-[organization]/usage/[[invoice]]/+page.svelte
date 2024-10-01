@@ -237,7 +237,7 @@
                 <ProgressBarBig
                     currentUnit="Executions"
                     currentValue={formatNum(current)}
-                    maxValue={`of ${formatNum(max)} Executions used`}
+                    maxValue={`of ${formatNum(max)} executions used`}
                     progressValue={current}
                     progressMax={max}
                     showBar={false} />
