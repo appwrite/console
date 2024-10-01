@@ -14,16 +14,21 @@
     import { BillingPlan, Dependencies } from '$lib/constants';
     import { isCloud, isSelfHosted } from '$lib/system';
     import { organization } from '$lib/stores/organization';
-    import LockedBackupsDarkDesktop from '$lib/images/backups/empty/backups-dark.png';
-    import LockedBackupsLightDesktop from '$lib/images/backups/empty/backups-light.png';
-    import LockedBackupsDarkMobile from '$lib/images/backups/empty/backups-mobile-dark.png';
-    import LockedBackupsLightMobile from '$lib/images/backups/empty/backups-mobile-light.png';
     import { app } from '$lib/stores/app';
     import { onMount } from 'svelte';
     import { feedback } from '$lib/stores/feedback';
     import { cronExpression, type UserBackupPolicy } from '$lib/helpers/backups';
     import { ID } from '@appwrite.io/console';
     import { showCreateBackup, showCreatePolicy } from './store';
+
+    import LockedBackupsDarkDesktop from '$lib/images/backups/empty/backups-dark.png';
+    import LockedBackupsLightDesktop from '$lib/images/backups/empty/backups-light.png';
+
+    import LockedBackupsDarkMobile from '$lib/images/backups/empty/backups-mobile-dark.png';
+    import LockedBackupsLightMobile from '$lib/images/backups/empty/backups-mobile-light.png';
+
+    import LockedBackupsDarkTablet from '$lib/images/backups/empty/backups-tablet-light.png';
+    import LockedBackupsLightTablet from '$lib/images/backups/empty/backups-tablet-light.png';
 
     let policyCreateError: string;
     let totalPolicies: UserBackupPolicy[] = [];
@@ -195,6 +200,15 @@
                     style="opacity: 0.5" />
 
                 <img
+                    class="is-tablet"
+                    src={$app.themeInUse === 'dark'
+                        ? LockedBackupsLightTablet
+                        : LockedBackupsLightTablet}
+                    alt="create"
+                    aria-hidden="true"
+                    style="opacity: 0.5" />
+
+                <img
                     class="is-only-mobile"
                     src={$app.themeInUse === 'dark'
                         ? LockedBackupsDarkMobile
@@ -235,14 +249,28 @@
 
 <style>
     .empty {
-        /* block-size: 365px; TODO: check with design */
+        block-size: 365px;
         text-align: center;
         align-content: center;
+    }
+
+    .is-tablet {
+        display: none;
     }
 
     @media (min-width: 768px) {
         .policies-holder-card {
             max-width: 21.5rem;
+        }
+    }
+
+    @media (min-width: 525px) and (max-width: 768px) {
+        .is-tablet {
+            display: block;
+        }
+
+        .is-only-mobile {
+            display: none !important;
         }
     }
 </style>

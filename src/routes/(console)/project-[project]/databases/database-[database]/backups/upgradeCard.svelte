@@ -8,6 +8,9 @@
     import EmptyDarkMobile from '$lib/images/backups/upgrade/backups-mobile-dark.png';
     import EmptyLightMobile from '$lib/images/backups/upgrade/backups-mobile-light.png';
 
+    import EmptyDarkTablet from '$lib/images/backups/upgrade/backups-tablet-light.png';
+    import EmptyLightTablet from '$lib/images/backups/upgrade/backups-tablet-light.png';
+
     import { upgradeURL } from '$lib/stores/billing';
     import { Card } from '$lib/components';
     import { isCloud } from '$lib/system';
@@ -58,6 +61,22 @@
                             alt="Backups Example" />
                     {/if}
                 </div>
+
+                <div class="is-tablet">
+                    {#if $app.themeInUse === 'dark'}
+                        <img
+                            src={EmptyDarkTablet}
+                            height="102px"
+                            class="u-image-object-fit-contain u-block u-only-dark"
+                            alt="Backups Example" />
+                    {:else}
+                        <img
+                            src={EmptyDarkTablet}
+                            height="102px"
+                            class="u-image-object-fit-contain u-only-light"
+                            alt="Backups Example" />
+                    {/if}
+                </div>
             </div>
             <div class="u-flex u-flex-vertical-mobile u-gap-mobile-6">
                 <div class="u-flex-vertical u-gap-8">
@@ -91,9 +110,27 @@
 </div>
 
 <style>
+    .is-tablet {
+        display: none;
+    }
+
     @media (min-width: 768px) {
         .upgrade-description {
             padding-inline-end: 16ch;
+        }
+    }
+
+    @media (min-width: 525px) and (max-width: 768px) {
+        .is-tablet {
+            display: block;
+        }
+
+        .is-tablet img {
+            height: 100%;
+        }
+
+        .is-only-mobile {
+            display: none !important;
         }
     }
 </style>
