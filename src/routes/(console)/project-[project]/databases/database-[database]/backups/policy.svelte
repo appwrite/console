@@ -199,9 +199,7 @@
                                 class="u-flex u-gap-4 u-cross-center policy-item-subtitles darker-neutral-color">
                                 <span
                                     class="medium-ellipse"
-                                    style="color: {lastBackupDates[policy.$id]
-                                        ? 'hsl(var(--color-success-100))'
-                                        : 'inherit'};">●</span>
+                                    class:success={!!lastBackupDates[policy.$id]}>●</span>
                                 <span class="policy-item-subtitles">
                                     {#if lastBackupDates[policy.$id]}
                                         {toLocaleDateTime(lastBackupDates[policy.$id])}
@@ -345,6 +343,10 @@
     :global(.medium-ellipse) {
         font-size: 0.5rem;
         color: hsl(var(--color-neutral-20));
+    }
+
+    :global(.medium-ellipse.success) {
+        color: hsl(var(--color-success-100));
     }
 
     :global(.u-gap-6) {
