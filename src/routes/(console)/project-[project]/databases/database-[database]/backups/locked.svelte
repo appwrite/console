@@ -1,7 +1,7 @@
 <script lang="ts">
-    import ContainerHeader from './containerHeader.svelte';
-    import UpgradeCard from './upgradeCard.svelte';
     import { app } from '$lib/stores/app';
+    import UpgradeCard from './upgradeCard.svelte';
+    import ContainerHeader from './containerHeader.svelte';
 
     import LockedBackupsDarkDesktop from '$lib/images/backups/empty/backups-dark.png';
     import LockedBackupsLightDesktop from '$lib/images/backups/empty/backups-light.png';
