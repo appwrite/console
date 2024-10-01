@@ -20,6 +20,7 @@
     import { ID } from '@appwrite.io/console';
     import { showCreateBackup, showCreatePolicy } from './store';
     import { getProjectId } from '$lib/helpers/project';
+    import { trackEvent } from '$lib/actions/analytics';
 
     let policyCreateError: string;
     let totalPolicies: UserBackupPolicy[] = [];
@@ -68,6 +69,7 @@
                 message: 'Database backup initiated'
             });
             invalidate(Dependencies.BACKUPS);
+            trackEvent('click_manual_submit');
             showFeedbackNotification();
         } catch (error) {
             addNotification({
@@ -77,6 +79,35 @@
         } finally {
             $showCreateBackup = false;
         }
+    };
+
+    const trackEvents = (policies) => {
+        policies.forEach((policy) => {
+            let actualDay = null;
+            const monthlyBackupFrequency = policy.monthlyBackupFrequency;
+            switch (monthlyBackupFrequency) {
+                case 'first':
+                    actualDay = '1st';
+                    break;
+                case 'middle':
+                    actualDay = '15th';
+                    break;
+                case 'end':
+                default:
+                    actualDay = '28th';
+                    break;
+            }
+
+            const message = {
+                keepFor: `${policy.retained} days`,
+                frequency: policy.plainTextFrequency,
+                policy: policy.default ? 'preset' : 'custom'
+            };
+
+            if (actualDay) message['monthlyInterval'] = actualDay;
+
+            trackEvent('submit_policy_submit', message);
+        });
     };
 
     const createPolicies = async () => {
@@ -106,6 +137,8 @@
                 type: 'success',
                 message
             });
+
+            trackEvents(totalPolicies);
 
             invalidate(Dependencies.BACKUPS);
             showFeedbackNotification();
@@ -142,7 +175,10 @@
                     buttonEvent="create_backup"
                     buttonType="secondary"
                     buttonDisabled={isDisabled}
-                    buttonMethod={() => ($showCreatePolicy = true)} />
+                    buttonMethod={() => {
+                        $showCreatePolicy = true;
+                        trackEvent('click_policy_create');
+                    }} />
 
                 <BackupPolicy
                     bind:showCreatePolicy={$showCreatePolicy}
@@ -157,7 +193,10 @@
                     buttonEvent="create_backup"
                     buttonType="secondary"
                     buttonDisabled={isDisabled}
-                    buttonMethod={() => ($showCreateBackup = true)} />
+                    buttonMethod={() => {
+                        $showCreateBackup = true;
+                        trackEvent('click_manual_create');
+                    }} />
 
                 {#if data.backups.total}
                     <div class="u-padding-block-start-8">

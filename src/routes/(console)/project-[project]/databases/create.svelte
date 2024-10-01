@@ -24,6 +24,35 @@
     let showCustomId = false;
     let showPlanUpgradeAlert = true;
 
+    const trackEvents = (policies) => {
+        policies.forEach((policy) => {
+            let actualDay = null;
+            const monthlyBackupFrequency = policy.monthlyBackupFrequency;
+            switch (monthlyBackupFrequency) {
+                case 'first':
+                    actualDay = '1st';
+                    break;
+                case 'middle':
+                    actualDay = '15th';
+                    break;
+                case 'end':
+                default:
+                    actualDay = '28th';
+                    break;
+            }
+
+            const message = {
+                keepFor: `${policy.retained} days`,
+                frequency: policy.plainTextFrequency,
+                policy: policy.default ? 'preset' : 'custom'
+            };
+
+            if (actualDay) message['monthlyInterval'] = actualDay;
+
+            trackEvent('submit_policy_submit', message);
+        });
+    };
+
     const createPolicies = async (resourceId: string) => {
         if (!totalPolicies.length) return;
 
@@ -41,6 +70,7 @@
         });
 
         await Promise.all(totalPoliciesPromise);
+        trackEvents(totalPolicies);
     };
 
     const create = async () => {

@@ -24,6 +24,7 @@
     import { ID } from '@appwrite.io/console';
     import { page } from '$app/stores';
     import type { BackupArchive } from '$lib/sdk/backups';
+    import { trackEvent } from '$lib/actions/analytics';
 
     export let data: PageData;
     const databaseId = $page.params.database;
@@ -82,6 +83,9 @@
             });
 
             invalidate(Dependencies.BACKUPS);
+            trackEvent('backup_restore_submit', {
+                newDatabaseName: newDatabaseInfo.name
+            });
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -191,6 +195,7 @@
                                         showRestore = true;
                                         selectedBackup = backup;
                                         showDropdown[index] = false;
+                                        trackEvent('click_backup_restore');
                                     }}>
                                     Restore
                                 </DropListItem>
@@ -200,6 +205,7 @@
                                     showDelete = true;
                                     selectedBackup = backup;
                                     showDropdown[index] = false;
+                                    trackEvent('click_backup_delete');
                                 }}>
                                 Delete
                             </DropListItem>
