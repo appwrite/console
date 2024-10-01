@@ -81,8 +81,6 @@
 
     const updateOrAddItem = (payload) => {
         const { $id, status, $collection } = payload;
-        // exclude if policy exists.
-        if (payload.policyId) return;
 
         if ($collection in backupRestoreItems) {
             const collectionMap = backupRestoreItems[$collection];

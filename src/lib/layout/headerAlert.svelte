@@ -36,3 +36,13 @@
         {/if}
     </div>
 </section>
+
+<style>
+    .alert {
+        padding: 1rem 1rem 0.75rem 1rem;
+    }
+
+    .alert-content {
+        gap: 0.25rem;
+    }
+</style>

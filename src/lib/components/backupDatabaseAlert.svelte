@@ -9,14 +9,6 @@
     import { hideNotification } from '$lib/helpers/notifications';
     import { backupsBannerId, showPolicyAlert } from '$lib/stores/database';
 
-    const isFreePlan = $organization?.billingPlan === BillingPlan.FREE;
-
-    const subtitle = isFreePlan
-        ? 'Upgrade your plan to ensure your data stays safe with advanced backup policies'
-        : 'Protect your data by quickly adding a backup policy';
-    const ctaText = isFreePlan ? 'Upgrade plan' : 'Add backup';
-    const ctaURL = isFreePlan ? $upgradeURL : `${$page.url.pathname}/backups`;
-
     function handleClose() {
         showPolicyAlert.set(false);
         hideNotification(backupsBannerId);
@@ -24,6 +16,15 @@
 </script>
 
 {#if $showPolicyAlert && isCloud && $organization?.$id && $page.url.pathname.match(/\/databases\/database-[^/]+$/)}
+    {@const isFreePlan = $organization?.billingPlan === BillingPlan.FREE}
+
+    {@const subtitle = isFreePlan
+        ? 'Upgrade your plan to ensure your data stays safe with advanced backup policies'
+        : 'Protect your data by quickly adding a backup policy'}
+
+    {@const ctaText = isFreePlan ? 'Upgrade plan' : 'Add backup'}
+    {@const ctaURL = isFreePlan ? $upgradeURL : `${$page.url.pathname}/backups`}
+
     <HeaderAlert type="warning" title="Your database is not backed up">
         <svelte:fragment>{subtitle}</svelte:fragment>
         <svelte:fragment slot="buttons">

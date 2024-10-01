@@ -54,8 +54,8 @@
                     {
                         name: 'Leave feedback',
                         method: () => {
-                            feedback.toggleFeedback();
                             dismissAllNotifications();
+                            feedback.toggleFeedback('backups');
                         }
                     },
                     {
