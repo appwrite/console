@@ -109,7 +109,6 @@
             required
             options={employeesOptions}
             bind:value={employees} />
-        <!-- <InputText label="Company name" placeholder="Enter company name" id="company" /> -->
         <InputSelect
             label="Country"
             id="country"
