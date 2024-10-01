@@ -3,6 +3,10 @@
     import { sdk } from '$lib/stores/sdk';
     import { OAuthProvider } from '@appwrite.io/console';
     import { Button } from '$lib/elements/forms';
+    import AppwriteLogoDark from '$lib/images/appwrite-logo-dark.svg';
+    import AppwriteLogoLight from '$lib/images/appwrite-logo-light.svg';
+    import GithubLogoDark from '$lib/images/github-logo-dark.svg';
+    import GithubLogoLight from '$lib/images/github-logo-light.svg';
 
     let artworkImageSrc;
     getArtworkImageSrc();
@@ -49,16 +53,17 @@
 <section class="github-education-container">
     <div class="artwork">
         <img src={artworkImageSrc} alt="" />
+        <div class="mobile-gradient" />
     </div>
     <div class="content-container">
         <div class="content">
             <div class="logos">
                 <img
-                    src="/console/src/lib/images/github-education-program/appwrite-logo.svg"
+                    src={$app.themeInUse === 'light' ? AppwriteLogoLight : AppwriteLogoDark}
                     alt="Appwrite logo" />
                 <div class="logo-divider" />
                 <img
-                    src="/console/src/lib/images/github-education-program/github-logo.svg"
+                    src={$app.themeInUse === 'light' ? GithubLogoLight : GithubLogoDark}
                     alt="Github logo" />
             </div>
             <h1>Join the Appwrite Education Program</h1>
@@ -75,6 +80,17 @@
 </section>
 
 <style>
+    :global(.theme-dark) {
+        --gradient-start-color: #0c0c0d;
+        --heading-color: inherit;
+        --text-color: #e4e4e7a3;
+    }
+    :global(.theme-light) {
+        --gradient-start-color: #ededf0;
+        --heading-color: #19191c;
+        --text-color: #19191ca3;
+    }
+
     .github-education-container {
         display: flex;
         flex-direction: column;
@@ -96,12 +112,25 @@
             background: linear-gradient(
                 56deg,
                 rgba(253, 54, 110, 0.1) 0%,
-                rgba(253, 54, 110, 0) 48.38%
+                var(--gradient-start-color) 48.38%
             );
 
             display: flex;
             justify-content: center;
             align-items: center;
+        }
+    }
+
+    .artwork .mobile-gradient {
+        @media (max-width: 768px) {
+            background: linear-gradient(
+                180deg,
+                rgba(25, 25, 28, 0) -4.43%,
+                hsl(var(--p-body-bg-color)) 100%
+            );
+            position: absolute;
+            width: 100%;
+            height: 16.5rem;
         }
     }
 
@@ -115,7 +144,7 @@
     }
 
     .content-container {
-        background-color: #141416;
+        background-color: hsl(var(--p-body-bg-color));
         width: 100%;
         padding: 1rem;
 
@@ -138,11 +167,12 @@
         font-size: 2rem;
         line-height: 2.125rem;
         margin-top: 2.5rem;
+        color: var(--heading-color);
     }
 
     .content p {
         margin-top: 1.25rem;
-        color: #e4e4e7a3;
+        color: var(--text-color);
         font-size: 1.125rem;
         font-weight: 500;
         line-height: 1.625rem;
