@@ -10,7 +10,15 @@
     class:is-danger={type === 'error'}
     class:is-info={type === 'info'}>
     <div class="alert-grid">
-        <span class="icon-info" aria-hidden="true" />
+        <span
+            aria-hidden="true"
+            class:icon-check-circle={type === 'success'}
+            class:icon-exclamation={type === 'warning'}
+            class:icon-exclamation-circle={type === 'error'}
+            class:icon-info={type === 'info' || type === 'default'}
+        />
+
+
         <div class="alert-content">
             {#if title || $$slots.title}
                 <h6 class="alert-title">
