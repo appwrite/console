@@ -178,7 +178,7 @@
                         </h4>
                         <button
                             class="upload-box-button"
-                            class:is-open={!openStates[key]}
+                            class:is-open={openStates[key]}
                             aria-label="toggle upload box"
                             on:click={() => {
                                 openStates[key] = !openStates[key];

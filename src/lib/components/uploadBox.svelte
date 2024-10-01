@@ -117,4 +117,8 @@
         min-width: 400px;
         max-width: 100vw;
     }
+
+    .file-name {
+        max-width: 24ch;
+    }
 </style>
