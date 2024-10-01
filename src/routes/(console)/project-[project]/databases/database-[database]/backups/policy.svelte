@@ -17,7 +17,7 @@
     import EmptyLight from '$lib/images/backups/backups-light.png';
     import type { BackupPolicy, BackupPolicyList } from '$lib/sdk/backups';
     import { backupFrequencies } from '$lib/helpers/backups';
-    import { Submit, trackEvent } from '$lib/actions/analytics';
+    import { trackEvent } from '$lib/actions/analytics';
 
     let showDropdown = [];
     let showDelete = false;
