@@ -1,6 +1,5 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
-    import { project } from '../../store';
     import UpdateMockNumbers from './updateMockNumbers.svelte';
     import UpdatePasswordDictionary from './updatePasswordDictionary.svelte';
     import UpdatePasswordHistory from './updatePasswordHistory.svelte';
