@@ -50,16 +50,12 @@
     $: currentModalAlert = filteredModalAlerts[currentIndex] as BottomModalAlertItem;
 
     function handleClose() {
-        const modalAlert = currentModalAlert;
-        dismissBottomModalAlert(modalAlert.id);
-        hideNotification(modalAlert.id, { coolOffPeriod: 24 * 365 });
-        if (modalAlert.closed) modalAlert.closed();
-
-        if (currentIndex === filteredModalAlerts.length - 1 && filteredModalAlerts.length > 1) {
-            currentIndex = currentIndex - 1;
-        } else {
-            currentIndex = currentIndex % filteredModalAlerts.length;
-        }
+        filteredModalAlerts.forEach((alert) => {
+            const modalAlert = alert;
+            dismissBottomModalAlert(modalAlert.id);
+            hideNotification(modalAlert.id, { coolOffPeriod: 24 * 365 });
+            if (modalAlert.closed) modalAlert.closed();
+        });
     }
 
     function showNext() {
