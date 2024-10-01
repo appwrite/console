@@ -41,6 +41,7 @@ const listOfPromotions: BottomModalAlertItem[] = [
         isHtml: true,
         plan: 'pro',
         scope: 'project',
+        importance: 8,
         cta: {
             text: 'Try now',
             link: ({ project }) => `${base}/project-${project.$id}/databases`
