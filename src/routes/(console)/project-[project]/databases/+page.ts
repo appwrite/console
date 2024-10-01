@@ -34,8 +34,10 @@ async function fetchDatabasesAndBackups(limit: number, offset: number) {
         Query.orderDesc('')
     ]);
 
-    const policies = await fetchPolicies(databases);
-    const lastBackups = await fetchLastBackups(databases);
+    const [ policies, lastBackups ] = await Promise.all([
+        await fetchPolicies(databases),
+        await fetchLastBackups(databases)
+    ]);
 
     return { databases, policies, lastBackups };
 }
