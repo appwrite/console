@@ -100,7 +100,7 @@
                 <Button
                     fullWidthMobile
                     external={!isCloud}
-                    class="is-only-mobile u-margin-block-start-32"
+                    class="is-only-mobile-button u-margin-block-start-32"
                     href={isCloud ? $upgradeURL : 'https://cloud.appwrite.io/register'}>
                     {isCloud ? 'Upgrade plan' : 'Sign up'}
                 </Button>
@@ -114,13 +114,23 @@
         display: none;
     }
 
+    :global(.is-only-mobile-button) {
+        display: none;
+    }
+
     @media (min-width: 768px) {
         .upgrade-description {
             padding-inline-end: 16ch;
         }
     }
 
-    @media (min-width: 525px) and (max-width: 768px) {
+    @media (max-width: 767.99px) {
+        :global(.is-only-mobile-button) {
+            display: flex;
+        }
+    }
+
+    @media (min-width: 525px) and (max-width: 767.99px) {
         .is-tablet {
             display: block;
         }
