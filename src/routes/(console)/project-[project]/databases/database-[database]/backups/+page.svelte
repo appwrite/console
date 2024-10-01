@@ -19,6 +19,7 @@
     import { cronExpression, type UserBackupPolicy } from '$lib/helpers/backups';
     import { ID } from '@appwrite.io/console';
     import { showCreateBackup, showCreatePolicy } from './store';
+    import { getProjectId } from '$lib/helpers/project';
 
     let policyCreateError: string;
     let totalPolicies: UserBackupPolicy[] = [];
@@ -121,6 +122,9 @@
 
     onMount(() => {
         return sdk.forConsole.client.subscribe('console', (response) => {
+            // fast path return.
+            if (!response.channels.includes(`projects.${getProjectId()}`)) return;
+
             if (response.events.includes('archives.*') || response.events.includes('policies.*')) {
                 invalidate(Dependencies.BACKUPS);
             }
