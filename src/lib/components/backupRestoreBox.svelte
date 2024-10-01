@@ -10,6 +10,7 @@
     import { page } from '$app/stores';
     import { addNotification } from '$lib/stores/notifications';
     import { base } from '$app/paths';
+    import { getProjectId } from '$lib/helpers/project';
 
     let backupRestoreItems: {
         archives: Map<string, BackupArchive>;
@@ -93,7 +94,7 @@
 
                     if ($collection === 'restorations') {
                         const { newId, newName } =
-                            collectionMap.get($id).options?.['databases']?.['database'][0] || {};
+                        collectionMap.get($id).options?.['databases']?.['database'][0] || {};
 
                         showRestoreNotification(newId, newName);
                     }
@@ -149,6 +150,9 @@
         if (isSelfHosted || (isCloud && $organization.billingPlan === BillingPlan.FREE)) return;
 
         sdk.forConsole.client.subscribe('console', (response) => {
+            // nice!
+            if (!response.channels.includes(`projects.${getProjectId()}`)) return;
+
             if (
                 response.events.includes('archives.*') ||
                 response.events.includes('restorations.*')
