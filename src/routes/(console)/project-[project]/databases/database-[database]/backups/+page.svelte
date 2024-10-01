@@ -27,7 +27,7 @@
     import LockedBackupsDarkMobile from '$lib/images/backups/empty/backups-mobile-dark.png';
     import LockedBackupsLightMobile from '$lib/images/backups/empty/backups-mobile-light.png';
 
-    import LockedBackupsDarkTablet from '$lib/images/backups/empty/backups-tablet-light.png';
+    import LockedBackupsDarkTablet from '$lib/images/backups/empty/backups-tablet-dark.png';
     import LockedBackupsLightTablet from '$lib/images/backups/empty/backups-tablet-light.png';
 
     let policyCreateError: string;
@@ -202,7 +202,7 @@
                 <img
                     class="is-tablet"
                     src={$app.themeInUse === 'dark'
-                        ? LockedBackupsLightTablet
+                        ? LockedBackupsDarkTablet
                         : LockedBackupsLightTablet}
                     alt="create"
                     aria-hidden="true"

@@ -8,7 +8,7 @@
     import EmptyDarkMobile from '$lib/images/backups/upgrade/backups-mobile-dark.png';
     import EmptyLightMobile from '$lib/images/backups/upgrade/backups-mobile-light.png';
 
-    import EmptyDarkTablet from '$lib/images/backups/upgrade/backups-tablet-light.png';
+    import EmptyDarkTablet from '$lib/images/backups/upgrade/backups-tablet-dark.png';
     import EmptyLightTablet from '$lib/images/backups/upgrade/backups-tablet-light.png';
 
     import { upgradeURL } from '$lib/stores/billing';
@@ -71,7 +71,7 @@
                             alt="Backups Example" />
                     {:else}
                         <img
-                            src={EmptyDarkTablet}
+                            src={EmptyLightTablet}
                             height="102px"
                             class="u-image-object-fit-contain u-only-light"
                             alt="Backups Example" />
