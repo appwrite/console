@@ -64,7 +64,8 @@
             class="tags-input-text u-cursor-text"
             {placeholder}
             bind:value={search}
-            bind:this={input} />
+            bind:this={input}
+        />
         <span
             class:icon-cheveron-up={show}
             class:icon-cheveron-down={!show}
@@ -91,6 +92,10 @@
     @media (max-width: 768px) {
         .chevron-icon {
             inset-block-start: 0.25rem !important;
+        }
+
+        .tags-input {
+            padding-right: 2rem;
         }
     }
 </style>
