@@ -64,8 +64,7 @@
             class="tags-input-text u-cursor-text"
             {placeholder}
             bind:value={search}
-            bind:this={input}
-        />
+            bind:this={input} />
         <span
             class:icon-cheveron-up={show}
             class:icon-cheveron-down={!show}
