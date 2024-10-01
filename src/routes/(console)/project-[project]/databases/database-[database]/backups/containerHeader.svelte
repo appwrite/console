@@ -12,7 +12,9 @@
 </script>
 
 <header class:u-flex={isFlex} class="u-gap-12 common-section u-main-space-between u-flex-wrap">
-    <div class="u-flex u-cross-child-center u-cross-center u-gap-16">
+    <div
+        class="u-flex u-cross-child-center u-cross-center u-gap-16"
+        class:is-disabled={buttonDisabled}>
         <div class="body-text-1 u-bold backups-title">{title}</div>
     </div>
 
