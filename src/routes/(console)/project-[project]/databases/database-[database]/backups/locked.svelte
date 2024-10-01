@@ -16,7 +16,7 @@
 <div class="u-flex-vertical u-gap-32">
     <UpgradeCard />
 
-    <div style="opacity: 0.25;">
+    <div>
         <!-- mobile, only policies are shown -->
         <div class="is-only-mobile u-flex-vertical u-gap-16">
             <ContainerHeader

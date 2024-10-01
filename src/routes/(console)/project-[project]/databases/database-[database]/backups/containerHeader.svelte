@@ -11,10 +11,11 @@
     export let buttonType: 'primary' | 'secondary' | 'text' = 'primary';
 </script>
 
-<header class:u-flex={isFlex} class="u-gap-12 common-section u-main-space-between u-flex-wrap">
-    <div
-        class="u-flex u-cross-child-center u-cross-center u-gap-16"
-        class:is-disabled={buttonDisabled}>
+<header
+    class:is-disabled={buttonDisabled}
+    class:u-flex={isFlex}
+    class="u-gap-12 common-section u-main-space-between u-flex-wrap">
+    <div class="u-flex u-cross-child-center u-cross-center u-gap-16">
         <div class="body-text-1 u-bold backups-title">{title}</div>
     </div>
 
@@ -30,6 +31,10 @@
 </header>
 
 <style>
+    .is-disabled {
+        opacity: 0.5;
+    }
+
     :global(.theme-light) .backups-title {
         --p-body-text-color: #373b4d;
         color: var(--p-body-text-color);
