@@ -13,7 +13,7 @@
 </script>
 
 {#if $uploader?.isOpen}
-    <section class="upload-box is-float">
+    <section class="upload-box">
         <header class="upload-box-header">
             <h4 class="upload-box-title">
                 <span class="text">Uploading files</span>
@@ -101,3 +101,20 @@
         </div>
     </section>
 {/if}
+
+<style>
+    .upload-box-title {
+        font-size: 11px;
+    }
+
+    .upload-box-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .upload-box-content {
+        min-width: 400px;
+        max-width: 100vw;
+    }
+</style>

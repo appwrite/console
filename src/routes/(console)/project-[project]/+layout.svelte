@@ -103,7 +103,29 @@
 
 <slot />
 
-<UploadBox />
-<MigrationBox />
+<div class="layout-level-progress-bars">
+    <UploadBox />
+    <MigrationBox />
 
-<BackupRestoreBox />
+    <BackupRestoreBox />
+</div>
+
+<style>
+    .layout-level-progress-bars {
+        gap: 1rem;
+        display: flex;
+        flex-direction: column;
+
+        right: 0;
+        bottom: 0;
+        position: fixed;
+        padding: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .layout-level-progress-bars {
+            position: relative;
+            align-items: center;
+        }
+    }
+</style>

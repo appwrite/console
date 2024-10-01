@@ -94,7 +94,7 @@
 
                     if ($collection === 'restorations') {
                         const { newId, newName } =
-                        collectionMap.get($id).options?.['databases']?.['database'][0] || {};
+                            collectionMap.get($id).options?.['databases']?.['database'][0] || {};
 
                         showRestoreNotification(newId, newName);
                     }
@@ -171,10 +171,10 @@
             {@const titleText = isBackup ? 'Creating Backup' : 'Creating Restoration'}
 
             {#if items.size > 0}
-                <section class="upload-box is-float">
+                <section class="upload-box">
                     <header class="upload-box-header">
                         <h4 class="upload-box-title">
-                            <span class="text">{titleText}</span>
+                            <span class="text">{titleText} ({items.size})</span>
                         </h4>
                         <button
                             class="upload-box-button"
@@ -239,17 +239,6 @@
         justify-content: center;
     }
 
-    .box-holder {
-        right: 0;
-        bottom: 0;
-        display: flex;
-        position: fixed;
-    }
-
-    .is-float {
-        position: relative;
-    }
-
     .backup-name {
         font-size: 12px;
         font-weight: 400;
@@ -258,11 +247,5 @@
         letter-spacing: -0.12px;
         color: var(--mid-neutrals-50, #818186);
         font-family: var(--font-family-sansSerif, Inter);
-    }
-
-    @media (max-width: 768px) {
-        .is-float {
-            position: fixed;
-        }
     }
 </style>
