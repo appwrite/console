@@ -8,7 +8,7 @@ import { shouldShowNotification } from '$lib/helpers/notifications';
 
 export const database = derived(page, ($page) => $page.data?.database as Models.Database);
 
-export const backupsBannerId = 'databasesBackupBannerAlert';
+export const backupsBannerId = 'banner:databaseBackups';
 
 export const showPolicyAlert = writable<boolean>(false);
 

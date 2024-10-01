@@ -8,7 +8,7 @@ import { type BottomModalAlertItem, showBottomModalAlert } from '$lib/stores/bot
 
 const listOfPromotions: BottomModalAlertItem[] = [
     {
-        id: 'memberRoles',
+        id: 'modal:memberRoles',
         src: {
             dark: RolesDark,
             light: RolesLight
@@ -29,7 +29,7 @@ const listOfPromotions: BottomModalAlertItem[] = [
         }
     },
     {
-        id: 'databaseBackups',
+        id: 'modal:databaseBackups',
         src: {
             dark: BackupsDark,
             light: BackupsLight
