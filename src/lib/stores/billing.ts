@@ -32,14 +32,42 @@ import { last } from '$lib/helpers/array';
 import { sizeToBytes, type Size } from '$lib/helpers/sizeConvertion';
 import { user } from './user';
 import { browser } from '$app/environment';
+import { canSeeBilling } from './roles';
 
 export type Tier = 'tier-0' | 'tier-1' | 'tier-2';
+
+export const roles = [
+    {
+        label: 'Owner',
+        value: 'owner'
+    },
+    {
+        label: 'Developer',
+        value: 'developer'
+    },
+    {
+        label: 'Editor',
+        value: 'editor'
+    },
+    {
+        label: 'Analyst',
+        value: 'analyst'
+    },
+    {
+        label: 'Billing',
+        value: 'billing'
+    }
+];
 
 export const paymentMethods = derived(page, ($page) => $page.data.paymentMethods as PaymentList);
 export const addressList = derived(page, ($page) => $page.data.addressList as AddressesList);
 export const plansInfo = derived(page, ($page) => $page.data.plansInfo as PlansMap);
 export const daysLeftInTrial = writable<number>(0);
 export const readOnly = writable<boolean>(false);
+
+export function getRoleLabel(role: string) {
+    return roles.find((r) => r.value === role)?.label ?? role;
+}
 
 export function tierToPlan(tier: Tier) {
     switch (tier) {
@@ -116,6 +144,7 @@ export const failedInvoice = cachedStore<
     return {
         load: async (orgId) => {
             if (!isCloud) set(null);
+            if (!get(canSeeBilling)) set(null);
             const invoices = await sdk.forConsole.billing.listInvoices(orgId);
             const failedInvoices = invoices.invoices.filter((i) => i.status === 'failed');
             // const failedInvoices = invoices.invoices;
@@ -306,6 +335,8 @@ export async function paymentExpired(org: Organization) {
         org.paymentMethodId
     );
     if (!payment?.expiryYear) return;
+    const sessionStorageNotification = sessionStorage.getItem('expiredPaymentNotification');
+    if (sessionStorageNotification === 'true') return;
     const year = new Date().getFullYear();
     const month = new Date().getMonth();
     const expiredMessage = `The default payment method for <b>${org.name}</b> has expired`;
@@ -343,6 +374,7 @@ export async function paymentExpired(org: Organization) {
             ]
         });
     }
+    sessionStorage.setItem('expiredPaymentNotification', 'true');
 }
 
 export function checkForMarkedForDeletion(org: Organization) {

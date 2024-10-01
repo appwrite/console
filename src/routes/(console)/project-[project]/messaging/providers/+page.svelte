@@ -17,6 +17,7 @@
     import CreateProviderDropdown from './createProviderDropdown.svelte';
     import Table from './table.svelte';
     import { base } from '$app/paths';
+    import { canWriteProviders } from '$lib/stores/roles';
 
     export let data: PageData;
 
@@ -29,9 +30,11 @@
     <div class="u-flex u-flex-vertical">
         <div class="u-flex u-main-space-between">
             <Heading tag="h2" size="5">Providers</Heading>
-            <div class="is-only-mobile">
-                <CreateProviderDropdown bind:showCreateDropdown={showCreateDropdownMobile} />
-            </div>
+            {#if $canWriteProviders}
+                <div class="is-only-mobile">
+                    <CreateProviderDropdown bind:showCreateDropdown={showCreateDropdownMobile} />
+                </div>
+            {/if}
         </div>
         <!-- TODO: fix width of search input in mobile -->
         <SearchQuery search={data.search} placeholder="Search provider">
@@ -43,7 +46,9 @@
                     hideView
                     allowNoColumns
                     showColsTextMobile />
-                <CreateProviderDropdown bind:showCreateDropdown={showCreateDropdownDesktop} />
+                {#if $canWriteProviders}
+                    <CreateProviderDropdown bind:showCreateDropdown={showCreateDropdownDesktop} />
+                {/if}
             </div>
         </SearchQuery>
         <div class="u-flex u-gap-16 is-only-mobile u-margin-block-start-16">
@@ -101,14 +106,16 @@
                     ariaLabel={`create provider`}>
                     Documentation
                 </Button>
-                <CreateProviderDropdown bind:showCreateDropdown={showCreateDropdownEmpty}>
-                    <Button
-                        secondary
-                        on:click={() => (showCreateDropdownEmpty = !showCreateDropdownEmpty)}
-                        event="create_provider">
-                        <span class="text">Create provider</span>
-                    </Button>
-                </CreateProviderDropdown>
+                {#if $canWriteProviders}
+                    <CreateProviderDropdown bind:showCreateDropdown={showCreateDropdownEmpty}>
+                        <Button
+                            secondary
+                            on:click={() => (showCreateDropdownEmpty = !showCreateDropdownEmpty)}
+                            event="create_provider">
+                            <span class="text">Create provider</span>
+                        </Button>
+                    </CreateProviderDropdown>
+                {/if}
             </div>
         </Empty>
     {/if}

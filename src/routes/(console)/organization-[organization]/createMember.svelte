@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Alert, Modal } from '$lib/components';
     import { InputText, InputEmail, Button, FormList } from '$lib/elements/forms';
@@ -10,23 +11,26 @@
     import { BillingPlan, Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { isCloud } from '$lib/system';
-    import { plansInfo } from '$lib/stores/billing';
-    import { formatCurrency } from '$lib/helpers/numbers';
+    import { roles } from '$lib/stores/billing';
+    import InputSelect from '$lib/elements/forms/inputSelect.svelte';
+    import Roles from '$lib/components/roles/roles.svelte';
 
     export let showCreate = false;
 
     const dispatch = createEventDispatcher();
 
-    const url = `${$page.url.origin}/invite`;
-    $: plan = $plansInfo?.get($organization?.billingPlan);
+    const url = `${$page.url.origin}${base}/invite`;
 
-    let email: string, name: string, error: string;
+    let email: string,
+        name: string,
+        error: string,
+        role: string = 'developer';
 
     async function create() {
         try {
             const team = await sdk.forConsole.teams.createMembership(
                 $organization.$id,
-                ['owner'],
+                [role],
                 email,
                 undefined,
                 undefined,
@@ -60,9 +64,17 @@
 <Modal title="Invite member" {error} size="big" bind:show={showCreate} onSubmit={create}>
     {#if isCloud}
         {#if $organization?.billingPlan === BillingPlan.PRO}
-            <Alert type="info">
+            <!-- <Alert type="info">
                 You can add unlimited organization members on the {plan.name} plan for
                 <b>{formatCurrency(plan.addons.member.price)} each per billing period</b>.
+            </Alert> -->
+            <Alert type="info">
+                New roles are free until 1st January 2025. <a
+                    class="link"
+                    href="https://appwrite.io/docs/advanced/platform/roles"
+                    target="_blank"
+                    rel="noopener noreferrer">Learn more</a
+                >.
             </Alert>
         {/if}
     {/if}
@@ -79,6 +91,7 @@
             label="Name (optional)"
             placeholder="Enter name"
             bind:value={name} />
+        <InputSelect popover={Roles} id="role" label="Role" options={roles} bind:value={role} />
     </FormList>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>

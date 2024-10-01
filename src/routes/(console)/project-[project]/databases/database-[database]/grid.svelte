@@ -3,6 +3,7 @@
     import { page } from '$app/stores';
     import { CardContainer, GridItem1, Id } from '$lib/components';
     import { Pill } from '$lib/elements';
+    import { canWriteCollections } from '$lib/stores/roles';
     import type { PageData } from './$types';
     export let data: PageData;
     export let showCreate = false;
@@ -11,6 +12,7 @@
 </script>
 
 <CardContainer
+    showEmpty={$canWriteCollections}
     total={data.collections.total}
     on:click={() => (showCreate = true)}
     event="collection">

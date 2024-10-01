@@ -21,14 +21,16 @@
     export async function updateUrl(
         databaseId: string,
         collectionId: string,
-        data: Partial<Models.AttributeUrl>
+        data: Partial<Models.AttributeUrl>,
+        originalKey?: string
     ) {
         await sdk.forProject.databases.updateUrlAttribute(
             databaseId,
             collectionId,
-            data.key,
+            originalKey,
             data.required,
-            data.default
+            data.default,
+            data.key !== originalKey ? data.key : undefined
         );
     }
 </script>

@@ -20,6 +20,7 @@
     } from '$lib/elements/table';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
+    import { canWriteCollections } from '$lib/stores/roles';
     import { sdk } from '$lib/stores/sdk';
     import type { PageData } from './$types';
     import { columns } from './store';
@@ -61,9 +62,11 @@
 
 <TableScroll>
     <TableHeader>
-        <TableCellHeadCheck
-            bind:selected
-            pageItemsIds={data.collections.collections.map((c) => c.$id)} />
+        {#if $canWriteCollections}
+            <TableCellHeadCheck
+                bind:selected
+                pageItemsIds={data.collections.collections.map((c) => c.$id)} />
+        {/if}
         {#each $columns as column}
             {#if column.show}
                 <TableCellHead width={column.width}>{column.title}</TableCellHead>
@@ -74,7 +77,9 @@
         {#each data.collections.collections as collection}
             <TableRowLink
                 href={`${base}/project-${projectId}/databases/database-${databaseId}/collection-${collection.$id}`}>
-                <TableCellCheck bind:selectedIds={selected} id={collection.$id} />
+                {#if $canWriteCollections}
+                    <TableCellCheck bind:selectedIds={selected} id={collection.$id} />
+                {/if}
                 {#each $columns as column}
                     {#if column.show}
                         {#if column.id === '$id'}

@@ -1,6 +1,7 @@
-import type { Models } from '@appwrite.io/console';
+import { Client, type Models, Storage } from '@appwrite.io/console';
 import { writable } from 'svelte/store';
-import { sdk } from './sdk';
+import { getProjectId } from '$lib/helpers/project';
+import { getApiEndpoint } from '$lib/stores/sdk';
 
 type UploaderFile = {
     $id: string;
@@ -15,6 +16,15 @@ export type Uploader = {
     isOpen: boolean;
     isCollapsed: boolean;
     files: UploaderFile[];
+};
+
+const temporaryStorage = () => {
+    const clientProject = new Client()
+        .setEndpoint(getApiEndpoint())
+        .setMode('admin')
+        .setProject(getProjectId());
+
+    return new Storage(clientProject);
 };
 
 const createUploader = () => {
@@ -71,7 +81,7 @@ const createUploader = () => {
                 n.files.unshift(newFile);
                 return n;
             });
-            const uploadedFile = await sdk.forProject.storage.createFile(
+            const uploadedFile = await temporaryStorage().createFile(
                 bucketId,
                 id ?? 'unique()',
                 file,

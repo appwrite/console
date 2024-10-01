@@ -14,6 +14,7 @@
     import type { Models } from '@appwrite.io/console';
     import { writable } from 'svelte/store';
     import type { PageData } from './$types';
+    import { canWriteBuckets } from '$lib/stores/roles';
 
     export let data: PageData;
 
@@ -29,11 +30,12 @@
     <ContainerHeader
         title="Buckets"
         total={data.buckets.total}
-        buttonText="Create bucket"
+        buttonText={$canWriteBuckets ? 'Create bucket' : null}
         buttonEvent="create_bucket"
         buttonMethod={() => ($showCreateBucket = true)} />
     {#if data.buckets.total}
         <CardContainer
+            showEmpty={$canWriteBuckets}
             total={data.buckets.total}
             offset={data.offset}
             event="bucket"

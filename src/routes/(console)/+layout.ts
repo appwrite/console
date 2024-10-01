@@ -34,6 +34,8 @@ export const load: LayoutLoad = async ({ fetch, depends, parent }) => {
     return {
         consoleVariables: variables,
         version: data?.version ?? null,
-        plansInfo
+        plansInfo,
+        roles: [],
+        scopes: []
     };
 };
