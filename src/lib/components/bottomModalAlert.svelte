@@ -15,9 +15,12 @@
     import { addBottomModalAlerts } from '$routes/(console)/bottomAlerts';
     import { project } from '$routes/(console)/project-[project]/store';
     import { page } from '$app/stores';
+    import { trackEvent } from '$lib/actions/analytics';
 
     let currentIndex = 0;
     let openModalOnMobile = false;
+
+    const promoId = (alertId: string) => alertId.replace(/(banner:|modal:)/g, '');
 
     function getPageScope(pathname: string) {
         const isProjectPage = pathname.includes('project-[project]');
@@ -167,7 +170,13 @@
                                           project: $project
                                       })}
                                 external={!!currentModalAlert.cta.external}
-                                fullWidthMobile>
+                                fullWidthMobile
+                                on:click={() => {
+                                    trackEvent('click_promo', {
+                                        promo: promoId(currentModalAlert.id),
+                                        type: shouldShowUpgrade ? 'upgrade' : 'try_now'
+                                    });
+                                }}>
                                 {currentModalAlert.cta.text}
                             </Button>
 
