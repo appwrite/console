@@ -1,6 +1,6 @@
 import { browser } from '$app/environment';
 import { VARS } from '$lib/system';
-import { writable } from 'svelte/store';
+import { get, writable } from 'svelte/store';
 import type { SvelteComponent } from 'svelte';
 import FeedbackGeneral from '$lib/components/feedback/feedbackGeneral.svelte';
 import FeedbackNps from '$lib/components/feedback/feedbackNPS.svelte';
@@ -131,17 +131,20 @@ function createFeedbackStore() {
                     message,
                     email,
                     // billingPlan,
-                    // source: get(feedback).source,
                     firstname: name || 'Unknown',
                     customFields: [
                         { id: '47364', currentPage },
                         ...(value ? [{ id: '40655', value }] : [])
-                    ]
+                    ],
+                    metaFields: {
+                        source: get(feedback).source
+                    }
                 })
             });
 
             // reset the state
-            // get(feedback).source = 'n/a';
+            get(feedback).source = 'n/a';
+
             if (response.status >= 400) {
                 throw new Error('Failed to submit feedback');
             }
