@@ -10,6 +10,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
+    import RemoveAddress from './removeAddress.svelte';
     import { user } from '$lib/stores/user';
     import AddressModal from '$routes/(console)/account/payments/addressModal.svelte';
     import EditAddressModal from '$routes/(console)/account/payments/editAddressModal.svelte';
@@ -22,6 +23,7 @@
     let showCreate = false;
     let showEdit = false;
     let showReplace = false;
+    let showRemove = false;
 
     async function addAddress(addressId: string) {
         try {
@@ -100,6 +102,14 @@
                                 }}>
                                 Replace
                             </DropListItem>
+                            <DropListItem
+                                icon="trash"
+                                on:click={() => {
+                                    showRemove = true;
+                                    showBillingAddressDropdown = false;
+                                }}>
+                                Remove
+                            </DropListItem>
                         </svelte:fragment>
                     </DropList>
                 </div>
@@ -165,4 +175,7 @@
 {/if}
 {#if showReplace}
     <ReplaceAddress bind:show={showReplace} />
+{/if}
+{#if showRemove}
+    <RemoveAddress bind:show={showRemove} />
 {/if}
