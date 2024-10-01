@@ -192,6 +192,7 @@
                 billingBudget ?? null
             );
 
+            //If the response contains a client_secret, it means that validation is required
             if (org?.client_secret) {
                 let redirectURL = buildOrgRedirectURL(
                     `${base}/create-organization`,
