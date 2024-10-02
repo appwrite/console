@@ -20,8 +20,6 @@
     let currentIndex = 0;
     let openModalOnMobile = false;
 
-    const promoId = (alertId: string) => alertId.replace(/(banner:|modal:)/g, '');
-
     function getPageScope(pathname: string) {
         const isProjectPage = pathname.includes('project-[project]');
         const isOrganizationPage = pathname.includes('organization-[organization]');
@@ -173,7 +171,7 @@
                                 fullWidthMobile
                                 on:click={() => {
                                     trackEvent('click_promo', {
-                                        promo: promoId(currentModalAlert.id),
+                                        promo: currentModalAlert.id,
                                         type: shouldShowUpgrade ? 'upgrade' : 'try_now'
                                     });
                                 }}>
@@ -282,7 +280,13 @@
                                           })}
                                     external={!!currentModalAlert.cta.external}
                                     fullWidthMobile
-                                    on:click={() => (openModalOnMobile = false)}>
+                                    on:click={() => {
+                                        openModalOnMobile = false;
+                                        trackEvent('click_promo', {
+                                            promo: currentModalAlert.id,
+                                            type: shouldShowUpgrade ? 'upgrade' : 'try_now'
+                                        });
+                                    }}>
                                     {shouldShowUpgrade
                                         ? 'Upgrade plan'
                                         : currentModalAlert.cta.text}
