@@ -65,6 +65,13 @@
                 username = undefined;
                 password = undefined;
             }
+
+            let secureProtocol = undefined;
+
+            if (secure) {
+                secureProtocol = secure as SMTPSecure
+            }
+
             await sdk.forConsole.projects.updateSmtp(
                 $project.$id,
                 enabled,
@@ -75,7 +82,7 @@
                 port ? port : undefined,
                 username ? username : undefined,
                 password ? password : undefined,
-                secure ? SMTPSecure.Tls : undefined
+                secureProtocol
             );
 
             invalidate(Dependencies.PROJECT);
