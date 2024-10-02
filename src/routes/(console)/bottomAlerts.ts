@@ -48,7 +48,7 @@ const listOfPromotions: BottomModalAlertItem[] = [
         },
         learnMore: {
             text: 'Learn more',
-            link: () => 'http://1371.gkswsco.37.27.92.31.sslip.io/docs/products/databases/backups'
+            link: () => 'http://appwrite.io/docs/products/databases/backups'
         }
     }
 ];

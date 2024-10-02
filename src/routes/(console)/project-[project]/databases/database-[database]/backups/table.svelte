@@ -268,7 +268,8 @@
     onSubmit={restoreBackup}>
     <p class="text" data-private style="padding-inline-end: 2rem;">
         Restoring this backup will duplicate the database from the selected backup version. This
-        action may take a while.
+        action may take a while. Backups do not currently support backing up relationships between
+        data.
     </p>
 
     <Card

@@ -233,6 +233,9 @@
     onSubmit={createPolicies}
     bind:show={$showCreatePolicy}
     bind:error={policyCreateError}>
+    <Alert type="info">
+        Backups do not currently support backing up relationships between data
+    </Alert>
     <CreatePolicy bind:totalPolicies isShowing={$showCreatePolicy} />
 
     <svelte:fragment slot="footer">
