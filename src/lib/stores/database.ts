@@ -36,7 +36,7 @@ export async function checkForDatabaseBackupPolicies(database: Models.Database) 
             id: backupsBannerId,
             component: BackupDatabase,
             show: true,
-            importance: 7
+            importance: 1
         });
     }
 }

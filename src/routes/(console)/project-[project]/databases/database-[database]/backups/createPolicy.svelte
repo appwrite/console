@@ -20,6 +20,7 @@
         type UserBackupPolicy
     } from '$lib/helpers/backups';
     import { InputNumber } from '$lib/elements/forms/index.js';
+    import { formatCurrency } from '$lib/helpers/numbers';
 
     export let isShowing: boolean;
     export let title: string | undefined = undefined;
@@ -313,14 +314,14 @@
                                     placeholder="3 months"
                                     bind:value={policyRetention}
                                     options={backupRetainingOptions} />
-                                <span>
+                                <span class="u-flex u-flex-vertical u-gap-8">
                                     {#if customRetentionEnabled}
                                         <div class="u-flex u-gap-8 u-padding-block-start-12">
                                             <div class="u-width-150">
                                                 <InputNumber
                                                     min={1}
                                                     id="number"
-                                                    placeholder="08"
+                                                    placeholder="11"
                                                     max={customRetention.max}
                                                     bind:value={customRetention.number} />
                                             </div>
@@ -333,18 +334,20 @@
                                                 bind:value={customRetention.value} />
                                         </div>
                                     {/if}
-
-                                    {#if policyRetention === 365 * 100}
-                                        Every backup created under this policy will be retained <b
-                                            >forever</b
-                                        >.
-                                    {:else}
-                                        Every backup created under this policy will be retained for <b>
-                                            {backupRetainingOptions.find(
-                                                (option) => option.value === policyRetention
-                                            )?.label ?? '3 months'}
-                                        </b> before being automatically deleted.
-                                    {/if}
+                                    <span>
+                                        {#if policyRetention === 365 * 100}
+                                            Every backup created under this policy will be retained <b
+                                                >forever</b
+                                            >.
+                                        {:else}
+                                            Every backup created under this policy will be retained
+                                            for <b>
+                                                {backupRetainingOptions.find(
+                                                    (option) => option.value === policyRetention
+                                                )?.label ?? '3 months'}
+                                            </b> before being automatically deleted.
+                                        {/if}
+                                    </span>
                                 </span>
                             </div>
 
@@ -398,10 +401,10 @@
                     <div>
                         <span>Total:</span>
                         {#if totalPolicies.length}
-                            <span style="text-decoration: line-through;"
-                                >${totalPolicies.length * policyPricing}.00</span>
+                            <span style="text-decoration: line-through;">
+                                {formatCurrency(totalPolicies.length * policyPricing)}</span>
                         {/if}
-                        <span>$0.00 until Jan 1st 2025</span>
+                        <span>{formatCurrency(0)} until Jan 1st 2025</span>
                     </div>
                 </div>
             {/if}

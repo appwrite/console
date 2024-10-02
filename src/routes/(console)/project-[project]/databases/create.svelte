@@ -124,29 +124,31 @@
             <CustomId bind:show={showCustomId} name="Database" bind:id autofocus={false} />
         {/if}
 
-        <div class="u-flex-vertical u-gap-24 u-padding-block-start-24">
-            {#if isCloud && $organization?.billingPlan === BillingPlan.FREE}
-                {#if showPlanUpgradeAlert}
-                    <Alert
-                        type="warning"
-                        dismissible
-                        on:dismiss={() => (showPlanUpgradeAlert = false)}>
-                        <svelte:fragment slot="title"
-                            >This database won't be backed up</svelte:fragment>
-                        Upgrade your plan to ensure your data stays safe with advanced backup policies.
-                        <svelte:fragment slot="buttons">
-                            <Button href={$upgradeURL} text>Upgrade plan</Button>
-                        </svelte:fragment>
-                    </Alert>
+        {#if isCloud}
+            <div class="u-flex-vertical u-gap-24 u-padding-block-start-24">
+                {#if $organization?.billingPlan === BillingPlan.FREE}
+                    {#if showPlanUpgradeAlert}
+                        <Alert
+                            type="warning"
+                            dismissible
+                            on:dismiss={() => (showPlanUpgradeAlert = false)}>
+                            <svelte:fragment slot="title"
+                                >This database won't be backed up</svelte:fragment>
+                            Upgrade your plan to ensure your data stays safe with advanced backup policies.
+                            <svelte:fragment slot="buttons">
+                                <Button href={$upgradeURL} text>Upgrade plan</Button>
+                            </svelte:fragment>
+                        </Alert>
+                    {/if}
+                {:else}
+                    <CreatePolicy
+                        bind:totalPolicies
+                        isShowing={showCreate}
+                        title="Backup policies"
+                        subtitle="Protect your data and ensure quick recovery by adding backup policies." />
                 {/if}
-            {:else}
-                <CreatePolicy
-                    bind:totalPolicies
-                    isShowing={showCreate}
-                    title="Backup policies"
-                    subtitle="Protect your data and ensure quick recovery by adding backup policies." />
-            {/if}
-        </div>
+            </div>
+        {/if}
     </FormList>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>

@@ -166,7 +166,7 @@
         {#each Object.keys(backupRestoreItems) as key}
             {@const isBackup = key === 'archives'}
             {@const items = backupRestoreItems[key]}
-            {@const titleText = isBackup ? 'Creating Backup' : 'Creating Restoration'}
+            {@const titleText = isBackup ? 'Backup status' : 'Restoration status'}
 
             {#if items.size > 0}
                 <section class="upload-box">

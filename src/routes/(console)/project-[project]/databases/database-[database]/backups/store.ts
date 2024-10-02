@@ -1,7 +1,7 @@
 import { writable } from 'svelte/store';
 import type { UserBackupPolicy } from '$lib/helpers/backups';
 
-export const policyPricing = 20;
+export const policyPricing = 20; //TODO: get this from the backend
 export const showCreatePolicy = writable(false);
 export const showCreateBackup = writable(false);
 

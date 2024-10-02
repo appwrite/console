@@ -66,7 +66,7 @@
             await sdk.forProject.backups.createArchive(['databases'], data.database.$id);
             addNotification({
                 type: 'success',
-                message: 'Database backup initiated'
+                message: 'Database backup has started'
             });
             invalidate(Dependencies.BACKUPS);
             trackEvent('click_manual_submit');
