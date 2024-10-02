@@ -69,7 +69,7 @@
             let secureProtocol = undefined;
 
             if (secure) {
-                secureProtocol = secure as SMTPSecure
+                secureProtocol = secure as SMTPSecure;
             }
 
             await sdk.forConsole.projects.updateSmtp(
