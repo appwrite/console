@@ -250,7 +250,7 @@
         {#if selectedBackups.length}
             <b>{selectedBackups.length}</b> {selectedBackups.length > 1 ? 'backups' : 'backup'}?
         {:else}
-            <b>{cleanBackupName(selectedBackup)}</b>?
+            the <b>{cleanBackupName(selectedBackup)}</b> backup?
         {/if}
         <br />This action is irreversible.
     </p>

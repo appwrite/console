@@ -1,11 +1,10 @@
 import { getLimit, getPage, getView, pageToOffset, View } from '$lib/helpers/load';
-import type { PageLoad } from './$types';
 import { CARD_LIMIT, Dependencies } from '$lib/constants';
 import { sdk } from '$lib/stores/sdk';
 import { Query } from '@appwrite.io/console';
 import type { BackupArchive, BackupArchiveList, BackupPolicyList } from '$lib/sdk/backups';
 
-export const load: PageLoad = async ({ params, url, route, depends }) => {
+export const load = async ({ params, url, route, depends }) => {
     depends(Dependencies.BACKUPS);
     const page = getPage(url);
     const limit = getLimit(url, route, CARD_LIMIT);
