@@ -29,11 +29,15 @@
         <svelte:fragment>{subtitle}</svelte:fragment>
         <svelte:fragment slot="buttons">
             <div class="u-flex u-gap-16">
-                <Button href={ctaURL} secondary fullWidthMobile>
+                <Button
+                    href={ctaURL}
+                    secondary
+                    fullWidthMobile
+                    event={isFreePlan ? 'backup_banner_upgrade' : 'backup_banner_add'}>
                     <span class="text">{ctaText}</span>
                 </Button>
 
-                <Button text on:click={handleClose}>
+                <Button text on:click={handleClose} event="backup_banner_close">
                     <span class="icon-x" aria-hidden="true"></span>
                 </Button>
             </div>
