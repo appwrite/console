@@ -25,7 +25,7 @@
     {@const ctaText = isFreePlan ? 'Upgrade plan' : 'Add backup'}
     {@const ctaURL = isFreePlan ? $upgradeURL : `${$page.url.pathname}/backups`}
 
-    <HeaderAlert type="warning" title="Your database is not backed up automatically">
+    <HeaderAlert type="warning" title="Your database has no backup policy">
         <svelte:fragment>{subtitle}</svelte:fragment>
         <svelte:fragment slot="buttons">
             <div class="u-flex u-gap-16">
