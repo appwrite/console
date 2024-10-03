@@ -11,6 +11,7 @@
     export let couponData: Partial<Coupon>;
     export let billingBudget: number;
     export let fixedCoupon = false; // If true, the coupon cannot be removed
+    export let isDowngrade = false;
 
     const today = new Date();
     const billingPayDate = new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000);
@@ -18,7 +19,7 @@
     let budgetEnabled = false;
 
     $: currentPlan = $plansInfo.get(billingPlan);
-    $: extraSeatsCost = (collaborators?.length ?? 0) * (currentPlan?.addons?.member?.price ?? 0);
+    $: extraSeatsCost = 0; // 0 untile trial period later replace (collaborators?.length ?? 0) * (currentPlan?.addons?.member?.price ?? 0);
     $: grossCost = currentPlan.price + extraSeatsCost;
     $: estimatedTotal =
         couponData?.status === 'active'
@@ -41,8 +42,8 @@
         <p class="text">{formatCurrency(currentPlan.price)}</p>
     </span>
     <span class="u-flex u-main-space-between">
-        <p class="text">Additional seats ({collaborators?.length})</p>
-        <p class="text">
+        <p class="text" class:u-bold={isDowngrade}>Additional seats ({collaborators?.length})</p>
+        <p class="text" class:u-bold={isDowngrade}>
             {formatCurrency(extraSeatsCost)}
         </p>
     </span>

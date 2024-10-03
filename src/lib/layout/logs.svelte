@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { hoursToDays, toLocaleDateTime } from '$lib/helpers/date';
+    import { hoursToDays, timeFromNow, toLocaleDateTime } from '$lib/helpers/date';
     import { log } from '$lib/stores/logs';
-    import { Alert, Card, Code, Heading, Id, SvgIcon, Tab, Tabs } from '../components';
+    import { Alert, Card, Code, Copy, Heading, Id, SvgIcon, Tab, Tabs } from '../components';
     import { calculateTime } from '$lib/helpers/timeConversion';
     import {
         TableBody,
@@ -16,9 +16,9 @@
     import { isCloud } from '$lib/system';
     import { getServiceLimit, tierToPlan, upgradeURL } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
-    import { app } from '$lib/stores/app';
     import { Button } from '$lib/elements/forms';
     import { BillingPlan } from '$lib/constants';
+    import { tooltip } from '$lib/actions/tooltip';
 
     let selectedRequest = 'parameters';
     let selectedResponse = 'logs';
@@ -129,13 +129,27 @@
                         {/if}
                     </ul>
                     <div class="status u-margin-inline-start-auto">
-                        <Pill
-                            warning={execution.status === 'waiting' ||
-                                execution.status === 'building'}
-                            danger={execution.status === 'failed'}
-                            info={execution.status === 'completed' || execution.status === 'ready'}>
-                            {execution.status}
-                        </Pill>
+                        <div
+                            use:tooltip={{
+                                content: `Scheduled to execute on ${toLocaleDateTime(execution.scheduledAt)}`,
+                                disabled:
+                                    !execution?.scheduledAt || execution.status !== 'scheduled',
+                                maxWidth: 180
+                            }}>
+                            <Pill
+                                warning={execution.status === 'waiting' ||
+                                    execution.status === 'building'}
+                                danger={execution.status === 'failed'}
+                                info={execution.status === 'completed' ||
+                                    execution.status === 'ready'}>
+                                {#if execution.status === 'scheduled'}
+                                    <span class="icon-clock" aria-hidden="true" />
+                                    {timeFromNow(execution.scheduledAt)}
+                                {:else}
+                                    {execution.status}
+                                {/if}
+                            </Pill>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -150,7 +164,23 @@
                             </div>
                             <div class="u-flex u-gap-16">
                                 <h4 class="text u-bold">Path:</h4>
-                                <span class="u-text-color-gray">{execution.requestPath}</span>
+
+                                <Copy value={execution.requestPath}>
+                                    <div
+                                        class="interactive-text-output is-textarea"
+                                        style:min-inline-size="0">
+                                        <span class="text u-line-height-1-5 u-break-all">
+                                            {execution.requestPath}
+                                        </span>
+                                        <div class="u-flex u-cross-child-start u-gap-8">
+                                            <button
+                                                class="interactive-text-output-button"
+                                                aria-label="copy text">
+                                                <span class="icon-duplicate" aria-hidden="true" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </Copy>
                             </div>
                         </div>
 
@@ -161,15 +191,14 @@
                             </div>
                             <div class="u-flex u-gap-16">
                                 <h4 class="text u-bold">Status Code:</h4>
-                                <span class="u-text-color-gray"
-                                    >{execution.responseStatusCode}</span>
+                                <span class="u-text-color-gray">
+                                    {execution.responseStatusCode}
+                                </span>
                             </div>
                         </div>
                     </header>
                     <div class="code-panel-content grid-1-2" style="u-grid">
-                        <div
-                            class="grid-1-2-col-1 u-flex u-flex-vertical u-gap-16"
-                            class:theme-dark={$app.themeInUse === 'light'}>
+                        <div class="grid-1-2-col-1 u-flex u-flex-vertical u-gap-16">
                             <Heading tag="h3" size="6">Request</Heading>
                             <div class="u-sep-block-end">
                                 <Tabs>
@@ -280,9 +309,7 @@
                                 </p>
                             {/if}
                         </div>
-                        <div
-                            class="grid-1-2-col-2 u-flex u-flex-vertical u-gap-16 u-min-width-0"
-                            class:theme-dark={$app.themeInUse === 'light'}>
+                        <div class="grid-1-2-col-2 u-flex u-flex-vertical u-gap-16 u-min-width-0">
                             <Heading tag="h3" size="6">Response</Heading>
                             <div class="u-sep-block-end">
                                 <Tabs>

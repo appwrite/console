@@ -3,6 +3,7 @@
     import { trackEvent } from '$lib/actions/analytics';
     import { Form } from '$lib/elements/forms';
     import { disableCommands } from '$lib/commandCenter';
+    import { beforeNavigate } from '$app/navigation';
 
     export let show = false;
     export let size: 'small' | 'big' | 'huge' = null;
@@ -18,6 +19,10 @@
     export let description = '';
 
     let alert: HTMLElement;
+
+    beforeNavigate(() => {
+        show = false;
+    });
 
     $: $disableCommands(show);
 

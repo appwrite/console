@@ -13,8 +13,8 @@
             target="_blank"
             rel="noopener noreferrer"
             class="link">
-            Permissions guide
-        </a>.
+            Permissions guide</a
+        >.
     </svelte:fragment>
 
     <Roles bind:roles={$createFunction.execute} />
