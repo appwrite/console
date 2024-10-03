@@ -3,7 +3,7 @@
     import { Pill } from '$lib/elements';
     import { FormList, InputSelect, InputText } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
-    import { runtimesList } from '$routes/console/project-[project]/functions/store';
+    import { runtimesList } from '$lib/stores/runtimes';
     import { template, templateConfig } from '../store';
 
     let showCustomId = false;

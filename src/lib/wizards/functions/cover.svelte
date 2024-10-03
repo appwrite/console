@@ -1,7 +1,10 @@
 <script context="module" lang="ts">
     import CreateTemplate from './createTemplate.svelte';
 
-    export function connectTemplate(template: MarketplaceTemplate, runtime: string | null = null) {
+    export function connectTemplate(
+        template: Models.TemplateFunction,
+        runtime: string | null = null
+    ) {
         const variables: Record<string, string> = {};
         template.variables.forEach((variable) => {
             variables[variable.name] = variable.value ?? '';
@@ -24,14 +27,13 @@
 
 <script lang="ts">
     import { base } from '$app/paths';
-    import { AvatarGroup, Box, CardGrid, Heading } from '$lib/components';
+    import { AvatarGroup, Box, Heading } from '$lib/components';
     import { app } from '$lib/stores/app';
     import { wizard } from '$lib/stores/wizard';
     import { repository, templateConfig, template as templateStore } from './store';
-    import { marketplace, type MarketplaceTemplate } from '$lib/stores/marketplace';
     import { Button } from '$lib/elements/forms';
     import { page } from '$app/stores';
-    import { baseRuntimesList } from '$routes/console/project-[project]/functions/store';
+    import { baseRuntimesList } from '$lib/stores/runtimes';
     import { trackEvent } from '$lib/actions/analytics';
     import type { Models } from '@appwrite.io/console';
     import WizardCover from '$lib/layout/wizardCover.svelte';
@@ -40,14 +42,12 @@
     import CreateGit from './createGit.svelte';
     import { tooltip } from '$lib/actions/tooltip';
     import { isSelfHosted } from '$lib/system';
-    import { consoleVariables } from '$routes/console/store';
+    import { consoleVariables } from '$routes/(console)/store';
+    import { featuredTemplatesList, starterTemplate } from '$lib/stores/templates';
 
     const isVcsEnabled = $consoleVariables?._APP_VCS_ENABLED === true;
     let hasInstallations: boolean;
     let selectedRepository: string;
-
-    const quickStart = marketplace.find((template) => template.id === 'starter');
-    const templates = marketplace.filter((template) => template.id !== 'starter').slice(0, 2);
 
     function connect(event: CustomEvent<Models.ProviderRepository>) {
         trackEvent('click_connect_repository', {
@@ -61,55 +61,7 @@
 <WizardCover>
     <svelte:fragment slot="title">Create Function</svelte:fragment>
     <div class="wizard-container container">
-        {#if isSelfHosted && !isVcsEnabled}
-            <div class="u-flex-vertical u-text-center">
-                <Heading tag="h5" size="5">Choose your source</Heading>
-                <p>
-                    Connect your function to a Git repository or use a template to get started. You
-                    can also create a function manually.
-                </p>
-            </div>
-            <CardGrid>
-                <Heading tag="h6" size="6">Create manually</Heading>
-                <p class="text">Create and deploy your function manually.</p>
-                <svelte:fragment slot="aside">
-                    <div class="u-flex u-height-100-percent u-main-end u-cross-center">
-                        <Button
-                            secondary
-                            on:click={() => {
-                                trackEvent('click_create_function_manual', {
-                                    from: 'cover'
-                                });
-                            }}
-                            on:click={() => wizard.start(CreateManual)}>Create function</Button>
-                    </div>
-                </svelte:fragment>
-            </CardGrid>
-        {/if}
-        <div
-            class="git-container u-position-relative"
-            class:u-margin-block-start-24={isSelfHosted && !isVcsEnabled}>
-            {#if isSelfHosted && !isVcsEnabled}
-                <div
-                    class="overlay u-flex-vertical u-position-absolute u-height-100-percent u-width-full-line u-z-index-1 card u-text-center">
-                    <div
-                        class="u-flex-vertical u-height-100-percent u-main-center u-cross-center u-gap-16">
-                        <Heading size="7" tag="h6">
-                            Configure your self-hosted instance to connect to Git
-                        </Heading>
-                        <p>
-                            Connect your function to a Git repository or use a pre-made template<br />after
-                            configuring your self-hosted instance. Learn more in our
-                            <a
-                                href="https://appwrite.io/docs/advanced/self-hosting/functions#git"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                class="link">documentation</a
-                            >.
-                        </p>
-                    </div>
-                </div>
-            {/if}
+        <div class="git-container u-position-relative">
             <div class="grid-1-1 u-gap-24">
                 <div class="card u-cross-child-start u-height-100-percent">
                     <Heading size="6" tag="h6">Connect Git repository</Heading>
@@ -127,7 +79,30 @@
                             }}
                             on:connect={connect} />
                     </div>
+                    {#if isSelfHosted && !isVcsEnabled}
+                        <div
+                            class="overlay u-flex-vertical u-position-absolute u-height-100-percent u-width-full-line u-z-index-1 u-text-center u-inset-0"
+                            style="border-radius: var(--border-radius-medium)">
+                            <div
+                                class="u-flex-vertical u-height-100-percent u-main-center u-cross-center u-gap-16 u-padding-inline-24">
+                                <Heading size="7" tag="h6" trimmed={false}>
+                                    Connect your self-hosted instance to Git
+                                </Heading>
+                                <p>
+                                    Configure your self-hosted instance to connect your function to
+                                    a Git repository.
+                                    <a
+                                        href="https://appwrite.io/docs/advanced/self-hosting/functions#git"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="link">Learn more</a
+                                    >.
+                                </p>
+                            </div>
+                        </div>
+                    {/if}
                 </div>
+
                 <div class="card u-height-100-percent">
                     <section class="common-section">
                         <Heading size="6" tag="h6">Quick start</Heading>
@@ -137,7 +112,7 @@
                             style:--grid-item-size="8rem"
                             style:--grid-item-size-small-screens="9rem"
                             style:--grid-gap=".5rem">
-                            {#await $baseRuntimesList}
+                            {#await Promise.all([$baseRuntimesList, $starterTemplate])}
                                 {#each Array(6) as _i}
                                     <li>
                                         <button
@@ -151,7 +126,7 @@
                                         </button>
                                     </li>
                                 {/each}
-                            {:then response}
+                            {:then [response, quickStart]}
                                 {@const runtimes = new Map(
                                     response.runtimes.map((r) => [r.$id, r])
                                 )}
@@ -184,6 +159,9 @@
                                             </div>
                                             <div class="body-text-2">
                                                 {runtimeDetail.name}
+                                                {#if runtimeDetail.name.toLowerCase() === 'go'}
+                                                    <span class="inline-tag">New</span>
+                                                {/if}
                                             </div>
                                         </button>
                                     </li>
@@ -210,6 +188,13 @@
                             {/await}
                         </ul>
                     </section>
+
+                    <Button
+                        text
+                        class="u-margin-block-start-24 u-margin-inline-start-auto"
+                        href={`${base}/project-${$page.params.project}/functions/templates?useCase=Starter`}>
+                        All starter templates <span class="icon-cheveron-right" />
+                    </Button>
                     <div class="u-sep-block-start common-section" />
                     <section class="common-section">
                         <Heading size="6" tag="h6">Templates</Heading>
@@ -218,41 +203,63 @@
                         </p>
 
                         <ul class="clickable-list u-margin-block-start-16">
-                            {#each templates as template}
-                                <li class="clickable-list-item">
-                                    <button
-                                        type="button"
-                                        on:click={() => {
-                                            trackEvent('click_connect_template', {
-                                                from: 'cover',
-                                                template: template.id
-                                            });
-                                        }}
-                                        on:click={() => connectTemplate(template)}
-                                        class="clickable-list-button u-width-full-line u-flex u-gap-12">
-                                        <div
-                                            class="avatar is-size-small"
-                                            style:--p-text-size="1.25rem">
-                                            <span class={template.icon} />
-                                        </div>
-                                        <div class="u-flex u-flex-vertical u-gap-4">
-                                            <div class="body-text-2 u-bold u-trim">
-                                                {template.name}
+                            {#await $featuredTemplatesList}
+                                {#each Array(3) as _i}
+                                    <li>
+                                        <button
+                                            disabled
+                                            class="clickable-list-button u-width-full-line u-flex u-gap-12">
+                                            <div class="avatar is-size-small">
+                                                <div class="loader" />
                                             </div>
-                                            <div class="u-trim-1 u-color-text-gray">
-                                                {template.tagline}
+                                            <div class="u-flex u-flex-vertical u-gap-4">
+                                                <div class="body-text-2 u-bold u-trim">
+                                                    <div class="loader" />
+                                                </div>
+                                                <div class="u-trim-1 u-color-text-gray">
+                                                    <div class="loader" />
+                                                </div>
                                             </div>
-                                        </div>
-                                    </button>
-                                </li>
-                            {/each}
+                                        </button>
+                                    </li>
+                                {/each}
+                            {:then templatesListWithoutStarter}
+                                {#each templatesListWithoutStarter.templates as template}
+                                    <li class="clickable-list-item">
+                                        <button
+                                            type="button"
+                                            on:click={() => {
+                                                trackEvent('click_connect_template', {
+                                                    from: 'cover',
+                                                    template: template.id
+                                                });
+                                            }}
+                                            on:click={() => connectTemplate(template)}
+                                            class="clickable-list-button u-width-full-line u-flex u-gap-12">
+                                            <div
+                                                class="avatar is-size-small"
+                                                style:--p-text-size="1.25rem">
+                                                <span class={template.icon} />
+                                            </div>
+                                            <div class="u-flex u-flex-vertical u-gap-4">
+                                                <div class="body-text-2 u-bold u-trim">
+                                                    {template.name}
+                                                </div>
+                                                <div class="u-trim-1 u-color-text-gray">
+                                                    {template.tagline}
+                                                </div>
+                                            </div>
+                                        </button>
+                                    </li>
+                                {/each}
+                            {/await}
                         </ul>
                     </section>
                     <Button
                         text
                         noMargin
                         class="u-margin-inline-start-auto u-margin-block-start-16"
-                        href={`${base}/console/project-${$page.params.project}/functions/templates`}>
+                        href={`${base}/project-${$page.params.project}/functions/templates`}>
                         <span> All templates </span>
                         <span class="icon-cheveron-right" aria-hidden="true" />
                     </Button>
@@ -279,12 +286,17 @@
     </div>
 </WizardCover>
 
-<style>
+<style lang="scss">
     .git-container .overlay {
         background: linear-gradient(
             0,
             hsl(var(--p-card-bg-color)) 68.91%,
-            hsl(var(--p-card-bg-color) / 0.5) 95.8%
+            hsl(var(--p-card-bg-color) / 0.5) 92.8%
         );
+    }
+
+    .inline-tag {
+        line-height: 140%;
+        font-weight: 500;
     }
 </style>

@@ -15,8 +15,6 @@ export type Feedback = {
 
 export type FeedbackData = {
     message: string;
-    name?: string;
-    email?: string;
     value?: number;
 };
 
@@ -47,8 +45,6 @@ export const selectedFeedback = writable<FeedbackOption>();
 function createFeedbackDataStore() {
     const { set, subscribe, update } = writable<FeedbackData>({
         message: '',
-        name: '',
-        email: '',
         value: null
     });
     return {
@@ -58,8 +54,6 @@ function createFeedbackDataStore() {
         reset: () => {
             update((feedbackData) => {
                 feedbackData.message = '';
-                feedbackData.name = '';
-                feedbackData.email = '';
                 feedbackData.value = null;
                 return feedbackData;
             });
@@ -110,11 +104,16 @@ function createFeedbackStore() {
                 return feedback;
             });
         },
+        // TODO: update growth server to accept `billingPlan` and other keys.
         submitFeedback: async (
             subject: string,
             message: string,
-            firstname?: string,
+            name?: string,
             email?: string,
+            // eslint-disable-next-line
+            // @ts-expect-error
+            billingPlan?: string,
+            currentPage?: string,
             value?: number
         ) => {
             if (!VARS.GROWTH_ENDPOINT) return;
@@ -127,8 +126,12 @@ function createFeedbackStore() {
                     subject,
                     message,
                     email,
-                    firstname: firstname ? firstname : undefined,
-                    customFields: value ? [{ id: '40655', value }] : undefined
+                    // billingPlan,
+                    firstname: name || 'Unknown',
+                    customFields: [
+                        { id: '47364', currentPage },
+                        ...(value ? [{ id: '40655', value }] : [])
+                    ]
                 })
             });
             if (response.status >= 400) {
