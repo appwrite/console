@@ -89,11 +89,13 @@
         --gradient-start-color: #0c0c0d;
         --heading-color: inherit;
         --text-color: #e4e4e7a3;
+        --divider-background-color: rgba(255, 255, 255, 0.06);
     }
     :global(.theme-light) {
         --gradient-start-color: #ededf0;
         --heading-color: #19191c;
         --text-color: #19191ca3;
+        --divider-background-color: rgba(25, 25, 28, 0.04);
     }
 
     .github-education-container {
@@ -192,8 +194,8 @@
     }
 
     .content .logo-divider {
-        width: 1px;
+        width: 2px;
         height: 100%;
-        background-color: rgba(255, 255, 255, 0.06);
+        background-color: var(--divider-background-color);
     }
 </style>
