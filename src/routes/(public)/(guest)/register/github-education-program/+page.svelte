@@ -7,6 +7,12 @@
     import AppwriteLogoLight from '$lib/images/appwrite-logo-light.svg';
     import GithubLogoDark from '$lib/images/github-logo-dark.svg';
     import GithubLogoLight from '$lib/images/github-logo-light.svg';
+    import {
+        ArtworkDark,
+        ArtworkDarkMobile,
+        ArtworkLightMobile,
+        ArtworkLight
+    } from '$lib/images/github-education-program';
 
     let artworkImageSrc;
     getArtworkImageSrc();
@@ -15,15 +21,13 @@
     function getArtworkImageSrc() {
         let isMobile = window.matchMedia('(max-width: 767px)').matches;
         if ($app.themeInUse === 'light' && isMobile) {
-            artworkImageSrc =
-                '/console/src/lib/images/github-education-program/artwork-light-mobile.svg';
+            artworkImageSrc = ArtworkLightMobile;
         } else if ($app.themeInUse === 'light' && !isMobile) {
-            artworkImageSrc = '/console/src/lib/images/github-education-program/artwork-light.svg';
+            artworkImageSrc = ArtworkLight;
         } else if ($app.themeInUse === 'dark' && isMobile) {
-            artworkImageSrc =
-                '/console/src/lib/images/github-education-program/artwork-dark-mobile.svg';
+            artworkImageSrc = ArtworkDarkMobile;
         } else {
-            artworkImageSrc = '/console/src/lib/images/github-education-program/artwork-dark.svg';
+            artworkImageSrc = ArtworkDark;
         }
     }
 
