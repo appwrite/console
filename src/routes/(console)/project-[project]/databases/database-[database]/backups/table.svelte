@@ -25,6 +25,7 @@
     import { page } from '$app/stores';
     import type { BackupArchive } from '$lib/sdk/backups';
     import { trackEvent } from '$lib/actions/analytics';
+    import { copy } from '$lib/helpers/copy';
 
     export let data: PageData;
     const databaseId = $page.params.database;
@@ -201,6 +202,7 @@
                                 </DropListItem>
                             {/if}
                             <DropListItem
+                                icon="trash"
                                 on:click={() => {
                                     showDelete = true;
                                     selectedBackup = backup;
@@ -208,6 +210,15 @@
                                     trackEvent('click_backup_delete');
                                 }}>
                                 Delete
+                            </DropListItem>
+
+                            <DropListItem
+                                icon="duplicate"
+                                on:click={() => {
+                                    copy(backup.$id);
+                                    showDropdown[index] = false;
+                                }}>
+                                Copy ID
                             </DropListItem>
                         </svelte:fragment>
                     </DropList>
