@@ -100,8 +100,8 @@
 
     /* reset data on modal close */
     $: if (!showDelete) {
-        databaseName = '';
         collections = null;
+        databaseName = null;
         collectionItems = [];
     }
 </script>
@@ -127,7 +127,7 @@
             {:else if collectionItems.length > 0}
                 <p class="text" data-private>
                     The following collections and all data associated with <b>{$database.name}</b>
-                    will be permanently deleted.
+                    will be permanently deleted. This includes backups.
                     <b>This action is irreversible.</b>
                 </p>
 
@@ -206,11 +206,11 @@
 
 <style>
     :global(.max-height-dialog dialog) {
-        max-height: 650px !important;
+        max-height: 650px;
     }
 
     :global(.no-inner-borders .table) {
-        box-shadow: unset !important;
-        border-radius: unset !important;
+        box-shadow: unset;
+        border-radius: unset;
     }
 </style>
