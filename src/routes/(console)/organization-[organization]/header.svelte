@@ -110,8 +110,7 @@
                             <span class="u-trim">
                                 {$organization.name}
                             </span>
-                            <!-- TODO: remove true check below when API change, https://github.com/appwrite-labs/cloud/pull/816, has been merged and deployed -->
-                            {#if isCloud && (true || $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION)}
+                            {#if isCloud && $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
                                 <Pill class="eyebrow-heading-3"
                                     ><span class="icon-github" aria-hidden="true" /> EDUCATION</Pill>
                             {:else if isCloud && $organization?.billingPlan === BillingPlan.FREE}
