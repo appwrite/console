@@ -3,25 +3,29 @@ import prettyBytes from 'pretty-bytes';
 const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'] as const;
 export type Size = (typeof sizes)[number];
 
-export function calculateSize(bytes: number, decimals = 1) {
+export function calculateSize(bytes: number, decimals = 1, base: 1000 | 1024 = 1000) {
     if (bytes === 0) return '0 Bytes';
 
-    const k = 1024;
     const dm = decimals < 0 ? 0 : decimals;
 
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    const i = Math.floor(Math.log(bytes) / Math.log(base));
 
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+    return parseFloat((bytes / Math.pow(base, i)).toFixed(dm)) + ' ' + sizes[i];
 }
 
-export function sizeToBytes(value: number, unit: Size, base = 1024) {
+export function sizeToBytes(value: number, unit: Size, base = 1000) {
+    if (typeof value !== 'number') return 0;
     const index = sizes.indexOf(unit);
     return value * Math.pow(base, index);
 }
 
-export function bytesToSize(value: number, unit: Size) {
+export function bytesToSize(value: number, unit: Size, base = 1000) {
     const index = sizes.indexOf(unit);
-    return value / Math.pow(1024, index);
+    return value / Math.pow(base, index);
+}
+
+export function mbSecondsToGBHours(value: number, base: 1000 | 1024 = 1000) {
+    return value / base / (60 * 60);
 }
 
 export function humanFileSize(

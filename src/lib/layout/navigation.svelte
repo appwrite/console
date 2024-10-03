@@ -8,15 +8,18 @@
     import { slide } from '$lib/helpers/transition';
     import { upgradeURL } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
+    import { canSeeDatabases } from '$lib/stores/roles';
     import { wizard } from '$lib/stores/wizard';
     import { isCloud } from '$lib/system';
-    import Create from '$routes/console/feedbackWizard.svelte';
-    import { showSupportModal } from '$routes/console/wizard/support/store';
+    import Create from '$routes/(console)/feedbackWizard.svelte';
+    import { showSupportModal } from '$routes/(console)/wizard/support/store';
+    import { getContext } from 'svelte';
+    import type { Writable } from 'svelte/store';
 
     export let isOpen = false;
 
     $: project = $page.params.project;
-    $: projectPath = `${base}/console/project-${project}`;
+    $: projectPath = `${base}/project-${project}`;
 
     $: subNavigation = $page.data.subNavigation;
     // We need to have this second variable, because we only want narrow
@@ -28,6 +31,9 @@
     $: {
         narrow = hasSubNavigation;
     }
+
+    $: getContext<Writable<boolean>>('isNarrow').set(narrow);
+    $: getContext<Writable<boolean>>('hasSubNavigation').set(hasSubNavigation);
 
     function handleKeyDown(event: KeyboardEvent) {
         // If Alt + S is pressed
@@ -90,23 +96,25 @@
                                 <span class="text">Auth</span>
                             </a>
                         </li>
-                        <li class="drop-list-item">
-                            <a
-                                class="drop-button"
-                                class:is-selected={$page.url.pathname.startsWith(
-                                    `${projectPath}/databases`
-                                )}
-                                on:click={() => trackEvent('click_menu_databases')}
-                                href={`${projectPath}/databases`}
-                                use:tooltip={{
-                                    content: 'Databases',
-                                    placement: 'right',
-                                    disabled: !narrow
-                                }}>
-                                <span class="icon-database" aria-hidden="true" />
-                                <span class="text">Databases</span>
-                            </a>
-                        </li>
+                        {#if $canSeeDatabases}
+                            <li class="drop-list-item">
+                                <a
+                                    class="drop-button"
+                                    class:is-selected={$page.url.pathname.startsWith(
+                                        `${projectPath}/databases`
+                                    )}
+                                    on:click={() => trackEvent('click_menu_databases')}
+                                    href={`${projectPath}/databases`}
+                                    use:tooltip={{
+                                        content: 'Databases',
+                                        placement: 'right',
+                                        disabled: !narrow
+                                    }}>
+                                    <span class="icon-database" aria-hidden="true" />
+                                    <span class="text">Databases</span>
+                                </a>
+                            </li>
+                        {/if}
                         <li class="drop-list-item">
                             <a
                                 class="drop-button"

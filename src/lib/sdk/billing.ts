@@ -9,6 +9,7 @@ export type PaymentMethodData = {
     $updatedAt: string;
     providerMethodId: string;
     providerUserId: string;
+    userId: string;
     expiryMonth: number;
     expiryYear: number;
     expired: boolean;
@@ -31,17 +32,23 @@ export type Invoice = {
     $id: string;
     $createdAt: Date;
     $updatedAt: Date;
+    permissions: string[];
     teamId: string;
     aggregationId: string;
+    plan: Tier;
     amount: number;
+    tax: number;
+    taxAmount: number;
+    vat: number;
+    vatAmount: number;
+    grossAmount: number;
+    creditsUsed: number;
     currency: string;
-    date: number;
     from: string;
     to: string;
     status: string;
     dueAt: string;
     clientSecret: string;
-    tier: Tier;
     usage: {
         name: string;
         value: number /* service over the limit*/;
@@ -111,6 +118,7 @@ export type Credit = {
 };
 
 export type CreditList = {
+    available: number;
     credits: Credit[];
     total: number;
 };
@@ -171,6 +179,11 @@ export type OrganizationUsage = {
     bandwidth: Array<Models.Metric>;
     executions: Array<Models.Metric>;
     executionsTotal: number;
+    filesStorageTotal: number;
+    buildsStorageTotal: number;
+    deploymentsStorageTotal: number;
+    executionsMBSecondsTotal: number;
+    buildsMBSecondsTotal: number;
     storageTotal: number;
     users: Array<Models.Metric>;
     usersTotal: number;
@@ -221,6 +234,7 @@ export type Address = {
     city: string;
     state?: string;
     postalCode: string;
+    userId: string;
 };
 
 export type AddressesList = {
@@ -271,6 +285,11 @@ export type PlansInfo = {
 };
 
 export type PlansMap = Map<Tier, Plan>;
+
+export type Roles = {
+    scopes: string[];
+    roles: string[];
+};
 
 export class Billing {
     client: Client;
@@ -351,6 +370,14 @@ export class Billing {
             },
             params
         );
+    }
+
+    async getRoles(organizationId: string): Promise<Roles> {
+        const path = `/organizations/${organizationId}/roles`;
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call('get', uri, {
+            'content-type': 'application/json'
+        });
     }
 
     async updatePlan(
