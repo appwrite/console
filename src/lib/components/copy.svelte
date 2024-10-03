@@ -37,6 +37,7 @@
     role="button"
     tabindex="0"
     style:cursor="pointer"
+    style:width="fit-content"
     on:click|preventDefault={handleClick}
     on:keyup={clickOnEnter}
     on:mouseenter={() => setTimeout(() => (content = 'Click to copy'))}
