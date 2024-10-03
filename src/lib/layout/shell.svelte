@@ -4,7 +4,7 @@
     import { page } from '$app/stores';
     import { log } from '$lib/stores/logs';
     import { wizard } from '$lib/stores/wizard';
-    import { activeHeaderAlert } from '$routes/console/store';
+    import { activeHeaderAlert } from '$routes/(console)/store';
     import { setContext } from 'svelte';
     import { writable } from 'svelte/store';
 
