@@ -132,7 +132,7 @@
         </p>
 
         {#if $projects.total > 0}
-            <div class="box is-only-desktop no-inner-borders">
+            <div class="box is-only-desktop">
                 <SecondaryTabs large stretch class="u-sep-block-end u-padding-8">
                     {#each tabs as { name, label, total }}
                         <SecondaryTabsItem
@@ -162,7 +162,7 @@
                     </TableBody>
                 </TableScroll>
             </div>
-            <div class="box is-not-desktop no-inner-borders">
+            <div class="box is-not-desktop">
                 <SecondaryTabs large stretch class="u-sep-block-end u-padding-8">
                     {#each tabs as { name, label, total }}
                         <SecondaryTabsItem
@@ -220,16 +220,10 @@
 <style>
     .box {
         padding: unset;
-        background-color: unset;
         border-radius: var(--border-radius-medium, 8px);
     }
 
     :global(.max-height-dialog dialog) {
         max-height: 650px;
-    }
-
-    :global(.no-inner-borders .table-with-scroll .table) {
-        box-shadow: unset;
-        border-radius: unset;
     }
 </style>
