@@ -192,6 +192,7 @@
                         <svelte:fragment slot="list">
                             {#if backup.status === 'completed'}
                                 <DropListItem
+                                    icon="refresh"
                                     on:click={() => {
                                         showRestore = true;
                                         selectedBackup = backup;
