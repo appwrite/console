@@ -184,6 +184,7 @@ export enum Submit {
     ProjectUpdateSMTP = 'submit_project_update_smtp',
     MemberCreate = 'submit_member_create',
     MemberDelete = 'submit_member_delete',
+    MembershipUpdate = 'submit_membership_update',
     MembershipUpdateStatus = 'submit_membership_update_status',
     ProviderUpdate = 'submit_provider_update',
     TeamCreate = 'submit_team_create',
@@ -320,5 +321,7 @@ export enum Submit {
     MessagingTopicUpdatePermissions = 'submit_messaging_topic_update_permissions',
     MessagingTopicSubscriberAdd = 'submit_messaging_topic_subscriber_add',
     MessagingTopicSubscriberDelete = 'submit_messaging_topic_subscriber_delete',
-    ApplyQuickFilter = 'submit_apply_quick_filter'
+    ApplyQuickFilter = 'submit_apply_quick_filter',
+    RequestBAA = 'submit_request_baa',
+    RequestSoc2 = 'submit_request_soc2'
 }

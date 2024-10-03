@@ -7,6 +7,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { AuthenticatorType, type Models } from '@appwrite.io/console';
     import QrFrame from '$lib/images/qr2.svg';
+    import { addNotification } from '$lib/stores/notifications';
 
     export let showSetup = false;
 
@@ -28,6 +29,10 @@
             await sdk.forConsole.account.updateMfaAuthenticator(AuthenticatorType.Totp, code);
             await Promise.all([invalidate(Dependencies.ACCOUNT), invalidate(Dependencies.FACTORS)]);
             showSetup = false;
+            addNotification({
+                type: 'success',
+                message: 'Authenticator app connected successfully'
+            });
             trackEvent(Submit.AccountAuthenticatorUpdate);
         } catch (e) {
             error = e.message;

@@ -4,6 +4,7 @@
     import { Tab, Tabs } from '$lib/components';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover, CoverTitle } from '$lib/layout';
+    import { canWriteProjects } from '$lib/stores/roles';
 
     const projectId = $page.params.project;
     const path = `${base}/project-${projectId}/auth`;
@@ -23,13 +24,15 @@
         {
             href: `${path}/security`,
             title: 'Security',
-            event: 'security'
+            event: 'security',
+            disabled: !$canWriteProjects
         },
         {
             href: `${path}/templates`,
             title: 'Templates',
             hasChildren: false,
-            event: 'templates'
+            event: 'templates',
+            disabled: !$canWriteProjects
         },
         {
             href: `${path}/usage`,
@@ -40,9 +43,10 @@
         {
             href: `${path}/settings`,
             title: 'Settings',
-            event: 'settings'
+            event: 'settings',
+            disabled: !$canWriteProjects
         }
-    ];
+    ].filter((tab) => !tab.disabled);
 </script>
 
 <Cover>

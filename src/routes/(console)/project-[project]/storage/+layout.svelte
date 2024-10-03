@@ -4,6 +4,7 @@
     import { page } from '$app/stores';
     import { addSubPanel, registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
     import { BucketsPanel } from '$lib/commandCenter/panels';
+    import { canWriteBuckets } from '$lib/stores/roles';
     import { project } from '../store';
     import { showCreateBucket } from './+page.svelte';
 
@@ -18,7 +19,8 @@
             },
             keys: $page.url.pathname.endsWith('storage') ? ['c'] : ['c', 'b'],
             icon: 'plus',
-            group: 'buckets'
+            group: 'buckets',
+            disabled: !$canWriteBuckets
         },
         {
             label: 'Go to usage',

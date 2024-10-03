@@ -109,13 +109,18 @@
                     <div
                         class="method u-flex u-flex-vertical-mobile u-gap-16 u-main-space-between u-sep-block-end"
                         style="padding-block-end: 16px">
-                        <div class="u-flex u-gap-8">
+                        <div class="u-flex u-gap-8 u-cross-baseline">
                             <div class="avatar is-size-x-small">
                                 <span class="icon-device-mobile" aria-hidden="true" />
                             </div>
-                            <div class="u-flex-vertical u-gap-4 body-text-2">
-                                <span class="u-bold">Authenticator app</span>
-                                <span
+                            <div class="u-flex-vertical u-gap-4">
+                                <div class="u-flex u-gap-4 u-cross-center">
+                                    <span class="body-text-2 u-bold">Authenticator app</span>
+                                    {#if $factors.totp}
+                                        <Pill>connected</Pill>
+                                    {/if}
+                                </div>
+                                <span class="body-text-2"
                                     >Use an authentication app to generate two-factor authentication
                                     codes.</span>
                             </div>
@@ -141,7 +146,7 @@
                         <div
                             class="u-flex u-main-space-between u-sep-block-end"
                             style="padding-block-end: 16px">
-                            <div class="u-flex u-gap-8">
+                            <div class="u-flex u-gap-8 u-cross-baseline">
                                 <div class="avatar is-size-x-small">
                                     <span class="icon-mail" aria-hidden="true" />
                                 </div>
@@ -185,7 +190,7 @@
                         <div
                             class="method u-flex u-flex-vertical-mobile u-gap-16 u-main-space-between u-sep-block-end"
                             style="padding-block-end: 16px">
-                            <div class="u-flex u-gap-8">
+                            <div class="u-flex u-gap-8 u-cross-baseline">
                                 <div class="avatar is-size-x-small">
                                     <span class="icon-lock-open" aria-hidden="true" />
                                 </div>

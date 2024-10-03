@@ -10,7 +10,6 @@ export const load: PageLoad = async ({ depends }) => {
         sdk.forConsole.billing.listPaymentMethods(),
         sdk.forConsole.billing.listAddresses()
     ]);
-
     return {
         paymentMethods,
         addressList

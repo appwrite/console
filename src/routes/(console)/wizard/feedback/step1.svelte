@@ -6,7 +6,10 @@
         feedbackOptions,
         feedback
     } from '$lib/stores/feedback';
+    import { user } from '$lib/stores/user';
+    import { organization } from '$lib/stores/organization';
     import { addNotification } from '$lib/stores/notifications';
+    import { page } from '$app/stores';
 
     $: $selectedFeedback = feedbackOptions.find((option) => option.type === $feedback.type);
 
@@ -15,8 +18,11 @@
             await feedback.submitFeedback(
                 `feedback-${$feedback.type}`,
                 $feedbackData.message,
-                $feedbackData.name,
-                $feedbackData.email
+                $user.name,
+                $user.email,
+                $organization.billingPlan,
+                $page.url.href,
+                $feedbackData.value
             );
             addNotification({
                 type: 'success',

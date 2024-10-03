@@ -113,7 +113,6 @@
                 `${base}/project-${$page.params.project}/functions/function-${func.$id}/executions`
             );
             invalidate(Dependencies.EXECUTIONS);
-            close();
             addNotification({
                 type: 'success',
                 message: `Function has been executed`
@@ -390,12 +389,14 @@
                         <DeploymentSource {deployment} />
                     </span>
                 </div>
-                <div class="u-flex-vertical u-gap-8">
-                    <p class="u-color-text-offline">Domains</p>
-                    <span>
-                        <DeploymentDomains domain={$proxyRuleList} />
-                    </span>
-                </div>
+                {#if $proxyRuleList?.rules?.length}
+                    <div class="u-flex-vertical u-gap-8">
+                        <p class="u-color-text-offline">Domains</p>
+                        <span>
+                            <DeploymentDomains domain={$proxyRuleList} />
+                        </span>
+                    </div>
+                {/if}
                 <div class="u-flex-vertical u-gap-8">
                     <p class="u-color-text-offline">Updated</p>
                     <span>
