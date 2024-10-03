@@ -3,7 +3,6 @@ import { sdk } from '$lib/stores/sdk';
 import { getLimit, getPage, getView, pageToOffset, View } from '$lib/helpers/load';
 import type { PageLoad } from './$types';
 import { CARD_LIMIT, Dependencies } from '$lib/constants';
-import { collections as collectionsStore } from './store';
 
 export const load: PageLoad = async ({ params, url, route, depends }) => {
     depends(Dependencies.COLLECTIONS);
@@ -16,8 +15,6 @@ export const load: PageLoad = async ({ params, url, route, depends }) => {
         Query.offset(offset),
         Query.orderDesc('')
     ]);
-
-    collectionsStore.set(collections);
 
     return {
         offset,

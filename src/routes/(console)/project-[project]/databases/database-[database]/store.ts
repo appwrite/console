@@ -5,7 +5,6 @@ import { derived, writable } from 'svelte/store';
 
 export const database = derived(page, ($page) => $page.data.database as Models.Database);
 export const showCreate = writable(false);
-export const collections = writable<Models.CollectionList>({ total: 0, collections: [] });
 
 export const columns = writable<Column[]>([
     { id: '$id', title: 'Collection ID', type: 'string', show: true, width: 150 },
