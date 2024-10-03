@@ -28,10 +28,11 @@
     }
 
     function onGithubLogin() {
+        localStorage.setItem('githubEducationProgram', 'true');
         sdk.forConsole.account.createOAuth2Session(
             OAuthProvider.Github,
-            window.location.origin,
-            window.location.origin,
+            window.location.origin + '/console/register/github-education-program?success',
+            window.location.origin + '/console/register/github-education-program?failure',
             ['read:user', 'user:email']
         );
     }
@@ -71,7 +72,7 @@
                 Enjoy Appwrite Cloud for free throughout your student journey as part of the GitHub
                 Student Developer Pack.
             </p>
-            <Button fullWidth>
+            <Button fullWidth on:click={onGithubLogin}>
                 <span class="icon-github" aria-hidden="true" />
                 <span class="text">Sign up with GitHub</span>
             </Button>

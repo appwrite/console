@@ -705,6 +705,14 @@ export class Billing {
         );
     }
 
+    async setMembership(programId: string): Promise<void> {
+        const path = `/console/programs/${programId}/memberships`;
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call('POST', uri, {
+            'content-type': 'application/json'
+        });
+    }
+
     async getCoupon(couponId: string): Promise<Coupon> {
         const path = `/console/coupons/${couponId}`;
         const params = {
