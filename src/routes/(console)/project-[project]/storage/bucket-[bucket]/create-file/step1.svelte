@@ -47,7 +47,9 @@
                 required
                 bind:files={$createFile.files}
                 allowedFileExtensions={$bucket.allowedFileExtensions}
-                maxSize={$bucket.maximumFileSize} />
+                maxSize={isCloud
+                    ? $bucket.maximumFileSize
+                    : ($bucket.maximumFileSize ?? sizeToBytes(service, 'MB', 1000))} />
         </div>
 
         {#if !showCustomId}

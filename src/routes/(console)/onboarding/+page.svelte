@@ -32,11 +32,11 @@
               {
                   value: BillingPlan.PRO,
                   label: `${tierToPlan(BillingPlan.PRO).name} - ${formatCurrency($plansInfo.get(BillingPlan.PRO).price)}/month + add-ons`
-              },
-              {
-                  value: BillingPlan.SCALE,
-                  label: `${tierToPlan(BillingPlan.SCALE).name} - ${formatCurrency($plansInfo.get(BillingPlan.SCALE).price)}/month + usage`
               }
+              // {
+              //     value: BillingPlan.SCALE,
+              //     label: `${tierToPlan(BillingPlan.SCALE).name} - ${formatCurrency($plansInfo.get(BillingPlan.SCALE).price)}/month + usage`
+              // }
           ]
         : [];
 

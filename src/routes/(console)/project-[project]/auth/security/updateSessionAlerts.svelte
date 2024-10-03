@@ -9,7 +9,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { project } from '../../store';
 
-    let authSessionAlerts = $project.authSessionAlerts ?? false;
+    let authSessionAlerts = $project?.authSessionAlerts ?? false;
 
     async function updateSessionAlerts() {
         try {
@@ -46,7 +46,7 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={authSessionAlerts === $project.authSessionAlerts} submit>
+            <Button disabled={authSessionAlerts === $project?.authSessionAlerts} submit>
                 Update
             </Button>
         </svelte:fragment>

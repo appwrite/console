@@ -41,6 +41,7 @@ jobs:
                       "PUBLIC_CONSOLE_MODE=cloud"
                       "PUBLIC_GROWTH_ENDPOINT=${{ secrets.PUBLIC_GROWTH_ENDPOINT }}"
                       "PUBLIC_STRIPE_KEY=${{ secrets.PUBLIC_STRIPE_KEY }}"
+                      "SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}"
     publish-cloud-stage:
         runs-on: ubuntu-latest
         steps:

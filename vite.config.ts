@@ -1,16 +1,31 @@
 import { defineConfig } from 'vitest/config';
 import { sveltekit } from '@sveltejs/kit/vite';
+import { sentrySvelteKit } from '@sentry/sveltekit';
 
 const config = defineConfig({
-    plugins: [sveltekit()],
+    plugins: [
+        sentrySvelteKit({
+            adapter: 'auto',
+            sourceMapsUploadOptions: {
+                org: 'appwrite',
+                project: 'console'
+            }
+        }),
+        sveltekit()
+    ],
     optimizeDeps: {
         include: ['echarts', 'prismjs']
+    },
+    css: {
+        preprocessorOptions: {
+            scss: {
+                silenceDeprecations: ['legacy-js-api']
+            }
+        }
     },
     ssr: {
         noExternal: [
             '@analytics/google-analytics',
-            '@sentry/browser',
-            '@sentry-internal/tracing',
             'analytics',
             'dayjs',
             'echarts',

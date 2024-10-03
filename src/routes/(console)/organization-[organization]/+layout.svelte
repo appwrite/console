@@ -8,6 +8,7 @@
     import { requestedMigration } from '$routes/store';
     import { openMigrationWizard } from '../(migration-wizard)';
     import { base } from '$app/paths';
+    import { isOwner } from '$lib/stores/roles';
 
     export let data;
 
@@ -22,7 +23,7 @@
                 goto(`${base}/organization-${data.organization.$id}/members`);
             },
             keys: ['g', 'm'],
-            disabled: $page.url.pathname.endsWith('/members'),
+            disabled: $page.url.pathname.endsWith('/members') || !$isOwner,
             group: 'navigation'
         },
         {
@@ -31,7 +32,7 @@
                 goto(`${base}/organization-${data.organization.$id}/settings`);
             },
             keys: ['g', 's'],
-            disabled: $page.url.pathname.endsWith('/settings'),
+            disabled: $page.url.pathname.endsWith('/settings') || !$isOwner,
             group: 'navigation'
         }
     ]);

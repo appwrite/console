@@ -2,6 +2,7 @@
     import { beforeNavigate } from '$app/navigation';
     import { DropList, DropListItem } from '$lib/components';
     import { Button } from '$lib/elements/forms';
+    import { canWriteFunctions } from '$lib/stores/roles';
     import CreateCli from './createCli.svelte';
     import CreateGit from './createGit.svelte';
     import CreateManual from './createManual.svelte';
@@ -24,14 +25,16 @@
 </script>
 
 <DropList bind:show placement="bottom-end">
-    <Button {secondary} {round} on:click={() => (show = !show)} event="create_deployment">
-        <slot>
-            {#if !secondary}
-                <span class="icon-plus" aria-hidden="true" />
-            {/if}
-            <span class="text">Create deployment</span>
-        </slot>
-    </Button>
+    {#if $canWriteFunctions}
+        <Button {secondary} {round} on:click={() => (show = !show)} event="create_deployment">
+            <slot>
+                {#if !secondary}
+                    <span class="icon-plus" aria-hidden="true" />
+                {/if}
+                <span class="text">Create deployment</span>
+            </slot>
+        </Button>
+    {/if}
     <svelte:fragment slot="list">
         <DropListItem
             on:click={() => {
