@@ -34,7 +34,7 @@ import { user } from './user';
 import { browser } from '$app/environment';
 import { canSeeBilling } from './roles';
 
-export type Tier = 'tier-0' | 'tier-1' | 'tier-2';
+export type Tier = 'tier-0' | 'tier-1' | 'tier-2' | 'tier-3';
 
 export const roles = [
     {
