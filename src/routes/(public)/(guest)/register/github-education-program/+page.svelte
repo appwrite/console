@@ -118,7 +118,7 @@
             min-height: 100vh;
             background: linear-gradient(
                 56deg,
-                rgba(253, 54, 110, 0.1) 0%,
+                rgba(253, 54, 110, 0.15) 0%,
                 var(--gradient-start-color) 48.38%
             );
 
