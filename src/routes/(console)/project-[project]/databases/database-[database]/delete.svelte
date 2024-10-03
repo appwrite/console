@@ -208,9 +208,4 @@
     :global(.max-height-dialog dialog) {
         max-height: 650px;
     }
-
-    :global(.no-inner-borders .table) {
-        box-shadow: unset;
-        border-radius: unset;
-    }
 </style>
