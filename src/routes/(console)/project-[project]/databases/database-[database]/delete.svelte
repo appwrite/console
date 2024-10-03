@@ -10,9 +10,9 @@
     import { database } from './store';
     import {
         TableBody,
+        TableCell,
         TableCellHead,
         TableHeader,
-        TableCell,
         TableRow,
         TableScroll
     } from '$lib/elements/table';
@@ -57,16 +57,9 @@
             collections = await sdk.forProject.databases.listCollections(databaseId, queries);
 
             const collectionPromises = collections.collections.map(async (collection) => {
-                const { total: totalDocuments } = await sdk.forProject.databases.listDocuments(
-                    databaseId,
-                    collection.$id,
-                    [Query.limit(1)] /* limit 1, just to get the total count */
-                );
-
                 return {
                     id: collection.$id,
                     name: collection.name,
-                    count: totalDocuments,
                     updatedAt: collection.$updatedAt
                 };
             });
@@ -132,20 +125,19 @@
                 </p>
 
                 <div class="u-flex-vertical u-gap-16">
-                    <TableScroll dense noMargin class="table no-inner-borders">
+                    <TableScroll dense noMargin class="table">
                         <TableHeader>
                             <TableCellHead width={columnWidth}>Collection</TableCellHead>
-                            <TableCellHead width={columnWidth}># of Documents</TableCellHead>
+                            <!-- small spacer placeholder -->
+                            <TableCellHead width={columnWidth / 4} />
                             <TableCellHead width={columnWidth}>Last Updated</TableCellHead>
                         </TableHeader>
                         <TableBody>
                             {#each collectionItems as collection}
                                 <TableRow>
-                                    <TableCell width={columnWidth} title="Collection"
-                                        >{collection.name}</TableCell>
-                                    <TableCell width={columnWidth} title="Document Count"
-                                        >{collection.count}</TableCell>
-                                    <TableCell width={columnWidth} title="Last Updated"
+                                    <TableCell title="Collection">{collection.name}</TableCell>
+                                    <TableCell />
+                                    <TableCell title="Last Updated"
                                         >{toLocaleDate(collection.updatedAt)}</TableCell>
                                 </TableRow>
                             {/each}
