@@ -219,17 +219,17 @@
 
 <style>
     .box {
-        padding: unset !important;
-        background-color: unset !important;
+        padding: unset;
+        background-color: unset;
         border-radius: var(--border-radius-medium, 8px);
     }
 
     :global(.max-height-dialog dialog) {
-        max-height: 650px !important;
+        max-height: 650px;
     }
 
     :global(.no-inner-borders .table-with-scroll .table) {
-        box-shadow: unset !important;
-        border-radius: unset !important;
+        box-shadow: unset;
+        border-radius: unset;
     }
 </style>
