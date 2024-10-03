@@ -81,7 +81,7 @@
 
     .main-footer-start .inline-links-item {
         padding-inline-end: 1rem;
-        padding-inline-start: unset !important;
+        padding-inline-start: unset;
     }
 
     [class^='icon-']:not(.icon-cloud):not(:hover) {
