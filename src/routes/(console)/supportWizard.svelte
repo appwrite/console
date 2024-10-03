@@ -41,7 +41,7 @@
             body: JSON.stringify({
                 subject: 'support',
                 email: $user.email,
-                firstName: $user?.name ?? '',
+                firstName: $user?.name || 'Unknown',
                 message: $supportData.message,
                 tags: ['cloud'],
                 customFields: [

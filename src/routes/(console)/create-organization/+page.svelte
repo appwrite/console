@@ -10,6 +10,7 @@
         SelectPaymentMethod
     } from '$lib/components/billing';
     import ValidateCreditModal from '$lib/components/billing/validateCreditModal.svelte';
+    import Default from '$lib/components/roles/default.svelte';
     import { BillingPlan, Dependencies } from '$lib/constants';
     import { Button, Form, FormList, InputTags, InputText, Label } from '$lib/elements/forms';
     import {
@@ -101,17 +102,6 @@
                     null
                 );
             } else {
-                // Create free organization if coming from onboarding
-                if (previousPage.includes('/console/onboarding') && !anyOrgFree) {
-                    await sdk.forConsole.billing.createOrganization(
-                        ID.unique(),
-                        'Personal Projects',
-                        BillingPlan.FREE,
-                        null,
-                        null
-                    );
-                }
-
                 org = await sdk.forConsole.billing.createOrganization(
                     ID.unique(),
                     name,
@@ -136,7 +126,7 @@
                     collaborators.forEach(async (collaborator) => {
                         await sdk.forConsole.teams.createMembership(
                             org.$id,
-                            ['owner'],
+                            ['developer'],
                             collaborator,
                             undefined,
                             undefined,
@@ -205,7 +195,7 @@
                     <InputTags
                         bind:tags={collaborators}
                         label="Invite members by email"
-                        tooltip="Invited members will have access to all services and payment data within your organization"
+                        popover={Default}
                         placeholder="Enter email address(es)"
                         validityRegex={emailRegex}
                         validityMessage="Invalid email address"

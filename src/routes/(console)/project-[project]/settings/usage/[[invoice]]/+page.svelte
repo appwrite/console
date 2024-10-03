@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Container } from '$lib/layout';
-    import { CardGrid, Heading, Card } from '$lib/components';
+    import { CardGrid, Heading, Card, ProgressBarBig } from '$lib/components';
     import {
         TableBody,
         TableCell,
@@ -13,21 +13,25 @@
     import { showUsageRatesModal, tierToPlan, upgradeURL } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
     import { Button } from '$lib/elements/forms';
-    import { humanFileSize } from '$lib/helpers/sizeConvertion';
+    import { bytesToSize, humanFileSize, mbSecondsToGBHours } from '$lib/helpers/sizeConvertion';
     import { BarChart } from '$lib/charts';
     import { formatNum } from '$lib/helpers/string';
     import { total } from '$lib/layout/usage.svelte';
     import { BillingPlan } from '$lib/constants.js';
+    import { base } from '$app/paths';
 
     export let data;
 
-    $: base = `${base}/project-${data.project.$id}`;
+    $: baseRoute = `${base}/project-${data.project.$id}`;
     $: network = data.usage.network;
     $: users = data.usage.users;
     $: usersTotal = data.usage.usersTotal;
     $: executions = data.usage.executions;
     $: executionsTotal = data.usage.executionsTotal;
-    $: storage = data.usage.filesStorageTotal;
+    $: storage =
+        data.usage.filesStorageTotal +
+        data.usage.deploymentsStorageTotal +
+        data.usage.buildsStorageTotal;
 
     const tier = data?.currentInvoice?.plan ?? $organization?.billingPlan;
     const plan = tierToPlan(tier).name;
@@ -237,7 +241,7 @@
                                         {formatNum(func.value)} executions
                                     </TableCell>
                                     <TableCellLink
-                                        href={`${base}/functions/function-${func.resourceId}`}
+                                        href={`${baseRoute}/functions/function-${func.resourceId}`}
                                         title="View function">
                                         View function
                                     </TableCellLink>
@@ -270,6 +274,32 @@
         <svelte:fragment slot="aside">
             {#if storage}
                 {@const humanized = humanFileSize(storage)}
+                {@const progressBarStorageDate = [
+                    {
+                        size: bytesToSize(data.usage.filesStorageTotal, 'MB'),
+                        color: '#85DBD8',
+                        tooltip: {
+                            title: 'File storage',
+                            label: `${Math.round(bytesToSize(data.usage.filesStorageTotal, 'MB') * 100) / 100}MB`
+                        }
+                    },
+                    {
+                        size: bytesToSize(data.usage.deploymentsStorageTotal, 'MB'),
+                        color: '#7C67FE',
+                        tooltip: {
+                            title: 'Deployments storage',
+                            label: `${Math.round(bytesToSize(data.usage.deploymentsStorageTotal, 'MB') * 100) / 100}MB`
+                        }
+                    },
+                    {
+                        size: bytesToSize(data.usage.buildsStorageTotal, 'MB'),
+                        color: '#FE9567',
+                        tooltip: {
+                            title: 'Builds storage',
+                            label: `${Math.round(bytesToSize(data.usage.buildsStorageTotal, 'MB') * 100) / 100}MB`
+                        }
+                    }
+                ]}
                 <div class="u-flex u-flex-vertical">
                     <div class="u-flex u-main-space-between">
                         <p>
@@ -278,33 +308,68 @@
                         </p>
                     </div>
                 </div>
-                {#if data.usage.bucketsBreakdown.length > 0}
-                    <Table noMargin noStyles>
-                        <TableHeader>
-                            <TableCellHead width={285}>Bucket</TableCellHead>
-                            <TableCellHead>Usage</TableCellHead>
-                            <TableCellHead width={140} />
-                        </TableHeader>
-                        <TableBody>
-                            {#each data.usage.bucketsBreakdown.sort((a, b) => b.value - a.value) as bucket}
-                                {@const humanized = humanFileSize(bucket.value)}
-                                <TableRow>
-                                    <TableCell title="Function">
-                                        {bucket.name ?? bucket.resourceId}
-                                    </TableCell>
-                                    <TableCell title="Usage">
-                                        {humanized.value}{humanized.unit}
-                                    </TableCell>
-                                    <TableCellLink
-                                        href={`${base}/storage/bucket-${bucket.resourceId}`}
-                                        title="View bucket">
-                                        View bucket
-                                    </TableCellLink>
-                                </TableRow>
-                            {/each}
-                        </TableBody>
-                    </Table>
-                {/if}
+                <ProgressBarBig
+                    progressValue={bytesToSize(storage, 'MB')}
+                    progressMax={bytesToSize(storage, 'MB')}
+                    progressBarData={progressBarStorageDate} />
+            {:else}
+                <Card isDashed>
+                    <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
+                        <span
+                            class="icon-chart-square-bar text-large"
+                            aria-hidden="true"
+                            style="font-size: 32px;" />
+                        <p class="u-bold">No data to show</p>
+                    </div>
+                </Card>
+            {/if}
+        </svelte:fragment>
+    </CardGrid>
+    <CardGrid>
+        <Heading tag="h6" size="7">GB hours</Heading>
+
+        <p class="text">
+            GB hours represent the memory usage (in gigabytes) of your function executions and
+            builds, multiplied by the total execution time (in hours).
+        </p>
+        <svelte:fragment slot="aside">
+            {#if data.usage.executionsMbSecondsTotal}
+                {@const totalGbHours = mbSecondsToGBHours(
+                    data.usage.executionsMbSecondsTotal + data.usage.buildsMbSecondsTotal
+                )}
+                {@const progressBarStorageDate = [
+                    {
+                        size: mbSecondsToGBHours(data.usage.executionsMbSecondsTotal),
+                        color: '#85DBD8',
+                        tooltip: {
+                            title: 'Executions',
+                            label: `${(Math.round(mbSecondsToGBHours(data.usage.executionsMbSecondsTotal) * 100) / 100).toLocaleString('en-US')} GB hours`
+                        }
+                    },
+                    {
+                        size: mbSecondsToGBHours(data.usage.buildsMbSecondsTotal),
+                        color: '#FE9567',
+                        tooltip: {
+                            title: 'Deployments',
+                            label: `${(Math.round(mbSecondsToGBHours(data.usage.buildsMbSecondsTotal) * 100) / 100).toLocaleString('en-US')} GB hours`
+                        }
+                    }
+                ]}
+                <div class="u-flex u-flex-vertical">
+                    <div class="u-flex u-main-space-between">
+                        <p>
+                            <span class="heading-level-4"
+                                >{(Math.ceil(totalGbHours * 100) / 100).toLocaleString(
+                                    'en-US'
+                                )}</span>
+                            <span class="body-text-1 u-bold">{`GB hours`}</span>
+                        </p>
+                    </div>
+                </div>
+                <ProgressBarBig
+                    progressMax={totalGbHours}
+                    progressValue={totalGbHours}
+                    progressBarData={progressBarStorageDate} />
             {:else}
                 <Card isDashed>
                     <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">

@@ -32,6 +32,7 @@
     import type { PageData } from './$types';
     import Create from './createUser.svelte';
     import { tooltip } from '$lib/actions/tooltip';
+    import { canWriteUsers } from '$lib/stores/roles';
 
     export let data: PageData;
 
@@ -44,19 +45,22 @@
 <Container>
     <ContainerHeader title="Users" isFlex={false} total={data.users.total} let:isButtonDisabled>
         <SearchQuery search={data.search} placeholder="Search by name, email, phone, or ID">
-            <div
-                use:tooltip={{
-                    content: `Upgrade to add more users`,
-                    disabled: !isButtonDisabled
-                }}>
-                <Button
-                    on:click={() => ($showCreateUser = true)}
-                    event="create_user"
-                    disabled={isButtonDisabled}>
-                    <span class="icon-plus" aria-hidden="true" />
-                    <span class="text">Create user</span>
-                </Button>
-            </div></SearchQuery>
+            {#if $canWriteUsers}
+                <div
+                    use:tooltip={{
+                        content: `Upgrade to add more users`,
+                        disabled: !isButtonDisabled
+                    }}>
+                    <Button
+                        on:click={() => ($showCreateUser = true)}
+                        event="create_user"
+                        disabled={isButtonDisabled}>
+                        <span class="icon-plus" aria-hidden="true" />
+                        <span class="text">Create user</span>
+                    </Button>
+                </div>
+            {/if}
+        </SearchQuery>
     </ContainerHeader>
     {#if data.users.total}
         <Table>
@@ -151,6 +155,7 @@
             single
             href="https://appwrite.io/docs/references/cloud/server-nodejs/users"
             target="user"
+            allowCreate={$canWriteUsers}
             on:click={() => showCreateUser.set(true)} />
     {/if}
 </Container>

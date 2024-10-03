@@ -10,7 +10,7 @@
         DropListItem,
         Heading
     } from '$lib/components';
-    import { Dependencies } from '$lib/constants';
+    import { BillingPlan, Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
     import { organization } from '$lib/stores/organization';
     import { Button } from '$lib/elements/forms';
@@ -22,6 +22,7 @@
     import EditPaymentModal from '$routes/(console)/account/payments/editPaymentModal.svelte';
     import { tooltip } from '$lib/actions/tooltip';
     import PaymentModal from '$lib/components/billing/paymentModal.svelte';
+    import { user } from '$lib/stores/user';
 
     let showDropdown = false;
     let showDropdownBackup = false;
@@ -112,15 +113,17 @@
                             <span class="icon-dots-horizontal" aria-hidden="true" />
                         </Button>
                         <svelte:fragment slot="list">
-                            <DropListItem
-                                icon="pencil"
-                                on:click={() => {
-                                    isSelectedBackup = false;
-                                    showEdit = true;
-                                    showDropdown = false;
-                                }}>
-                                Edit
-                            </DropListItem>
+                            {#if defaultPaymentMethod.userId === $user.$id}
+                                <DropListItem
+                                    icon="pencil"
+                                    on:click={() => {
+                                        isSelectedBackup = false;
+                                        showEdit = true;
+                                        showDropdown = false;
+                                    }}>
+                                    Edit
+                                </DropListItem>
+                            {/if}
                             <DropListItem
                                 icon="switch-horizontal"
                                 on:click={() => {
@@ -208,15 +211,17 @@
                             <span class="icon-dots-horizontal" aria-hidden="true" />
                         </Button>
                         <svelte:fragment slot="list">
-                            <DropListItem
-                                icon="pencil"
-                                on:click={() => {
-                                    showEdit = true;
-                                    isSelectedBackup = true;
-                                    showDropdownBackup = false;
-                                }}>
-                                Edit
-                            </DropListItem>
+                            {#if backupPaymentMethod.userId === $user.$id}
+                                <DropListItem
+                                    icon="pencil"
+                                    on:click={() => {
+                                        showEdit = true;
+                                        isSelectedBackup = true;
+                                        showDropdownBackup = false;
+                                    }}>
+                                    Edit
+                                </DropListItem>
+                            {/if}
                             <DropListItem
                                 icon="switch-horizontal"
                                 on:click={() => {
@@ -320,10 +325,12 @@
     <ReplaceCard bind:show={showReplace} isBackup={isSelectedBackup} />
 {/if}
 {#if showDelete && isCloud && hasStripePublicKey}
+    {@const hasOtherMethod = isSelectedBackup
+        ? !!$organization?.paymentMethodId
+        : !!$organization?.backupPaymentMethodId}
     <DeleteOrgPayment
         bind:showDelete
+        {hasOtherMethod}
         isBackup={isSelectedBackup}
-        disabled={isSelectedBackup
-            ? !$organization?.paymentMethodId
-            : !$organization?.backupPaymentMethodId} />
+        disabled={$organization?.billingPlan !== BillingPlan.FREE && !hasOtherMethod} />
 {/if}

@@ -50,7 +50,7 @@
         const callbackState = {
             from: 'github',
             to: 'template',
-            step: '4',
+            step: '5',
             template: $template.id,
             templateConfig: JSON.stringify($templateConfig)
         };
