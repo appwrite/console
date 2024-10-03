@@ -21,14 +21,17 @@
     export async function updateString(
         databaseId: string,
         collectionId: string,
-        data: Partial<Models.AttributeString>
+        data: Partial<Models.AttributeString>,
+        originalKey?: string
     ) {
         await sdk.forProject.databases.updateStringAttribute(
             databaseId,
             collectionId,
-            data.key,
+            originalKey,
             data.required,
-            data.default
+            data.default,
+            data.size,
+            data.key !== originalKey ? data.key : undefined
         );
     }
 </script>
@@ -69,24 +72,7 @@
     $: handleDefaultState($required || $array);
 </script>
 
-<div>
-    <InputNumber
-        id="size"
-        label="Size"
-        placeholder="Enter size"
-        bind:value={data.size}
-        required={!editing}
-        readonly={editing} />
-
-    <div class="u-flex u-gap-4 u-margin-block-start-8 u-small">
-        <span
-            class="icon-info u-cross-center u-margin-block-start-2 u-line-height-1 u-icon-small"
-            aria-hidden="true" />
-        <span class="text u-line-height-1-5">
-            Once created, attribute size cannot be adjusted to maintain data integrity.
-        </span>
-    </div>
-</div>
+<InputNumber id="size" label="Size" placeholder="Enter size" bind:value={data.size} />
 {#if data.size >= 50}
     <InputTextarea
         id="default"

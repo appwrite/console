@@ -32,6 +32,7 @@
     import { wizard } from '$lib/stores/wizard';
     import CreateDocument from './createDocument.svelte';
     import { base } from '$app/paths';
+    import { canWriteCollections } from '$lib/stores/roles';
 
     let unsubscribe: { (): void };
 
@@ -69,7 +70,8 @@
                 addSubPanel(CreateAttributePanel);
             },
             icon: 'plus',
-            group: 'attributes'
+            group: 'attributes',
+            disabled: !$canWriteCollections
         },
         {
             label: 'Go to documents',
@@ -134,7 +136,7 @@
                     `${base}/project-${$project?.$id}/databases/database-${$database?.$id}/collection-${$collection?.$id}/settings`
                 );
             },
-            disabled: $page.url.pathname.endsWith('settings'),
+            disabled: $page.url.pathname.endsWith('settings') || !$canWriteCollections,
             group: 'collections'
         },
         {
@@ -147,7 +149,8 @@
             group: 'collections',
             disabled:
                 $page.url.pathname.endsWith('display-name') ||
-                $page.url.pathname.endsWith('settings'),
+                $page.url.pathname.endsWith('settings') ||
+                !$canWriteCollections,
             icon: 'eye'
         },
         {
@@ -160,7 +163,8 @@
             group: 'collections',
             disabled:
                 $page.url.pathname.endsWith('permissions') ||
-                $page.url.pathname.endsWith('settings'),
+                $page.url.pathname.endsWith('settings') ||
+                !$canWriteCollections,
             icon: 'puzzle'
         },
         {
@@ -173,7 +177,8 @@
             group: 'collections',
             disabled:
                 $page.url.pathname.endsWith('document-security') ||
-                $page.url.pathname.endsWith('settings'),
+                $page.url.pathname.endsWith('settings') ||
+                !$canWriteCollections,
             icon: 'lock-closed'
         },
         {
@@ -183,7 +188,8 @@
                 initCreateIndex();
             },
             icon: 'plus',
-            group: 'indexes'
+            group: 'indexes',
+            disabled: !$canWriteCollections
         }
     ]);
 

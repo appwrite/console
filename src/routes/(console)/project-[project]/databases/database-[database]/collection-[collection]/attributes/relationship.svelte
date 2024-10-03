@@ -29,16 +29,19 @@
     export async function updateRelationship(
         databaseId: string,
         collectionId: string,
-        data: Partial<Models.AttributeRelationship>
+        data: Partial<Models.AttributeRelationship>,
+        originalKey?: string
     ) {
         if (!isValueOfStringEnum(RelationMutate, data.onDelete)) {
             throw new Error(`Invalid on delete: ${data.onDelete}`);
         }
+
         await sdk.forProject.databases.updateRelationshipAttribute(
             databaseId,
             collectionId,
-            data.key,
-            data.onDelete
+            originalKey,
+            data.onDelete,
+            data.key !== originalKey ? data.key : undefined
         );
     }
 </script>
@@ -198,7 +201,6 @@
             placeholder="Enter Key"
             bind:value={data.key}
             autofocus
-            readonly={editing}
             required />
 
         <div class="u-flex u-gap-4 u-margin-block-start-8 u-small">

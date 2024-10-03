@@ -21,6 +21,7 @@
     import CreateAttributeDropdown from '../attributes/createAttributeDropdown.svelte';
     import type { Option } from '../attributes/store';
     import FailedModal from '../failedModal.svelte';
+    import { canWriteCollections } from '$lib/stores/roles';
 
     let showDropdown = [];
     let selectedIndex: Models.Index = null;
@@ -38,13 +39,15 @@
     <div class="u-flex u-gap-12 common-section u-main-space-between">
         <Heading tag="h2" size="5">Indexes</Heading>
 
-        <Button
-            event="create_index"
-            disabled={!$collection?.attributes?.length}
-            on:click={() => (showCreateIndex = true)}>
-            <span class="icon-plus" aria-hidden="true" />
-            <span class="text">Create index</span>
-        </Button>
+        {#if $canWriteCollections}
+            <Button
+                event="create_index"
+                disabled={!$collection?.attributes?.length}
+                on:click={() => (showCreateIndex = true)}>
+                <span class="icon-plus" aria-hidden="true" />
+                <span class="text">Create index</span>
+            </Button>
+        {/if}
     </div>
     {#if $collection?.attributes?.length}
         {#if $indexes.length}
@@ -130,13 +133,18 @@
             </div>
         {:else}
             <Empty
+                allowCreate={$canWriteCollections}
                 single
                 href="https://appwrite.io/docs/products/databases/collections#indexes"
                 target="index"
                 on:click={() => (showCreateIndex = true)} />
         {/if}
     {:else}
-        <Empty single target="attribute" on:click={() => (showCreateDropdown = true)}>
+        <Empty
+            single
+            target="attribute"
+            allowCreate={$canWriteCollections}
+            on:click={() => (showCreateDropdown = true)}>
             <div class="u-text-center">
                 <Heading size="7" tag="h2">Create an attribute to get started.</Heading>
                 <p class="body-text-2 u-bold u-margin-block-start-4">
@@ -150,19 +158,21 @@
                     text
                     event="empty_documentation"
                     ariaLabel={`create {target}`}>Documentation</Button>
-                <CreateAttributeDropdown
-                    bind:showCreateDropdown
-                    bind:showCreate={showCreateAttribute}
-                    bind:selectedOption={selectedAttribute}>
-                    <Button
-                        secondary
-                        event="create_attribute"
-                        on:click={() => {
-                            showCreateDropdown = !showCreateDropdown;
-                        }}>
-                        Create attribute
-                    </Button>
-                </CreateAttributeDropdown>
+                {#if $canWriteCollections}
+                    <CreateAttributeDropdown
+                        bind:showCreateDropdown
+                        bind:showCreate={showCreateAttribute}
+                        bind:selectedOption={selectedAttribute}>
+                        <Button
+                            secondary
+                            event="create_attribute"
+                            on:click={() => {
+                                showCreateDropdown = !showCreateDropdown;
+                            }}>
+                            Create attribute
+                        </Button>
+                    </CreateAttributeDropdown>
+                {/if}
             </div>
         </Empty>
     {/if}
