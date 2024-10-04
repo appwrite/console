@@ -20,6 +20,7 @@
     import { connectTemplate } from '$lib/wizards/functions/cover.svelte';
     import type { Models } from '@appwrite.io/console';
     import { functionsList } from '../store';
+    import { debounce } from '$lib/helpers/debounce';
 
     export let data;
 
@@ -79,25 +80,27 @@
     }
 
     function applySearch(event: CustomEvent<string>) {
-        const value = event.detail;
-        const target = new URL($page.url);
+        debounce(() => {
+            const value = event.detail;
+            const target = new URL($page.url);
 
-        if (value.length > 0) {
-            target.searchParams.set('search', value);
-        } else {
-            target.searchParams.delete('search');
-        }
-        target.searchParams.delete('page');
-        goto(target.toString(), { keepFocus: true });
+            if (value.length > 0) {
+                target.searchParams.set('search', value);
+            } else {
+                target.searchParams.delete('search');
+            }
+            target.searchParams.delete('page');
+            goto(target.toString(), { keepFocus: true });
+        }, 250)();
     }
 
-    function isChecked(useCase: string) {
+    $: isChecked = (useCase: string) => {
         return $page.url.searchParams
             .getAll('useCase')
             .some((param) => param.toLowerCase() === useCase.toLowerCase());
-    }
+    };
 
-    function getErrorMessage() {
+    $: getErrorMessage = () => {
         const searchParams = $page.url.searchParams;
         const paramsArray = Array.from(searchParams.entries());
 
@@ -107,7 +110,7 @@
         } else if (paramsArray.length > 1) {
             return `Sorry, we couldn't find any results with the applied filters.`;
         }
-    }
+    };
 
     $: buttonDisabled = isServiceLimited(
         'functions',
@@ -127,6 +130,7 @@
         <section>
             <InputSearch
                 placeholder="Search templates"
+                value={$page.url.searchParams.get('search')}
                 on:clear={clearSearch}
                 on:change={applySearch} />
             <div class="u-margin-block-start-24">
