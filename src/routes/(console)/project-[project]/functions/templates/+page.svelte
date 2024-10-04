@@ -70,6 +70,8 @@
                 return 'dart';
             case runtime.includes('bun'):
                 return 'bun';
+            case runtime.includes('go'):
+                return 'go';
             default:
                 return undefined;
         }
@@ -119,11 +121,11 @@
                                         <input
                                             type="checkbox"
                                             class="is-small"
-                                            value={$page.url.searchParams
+                                            checked={$page.url.searchParams
                                                 .getAll('useCase')
                                                 .includes(useCase)}
                                             on:change={(e) => applyFilter('useCase', useCase, e)} />
-                                        <div class="u-trim-1">{useCase}</div>
+                                        <span class="u-trim-1">{useCase}</span>
                                     </label>
                                 </li>
                             {/each}
