@@ -29,7 +29,9 @@
         if (add) {
             target.searchParams.append(filter, value);
         } else {
-            const previous = target.searchParams.getAll(filter).filter((n) => n !== value);
+            const previous = target.searchParams
+                .getAll(filter)
+                .filter((n) => n.toLowerCase() !== value.toLowerCase());
             target.searchParams.delete(filter);
             previous.forEach((n) => target.searchParams.append(filter, n));
         }
@@ -39,8 +41,7 @@
 
     function clearSearch() {
         const target = new URL($page.url);
-        target.searchParams.delete('page');
-        target.searchParams.delete('search');
+        target.search = '';
         goto(target.toString());
     }
 
@@ -90,6 +91,24 @@
         goto(target.toString(), { keepFocus: true });
     }
 
+    function isChecked(useCase: string) {
+        return $page.url.searchParams
+            .getAll('useCase')
+            .some((param) => param.toLowerCase() === useCase.toLowerCase());
+    }
+
+    function getErrorMessage() {
+        const searchParams = $page.url.searchParams;
+        const paramsArray = Array.from(searchParams.entries());
+
+        if (paramsArray.length === 1) {
+            const [_, value] = paramsArray[0];
+            return `Sorry, we couldn't find "${value}".`;
+        } else if (paramsArray.length > 1) {
+            return `Sorry, we couldn't find any results with the applied filters.`;
+        }
+    }
+
     $: buttonDisabled = isServiceLimited(
         'functions',
         $organization?.billingPlan,
@@ -121,9 +140,7 @@
                                         <input
                                             type="checkbox"
                                             class="is-small"
-                                            checked={$page.url.searchParams
-                                                .getAll('useCase')
-                                                .includes(useCase)}
+                                            checked={isChecked(useCase)}
                                             on:change={(e) => applyFilter('useCase', useCase, e)} />
                                         <span class="u-trim-1">{useCase}</span>
                                     </label>
@@ -248,8 +265,7 @@
                 <EmptySearch hidePagination>
                     <div class="common-section">
                         <div class="u-text-center common-section">
-                            <b class="body-text-2 u-bold"
-                                >Sorry we couldn't find "{$page.url.searchParams.get('search')}"</b>
+                            <b class="body-text-2 u-bold">{getErrorMessage()}</b>
                             <p>There are no templates that match your search.</p>
                         </div>
                         <div class="u-flex u-gap-16 common-section u-main-center">
