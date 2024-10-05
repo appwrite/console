@@ -19,13 +19,13 @@ export const load = async ({ params, url, route, depends }) => {
             sdk.forProject.backups.listArchives([
                 Query.limit(limit),
                 Query.offset(offset),
-                Query.orderDesc(''),
+                Query.orderDesc('$createdAt'),
                 Query.equal('resourceType', 'database'),
                 Query.equal('resourceId', params.database)
             ]),
 
             sdk.forProject.backups.listPolicies([
-                Query.orderDesc(''),
+                Query.orderDesc('$createdAt'),
                 Query.equal('resourceType', 'database'),
                 Query.equal('resourceId', params.database)
             ])

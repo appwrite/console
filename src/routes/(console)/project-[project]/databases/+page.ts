@@ -31,7 +31,7 @@ async function fetchDatabasesAndBackups(limit: number, offset: number) {
     const databases = await sdk.forProject.databases.list([
         Query.limit(limit),
         Query.offset(offset),
-        Query.orderDesc('')
+        Query.orderDesc('$createdAt')
     ]);
 
     const [policies, lastBackups] = await Promise.all([
