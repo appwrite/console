@@ -88,7 +88,7 @@
     label="Elements"
     bind:tags={data.elements}
     placeholder="Add elements here"
-    tooltip="Enum elements have a maxiumum length of 255 characters. This limit can not be exceeded."
+    tooltip="Enum elements have a maximum length of 255 characters. This limit can not be exceeded."
     required>
 </InputTags>
 

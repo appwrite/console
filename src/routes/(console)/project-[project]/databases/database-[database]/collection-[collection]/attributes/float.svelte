@@ -77,20 +77,28 @@
     $: handleDefaultState($required || $array);
 </script>
 
-<InputNumber
-    id="min"
-    label="Min"
-    placeholder="Enter size"
-    bind:value={data.min}
-    step="any"
-    required={editing} />
-<InputNumber
-    id="max"
-    label="Max"
-    placeholder="Enter size"
-    bind:value={data.max}
-    step="any"
-    required={editing} />
+<div>
+    <ul class="u-flex u-gap-16">
+        <li class="u-flex-basis-50-percent">
+            <InputNumber
+                id="min"
+                label="Min"
+                placeholder="Enter size"
+                bind:value={data.min}
+                step="any"
+                required={editing} />
+        </li>
+        <li class="u-flex-basis-50-percent">
+            <InputNumber
+                id="max"
+                label="Max"
+                placeholder="Enter size"
+                bind:value={data.max}
+                step="any"
+                required={editing} />
+        </li>
+    </ul>
+</div>
 <InputNumber
     id="default"
     label="Default value"
