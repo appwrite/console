@@ -9,7 +9,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { project } from '../../store';
 
-    let authPersonalDataCheck = $project.authPersonalDataCheck ?? false;
+    let authPersonalDataCheck = $project?.authPersonalDataCheck ?? false;
 
     async function updatePersonalDataCheck() {
         try {
@@ -50,7 +50,7 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={authPersonalDataCheck === $project.authPersonalDataCheck} submit
+            <Button disabled={authPersonalDataCheck === $project?.authPersonalDataCheck} submit
                 >Update</Button>
         </svelte:fragment>
     </CardGrid>

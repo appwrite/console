@@ -52,7 +52,7 @@
     function handleClose() {
         const modalAlert = currentModalAlert;
         dismissBottomModalAlert(modalAlert.id);
-        hideNotification(modalAlert.id);
+        hideNotification(modalAlert.id, { coolOffPeriod: 24 * 365 });
         if (modalAlert.closed) modalAlert.closed();
 
         if (currentIndex === filteredModalAlerts.length - 1 && filteredModalAlerts.length > 1) {

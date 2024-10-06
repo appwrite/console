@@ -8,13 +8,12 @@
     import { sdk } from '$lib/stores/sdk';
     import { project } from '../../store';
 
-    const projectId = $project.$id;
-    let passwordDictionary = $project.authPasswordDictionary ?? false;
+    let passwordDictionary = $project?.authPasswordDictionary ?? false;
 
     async function updatePasswordDictionary() {
         try {
             await sdk.forConsole.projects.updateAuthPasswordDictionary(
-                projectId,
+                $project.$id,
                 passwordDictionary
             );
             await invalidate(Dependencies.PROJECT);
@@ -56,7 +55,7 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={passwordDictionary === $project.authPasswordDictionary} submit
+            <Button disabled={passwordDictionary === $project?.authPasswordDictionary} submit
                 >Update</Button>
         </svelte:fragment>
     </CardGrid>
