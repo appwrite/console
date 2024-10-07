@@ -73,7 +73,5 @@
 </script>
 
 <Wizard confirmExit title="Create Webhook" steps={stepsComponents} on:finish={create}>
-    <svelte:fragment slot="exit">
-        Are you sure you want to exit from this process?
-    </svelte:fragment>
+    <svelte:fragment slot="exit">Are you sure you want to exit from this process?</svelte:fragment>
 </Wizard>
