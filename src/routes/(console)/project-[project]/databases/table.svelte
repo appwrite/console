@@ -7,7 +7,7 @@
     import { Id, Modal } from '$lib/components';
     import FloatingActionBar from '$lib/components/floatingActionBar.svelte';
     import { Dependencies } from '$lib/constants';
-    import { Button } from '$lib/elements/forms';
+    import { Button, FormList, InputCheckbox } from '$lib/elements/forms';
     import {
         TableBody,
         TableCell,
@@ -33,6 +33,7 @@
     let selected: string[] = [];
     let showDelete = false;
     let deleting = false;
+    let confirmedDeletion = false;
 
     async function handleDelete() {
         showDelete = false;
@@ -160,17 +161,33 @@
     title="Delete Database"
     icon="exclamation"
     state="warning"
+    size="small"
     bind:show={showDelete}
     onSubmit={handleDelete}
     headerDivider={false}
     closable={!deleting}>
-    <p class="text" data-private>
-        Are you sure you want to delete <b>{selected.length}</b>
-        {selected.length > 1 ? 'databases' : 'database'}?
-    </p>
+    <FormList>
+        <p class="text" data-private>
+            Are you sure you want to delete <b>{selected.length}</b>
+            {selected.length > 1 ? 'databases' : 'database'}?
+        </p>
+
+        <p class="text" data-private>
+            <b>Once deleted, these databases cannot be restored. This action is irreversible.</b>
+        </p>
+
+        <div class="input-check-box-friction">
+            <InputCheckbox
+                required
+                size="small"
+                id="delete_policy"
+                bind:checked={confirmedDeletion}
+                label="I understand and confirm" />
+        </div>
+    </FormList>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)} disabled={deleting}>Cancel</Button>
-        <Button secondary submit disabled={deleting}>Delete</Button>
+        <Button secondary submit disabled={deleting || !confirmedDeletion}>Delete</Button>
     </svelte:fragment>
 </Modal>
 
