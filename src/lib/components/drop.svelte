@@ -42,10 +42,7 @@
                 {
                     name: 'offset',
                     options: {
-                        offset:
-                            placement !== 'bottom-end'
-                                ? [noArrow ? 0 : -arrowSize, noArrow ? 0 : arrowSize / 1.5]
-                                : [noArrow ? 0 : arrowSize * 1.75, noArrow ? 0 : arrowSize / 1.5]
+                        offset: [noArrow ? 0 : arrowSize * 1.75, noArrow ? 0 : arrowSize / 1.5]
                     }
                 },
                 {
