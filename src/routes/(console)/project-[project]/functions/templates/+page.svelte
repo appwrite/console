@@ -119,7 +119,7 @@
                                         <input
                                             type="checkbox"
                                             class="is-small"
-                                            value={$page.url.searchParams
+                                            checked={$page.url.searchParams
                                                 .getAll('useCase')
                                                 .includes(useCase)}
                                             on:change={(e) => applyFilter('useCase', useCase, e)} />
