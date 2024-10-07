@@ -55,7 +55,9 @@
                     <span class="body-text-2">
                         {tierToPlan($organization?.billingPlan)?.name} plan</span>
                     <div class="body-text-2 u-margin-inline-start-auto">
-                        {isTrial ? formatCurrency(0) : formatCurrency(currentPlan?.price)}
+                        {isTrial || $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION
+                            ? formatCurrency(0)
+                            : formatCurrency(currentPlan?.price)}
                     </div>
                 </CollapsibleItem>
                 {#if $organization?.billingPlan !== BillingPlan.FREE && $organization?.billingPlan !== BillingPlan.GITHUB_EDUCATION && extraUsage > 0}
