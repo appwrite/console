@@ -54,8 +54,9 @@
     const fetchBackupRestores = async () => {
         try {
             const query = [
-                Query.notEqual('status', ['failed']),
-                Query.notEqual('status', ['completed'])
+                Query.equal('status', 'pending'),
+                Query.equal('status', 'uploading'),
+                Query.equal('status', 'processing')
             ];
 
             const [archivesResponse, restorationsResponse] = await Promise.all([
