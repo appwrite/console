@@ -467,7 +467,8 @@ export const eventServices: Array<EventService> = [
 export enum BillingPlan {
     FREE = 'tier-0',
     PRO = 'tier-1',
-    SCALE = 'tier-2'
+    SCALE = 'tier-2',
+    CUSTOM = 'cont-1'
 }
 
 export const feedbackDowngradeOptions = [
