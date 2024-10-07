@@ -42,8 +42,5 @@ export const organizationList = derived(
     ($page) => $page.data.organizations as Models.TeamList<Record<string, unknown>>
 );
 
-// TODO: remove override to tier-3 when BE PR, https://github.com/appwrite-labs/cloud/pull/816, has been merged and deployed -->
-export const organization = derived(page, ($page) => {
-    return { ...($page.data?.organization as Organization), billingPlan: 'tier-3' as Tier };
-});
+export const organization = derived(page, ($page) => $page.data?.organization as Organization);
 export const members = derived(page, ($page) => $page.data.members as Models.MembershipList);
