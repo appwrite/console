@@ -103,7 +103,7 @@
         }
 
         const currentPlan = await sdk.forConsole.billing.getPlan($organization?.$id);
-        selfService = false; //currentPlan.selfService;
+        selfService = currentPlan.selfService;
     });
 
     async function loadPaymentMethods() {
