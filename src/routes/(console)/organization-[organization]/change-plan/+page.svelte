@@ -18,7 +18,6 @@
         Button,
         Form,
         FormList,
-        Helper,
         InputSelect,
         InputTags,
         InputTextarea,
@@ -258,9 +257,9 @@
                 <Button href="https://appwrite.io/pricing" external link>pricing page</Button>.
             </p>
             {#if !selfService}
-                <Helper class="u-position-relative" type="warning"
-                    >Your contract is not eligible for manual changes. Please <a
-                        href="/contact-us/enterprise">reach out</a> to schedule a call or setup a dialog.</Helper>
+                <Alert class="u-position-relative u-margin-block-start-16" type="info"
+                    >Your contract is not eligible for manual changes. Pleasereach out to schedule a
+                    call or setup a dialog.</Alert>
             {/if}
             <PlanSelection
                 bind:billingPlan
