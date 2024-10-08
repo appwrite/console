@@ -3,14 +3,14 @@
     import Id from '$lib/components/id.svelte';
     import { WizardStep } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
-    import { isSelfHosted } from '$lib/system';
+    import { isCloud } from '$lib/system';
 
     const { endpoint, project } = sdk.forProject.client.config;
     const code = `import io.appwrite.Client
 import io.appwrite.services.Account
 
 ${
-    !isSelfHosted
+    isCloud
         ? `val client = Client(context).setProject("${project}")`
         : `val client = Client(context)
     .setEndpoint("${endpoint}")
