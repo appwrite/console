@@ -1,6 +1,6 @@
 <script lang="ts">
     import { sdk } from '$lib/stores/sdk';
-    import { Query } from '@appwrite.io/console';
+    import { type Payload, Query } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { isCloud, isSelfHosted } from '$lib/system';
     import { organization } from '$lib/stores/organization';
@@ -66,7 +66,10 @@
 
             // this is a one time op.
             backupRestoreItems.archives = new Map(
-                archivesResponse.archives.map((item) => [item.$id, item])
+                archivesResponse.archives
+                    // null policyId means manual backup
+                    .filter((item) => !item.policyId)
+                    .map((item) => [item.$id, item])
             );
 
             backupRestoreItems.restorations = new Map(
@@ -80,8 +83,11 @@
     // fresh fetch.
     fetchBackupRestores();
 
-    const updateOrAddItem = (payload) => {
-        const { $id, status, $collection } = payload;
+    const updateOrAddItem = (payload: Payload) => {
+        const { $id, status, $collection, policyId } = payload;
+        if ($collection === 'archives' && policyId !== null) {
+            return;
+        }
 
         if ($collection in backupRestoreItems) {
             const collectionMap = backupRestoreItems[$collection];
