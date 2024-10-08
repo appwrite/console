@@ -258,8 +258,8 @@
             </p>
             {#if !selfService}
                 <Alert class="u-position-relative u-margin-block-start-16" type="info"
-                    >Your contract is not eligible for manual changes. Pleasereach out to schedule a
-                    call or setup a dialog.</Alert>
+                    >Your contract is not eligible for manual changes. Please reach out to schedule
+                    a call or setup a dialog.</Alert>
             {/if}
             <PlanSelection
                 bind:billingPlan
