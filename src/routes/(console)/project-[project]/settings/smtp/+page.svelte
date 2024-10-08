@@ -21,7 +21,7 @@
     import deepEqual from 'deep-equal';
     import { onMount } from 'svelte';
     import { organization } from '$lib/stores/organization';
-    import { SMTPSecure } from '@appwrite.io/console';
+    import { type SMTPSecure } from '@appwrite.io/console';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
     import { upgradeURL } from '$lib/stores/billing';
 
