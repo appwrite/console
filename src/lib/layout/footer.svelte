@@ -88,7 +88,7 @@
         color: hsl(var(--color-neutral-50));
     }
 
-    @media (max-width: 767.99px), (min-width: 768px) and (max-width: 1198.99px) {
+    @media (max-width: 1200px) {
         .main-footer {
             gap: 2rem;
         }
