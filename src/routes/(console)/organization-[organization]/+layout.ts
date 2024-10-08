@@ -17,8 +17,8 @@ export const load: LayoutLoad = async ({ params, depends }) => {
     depends(Dependencies.ORGANIZATION);
     depends(Dependencies.MEMBERS);
     depends(Dependencies.PAYMENT_METHODS);
-    let roles = isCloud ? [] : defaultScopes;
-    let scopes = isCloud ? [] : defaultRoles;
+    let roles = isCloud ? [] : defaultRoles;
+    let scopes = isCloud ? [] : defaultScopes;
 
     try {
         if (isCloud) {
@@ -48,7 +48,7 @@ export const load: LayoutLoad = async ({ params, depends }) => {
             sdk.forConsole.teams.listMemberships(params.organization),
             preferences.loadTeamPrefs(params.organization)
         ]);
-
+		console.log(scopes);
         return {
             header: Header,
             breadcrumbs: Breadcrumbs,

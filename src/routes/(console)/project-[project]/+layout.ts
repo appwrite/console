@@ -17,8 +17,8 @@ export const load: LayoutLoad = async ({ params, depends }) => {
         const newPrefs = { ...prefs, organization: project.teamId };
         sdk.forConsole.account.updatePrefs(newPrefs);
         preferences.loadTeamPrefs(project.teamId);
-        let roles = isCloud ? [] : defaultScopes;
-        let scopes = isCloud ? [] : defaultRoles;
+        let roles = isCloud ? [] : defaultRoles;
+        let scopes = isCloud ? [] : defaultScopes;
         if (isCloud) {
             const res = await sdk.forConsole.billing.getRoles(project.teamId);
             roles = res.roles;
@@ -27,7 +27,7 @@ export const load: LayoutLoad = async ({ params, depends }) => {
                 await failedInvoice.load(project.teamId);
             }
         }
-
+		console.log(roles);
         return {
             project,
             organization: await (sdk.forConsole.teams.get(project.teamId) as Promise<Organization>),
