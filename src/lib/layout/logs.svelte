@@ -48,7 +48,7 @@
         return queries;
     }
 
-    function escapeNewLines(logs: string) {
+    function unescapeNewLines(logs: string) {
         return logs.replace(/\\n/g, '\n');
     }
 
@@ -350,7 +350,7 @@
                                     <Code
                                         withCopy
                                         noMargin
-                                        code={escapeNewLines(execution.logs)}
+                                        code={unescapeNewLines(execution.logs)}
                                         language="sh" />
                                 {:else}
                                     <Card isDashed isTile>
@@ -362,7 +362,7 @@
                                     <Code
                                         withCopy
                                         noMargin
-                                        code={escapeNewLines(execution.errors)}
+                                        code={unescapeNewLines(execution.errors)}
                                         language="sh" />
                                 {:else}
                                     <Card isDashed isTile>
