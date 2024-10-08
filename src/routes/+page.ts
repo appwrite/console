@@ -29,7 +29,6 @@ export const load: PageLoad = async ({ parent, url }) => {
     }
 
     if (organizations.total) {
-        console.log('getting into this funnel');
         const teamId = account.prefs.organization ?? organizations.teams[0].$id;
         if (!teamId) {
             redirect(303, `${base}/account/organizations${url.search}`);
