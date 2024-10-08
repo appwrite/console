@@ -34,7 +34,7 @@
 
 <Modal
     title="Label"
-    description="Labels allow you to grant access to users with the specfied label."
+    description="Labels allow you to grant access to users with the specified label."
     bind:show
     on:close={reset}
     onSubmit={create}>

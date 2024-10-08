@@ -36,7 +36,7 @@
     /**
      *
      * @param field {string} The field to update.
-     * Representes the path to the field in the formData object e.g. 'users.root'
+     * Represents the path to the field in the formData object e.g. 'users.root'
      */
     function handleInputChange(field: FormKeys) {
         return (event: Event) => {

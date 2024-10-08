@@ -31,7 +31,7 @@ function createHeaderAlertStore() {
             });
         },
         get: (): HeaderAlert => {
-            //return higest importance component
+            //return highest importance component
             let component = {
                 id: '',
                 show: false,
