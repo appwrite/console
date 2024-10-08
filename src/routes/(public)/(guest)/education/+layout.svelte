@@ -1,12 +1,5 @@
 <script lang="ts">
     import { app } from '$lib/stores/app';
-    import { sdk } from '$lib/stores/sdk';
-    import { OAuthProvider } from '@appwrite.io/console';
-    import { Button } from '$lib/elements/forms';
-    import AppwriteLogoDark from '$lib/images/appwrite-logo-dark.svg';
-    import AppwriteLogoLight from '$lib/images/appwrite-logo-light.svg';
-    import GithubLogoDark from '$lib/images/github-logo-dark.svg';
-    import GithubLogoLight from '$lib/images/github-logo-light.svg';
     import {
         ArtworkDark,
         ArtworkDarkMobile,
