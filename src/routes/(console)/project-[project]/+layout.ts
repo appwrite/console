@@ -27,7 +27,7 @@ export const load: LayoutLoad = async ({ params, depends }) => {
                 await failedInvoice.load(project.teamId);
             }
         }
-		console.log(roles);
+
         return {
             project,
             organization: await (sdk.forConsole.teams.get(project.teamId) as Promise<Organization>),

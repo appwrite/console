@@ -48,7 +48,7 @@ export const load: LayoutLoad = async ({ params, depends }) => {
             sdk.forConsole.teams.listMemberships(params.organization),
             preferences.loadTeamPrefs(params.organization)
         ]);
-		console.log(scopes);
+
         return {
             header: Header,
             breadcrumbs: Breadcrumbs,
