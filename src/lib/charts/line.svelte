@@ -6,10 +6,12 @@
 
     export let series: LineSeriesOption[];
     export let options: EChartsOption = null;
+    export let formatted: 'days' | 'hours' = 'days';
 </script>
 
 <Base
     {options}
+    {formatted}
     series={series.map((s) => {
         s.type = 'line';
         s.stack = 'total';

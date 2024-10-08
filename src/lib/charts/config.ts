@@ -1,3 +1,4 @@
+import { toLocaleDate, toLocaleDateTime } from '$lib/helpers/date';
 import type { EChartsOption } from 'echarts';
 
 export enum Colors {
@@ -10,9 +11,6 @@ export enum Colors {
 export const defaultConfig: EChartsOption = {
     color: Object.values(Colors),
     animation: false,
-    tooltip: {
-        trigger: 'axis'
-    },
     grid: {
         containLabel: true,
         left: 0,
@@ -31,6 +29,34 @@ export const defaultConfig: EChartsOption = {
         splitLine: {
             lineStyle: {
                 width: 1
+            }
+        }
+    }
+};
+
+export const dailyFormat: EChartsOption = {
+    tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+            label: {
+                formatter: function (params) {
+                    const date = new Date(params.value);
+                    return toLocaleDate(date.toString());
+                }
+            }
+        }
+    }
+};
+
+export const hourlyFormat: EChartsOption = {
+    tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+            label: {
+                formatter: function (params) {
+                    const date = new Date(params.value);
+                    return toLocaleDateTime(date.toString());
+                }
             }
         }
     }
