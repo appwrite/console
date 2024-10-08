@@ -705,12 +705,18 @@ export class Billing {
         );
     }
 
-    async setMembership(programId: string): Promise<void> {
+    async setMembership(
+        programId: string
+    ): Promise<void | { error: { code: number; message: string } }> {
         const path = `/console/programs/${programId}/memberships`;
         const uri = new URL(this.client.config.endpoint + path);
-        return await this.client.call('POST', uri, {
-            'content-type': 'application/json'
-        });
+        try {
+            return await this.client.call('POST', uri, {
+                'content-type': 'application/json'
+            });
+        } catch (e) {
+            return { error: { code: e.code, message: e.message } };
+        }
     }
 
     async getCoupon(couponId: string): Promise<Coupon> {

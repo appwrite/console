@@ -31,16 +31,6 @@
         }
     }
 
-    function onGithubLogin() {
-        localStorage.setItem('githubEducationProgram', 'true');
-        sdk.forConsole.account.createOAuth2Session(
-            OAuthProvider.Github,
-            window.location.origin + '/console/register/github-education-program?success',
-            window.location.origin + '/console/register/github-education-program?failure',
-            ['read:user', 'user:email']
-        );
-    }
-
     function monitorResize() {
         window.addEventListener('resize', getArtworkImageSrc);
 
@@ -61,26 +51,7 @@
         <div class="mobile-gradient" />
     </div>
     <div class="content-container">
-        <div class="content">
-            <div class="logos">
-                <img
-                    src={$app.themeInUse === 'light' ? AppwriteLogoLight : AppwriteLogoDark}
-                    alt="Appwrite logo" />
-                <div class="logo-divider" />
-                <img
-                    src={$app.themeInUse === 'light' ? GithubLogoLight : GithubLogoDark}
-                    alt="Github logo" />
-            </div>
-            <h1>Join the Appwrite Education Program</h1>
-            <p>
-                Enjoy Appwrite Cloud for free throughout your student journey as part of the GitHub
-                Student Developer Pack.
-            </p>
-            <Button fullWidth on:click={onGithubLogin}>
-                <span class="icon-github" aria-hidden="true" />
-                <span class="text">Sign up with GitHub</span>
-            </Button>
-        </div>
+        <slot />
     </div>
 </section>
 
@@ -161,41 +132,5 @@
             align-items: center;
             justify-content: center;
         }
-    }
-
-    .content {
-        @media (min-width: 768px) {
-            width: 460px;
-        }
-    }
-
-    .content h1 {
-        font-family: var(--heading-font);
-        font-size: 2rem;
-        line-height: 2.125rem;
-        margin-top: 2.5rem;
-        color: var(--heading-color);
-    }
-
-    .content p {
-        margin-top: 1.25rem;
-        color: var(--text-color);
-        font-size: 1.125rem;
-        font-weight: 500;
-        line-height: 1.625rem;
-        margin-bottom: 2rem;
-    }
-
-    .content .logos {
-        display: flex;
-        flex-direction: row;
-        gap: 1.5rem;
-        height: 1.5rem;
-    }
-
-    .content .logo-divider {
-        width: 2px;
-        height: 100%;
-        background-color: var(--divider-background-color);
     }
 </style>
