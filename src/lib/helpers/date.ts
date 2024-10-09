@@ -51,7 +51,7 @@ export const toLocaleDateTime = (datetime: string | number) => {
 };
 
 /**
- * Returns a date string usig the local timezone in ISO format (yyyy-mm-dd)
+ * Returns a date string using the local timezone in ISO format (yyyy-mm-dd)
  *
  * @param datetime date string or milliseconds since the epoch
  */
@@ -67,7 +67,7 @@ export const toLocaleDateISO = (datetime: string | number) => {
 };
 
 /**
- * Returns a time string usig the local timezone in ISO format (hh:mm:ss)
+ * Returns a time string using the local timezone in ISO format (hh:mm:ss)
  *
  * @param datetime date string or milliseconds since the epoch
  */

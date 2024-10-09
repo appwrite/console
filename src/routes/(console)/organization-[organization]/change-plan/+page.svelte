@@ -73,6 +73,7 @@
 
     let feedbackDowngradeReason: string;
     let feedbackMessage: string;
+    let selfService: boolean;
 
     onMount(async () => {
         if ($page.url.searchParams.has('code')) {
@@ -99,6 +100,9 @@
         } else {
             billingPlan = BillingPlan.PRO;
         }
+
+        const currentPlan = await sdk.forConsole.billing.getPlan($organization?.$id);
+        selfService = currentPlan.selfService;
     });
 
     async function loadPaymentMethods() {
@@ -252,8 +256,14 @@
                 For more details on our plans, visit our
                 <Button href="https://appwrite.io/pricing" external link>pricing page</Button>.
             </p>
+            {#if !selfService}
+                <Alert class="u-position-relative u-margin-block-start-16" type="info"
+                    >Your contract is not eligible for manual changes. Please reach out to schedule
+                    a call or setup a dialog.</Alert>
+            {/if}
             <PlanSelection
                 bind:billingPlan
+                bind:selfService
                 anyOrgFree={!!anyOrgFree}
                 class={anyOrgFree && billingPlan !== BillingPlan.FREE
                     ? 'u-margin-block-start-16'
@@ -323,14 +333,14 @@
             {/if}
         </Form>
         <svelte:fragment slot="aside">
-            {#if billingPlan !== BillingPlan.FREE && $organization.billingPlan !== billingPlan}
+            {#if billingPlan !== BillingPlan.FREE && $organization.billingPlan !== billingPlan && $organization.billingPlan !== BillingPlan.CUSTOM}
                 <EstimatedTotalBox
                     {billingPlan}
                     {collaborators}
                     bind:couponData
                     bind:billingBudget
                     {isDowngrade} />
-            {:else}
+            {:else if $organization.billingPlan !== BillingPlan.CUSTOM}
                 <PlanComparisonBox downgrade={isDowngrade} />
             {/if}
         </svelte:fragment>
@@ -341,7 +351,7 @@
         <Button
             fullWidthMobile
             on:click={() => formComponent.triggerSubmit()}
-            disabled={$isSubmitting || isButtonDisabled}>
+            disabled={$isSubmitting || isButtonDisabled || !selfService}>
             Change plan
         </Button>
     </WizardSecondaryFooter>

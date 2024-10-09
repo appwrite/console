@@ -15,6 +15,7 @@
     import { addBottomModalAlerts } from '$routes/(console)/bottomAlerts';
     import { project } from '$routes/(console)/project-[project]/store';
     import { page } from '$app/stores';
+    import { trackEvent } from '$lib/actions/analytics';
 
     let currentIndex = 0;
     let openModalOnMobile = false;
@@ -50,16 +51,12 @@
     $: currentModalAlert = filteredModalAlerts[currentIndex] as BottomModalAlertItem;
 
     function handleClose() {
-        const modalAlert = currentModalAlert;
-        dismissBottomModalAlert(modalAlert.id);
-        hideNotification(modalAlert.id, { coolOffPeriod: 24 * 365 });
-        if (modalAlert.closed) modalAlert.closed();
-
-        if (currentIndex === filteredModalAlerts.length - 1 && filteredModalAlerts.length > 1) {
-            currentIndex = currentIndex - 1;
-        } else {
-            currentIndex = currentIndex % filteredModalAlerts.length;
-        }
+        filteredModalAlerts.forEach((alert) => {
+            const modalAlert = alert;
+            dismissBottomModalAlert(modalAlert.id);
+            hideNotification(modalAlert.id, { coolOffPeriod: 24 * 365 });
+            if (modalAlert.closed) modalAlert.closed();
+        });
     }
 
     function showNext() {
@@ -171,7 +168,13 @@
                                           project: $project
                                       })}
                                 external={!!currentModalAlert.cta.external}
-                                fullWidthMobile>
+                                fullWidthMobile
+                                on:click={() => {
+                                    trackEvent('click_promo', {
+                                        promo: currentModalAlert.id,
+                                        type: shouldShowUpgrade ? 'upgrade' : 'try_now'
+                                    });
+                                }}>
                                 {currentModalAlert.cta.text}
                             </Button>
 
@@ -277,7 +280,13 @@
                                           })}
                                     external={!!currentModalAlert.cta.external}
                                     fullWidthMobile
-                                    on:click={() => (openModalOnMobile = false)}>
+                                    on:click={() => {
+                                        openModalOnMobile = false;
+                                        trackEvent('click_promo', {
+                                            promo: currentModalAlert.id,
+                                            type: shouldShowUpgrade ? 'upgrade' : 'try_now'
+                                        });
+                                    }}>
                                     {shouldShowUpgrade
                                         ? 'Upgrade plan'
                                         : currentModalAlert.cta.text}

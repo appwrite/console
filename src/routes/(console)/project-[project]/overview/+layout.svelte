@@ -16,7 +16,7 @@
     import { Container, type UsagePeriods } from '$lib/layout';
     import { onMount } from 'svelte';
     import { onboarding, project } from '../store';
-    import Bandwith from './bandwith.svelte';
+    import Bandwidth from './bandwidth.svelte';
     import { createApiKey } from './keys/+page.svelte';
     import Onboard from './onboard.svelte';
     import Realtime from './realtime.svelte';
@@ -91,7 +91,7 @@
                 <section class="common-section">
                     <div class="grid-dashboard-1s-2m-6l">
                         <div class="card is-2-columns-medium-screen is-3-columns-large-screen">
-                            <Bandwith {period} on:change={(e) => changePeriod(e.detail)} />
+                            <Bandwidth {period} on:change={(e) => changePeriod(e.detail)} />
                         </div>
                         <div class="card is-2-columns-medium-screen is-3-columns-large-screen">
                             <Requests {period} on:change={(e) => changePeriod(e.detail)} />

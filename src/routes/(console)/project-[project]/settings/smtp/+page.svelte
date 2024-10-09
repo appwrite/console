@@ -21,7 +21,7 @@
     import deepEqual from 'deep-equal';
     import { onMount } from 'svelte';
     import { organization } from '$lib/stores/organization';
-    import { SMTPSecure } from '@appwrite.io/console';
+    import { type SMTPSecure } from '@appwrite.io/console';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
     import { upgradeURL } from '$lib/stores/billing';
 
@@ -65,6 +65,7 @@
                 username = undefined;
                 password = undefined;
             }
+
             await sdk.forConsole.projects.updateSmtp(
                 $project.$id,
                 enabled,
@@ -75,7 +76,7 @@
                 port ? port : undefined,
                 username ? username : undefined,
                 password ? password : undefined,
-                secure ? SMTPSecure.Tls : undefined
+                secure ? (secure as SMTPSecure) : undefined
             );
 
             invalidate(Dependencies.PROJECT);
