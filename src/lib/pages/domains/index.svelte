@@ -20,6 +20,7 @@
     import Delete from './delete.svelte';
     import Retry from './wizard/retry.svelte';
     import { Pill } from '$lib/elements';
+    import { canWriteRules } from '$lib/stores/roles';
 
     export let rules: Models.ProxyRuleList;
     export let type: ResourceType;
@@ -55,9 +56,11 @@
         <slot name="heading" />
     </Heading>
 
-    <Button on:click={openWizard}>
-        <span class="icon-plus" aria-hidden="true" /> <span class="text">Create domain</span>
-    </Button>
+    {#if $canWriteRules}
+        <Button on:click={openWizard}>
+            <span class="icon-plus" aria-hidden="true" /> <span class="text">Create domain</span>
+        </Button>
+    {/if}
 </div>
 {#if rules.total}
     <TableScroll>
@@ -65,7 +68,9 @@
             <TableCellHead width={150}>Name</TableCellHead>
             <TableCellHead width={120}>Verification Status</TableCellHead>
             <TableCellHead width={180}>Certificate Status</TableCellHead>
-            <TableCellHead width={40} />
+            {#if $canWriteRules}
+                <TableCellHead width={40} />
+            {/if}
         </TableHeader>
         <TableBody>
             {#each rules.rules as domain, i}
@@ -138,40 +143,43 @@
                             </Pill>
                         {/if}
                     </TableCell>
-                    <TableCell>
-                        <DropList
-                            bind:show={showDomainsDropdown[i]}
-                            placement="bottom-start"
-                            noArrow>
-                            <Button
-                                text
-                                round
-                                ariaLabel="more options"
-                                on:click={() => (showDomainsDropdown[i] = !showDomainsDropdown[i])}>
-                                <span class="icon-dots-horizontal" aria-hidden="true" />
-                            </Button>
-                            <svelte:fragment slot="list">
-                                {#if domain.status !== 'verified'}
+                    {#if $canWriteRules}
+                        <TableCell right>
+                            <DropList
+                                bind:show={showDomainsDropdown[i]}
+                                placement="bottom-start"
+                                noArrow>
+                                <Button
+                                    text
+                                    round
+                                    ariaLabel="more options"
+                                    on:click={() =>
+                                        (showDomainsDropdown[i] = !showDomainsDropdown[i])}>
+                                    <span class="icon-dots-horizontal" aria-hidden="true" />
+                                </Button>
+                                <svelte:fragment slot="list">
+                                    {#if domain.status !== 'verified'}
+                                        <DropListItem
+                                            icon="refresh"
+                                            on:click={() => openRetry(domain, i)}>
+                                            {domain.status === 'unverified'
+                                                ? 'Retry generation'
+                                                : 'Retry verification'}
+                                        </DropListItem>
+                                    {/if}
                                     <DropListItem
-                                        icon="refresh"
-                                        on:click={() => openRetry(domain, i)}>
-                                        {domain.status === 'unverified'
-                                            ? 'Retry generation'
-                                            : 'Retry verification'}
+                                        icon="trash"
+                                        on:click={() => {
+                                            selectedDomain = domain;
+                                            showDelete = true;
+                                            showDomainsDropdown[i] = false;
+                                        }}>
+                                        Delete
                                     </DropListItem>
-                                {/if}
-                                <DropListItem
-                                    icon="trash"
-                                    on:click={() => {
-                                        selectedDomain = domain;
-                                        showDelete = true;
-                                        showDomainsDropdown[i] = false;
-                                    }}>
-                                    Delete
-                                </DropListItem>
-                            </svelte:fragment>
-                        </DropList>
-                    </TableCell>
+                                </svelte:fragment>
+                            </DropList>
+                        </TableCell>
+                    {/if}
                 </TableRow>
             {/each}
         </TableBody>

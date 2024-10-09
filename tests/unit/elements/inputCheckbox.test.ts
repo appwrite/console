@@ -1,4 +1,4 @@
-import '@testing-library/jest-dom';
+import { expect, test } from 'vitest';
 import { render, fireEvent } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
 import { InputCheckbox } from '../../../src/lib/elements/forms';

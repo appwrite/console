@@ -14,6 +14,7 @@
     export let readonly = false;
     export let autofocus = false;
     export let autocomplete = false;
+    export let step: number | 'any' = 0.001;
 
     let element: HTMLInputElement;
     let error: string;
@@ -70,7 +71,7 @@
             {readonly}
             {required}
             {value}
-            step=".001"
+            {step}
             autocomplete={autocomplete ? 'on' : 'off'}
             type="datetime-local"
             class="input-text"
