@@ -18,8 +18,6 @@
     import type { BackupPolicy, BackupPolicyList } from '$lib/sdk/backups';
     import { backupFrequencies } from '$lib/helpers/backups';
     import { trackEvent } from '$lib/actions/analytics';
-    import { formatCurrency } from '$lib/helpers/numbers';
-    import { policyPricing } from './store';
 
     let showDropdown = [];
     let showDelete = false;
@@ -361,14 +359,6 @@
 
     .policy-card-item-padding:last-child {
         border-block-end: none;
-    }
-
-    .policy-addon-fee-alert {
-        margin-inline: 0.5rem;
-    }
-
-    :global(.theme-light .policy-addon-fee-alert) {
-        color: var(--mid-neutrals-60, #6c6c71);
     }
 
     .u-padding-block-start-10 {
