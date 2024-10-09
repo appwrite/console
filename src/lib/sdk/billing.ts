@@ -277,6 +277,8 @@ export type Plan = {
         users: AdditionalResource;
     };
     trialDays: number;
+    isAvailable: boolean;
+    selfService: boolean;
 };
 
 export type PlansInfo = {
