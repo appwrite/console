@@ -60,16 +60,17 @@
             ];
 
             const [archivesResponse, restorationsResponse] = await Promise.all([
-                sdk.forProject.backups.listArchives(query),
+                sdk.forProject.backups.listArchives([
+                    ...query,
+                    // only manual backups
+                    Query.isNull('policyId')
+                ]),
                 sdk.forProject.backups.listRestorations(query)
             ]);
 
             // this is a one time op.
             backupRestoreItems.archives = new Map(
-                archivesResponse.archives
-                    // null policyId means manual backup
-                    .filter((item) => !item.policyId)
-                    .map((item) => [item.$id, item])
+                archivesResponse.archives.map((item) => [item.$id, item])
             );
 
             backupRestoreItems.restorations = new Map(
