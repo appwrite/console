@@ -30,10 +30,11 @@
         WizardSecondaryFooter
     } from '$lib/layout';
     import { type Coupon, type PaymentList } from '$lib/sdk/billing';
-    import { plansInfo, tierToPlan, type Tier } from '$lib/stores/billing';
+    import { buildOrgRedirectURL, plansInfo, tierToPlan, type Tier } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { organization, organizationList, type Organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
+    import { confirmPayment } from '$lib/stores/stripe.js';
     import { user } from '$lib/stores/user';
     import { VARS } from '$lib/system';
     import { onMount } from 'svelte';
@@ -98,6 +99,17 @@
             billingPlan = BillingPlan.SCALE;
         } else {
             billingPlan = BillingPlan.PRO;
+        }
+
+        if ($page.url.searchParams.has('paymentMethod')) {
+            paymentMethodId = $page.url.searchParams.get('paymentMethod');
+        }
+        if ($page.url.searchParams.has('collaborators')) {
+            collaborators = $page.url.searchParams.get('collaborators')?.split(',') ?? [];
+        }
+        if ($page.url.searchParams.has('validate')) {
+            const id = $page.url.searchParams.get('validate');
+            await sdk.forConsole.billing.validateOrganization(id);
         }
     });
 
@@ -173,41 +185,27 @@
                 $organization.$id,
                 billingPlan,
                 paymentMethodId,
-                null
+                null,
+                collaborators?.length ? collaborators : null,
+                couponData?.code ? couponData.code : null,
+                taxId ?? null,
+                billingBudget ?? null
             );
 
-            //Add coupon
-            if (couponData?.code) {
-                await sdk.forConsole.billing.addCredit(org.$id, couponData.code);
-                trackEvent(Submit.CreditRedeem);
-            }
-
-            //Add budget
-            if (billingBudget) {
-                await sdk.forConsole.billing.updateBudget(org.$id, billingBudget, [75]);
-            }
-
-            //Add collaborators
-            if (collaborators?.length) {
-                const newCollaborators = collaborators.filter(
-                    (collaborator) =>
-                        !data?.members?.memberships?.find((m) => m.userEmail === collaborator)
+            //If the response contains a client_secret, it means that validation is required
+            if (org?.client_secret) {
+                let redirectURL = buildOrgRedirectURL(
+                    `${base}/create-organization`,
+                    org.name,
+                    billingPlan,
+                    paymentMethodId,
+                    org.$id,
+                    collaborators,
+                    couponData?.code
                 );
-                newCollaborators.forEach(async (collaborator) => {
-                    await sdk.forConsole.teams.createMembership(
-                        org.$id,
-                        ['owner'],
-                        collaborator,
-                        undefined,
-                        undefined,
-                        `${$page.url.origin}/${base}/organization-${org.$id}`
-                    );
-                });
-            }
+                await confirmPayment(org.$id, org.client_secret, paymentMethodId, redirectURL);
 
-            //Add tax ID
-            if (taxId) {
-                await sdk.forConsole.billing.updateTaxId(org.$id, taxId);
+                await sdk.forConsole.billing.validateOrganization(org.$id);
             }
 
             await invalidate(Dependencies.ACCOUNT);

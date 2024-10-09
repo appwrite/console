@@ -319,7 +319,11 @@ export class Billing {
         name: string,
         billingPlan: string,
         paymentMethodId: string,
-        billingAddressId: string = undefined
+        billingAddressId: string = undefined,
+        invites: string[] = undefined,
+        couponId: string = undefined,
+        taxId: string = undefined,
+        billingBudget: number = undefined
     ): Promise<Organization> {
         const path = `/organizations`;
         const params = {
@@ -327,7 +331,11 @@ export class Billing {
             name,
             billingPlan,
             paymentMethodId,
-            billingAddressId
+            billingAddressId,
+            invites,
+            couponId,
+            taxId,
+            billingBudget
         };
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
@@ -384,14 +392,37 @@ export class Billing {
         organizationId: string,
         billingPlan: string,
         paymentMethodId: string,
-        billingAddressId: string = undefined
+        billingAddressId: string = undefined,
+        invites: string[] = undefined,
+        couponId: string = undefined,
+        taxId: string = undefined,
+        billingBudget: number = undefined
     ): Promise<Organization> {
         const path = `/organizations/${organizationId}/plan`;
         const params = {
             organizationId,
             billingPlan,
             paymentMethodId,
-            billingAddressId
+            billingAddressId,
+            invites,
+            couponId,
+            taxId,
+            billingBudget
+        };
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'patch',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            params
+        );
+    }
+    async validateOrganization(organizationId: string): Promise<Organization> {
+        const path = `/organizations/${organizationId}/validate`;
+        const params = {
+            organizationId
         };
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(

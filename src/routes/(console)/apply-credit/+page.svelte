@@ -18,10 +18,12 @@
     } from '$lib/layout';
     import { type PaymentList } from '$lib/sdk/billing';
     import { app } from '$lib/stores/app';
+    import { buildOrgRedirectURL } from '$lib/stores/billing.js';
     import { campaigns } from '$lib/stores/campaigns';
     import { addNotification } from '$lib/stores/notifications';
     import { organizationList, type Organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
+    import { confirmPayment } from '$lib/stores/stripe.js';
     import { ID } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
@@ -83,6 +85,19 @@
         if (campaign?.plan) {
             billingPlan = campaign.plan;
         }
+        if ($page.url.searchParams.has('name')) {
+            name = $page.url.searchParams.get('name');
+        }
+        if ($page.url.searchParams.has('paymentMethod')) {
+            paymentMethodId = $page.url.searchParams.get('paymentMethod');
+        }
+        if ($page.url.searchParams.has('collaborators')) {
+            collaborators = $page.url.searchParams.get('collaborators')?.split(',') ?? [];
+        }
+        if ($page.url.searchParams.has('validate')) {
+            const id = $page.url.searchParams.get('validate');
+            await sdk.forConsole.billing.validateOrganization(id);
+        }
     });
 
     async function loadPaymentMethods() {
@@ -105,7 +120,12 @@
                     newOrgId,
                     name,
                     billingPlan,
-                    paymentMethodId
+                    paymentMethodId,
+                    null,
+                    collaborators?.length ? collaborators : null,
+                    couponData?.code ? couponData.code : null,
+                    taxId ?? null,
+                    billingBudget ?? null
                 );
             }
             // Upgrade existing org
@@ -114,42 +134,58 @@
                     selectedOrg.$id,
                     billingPlan,
                     paymentMethodId,
-                    null
+                    null,
+                    collaborators?.length ? collaborators : null,
+                    couponData?.code ? couponData.code : null,
+                    taxId ?? null,
+                    billingBudget ?? null
                 );
             }
             // Existing pro org
             else {
                 org = selectedOrg;
+
+                if (couponData?.code) {
+                    await sdk.forConsole.billing.addCredit(org.$id, couponData.code);
+                }
+                if (collaborators?.length) {
+                    collaborators.forEach(async (collaborator) => {
+                        await sdk.forConsole.teams.createMembership(
+                            org.$id,
+                            ['owner'],
+                            collaborator,
+                            undefined,
+                            undefined,
+                            `${$page.url.origin}/${base}/organization-${org.$id}`
+                        );
+                    });
+                }
+
+                if (billingBudget) {
+                    await sdk.forConsole.billing.updateBudget(org.$id, billingBudget, [75]);
+                }
+
+                if (taxId) {
+                    await sdk.forConsole.billing.updateTaxId(org.$id, taxId);
+                }
             }
 
-            // Add coupon
-            if (couponData?.code) {
-                await sdk.forConsole.billing.addCredit(org.$id, couponData.code);
+            // Confirm payment if required
+            if (org?.client_secret) {
+                let redirectURL = buildOrgRedirectURL(
+                    `${base}/apply-credit`,
+                    name,
+                    billingPlan,
+                    paymentMethodId,
+                    org.$id,
+                    collaborators,
+                    couponData?.code
+                );
+                await confirmPayment(org.$id, org.client_secret, paymentMethodId, redirectURL);
+
+                await sdk.forConsole.billing.validateOrganization(org.$id);
             }
 
-            // Add budget
-            if (billingBudget) {
-                await sdk.forConsole.billing.updateBudget(org.$id, billingBudget, [75]);
-            }
-
-            // Add collaborators
-            if (collaborators?.length) {
-                collaborators.forEach(async (collaborator) => {
-                    await sdk.forConsole.teams.createMembership(
-                        org.$id,
-                        ['owner'],
-                        collaborator,
-                        undefined,
-                        undefined,
-                        `${$page.url.origin}/${base}/organization-${org.$id}`
-                    );
-                });
-            }
-
-            // Add tax ID
-            if (taxId) {
-                await sdk.forConsole.billing.updateTaxId(org.$id, taxId);
-            }
             trackEvent(Submit.CreditRedeem, {
                 coupon: couponData.code,
                 campaign: couponData?.campaign

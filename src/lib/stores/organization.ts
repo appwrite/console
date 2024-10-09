@@ -20,6 +20,7 @@ export type Organization = Models.Team<Record<string, unknown>> & {
     amount: number;
     billingTaxId?: string;
     billingPlanDowngrade?: Tier;
+    client_secret?: string;
 };
 
 export type OrganizationList = {
