@@ -55,10 +55,12 @@
                     <span class="body-text-2">
                         {tierToPlan($organization?.billingPlan)?.name} plan</span>
                     <div class="body-text-2 u-margin-inline-start-auto">
-                        {isTrial ? formatCurrency(0) : formatCurrency(currentPlan?.price)}
+                        {isTrial || $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION
+                            ? formatCurrency(0)
+                            : formatCurrency(currentPlan?.price)}
                     </div>
                 </CollapsibleItem>
-                {#if $organization?.billingPlan !== BillingPlan.FREE && extraUsage > 0}
+                {#if $organization?.billingPlan !== BillingPlan.FREE && $organization?.billingPlan !== BillingPlan.GITHUB_EDUCATION && extraUsage > 0}
                     <CollapsibleItem isInfo gap={8}>
                         <svelte:fragment slot="beforetitle">
                             <span class="body-text-2"><b>Add-ons</b></span><span class="inline-tag"
@@ -147,7 +149,8 @@
                             }}></span>
                     </span>
                     <div class="body-text-2 u-margin-inline-start-auto">
-                        {$organization?.billingPlan === BillingPlan.FREE
+                        {$organization?.billingPlan === BillingPlan.FREE ||
+                        $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION
                             ? formatCurrency(0)
                             : formatCurrency(currentInvoice?.amount ?? 0)}
                     </div>
@@ -171,7 +174,7 @@
                         Upgrade
                     </Button>
                 </div>
-            {:else}
+            {:else if $organization?.billingPlan !== BillingPlan.GITHUB_EDUCATION}
                 <div class="u-flex u-gap-16 u-flex-wrap">
                     <Button
                         text
