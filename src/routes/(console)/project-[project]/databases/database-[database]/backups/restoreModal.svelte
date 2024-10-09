@@ -60,7 +60,7 @@
         Enter a custom {name} ID. Leave blank for a randomly generated one.
     </svelte:fragment>
     <svelte:fragment slot="content">
-        <div class="form">
+        <div class="form u-gap-8">
             <FormItem>
                 <div class="input-text-wrapper">
                     <input

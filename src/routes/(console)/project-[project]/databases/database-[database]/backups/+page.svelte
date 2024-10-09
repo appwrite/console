@@ -28,6 +28,15 @@
 
     export let data: PageData;
 
+    $: hasPolicyCreationLimitations = () => {
+        // allow when on Pro and no policy exists
+        if ($organization?.billingPlan === BillingPlan.PRO) {
+            return data.policies.total > 0;
+        } else if ($organization?.billingPlan === BillingPlan.SCALE) {
+            return false;
+        }
+    };
+
     const showFeedbackNotification = () => {
         let counter = localStorage.getItem('createBackupsCounter');
         const parsedCounter = counter ? parseInt(counter, 10) : 0;
@@ -175,6 +184,7 @@
                     buttonEvent="create_backup"
                     buttonType="secondary"
                     buttonDisabled={isDisabled}
+                    hasLimitations={hasPolicyCreationLimitations()}
                     buttonMethod={() => {
                         $showCreatePolicy = true;
                         trackEvent('click_policy_create');
@@ -192,6 +202,7 @@
                     buttonText="Manual backup"
                     buttonEvent="create_backup"
                     buttonType="secondary"
+                    hasLimitations={false}
                     buttonDisabled={isDisabled}
                     buttonMethod={() => {
                         $showCreateBackup = true;
@@ -236,7 +247,8 @@
     <Alert type="info">
         Backups do not currently support backing up relationships between data
     </Alert>
-    <CreatePolicy bind:totalPolicies isShowing={$showCreatePolicy} />
+
+    <CreatePolicy bind:totalPolicies isShowing={$showCreatePolicy} isFromBackupsTab />
 
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => ($showCreatePolicy = false)}>Cancel</Button>
@@ -246,10 +258,13 @@
 
 <Modal title="Create manual backup" bind:show={$showCreateBackup} onSubmit={createManualBackup}>
     <p class="text" data-private>
-        Manual backups are <b>retained forever</b> unless manually deleted. Use them when making significant
-        changes to your data structure or as a safeguard for future rollbacks.
+        Manual backups are <b>retained forever</b> unless manually deleted. Use for major data
+        changes or rollback safeguards.
+        <b>Depending on the size of your data, this may take a while.</b>
     </p>
-    <Alert type="info">Depending on the size of your data, this may take a while.</Alert>
+    <Alert type="info"
+        >Backups do not currently support backing up relationships between data.
+    </Alert>
     <svelte:fragment slot="footer">
         <Button text on:click={() => ($showCreateBackup = false)}>Cancel</Button>
         <Button submit>Create</Button>

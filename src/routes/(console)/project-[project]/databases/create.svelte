@@ -133,8 +133,9 @@
                             dismissible
                             on:dismiss={() => (showPlanUpgradeAlert = false)}>
                             <svelte:fragment slot="title"
-                                >This database won't be backed up</svelte:fragment>
-                            Upgrade your plan to ensure your data stays safe with advanced backup policies.
+                                >This database won't be backed up
+                            </svelte:fragment>
+                            Upgrade your plan to ensure your data stays safe and backed up.
                             <svelte:fragment slot="buttons">
                                 <Button href={$upgradeURL} text>Upgrade plan</Button>
                             </svelte:fragment>
@@ -143,7 +144,7 @@
                 {:else}
                     <CreatePolicy
                         bind:totalPolicies
-                        isShowing={showCreate}
+                        bind:isShowing={showCreate}
                         title="Backup policies"
                         subtitle="Protect your data and ensure quick recovery by adding backup policies." />
                 {/if}

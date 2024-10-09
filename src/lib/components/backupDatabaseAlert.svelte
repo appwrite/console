@@ -19,7 +19,7 @@
     {@const isFreePlan = $organization?.billingPlan === BillingPlan.FREE}
 
     {@const subtitle = isFreePlan
-        ? 'Upgrade your plan to ensure your data stays safe with advanced backup policies'
+        ? 'Upgrade your plan to ensure your data stays safe and backed up'
         : 'Protect your data by quickly adding a backup policy'}
 
     {@const ctaText = isFreePlan ? 'Upgrade plan' : 'Add backup'}

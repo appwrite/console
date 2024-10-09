@@ -35,10 +35,7 @@ const listOfPromotions: BottomModalAlertItem[] = [
             light: BackupsLight
         },
         title: 'Database Backups are available now',
-        message:
-            'Protect your data and ensure quick recovery with our new backups.<br/><b>Try for free until Jan 1st 2025 on paid plans.</b>',
-
-        isHtml: true,
+        message: 'Protect your data and ensure quick recovery with our new backups',
         plan: 'pro',
         scope: 'project',
         importance: 8,

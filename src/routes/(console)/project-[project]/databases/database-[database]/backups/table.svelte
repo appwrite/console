@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Card, DropList, DropListItem, FloatingActionBar, Modal } from '$lib/components';
-    import { Button, FormList, InputText } from '$lib/elements/forms';
+    import { Button, FormList, InputCheckbox, InputText } from '$lib/elements/forms';
     import {
         TableBody,
         TableCell,
@@ -19,16 +19,16 @@
     import { sdk } from '$lib/stores/sdk';
     import { addNotification } from '$lib/stores/notifications';
     import { invalidate } from '$app/navigation';
-    import { Dependencies } from '$lib/constants';
     import { calculateSize } from '$lib/helpers/sizeConvertion';
     import { ID } from '@appwrite.io/console';
-    import { page } from '$app/stores';
+    import { database } from '../store';
     import type { BackupArchive } from '$lib/sdk/backups';
     import { trackEvent } from '$lib/actions/analytics';
     import { copy } from '$lib/helpers/copy';
+    import { LabelCard } from '$lib/components/index.js';
+    import { Dependencies } from '$lib/constants';
 
     export let data: PageData;
-    const databaseId = $page.params.database;
 
     let showDelete = false;
     let selectedBackup: BackupArchive = null;
@@ -39,6 +39,22 @@
     let showRestore = false;
     let showCustomId = false;
     let newDatabaseInfo: { name: string; id: string } = { name: null, id: null };
+
+    let confirmSameDbRestore = false;
+    let selectedRestoreOption = 'new';
+    let restoreOptions = [
+        {
+            id: 'new',
+            title: 'Restore in new database',
+            description:
+                'Duplicate the database from the selected backup version into a new database.'
+        },
+        {
+            id: 'same',
+            title: 'Restore in current database',
+            description: 'Overwrite the current database with the selected backup version.'
+        }
+    ];
 
     const deleteBackups = async () => {
         if (!selectedBackups.length && selectedBackup) {
@@ -71,6 +87,11 @@
     };
 
     const restoreBackup = async () => {
+        if (selectedRestoreOption === 'same') {
+            newDatabaseInfo.id = $database.$id;
+            newDatabaseInfo.name = $database.name;
+        }
+
         try {
             await sdk.forProject.backups.createRestoration(
                 selectedBackup.$id,
@@ -106,6 +127,9 @@
     $: if (!showRestore && !showDelete) {
         showCustomId = false;
         selectedBackup = null;
+
+        confirmSameDbRestore = false;
+        selectedRestoreOption = 'new';
         newDatabaseInfo = { name: null, id: null };
     }
 </script>
@@ -129,10 +153,7 @@
             )}
             {@const formattedRetainedUntil = `${retainedUntil.getDate()} ${retainedUntil.toLocaleString('en-US', { month: 'short' })}, ${retainedUntil.getFullYear()} ${retainedUntil.toLocaleTimeString('en-US', { hour12: false })}`}
             <TableRow>
-                <TableCellCheck
-                    bind:selectedIds={selectedBackups}
-                    disabled={backup.status !== 'completed'}
-                    id={backup.status !== 'completed' ? null : backup.$id} />
+                <TableCellCheck id={backup.$id} bind:selectedIds={selectedBackups} />
                 <TableCell title={backup.$createdAt}>
                     <span
                         use:tooltip={{
@@ -273,20 +294,10 @@
     </svelte:fragment>
 </Modal>
 
-<Modal
-    headerDivider={false}
-    title="Restore backup"
-    bind:show={showRestore}
-    onSubmit={restoreBackup}>
-    <p class="text" data-private style="padding-inline-end: 2rem;">
-        Restoring this backup will duplicate the database from the selected backup version. This
-        action may take a while. Backups do not currently support backing up relationships between
-        data.
-    </p>
-
+<Modal headerDivider={true} title="Restore backup" bind:show={showRestore} onSubmit={restoreBackup}>
     <Card
         isTile
-        class="restore-modal-inner-card"
+        class="restore-modal-inner-card u-width-full-line"
         style="border-radius: var(--border-radius-small, 8px); padding: 1rem;">
         <div class="u-flex u-flex-vertical u-gap-4">
             <span class="body-text-2 u-bold darker-neutral-color">
@@ -299,35 +310,78 @@
                 <span class="small-ellipse">●</span>
                 {calculateSize(selectedBackup.size)}
                 <span class="small-ellipse">●</span>
-                Created {timeFromNow(selectedBackup.$createdAt)}
+
+                <!--                TODO: ellipsis-->
+                {timeFromNow(selectedBackup.$createdAt)}
             </div>
         </div>
     </Card>
 
-    <FormList gap={8}>
-        <InputText
-            id="name"
-            label="Database name"
-            placeholder="Enter database name"
-            bind:value={newDatabaseInfo.name}
-            autofocus
-            required />
+    <FormList>
+        <div class="u-flex u-flex-vertical-mobile u-gap-16">
+            {#each restoreOptions as restoreOption}
+                <div class="u-width-full-line">
+                    <LabelCard
+                        padding={1}
+                        name="restore"
+                        value={restoreOption.id}
+                        bind:group={selectedRestoreOption}>
+                        <svelte:fragment slot="custom">
+                            <div class="u-flex u-flex-vertical u-gap-4 u-width-full-line">
+                                <h4 class="body-text-2 u-bold">
+                                    {restoreOption.title}
+                                </h4>
+                                <p class="u-color-text-offline u-small">
+                                    {restoreOption.description}
+                                </p>
+                            </div>
+                        </svelte:fragment>
+                    </LabelCard>
+                </div>
+            {/each}
+        </div>
 
-        {#if !showCustomId}
-            <div>
-                <Pill button on:click={() => (showCustomId = !showCustomId)}
-                    ><span class="icon-pencil" aria-hidden="true" /><span class="text">
-                        Database ID
-                    </span></Pill>
+        {#if selectedRestoreOption === 'new'}
+            <div class="u-flex-vertical u-gap-8">
+                <InputText
+                    id="name"
+                    label="Database name"
+                    placeholder="Enter database name"
+                    bind:value={newDatabaseInfo.name}
+                    autofocus
+                    required />
+
+                {#if !showCustomId}
+                    <div>
+                        <Pill button on:click={() => (showCustomId = !showCustomId)}
+                            ><span class="icon-pencil" aria-hidden="true" /><span class="text">
+                                Database ID
+                            </span></Pill>
+                    </div>
+                {:else}
+                    <div class="u-flex u-flex-vertical u-gap-8">
+                        <RestoreModal
+                            autofocus={false}
+                            name="Database"
+                            bind:show={showCustomId}
+                            databaseId={$database.$id}
+                            bind:id={newDatabaseInfo.id} />
+                    </div>
+                {/if}
             </div>
         {:else}
-            <div class="u-flex u-flex-vertical u-gap-8">
-                <RestoreModal
-                    bind:show={showCustomId}
-                    name="Database"
-                    {databaseId}
-                    bind:id={newDatabaseInfo.id}
-                    autofocus={false} />
+            <div class="input-check-box-friction">
+                <InputCheckbox
+                    required
+                    size="small"
+                    id="delete_policy"
+                    bind:checked={confirmSameDbRestore}>
+                    <svelte:fragment slot="description">
+                        <span style="margin-block-start: 1px;">
+                            Overwrite <b>{$database.name}</b> with the selected backup version
+                        </span>
+                    </svelte:fragment>
+                </InputCheckbox>
             </div>
         {/if}
     </FormList>

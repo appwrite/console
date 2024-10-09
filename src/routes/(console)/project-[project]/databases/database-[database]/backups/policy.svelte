@@ -283,14 +283,6 @@
             </div>
         {/if}
     </Card>
-
-    {#if policies.total > 0}
-        <span class="policy-item-subtitles policy-addon-fee-alert">
-            Database backups are free until <b>January 1st, 2025</b>. Starting then, a {formatCurrency(
-                policyPricing
-            )} fee will apply per backup policy.
-        </span>
-    {/if}
 </div>
 
 <Modal

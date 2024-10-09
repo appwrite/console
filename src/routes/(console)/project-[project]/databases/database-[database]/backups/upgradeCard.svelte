@@ -16,7 +16,7 @@
     import { isCloud } from '$lib/system';
 
     const title = isCloud
-        ? 'Backups are available for free on paid plans until Jan 1st 2025'
+        ? 'Backups are available on paid plans'
         : 'Database Backups are available on Appwrite Cloud';
 
     const message = isCloud

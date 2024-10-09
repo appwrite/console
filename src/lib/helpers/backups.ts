@@ -20,9 +20,7 @@ export const cronExpression = (policy: UserBackupPolicy) => {
     if (policy.plainTextFrequency === 'hourly') {
         const utcMinute = now.getUTCMinutes();
 
-        if (policy.default) {
-            policy.schedule = policy.schedule.replace('{time}', `${utcMinute} *`);
-        } else {
+        if (!policy.default) {
             policy.schedule = `${utcMinute} * * * *`;
         }
         return;
@@ -31,13 +29,8 @@ export const cronExpression = (policy: UserBackupPolicy) => {
     let cronExpression = '';
 
     if (policy.default) {
-        now.setHours(0, 0, 0); // remove this if we need to use local time.
-        const utcHour = now.getUTCHours();
-        const utcMinute = now.getUTCMinutes();
-
-        // TODO: confirm if we need to use current time here or midnight.
-
-        cronExpression = policy.schedule.replace('{time}', `${utcMinute} ${utcHour}`);
+        // default should use utc.
+        cronExpression = policy.schedule;
     } else {
         const [localHour, localMinute] = policy.selectedTime.split(':');
         now.setHours(parseInt(localHour), parseInt(localMinute), 0);

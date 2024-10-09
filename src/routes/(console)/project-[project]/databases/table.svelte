@@ -56,6 +56,7 @@
         } finally {
             selected = [];
             showDelete = false;
+            confirmedDeletion = false;
         }
     }
 
