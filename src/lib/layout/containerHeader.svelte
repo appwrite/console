@@ -78,6 +78,10 @@
     onMount(() => {
         dispatch('data', { isButtonDisabled, limit, tier });
     });
+
+    // on free plan, if the only db is deleted,
+    // `create database` button needs to be enabled again.
+    $: if (isLimited) dispatch('data', { isButtonDisabled, limit, tier });
 </script>
 
 <!-- Show only if on Cloud, alerts are enabled, and it isn't a project limited service -->
