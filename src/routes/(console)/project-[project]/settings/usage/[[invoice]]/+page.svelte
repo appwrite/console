@@ -31,8 +31,7 @@
     $: storage =
         data.usage.filesStorageTotal +
         data.usage.deploymentsStorageTotal +
-        data.usage.buildsStorageTotal +
-        data.usage.backupsStorageTotal;
+        data.usage.buildsStorageTotal;
 
     const tier = data?.currentInvoice?.plan ?? $organization?.billingPlan;
     const plan = tierToPlan(tier).name;
@@ -268,7 +267,7 @@
         <Heading tag="h6" size="7">Storage</Heading>
 
         <p class="text">
-            Calculated for all your files, deployments, builds, databases and backups. While in beta, only
+            Calculated for all your files, deployments, builds and databases. While in beta, only
             file storage is counted against your plan limits.
         </p>
 
@@ -282,14 +281,6 @@
                         tooltip: {
                             title: 'File storage',
                             label: `${Math.round(bytesToSize(data.usage.filesStorageTotal, 'MB') * 100) / 100}MB`
-                        }
-                    },
-                    {
-                        size: bytesToSize(data.usage.backupsStorageTotal, 'MB'),
-                        color: '#FF6F61',
-                        tooltip: {
-                            title: 'Backups storage',
-                            label: `${Math.round(bytesToSize(data.usage.backupsStorageTotal, 'MB') * 100) / 100}MB`
                         }
                     },
                     {

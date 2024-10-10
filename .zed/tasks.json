@@ -1,0 +1,16 @@
+[
+    {
+        "label": "Start Stack",
+        "command": "docker compose up -d",
+        "hide": "on_success"
+    },
+    {
+        "label": "Start Stack with build",
+        "command": "docker compose up -d --build",
+        "hide": "on_success"
+    },
+    {
+        "label": "Dev",
+        "command": "pnpm dev"
+    }
+]
