@@ -7,21 +7,20 @@
     import { organization } from '$lib/stores/organization';
     import { onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
-    import type { Invoice } from '$lib/sdk/billing';
-    import { Query } from '@appwrite.io/console';
+    import { Query, type Models } from '@appwrite.io/console';
     import { abbreviateNumber, formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
-    import { BillingPlan } from '$lib/constants';
+    import { BillingPlan } from '@appwrite.io/console';
     import { trackEvent } from '$lib/actions/analytics';
     import { tooltip } from '$lib/actions/tooltip';
 
-    let currentInvoice: Invoice;
+    let currentInvoice: Models.Invoice;
     let extraMembers = 0;
-    let currentPlan;
+    let currentPlan: Models.BillingPlan;
 
     const today = new Date();
     onMount(async () => {
-        const invoices = await sdk.forConsole.billing.listInvoices($organization.$id, [
+        const invoices = await sdk.forConsole.organizations.listInvoices($organization.$id, [
             Query.limit(1),
             Query.equal('from', $organization.billingCurrentInvoiceDate)
         ]);
@@ -29,14 +28,14 @@
         const members = await sdk.forConsole.teams.listMemberships($organization.$id, []);
         extraMembers = members.total > 1 ? members.total - 1 : 0;
 
-        currentPlan = await sdk.forConsole.billing.getPlan($organization?.$id);
+        currentPlan = await sdk.forConsole.organizations.getPlan($organization?.$id);
     });
 
     $: extraUsage = (currentInvoice?.amount ?? 0) - (currentPlan?.price ?? 0);
     $: extraAddons = currentInvoice?.usage?.length ?? 0;
     $: isTrial =
         new Date($organization?.billingStartDate).getTime() - today.getTime() > 0 &&
-        $plansInfo.get($organization.billingPlan)?.trialDays;
+        $plansInfo.get($organization.billingPlan)?.trial;
 </script>
 
 {#if $organization}
@@ -61,7 +60,7 @@
                         {isTrial ? formatCurrency(0) : formatCurrency(currentPlan?.price)}
                     </div>
                 </CollapsibleItem>
-                {#if $organization?.billingPlan !== BillingPlan.FREE && extraUsage > 0}
+                {#if $organization?.billingPlan !== BillingPlan.Tier0 && extraUsage > 0}
                     <CollapsibleItem isInfo gap={8}>
                         <svelte:fragment slot="beforetitle">
                             <span class="body-text-2"><b>Add-ons</b></span><span class="inline-tag"
@@ -151,7 +150,7 @@
                             }}></span>
                     </span>
                     <div class="body-text-2 u-margin-inline-start-auto">
-                        {$organization?.billingPlan === BillingPlan.FREE
+                        {$organization?.billingPlan === BillingPlan.Tier0
                             ? formatCurrency(0)
                             : formatCurrency(currentInvoice?.amount ?? 0)}
                     </div>
@@ -159,7 +158,7 @@
             </Collapsible>
         </svelte:fragment>
         <svelte:fragment slot="actions">
-            {#if $organization?.billingPlan === BillingPlan.FREE}
+            {#if $organization?.billingPlan === BillingPlan.Tier0}
                 <div class="u-flex u-gap-16 u-flex-wrap">
                     <Button text href={`${base}/organization-${$organization?.$id}/usage`}>
                         View estimated usage

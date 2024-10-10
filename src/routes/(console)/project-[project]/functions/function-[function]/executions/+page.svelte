@@ -1,7 +1,8 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { Alert, EmptySearch, PaginationWithLimit, ViewSelector } from '$lib/components';
-    import { BillingPlan, Dependencies } from '$lib/constants';
+    import { Dependencies } from '$lib/constants';
+    import { BillingPlan } from '@appwrite.io/console';
     import { Button } from '$lib/elements/forms';
     import { hoursToDays } from '$lib/helpers/date';
     import { Container, ContainerHeader } from '$lib/layout';
@@ -171,7 +172,7 @@
                     {hoursToDays(logs)} of logs
                 </li>
             </ul>
-            {#if $organization?.billingPlan === BillingPlan.FREE}
+            {#if $organization?.billingPlan === BillingPlan.Tier0}
                 <p class="text">
                     <button class="link" type="button" on:click|preventDefault={upgradeMethod}
                         >Upgrade</button>

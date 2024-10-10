@@ -37,7 +37,7 @@
     async function deleteOrg() {
         try {
             if (isCloud) {
-                await sdk.forConsole.billing.deleteOrganization($organization.$id);
+                await sdk.forConsole.organizations.delete($organization.$id);
             } else {
                 await sdk.forConsole.teams.delete($organization.$id);
             }

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { BillingPlan } from '$lib/constants';
+    import { BillingPlan } from '@appwrite.io/console';
     import { formatCurrency } from '$lib/helpers/numbers';
     import { plansInfo, tierFree, tierPro, tierScale, type Tier } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
@@ -12,9 +12,9 @@
     let classes: string = '';
     export { classes as class };
 
-    $: freePlan = $plansInfo.get(BillingPlan.FREE);
-    $: proPlan = $plansInfo.get(BillingPlan.PRO);
-    $: scalePlan = $plansInfo.get(BillingPlan.SCALE);
+    $: freePlan = $plansInfo.get(BillingPlan.Tier0);
+    $: proPlan = $plansInfo.get(BillingPlan.Tier1);
+    $: scalePlan = $plansInfo.get(BillingPlan.Tier2);
 </script>
 
 {#if billingPlan}
@@ -24,7 +24,7 @@
                 name="plan"
                 bind:group={billingPlan}
                 disabled={anyOrgFree || !selfService}
-                value={BillingPlan.FREE}
+                value={BillingPlan.Tier0}
                 tooltipShow={anyOrgFree}
                 tooltipText="You are limited to 1 Free organization per account."
                 padding={1.5}>
@@ -34,7 +34,7 @@
                         class:u-opacity-50={disabled}>
                         <h4 class="body-text-2 u-bold">
                             {tierFree.name}
-                            {#if $organization?.billingPlan === BillingPlan.FREE && !isNewOrg}
+                            {#if $organization?.billingPlan === BillingPlan.Tier0 && !isNewOrg}
                                 <span class="inline-tag">Current plan</span>
                             {/if}
                         </h4>
@@ -54,7 +54,7 @@
                 name="plan"
                 disabled={!selfService}
                 bind:group={billingPlan}
-                value={BillingPlan.PRO}
+                value={BillingPlan.Tier1}
                 padding={1.5}>
                 <svelte:fragment slot="custom" let:disabled>
                     <div
@@ -62,7 +62,7 @@
                         class:u-opacity-50={disabled}>
                         <h4 class="body-text-2 u-bold">
                             {tierPro.name}
-                            {#if $organization?.billingPlan === BillingPlan.PRO && !isNewOrg}
+                            {#if $organization?.billingPlan === BillingPlan.Tier1 && !isNewOrg}
                                 <span class="inline-tag">Current plan</span>
                             {/if}
                         </h4>
@@ -76,18 +76,18 @@
                 </svelte:fragment>
             </LabelCard>
         </li>
-        {#if $organization?.billingPlan === BillingPlan.SCALE}
+        {#if $organization?.billingPlan === BillingPlan.Tier2}
             <li>
                 <LabelCard
                     name="plan"
                     bind:group={billingPlan}
-                    value={BillingPlan.SCALE}
+                    value={BillingPlan.Tier2}
                     padding={1.5}>
                     <svelte:fragment slot="custom">
                         <div class="u-flex u-flex-vertical u-gap-4 u-width-full-line">
                             <h4 class="body-text-2 u-bold">
                                 {tierScale.name}
-                                {#if $organization?.billingPlan === BillingPlan.SCALE && !isNewOrg}
+                                {#if $organization?.billingPlan === BillingPlan.Tier2 && !isNewOrg}
                                     <span class="inline-tag">Current plan</span>
                                 {/if}
                             </h4>

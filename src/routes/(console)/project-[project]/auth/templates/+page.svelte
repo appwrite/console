@@ -51,7 +51,7 @@
     import { baseEmailTemplate, emailTemplate } from './store';
     import { Button } from '$lib/elements/forms';
     import { organization } from '$lib/stores/organization';
-    import { BillingPlan } from '$lib/constants';
+    import { BillingPlan } from '@appwrite.io/console';
     import EmailSignature from './emailSignature.svelte';
     import { isCloud } from '$lib/system';
     import type {
@@ -268,7 +268,7 @@
             </Collapsible>
         </svelte:fragment>
     </CardGrid>-->
-    {#if isCloud && $organization?.billingPlan === BillingPlan.FREE}
+    {#if isCloud && $organization?.billingPlan === BillingPlan.Tier0}
         <EmailSignature />
     {/if}
 </Container>

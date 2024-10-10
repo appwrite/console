@@ -1,13 +1,13 @@
 <script lang="ts">
     import { tooltip } from '$lib/actions/tooltip';
-    import { BillingPlan } from '$lib/constants';
+    import { BillingPlan } from '@appwrite.io/console';
     import { Button } from '$lib/elements/forms';
     import { tierToPlan } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
 
     export let title: string;
     export let tooltipContent =
-        $organization?.billingPlan === BillingPlan.FREE
+        $organization?.billingPlan === BillingPlan.Tier0
             ? `Upgrade to add more ${title.toLocaleLowerCase()}`
             : `You've reached the ${title.toLocaleLowerCase()} limit for the ${
                   tierToPlan($organization?.billingPlan)?.name

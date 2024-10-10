@@ -10,19 +10,19 @@
         DropListItem,
         Heading
     } from '$lib/components';
-    import { BillingPlan, Dependencies } from '$lib/constants';
+    import { Dependencies } from '$lib/constants';
     import { addNotification } from '$lib/stores/notifications';
     import { organization } from '$lib/stores/organization';
     import { Button } from '$lib/elements/forms';
     import { hasStripePublicKey, isCloud } from '$lib/system';
     import { paymentMethods } from '$lib/stores/billing';
-    import type { PaymentMethodData } from '$lib/sdk/billing';
     import DeleteOrgPayment from './deleteOrgPayment.svelte';
     import ReplaceCard from './replaceCard.svelte';
     import EditPaymentModal from '$routes/(console)/account/payments/editPaymentModal.svelte';
     import { tooltip } from '$lib/actions/tooltip';
     import PaymentModal from '$lib/components/billing/paymentModal.svelte';
     import { user } from '$lib/stores/user';
+    import { BillingPlan, type Models } from '@appwrite.io/console';
 
     let showDropdown = false;
     let showDropdownBackup = false;
@@ -32,12 +32,12 @@
     let showDelete = false;
     let showReplace = false;
     let isSelectedBackup = false;
-    let defaultPaymentMethod: PaymentMethodData;
-    let backupPaymentMethod: PaymentMethodData;
+    let defaultPaymentMethod: Models.PaymentMethod;
+    let backupPaymentMethod: Models.PaymentMethod;
 
     async function addPaymentMethod(paymentMethodId: string) {
         try {
-            await sdk.forConsole.billing.setOrganizationPaymentMethod(
+            await sdk.forConsole.organizations.setDefaultPaymentMethod(
                 $organization.$id,
                 paymentMethodId
             );
@@ -58,7 +58,7 @@
 
     async function addBackupPaymentMethod(paymentMethodId: string) {
         try {
-            await sdk.forConsole.billing.setOrganizationPaymentMethodBackup(
+            await sdk.forConsole.organizations.setBackupPaymentMethod(
                 $organization.$id,
                 paymentMethodId
             );
@@ -77,14 +77,14 @@
     }
 
     $: if ($organization?.backupPaymentMethodId) {
-        sdk.forConsole.billing
-            .getOrganizationPaymentMethod($organization.$id, $organization.backupPaymentMethodId)
+        sdk.forConsole.organizations
+            .getPaymentMethod($organization.$id, $organization.backupPaymentMethodId)
             .then((res) => (backupPaymentMethod = res));
     }
 
     $: if ($organization?.paymentMethodId) {
-        sdk.forConsole.billing
-            .getOrganizationPaymentMethod($organization.$id, $organization.paymentMethodId)
+        sdk.forConsole.organizations
+            .getPaymentMethod($organization.$id, $organization.paymentMethodId)
             .then((res) => (defaultPaymentMethod = res));
     }
 
@@ -332,5 +332,5 @@
         bind:showDelete
         {hasOtherMethod}
         isBackup={isSelectedBackup}
-        disabled={$organization?.billingPlan !== BillingPlan.FREE && !hasOtherMethod} />
+        disabled={$organization?.billingPlan !== BillingPlan.Tier0 && !hasOtherMethod} />
 {/if}

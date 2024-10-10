@@ -2,7 +2,6 @@
     import { FormList } from '$lib/elements/forms';
     import { WizardStep } from '$lib/layout';
     import { onMount } from 'svelte';
-    import type { PaymentList } from '$lib/sdk/billing';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { initializeStripe, isStripeInitialized, submitStripeCard } from '$lib/stores/stripe';
@@ -10,12 +9,13 @@
     import { PaymentBoxes } from '$lib/components/billing';
     import { addCreditWizardStore } from '../store';
     import { organization } from '$lib/stores/organization';
+    import type { Models } from '@appwrite.io/console';
 
-    let methods: PaymentList;
+    let methods: Models.PaymentMethodList;
     let name: string;
 
     onMount(async () => {
-        methods = await sdk.forConsole.billing.listPaymentMethods();
+        methods = await sdk.forConsole.account.listPaymentMethods();
         $addCreditWizardStore.paymentMethodId =
             methods.paymentMethods.find((method) => !!method?.last4)?.$id ?? null;
     });

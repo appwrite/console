@@ -11,7 +11,8 @@
     import { addNotification, dismissAllNotifications } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { invalidate } from '$app/navigation';
-    import { BillingPlan, Dependencies } from '$lib/constants';
+    import { Dependencies } from '$lib/constants';
+    import { BillingPlan } from '@appwrite.io/console';
     import { isCloud, isSelfHosted } from '$lib/system';
     import { organization } from '$lib/stores/organization';
     import { onMount } from 'svelte';
@@ -24,15 +25,15 @@
 
     let policyCreateError: string;
     let totalPolicies: UserBackupPolicy[] = [];
-    let isDisabled = isSelfHosted || (isCloud && $organization?.billingPlan === BillingPlan.FREE);
+    let isDisabled = isSelfHosted || (isCloud && $organization?.billingPlan === BillingPlan.Tier0);
 
     export let data: PageData;
 
     $: hasPolicyCreationLimitations = () => {
         // allow when on Pro and no policy exists
-        if ($organization?.billingPlan === BillingPlan.PRO) {
+        if ($organization?.billingPlan === BillingPlan.Tier1) {
             return data.policies.total > 0;
-        } else if ($organization?.billingPlan === BillingPlan.SCALE) {
+        } else if ($organization?.billingPlan === BillingPlan.Tier2) {
             return false;
         }
     };

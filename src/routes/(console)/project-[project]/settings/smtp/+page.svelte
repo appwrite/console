@@ -13,7 +13,8 @@
     import InputPassword from '$lib/elements/forms/inputPassword.svelte';
     import { sdk } from '$lib/stores/sdk';
     import { invalidate } from '$app/navigation';
-    import { BillingPlan, Dependencies } from '$lib/constants';
+    import { Dependencies } from '$lib/constants';
+    import { BillingPlan } from '@appwrite.io/console';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import InputNumber from '$lib/elements/forms/inputNumber.svelte';
@@ -132,7 +133,7 @@
                     class="link">here</a>
             </p>
             <svelte:fragment slot="aside">
-                {#if $organization.billingPlan === BillingPlan.FREE}
+                {#if $organization.billingPlan === BillingPlan.Tier0}
                     <Alert type="info">
                         Custom SMTP is a Pro plan feature. Upgrade to enable custom SMTP sever.
                         <svelte:fragment slot="action">
@@ -206,7 +207,7 @@
             <svelte:fragment slot="actions">
                 <Button
                     submit
-                    disabled={isButtonDisabled || $organization.billingPlan === BillingPlan.FREE}>
+                    disabled={isButtonDisabled || $organization.billingPlan === BillingPlan.Tier0}>
                     Update
                 </Button>
             </svelte:fragment>

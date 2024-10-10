@@ -17,7 +17,7 @@
     import { BarChart } from '$lib/charts';
     import { formatNum } from '$lib/helpers/string';
     import { total } from '$lib/layout/usage.svelte';
-    import { BillingPlan } from '$lib/constants.js';
+    import { BillingPlan } from '@appwrite.io/console';
     import { base } from '$app/paths';
 
     export let data;

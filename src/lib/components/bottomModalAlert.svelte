@@ -10,7 +10,7 @@
     } from '$lib/stores/bottom-alerts';
     import { onMount } from 'svelte';
     import { organization } from '$lib/stores/organization';
-    import { BillingPlan } from '$lib/constants';
+    import { BillingPlan } from '@appwrite.io/console';
     import { upgradeURL } from '$lib/stores/billing';
     import { addBottomModalAlerts } from '$routes/(console)/bottomAlerts';
     import { project } from '$routes/(console)/project-[project]/store';
@@ -74,10 +74,10 @@
             case 'free':
                 return false;
             case 'pro':
-                return organizationPlan === BillingPlan.FREE;
+                return organizationPlan === BillingPlan.Tier0;
             case 'scale':
                 return (
-                    organizationPlan === BillingPlan.FREE || organizationPlan === BillingPlan.PRO
+                    organizationPlan === BillingPlan.Tier0 || organizationPlan === BillingPlan.Tier1
                 );
         }
     }

@@ -12,7 +12,7 @@
         Tab,
         Tabs
     } from '$lib/components';
-    import { BillingPlan } from '$lib/constants';
+    import { BillingPlan } from '@appwrite.io/console';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
@@ -110,10 +110,10 @@
                             <span class="u-trim">
                                 {$organization.name}
                             </span>
-                            {#if isCloud && $organization?.billingPlan === BillingPlan.FREE}
+                            {#if isCloud && $organization?.billingPlan === BillingPlan.Tier0}
                                 <Pill class="eyebrow-heading-3">FREE</Pill>
                             {/if}
-                            {#if isCloud && $organization?.billingTrialStartDate && $daysLeftInTrial > 0 && $organization.billingPlan !== BillingPlan.FREE && $plansInfo.get($organization.billingPlan)?.trialDays}
+                            {#if isCloud && $organization?.billingTrialStartDate && $daysLeftInTrial > 0 && $organization.billingPlan !== BillingPlan.Tier0 && $plansInfo.get($organization.billingPlan)?.trial}
                                 <div
                                     class="u-flex u-cross-center"
                                     use:tooltip={{
@@ -156,7 +156,7 @@
                     <div
                         use:tooltip={{
                             content:
-                                $organization?.billingPlan === BillingPlan.FREE
+                                $organization?.billingPlan === BillingPlan.Tier0
                                     ? `Upgrade to add more members`
                                     : `You've reached the members limit for the ${
                                           tierToPlan($organization?.billingPlan)?.name

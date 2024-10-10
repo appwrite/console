@@ -42,7 +42,7 @@
 
     async function handleSubmit() {
         try {
-            const response = await sdk.forConsole.billing.createAddress(
+            const response = await sdk.forConsole.account.createBillingAddress(
                 country,
                 address,
                 city,
@@ -53,7 +53,10 @@
             trackEvent(Submit.BillingAddressCreate);
             let org: Organization = null;
             if (organization) {
-                org = await sdk.forConsole.billing.setBillingAddress(organization, response.$id);
+                org = (await sdk.forConsole.organizations.setBillingAddress(
+                    organization,
+                    response.$id
+                )) as unknown as Organization;
                 trackEvent(Submit.OrganizationBillingAddressUpdate);
                 await invalidate(Dependencies.ORGANIZATION);
             }

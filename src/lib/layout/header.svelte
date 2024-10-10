@@ -21,7 +21,8 @@
     import { sdk } from '$lib/stores/sdk';
     import { isCloud } from '$lib/system';
     import { Feedback } from '$lib/components/feedback';
-    import { BillingPlan, Dependencies } from '$lib/constants';
+    import { Dependencies } from '$lib/constants';
+    import { BillingPlan } from '@appwrite.io/console';
     import { upgradeURL } from '$lib/stores/billing';
 
     let showDropdown = false;
@@ -100,7 +101,7 @@
 
 <div class="main-header-end">
     <nav class="u-flex is-only-desktop u-cross-center">
-        {#if isCloud && $organization?.billingPlan === BillingPlan.FREE && !$page.url.pathname.startsWith('/console/account')}
+        {#if isCloud && $organization?.billingPlan === BillingPlan.Tier0 && !$page.url.pathname.startsWith('/console/account')}
             <Button
                 disabled={$organization?.markedForDeletion}
                 href={$upgradeURL}

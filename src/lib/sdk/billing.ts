@@ -1,4 +1,4 @@
-import type { Client, Models } from '@appwrite.io/console';
+import type { BillingPlan, Client, Models } from '@appwrite.io/console';
 import type { Organization, OrganizationList } from '../stores/organization';
 import type { PaymentMethod } from '@stripe/stripe-js';
 import type { Tier } from '$lib/stores/billing';
@@ -286,7 +286,7 @@ export type PlansInfo = {
     total: number;
 };
 
-export type PlansMap = Map<Tier, Plan>;
+export type PlansMap = Map<Tier, Models.BillingPlan>;
 
 export type Roles = {
     scopes: string[];

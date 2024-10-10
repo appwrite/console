@@ -19,7 +19,9 @@ export const load: PageLoad = async ({ params, depends, url, route, parent }) =>
             [Query.limit(limit), Query.offset(offset), Query.orderDesc('')],
             search
         ),
-        isCloud && organization?.$id ? sdk.forConsole.billing.listUsage(organization.$id) : null
+        isCloud && organization?.$id
+            ? sdk.forConsole.organizations.getUsage(organization.$id)
+            : null
     ]);
     return {
         offset,

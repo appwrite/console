@@ -27,9 +27,7 @@
                 ? grossCost - couponData.credits
                 : 0
             : grossCost;
-    $: trialEndDate = new Date(
-        billingPayDate.getTime() + currentPlan.trialDays * 24 * 60 * 60 * 1000
-    );
+    $: trialEndDate = new Date(billingPayDate.getTime() + currentPlan.trial * 24 * 60 * 60 * 1000);
 </script>
 
 <section
@@ -59,7 +57,7 @@
     </span>
 
     <p class="text u-margin-block-start-16">
-        Your payment method will be charged this amount plus usage fees every 30 days {!currentPlan.trialDays
+        Your payment method will be charged this amount plus usage fees every 30 days {!currentPlan.trial
             ? `starting ${toLocaleDate(billingPayDate.toString())}`
             : ` after your trial period ends on ${toLocaleDate(trialEndDate.toString())}`}.
     </p>

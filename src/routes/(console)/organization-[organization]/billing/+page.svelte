@@ -11,13 +11,12 @@
     import TaxId from './taxId.svelte';
     import { Alert, Heading } from '$lib/components';
     import { failedInvoice, paymentMethods, tierToPlan, upgradeURL } from '$lib/stores/billing';
-    import type { PaymentMethodData } from '$lib/sdk/billing';
     import { onMount } from 'svelte';
     import { page } from '$app/stores';
     import { confirmPayment } from '$lib/stores/stripe';
     import { sdk } from '$lib/stores/sdk';
     import { toLocaleDate } from '$lib/helpers/date';
-    import { BillingPlan } from '$lib/constants';
+    import { BillingPlan, type Models } from '@appwrite.io/console';
     import RetryPaymentModal from './retryPaymentModal.svelte';
     import { selectedInvoice, showRetryModal } from './store';
     import { Button } from '$lib/elements/forms';
@@ -26,11 +25,11 @@
     export let data;
 
     $: defaultPaymentMethod = $paymentMethods?.paymentMethods?.find(
-        (method: PaymentMethodData) => method.$id === $organization?.paymentMethodId
+        (method: Models.PaymentMethod) => method.$id === $organization?.paymentMethodId
     );
 
     $: backupPaymentMethod = $paymentMethods?.paymentMethods?.find(
-        (method: PaymentMethodData) => method.$id === $organization?.backupPaymentMethodId
+        (method: Models.PaymentMethod) => method.$id === $organization?.backupPaymentMethodId
     );
 
     onMount(async () => {
@@ -44,7 +43,7 @@
                 $page.url.searchParams.get('type') === 'confirmation'
             ) {
                 const invoiceId = $page.url.searchParams.get('invoice');
-                const invoice = await sdk.forConsole.billing.getInvoice(
+                const invoice = await sdk.forConsole.organizations.getInvoice(
                     $page.params.organization,
                     invoiceId
                 );
@@ -61,7 +60,7 @@
                 $page.url.searchParams.get('type') === 'retry'
             ) {
                 const invoiceId = $page.url.searchParams.get('invoice');
-                const invoice = await sdk.forConsole.billing.getInvoice(
+                const invoice = await sdk.forConsole.organizations.getInvoice(
                     $page.params.organization,
                     invoiceId
                 );
@@ -126,7 +125,7 @@
     <BillingAddress billingAddress={data?.billingAddress} />
     <TaxId />
     <BudgetCap />
-    {#if $organization?.billingPlan !== BillingPlan.FREE && !!$organization?.billingBudget}
+    {#if $organization?.billingPlan !== BillingPlan.Tier0 && !!$organization?.billingBudget}
         <BudgetAlert />
     {/if}
     <AvailableCredit />

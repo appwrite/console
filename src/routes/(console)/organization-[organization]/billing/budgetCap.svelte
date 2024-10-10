@@ -2,7 +2,8 @@
     import { invalidate } from '$app/navigation';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Alert, CardGrid, Heading } from '$lib/components';
-    import { BillingPlan, Dependencies } from '$lib/constants';
+    import { Dependencies } from '$lib/constants';
+    import { BillingPlan } from '@appwrite.io/console';
     import { Button, Form, FormList, InputNumber, InputSwitch } from '$lib/elements/forms';
     import { showUsageRatesModal, upgradeURL } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
@@ -20,7 +21,7 @@
 
     async function updateBudget() {
         try {
-            await sdk.forConsole.billing.updateBudget(
+            await sdk.forConsole.organizations.updateBudget(
                 $organization.$id,
                 budget,
                 $organization.budgetAlerts
@@ -59,7 +60,7 @@
                 class="link">Learn more about usage rates.</button>
         </p>
         <svelte:fragment slot="aside">
-            {#if $organization?.billingPlan === BillingPlan.FREE}
+            {#if $organization?.billingPlan === BillingPlan.Tier0}
                 <Alert type="info">
                     <svelte:fragment slot="title">
                         Budget caps are a Pro plan feature
@@ -92,7 +93,7 @@
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            {#if $organization?.billingPlan === BillingPlan.FREE}
+            {#if $organization?.billingPlan === BillingPlan.Tier0}
                 <Button
                     secondary
                     href={$upgradeURL}

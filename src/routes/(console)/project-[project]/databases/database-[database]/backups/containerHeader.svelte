@@ -4,7 +4,7 @@
     import { Pill } from '$lib/elements';
     import { wizard } from '$lib/stores/wizard';
     import SupportWizard from '$routes/(console)/supportWizard.svelte';
-    import { BillingPlan } from '$lib/constants';
+    import { BillingPlan } from '@appwrite.io/console';
     import { organization } from '$lib/stores/organization';
 
     export let isFlex = true;
@@ -27,7 +27,7 @@
     <div class="u-flex u-cross-child-center u-cross-center u-gap-12">
         <div class="body-text-1 u-bold backups-title">{title}</div>
 
-        {#if hasLimitations && $organization.billingPlan === BillingPlan.PRO}
+        {#if hasLimitations && $organization.billingPlan === BillingPlan.Tier1}
             <div style="height: 40px; padding-block-start: 4px">
                 <DropList bind:show={showDropdown} width="16">
                     <Pill button on:click={() => (showDropdown = true)}>

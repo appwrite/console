@@ -1,6 +1,6 @@
 //campaign welcome and startup
 
-import { BillingPlan } from '$lib/constants';
+import { BillingPlan } from '@appwrite.io/console';
 
 export type CampaignData = {
     title: string;
@@ -57,7 +57,7 @@ campaigns
         description:
             "We're excited to have you on board. Add your credit code to your Appwrite Scale account to join.",
         onlyNewOrgs: true,
-        plan: BillingPlan.SCALE,
+        plan: BillingPlan.Tier2,
         data: {
             cta: 'Get everything out of Cloud with Scale',
             claimed: 'Your credits will be valid for 12 months.',

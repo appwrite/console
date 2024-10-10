@@ -6,7 +6,7 @@
     import { showSupportModal } from '$routes/(console)/wizard/support/store';
     import { isCloud } from '$lib/system';
     import { organization } from '$lib/stores/organization';
-    import { BillingPlan } from '$lib/constants';
+    import { BillingPlan } from '@appwrite.io/console';
     import { trackEvent } from '$lib/actions/analytics';
     import { localeTimezoneName, utcHourToLocaleHour } from '$lib/helpers/date';
     import { upgradeURL } from '$lib/stores/billing';
@@ -14,8 +14,8 @@
     export let show = false;
 
     $: isPaid =
-        $organization?.billingPlan === BillingPlan.PRO ||
-        $organization?.billingPlan === BillingPlan.SCALE;
+        $organization?.billingPlan === BillingPlan.Tier1 ||
+        $organization?.billingPlan === BillingPlan.Tier2;
 
     $: supportTimings = `${utcHourToLocaleHour('16:00')} - ${utcHourToLocaleHour('00:00')} ${localeTimezoneName()}`;
 </script>
@@ -30,7 +30,7 @@
                 </p>
             {/if}
         </div>
-        {#if $organization?.billingPlan === BillingPlan.FREE}
+        {#if $organization?.billingPlan === BillingPlan.Tier0}
             <Button
                 fullWidth
                 href={$upgradeURL}

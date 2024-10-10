@@ -4,6 +4,7 @@ import {
     Account,
     Assistant,
     Avatars,
+    Backups,
     Client,
     Console,
     Databases,
@@ -12,8 +13,8 @@ import {
     Locale,
     Messaging,
     Migrations,
+    Organizations,
     Project,
-    Project as ProjectApi,
     Projects,
     Proxy,
     Storage,
@@ -21,8 +22,6 @@ import {
     Users,
     Vcs
 } from '@appwrite.io/console';
-import { Billing } from '../sdk/billing';
-import { Backups } from '../sdk/backups';
 import { Sources } from '$lib/sdk/sources';
 
 export function getApiEndpoint(): string {
@@ -49,7 +48,6 @@ const sdkForProject = {
     locale: new Locale(clientProject),
     messaging: new Messaging(clientProject),
     project: new Project(clientProject),
-    projectApi: new ProjectApi(clientProject),
     storage: new Storage(clientProject),
     teams: new Teams(clientProject),
     users: new Users(clientProject),
@@ -76,11 +74,11 @@ export const sdk = {
         locale: new Locale(clientConsole),
         projects: new Projects(clientConsole),
         teams: new Teams(clientConsole),
+        organizations: new Organizations(clientConsole),
         users: new Users(clientConsole),
         migrations: new Migrations(clientConsole),
         console: new Console(clientConsole),
         assistant: new Assistant(clientConsole),
-        billing: new Billing(clientConsole),
         sources: new Sources(clientConsole)
     },
     get forProject() {

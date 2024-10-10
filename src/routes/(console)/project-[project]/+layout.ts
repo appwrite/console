@@ -20,7 +20,7 @@ export const load: LayoutLoad = async ({ params, depends }) => {
         let roles = isCloud ? [] : defaultRoles;
         let scopes = isCloud ? [] : defaultScopes;
         if (isCloud) {
-            const res = await sdk.forConsole.billing.getRoles(project.teamId);
+            const res = await sdk.forConsole.organizations.getScopes(project.teamId);
             roles = res.roles;
             scopes = res.scopes;
             if (scopes.includes('billing.read')) {

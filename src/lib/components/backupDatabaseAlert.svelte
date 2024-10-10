@@ -1,6 +1,5 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { BillingPlan } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { organization } from '$lib/stores/organization';
     import { HeaderAlert } from '$lib/layout';
@@ -8,6 +7,7 @@
     import { upgradeURL } from '$lib/stores/billing';
     import { hideNotification } from '$lib/helpers/notifications';
     import { backupsBannerId, showPolicyAlert } from '$lib/stores/database';
+    import { BillingPlan } from '@appwrite.io/console';
 
     function handleClose() {
         showPolicyAlert.set(false);
@@ -16,7 +16,7 @@
 </script>
 
 {#if $showPolicyAlert && isCloud && $organization?.$id && $page.url.pathname.match(/\/databases\/database-[^/]+$/)}
-    {@const isFreePlan = $organization?.billingPlan === BillingPlan.FREE}
+    {@const isFreePlan = $organization?.billingPlan === BillingPlan.Tier0}
 
     {@const subtitle = isFreePlan
         ? 'Upgrade your plan to ensure your data stays safe and backed up'

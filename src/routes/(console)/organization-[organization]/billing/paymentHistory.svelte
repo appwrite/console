@@ -22,9 +22,8 @@
     } from '$lib/elements/table';
     import { toLocaleDate } from '$lib/helpers/date';
     import { formatCurrency } from '$lib/helpers/numbers';
-    import type { Invoice, InvoiceList } from '$lib/sdk/billing';
     import { getApiEndpoint, sdk } from '$lib/stores/sdk';
-    import { Query } from '@appwrite.io/console';
+    import { Query, type Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { trackEvent } from '$lib/actions/analytics';
     import { selectedInvoice, showRetryModal } from './store';
@@ -34,7 +33,7 @@
     let showFailedError = false;
 
     let offset = 0;
-    let invoiceList: InvoiceList = {
+    let invoiceList: Models.InvoiceList = {
         invoices: [],
         total: 0
     };
@@ -45,7 +44,7 @@
     onMount(request);
 
     async function request() {
-        invoiceList = await sdk.forConsole.billing.listInvoices($page.params.organization, [
+        invoiceList = await sdk.forConsole.organizations.listInvoices($page.params.organization, [
             Query.limit(limit),
             Query.offset(offset),
             Query.notEqual('from', $organization.billingCurrentInvoiceDate),
@@ -53,7 +52,7 @@
         ]);
     }
 
-    function retryPayment(invoice: Invoice) {
+    function retryPayment(invoice: Models.Invoice) {
         $selectedInvoice = invoice;
         $showRetryModal = true;
     }

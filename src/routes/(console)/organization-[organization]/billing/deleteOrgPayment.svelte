@@ -6,7 +6,8 @@
     import { sdk } from '$lib/stores/sdk';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { organization } from '$lib/stores/organization';
-    import { BillingPlan, Dependencies } from '$lib/constants';
+    import { Dependencies } from '$lib/constants';
+    import { BillingPlan } from '@appwrite.io/console';
 
     export let showDelete = false;
     export let isBackup = false;
@@ -16,10 +17,10 @@
     let error: string;
 
     async function removeDefaultMethod() {
-        if ($organization?.billingPlan !== BillingPlan.FREE && !hasOtherMethod) return;
+        if ($organization?.billingPlan !== BillingPlan.Tier0 && !hasOtherMethod) return;
 
         try {
-            await sdk.forConsole.billing.removeOrganizationPaymentMethod($organization.$id);
+            await sdk.forConsole.organizations.deleteDefaultPaymentMethod($organization.$id);
             addNotification({
                 type: 'success',
                 message: `The payment method has been removed from ${$organization.name}`
@@ -35,11 +36,11 @@
         }
     }
     async function removeBackuptMethod() {
-        if ($organization?.billingPlan !== BillingPlan.FREE && !hasOtherMethod) return;
+        if ($organization?.billingPlan !== BillingPlan.Tier0 && !hasOtherMethod) return;
         showDelete = false;
 
         try {
-            await sdk.forConsole.billing.removeOrganizationPaymentMethodBackup($organization.$id);
+            await sdk.forConsole.organizations.deleteBackupPaymentMethod($organization.$id);
             addNotification({
                 type: 'success',
                 message: `The payment method has been removed from ${$organization.name}`

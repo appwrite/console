@@ -16,7 +16,7 @@
 
     async function redeem() {
         try {
-            await sdk.forConsole.billing.addCredit($organization.$id, coupon);
+            await sdk.forConsole.organizations.addCredit($organization.$id, coupon);
             show = false;
             await invalidate(Dependencies.CREDIT);
             await invalidate(Dependencies.ORGANIZATION);
