@@ -50,6 +50,7 @@ export enum Dependencies {
     WEBHOOKS = 'dependency:webhooks',
     MIGRATIONS = 'dependency:migrations',
     COLLECTIONS = 'dependency:collections',
+    BACKUPS = 'dependency:backups',
     RUNTIMES = 'dependency:runtimes',
     CONSOLE_VARIABLES = 'dependency:console_variables',
     MESSAGING_PROVIDERS = 'dependency:messaging_providers',

@@ -9,6 +9,7 @@
     import { app } from '$lib/stores/app';
     import { log } from '$lib/stores/logs';
     import { newOrgModal, organization } from '$lib/stores/organization';
+    import { database, checkForDatabaseBackupPolicies } from '$lib/stores/database';
     import { wizard } from '$lib/stores/wizard';
     import { afterUpdate, onMount } from 'svelte';
     import { loading } from '$routes/store';
@@ -267,6 +268,12 @@
             feedback.switchType('nps');
         }
     }
+
+    database.subscribe(async (database) => {
+        if (!database) return;
+        // the component checks `isCloud` internally.
+        await checkForDatabaseBackupPolicies(database);
+    });
 
     organization.subscribe(async (org) => {
         if (!org) return;

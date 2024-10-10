@@ -1,6 +1,6 @@
 import { browser } from '$app/environment';
 import { VARS } from '$lib/system';
-import { writable } from 'svelte/store';
+import { get, writable } from 'svelte/store';
 import type { SvelteComponent } from 'svelte';
 import FeedbackGeneral from '$lib/components/feedback/feedbackGeneral.svelte';
 import FeedbackNps from '$lib/components/feedback/feedbackNPS.svelte';
@@ -11,6 +11,7 @@ export type Feedback = {
     notification: boolean;
     type: 'nps' | 'general';
     show: boolean;
+    source: string;
 };
 
 export type FeedbackData = {
@@ -69,13 +70,15 @@ function createFeedbackStore() {
         visualized: browser ? (parseInt(localStorage.getItem('feedbackVisualized')) ?? 0) : 0,
         notification: false,
         type: 'general',
-        show: false
+        show: false,
+        source: 'n/a'
     });
     return {
         subscribe,
         update,
-        toggleFeedback: () => {
+        toggleFeedback: (source: string = 'n/a') => {
             update((feedback) => {
+                feedback.source = source;
                 feedback.show = !feedback.show;
                 return feedback;
             });
@@ -104,7 +107,8 @@ function createFeedbackStore() {
                 return feedback;
             });
         },
-        // TODO: update growth server to accept `billingPlan` and other keys.
+        // TODO: update growth server to accept `billingPlan`.
+        // TODO: update growth server to accept `source` key to know the feedback source area.
         submitFeedback: async (
             subject: string,
             message: string,
@@ -131,13 +135,21 @@ function createFeedbackStore() {
                     customFields: [
                         { id: '47364', currentPage },
                         ...(value ? [{ id: '40655', value }] : [])
-                    ]
+                    ],
+                    metaFields: {
+                        source: get(feedback).source
+                    }
                 })
             });
+
+            // reset the state
+            get(feedback).source = 'n/a';
+
             if (response.status >= 400) {
                 throw new Error('Failed to submit feedback');
             }
         }
     };
 }
+
 export const feedback = createFeedbackStore();
