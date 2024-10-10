@@ -388,7 +388,7 @@
                                         options={backupRetainingOptions} />
                                     <span class="u-flex u-flex-vertical u-gap-8">
                                         {#if customRetentionEnabled}
-                                            <div class="u-flex u-gap-8 u-padding-block-start-12">
+                                            <div class="u-flex u-gap-8">
                                                 <div class="u-width-150">
                                                     <InputNumber
                                                         min={1}
@@ -411,12 +411,22 @@
                                                 Every backup created under this policy will be
                                                 retained <b>forever</b>.
                                             {:else}
-                                                Every backup created under this policy will be
-                                                retained for <b>
-                                                    {backupRetainingOptions.find(
+                                                {@const period =
+                                                    backupRetainingOptions.find(
                                                         (option) => option.value === policyRetention
                                                     )?.label ?? '3 months'}
-                                                </b> before being automatically deleted.
+
+                                                {@const description =
+                                                    period === 'Custom'
+                                                        ? `${customRetention.number}  ${customRetention.label}`
+                                                        : period}
+
+                                                {#if (period === 'Custom' && customRetention.number !== null) || period !== 'Custom'}
+                                                    Every backup created under this policy will be
+                                                    retained for <b>
+                                                        {description}
+                                                    </b> before being automatically deleted.
+                                                {/if}
                                             {/if}
                                         </span>
                                     </span>
