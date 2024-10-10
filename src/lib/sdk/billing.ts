@@ -184,6 +184,7 @@ export type OrganizationUsage = {
     deploymentsStorageTotal: number;
     executionsMBSecondsTotal: number;
     buildsMBSecondsTotal: number;
+    backupsStorageTotal: number;
     storageTotal: number;
     users: Array<Models.Metric>;
     usersTotal: number;

@@ -22,6 +22,7 @@ export const load: PageLoad = async ({ params, parent }) => {
                 filesStorageTotal: null,
                 buildsStorageTotal: null,
                 deploymentsStorageTotal: null,
+                backupsStorageTotal: null,
                 executions: null,
                 executionsTotal: null,
                 projects: null,
