@@ -8,7 +8,8 @@ export async function load({ depends }) {
     try {
         const { migrations } = await sdk.forProject.migrations.list([
             // hides backups/restorations from migrations page.
-            Query.equal('source', ['Firebase', 'NHost', 'Supabase'])
+            Query.notEquals('source', 'Backup'),
+            Query.notEquals('destination', 'Backup')
         ]);
 
         return {
