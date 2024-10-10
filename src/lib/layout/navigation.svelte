@@ -3,7 +3,7 @@
     import { page } from '$app/stores';
     import { trackEvent } from '$lib/actions/analytics';
     import { tooltip } from '$lib/actions/tooltip';
-    import { BillingPlan } from '$lib/constants';
+    import { BillingPlan } from '@appwrite.io/console';
     import { isMac } from '$lib/helpers/platform';
     import { slide } from '$lib/helpers/transition';
     import { upgradeURL } from '$lib/stores/billing';
@@ -206,7 +206,7 @@
                     </a>
 
                     <ul class="drop-list is-not-desktop">
-                        {#if isCloud && $organization?.billingPlan !== BillingPlan.SCALE}
+                        {#if isCloud && $organization?.billingPlan !== BillingPlan.Tier2}
                             <li class="drop-list-item">
                                 <a class="drop-button" href={$upgradeURL}>
                                     <span class="text">Upgrade</span>

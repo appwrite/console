@@ -11,7 +11,7 @@ export const load: PageLoad = async ({ url }) => {
         let couponData: Coupon;
         const code = url.searchParams.get('code');
         try {
-            couponData = await sdk.forConsole.billing.getCoupon(code);
+            couponData = await sdk.forConsole.console.getCopon(code);
         } catch (e) {
             redirect(303, base);
         }

@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Alert, DropList, Heading } from '$lib/components';
-    import { BillingPlan } from '$lib/constants';
+    import { BillingPlan } from '@appwrite.io/console';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import {
@@ -64,7 +64,7 @@
 
     $: tier = tierToPlan($organization?.billingPlan)?.name;
     $: hasProjectLimitation =
-        checkForProjectLimitation(serviceId) && $organization?.billingPlan === BillingPlan.FREE;
+        checkForProjectLimitation(serviceId) && $organization?.billingPlan === BillingPlan.Tier0;
     $: hasUsageFees = hasProjectLimitation
         ? checkForUsageFees($organization?.billingPlan, serviceId)
         : false;
@@ -89,7 +89,7 @@
             })
             .join(', ')}
         <slot name="alert" {limit} {tier} {title} {upgradeMethod} {hasUsageFees} {services}>
-            {#if $organization?.billingPlan !== BillingPlan.FREE && hasUsageFees}
+            {#if $organization?.billingPlan !== BillingPlan.Tier0 && hasUsageFees}
                 <Alert type="info" isStandalone>
                     <span class="text">
                         You've reached the {services} limit for the {tier} plan.
@@ -136,7 +136,7 @@
                             <p class="text">
                                 You are limited to {limit}
                                 {title.toLocaleLowerCase()} per project on the {tier} plan.
-                                {#if $organization?.billingPlan === BillingPlan.FREE}<Button
+                                {#if $organization?.billingPlan === BillingPlan.Tier0}<Button
                                         link
                                         href={$upgradeURL}
                                         on:click={() =>
@@ -159,7 +159,7 @@
                             <p class="text">
                                 You are limited to {limit}
                                 {title.toLocaleLowerCase()} per organization on the {tier} plan.
-                                {#if $organization?.billingPlan === BillingPlan.FREE}
+                                {#if $organization?.billingPlan === BillingPlan.Tier0}
                                     <Button link href={$upgradeURL}>Upgrade</Button>
                                     for additional {title.toLocaleLowerCase()}.
                                 {/if}

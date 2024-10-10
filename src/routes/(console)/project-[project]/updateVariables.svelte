@@ -127,11 +127,11 @@
             const isConflicting = globalVariable !== undefined;
 
             if (isConflicting) {
-                await sdk.forProject.projectApi.deleteVariable(globalVariable.$id);
-                await sdk.forProject.projectApi.createVariable(variable.key, variable.value);
+                await sdk.forProject.project.deleteVariable(globalVariable.$id);
+                await sdk.forProject.project.createVariable(variable.key, variable.value);
                 await sdk.forProject.functions.deleteVariable(variable.resourceId, variable.$id);
             } else {
-                await sdk.forProject.projectApi.createVariable(variable.key, variable.value);
+                await sdk.forProject.project.createVariable(variable.key, variable.value);
                 await sdk.forProject.functions.deleteVariable(variable.resourceId, variable.$id);
             }
 

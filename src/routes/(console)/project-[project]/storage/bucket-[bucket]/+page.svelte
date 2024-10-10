@@ -19,7 +19,8 @@
         PaginationWithLimit,
         SearchQuery
     } from '$lib/components';
-    import { BillingPlan, Dependencies } from '$lib/constants';
+    import { Dependencies } from '$lib/constants';
+    import { BillingPlan } from '@appwrite.io/console';
     import { Pill } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import {

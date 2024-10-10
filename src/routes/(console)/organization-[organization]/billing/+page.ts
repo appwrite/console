@@ -19,15 +19,15 @@ export const load: PageLoad = async ({ parent, depends }) => {
 
     const billingAddressId = (organization as Organization)?.billingAddressId;
     const billingAddressPromise: Promise<Address> = billingAddressId
-        ? sdk.forConsole.billing
-              .getOrganizationBillingAddress(organization.$id, billingAddressId)
+        ? sdk.forConsole.organizations
+              .getBillingAddress(organization.$id, billingAddressId)
               .catch(() => null)
         : null;
 
     const [paymentMethods, addressList, aggregationList, billingAddress] = await Promise.all([
-        sdk.forConsole.billing.listPaymentMethods(),
-        sdk.forConsole.billing.listAddresses(),
-        sdk.forConsole.billing.listAggregation(organization.$id),
+        sdk.forConsole.account.listPaymentMethods(),
+        sdk.forConsole.account.listBillingAddresses(),
+        sdk.forConsole.organizations.listAggregations(organization.$id),
         billingAddressPromise
     ]);
 

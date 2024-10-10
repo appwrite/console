@@ -2,7 +2,7 @@
     import { tooltip } from '$lib/actions/tooltip';
     import { AvatarInitials, CardGrid, Heading, Paginator } from '$lib/components';
     import { EmptyCardCloud } from '$lib/components/billing';
-    import { BillingPlan } from '$lib/constants';
+    import { BillingPlan } from '@appwrite.io/console';
     import { Button } from '$lib/elements/forms';
     import {
         TableBody,
@@ -30,7 +30,7 @@
 
     <p class="text">The number of members in your organization.</p>
     <svelte:fragment slot="aside">
-        {#if $organization.billingPlan !== BillingPlan.FREE}
+        {#if $organization.billingPlan !== BillingPlan.Tier0}
             <div class="u-flex u-flex-vertical">
                 <div class="u-flex u-main-space-between">
                     <p>

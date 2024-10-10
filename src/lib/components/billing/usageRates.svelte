@@ -13,7 +13,7 @@
     import { organization, type Organization } from '$lib/stores/organization';
     import { plansInfo } from '$lib/stores/billing';
     import { abbreviateNumber, formatCurrency } from '$lib/helpers/numbers';
-    import { BillingPlan } from '$lib/constants';
+    import { BillingPlan } from '@appwrite.io/console';
 
     export let show = false;
     export let org: Organization;
@@ -49,19 +49,19 @@
         }
     ];
 
-    $: isFree = org.billingPlan === BillingPlan.FREE;
+    $: isFree = org.billingPlan === BillingPlan.Tier0;
 </script>
 
 <Modal bind:show size="big" headerDivider={false} title="Usage rates">
     {#if isFree}
-        Usage on the {$plansInfo?.get(BillingPlan.FREE).name} plan is limited for the following resources.
+        Usage on the {$plansInfo?.get(BillingPlan.Tier0).name} plan is limited for the following resources.
         Next billing period: {toLocaleDate(nextDate)}.
-    {:else if org.billingPlan === BillingPlan.PRO}
+    {:else if org.billingPlan === BillingPlan.Tier1}
         <p>
             Usage on the Pro plan will be charged at the end of each billing period at the following
             rates. Next billing period: {toLocaleDate(nextDate)}.
         </p>
-    {:else if org.billingPlan === BillingPlan.SCALE}
+    {:else if org.billingPlan === BillingPlan.Tier2}
         <p>
             Usage on the Scale plan will be charged at the end of each billing period at the
             following rates. Next billing period: {toLocaleDate(nextDate)}.

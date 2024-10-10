@@ -10,15 +10,15 @@
     import { isCloud } from '$lib/system';
     import { onMount } from 'svelte';
     import { project } from '../store';
-    import type { RegionList } from '$lib/sdk/billing';
+    import type { Models } from '@appwrite.io/console';
 
     let showDelete = false;
     let name: string = null;
 
-    let regions: RegionList;
+    let regions: Models.ConsoleRegionList;
     onMount(async () => {
         if (isCloud) {
-            regions = await sdk.forConsole.billing.listRegions();
+            regions = await sdk.forConsole.console.regions();
         }
     });
 

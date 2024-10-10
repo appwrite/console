@@ -20,7 +20,7 @@
     import { daysLeftInTrial, plansInfo } from '$lib/stores/billing';
     import { tooltip } from '$lib/actions/tooltip';
     import { toLocaleDate } from '$lib/helpers/date';
-    import { BillingPlan } from '$lib/constants';
+    import { BillingPlan } from '@appwrite.io/console';
     import { goto } from '$app/navigation';
 
     export let data: PageData;
@@ -71,7 +71,7 @@
                     </svelte:fragment>
                     <svelte:fragment slot="status">
                         {#if isCloudOrg(organization)}
-                            {#if organization?.billingPlan === BillingPlan.FREE}
+                            {#if organization?.billingPlan === BillingPlan.Tier0}
                                 <div
                                     class="u-flex u-cross-center"
                                     use:tooltip={{
@@ -81,7 +81,7 @@
                                     <Pill class="eyebrow-heading-3">FREE</Pill>
                                 </div>
                             {/if}
-                            {#if organization?.billingTrialStartDate && $daysLeftInTrial > 0 && organization.billingPlan !== BillingPlan.FREE && $plansInfo.get(organization.billingPlan)?.trialDays}
+                            {#if organization?.billingTrialStartDate && $daysLeftInTrial > 0 && organization.billingPlan !== BillingPlan.Tier0 && $plansInfo.get(organization.billingPlan)?.trialDays}
                                 <div
                                     class="u-flex u-cross-center"
                                     use:tooltip={{

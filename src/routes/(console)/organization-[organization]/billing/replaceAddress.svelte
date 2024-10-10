@@ -6,13 +6,13 @@
     import { organization } from '$lib/stores/organization';
     import { Dependencies } from '$lib/constants';
     import { onMount } from 'svelte';
-    import type { AddressesList } from '$lib/sdk/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Pill } from '$lib/elements';
+    import type { Models } from '@appwrite.io/console';
 
     export let show = false;
-    let addresses: AddressesList;
+    let addresses: Models.BillingAddress;
     let selectedAddress: string;
     let error: string;
     let country: string;
@@ -29,7 +29,7 @@
     ];
 
     onMount(async () => {
-        addresses = await sdk.forConsole.billing.listAddresses();
+        addresses = await sdk.forConsole.account.listBillingAddresses();
 
         const firstNonCurrentAddress = addresses?.billingAddresses?.find(
             (address) => address.$id !== $organization?.billingAddressId
@@ -57,7 +57,7 @@
             if (selectedAddress === $organization.billingAddressId) {
                 show = false;
             } else if (selectedAddress === null) {
-                const address = await sdk.forConsole.billing.createAddress(
+                const address = await sdk.forConsole.account.createBillingAddress(
                     country,
                     streetAddress,
                     city,
@@ -65,7 +65,10 @@
                     postalCode ? postalCode : undefined,
                     addressLine2 ? postalCode : undefined
                 );
-                await sdk.forConsole.billing.setBillingAddress($organization.$id, address.$id);
+                await sdk.forConsole.organizations.setBillingAddress(
+                    $organization.$id,
+                    address.$id
+                );
 
                 invalidate(Dependencies.ORGANIZATION);
                 invalidate(Dependencies.ADDRESS);
@@ -80,7 +83,10 @@
                     message: `Your billing address has been updated`
                 });
             } else {
-                await sdk.forConsole.billing.setBillingAddress($organization.$id, selectedAddress);
+                await sdk.forConsole.organizations.setBillingAddress(
+                    $organization.$id,
+                    selectedAddress
+                );
 
                 invalidate(Dependencies.ORGANIZATION);
                 invalidate(Dependencies.ADDRESS);

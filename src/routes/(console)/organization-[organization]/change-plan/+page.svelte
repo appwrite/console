@@ -13,7 +13,7 @@
     import PlanSelection from '$lib/components/billing/planSelection.svelte';
     import ValidateCreditModal from '$lib/components/billing/validateCreditModal.svelte';
     import Default from '$lib/components/roles/default.svelte';
-    import { BillingPlan, Dependencies, feedbackDowngradeOptions } from '$lib/constants';
+    import { Dependencies, feedbackDowngradeOptions } from '$lib/constants';
     import {
         Button,
         Form,
@@ -29,20 +29,20 @@
         WizardSecondaryContent,
         WizardSecondaryFooter
     } from '$lib/layout';
-    import { type Coupon, type PaymentList } from '$lib/sdk/billing';
-    import { plansInfo, tierToPlan, type Tier } from '$lib/stores/billing';
+    import { plansInfo, tierToPlan } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { organization, organizationList, type Organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
     import { VARS } from '$lib/system';
+    import { BillingPlan, type Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
 
     export let data;
 
     $: anyOrgFree = $organizationList.teams?.find(
-        (org) => (org as Organization)?.billingPlan === BillingPlan.FREE
+        (org) => (org as Organization)?.billingPlan === BillingPlan.Tier0
     );
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$/i;
     let previousPage: string = base;
@@ -53,8 +53,8 @@
 
     let formComponent: Form;
     let isSubmitting = writable(false);
-    let methods: PaymentList;
-    let billingPlan: Tier = $organization.billingPlan;
+    let methods: Models.PaymentMethodList;
+    let billingPlan = $organization.billingPlan;
     let paymentMethodId: string;
     let collaborators: string[] =
         data?.members?.memberships
@@ -62,7 +62,7 @@
                 if (m.userEmail !== $user.email) return m.userEmail;
             })
             ?.filter(Boolean) ?? [];
-    let couponData: Partial<Coupon> = {
+    let couponData: Partial<Models.Coupon> = {
         code: null,
         status: null,
         credits: null
@@ -79,7 +79,7 @@
         if ($page.url.searchParams.has('code')) {
             const coupon = $page.url.searchParams.get('code');
             try {
-                const response = await sdk.forConsole.billing.getCoupon(coupon);
+                const response = await sdk.forConsole.console.getCopon(coupon);
                 couponData = response;
             } catch (e) {
                 couponData = {
@@ -95,18 +95,18 @@
                 billingPlan = plan as BillingPlan;
             }
         }
-        if ($organization?.billingPlan === BillingPlan.SCALE) {
-            billingPlan = BillingPlan.SCALE;
+        if ($organization?.billingPlan === BillingPlan.Tier2) {
+            billingPlan = BillingPlan.Tier2;
         } else {
-            billingPlan = BillingPlan.PRO;
+            billingPlan = BillingPlan.Tier1;
         }
 
-        const currentPlan = await sdk.forConsole.billing.getPlan($organization?.$id);
+        const currentPlan = await sdk.forConsole.organizations.getPlan($organization?.$id);
         selfService = currentPlan.selfService;
     });
 
     async function loadPaymentMethods() {
-        methods = await sdk.forConsole.billing.listPaymentMethods();
+        methods = await sdk.forConsole.account.listPaymentMethods();
 
         paymentMethodId =
             $organization?.paymentMethodId ??
@@ -124,7 +124,7 @@
 
     async function downgrade() {
         try {
-            await sdk.forConsole.billing.updatePlan(
+            await sdk.forConsole.organizations.updatePlan(
                 $organization.$id,
                 billingPlan,
                 paymentMethodId,
@@ -173,7 +173,7 @@
 
     async function upgrade() {
         try {
-            const org = await sdk.forConsole.billing.updatePlan(
+            const org = await sdk.forConsole.organizations.updatePlan(
                 $organization.$id,
                 billingPlan,
                 paymentMethodId,
@@ -182,13 +182,13 @@
 
             //Add coupon
             if (couponData?.code) {
-                await sdk.forConsole.billing.addCredit(org.$id, couponData.code);
+                await sdk.forConsole.organizations.addCredit(org.$id, couponData.code);
                 trackEvent(Submit.CreditRedeem);
             }
 
             //Add budget
             if (billingBudget) {
-                await sdk.forConsole.billing.updateBudget(org.$id, billingBudget, [75]);
+                await sdk.forConsole.organizations.updateBudget(org.$id, billingBudget, [75]);
             }
 
             //Add collaborators
@@ -211,7 +211,7 @@
 
             //Add tax ID
             if (taxId) {
-                await sdk.forConsole.billing.updateTaxId(org.$id, taxId);
+                await sdk.forConsole.organizations.setBillingTaxId(org.$id, taxId);
             }
 
             await invalidate(Dependencies.ACCOUNT);
@@ -237,7 +237,7 @@
 
     $: isUpgrade = billingPlan > $organization.billingPlan;
     $: isDowngrade = billingPlan < $organization.billingPlan;
-    $: if (billingPlan !== BillingPlan.FREE) {
+    $: if (billingPlan !== BillingPlan.Tier0) {
         loadPaymentMethods();
     }
     $: isButtonDisabled = $organization.billingPlan === billingPlan;
@@ -265,17 +265,17 @@
                 bind:billingPlan
                 bind:selfService
                 anyOrgFree={!!anyOrgFree}
-                class={anyOrgFree && billingPlan !== BillingPlan.FREE
+                class={anyOrgFree && billingPlan !== BillingPlan.Tier0
                     ? 'u-margin-block-start-16'
                     : ''} />
 
             {#if isDowngrade}
-                {#if billingPlan === BillingPlan.FREE}
+                {#if billingPlan === BillingPlan.Tier0}
                     <PlanExcess
-                        tier={BillingPlan.FREE}
+                        tier={BillingPlan.Tier0}
                         class="u-margin-block-start-24"
                         members={data?.members?.total ?? 0} />
-                {:else if billingPlan === BillingPlan.PRO && $organization.billingPlan === BillingPlan.SCALE}
+                {:else if billingPlan === BillingPlan.Tier1 && $organization.billingPlan === BillingPlan.Tier2}
                     {@const extraMembers = collaborators?.length ?? 0}
                     <Alert type="error" class="u-margin-block-start-24">
                         <svelte:fragment slot="title">
@@ -292,7 +292,7 @@
                 {/if}
             {/if}
             <!-- Show email input if upgrading from free plan -->
-            {#if billingPlan !== BillingPlan.FREE && $organization.billingPlan === BillingPlan.FREE}
+            {#if billingPlan !== BillingPlan.Tier0 && $organization.billingPlan === BillingPlan.Tier0}
                 <FormList class="u-margin-block-start-16">
                     <InputTags
                         bind:tags={collaborators}
@@ -333,14 +333,14 @@
             {/if}
         </Form>
         <svelte:fragment slot="aside">
-            {#if billingPlan !== BillingPlan.FREE && $organization.billingPlan !== billingPlan && $organization.billingPlan !== BillingPlan.CUSTOM}
+            {#if billingPlan !== BillingPlan.Tier0 && $organization.billingPlan !== billingPlan && $organization.billingPlan.toString() !== 'cont-1'}
                 <EstimatedTotalBox
                     {billingPlan}
                     {collaborators}
                     bind:couponData
                     bind:billingBudget
                     {isDowngrade} />
-            {:else if $organization.billingPlan !== BillingPlan.CUSTOM}
+            {:else if $organization.billingPlan.toString() !== 'cont-1'}
                 <PlanComparisonBox downgrade={isDowngrade} />
             {/if}
         </svelte:fragment>

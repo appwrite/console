@@ -1,6 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
-    import { BillingPlan, INTERVAL } from '$lib/constants';
+    import { INTERVAL } from '$lib/constants';
+    import { BillingPlan } from '@appwrite.io/console';
     import { Logs } from '$lib/layout';
     import Footer from '$lib/layout/footer.svelte';
     import Header from '$lib/layout/header.svelte';
@@ -282,12 +283,12 @@
             checkForMarkedForDeletion(org);
             await checkForNewDevUpgradePro(org);
 
-            if (org?.billingPlan !== BillingPlan.FREE) {
+            if (org?.billingPlan !== BillingPlan.Tier0) {
                 await paymentExpired(org);
                 await checkPaymentAuthorizationRequired(org);
                 await checkForMandate(org);
 
-                if ($plansInfo.get(org.billingPlan)?.trialDays) {
+                if ($plansInfo.get(org.billingPlan)?.trial) {
                     calculateTrialDay(org);
                 }
             }

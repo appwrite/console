@@ -1,25 +1,15 @@
 import { page } from '$app/stores';
 import { derived, writable } from 'svelte/store';
-import type { Models } from '@appwrite.io/console';
-import type { Tier } from './billing';
+import type { BillingPlan, Models } from '@appwrite.io/console';
 
-export type Organization = Models.Team<Record<string, unknown>> & {
-    billingBudget: number;
-    billingPlan: Tier;
-    budgetAlerts: number[];
-    paymentMethodId: string;
-    backupPaymentMethodId: string;
-    markedForDeletion: boolean;
+export type Organization = Omit<
+    Models.Organization<Record<string, unknown>>,
+    'billingPlanDowngrade'
+> & {
+    billingPlan: BillingPlan;
     billingLimits: BillingLimits;
-    billingCurrentInvoiceDate: string;
-    billingNextInvoiceDate: string;
-    billingTrialStartDate?: string;
-    billingStartDate?: string;
-    billingTrialDays?: number;
-    billingAddressId?: string;
-    amount: number;
-    billingTaxId?: string;
-    billingPlanDowngrade?: Tier;
+    billingPlanDowngrade: BillingPlan;
+    budgetAlerts: number[];
 };
 
 export type OrganizationList = {

@@ -17,9 +17,8 @@
     import { abbreviateNumber } from '$lib/helpers/numbers';
     import { formatNum } from '$lib/helpers/string';
     import { onMount } from 'svelte';
-    import type { OrganizationUsage } from '$lib/sdk/billing';
     import { sdk } from '$lib/stores/sdk';
-    import { BillingPlan } from '$lib/constants';
+    import { BillingPlan, type Models } from '@appwrite.io/console';
     import { tooltip } from '$lib/actions/tooltip';
 
     export let tier: Tier;
@@ -33,11 +32,11 @@
         executions?: number;
         members?: number;
     } = null;
-    let usage: OrganizationUsage = null;
+    let usage: Models.UsageOrganization = null;
     let showExcess = false;
 
     onMount(async () => {
-        usage = await sdk.forConsole.billing.listUsage(
+        usage = await sdk.forConsole.organizations.getUsage(
             $organization.$id,
             $organization.billingCurrentInvoiceDate,
             new Date().toISOString()
@@ -55,7 +54,7 @@
             )}
         </svelte:fragment>
         Following payment of your final invoice, your organization will switch to the {tierToPlan(
-            BillingPlan.FREE
+            BillingPlan.Tier0
         ).name} plan. {#if excess?.members > 0}All team members except the owner will be removed on
             that date.{/if} Service disruptions may occur unless resource usage is reduced.
         <!-- Any executions, bandwidth, or messaging usage will be reset at that time. -->

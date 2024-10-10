@@ -4,7 +4,7 @@
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Card, Heading } from '$lib/components';
     import CustomId from '$lib/components/customId.svelte';
-    import { BillingPlan, Dependencies } from '$lib/constants';
+    import { Dependencies } from '$lib/constants';
     import { Pill } from '$lib/elements';
     import { Button, Form, InputSelect, InputText } from '$lib/elements/forms';
     import FormList from '$lib/elements/forms/formList.svelte';
@@ -12,26 +12,26 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { isCloud } from '$lib/system';
-    import { ID } from '@appwrite.io/console';
+    import { ID, BillingPlan } from '@appwrite.io/console';
     import { onMount } from 'svelte';
-    import { tierToPlan, type Tier, plansInfo } from '$lib/stores/billing';
+    import { tierToPlan, plansInfo } from '$lib/stores/billing';
     import { formatCurrency } from '$lib/helpers/numbers';
     import { base } from '$app/paths';
 
     let name: string;
     let id: string;
     let showCustomId = false;
-    let plan: Tier;
+    let plan: BillingPlan;
 
     const options = isCloud
         ? [
               {
-                  value: BillingPlan.FREE,
-                  label: `${tierToPlan(BillingPlan.FREE).name} - ${formatCurrency($plansInfo.get(BillingPlan.FREE).price)}/month`
+                  value: BillingPlan.Tier0,
+                  label: `${tierToPlan(BillingPlan.Tier0).name} - ${formatCurrency($plansInfo.get(BillingPlan.Tier0).price)}/month`
               },
               {
-                  value: BillingPlan.PRO,
-                  label: `${tierToPlan(BillingPlan.PRO).name} - ${formatCurrency($plansInfo.get(BillingPlan.PRO).price)}/month + add-ons`
+                  value: BillingPlan.Tier1,
+                  label: `${tierToPlan(BillingPlan.Tier1).name} - ${formatCurrency($plansInfo.get(BillingPlan.Tier1).price)}/month + add-ons`
               }
               // {
               //     value: BillingPlan.SCALE,
@@ -54,9 +54,9 @@
     async function handleSubmit() {
         const orgName = name?.length ? name : 'Personal Projects';
         if (isCloud) {
-            if (plan === BillingPlan.FREE) {
+            if (plan === BillingPlan.Tier0) {
                 try {
-                    const org = await sdk.forConsole.billing.createOrganization(
+                    const org = await sdk.forConsole.organizations.create(
                         id ?? ID.unique(),
                         orgName,
                         plan,

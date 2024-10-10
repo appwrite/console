@@ -1,10 +1,10 @@
 <script lang="ts">
     import { sdk } from '$lib/stores/sdk';
-    import { type Payload, Query } from '@appwrite.io/console';
+    import { BillingPlan, type Payload, Query } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { isCloud, isSelfHosted } from '$lib/system';
     import { organization } from '$lib/stores/organization';
-    import { BillingPlan, Dependencies } from '$lib/constants';
+    import { Dependencies } from '$lib/constants';
     import type { BackupArchive, BackupRestoration } from '$lib/sdk/backups';
     import { goto, invalidate } from '$app/navigation';
     import { page } from '$app/stores';
@@ -153,7 +153,7 @@
 
     onMount(() => {
         // fast path: don't subscribe if org is on a free plan or is self-hosted.
-        if (isSelfHosted || (isCloud && $organization.billingPlan === BillingPlan.FREE)) return;
+        if (isSelfHosted || (isCloud && $organization.billingPlan === BillingPlan.Tier0)) return;
 
         sdk.forConsole.client.subscribe('console', (response) => {
             // nice!

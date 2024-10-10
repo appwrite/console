@@ -8,7 +8,7 @@
         EstimatedTotalBox,
         SelectPaymentMethod
     } from '$lib/components/billing';
-    import { BillingPlan, Dependencies } from '$lib/constants';
+    import { Dependencies } from '$lib/constants';
     import { Button, Form, FormList, InputSelect, InputTags, InputText } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
     import {
@@ -16,13 +16,12 @@
         WizardSecondaryContent,
         WizardSecondaryFooter
     } from '$lib/layout';
-    import { type PaymentList } from '$lib/sdk/billing';
     import { app } from '$lib/stores/app';
     import { campaigns } from '$lib/stores/campaigns';
     import { addNotification } from '$lib/stores/notifications';
     import { organizationList, type Organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
-    import { ID } from '@appwrite.io/console';
+    import { ID, BillingPlan, type Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
 
@@ -49,7 +48,7 @@
     let formComponent: Form;
     let couponForm: Form;
     let isSubmitting = writable(false);
-    let methods: PaymentList;
+    let methods: Models.PaymentMethodList;
     let paymentMethodId: string;
     let collaborators: string[];
     let taxId: string;
@@ -69,7 +68,7 @@
     let coupon: string;
     let couponData = data?.couponData;
     let campaign = campaigns.get(data?.couponData?.campaign ?? data?.campaign);
-    let billingPlan = BillingPlan.PRO;
+    let billingPlan = BillingPlan.Tier1;
 
     onMount(async () => {
         await loadPaymentMethods();
@@ -86,7 +85,7 @@
     });
 
     async function loadPaymentMethods() {
-        const methodList = await sdk.forConsole.billing.listPaymentMethods();
+        const methodList = await sdk.forConsole.account.listPaymentMethods();
         const filteredMethods = methodList.paymentMethods.filter((method) => !!method?.last4);
         methods = { paymentMethods: filteredMethods, total: filteredMethods.length };
         paymentMethodId =
@@ -101,21 +100,21 @@
             let org: Organization;
             // Create new org
             if (selectedOrgId === newOrgId) {
-                org = await sdk.forConsole.billing.createOrganization(
+                org = (await sdk.forConsole.organizations.create(
                     newOrgId,
                     name,
                     billingPlan,
                     paymentMethodId
-                );
+                )) as unknown as Organization;
             }
             // Upgrade existing org
-            else if (selectedOrg?.billingPlan === BillingPlan.FREE) {
-                org = await sdk.forConsole.billing.updatePlan(
+            else if (selectedOrg?.billingPlan === BillingPlan.Tier0) {
+                org = (await sdk.forConsole.organizations.updatePlan(
                     selectedOrg.$id,
                     billingPlan,
                     paymentMethodId,
                     null
-                );
+                )) as unknown as Organization;
             }
             // Existing pro org
             else {
@@ -124,12 +123,12 @@
 
             // Add coupon
             if (couponData?.code) {
-                await sdk.forConsole.billing.addCredit(org.$id, couponData.code);
+                await sdk.forConsole.organizations.addCredit(org.$id, couponData.code);
             }
 
             // Add budget
             if (billingBudget) {
-                await sdk.forConsole.billing.updateBudget(org.$id, billingBudget, [75]);
+                await sdk.forConsole.organizations.updateBudget(org.$id, billingBudget, [75]);
             }
 
             // Add collaborators
@@ -148,7 +147,7 @@
 
             // Add tax ID
             if (taxId) {
-                await sdk.forConsole.billing.updateTaxId(org.$id, taxId);
+                await sdk.forConsole.organizations.setBillingTaxId(org.$id, taxId);
             }
             trackEvent(Submit.CreditRedeem, {
                 coupon: couponData.code,
@@ -172,7 +171,7 @@
 
     async function addCoupon() {
         try {
-            const response = await sdk.forConsole.billing.getCoupon(coupon);
+            const response = await sdk.forConsole.console.getCopon(coupon);
             couponData = response;
             coupon = null;
             addNotification({
@@ -212,7 +211,7 @@
                         placeholder="Select organization"
                         id="organization" />
                 {/if}
-                {#if selectedOrgId && (selectedOrg?.billingPlan !== BillingPlan.PRO || !selectedOrg?.paymentMethodId)}
+                {#if selectedOrgId && (selectedOrg?.billingPlan !== BillingPlan.Tier1 || !selectedOrg?.paymentMethodId)}
                     {#if selectedOrgId === newOrgId}
                         <InputText
                             label="Organization name"
@@ -271,7 +270,7 @@
                     </div>
                 </div>
             {/if}
-            {#if selectedOrg?.$id && selectedOrg?.billingPlan !== BillingPlan.FREE}
+            {#if selectedOrg?.$id && selectedOrg?.billingPlan !== BillingPlan.Tier0}
                 <section
                     class="card u-margin-block-start-24"
                     style:--p-card-padding="1.5rem"
@@ -290,7 +289,7 @@
                 <div class:u-margin-block-start-24={campaign?.template === 'card'}>
                     <EstimatedTotalBox
                         fixedCoupon={!!data?.couponData?.code}
-                        billingPlan={BillingPlan.PRO}
+                        billingPlan={BillingPlan.Tier1}
                         {collaborators}
                         bind:couponData
                         bind:billingBudget>

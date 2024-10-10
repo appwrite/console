@@ -22,7 +22,7 @@ export const load: LayoutLoad = async ({ params, depends }) => {
 
     try {
         if (isCloud) {
-            const res = await sdk.forConsole.billing.getRoles(params.organization);
+            const res = await sdk.forConsole.organizations.getScopes(params.organization);
             roles = res.roles;
             scopes = res.scopes;
             if (scopes.includes('billing.read')) {

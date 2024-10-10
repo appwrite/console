@@ -8,7 +8,7 @@
     import { ID } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
     import { isCloud } from '$lib/system';
-    import { BillingPlan } from '$lib/constants';
+    import { BillingPlan } from '@appwrite.io/console';
     import { organization } from '$lib/stores/organization';
     import { upgradeURL } from '$lib/stores/billing';
     import CreatePolicy from './database-[database]/backups/createPolicy.svelte';
@@ -126,7 +126,7 @@
 
         {#if isCloud}
             <div class="u-flex-vertical u-gap-24 u-padding-block-start-24">
-                {#if $organization?.billingPlan === BillingPlan.FREE}
+                {#if $organization?.billingPlan === BillingPlan.Tier0}
                     {#if showPlanUpgradeAlert}
                         <Alert
                             type="warning"

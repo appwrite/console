@@ -7,20 +7,20 @@
     import { Dependencies } from '$lib/constants';
     import { initializeStripe, isStripeInitialized, submitStripeCard } from '$lib/stores/stripe';
     import { onMount } from 'svelte';
-    import type { PaymentList } from '$lib/sdk/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { PaymentBoxes } from '$lib/components/billing';
+    import type { Models } from '@appwrite.io/console';
 
     export let show = false;
     export let isBackup = false;
-    let methods: PaymentList;
+    let methods: Models.PaymentMethodList;
     let selectedPaymentMethodId: string;
     let name: string;
     let error: string;
 
     onMount(async () => {
-        methods = await sdk.forConsole.billing.listPaymentMethods();
+        methods = await sdk.forConsole.account.listPaymentMethods();
 
         if (!$organization.paymentMethodId && !$organization.backupPaymentMethodId) {
             selectedPaymentMethodId = methods?.total ? methods.paymentMethods[0].$id : null;
@@ -68,7 +68,7 @@
 
     async function addPaymentMethod(paymentMethodId: string) {
         try {
-            await sdk.forConsole.billing.setOrganizationPaymentMethod(
+            await sdk.forConsole.organizations.setDefaultPaymentMethod(
                 $organization.$id,
                 paymentMethodId
             );
@@ -79,7 +79,7 @@
 
     async function addBackupPaymentMethod(paymentMethodId: string) {
         try {
-            await sdk.forConsole.billing.setOrganizationPaymentMethodBackup(
+            await sdk.forConsole.organizations.setBackupPaymentMethod(
                 $organization.$id,
                 paymentMethodId
             );

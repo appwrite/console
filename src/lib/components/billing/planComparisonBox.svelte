@@ -1,10 +1,10 @@
 <script lang="ts">
-    import { BillingPlan } from '$lib/constants';
+    import { BillingPlan } from '@appwrite.io/console';
     import { formatNum } from '$lib/helpers/string';
     import { plansInfo, tierFree, tierPro, type Tier } from '$lib/stores/billing';
     import { Card, SecondaryTabs, SecondaryTabsItem } from '..';
 
-    let selectedTab: Tier = BillingPlan.FREE;
+    let selectedTab: Tier = BillingPlan.Tier0;
     export let downgrade = false;
 
     $: plan = $plansInfo.get(selectedTab);
@@ -14,13 +14,13 @@
     <div class="comparison-box">
         <SecondaryTabs stretch>
             <SecondaryTabsItem
-                disabled={selectedTab === BillingPlan.FREE}
-                on:click={() => (selectedTab = BillingPlan.FREE)}>
+                disabled={selectedTab === BillingPlan.Tier0}
+                on:click={() => (selectedTab = BillingPlan.Tier0)}>
                 {tierFree.name}
             </SecondaryTabsItem>
             <SecondaryTabsItem
-                disabled={selectedTab === BillingPlan.PRO}
-                on:click={() => (selectedTab = BillingPlan.PRO)}>
+                disabled={selectedTab === BillingPlan.Tier1}
+                on:click={() => (selectedTab = BillingPlan.Tier1)}>
                 {tierPro.name}
             </SecondaryTabsItem>
             <!-- <SecondaryTabsItem
@@ -32,7 +32,7 @@
     </div>
 
     <div class="u-margin-block-start-24">
-        {#if selectedTab === BillingPlan.FREE}
+        {#if selectedTab === BillingPlan.Tier0}
             <h3 class="u-bold body-text-1">{plan.name} plan</h3>
             {#if downgrade}
                 <ul class="u-margin-block-start-8 list u-gap-4 u-small">
@@ -94,7 +94,7 @@
                     </li>
                 </ul>
             {/if}
-        {:else if selectedTab === BillingPlan.PRO}
+        {:else if selectedTab === BillingPlan.Tier1}
             <h3 class="u-bold body-text-1">{plan.name} plan</h3>
             <p class="u-margin-block-start-8">Everything in the Free plan, plus:</p>
             <ul class="un-order-list u-margin-inline-start-4">
@@ -104,7 +104,7 @@
                 <li>{formatNum(plan.executions)} executions</li>
                 <li>Email support</li>
             </ul>
-        {:else if selectedTab === BillingPlan.SCALE}
+        {:else if selectedTab === BillingPlan.Tier2}
             <h3 class="u-bold body-text-1">{plan.name} plan</h3>
             <p class="u-margin-block-start-8">Everything in the Pro plan, plus:</p>
             <ul class="un-order-list u-margin-inline-start-4">

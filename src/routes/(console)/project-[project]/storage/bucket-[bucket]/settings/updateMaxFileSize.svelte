@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Submit } from '$lib/actions/analytics';
     import { Alert, CardGrid, Heading } from '$lib/components';
-    import { BillingPlan } from '$lib/constants';
+    import { BillingPlan } from '@appwrite.io/console';
     import { Button, Form, FormItem, InputNumber, InputSelect } from '$lib/elements/forms';
     import { humanFileSize, sizeToBytes } from '$lib/helpers/sizeConvertion';
     import { createByteUnitPair } from '$lib/helpers/unit';
@@ -41,12 +41,12 @@
                         The {plan.name} plan has a maximum upload file size limit of {Math.floor(
                             parseInt(size.value)
                         )}{size.unit}.
-                        {#if $organization?.billingPlan === BillingPlan.FREE}
+                        {#if $organization?.billingPlan === BillingPlan.Tier0}
                             Upgrade to allow files of a larger size.
                         {/if}
                     </p>
                     <svelte:fragment slot="action">
-                        {#if $organization?.billingPlan === BillingPlan.FREE}
+                        {#if $organization?.billingPlan === BillingPlan.Tier0}
                             <div class="alert-buttons u-flex">
                                 <Button text href={$upgradeURL}>Upgrade plan</Button>
                             </div>

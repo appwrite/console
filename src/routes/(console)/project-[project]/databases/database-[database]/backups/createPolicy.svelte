@@ -22,7 +22,7 @@
     } from '$lib/helpers/backups';
     import { InputNumber } from '$lib/elements/forms/index.js';
     import { organization } from '$lib/stores/organization';
-    import { BillingPlan } from '$lib/constants';
+    import { BillingPlan } from '@appwrite.io/console';
     import { Card } from '$lib/components';
     import { wizard } from '$lib/stores/wizard';
     import SupportWizard from '$routes/(console)/supportWizard.svelte';
@@ -146,7 +146,7 @@
         );
 
         // pre-check the hourly if on pro plan
-        if ($organization.billingPlan === BillingPlan.PRO && isFromBackupsTab) {
+        if ($organization.billingPlan === BillingPlan.Tier1 && isFromBackupsTab) {
             presetPolicies.update((all) =>
                 all.map((policy) => {
                     policy.id = ID.unique();
@@ -168,7 +168,7 @@
 </script>
 
 <div class="u-flex-vertical u-gap-16">
-    {#if $organization.billingPlan === BillingPlan.SCALE}
+    {#if $organization.billingPlan === BillingPlan.Tier2}
         {#if title || subtitle}
             <div class="body-text-2">
                 {#if title}
@@ -184,7 +184,7 @@
 
     <FormList>
         <!-- because we show a set of pre-defined ones -->
-        {#if $organization.billingPlan === BillingPlan.PRO}
+        {#if $organization.billingPlan === BillingPlan.Tier1}
             {@const dailyPolicy = $presetPolicies[1]}
 
             {#if isFromBackupsTab}

@@ -15,7 +15,7 @@
     import { formatNum } from '$lib/helpers/string';
     import { accumulateFromEndingTotal, total } from '$lib/layout/usage.svelte';
     import type { OrganizationUsage } from '$lib/sdk/billing';
-    import { BillingPlan } from '$lib/constants';
+    import { BillingPlan } from '@appwrite.io/console';
     import { trackEvent } from '$lib/actions/analytics';
     import TotalMembers from './totalMembers.svelte';
 
@@ -46,7 +46,7 @@
     <div class="u-flex u-cross-center u-main-space-between">
         <Heading tag="h2" size="5">Usage</Heading>
 
-        {#if $organization?.billingPlan === BillingPlan.FREE}
+        {#if $organization?.billingPlan === BillingPlan.Tier0}
             <Button
                 href={$upgradeURL}
                 on:click={() => {
@@ -60,7 +60,7 @@
         {/if}
     </div>
     <div class="u-flex u-main-space-between common-section u-cross-center">
-        {#if $organization.billingPlan === BillingPlan.SCALE}
+        {#if $organization.billingPlan === BillingPlan.Tier2}
             <p class="text">
                 On the Scale plan, you'll be charged only for any usage that exceeds the thresholds
                 per resource listed below. <button
@@ -68,7 +68,7 @@
                     class="link"
                     type="button">Learn more about plan usage limits.</button>
             </p>
-        {:else if $organization.billingPlan === BillingPlan.PRO}
+        {:else if $organization.billingPlan === BillingPlan.Tier1}
             <p class="text">
                 On the Pro plan, you'll be charged only for any usage that exceeds the thresholds
                 per resource listed below. <button
@@ -76,7 +76,7 @@
                     class="link"
                     type="button">Learn more about plan usage limits.</button>
             </p>
-        {:else if $organization.billingPlan === BillingPlan.FREE}
+        {:else if $organization.billingPlan === BillingPlan.Tier0}
             <p class="text">
                 If you exceed the limits of the {plan} plan, services for your organization's projects
                 may be disrupted.

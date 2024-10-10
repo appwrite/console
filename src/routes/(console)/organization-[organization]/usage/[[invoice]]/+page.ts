@@ -1,8 +1,7 @@
 import { sdk } from '$lib/stores/sdk';
-import { Query } from '@appwrite.io/console';
+import { Query, type Models } from '@appwrite.io/console';
 import type { PageLoad } from './$types';
 import type { Organization } from '$lib/stores/organization';
-import type { Invoice } from '$lib/sdk/billing';
 
 export const load: PageLoad = async ({ params, parent }) => {
     const { invoice } = params;
@@ -33,17 +32,17 @@ export const load: PageLoad = async ({ params, parent }) => {
 
     let startDate: string = org.billingCurrentInvoiceDate;
     let endDate: string = org.billingNextInvoiceDate;
-    let currentInvoice: Invoice = undefined;
+    let currentInvoice: Models.Invoice = undefined;
 
     if (invoice) {
-        currentInvoice = await sdk.forConsole.billing.getInvoice(org.$id, invoice);
+        currentInvoice = await sdk.forConsole.organizations.getInvoice(org.$id, invoice);
         startDate = currentInvoice.from;
         endDate = currentInvoice.to;
     }
 
     const [invoices, usage, organizationMembers] = await Promise.all([
-        sdk.forConsole.billing.listInvoices(org.$id, [Query.orderDesc('from')]),
-        sdk.forConsole.billing.listUsage(params.organization, startDate, endDate),
+        sdk.forConsole.organizations.listInvoices(org.$id, [Query.orderDesc('from')]),
+        sdk.forConsole.organizations.getUsage(params.organization, startDate, endDate),
         sdk.forConsole.teams.listMemberships(params.organization)
     ]);
 

@@ -11,24 +11,24 @@
     } from '$lib/components/billing';
     import ValidateCreditModal from '$lib/components/billing/validateCreditModal.svelte';
     import Default from '$lib/components/roles/default.svelte';
-    import { BillingPlan, Dependencies } from '$lib/constants';
+    import { Dependencies } from '$lib/constants';
     import { Button, Form, FormList, InputTags, InputText, Label } from '$lib/elements/forms';
     import {
         WizardSecondaryContainer,
         WizardSecondaryContent,
         WizardSecondaryFooter
     } from '$lib/layout';
-    import type { Coupon, PaymentList } from '$lib/sdk/billing';
+    import type { Coupon } from '$lib/sdk/billing';
     import { tierToPlan } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { organizationList, type Organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
-    import { ID } from '@appwrite.io/console';
+    import { ID, BillingPlan, type Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
 
     $: anyOrgFree = $organizationList.teams?.some(
-        (org) => (org as Organization)?.billingPlan === BillingPlan.FREE
+        (org) => (org as Organization)?.billingPlan === BillingPlan.Tier0
     );
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$/i;
     let previousPage: string = base;
@@ -41,9 +41,9 @@
     let formComponent: Form;
     let isSubmitting = writable(false);
 
-    let methods: PaymentList;
+    let methods: Models.PaymentMethodList;
     let name: string;
-    let billingPlan: BillingPlan = BillingPlan.FREE;
+    let billingPlan: BillingPlan = BillingPlan.Tier0;
     let paymentMethodId: string;
     let collaborators: string[] = [];
     let couponData: Partial<Coupon> = {
@@ -60,7 +60,7 @@
         if ($page.url.searchParams.has('coupon')) {
             const coupon = $page.url.searchParams.get('coupon');
             try {
-                const response = await sdk.forConsole.billing.getCoupon(coupon);
+                const response = await sdk.forConsole.console.getCopon(coupon);
                 couponData = response;
             } catch (e) {
                 couponData = {
@@ -80,12 +80,12 @@
             }
         }
         if (anyOrgFree) {
-            billingPlan = BillingPlan.PRO;
+            billingPlan = BillingPlan.Tier1;
         }
     });
 
     async function loadPaymentMethods() {
-        methods = await sdk.forConsole.billing.listPaymentMethods();
+        methods = await sdk.forConsole.account.listPaymentMethods();
         paymentMethodId = methods.paymentMethods.find((method) => !!method?.last4)?.$id ?? null;
     }
 
@@ -93,31 +93,31 @@
         try {
             let org: Organization;
 
-            if (billingPlan === BillingPlan.FREE) {
-                org = await sdk.forConsole.billing.createOrganization(
+            if (billingPlan === BillingPlan.Tier0) {
+                org = (await sdk.forConsole.organizations.create(
                     ID.unique(),
                     name,
-                    BillingPlan.FREE,
+                    BillingPlan.Tier0,
                     null,
                     null
-                );
+                )) as unknown as Organization;
             } else {
-                org = await sdk.forConsole.billing.createOrganization(
+                org = (await sdk.forConsole.organizations.create(
                     ID.unique(),
                     name,
                     billingPlan,
                     paymentMethodId,
                     null
-                );
+                )) as unknown as Organization;
 
                 //Add budget
                 if (billingBudget) {
-                    await sdk.forConsole.billing.updateBudget(org.$id, billingBudget, [75]);
+                    await sdk.forConsole.organizations.updateBudget(org.$id, billingBudget, [75]);
                 }
 
                 //Add coupon
                 if (couponData?.code) {
-                    await sdk.forConsole.billing.addCredit(org.$id, couponData.code);
+                    await sdk.forConsole.organizations.addCredit(org.$id, couponData.code);
                     trackEvent(Submit.CreditRedeem);
                 }
 
@@ -137,7 +137,7 @@
 
                 // Add tax ID
                 if (taxId) {
-                    await sdk.forConsole.billing.updateTaxId(org.$id, taxId);
+                    await sdk.forConsole.organizations.setBillingTaxId(org.$id, taxId);
                 }
             }
 
@@ -163,7 +163,7 @@
         }
     }
 
-    $: if (billingPlan !== BillingPlan.FREE) {
+    $: if (billingPlan !== BillingPlan.Tier0) {
         loadPaymentMethods();
     }
 </script>
@@ -190,7 +190,7 @@
                 <Button href="https://appwrite.io/pricing" external link>pricing page</Button>.
             </p>
             <PlanSelection bind:billingPlan {anyOrgFree} isNewOrg />
-            {#if billingPlan !== BillingPlan.FREE}
+            {#if billingPlan !== BillingPlan.Tier0}
                 <FormList class="u-margin-block-start-24">
                     <InputTags
                         bind:tags={collaborators}
@@ -200,8 +200,7 @@
                         validityRegex={emailRegex}
                         validityMessage="Invalid email address"
                         id="members" />
-                    <SelectPaymentMethod bind:methods bind:value={paymentMethodId} bind:taxId
-                    ></SelectPaymentMethod>
+                    <SelectPaymentMethod bind:methods bind:value={paymentMethodId} bind:taxId />
                 </FormList>
                 {#if !couponData?.code}
                     <Button
@@ -215,7 +214,7 @@
             {/if}
         </Form>
         <svelte:fragment slot="aside">
-            {#if billingPlan !== BillingPlan.FREE}
+            {#if billingPlan !== BillingPlan.Tier0}
                 <EstimatedTotalBox
                     {billingPlan}
                     {collaborators}

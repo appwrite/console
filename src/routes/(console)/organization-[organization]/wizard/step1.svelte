@@ -8,7 +8,7 @@
 
     let showCustomId = false;
 
-    sdk.forConsole.billing.listRegions().then(regions.set);
+    sdk.forConsole.console.regions().then(regions.set);
 </script>
 
 <WizardStep>

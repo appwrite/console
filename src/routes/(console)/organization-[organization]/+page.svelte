@@ -28,7 +28,6 @@
     import { ID, Region } from '@appwrite.io/console';
     import { openImportWizard } from '../project-[project]/settings/migrations/(import)';
     import { readOnly } from '$lib/stores/billing';
-    import type { RegionList } from '$lib/sdk/billing';
     import { onMount } from 'svelte';
     import { organization } from '$lib/stores/organization';
     import { canWriteProjects } from '$lib/stores/roles';
@@ -119,10 +118,10 @@
         }
     };
 
-    let regions: RegionList;
+    let regions: Models.ConsoleRegionList;
     onMount(async () => {
         if (isCloud) {
-            regions = await sdk.forConsole.billing.listRegions();
+            regions = await sdk.forConsole.console.regions();
             if ($page.url.searchParams.has('type')) {
                 const paramType = $page.url.searchParams.get('type');
                 if (paramType === 'createPro') {

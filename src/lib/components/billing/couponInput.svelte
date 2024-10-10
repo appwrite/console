@@ -1,15 +1,15 @@
 <script lang="ts">
     import { Button, FormList, InputText } from '$lib/elements/forms';
     import { formatCurrency } from '$lib/helpers/numbers';
-    import type { Coupon } from '$lib/sdk/billing';
     import { sdk } from '$lib/stores/sdk';
+    import type { Models } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
 
     const dispatch = createEventDispatcher();
 
     export let required = false;
     export let coupon: string = '';
-    export let couponData: Partial<Coupon> = {
+    export let couponData: Partial<Models.Coupon> = {
         code: null,
         status: null,
         credits: null
@@ -17,7 +17,7 @@
 
     async function addCoupon() {
         try {
-            const response = await sdk.forConsole.billing.getCoupon(coupon);
+            const response = await sdk.forConsole.console.getCopon(coupon);
             couponData = response;
             dispatch('validation', couponData);
             coupon = null;

@@ -19,7 +19,7 @@
     import { Button } from '$lib/elements/forms';
     import AddCreditModal from './addCreditModal.svelte';
     import { formatCurrency } from '$lib/helpers/numbers';
-    import { BillingPlan } from '$lib/constants';
+    import { BillingPlan } from '@appwrite.io/console';
     import { trackEvent } from '$lib/actions/analytics';
     import { upgradeURL } from '$lib/stores/billing';
 
@@ -47,7 +47,7 @@
 
     async function request() {
         if (!$organization?.$id) return;
-        creditList = await sdk.forConsole.billing.listCredits($organization.$id, [
+        creditList = await sdk.forConsole.organizations.listCredits($organization.$id, [
             Query.limit(limit),
             Query.offset(offset)
         ]);
@@ -65,12 +65,12 @@
     }
 </script>
 
-<CardGrid hideFooter={$organization?.billingPlan !== BillingPlan.FREE}>
+<CardGrid hideFooter={$organization?.billingPlan !== BillingPlan.Tier0}>
     <Heading tag="h2" size="6">Available credit</Heading>
 
     <p class="text">Appwrite credit will automatically be applied to your next invoice.</p>
     <svelte:fragment slot="aside">
-        {#if $organization?.billingPlan === BillingPlan.FREE}
+        {#if $organization?.billingPlan === BillingPlan.Tier0}
             <Alert type="info">
                 <svelte:fragment slot="title">Upgrade to Pro to add credits</svelte:fragment>
                 Upgrade to a Pro plan to add credits to your organization. For more information on what
@@ -131,7 +131,7 @@
         {/if}
     </svelte:fragment>
     <svelte:fragment slot="actions">
-        {#if $organization?.billingPlan === BillingPlan.FREE}
+        {#if $organization?.billingPlan === BillingPlan.Tier0}
             <Button
                 secondary
                 href={$upgradeURL}
