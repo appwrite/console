@@ -303,7 +303,7 @@
                     },
                     {
                         size: bytesToSize(data.organizationUsage.backupsStorageTotal, 'GB'),
-                        color: '#FF6F61',
+                        color: '#68A3FE',
                         tooltip: {
                             title: 'Backups storage',
                             label: `${Math.round(bytesToSize(data.organizationUsage.backupsStorageTotal, 'GB') * 100) / 100}MB`
