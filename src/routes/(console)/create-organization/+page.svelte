@@ -60,7 +60,7 @@
         if ($page.url.searchParams.has('coupon')) {
             const coupon = $page.url.searchParams.get('coupon');
             try {
-                const response = await sdk.forConsole.console.getCopon(coupon);
+                const response = await sdk.forConsole.console.getCoupon(coupon);
                 couponData = response;
             } catch (e) {
                 couponData = {

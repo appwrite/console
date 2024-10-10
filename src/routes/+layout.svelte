@@ -42,7 +42,7 @@
 
         if ($page.url.searchParams.has('code')) {
             const code = $page.url.searchParams.get('code');
-            const coupon = await sdk.forConsole.console.getCopon(code).catch<null>(() => null);
+            const coupon = await sdk.forConsole.console.getCoupon(code).catch<null>(() => null);
             if (coupon?.campaign && campaigns.has(coupon.campaign)) {
                 if ($user) {
                     goto(`${base}/apply-credit?code=${code}`);

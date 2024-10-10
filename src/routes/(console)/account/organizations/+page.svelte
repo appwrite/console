@@ -81,7 +81,7 @@
                                     <Pill class="eyebrow-heading-3">FREE</Pill>
                                 </div>
                             {/if}
-                            {#if organization?.billingTrialStartDate && $daysLeftInTrial > 0 && organization.billingPlan !== BillingPlan.Tier0 && $plansInfo.get(organization.billingPlan)?.trialDays}
+                            {#if organization?.billingTrialStartDate && $daysLeftInTrial > 0 && organization.billingPlan !== BillingPlan.Tier0 && $plansInfo.get(organization.billingPlan)?.trial}
                                 <div
                                     class="u-flex u-cross-center"
                                     use:tooltip={{

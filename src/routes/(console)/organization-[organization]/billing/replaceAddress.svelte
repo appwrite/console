@@ -12,7 +12,7 @@
     import type { Models } from '@appwrite.io/console';
 
     export let show = false;
-    let addresses: Models.BillingAddress;
+    let addresses: Models.BillingAddressList;
     let selectedAddress: string;
     let error: string;
     let country: string;

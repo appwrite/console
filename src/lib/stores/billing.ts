@@ -416,8 +416,8 @@ export async function checkForMissingPaymentMethod() {
         Query.isNull('paymentMethodId'),
         Query.isNull('backupPaymentMethodId')
     ]);
-    if (orgs?.total) {
-        orgMissingPaymentMethod.set(orgs.teams[0] as Organization);
+    if (orgs?.teams.length > 0) {
+        orgMissingPaymentMethod.set(orgs.teams[0] as unknown as Organization);
         headerAlert.add({
             id: 'missingPaymentMethod',
             component: MissingPaymentMethod,

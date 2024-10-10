@@ -17,7 +17,7 @@
     async function validateCoupon() {
         if (couponData?.status === 'active') return;
         try {
-            const response = await sdk.forConsole.console.getCopon(coupon);
+            const response = await sdk.forConsole.console.getCoupon(coupon);
             couponData = response;
             $addCreditWizardStore.coupon = coupon;
             coupon = null;

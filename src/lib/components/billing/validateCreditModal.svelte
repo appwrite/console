@@ -18,7 +18,7 @@
 
     async function addCoupon() {
         try {
-            const response = await sdk.forConsole.console.getCopon(coupon);
+            const response = await sdk.forConsole.console.getCoupon(coupon);
             couponData = response;
             dispatch('validation', couponData);
             coupon = null;

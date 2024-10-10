@@ -8,7 +8,7 @@ export const load: PageLoad = async ({ url }) => {
     if (url.searchParams.has('code')) {
         const code = url.searchParams.get('code');
         try {
-            const couponData = await sdk.forConsole.console.getCopon(code);
+            const couponData = await sdk.forConsole.console.getCoupon(code);
             if (couponData?.campaign && campaigns.has(couponData.campaign)) {
                 return {
                     couponData
