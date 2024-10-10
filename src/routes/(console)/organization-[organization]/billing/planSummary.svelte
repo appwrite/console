@@ -85,7 +85,8 @@
                                         <h5 class="body-text-2 u-stretch">Additional members</h5>
                                         <div>
                                             {formatCurrency(
-                                                extraMembers * currentPlan.addons.member.price
+                                                extraMembers *
+                                                    (currentPlan?.addons?.member?.price ?? 0)
                                             )}
                                         </div>
                                     </div>
