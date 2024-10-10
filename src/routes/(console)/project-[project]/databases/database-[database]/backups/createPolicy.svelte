@@ -465,6 +465,7 @@
                 {:else}
                     <div class="custom-policy-wrapper u-padding-inline-4 u-width-full-line">
                         <button
+                            type="button"
                             class="custom-policy-text"
                             on:click={() => (showCustomPolicy = true)}
                             >Create custom policy
