@@ -11,6 +11,7 @@ const handleGithubEducationMembership = async () => {
             303,
             `${base}/education/error?message=${result.error.message}&code=${result.error.code}`
         );
+    } else {
     }
 };
 
@@ -25,6 +26,7 @@ export const load: PageLoad = async ({ parent, url }) => {
     const { organizations, account } = await parent();
 
     if (userVisitedEducationPage()) {
+        console.log('account', account);
         await handleGithubEducationMembership();
     }
 
