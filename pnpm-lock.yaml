@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@appwrite.io/console':
-        specifier: ^1.3.1
-        version: 1.3.1
+        specifier: ^1.3.2
+        version: 1.3.2
       '@appwrite.io/pink':
         specifier: 0.25.0
         version: 0.25.0
@@ -193,8 +193,8 @@ packages:
   '@analytics/type-utils@0.6.2':
     resolution: {integrity: sha512-TD+xbmsBLyYy/IxFimW/YL/9L2IEnM7/EoV9Aeh56U64Ify8o27HJcKjo38XY9Tcn0uOq1AX3thkKgvtWvwFQg==}
 
-  '@appwrite.io/console@1.3.1':
-    resolution: {integrity: sha512-kbKVqluc0yUwkMcOFS3lSBk4IYXB6OlRqSqc+B11HpxuJA3Lrk3lK1/yHn2fWMVAh6sG3ri8gJG3Zp51l5VL3Q==}
+  '@appwrite.io/console@1.3.2':
+    resolution: {integrity: sha512-3OKKlhXbEqgWPZxdJjmzVZkOoBbJBkOiTqqQWP9ZnuBNEXwIkaXsneMjkPYS3IEBLkJ9zNMON7rH8kkEgMnEgw==}
 
   '@appwrite.io/pink-icons@0.25.0':
     resolution: {integrity: sha512-0O3i2oEuh5mWvjO80i+X6rbzrWLJ1m5wmv2/M3a1p2PyBJsFxN8xQMTEmTn3Wl/D26SsM7SpzbdW6gmfgoVU9Q==}
@@ -3723,7 +3723,7 @@ snapshots:
 
   '@analytics/type-utils@0.6.2': {}
 
-  '@appwrite.io/console@1.3.1': {}
+  '@appwrite.io/console@1.3.2': {}
 
   '@appwrite.io/pink-icons@0.25.0': {}
 
