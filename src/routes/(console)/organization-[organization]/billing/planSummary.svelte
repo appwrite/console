@@ -30,7 +30,6 @@
         extraMembers = members.total > 1 ? members.total - 1 : 0;
 
         currentPlan = await sdk.forConsole.billing.getPlan($organization?.$id);
-        console.log(currentPlan);
     });
 
     $: extraUsage = (currentInvoice?.amount ?? 0) - (currentPlan?.price ?? 0);
@@ -59,7 +58,7 @@
                     <span class="body-text-2">
                         {tierToPlan($organization?.billingPlan)?.name} plan</span>
                     <div class="body-text-2 u-margin-inline-start-auto">
-                        {isTrial ? formatCurrency(0) : formatCurrency(currentPlan?.price)}!
+                        {isTrial ? formatCurrency(0) : formatCurrency(currentPlan?.price)}
                     </div>
                 </CollapsibleItem>
                 {#if $organization?.billingPlan !== BillingPlan.FREE && extraUsage > 0}
