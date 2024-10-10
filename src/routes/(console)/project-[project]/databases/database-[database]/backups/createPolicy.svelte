@@ -581,7 +581,7 @@
         }
     }
 
-    /** the modal, for some reason loses inner padding on smaller devices. */
+    /** the modal, for some reason has issues with inner padding on smaller devices. */
     @media (max-width: 409px) {
         .modal {
             --p-modal-padding: 0.95rem;
