@@ -46,12 +46,15 @@
     });
 
     let policyInEdit = null;
+    let policyBeingEdited = null;
+
     let policyRetention = 30;
     let selectedTime = '00:00';
     let policyNameError: boolean;
     let policyFrequency = 'monthly';
     let monthlyBackupFrequency = 'end';
 
+    $: policyInputError = customRetention.number === 0;
     $: daysSelectionArray = [];
     $: backupPolicyName = `${capitalize(policyFrequency)} backup`;
 
@@ -270,12 +273,19 @@
                                                 on:click={() => {
                                                     policyInEdit = policy.id;
                                                     backupPolicyName = policy.label;
-                                                    policyRetention = policy.retained;
                                                     selectedTime = policy.selectedTime;
                                                     policyFrequency = policy.plainTextFrequency;
                                                     monthlyBackupFrequency =
                                                         policy.monthlyBackupFrequency;
                                                     daysSelectionArray = policy.weeklySelectedDays;
+                                                    policyRetention = !backupRetainingOptions.some(
+                                                        (option) => option.value === policy.retained
+                                                    )
+                                                        ? -1 // -1 is for custom policy
+                                                        : policy.retained;
+
+                                                    // re-add if edit is cancelled
+                                                    policyBeingEdited = policy;
 
                                                     // do not show in the list can cause confusion.
                                                     listOfCustomPolicies = [
@@ -388,22 +398,28 @@
                                         options={backupRetainingOptions} />
                                     <span class="u-flex u-flex-vertical u-gap-8">
                                         {#if customRetentionEnabled}
-                                            <div class="u-flex u-gap-8">
-                                                <div class="u-width-150">
-                                                    <InputNumber
-                                                        min={1}
-                                                        id="number"
-                                                        placeholder="11"
-                                                        max={customRetention.max}
-                                                        bind:value={customRetention.number} />
-                                                </div>
+                                            <div class="u-flex-vertical u-gap-2">
+                                                <div class="u-flex u-gap-8">
+                                                    <div class="u-width-150">
+                                                        <InputNumber
+                                                            min={1}
+                                                            id="number"
+                                                            placeholder="11"
+                                                            max={customRetention.max}
+                                                            bind:value={customRetention.number} />
+                                                    </div>
 
-                                                <InputSelect
-                                                    fullWidth
-                                                    id="retention"
-                                                    placeholder="Months"
-                                                    options={customRetainingOptions}
-                                                    bind:value={customRetention.value} />
+                                                    <InputSelect
+                                                        fullWidth
+                                                        id="retention"
+                                                        placeholder="Months"
+                                                        options={customRetainingOptions}
+                                                        bind:value={customRetention.value} />
+                                                </div>
+                                                {#if policyInputError}
+                                                    <Helper type="warning"
+                                                        >Value should be between 1 and {customRetention.max}</Helper>
+                                                {/if}
                                             </div>
                                         {/if}
                                         <span>
@@ -418,10 +434,17 @@
 
                                                 {@const description =
                                                     period === 'Custom'
-                                                        ? `${customRetention.number}  ${customRetention.label}`
+                                                        ? `${customRetention.number} ${
+                                                              customRetention.number === 1
+                                                                  ? customRetention.label.slice(
+                                                                        0,
+                                                                        -1
+                                                                    )
+                                                                  : customRetention.label
+                                                          }`
                                                         : period}
 
-                                                {#if (period === 'Custom' && customRetention.number !== null) || period !== 'Custom'}
+                                                {#if (period === 'Custom' && customRetention.number !== null && customRetention.number !== 0) || period !== 'Custom'}
                                                     Every backup created under this policy will be
                                                     retained for <b>
                                                         {description}
@@ -446,11 +469,19 @@
                                     {/if}
                                 </div>
 
-                                <div class="u-main-end u-flex u-gap-8">
+                                <div class="button-container u-main-end u-flex u-gap-8">
                                     <Button
                                         text
                                         on:click={() => {
+                                            policyInEdit = false;
                                             showCustomPolicy = false;
+
+                                            if (policyBeingEdited) {
+                                                listOfCustomPolicies = [
+                                                    ...listOfCustomPolicies,
+                                                    policyBeingEdited
+                                                ];
+                                            }
                                         }}
                                         >Cancel
                                     </Button>
@@ -460,6 +491,10 @@
                                         on:click={() => {
                                             if (!backupPolicyName) {
                                                 policyNameError = true;
+                                                return;
+                                            }
+
+                                            if (policyInputError) {
                                                 return;
                                             }
 
@@ -475,6 +510,7 @@
                 {:else}
                     <div class="custom-policy-wrapper u-padding-inline-4 u-width-full-line">
                         <button
+                            type="button"
                             class="custom-policy-text"
                             on:click={() => (showCustomPolicy = true)}
                             >Create custom policy
@@ -542,6 +578,19 @@
 
         :global(.time-holder .input-time.hide > li label) {
             display: none;
+        }
+    }
+
+    /** the modal, for some reason loses inner padding on smaller devices. */
+    @media (max-width: 409px) {
+        .modal {
+            --p-modal-padding: 0.95rem;
+        }
+    }
+
+    @media (max-width: 315px) {
+        .modal {
+            --p-modal-padding: 0.9rem;
         }
     }
 </style>

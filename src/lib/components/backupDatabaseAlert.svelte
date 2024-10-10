@@ -22,7 +22,7 @@
         ? 'Upgrade your plan to ensure your data stays safe and backed up'
         : 'Protect your data by quickly adding a backup policy'}
 
-    {@const ctaText = isFreePlan ? 'Upgrade plan' : 'Add backup'}
+    {@const ctaText = isFreePlan ? 'Upgrade plan' : 'Create policy'}
     {@const ctaURL = isFreePlan ? $upgradeURL : `${$page.url.pathname}/backups`}
 
     <HeaderAlert type="warning" title="Your database has no backup policy">
