@@ -283,7 +283,7 @@
         <Heading tag="h6" size="7">Storage</Heading>
 
         <p class="text">
-            Calculated for all your files, deployments, builds and databases. While in beta, only
+            Calculated for all your files, deployments, builds, databases and backups. While in beta, only
             file storage is counted against your plan limits.
         </p>
 
@@ -299,6 +299,14 @@
                         tooltip: {
                             title: 'File storage',
                             label: `${Math.round(bytesToSize(data.organizationUsage.filesStorageTotal, 'GB') * 100) / 100}GB`
+                        }
+                    },
+                    {
+                        size: bytesToSize(data.organizationUsage.backupsStorageTotal, 'GB'),
+                        color: '#FF6F61',
+                        tooltip: {
+                            title: 'Backups storage',
+                            label: `${Math.round(bytesToSize(data.organizationUsage.backupsStorageTotal, 'GB') * 100) / 100}MB`
                         }
                     },
                     {
@@ -353,7 +361,7 @@
             {#if data.organizationUsage.storageTotal}
                 {@const totalGbHours = mbSecondsToGBHours(
                     data.organizationUsage.executionsMBSecondsTotal +
-                        data.organizationUsage.buildsMBSecondsTotal
+                    data.organizationUsage.buildsMBSecondsTotal
                 )}
                 {@const progressBarStorageDate = [
                     {
