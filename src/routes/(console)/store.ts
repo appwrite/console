@@ -12,3 +12,4 @@ export const consoleVariables = derived(
 
 export const activeHeaderAlert = writable<HeaderAlert>(null);
 export const orgMissingPaymentMethod = writable<Organization>(null);
+export const showSupportModal = writable<boolean>(false);

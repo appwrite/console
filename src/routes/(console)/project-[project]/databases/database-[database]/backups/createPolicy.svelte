@@ -24,8 +24,8 @@
     import { organization } from '$lib/stores/organization';
     import { BillingPlan } from '$lib/constants';
     import { Card } from '$lib/components';
-    import { wizard } from '$lib/stores/wizard';
-    import SupportWizard from '$routes/(console)/supportWizard.svelte';
+    import { base } from '$app/paths';
+    import { page } from '$app/stores';
 
     export let isShowing: boolean;
     export let isFromBackupsTab: boolean = false;
@@ -201,15 +201,13 @@
                         </div>
                     </Card>
                     <span>
-                        <button
-                            type="button"
-                            class="u-underline cursor-pointer"
+                        <a
+                            class="link"
+                            href={`${base}/support?org=${$organization?.$id}&project=${$page.params.project}`}
                             on:click={() => {
                                 isShowing = false;
                                 $showCreatePolicy = false;
-                                wizard.start(SupportWizard);
-                            }}>Contact support</button> to upgrade your plan and add customized backup
-                        policies.
+                            }}>Contact support</a> to upgrade your plan and add customized backup policies.
                     </span>
                 </div>
             {:else}
@@ -221,13 +219,12 @@
                         <svelte:fragment slot="description">
                             <span>
                                 Daily backups are retained for 7 days.
-                                <button
-                                    type="button"
-                                    class="u-underline cursor-pointer"
+                                <a
+                                    class="link"
+                                    href={`${base}/support?org=${$organization?.$id}&project=${$page.params.project}`}
                                     on:click={() => {
                                         isShowing = false;
-                                        wizard.start(SupportWizard);
-                                    }}>Contact support</button>
+                                    }}>Contact support</a>
                                 to upgrade your plan and add customized backup policies.
                             </span>
                         </svelte:fragment>
