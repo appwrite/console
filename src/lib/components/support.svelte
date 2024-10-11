@@ -1,17 +1,27 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
     import { app } from '$lib/stores/app';
-    import { wizard } from '$lib/stores/wizard';
-    import SupportWizard from '$routes/(console)/supportWizard.svelte';
-    import { showSupportModal } from '$routes/(console)/wizard/support/store';
     import { isCloud } from '$lib/system';
     import { organization } from '$lib/stores/organization';
     import { BillingPlan } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
     import { localeTimezoneName, utcHourToLocaleHour } from '$lib/helpers/date';
     import { upgradeURL } from '$lib/stores/billing';
+    import { base } from '$app/paths';
+    import { project } from '$routes/(console)/project-[project]/store';
 
     export let show = false;
+
+    function supportURL() {
+        let url = `${base}/support`;
+        if ($organization?.$id) {
+            url += `?org=${$organization?.$id}`;
+            if ($project?.$id) {
+                url += `&project=${$project?.$id}`;
+            }
+        }
+        return url;
+    }
 
     $: isPaid =
         $organization?.billingPlan === BillingPlan.PRO ||
@@ -46,10 +56,9 @@
             <Button
                 secondary
                 fullWidth
+                href={supportURL()}
                 on:click={() => {
                     show = false;
-                    $showSupportModal = false;
-                    wizard.start(SupportWizard);
                 }}>
                 <span class="text">Contact our Support Team</span>
             </Button>

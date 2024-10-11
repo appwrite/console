@@ -2,12 +2,12 @@
     import { afterNavigate, goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { Submit, trackError, trackEvent } from '$lib/actions/analytics.js';
-
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import {
         Button,
         Form,
         FormList,
+        InputCheckbox,
         InputSelect,
         InputSelectCheckbox,
         InputTextarea,
@@ -18,14 +18,12 @@
         WizardSecondaryContent,
         WizardSecondaryFooter
     } from '$lib/layout';
-    import { addNotification } from '$lib/stores/notifications.js';
-    import { user } from '$lib/stores/user.js';
-    import { VARS } from '$lib/system.js';
-
+    import { addNotification } from '$lib/stores/notifications';
+    import { user } from '$lib/stores/user';
+    import { VARS } from '$lib/system';
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
-    import { supportData } from '../wizard/support/store';
-    import { sdk } from '$lib/stores/sdk.js';
+    import { sdk } from '$lib/stores/sdk';
     import {
         localeTimezoneName,
         utcHourToLocaleHour,
@@ -33,11 +31,11 @@
         type WeekDay
     } from '$lib/helpers/date.js';
     import { isSupportOnline } from './store';
-    import type { Models } from '@appwrite.io/console';
+    import { Query } from '@appwrite.io/console';
     import { app } from '$lib/stores/app';
     import FormItem from '$lib/elements/forms/formItem.svelte';
-
-    export let data;
+    import type { OrganizationList } from '$lib/stores/organization';
+    import { BillingPlan } from '$lib/constants';
 
     let previousPage: string = base;
 
@@ -53,8 +51,9 @@
         }
     });
 
+    let originProjectId: string = null;
     let selectedOrgId: string = null;
-    let orgs: Models.TeamList<Record<string, unknown>>;
+    let orgs: OrganizationList;
     let formComponent: Form;
     let isSubmitting = writable(false);
 
@@ -75,13 +74,18 @@
         { value: 'other', label: 'Other', checked: false },
         { value: 'none', label: 'No particular product or serivce', checked: false }
     ];
+    let access = false;
 
     onMount(async () => {
         if ($page.url.searchParams.has('org')) {
             selectedOrgId = $page.url.searchParams.get('org');
-        } else {
-            orgs = await sdk.forConsole.teams.list();
         }
+        if ($page.url.searchParams.has('project')) {
+            originProjectId = $page.url.searchParams.get('project');
+        }
+        orgs = (await sdk.forConsole.teams.list([
+            Query.notEqual('billingPlan', BillingPlan.FREE)
+        ])) as unknown as OrganizationList;
     });
 
     async function handleSubmit() {
@@ -94,13 +98,13 @@
                 subject: 'support',
                 email: $user.email,
                 firstName: $user?.name || 'Unknown',
-                message: $supportData.message,
+                message: message,
                 tags: ['cloud'],
                 customFields: [
-                    { id: '41612', value: $supportData.category },
+                    { id: '41612', value: category },
                     { id: '48493', value: $user?.name ?? '' },
                     { id: '48492', value: selectedOrgId ?? '' },
-                    { id: '48491', value: $supportData?.project ?? '' },
+                    { id: '48491', value: originProjectId ?? '' },
                     { id: '48490', value: $user?.$id ?? '' }
                 ]
             })
@@ -147,18 +151,6 @@
     <WizardSecondaryContent>
         <Form bind:this={formComponent} onSubmit={handleSubmit} bind:isSubmitting>
             <FormList>
-                {#if !$page.url.searchParams.has('org') && orgs?.total}
-                    <InputSelect
-                        id="org"
-                        label="Select an organization"
-                        placeholder="Select organization"
-                        bind:value={selectedOrgId}
-                        options={orgs?.teams.map((org) => ({
-                            value: org.$id,
-                            label: org.name
-                        }))} />
-                {/if}
-
                 <InputSelect
                     id="categary"
                     label="Select a category"
@@ -179,12 +171,39 @@
                             }))} />
                     </FormItem>
                 {/if}
+                {#if orgs?.total && category === 'billing'}
+                    <InputSelect
+                        id="org"
+                        label="Select an organization"
+                        placeholder="Select organization"
+                        bind:value={selectedOrgId}
+                        options={orgs?.teams.map((org) => ({
+                            value: org.$id,
+                            label: org.name
+                        }))} />
+                {/if}
+
                 <InputTextarea
                     label="Explain your request"
                     id="message"
                     placeholder="Type here..."
                     bind:value={message}
                     required />
+                {#if category === 'technical'}
+                    <InputCheckbox
+                        required
+                        size="small"
+                        id="access"
+                        bind:checked={access}
+                        label="Allow temporary access to my Appwrite account">
+                        <svelte:fragment slot="description">
+                            <span style="margin-block-start: 1px;">
+                                Under some circumstances, you may want to provide access for help
+                                with issues related to your projects.
+                            </span>
+                        </svelte:fragment>
+                    </InputCheckbox>
+                {/if}
             </FormList>
         </Form>
         <svelte:fragment slot="aside">
