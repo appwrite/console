@@ -133,7 +133,7 @@ function createFeedbackStore() {
                     // billingPlan,
                     firstname: name || 'Unknown',
                     customFields: [
-                        { id: '47364', currentPage },
+                        { id: '47364', value: currentPage },
                         ...(value ? [{ id: '40655', value }] : [])
                     ],
                     metaFields: {
