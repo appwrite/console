@@ -106,7 +106,10 @@
                     { id: '48492', value: selectedOrgId ?? '' },
                     { id: '48491', value: originProjectId ?? '' },
                     { id: '48490', value: $user?.$id ?? '' }
-                ]
+                ],
+                metaFields: {
+                    temporaryAccess: access
+                }
             })
         });
         trackEvent(Submit.SupportTicket);
