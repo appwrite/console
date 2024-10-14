@@ -162,6 +162,12 @@ campaigns
         description:
             'Get $50 in Cloud credits when you upgrade or create an organization with a Pro plan'
     })
+    .set('BandwidthUpdate', {
+        template: 'card',
+        title: 'Get everything out of the Cloud. Claim your $30 credits.',
+        description:
+            'Get $30 in Cloud credits when you upgrade or create an organization with a Pro plan.'
+    })
     .set('FusionVC', {
         template: 'review',
         title: 'Welcome to Appwrite!',
