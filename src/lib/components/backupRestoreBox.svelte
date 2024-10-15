@@ -11,8 +11,9 @@
     import { addNotification } from '$lib/stores/notifications';
     import { base } from '$app/paths';
     import { getProjectId } from '$lib/helpers/project';
+    import { toLocaleDate } from '$lib/helpers/date';
 
-    let backupRestoreItems: {
+    const backupRestoreItems: {
         archives: Map<string, BackupArchive>;
         restorations: Map<string, BackupRestoration>;
     } = {
@@ -20,7 +21,7 @@
         restorations: new Map()
     };
 
-    let openStates = {
+    const openStates = {
         archives: true,
         restorations: true
     };
@@ -30,7 +31,7 @@
 
     let lastDatabaseRestorationId = null;
 
-    const showRestoreNotification = (newDatabaseId: string, newDatabaseName: string) => {
+    function showRestoreNotification(newDatabaseId: string, newDatabaseName: string) {
         if (newDatabaseId && newDatabaseName && lastDatabaseRestorationId !== newDatabaseId) {
             const project = $page.params.project;
             lastDatabaseRestorationId = newDatabaseId;
@@ -49,9 +50,9 @@
                 ]
             });
         }
-    };
+    }
 
-    const fetchBackupRestores = async () => {
+    async function fetchBackupRestores() {
         try {
             const query = [
                 Query.equal('status', 'pending'),
@@ -79,12 +80,12 @@
         } catch (e) {
             // ignore?
         }
-    };
+    }
 
     // fresh fetch.
     fetchBackupRestores();
 
-    const updateOrAddItem = (payload: Payload) => {
+    function updateOrAddItem(payload: Payload) {
         const { $id, status, $collection, policyId } = payload;
         if ($collection === 'archives' && policyId !== null) {
             return;
@@ -110,9 +111,9 @@
             }
             backupRestoreItems[$collection] = collectionMap;
         }
-    };
+    }
 
-    const graphSize = (status: string) => {
+    function graphSize(status: string): number {
         switch (status) {
             case 'pending':
                 return 10;
@@ -126,9 +127,9 @@
             default:
                 return 0;
         }
-    };
+    }
 
-    const text = (status: string, key: string) => {
+    function text(status: string, key: string) {
         const service = key === 'archives' ? 'backup' : 'restore';
         if (status === 'completed') {
             return `Database ${service} complete`;
@@ -137,19 +138,18 @@
         } else {
             return 'Preparing database...';
         }
-    };
+    }
 
-    const handleClose = (which: string) => {
+    function handleClose(which: string) {
         backupRestoreItems[which] = new Map();
         if (which === 'restorations') lastDatabaseRestorationId = null;
-    };
+    }
 
-    // TODO: `startedAt` is probably not correct here. need more info.
-    const backupName = (item: BackupArchive | BackupRestoration, key: string) => {
+    function backupName(item: BackupArchive | BackupRestoration, key: string) {
         const attribute = key === 'archives' ? '$createdAt' : 'startedAt';
-        const date = new Date(item[attribute]);
-        return `${date.toDateString().slice(4, 10)}, ${date.toTimeString().slice(0, 5)}`;
-    };
+
+        return toLocaleDate(item[attribute]);
+    }
 
     onMount(() => {
         // fast path: don't subscribe if org is on a free plan or is self-hosted.
