@@ -198,7 +198,7 @@
     <svelte:fragment slot="aside">
         <div class="u-flex u-flex-vertical-mobile u-main-space-between u-gap-16">
             <ul class="buttons-list">
-                <li class="buttons-list-item">
+                <li class="buttons-list-item padding-start">
                     <Button text on:click={() => (showEditorModal = true)}>
                         <span class="icon-code" />
                         <span class="text">Editor</span>
@@ -375,3 +375,9 @@
         {variableList}
         bind:show={showVariablesUpload} />
 {/if}
+
+<style>
+    .padding-start {
+        margin-left: -1rem;
+    }
+</style>
