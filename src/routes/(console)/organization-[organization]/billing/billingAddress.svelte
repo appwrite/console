@@ -10,6 +10,8 @@
     import { addNotification } from '$lib/stores/notifications';
     import { organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
+    import RemoveAddress from './removeAddress.svelte';
+    import { user } from '$lib/stores/user';
     import AddressModal from '$routes/(console)/account/payments/addressModal.svelte';
     import EditAddressModal from '$routes/(console)/account/payments/editAddressModal.svelte';
     import ReplaceAddress from './replaceAddress.svelte';
@@ -21,6 +23,7 @@
     let showCreate = false;
     let showEdit = false;
     let showReplace = false;
+    let showRemove = false;
 
     async function addAddress(addressId: string) {
         try {
@@ -81,14 +84,16 @@
                             <span class="icon-dots-horizontal" aria-hidden="true" />
                         </Button>
                         <svelte:fragment slot="list">
-                            <DropListItem
-                                icon="pencil"
-                                on:click={() => {
-                                    showEdit = true;
-                                    showBillingAddressDropdown = false;
-                                }}>
-                                Edit
-                            </DropListItem>
+                            {#if billingAddress.userId === $user.$id}
+                                <DropListItem
+                                    icon="pencil"
+                                    on:click={() => {
+                                        showEdit = true;
+                                        showBillingAddressDropdown = false;
+                                    }}>
+                                    Edit
+                                </DropListItem>
+                            {/if}
                             <DropListItem
                                 icon="switch-horizontal"
                                 on:click={() => {
@@ -96,6 +101,14 @@
                                     showBillingAddressDropdown = false;
                                 }}>
                                 Replace
+                            </DropListItem>
+                            <DropListItem
+                                icon="trash"
+                                on:click={() => {
+                                    showRemove = true;
+                                    showBillingAddressDropdown = false;
+                                }}>
+                                Remove
                             </DropListItem>
                         </svelte:fragment>
                     </DropList>
@@ -162,4 +175,7 @@
 {/if}
 {#if showReplace}
     <ReplaceAddress bind:show={showReplace} />
+{/if}
+{#if showRemove}
+    <RemoveAddress bind:show={showRemove} />
 {/if}

@@ -6,17 +6,17 @@
     import { sdk } from '$lib/stores/sdk';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { organization } from '$lib/stores/organization';
-    import { Dependencies } from '$lib/constants';
+    import { BillingPlan, Dependencies } from '$lib/constants';
 
     export let showDelete = false;
     export let isBackup = false;
     export let disabled = false;
+    export let hasOtherMethod = false;
 
     let error: string;
 
     async function removeDefaultMethod() {
-        if (!$organization.paymentMethodId || !$organization.backupPaymentMethodId) return;
-        showDelete = false;
+        if ($organization?.billingPlan !== BillingPlan.FREE && !hasOtherMethod) return;
 
         try {
             await sdk.forConsole.billing.removeOrganizationPaymentMethod($organization.$id);
@@ -26,13 +26,16 @@
             });
             trackEvent(Submit.OrganizationPaymentDelete);
             invalidate(Dependencies.ORGANIZATION);
+            showDelete = false;
         } catch (e) {
             error = e.message;
             trackError(e, Submit.OrganizationPaymentDelete);
+        } finally {
+            showDelete = false;
         }
     }
     async function removeBackuptMethod() {
-        if (!$organization.paymentMethodId || !$organization.backupPaymentMethodId) return;
+        if ($organization?.billingPlan !== BillingPlan.FREE && !hasOtherMethod) return;
         showDelete = false;
 
         try {
@@ -43,6 +46,7 @@
             });
             trackEvent(Submit.OrganizationBackupPaymentDelete);
             invalidate(Dependencies.ORGANIZATION);
+            showDelete = false;
         } catch (e) {
             error = e.message;
             trackError(e, Submit.OrganizationBackupPaymentDelete);

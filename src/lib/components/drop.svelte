@@ -42,7 +42,7 @@
                 {
                     name: 'offset',
                     options: {
-                        offset: [noArrow ? 0 : -arrowSize, noArrow ? 0 : arrowSize / 1.5]
+                        offset: [noArrow ? 0 : arrowSize * 1.75, noArrow ? 0 : arrowSize / 1.5]
                     }
                 },
                 {
@@ -135,10 +135,12 @@
 <style global lang="scss">
     .drop-arrow.is-popover {
         --drop-arrow-pop-over-bg-color: var(--color-neutral-90);
+
         body.theme-light & {
             --drop-arrow-pop-over-bg-color: var(--color-neutral-0);
         }
     }
+
     .drop-arrow,
     .drop-arrow::before {
         position: absolute;
@@ -148,6 +150,7 @@
 
         --drop-arrow-border: 1px solid hsl(var(--color-neutral-85));
         --drop-arrow-bg-color: hsl(var(--drop-arrow-pop-over-bg-color, var(--color-neutral-105)));
+
         body.theme-light & {
             --drop-arrow-border: 1px solid hsl(var(--color-neutral-10));
             --drop-arrow-bg-color: hsl(var(--drop-arrow-pop-over-bg-color, var(--color-neutral-0)));

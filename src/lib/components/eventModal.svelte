@@ -79,7 +79,7 @@
                     : selected.service?.actions;
 
                 // We need to check if the selected action name is still
-                // on the available list, and if so, change tje action to the
+                // on the available list, and if so, change the action to the
                 // appropriate one, as it may contain different attributes
                 const availableAction = availableActions.find(
                     (a) => a.name === selected.action?.name

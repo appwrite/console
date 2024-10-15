@@ -8,7 +8,9 @@
         <div class="grid-item-1-start-start">
             <div class="eyebrow-heading-3"><slot name="eyebrow" /></div>
             <Heading tag="h2" size="7"><slot name="title" /></Heading>
+            <div class="u-padding-block-start-4"><slot name="subtitle" /></div>
         </div>
+
         <div class="grid-item-1-start-end">
             <slot name="status" />
         </div>

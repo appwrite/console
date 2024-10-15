@@ -3,6 +3,7 @@
     import { trackEvent } from '$lib/actions/analytics';
     import { Form } from '$lib/elements/forms';
     import { disableCommands } from '$lib/commandCenter';
+    import { beforeNavigate } from '$app/navigation';
 
     export let show = false;
     export let size: 'small' | 'big' | 'huge' = null;
@@ -18,6 +19,10 @@
     export let description = '';
 
     let alert: HTMLElement;
+
+    beforeNavigate(() => {
+        show = false;
+    });
 
     $: $disableCommands(show);
 
@@ -65,7 +70,7 @@
                 {/if}
             </div>
             {#if description.length > 0}
-                <p class="u-margin-block-start-4">
+                <p class="modal-description u-margin-block-start-4">
                     <slot name="description">
                         {description}
                     </slot>

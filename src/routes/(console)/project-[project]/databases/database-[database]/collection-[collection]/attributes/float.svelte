@@ -23,16 +23,18 @@
     export async function updateFloat(
         databaseId: string,
         collectionId: string,
-        data: Partial<Models.AttributeFloat>
+        data: Partial<Models.AttributeFloat>,
+        originalKey?: string
     ) {
         await sdk.forProject.databases.updateFloatAttribute(
             databaseId,
             collectionId,
-            data.key,
+            originalKey,
             data.required,
             data.min,
             data.max,
-            data.default
+            data.default,
+            data.key !== originalKey ? data.key : undefined
         );
     }
 </script>

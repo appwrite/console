@@ -25,6 +25,7 @@
     import { Badge, Icon, Table, Layout } from '@appwrite.io/pink-svelte';
     import { Tag } from '@appwrite.io/pink-svelte';
     import { IconDuplicate } from '@appwrite.io/pink-icons-svelte';
+    import { canWriteUsers } from '$lib/stores/roles';
 
     export let data: PageData;
 
@@ -37,19 +38,21 @@
 <Container>
     <ContainerHeader title="Users" isFlex={false} total={data.users.total} let:isButtonDisabled>
         <SearchQuery search={data.search} placeholder="Search by name, email, phone, or ID">
-            <div
-                use:tooltip={{
-                    content: `Upgrade to add more users`,
-                    disabled: !isButtonDisabled
-                }}>
-                <Button
-                    on:mousedown={() => ($showCreateUser = true)}
-                    event="create_user"
-                    disabled={isButtonDisabled}>
-                    <span class="icon-plus" aria-hidden="true" />
-                    <span class="text">Create user</span>
-                </Button>
-            </div>
+            {#if $canWriteUsers}
+                <div
+                    use:tooltip={{
+                        content: `Upgrade to add more users`,
+                        disabled: !isButtonDisabled
+                    }}>
+                    <Button
+                        on:mousedown={() => ($showCreateUser = true)}
+                        event="create_user"
+                        disabled={isButtonDisabled}>
+                        <span class="icon-plus" aria-hidden="true" />
+                        <span class="text">Create user</span>
+                    </Button>
+                </div>
+            {/if}
         </SearchQuery>
     </ContainerHeader>
     {#if data.users.total}
@@ -139,13 +142,15 @@
             total={data.users.total} />
     {:else if data.search}
         <EmptySearch target="users" hidePagination>
-            <Button href={`${base}/project-${projectId}/auth`} size="small" secondary>Clear Search</Button>
+            <Button href={`${base}/project-${projectId}/auth`} size="small" secondary
+                >Clear Search</Button>
         </EmptySearch>
     {:else}
         <Empty
             single
             href="https://appwrite.io/docs/references/cloud/server-nodejs/users"
             target="user"
+            allowCreate={$canWriteUsers}
             on:mousedown={() => showCreateUser.set(true)} />
     {/if}
 </Container>

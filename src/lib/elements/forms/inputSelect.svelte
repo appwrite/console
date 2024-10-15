@@ -1,6 +1,7 @@
 <script lang="ts">
     import { Input } from '@appwrite.io/pink-svelte';
     import type { FormItemTag } from './formItem.svelte';
+    import type { SvelteComponent } from 'svelte';
 
     export let id: string;
     export let label: string | undefined = undefined;
@@ -19,9 +20,13 @@
     }[];
     export let isMultiple = false;
     export let fullWidth = false;
+    export let popover: typeof SvelteComponent<unknown> = null;
+    export let popoverProps: Record<string, unknown> = {};
 
     let element: HTMLSelectElement;
     let error: string;
+
+    let show: boolean = false;
 
     const handleInvalid = (event: Event) => {
         event.preventDefault();
@@ -49,6 +54,7 @@
 </script>
 
 <Input.Select
+    {id}
     {label}
     {options}
     {placeholder}

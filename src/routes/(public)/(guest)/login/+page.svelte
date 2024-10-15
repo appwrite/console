@@ -51,17 +51,6 @@
                 await goto(`${base}/apply-credit?campaign=${data.campaign}`);
                 return;
             }
-            if ($page.url.searchParams) {
-                const redirect = $page.url.searchParams.get('redirect');
-                $page.url.searchParams.delete('redirect');
-                if (redirect) {
-                    await goto(`${redirect}${$page.url.search}`);
-                } else {
-                    await goto(`${base}${$page.url.search ?? ''}`);
-                }
-            } else {
-                await goto(base);
-            }
         } catch (error) {
             disabled = false;
             addNotification({

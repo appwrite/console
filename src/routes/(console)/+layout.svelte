@@ -9,22 +9,23 @@
     import { app } from '$lib/stores/app';
     import { log } from '$lib/stores/logs';
     import { newOrgModal, organization } from '$lib/stores/organization';
+    import { database, checkForDatabaseBackupPolicies } from '$lib/stores/database';
     import { wizard } from '$lib/stores/wizard';
     import { afterUpdate, onMount } from 'svelte';
     import { loading } from '$routes/store';
     import { requestedMigration } from '../store';
     import Create from './createOrganization.svelte';
     import {
-        showUsageRatesModal,
-        checkForUsageLimit,
-        checkPaymentAuthorizationRequired,
         calculateTrialDay,
-        paymentExpired,
-        checkForMarkedForDeletion,
         checkForMandate,
+        checkForMarkedForDeletion,
         checkForMissingPaymentMethod,
         checkForNewDevUpgradePro,
-        plansInfo
+        checkForUsageLimit,
+        checkPaymentAuthorizationRequired,
+        paymentExpired,
+        plansInfo,
+        showUsageRatesModal
     } from '$lib/stores/billing';
     import { goto } from '$app/navigation';
     import { CommandCenter, registerCommands, registerSearchers } from '$lib/commandCenter';
@@ -35,7 +36,7 @@
     import { openMigrationWizard } from './(migration-wizard)';
     import { project } from './project-[project]/store';
     import { feedback } from '$lib/stores/feedback';
-    import { VARS, hasStripePublicKey, isCloud } from '$lib/system';
+    import { hasStripePublicKey, isCloud, VARS } from '$lib/system';
     import { stripe } from '$lib/stores/stripe';
     import MobileSupportModal from './wizard/support/mobileSupportModal.svelte';
     import { showSupportModal } from './wizard/support/store';
@@ -43,6 +44,8 @@
     import { headerAlert } from '$lib/stores/headerAlert';
     import { UsageRates } from '$lib/components/billing';
     import { base } from '$app/paths';
+    import { canSeeProjects } from '$lib/stores/roles';
+    import { BottomModalAlert } from '$lib/components';
 
     function kebabToSentenceCase(str: string) {
         return str
@@ -66,9 +69,10 @@
             keys: ['g', 'p'],
             group: 'navigation',
             disabled:
-                $page.url.pathname.includes('/console/organization-') &&
-                !$page.url.pathname.endsWith('/members') &&
-                !$page.url.pathname.endsWith('/settings'),
+                ($page.url.pathname.includes('/console/organization-') &&
+                    !$page.url.pathname.endsWith('/members') &&
+                    !$page.url.pathname.endsWith('/settings')) ||
+                !$canSeeProjects,
             rank: -1
         },
         {
@@ -83,7 +87,7 @@
         {
             label: 'Create new organization',
             callback: () => {
-                newOrgModal.set(true);
+                isCloud ? goto(`${base}/create-organization`) : newOrgModal.set(true);
             },
             keys: ['c', 'o'],
             group: 'organizations'
@@ -265,6 +269,12 @@
         }
     }
 
+    database.subscribe(async (database) => {
+        if (!database) return;
+        // the component checks `isCloud` internally.
+        await checkForDatabaseBackupPolicies(database);
+    });
+
     organization.subscribe(async (org) => {
         if (!org) return;
         if (isCloud) {
@@ -335,3 +345,5 @@
 {#if isCloud && $showUsageRatesModal}
     <UsageRates bind:show={$showUsageRatesModal} org={$organization} />
 {/if}
+
+<BottomModalAlert />

@@ -22,14 +22,16 @@
     export async function updateEmail(
         databaseId: string,
         collectionId: string,
-        data: Partial<Models.AttributeEmail>
+        data: Partial<Models.AttributeEmail>,
+        originalKey?: string
     ) {
         await sdk.forProject.databases.updateEmailAttribute(
             databaseId,
             collectionId,
-            data.key,
+            originalKey,
             data.required,
-            data.default
+            data.default,
+            data.key !== originalKey ? data.key : undefined
         );
     }
 </script>

@@ -8,7 +8,7 @@
 </script>
 
 <div class:box={isBox}>
-    <div class="u-flex u-main-space-between u-cross-start">
+    <div class="u-flex u-main-space-between u-cross-start" style="padding-block: 0.5rem;">
         <div class="u-line-height-1-5 u-flex u-flex-vertical u-gap-2">
             <span class="u-flex u-cross-center u-gap-8">
                 <p class="text u-bold">

@@ -138,11 +138,35 @@ campaigns
         description:
             'Get $50 in Cloud credits when you upgrade or create an organization with a Pro plan'
     })
+    .set('NetNinja', {
+        template: 'card',
+        title: 'Claim your $50 Net Ninja credits.',
+        description:
+            'Get $50 in Cloud credits when you upgrade or create an organization with a Pro plan'
+    })
+    .set('CodeWithAntonio', {
+        template: 'card',
+        title: 'Claim your $50 Code With Antonio credits.',
+        description:
+            'Get $50 in Cloud credits when you upgrade or create an organization with a Pro plan'
+    })
+    .set('Hacktoberfest2024', {
+        template: 'card',
+        title: 'Claim your $60 Hacktoberfest credits.',
+        description:
+            'Get $60 in Cloud credits when you upgrade or create an organization with a Pro plan'
+    })
     .set('VueJS', {
         template: 'card',
         title: 'Claim your $50 VueJS credits.',
         description:
             'Get $50 in Cloud credits when you upgrade or create an organization with a Pro plan'
+    })
+    .set('BandwidthUpdate', {
+        template: 'card',
+        title: 'Get everything out of the Cloud. Claim your $30 credits.',
+        description:
+            'Get $30 in Cloud credits when you upgrade or create an organization with a Pro plan.'
     })
     .set('FusionVC', {
         template: 'review',

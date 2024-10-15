@@ -17,6 +17,8 @@
 
     let currentInvoice: Invoice;
     let extraMembers = 0;
+    let currentPlan;
+
     const today = new Date();
     onMount(async () => {
         const invoices = await sdk.forConsole.billing.listInvoices($organization.$id, [
@@ -26,9 +28,10 @@
         currentInvoice = invoices.invoices[0];
         const members = await sdk.forConsole.teams.listMemberships($organization.$id, []);
         extraMembers = members.total > 1 ? members.total - 1 : 0;
+
+        currentPlan = await sdk.forConsole.billing.getPlan($organization?.$id);
     });
 
-    $: currentPlan = $plansInfo?.get($organization?.billingPlan);
     $: extraUsage = (currentInvoice?.amount ?? 0) - (currentPlan?.price ?? 0);
     $: extraAddons = currentInvoice?.usage?.length ?? 0;
     $: isTrial =
@@ -82,7 +85,8 @@
                                         <h5 class="body-text-2 u-stretch">Additional members</h5>
                                         <div>
                                             {formatCurrency(
-                                                extraMembers * currentPlan.addons.member.price
+                                                extraMembers *
+                                                    (currentPlan?.addons?.member?.price ?? 0)
                                             )}
                                         </div>
                                     </div>
