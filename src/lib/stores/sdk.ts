@@ -22,6 +22,7 @@ import {
     Vcs
 } from '@appwrite.io/console';
 import { Billing } from '../sdk/billing';
+import { Backups } from '../sdk/backups';
 import { Sources } from '$lib/sdk/sources';
 
 export function getApiEndpoint(): string {
@@ -41,6 +42,7 @@ const sdkForProject = {
     client: clientProject,
     account: new Account(clientProject),
     avatars: new Avatars(clientProject),
+    backups: new Backups(clientProject),
     databases: new Databases(clientProject),
     functions: new Functions(clientProject),
     health: new Health(clientProject),

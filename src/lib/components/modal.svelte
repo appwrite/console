@@ -70,7 +70,7 @@
                 {/if}
             </div>
             {#if description.length > 0}
-                <p class="u-margin-block-start-4">
+                <p class="modal-description u-margin-block-start-4">
                     <slot name="description">
                         {description}
                     </slot>

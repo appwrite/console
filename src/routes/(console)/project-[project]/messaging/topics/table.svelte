@@ -16,12 +16,12 @@
     } from '$lib/elements/table';
     import { addNotification } from '$lib/stores/notifications';
     import type { PageData } from './$types';
-    import { project } from '$routes/(console)/project-[project]/store';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { sdk } from '$lib/stores/sdk';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import type { Column } from '$lib/helpers/types';
+    import { page } from '$app/stores';
     import { canWriteTopics } from '$lib/stores/roles';
 
     export let columns: Column[];
@@ -75,7 +75,7 @@
     <TableBody>
         {#each data.topics.topics as topic (topic.$id)}
             <TableRowLink
-                href={`${base}/project-${$project.$id}/messaging/topics/topic-${topic.$id}`}>
+                href={`${base}/project-${$page.params.project}/messaging/topics/topic-${topic.$id}`}>
                 {#if $canWriteTopics}
                     <TableCellCheck bind:selectedIds id={topic.$id} />
                 {/if}

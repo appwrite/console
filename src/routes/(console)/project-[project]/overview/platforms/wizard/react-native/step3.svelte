@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Alert, Code } from '$lib/components';
     import { WizardStep } from '$lib/layout';
-    import { isSelfHosted } from '$lib/system';
+    import { isCloud } from '$lib/system';
     import { sdk } from '$lib/stores/sdk';
     import { createPlatform } from '../store';
     import Id from '$lib/components/id.svelte';
@@ -9,11 +9,15 @@
     const { endpoint, project } = sdk.forProject.client.config;
     const code = `import { Client, Account, ID } from 'react-native-appwrite';
 
-const client = new Client();
-const client
-    .setEndpoint('${endpoint}')
+const client = new Client()${
+        isCloud
+            ? ''
+            : `
+    .setEndpoint('${endpoint}')`
+    }
     .setProject('${project}')
-    .setPlatform('${$createPlatform.key}');`;
+    .setPlatform('${$createPlatform.key}');
+`;
 
     let showAlert = true;
 </script>
@@ -40,7 +44,7 @@ const client
         Before sending any API calls to your new Appwrite project, make sure your device or emulator
         has network access to your Appwrite project's hostname or IP address.
     </p>
-    {#if showAlert && isSelfHosted}
+    {#if showAlert && !isCloud}
         <div class="common-section">
             <Alert type="info" on:dismiss={() => (showAlert = false)}>
                 <svelte:fragment slot="title">For self-hosted solutions</svelte:fragment>

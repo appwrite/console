@@ -26,7 +26,7 @@
 
             <p class="body-text-2">
                 {maxValue}
-                {maxUnit && maxUnit}
+                {maxUnit ? maxUnit : ''}
             </p>
         </div>
     {/if}

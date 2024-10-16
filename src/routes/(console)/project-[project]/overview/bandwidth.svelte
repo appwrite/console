@@ -18,7 +18,7 @@
         value: number;
     }>;
 
-    $: bandwith = humanFileSize(totalMetrics($usage?.network));
+    $: bandwidth = humanFileSize(totalMetrics($usage?.network));
 
     $: if (period) {
         showPeriod = false;
@@ -28,8 +28,8 @@
 <div class="u-flex u-gap-16 u-main-space-between">
     <div>
         <div class="heading-level-4">
-            {bandwith.value}
-            <span class="body-text-2">{bandwith.unit}</span>
+            {bandwidth.value}
+            <span class="body-text-2">{bandwidth.unit}</span>
         </div>
         <div>Bandwidth</div>
     </div>
@@ -45,7 +45,7 @@
         </svelte:fragment>
     </DropList>
 </div>
-{#if bandwith.value !== '0'}
+{#if bandwidth.value !== '0'}
     <div style="height: 12rem;">
         <BarChart
             options={{

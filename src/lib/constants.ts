@@ -50,6 +50,7 @@ export enum Dependencies {
     WEBHOOKS = 'dependency:webhooks',
     MIGRATIONS = 'dependency:migrations',
     COLLECTIONS = 'dependency:collections',
+    BACKUPS = 'dependency:backups',
     RUNTIMES = 'dependency:runtimes',
     CONSOLE_VARIABLES = 'dependency:console_variables',
     MESSAGING_PROVIDERS = 'dependency:messaging_providers',
@@ -468,7 +469,8 @@ export enum BillingPlan {
     FREE = 'tier-0',
     PRO = 'tier-1',
     SCALE = 'tier-2',
-    GITHUB_EDUCATION = 'tier-3'
+    GITHUB_EDUCATION = 'tier-3',
+    CUSTOM = 'cont-1'
 }
 
 export const feedbackDowngradeOptions = [
