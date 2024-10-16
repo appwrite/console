@@ -60,49 +60,41 @@
                 on:click={() => {
                     show = false;
                 }}>
-                <span class="text">Contact our Support Team</span>
+                <span class="text">Email support</span>
             </Button>
         {/if}
     </section>
 {/if}
-<section class="drop-section u-grid u-gap-24 u-padding-24">
-    <div>
-        <h4 class="eyebrow-heading-3">Troubleshooting</h4>
+<section class="drop-section u-flex u-flex-vertical u-gap-16 u-padding-24">
+    <h4 class="eyebrow-heading-3">Troubleshooting</h4>
 
-        <div class="u-margin-block-start-8 u-width-full-line">
-            {#key $app.themeInUse}
-                <iframe
-                    style="color-scheme: none"
-                    title="Appwrite Status"
-                    src={`https://status.appwrite.online/badge?theme=${
-                        $app.themeInUse === 'dark' ? 'dark' : 'light'
-                    }`}
-                    width="250"
-                    height="30"
-                    frameborder="0"
-                    scrolling="no">
-                </iframe>
-            {/key}
-        </div>
+    <div class="u-margin-block-start-8 u-width-full-line">
+        {#key $app.themeInUse}
+            <iframe
+                style="color-scheme: none"
+                title="Appwrite Status"
+                src={`https://status.appwrite.online/badge?theme=${
+                    $app.themeInUse === 'dark' ? 'dark' : 'light'
+                }`}
+                width="250"
+                height="30"
+                frameborder="0"
+                scrolling="no">
+            </iframe>
+        {/key}
     </div>
 
-    <div class="u-flex u-gap-16">
-        <a
-            href="https://appwrite.io/docs"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="button is-secondary u-padding-inline-12 u-stretch u-main-center u-gap-4 u-flex-basis-auto">
-            <span class="icon-book-open" aria-hidden="true" />
-            <span class="text">Docs</span>
+    <div class="u-flex u-flex-vertical u-gap-8">
+        <a href="https://appwrite.io/docs" target="_blank" rel="noopener noreferrer" class="link">
+            Visit our docs
         </a>
         <a
             href="https://github.com/appwrite/appwrite/issues"
             aria-label="Open issue on GitHub"
             target="_blank"
             rel="noopener noreferrer"
-            class="button is-secondary u-padding-inline-12 u-stretch u-main-center u-gap-4 u-flex-basis-auto">
-            <span class="icon-github" aria-hidden="true" />
-            <span class="text">Open issue</span>
+            class="link">
+            Open a GitHub issue
         </a>
     </div>
 </section>

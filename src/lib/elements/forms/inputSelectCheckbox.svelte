@@ -12,6 +12,7 @@
     export let tags: string[] = [];
     export let placeholder: string;
     export let options: Option[] = [];
+    export let removable = false;
 
     let search = '';
     let input: HTMLInputElement;
@@ -54,6 +55,23 @@
                     <li class="tags-item">
                         <div class="input-tag">
                             <span class="tag-text">{tag}</span>
+                            {#if removable}
+                                <button
+                                    type="button"
+                                    class="input-tag-delete-button"
+                                    aria-label={`delete ${tag} tag`}
+                                    on:click|preventDefault|stopPropagation={() => {
+                                        tags = tags.filter((t) => t !== tag);
+                                        options = options.map((option) => {
+                                            if (option.value === tag) {
+                                                option.checked = false;
+                                            }
+                                            return option;
+                                        });
+                                    }}>
+                                    <span class="icon-x" aria-hidden="true" />
+                                </button>
+                            {/if}
                         </div>
                     </li>
                 {/each}

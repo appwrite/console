@@ -7,7 +7,6 @@
         Button,
         Form,
         FormList,
-        InputCheckbox,
         InputSelect,
         InputSelectCheckbox,
         InputTextarea,
@@ -36,6 +35,8 @@
     import FormItem from '$lib/elements/forms/formItem.svelte';
     import type { OrganizationList } from '$lib/stores/organization';
     import { BillingPlan } from '$lib/constants';
+    import { Card } from '$lib/components';
+    import { tooltip } from '$lib/actions/tooltip';
 
     let previousPage: string = base;
 
@@ -74,7 +75,6 @@
         { value: 'other', label: 'Other', checked: false },
         { value: 'none', label: 'No particular product or serivce', checked: false }
     ];
-    let access = false;
 
     onMount(async () => {
         if ($page.url.searchParams.has('org')) {
@@ -106,10 +106,7 @@
                     { id: '48492', value: selectedOrgId ?? '' },
                     { id: '48491', value: originProjectId ?? '' },
                     { id: '48490', value: $user?.$id ?? '' }
-                ],
-                metaFields: {
-                    temporaryAccess: access
-                }
+                ]
             })
         });
         trackEvent(Submit.SupportTicket);
@@ -123,8 +120,8 @@
         } else {
             await goto(previousPage);
             addNotification({
-                message:
-                    'Your support ticket was submitted successfully. The Appwrite team will get back to you shortly.',
+                title: 'Request sent successfully',
+                message: 'Our support team will reach out to you soon.',
                 type: 'success'
             });
         }
@@ -137,7 +134,7 @@
         endDay: 'Friday' as WeekDay
     };
 
-    $: supportTimings = `${utcHourToLocaleHour(workTimings.start)} - ${utcHourToLocaleHour(workTimings.end)} ${localeTimezoneName()}`;
+    $: supportTimings = `${utcHourToLocaleHour(workTimings.start)} - ${utcHourToLocaleHour(workTimings.end)}`;
     $: supportWeekDays = `${utcWeekDayToLocaleWeekDay(workTimings.startDay, workTimings.start)} - ${utcWeekDayToLocaleWeekDay(workTimings.endDay, workTimings.end)}`;
 </script>
 
@@ -148,8 +145,7 @@
 <WizardSecondaryContainer href={previousPage}>
     <svelte:fragment slot="title">Support</svelte:fragment>
     <svelte:fragment slot="description">
-        Please describe your request in detail, including reproduction steps or screenshots of any
-        in-app issues.
+        Please describe your request in detail, including reproduction steps of any in-app issues.
     </svelte:fragment>
     <WizardSecondaryContent>
         <Form bind:this={formComponent} onSubmit={handleSubmit} bind:isSubmitting>
@@ -167,6 +163,7 @@
                         <InputSelectCheckbox
                             placeholder="Select product or service"
                             name="product"
+                            removable
                             bind:tags={product}
                             options={productOptions.map((option) => ({
                                 ...option,
@@ -192,25 +189,10 @@
                     placeholder="Type here..."
                     bind:value={message}
                     required />
-                {#if category === 'technical'}
-                    <InputCheckbox
-                        required
-                        size="small"
-                        id="access"
-                        bind:checked={access}
-                        label="Allow temporary access to my Appwrite account">
-                        <svelte:fragment slot="description">
-                            <span style="margin-block-start: 1px;">
-                                Under some circumstances, you may want to provide access for help
-                                with issues related to your projects.
-                            </span>
-                        </svelte:fragment>
-                    </InputCheckbox>
-                {/if}
             </FormList>
         </Form>
         <svelte:fragment slot="aside">
-            <div class="card u-flex-vertical u-gap-16">
+            <Card class="u-flex-vertical u-gap-16" style="--card-padding:1.5rem;">
                 <p class="text">
                     We will contact you at <b>{$user.email}</b>. We try to respond to all messages
                     within our office hours.
@@ -218,6 +200,7 @@
                 <ul>
                     <li class="text">
                         Available: <b>{supportWeekDays}, {supportTimings}</b>
+                        <span class="icon-info" use:tooltip={{ content: localeTimezoneName() }} />
                     </li>
                     <li class="u-flex u-gap-4 u-cross-center">
                         <span>Currently:</span>
@@ -248,7 +231,7 @@
                         </iframe>
                     {/key}
                 </div>
-            </div>
+            </Card>
         </svelte:fragment>
     </WizardSecondaryContent>
 
