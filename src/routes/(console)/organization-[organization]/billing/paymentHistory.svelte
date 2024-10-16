@@ -45,12 +45,22 @@
     onMount(request);
 
     async function request() {
-        invoiceList = await sdk.forConsole.billing.listInvoices($page.params.organization, [
-            Query.limit(limit),
-            Query.offset(offset),
-            Query.notEqual('from', $organization.billingCurrentInvoiceDate),
-            Query.orderDesc('$createdAt')
-        ]);
+        const unfilteredInvoiceList = await sdk.forConsole.billing.listInvoices(
+            $page.params.organization,
+            [
+                Query.limit(limit),
+                Query.offset(offset),
+                Query.notEqual('from', $organization.billingCurrentInvoiceDate),
+                Query.orderDesc('$createdAt')
+            ]
+        );
+        const filteredInvoices = unfilteredInvoiceList.invoices.filter(
+            (invoice) => invoice.status !== 'pending'
+        );
+        invoiceList = {
+            invoices: filteredInvoices,
+            total: filteredInvoices.length
+        };
     }
 
     function retryPayment(invoice: Invoice) {
