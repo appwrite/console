@@ -217,7 +217,7 @@
             await invalidate(Dependencies.ACCOUNT);
             await invalidate(Dependencies.ORGANIZATION);
 
-            await goto(`${base}/organization-${org.$id}`);
+            await goto(`${base}/organization-${org.$id}/billing`);
             addNotification({
                 type: 'success',
                 message: 'Your organization has been upgraded'
