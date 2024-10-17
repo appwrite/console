@@ -196,7 +196,7 @@
         </p>
     {/if}
     <svelte:fragment slot="aside">
-        <div class="u-flex u-flex-vertical-mobile u-main-space-between u-gap-16 header-wrap">
+        <div class="u-flex u-flex-vertical-mobile u-main-space-between u-gap-16 u-flex-wrap">
             <ul class="buttons-list">
                 <li class="buttons-list-item padding-start">
                     <Button text on:click={() => (showEditorModal = true)}>
@@ -377,9 +377,6 @@
 {/if}
 
 <style>
-    .header-wrap {
-        flex-wrap: wrap;
-    }
     .padding-start {
         margin-left: -1rem;
     }
