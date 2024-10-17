@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page as pageStore } from '$app/stores';
-    import { Button } from '$lib/elements/forms';
+    import { Pagination } from '@appwrite.io/pink-svelte';
 
     export let sum: number;
     export let limit: number;
@@ -40,7 +40,8 @@
     }
 </script>
 
-{#if totalPages > 1}
+<Pagination page={currentPage} total={totalPages} {limit} createLink={getLink} />
+<!-- {#if totalPages > 1}
     {#key $pageStore.url}
         <nav class="pagination">
             {#if currentPage <= 1}
@@ -60,7 +61,7 @@
                         {#if typeof page === 'number'}
                             <li class="pagination-item">
                                 {#if currentPage === page}
-                                    <Button ariaLabel="page" disabled>
+                                    <Button text ariaLabel="page" disabled>
                                         <span class="text">{page}</span>
                                     </Button>
                                 {:else}
@@ -78,7 +79,7 @@
                 </ol>
             {/if}
             {#if currentPage >= totalPages}
-                <Button disabled text ariaLabel="next page">
+                <Button text ariaLabel="next page" disabled>
                     <span class="text">Next</span>
                     <span class="icon-cheveron-right" aria-hidden="true" />
                 </Button>
@@ -92,7 +93,7 @@
     {/key}
 {:else}
     <nav class="pagination">
-        <Button text disabled ariaLabel="prev page">
+        <Button text ariaLabel="prev page" disabled>
             <span class="icon-cheveron-left" aria-hidden="true" />
             <span class="text">Prev</span>
         </Button>
@@ -110,4 +111,4 @@
             <span class="icon-cheveron-right" aria-hidden="true" />
         </Button>
     </nav>
-{/if}
+{/if} -->

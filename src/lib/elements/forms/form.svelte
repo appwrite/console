@@ -26,6 +26,7 @@
     export function checkValidity() {
         return form.checkValidity();
     }
+
     export function triggerSubmit() {
         form.requestSubmit();
     }
@@ -41,7 +42,6 @@
     bind:this={form}
     class={classes}
     class:form={!noStyle}
-    class:common-section={!noMargin}
     class:modal-form={isModal}
     on:submit|preventDefault={submit}>
     <slot />
