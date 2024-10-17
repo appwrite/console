@@ -173,10 +173,11 @@
             {selected.length > 1 ? 'databases' : 'database'}?
         </p>
 
-        <p class="text" data-private>
-            <b
-                >Once deleted, {selected.length > 1 ? 'these databases' : 'this database'} cannot be
-                restored. This action is irreversible.</b>
+        <p class="text">
+            <b>
+                Once deleted, {selected.length > 1 ? 'these databases' : 'this database'} and its backups
+                cannot be restored. This action is irreversible.
+            </b>
         </p>
 
         <div class="input-check-box-friction">
