@@ -72,8 +72,8 @@
             style="--p-grid-item-size:12em; --p-grid-item-size-small-screens:12rem; --grid-gap: 1rem;">
             {#each $regions.regions
                 .filter((r) => r.$id !== 'default')
-                .sort((a, b) => {
-                    if (a.disabled >= b.disabled) {
+                .sort((regionA, regionB) => {
+                    if (regionA.disabled >= regionB.disabled) {
                         return 1;
                     }
                     return -1;
