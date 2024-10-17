@@ -196,7 +196,7 @@
         </p>
     {/if}
     <svelte:fragment slot="aside">
-        <div class="u-flex u-flex-vertical-mobile u-main-space-between u-gap-16">
+        <div class="u-flex u-flex-vertical-mobile u-main-space-between u-gap-16 u-flex-wrap">
             <ul class="buttons-list">
                 <li class="buttons-list-item padding-start">
                     <Button text on:click={() => (showEditorModal = true)}>
@@ -240,7 +240,7 @@
                 {/if}
                 <Table noMargin noStyles>
                     <TableHeader>
-                        <TableCellHead width={180}>Key</TableCellHead>
+                        <TableCellHead width={100}>Key</TableCellHead>
                         <TableCellHead width={180}>Value</TableCellHead>
                         <TableCellHead width={40} />
                     </TableHeader>
