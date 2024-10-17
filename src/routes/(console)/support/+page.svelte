@@ -67,13 +67,13 @@
     ];
     let product: string[] = [];
     let productOptions = [
-        { value: 'auth', label: 'Auth', checked: false },
-        { value: 'database', label: 'Database', checked: false },
-        { value: 'functions', label: 'Functions', checked: false },
-        { value: 'storage', label: 'Storage', checked: false },
-        { value: 'messaging', label: 'Messaging', checked: false },
-        { value: 'other', label: 'Other', checked: false },
-        { value: 'none', label: 'No particular product or serivce', checked: false }
+        { value: 'Auth', label: 'Auth', checked: false },
+        { value: 'Database', label: 'Database', checked: false },
+        { value: 'Functions', label: 'Functions', checked: false },
+        { value: 'Storage', label: 'Storage', checked: false },
+        { value: 'Messaging', label: 'Messaging', checked: false },
+        { value: 'Other', label: 'Other', checked: false },
+        { value: 'None', label: 'No particular product or serivce', checked: false }
     ];
 
     onMount(async () => {
@@ -109,7 +109,6 @@
                 ]
             })
         });
-        trackEvent(Submit.SupportTicket);
         if (response.status !== 200) {
             trackError(new Error(response.status.toString()), Submit.SupportTicket);
             addNotification({
@@ -118,6 +117,7 @@
                 type: 'error'
             });
         } else {
+            trackEvent(Submit.SupportTicket, { category });
             await goto(previousPage);
             addNotification({
                 title: 'Request sent successfully',
