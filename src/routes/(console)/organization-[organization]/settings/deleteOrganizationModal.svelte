@@ -55,7 +55,7 @@
             showDelete = false;
             addNotification({
                 type: 'success',
-                message: `${$organization.name} has been flagged for deletion`
+                message: `${$organization.name} has been deleted`
             });
         } catch (e) {
             error = e.message;
