@@ -149,7 +149,7 @@
                 })
             });
 
-            await goto(`${base}/organization-${$organization.$id}`);
+            await goto(`${base}/organization-${$organization.$id}/billing`);
             addNotification({
                 type: 'success',
                 isHtml: true,
