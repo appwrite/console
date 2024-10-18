@@ -6,9 +6,16 @@
     $: message = $page.url.searchParams.get('message');
     $: code = parseInt($page.url.searchParams.get('code'));
 
+    const getErrorTitle = () => {
+        if (code == 403) {
+            return "It looks like you're not currently eligible for the GitHub Student Developer Pack.";
+        }
+        return message;
+    };
+
     const getErrorExplanation = () => {
         if (code === 403) {
-            return 'You are not eligible for the education program.';
+            return 'You can still sign in and explore Appwrite.';
         } else if (code === 409) {
             return "You've already registered for the education program.";
         }
@@ -17,14 +24,14 @@
 </script>
 
 <div class="content">
-    <h1>{message}</h1>
+    <h1>{getErrorTitle()}</h1>
     <p>{getErrorExplanation()}</p>
     <Button
         fullWidth
         on:click={() => {
             location.href = `${base}/login`;
         }}>
-        <span class="text">Go to standard login page</span>
+        <span class="text">Go to sign in</span>
     </Button>
 </div>
 
