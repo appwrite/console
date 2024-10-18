@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Alert, Modal, PaginationWithLimit } from '$lib/components';
+    import { Modal, PaginationWithLimit } from '$lib/components';
     import { Container } from '$lib/layout';
     import ContainerHeader from './containerHeader.svelte';
     import BackupPolicy from './policy.svelte';
@@ -244,10 +244,6 @@
     onSubmit={createPolicies}
     bind:show={$showCreatePolicy}
     bind:error={policyCreateError}>
-    <Alert type="info">
-        Backups do not currently support backing up relationships between data
-    </Alert>
-
     <CreatePolicy bind:totalPolicies isShowing={$showCreatePolicy} isFromBackupsTab />
 
     <svelte:fragment slot="footer">
@@ -262,9 +258,7 @@
         changes or rollback safeguards.
         <b>Depending on the size of your data, this may take a while.</b>
     </p>
-    <Alert type="info"
-        >Backups do not currently support backing up relationships between data.
-    </Alert>
+
     <svelte:fragment slot="footer">
         <Button text on:click={() => ($showCreateBackup = false)}>Cancel</Button>
         <Button submit>Create</Button>
