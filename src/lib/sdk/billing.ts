@@ -728,7 +728,7 @@ export class Billing {
 
     async setMembership(
         programId: string
-    ): Promise<void | { error: { code: number; message: string } }> {
+    ): Promise<{ name: string; email: string } | { error: { code: number; message: string } }> {
         const path = `/console/programs/${programId}/memberships`;
         const uri = new URL(this.client.config.endpoint + path);
         try {

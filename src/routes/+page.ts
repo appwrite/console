@@ -11,7 +11,8 @@ const handleGithubEducationMembership = async () => {
             303,
             `${base}/education/error?message=${result.error.message}&code=${result.error.code}`
         );
-    } else {
+    } else if (result && 'name' in result) {
+        await sdk.forConsole.billing.setMailinglist('gh-student', result.name, result.email);
     }
 };
 
