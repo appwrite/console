@@ -21,7 +21,7 @@ export const presetPolicies = writable<UserBackupPolicy[]>([
         retained: 7,
         default: true,
         checked: false,
-        schedule: '0 0 * * *',
+        schedule: '{time} * * *',
         selectedTime: '00:00',
         plainTextFrequency: 'daily',
         description: 'Runs every day and is retained for 7 days'
