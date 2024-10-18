@@ -8,7 +8,7 @@
 
     let element: HTMLInputElement;
     let icon = 'info';
-    const pattern = String.raw`^[a-zA-Z0-9][a-zA-Z0-9._\-]*$`;
+    const pattern = String.raw`^[a-zA-Z0-9][a-zA-Z0-9\-]*$`;
 
     onMount(() => {
         if (element && autofocus) {
@@ -55,6 +55,6 @@
         class="u-cross-center u-line-height-1 u-color-text-gray"
         aria-hidden="true" />
     <span class="text u-line-height-1-5">
-        Allowed characters: alphanumeric, non-leading hyphen, underscore, period
+        Allowed characters: alphanumeric and non-leading hyphen
     </span>
 </div>
