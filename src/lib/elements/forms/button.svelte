@@ -23,6 +23,7 @@
     export let fullWidthMobile = false;
     export let ariaLabel: string = null;
     export let event: string = null;
+    export let eventData: Record<string, unknown> = {};
     let classes: string = '';
     export { classes as class };
     export let submissionLoader = false;
@@ -39,7 +40,8 @@
         }
 
         trackEvent(`click_${event}`, {
-            from: 'button'
+            from: 'button',
+            ...eventData
         });
     }
 

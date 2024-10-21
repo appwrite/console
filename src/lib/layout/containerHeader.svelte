@@ -1,8 +1,7 @@
 <script lang="ts">
     import { Alert, DropList, Heading } from '$lib/components';
     import { BillingPlan } from '$lib/constants';
-    import { Pill } from '$lib/elements';
-    import { Button } from '$lib/elements/forms';
+    import { Link, Pill } from '$lib/elements';
     import {
         checkForProjectLimitation,
         checkForUsageFees,
@@ -17,7 +16,6 @@
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
     import { createEventDispatcher, onMount } from 'svelte';
     import { ContainerButton } from '.';
-    import { trackEvent } from '$lib/actions/analytics';
     import { goto } from '$app/navigation';
     import { Layout } from '@appwrite.io/pink-svelte';
 
@@ -98,22 +96,19 @@
                 <Alert type="info" isStandalone>
                     <span class="text">
                         You've reached the {services} limit for the {tier} plan.
-                        <Button link on:click={() => ($showUsageRatesModal = true)}
-                            >Excess usage fees will apply</Button
+                        <Link on:mousedown={() => ($showUsageRatesModal = true)}
+                            >Excess usage fees will apply</Link
                         >.
                     </span>
                 </Alert>
             {:else}
                 <Alert type={alertType} isStandalone>
                     <span class="text">
-                        You've reached the {services} limit for the {tier} plan. <Button
-                            link
+                        You've reached the {services} limit for the {tier} plan. <Link
                             href={$upgradeURL}
-                            on:click={() =>
-                                trackEvent('click_organization_upgrade', {
-                                    from: 'button',
-                                    source: 'inline_alert'
-                                })}>Upgrade</Button> your organization for additional resources.
+                            event="organization_upgrade"
+                            eventData={{ from: 'event', source: 'inline_alert' }}>Upgrade</Link> your
+                        organization for additional resources.
                     </span>
                 </Alert>
             {/if}
@@ -140,14 +135,11 @@
                         <p class="text">
                             You are limited to {limit}
                             {title.toLocaleLowerCase()} per project on the {tier} plan.
-                            {#if $organization?.billingPlan === BillingPlan.FREE}<Button
-                                    link
+                            {#if $organization?.billingPlan === BillingPlan.FREE}<Link
                                     href={$upgradeURL}
-                                    on:click={() =>
-                                        trackEvent('click_organization_upgrade', {
-                                            from: 'button',
-                                            source: 'resource_limit_tag'
-                                        })}>Upgrade</Button>
+                                    event="organization_upgrade"
+                                    eventData={{ from: 'button', source: 'resource_limit_tag' }}
+                                    >Upgrade</Link>
                                 for additional {title.toLocaleLowerCase()}.
                             {/if}
                         </p>
@@ -155,8 +147,8 @@
                         <p class="text">
                             You are limited to {limit}
                             {title.toLocaleLowerCase()} per organization on the {tier} plan.
-                            <Button link on:click={() => ($showUsageRatesModal = true)}
-                                >Excess usage fees will apply</Button
+                            <Link on:mousedown={() => ($showUsageRatesModal = true)}
+                                >Excess usage fees will apply</Link
                             >.
                         </p>
                     {:else}
@@ -164,7 +156,7 @@
                             You are limited to {limit}
                             {title.toLocaleLowerCase()} per organization on the {tier} plan.
                             {#if $organization?.billingPlan === BillingPlan.FREE}
-                                <Button link href={$upgradeURL}>Upgrade</Button>
+                                <Link href={$upgradeURL}>Upgrade</Link>
                                 for additional {title.toLocaleLowerCase()}.
                             {/if}
                         </p>
