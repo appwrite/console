@@ -29,8 +29,10 @@ export const cronExpression = (policy: UserBackupPolicy) => {
     let cronExpression = '';
 
     if (policy.default) {
-        // default should use utc.
-        cronExpression = policy.schedule;
+        now.setHours(0, 0, 0);
+        const utcHour = now.getUTCHours();
+
+        cronExpression = policy.schedule.replace('{time}', `0 ${utcHour}`);
     } else {
         const [localHour, localMinute] = policy.selectedTime.split(':');
         now.setHours(parseInt(localHour), parseInt(localMinute), 0);
