@@ -76,7 +76,7 @@
                             <DropList bind:show={showDropdown[i]} placement="bottom-start" noArrow>
                                 <Button
                                     text
-                                    round
+                                    icon
                                     ariaLabel="more options"
                                     on:click={() => (showDropdown[i] = !showDropdown[i])}>
                                     <span class="icon-dots-horizontal" aria-hidden="true" />

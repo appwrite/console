@@ -133,7 +133,7 @@
                                     placement="bottom-start"
                                     noArrow>
                                     <Button
-                                        round
+                                        icon
                                         text
                                         noMargin
                                         ariaLabel="More options"

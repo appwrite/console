@@ -45,7 +45,7 @@
                 <Heading size={5} tag="h1"><slot name="title" /></Heading>
                 <Button
                     text
-                    round
+                    icon
                     ariaLabel="close modal"
                     href={confirmExit ? null : href}
                     on:click={() => {

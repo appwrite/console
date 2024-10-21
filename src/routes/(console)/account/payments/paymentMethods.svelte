@@ -101,7 +101,7 @@
                                             placement="bottom-start"
                                             noArrow>
                                             <Button
-                                                round
+                                                icon
                                                 text
                                                 on:click={() => {
                                                     showDropdown[i] = !showDropdown[i];

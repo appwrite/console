@@ -111,7 +111,7 @@
         <li>
             <Button
                 href="https://appwrite.io/discord"
-                round
+                icon
                 text
                 noMargin
                 external

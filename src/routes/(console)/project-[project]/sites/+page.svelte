@@ -1,8 +1,6 @@
 <script lang="ts">
-    import { base } from '$app/paths';
-    import { page } from '$app/stores';
     import { registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
-    import { Empty, Id, PaginationWithLimit, SvgIcon } from '$lib/components';
+    import { Empty, PaginationWithLimit } from '$lib/components';
     import { Container, ContainerHeader } from '$lib/layout';
     import { isServiceLimited } from '$lib/stores/billing';
     // import { templatesList } from '$lib/stores/templates';
@@ -11,11 +9,12 @@
     import Initial from '$lib/wizards/functions/cover.svelte';
     import { onMount } from 'svelte';
     import { canWriteSites } from '$lib/stores/roles.js';
-    import { Layout } from '@appwrite.io/pink-svelte';
+    import { Icon, Popover } from '@appwrite.io/pink-svelte';
+    import { Button } from '$lib/elements/forms';
+    import { IconDotsHorizontal } from '@appwrite.io/pink-icons-svelte';
+    import SiteCard from './siteCard.svelte';
 
     export let data;
-
-    const project = $page.params.project;
 
     onMount(async () => {
         // const from = $page.url.searchParams.get('from');
@@ -73,22 +72,24 @@
         buttonMethod={openWizard}
         total={data.siteList.total} />
     {#if data.siteList.total}
-        <Layout.Stack gap="m" wrap="wrap" direction="row">
+        <section class="sites-grid">
             {#each data.siteList.sites as site}
-                <a
-                    style="height: 218px; width: 275px; outline: 1px solid red; padding: 8px"
-                    href={`${base}/project-${project}/sites/sites-${site.$id}`}>
-                    <img src={site.preview} style="width: 259px; height: 146px;" alt="" />
-                    <!-- <div class="u-flex u-gap-16 u-cross-center">
-                        <div class="avatar is-medium">
-                            <SvgIcon name={site.runtime.split('-')[0]}></SvgIcon>
-                        </div>
-                        <span class="text">{site.name}</span>
-                    </div> -->
-                    <p>{site.name}</p>
-                </a>
+                <SiteCard {site}>
+                    <Popover placement="bottom-end" let:toggle>
+                        <Button
+                            text
+                            icon
+                            size="small"
+                            on:click={(e) => {
+                                e.preventDefault();
+                                toggle(e);
+                            }}>
+                            <Icon size="small" icon={IconDotsHorizontal} /></Button>
+                        <p slot="tooltip">Tooltip content</p>
+                    </Popover>
+                </SiteCard>
             {/each}
-        </Layout.Stack>
+        </section>
 
         <PaginationWithLimit
             name="Sites"
@@ -104,3 +105,11 @@
             on:click={openWizard} />
     {/if}
 </Container>
+
+<style lang="scss">
+    .sites-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(237.5px, 1fr));
+        gap: 1rem;
+    }
+</style>

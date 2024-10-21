@@ -12,7 +12,7 @@
     export let secondary = false;
     export let text = false;
     export let danger = false;
-    export let round = false;
+    export let icon = false;
     export let link = false;
     export let size: Props['size'] = 'medium';
     export let disabled = false;
@@ -62,6 +62,7 @@
         {href}
         {download}
         {size}
+        {icon}
         disabled={internalDisabled}
         variant={secondary ? 'secondary' : text ? 'text' : 'primary'}
         target={external ? '_blank' : ''}
@@ -77,6 +78,7 @@
         on:mousedown
         on:click={track}
         {size}
+        {icon}
         disabled={internalDisabled}
         variant={secondary ? 'secondary' : text ? 'text' : 'primary'}
         class={resolvedClasses}
