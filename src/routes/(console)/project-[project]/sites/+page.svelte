@@ -6,13 +6,15 @@
     // import { templatesList } from '$lib/stores/templates';
     import { organization } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
-    import Initial from '$lib/wizards/functions/cover.svelte';
     import { onMount } from 'svelte';
     import { canWriteSites } from '$lib/stores/roles.js';
     import { Icon, Popover } from '@appwrite.io/pink-svelte';
     import { Button } from '$lib/elements/forms';
     import { IconDotsHorizontal } from '@appwrite.io/pink-icons-svelte';
     import SiteCard from './siteCard.svelte';
+    import { goto } from '$app/navigation';
+    import { base } from '$app/paths';
+    import { page } from '$app/stores';
 
     export let data;
 
@@ -40,14 +42,14 @@
         // }
     });
 
-    function openWizard() {
-        wizard.showCover(Initial);
-    }
+    const wizardURL = `${base}/project-${$page.params.project}/sites/create-site`;
 
     $: $registerCommands([
         {
             label: 'Create site',
-            callback: openWizard,
+            callback: () => {
+                goto(wizardURL);
+            },
             keys: ['c'],
             disabled:
                 $wizard.show ||
@@ -69,7 +71,7 @@
         title="Sites"
         buttonText={TMPSITEROLES ? 'Create site' : ''}
         buttonEvent="create_site"
-        buttonMethod={openWizard}
+        buttonHref={wizardURL}
         total={data.siteList.total} />
     {#if data.siteList.total}
         <section class="sites-grid">
@@ -102,7 +104,7 @@
             allowCreate={TMPSITEROLES}
             href="https://appwrite.io/docs/products/sites"
             target="site"
-            on:click={openWizard} />
+            on:click={() => goto(wizardURL)} />
     {/if}
 </Container>
 
