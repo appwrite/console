@@ -5,7 +5,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { wizard } from '$lib/stores/wizard';
     import { goto } from '$app/navigation';
-    import { choices, createFunction, installation, repository } from '../store';
+    import { choices, createFunction } from '../store';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { base } from '$app/paths';
@@ -14,6 +14,7 @@
     import GitConfiguration from './steps/gitConfiguration.svelte';
     import FunctionConfiguration from './steps/functionConfiguration.svelte';
     import { isValueOfStringEnum } from '$lib/helpers/types';
+    import { installation, repository } from '$lib/stores/vcs';
 
     async function create() {
         try {

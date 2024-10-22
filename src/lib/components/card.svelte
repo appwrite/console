@@ -46,7 +46,7 @@
         </Layout.Stack>
     </Card.Button>
 {:else}
-    <Card.Base class={resolvedClasses} {style}>
+    <Card.Base class={resolvedClasses} {style} border={isDashed ? 'dashed' : 'solid'}>
         <Layout.Stack gap="xl">
             <slot />
         </Layout.Stack>

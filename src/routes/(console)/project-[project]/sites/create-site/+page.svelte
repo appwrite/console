@@ -39,7 +39,6 @@
     import Card from '$lib/components/card.svelte';
     import Repositories from '$lib/components/repositories.svelte';
     import { repository } from '$lib/stores/vcs';
-    import { Layout } from '@appwrite.io/pink-svelte';
 
     export let data;
     const isVcsEnabled = $consoleVariables?._APP_VCS_ENABLED === true;
@@ -69,18 +68,16 @@
         <div class="git-container u-position-relative">
             <div class="grid-1-1 u-gap-24">
                 <Card style="height: 100%">
-                    <Layout.Stack gap="xl">
-                        <Heading size="6" tag="h6">Connect Git repository</Heading>
-                        <Repositories
-                            bind:hasInstallations
-                            bind:selectedRepository
-                            action="button"
-                            callbackState={{
-                                from: 'github',
-                                to: 'cover'
-                            }}
-                            on:connect={connect} />
-                    </Layout.Stack>
+                    <Heading size="6" tag="h6">Connect Git repository</Heading>
+                    <Repositories
+                        bind:hasInstallations
+                        bind:selectedRepository
+                        action="button"
+                        callbackState={{
+                            from: 'github',
+                            to: 'cover'
+                        }}
+                        on:connect={connect} />
                     {#if isSelfHosted && !isVcsEnabled}
                         <div
                             class="overlay u-flex-vertical u-position-absolute u-height-100-percent u-width-full-line u-z-index-1 u-text-center u-inset-0"
@@ -107,7 +104,7 @@
                 <Card isTile>
                     <Heading size="6" tag="h6">Clone template</Heading>
                     <ul
-                        class="grid-box u-margin-block-start-16"
+                        class="grid-box"
                         style:--grid-item-size="8rem"
                         style:--grid-item-size-small-screens="9rem"
                         style:--grid-gap=".5rem">
@@ -117,11 +114,11 @@
                                     on:click={() => {
                                         trackEvent('click_connect_template', {
                                             from: 'cover',
-                                            template: template.name,
+                                            template: template.$id,
                                             runtime: template.name
                                         });
                                     }}
-                                    href={`${base}/project-${$page.params.project}/site/create-site/${template.$id}`}
+                                    href={`${base}/project-${$page.params.project}/sites/create-site/settings?template=${template.$id}`}
                                     class="box u-width-full-line u-flex u-cross-center u-gap-8"
                                     style:--box-padding="1rem"
                                     style:--box-border-radius="var(--border-radius-small)">
@@ -150,10 +147,5 @@
             hsl(var(--p-card-bg-color)) 68.91%,
             hsl(var(--p-card-bg-color) / 0.5) 92.8%
         );
-    }
-
-    .inline-tag {
-        line-height: 140%;
-        font-weight: 500;
     }
 </style>

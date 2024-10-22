@@ -8,3 +8,13 @@ export const installations = derived(
 );
 export const repository = writable<Models.ProviderRepository>();
 export const installation = writable<Models.Installation>();
+
+export function sortBranches(branches: Models.Branch[]) {
+    return branches.sort((a, b) => {
+        if (a.name === 'main' || a.name === 'master') {
+            return -1;
+        }
+
+        return a.name > b.name ? 1 : -1;
+    });
+}

@@ -4,9 +4,8 @@
     import InputSelectSearch from '$lib/elements/forms/inputSelectSearch.svelte';
     import { WizardStep } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
-    import { sortBranches } from '$routes/(console)/project-[project]/functions/function-[function]/settings/updateConfiguration.svelte';
     import { choices } from '../../store';
-    import { installation, repository } from '$lib/stores/vcs';
+    import { installation, repository, sortBranches } from '$lib/stores/vcs';
 
     $choices.rootDir ??= '';
 

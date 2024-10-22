@@ -6,8 +6,9 @@
     import { WizardStep } from '$lib/layout';
     import { onMount } from 'svelte';
     import { sdk } from '$lib/stores/sdk';
-    import { choices, createFunction, installation, repository } from '../../store';
+    import { choices, createFunction } from '../../store';
     import { runtimesList } from '$lib/stores/runtimes';
+    import { installation, repository } from '$lib/stores/vcs';
 
     let showCustomId = false;
 
