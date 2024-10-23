@@ -11,7 +11,7 @@
     import { Icon, Popover } from '@appwrite.io/pink-svelte';
     import { Button } from '$lib/elements/forms';
     import { IconDotsHorizontal } from '@appwrite.io/pink-icons-svelte';
-    import SiteCard from './siteCard.svelte';
+    import { Card } from '@appwrite.io/pink-svelte';
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
@@ -76,20 +76,28 @@
     {#if data.siteList.total}
         <section class="sites-grid">
             {#each data.siteList.sites as site}
-                <SiteCard {site}>
-                    <Popover placement="bottom-end" let:toggle>
-                        <Button
-                            text
-                            icon
-                            size="small"
-                            on:click={(e) => {
-                                e.preventDefault();
-                                toggle(e);
-                            }}>
-                            <Icon size="small" icon={IconDotsHorizontal} /></Button>
-                        <p slot="tooltip">Tooltip content</p>
-                    </Popover>
-                </SiteCard>
+                <Card.Link
+                    href={`${base}/project-${$page.params.project}/sites/sites-${site.$id}`}
+                    padding="x-small">
+                    <Card.Media
+                        title={site.name}
+                        description={site.domain}
+                        src={site.preview}
+                        alt={site.name}>
+                        <Popover placement="bottom-end" let:toggle>
+                            <Button
+                                text
+                                icon
+                                size="small"
+                                on:click={(e) => {
+                                    e.preventDefault();
+                                    toggle(e);
+                                }}>
+                                <Icon size="small" icon={IconDotsHorizontal} /></Button>
+                            <p slot="tooltip">Tooltip content</p>
+                        </Popover>
+                    </Card.Media>
+                </Card.Link>
             {/each}
         </section>
 

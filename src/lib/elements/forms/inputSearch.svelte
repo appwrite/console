@@ -12,6 +12,7 @@
     export let autofocus = false;
     export let isWithEndButton = true;
     export let style: string = '';
+    export let label: string = '';
 
     const dispatch = createEventDispatcher();
     let element: HTMLInputElement;
@@ -49,6 +50,7 @@
     {disabled}
     {required}
     {autofocus}
+    {label}
     type="search"
     bind:value
     on:input={valueChange}>

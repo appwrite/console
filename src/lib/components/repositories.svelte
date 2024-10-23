@@ -96,8 +96,6 @@
             <ul class="u-width-full-line">
                 <InputSelect
                     id="installation"
-                    label="Select installation"
-                    showLabel={false}
                     options={installations.map((entry) => {
                         return {
                             label: entry.organization,

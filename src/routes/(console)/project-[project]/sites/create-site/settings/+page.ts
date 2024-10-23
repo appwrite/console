@@ -2,7 +2,7 @@ import { Query } from '@appwrite.io/console';
 import { sdk } from '$lib/stores/sdk';
 
 export const load = async ({ url }) => {
-    const { installations } = await sdk.forProject.vcs.listInstallations();
+    const installations = await sdk.forProject.vcs.listInstallations();
     let template = null;
     if (url.searchParams.has('template')) {
         //Fetch the template

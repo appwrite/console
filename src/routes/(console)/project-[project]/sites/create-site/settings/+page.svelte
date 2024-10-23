@@ -3,12 +3,13 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { Card, Heading, LabelCard } from '$lib/components';
+    import { Card, LabelCard } from '$lib/components';
     import CustomId from '$lib/components/customId.svelte';
     import { Dependencies } from '$lib/constants';
     import {
         Button,
         Form,
+        InputChoice,
         InputRadio,
         InputSelect,
         InputSelectSearch,
@@ -22,12 +23,21 @@
     } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { repository, sortBranches } from '$lib/stores/vcs';
+    import { installation, installations, repository, sortBranches } from '$lib/stores/vcs';
     // import { consoleVariables } from '$routes/(console)/store';
-    import { Fieldset, Layout, Empty, Icon, Typography } from '@appwrite.io/pink-svelte';
+    import {
+        Fieldset,
+        Layout,
+        Empty,
+        Icon,
+        Typography,
+        Image,
+        Divider
+    } from '@appwrite.io/pink-svelte';
     import { IconGitBranch } from '@appwrite.io/pink-icons-svelte';
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
+    import Repositories from '$lib/components/repositories.svelte';
 
     export let data;
     // const isVcsEnabled = $consoleVariables?._APP_VCS_ENABLED === true;
@@ -40,6 +50,7 @@
     });
     let showExitModal = false;
     let isTemplate = !!data?.template;
+    let hasInstallations = !!data?.installations?.total;
 
     let formComponent: Form;
     let isSubmitting = writable(false);
@@ -52,15 +63,26 @@
     let framework: string;
     let connectBehaviour: 'now' | 'later' = 'now';
     let repositoryBehaviour = 'new';
+    let repositoryName = '';
+    let repositoryPrivate = false;
+    let selectedInstallationId = '';
+    let selectedRepository = '';
 
-    onMount(() => {});
+    onMount(() => {
+        if (isTemplate) {
+            name = data.template.name;
+            framework = data.template.frameworks[0];
+            $installation = data.installations[0];
+            selectedInstallationId = $installation.$id;
+        }
+    });
 
     async function loadBranches() {
-        console.log(data);
         const { branches } = await sdk.forProject.vcs.listRepositoryBranches(
-            data.installations[0].$id,
+            data.installations.installations[0].$id,
             $repository.id
         );
+        selectedInstallationId = $installation.$id;
         const sorted = sortBranches(branches);
         branch = sorted[0]?.name ?? null;
 
@@ -69,6 +91,10 @@
         }
 
         return sorted;
+    }
+
+    async function createRepo() {
+        selectedRepository = '1234';
     }
 
     async function create() {
@@ -177,7 +203,7 @@
                         </LabelCard>
                     </div>
                     {#if connectBehaviour === 'now'}
-                        {#if data?.installations?.length}
+                        {#if hasInstallations}
                             <Fieldset legend="Git repositoy">
                                 <Layout.Stack gap="l">
                                     <Layout.Stack direction="row" gap="xl">
@@ -195,21 +221,50 @@
                                             name="existing" />
                                     </Layout.Stack>
                                     {#if repositoryBehaviour === 'new'}
-                                        <InputText
-                                            label="Git repository"
-                                            id="name"
-                                            name="name"
-                                            bind:value={name}
-                                            required
-                                            placeholder="Enter name" />
-
                                         <InputSelect
-                                            id="framework"
-                                            label="Framework"
-                                            placeholder="Select framework"
-                                            bind:value={framework}
-                                            {options} />
-                                    {:else}asdsaasd{/if}
+                                            id="installation"
+                                            label="Git organization"
+                                            options={data.installations.installations.map(
+                                                (entry) => {
+                                                    return {
+                                                        label: entry.organization,
+                                                        value: entry.$id
+                                                    };
+                                                }
+                                            )}
+                                            on:change={() => {
+                                                $installation =
+                                                    data.installations.installations.find(
+                                                        (entry) =>
+                                                            entry.$id === selectedInstallationId
+                                                    );
+                                            }}
+                                            bind:value={selectedInstallationId} />
+                                        <InputText
+                                            id="repositoryName"
+                                            label="Repository name"
+                                            placeholder="my-repository"
+                                            bind:value={repositoryName} />
+                                        <InputChoice
+                                            id="repositoryPrivate"
+                                            label="Keep repository private"
+                                            bind:value={repositoryPrivate} />
+
+                                        <Layout.Stack gap="xl" alignItems="flex-end">
+                                            <Divider />
+
+                                            <Button>Create</Button>
+                                        </Layout.Stack>
+                                    {:else}
+                                        <Repositories
+                                            bind:hasInstallations
+                                            bind:selectedRepository
+                                            action="button"
+                                            callbackState={{
+                                                from: 'github',
+                                                to: 'cover'
+                                            }} />
+                                    {/if}
                                 </Layout.Stack>
                             </Fieldset>
                         {:else}
@@ -232,6 +287,7 @@
                         {/if}
                     {/if}
                 </Layout.Stack>
+                <!-- If not template -->
             {:else}
                 <Layout.Stack gap="xl">
                     <Fieldset legend="Details">
@@ -315,7 +371,11 @@
                             <Button secondary size="small">View demo</Button>
                         </Layout.Stack>
 
-                        <img src={data.template.preview} alt={data.template.name} />
+                        <Image
+                            src={data.template.preview}
+                            alt={data.template.name}
+                            width={357}
+                            height={200} />
 
                         <Typography.Caption variant="400">Framework</Typography.Caption>
                     </Layout.Stack>
