@@ -149,7 +149,7 @@
                 })
             });
 
-            await goto(`${base}/organization-${$organization.$id}`);
+            await goto(previousPage);
             addNotification({
                 type: 'success',
                 isHtml: true,
@@ -217,7 +217,7 @@
             await invalidate(Dependencies.ACCOUNT);
             await invalidate(Dependencies.ORGANIZATION);
 
-            await goto(`${base}/organization-${org.$id}`);
+            await goto(previousPage);
             addNotification({
                 type: 'success',
                 message: 'Your organization has been upgraded'
