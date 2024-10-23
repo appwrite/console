@@ -21,8 +21,8 @@ importers:
         specifier: 1.0.0-next.5
         version: 1.0.0-next.5(svelte@4.2.19)
       '@appwrite.io/pink-svelte':
-        specifier: 1.0.0-next.62
-        version: 1.0.0-next.62(react-dom@18.3.1(react@18.3.1))(svelte@4.2.19)
+        specifier: 1.0.0-next.63
+        version: 1.0.0-next.63(react-dom@18.3.1(react@18.3.1))(svelte@4.2.19)
       '@popperjs/core':
         specifier: ^2.11.8
         version: 2.11.8
@@ -213,8 +213,8 @@ packages:
   '@appwrite.io/pink-icons@0.25.0':
     resolution: {integrity: sha512-0O3i2oEuh5mWvjO80i+X6rbzrWLJ1m5wmv2/M3a1p2PyBJsFxN8xQMTEmTn3Wl/D26SsM7SpzbdW6gmfgoVU9Q==}
 
-  '@appwrite.io/pink-svelte@1.0.0-next.62':
-    resolution: {integrity: sha512-oGuLNHlJBUqLYvubIb06Vi9aYmF1i4RPJFzAPtuzn6TRcAYnzlGigFc2CXHPZg6pKOQ4ZEYMibcSNQaHAIrGGA==}
+  '@appwrite.io/pink-svelte@1.0.0-next.63':
+    resolution: {integrity: sha512-Zrnrc1aopTZ/Fq5VVyCnBLNWtsmrw+hMtGXr4tza2x8Qhl9n+G6DkaEZefV1p1AK502cd6OapZwpg/avTfSM+w==}
     peerDependencies:
       react-dom: ^18.0.0
       svelte: ^4.0.0
@@ -3870,7 +3870,7 @@ snapshots:
 
   '@appwrite.io/pink-icons@0.25.0': {}
 
-  '@appwrite.io/pink-svelte@1.0.0-next.62(react-dom@18.3.1(react@18.3.1))(svelte@4.2.19)':
+  '@appwrite.io/pink-svelte@1.0.0-next.63(react-dom@18.3.1(react@18.3.1))(svelte@4.2.19)':
     dependencies:
       '@appwrite.io/pink-icons-svelte': 1.0.0-next.5(svelte@4.2.19)
       '@floating-ui/dom': 1.6.11

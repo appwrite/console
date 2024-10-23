@@ -1,5 +1,7 @@
 <script lang="ts">
     import { Card, Layout } from '@appwrite.io/pink-svelte';
+    import type Base from '@appwrite.io/pink-svelte/dist/card/Base.svelte';
+    import type { ComponentProps } from 'svelte';
 
     type BaseProps = {
         isTile?: boolean;
@@ -19,7 +21,7 @@
         isButton?: never;
     };
 
-    type $$Props = BaseProps & (ButtonProps | AnchorProps | BaseProps);
+    type $$Props = BaseProps & (ButtonProps | AnchorProps | BaseProps) & ComponentProps<Base>;
 
     export let isTile = false;
     export let isDashed = false;
@@ -29,24 +31,25 @@
     let classes = '';
     export { classes as class };
     export let style = '';
+    export let padding: $$Props['padding'] = 'medium';
 
     $: resolvedClasses = [!isTile && 'common-section', classes].filter(Boolean).join(' ');
 </script>
 
 {#if href}
-    <Card.Link class={resolvedClasses} on:click {href} {style}>
+    <Card.Link class={resolvedClasses} on:click {href} {style} {padding}>
         <Layout.Stack gap="xl">
             <slot />
         </Layout.Stack>
     </Card.Link>
 {:else if isButton}
-    <Card.Button class={resolvedClasses} {style} on:click>
+    <Card.Button class={resolvedClasses} {style} {padding} on:click>
         <Layout.Stack gap="xl">
             <slot />
         </Layout.Stack>
     </Card.Button>
 {:else}
-    <Card.Base class={resolvedClasses} {style} border={isDashed ? 'dashed' : 'solid'}>
+    <Card.Base class={resolvedClasses} {style} border={isDashed ? 'dashed' : 'solid'} {padding}>
         <Layout.Stack gap="xl">
             <slot />
         </Layout.Stack>

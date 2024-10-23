@@ -3,7 +3,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { Card, LabelCard } from '$lib/components';
+    import { Card, Heading, LabelCard } from '$lib/components';
     import CustomId from '$lib/components/customId.svelte';
     import { Dependencies } from '$lib/constants';
     import {
@@ -23,8 +23,9 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { repository, sortBranches } from '$lib/stores/vcs';
-    import { consoleVariables } from '$routes/(console)/store';
-    import { Fieldset, Layout, Empty } from '@appwrite.io/pink-svelte';
+    // import { consoleVariables } from '$routes/(console)/store';
+    import { Fieldset, Layout, Empty, Icon, Typography } from '@appwrite.io/pink-svelte';
+    import { IconGitBranch } from '@appwrite.io/pink-icons-svelte';
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
 
@@ -91,6 +92,23 @@
             trackError(e, Submit.OrganizationCreate);
         }
     }
+
+    let callbackState: Record<string, string> = null;
+
+    function connectGitHub() {
+        const redirect = new URL($page.url);
+        if (callbackState) {
+            Object.keys(callbackState).forEach((key) => {
+                redirect.searchParams.append(key, callbackState[key]);
+            });
+        }
+        const target = new URL(`${sdk.forProject.client.config.endpoint}/vcs/github/authorize`);
+        target.searchParams.set('project', $page.params.project);
+        target.searchParams.set('success', redirect.toString());
+        target.searchParams.set('failure', redirect.toString());
+        target.searchParams.set('mode', 'admin');
+        return target;
+    }
 </script>
 
 <svelte:head>
@@ -143,8 +161,9 @@
                             value="now"
                             bind:group={connectBehaviour}
                             disabled={!isVcsEnabled}>
-                            <svelte:fragment slot="title"
-                                >Connect to Git repository</svelte:fragment>
+                            <svelte:fragment slot="title">
+                                Connect to Git repository
+                            </svelte:fragment>
                             Clone the template to a new repository or connect it to an existing one.
                         </LabelCard>
                         <LabelCard
@@ -199,7 +218,12 @@
                                     title={`Connect Git repository`}
                                     description="Create and deploy a Site with a connected git repository.">
                                     <svelte:fragment slot="actions">
-                                        <Button secondary on:mousedown on:click size="small">
+                                        <Button
+                                            secondary
+                                            href={connectGitHub().toString()}
+                                            size="small">
+                                            <Icon icon={IconGitBranch} />
+                                            <!-- TODO: replace icon -->
                                             Connect to GitHub
                                         </Button>
                                     </svelte:fragment>
@@ -276,7 +300,28 @@
                 </Layout.Stack>
             {/if}
         </Form>
-        <svelte:fragment slot="aside">I'm an aside! :)</svelte:fragment>
+        <svelte:fragment slot="aside">
+            {#if isTemplate}
+                <Card padding="x-small">
+                    <Layout.Stack gap="m">
+                        <Layout.Stack
+                            direction="row"
+                            justifyContent="space-between"
+                            alignItems="center">
+                            <Typography.Text variant="m-500">
+                                {data.template.name}
+                            </Typography.Text>
+
+                            <Button secondary size="small">View demo</Button>
+                        </Layout.Stack>
+
+                        <img src={data.template.preview} alt={data.template.name} />
+
+                        <Typography.Caption variant="400">Framework</Typography.Caption>
+                    </Layout.Stack>
+                </Card>
+            {/if}
+        </svelte:fragment>
     </WizardSecondaryContent>
 
     <WizardSecondaryFooter>
