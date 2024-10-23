@@ -3,8 +3,7 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { Card, LabelCard } from '$lib/components';
-    import CustomId from '$lib/components/customId.svelte';
+    import { Card } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import {
         Button,
@@ -15,7 +14,6 @@
         InputSelectSearch,
         InputText
     } from '$lib/elements/forms';
-    import Pill from '$lib/elements/pill.svelte';
     import {
         WizardSecondaryContainer,
         WizardSecondaryContent,
@@ -23,7 +21,7 @@
     } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { installation, installations, repository, sortBranches } from '$lib/stores/vcs';
+    import { installation, repository, sortBranches } from '$lib/stores/vcs';
     // import { consoleVariables } from '$routes/(console)/store';
     import {
         Fieldset,
@@ -38,10 +36,11 @@
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
     import Repositories from '$lib/components/repositories.svelte';
+    import Details from './details.svelte';
+    import ConnectBehaviour from './connectBehaviour.svelte';
+    import ProductionBranch from './productionBranch.svelte';
 
     export let data;
-    // const isVcsEnabled = $consoleVariables?._APP_VCS_ENABLED === true;
-    const isVcsEnabled = true;
 
     let previousPage: string = base;
 
@@ -57,23 +56,23 @@
 
     let name: string;
     let id: string;
-    let showCustomId = false;
     let branch: string;
     let rootDir = '';
     let framework: string;
     let connectBehaviour: 'now' | 'later' = 'now';
-    let repositoryBehaviour = 'new';
+    let repositoryBehaviour: 'new' | 'existing' = 'new';
     let repositoryName = '';
     let repositoryPrivate = false;
     let selectedInstallationId = '';
     let selectedRepository = '';
+    let showSiteConfig = false;
 
     onMount(() => {
         if (isTemplate) {
             name = data.template.name;
             framework = data.template.frameworks[0];
-            $installation = data.installations[0];
-            selectedInstallationId = $installation.$id;
+            $installation ??= data.installations[0];
+            selectedInstallationId = $installation?.$id;
         }
     });
 
@@ -91,10 +90,6 @@
         }
 
         return sorted;
-    }
-
-    async function createRepo() {
-        selectedRepository = '1234';
     }
 
     async function create() {
@@ -146,127 +141,93 @@
     <WizardSecondaryContent>
         <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
             {#if isTemplate}
-                {@const options = data.template.frameworks.map((framework) => {
-                    return {
-                        value: framework,
-                        label: framework
-                    };
-                })}
-                <Layout.Stack gap="xl">
-                    <Fieldset legend="Details">
-                        <Layout.Stack gap="l">
-                            <InputText
-                                label="Name"
-                                id="name"
-                                name="name"
-                                bind:value={name}
-                                required
-                                placeholder="Enter name" />
-                            {#if showCustomId}
-                                <CustomId bind:id bind:show={showCustomId} name="Site" fullWidth />
-                            {:else}
-                                <div>
-                                    <Pill button on:click={() => (showCustomId = !showCustomId)}>
-                                        <span class="icon-pencil" aria-hidden="true" />
-                                        <span class="text">Site ID </span>
-                                    </Pill>
-                                </div>
-                            {/if}
+                {#if selectedRepository && showSiteConfig}
+                    <ProductionBranch bind:branch bind:rootDir />
+                {:else}
+                    {@const options = data.template.frameworks.map((framework) => {
+                        return {
+                            value: framework,
+                            label: framework
+                        };
+                    })}
 
-                            <InputSelect
-                                id="framework"
-                                label="Framework"
-                                placeholder="Select framework"
-                                bind:value={framework}
-                                {options} />
-                        </Layout.Stack>
-                    </Fieldset>
-                    <div style="display: grid; gap: 1rem; grid-template-columns: 1fr 1fr;">
-                        <LabelCard
-                            name="connect-behaviour"
-                            value="now"
-                            bind:group={connectBehaviour}
-                            disabled={!isVcsEnabled}>
-                            <svelte:fragment slot="title">
-                                Connect to Git repository
-                            </svelte:fragment>
-                            Clone the template to a new repository or connect it to an existing one.
-                        </LabelCard>
-                        <LabelCard
-                            name="connect-behaviour"
-                            value="later"
-                            bind:group={connectBehaviour}
-                            disabled={!isVcsEnabled}>
-                            <svelte:fragment slot="title">Connect later</svelte:fragment>
-                            Deploy now and continue development via CLI, or connect Git from your site
-                            settings.
-                        </LabelCard>
-                    </div>
-                    {#if connectBehaviour === 'now'}
-                        {#if hasInstallations}
-                            <Fieldset legend="Git repositoy">
-                                <Layout.Stack gap="l">
-                                    <Layout.Stack direction="row" gap="xl">
-                                        <InputRadio
-                                            label="Create a new repository"
-                                            bind:group={repositoryBehaviour}
-                                            value="new"
-                                            id="new"
-                                            name="new" />
-                                        <InputRadio
-                                            label="Connect to an existing repository"
-                                            bind:group={repositoryBehaviour}
-                                            value="existing"
-                                            id="existing"
-                                            name="existing" />
-                                    </Layout.Stack>
-                                    {#if repositoryBehaviour === 'new'}
-                                        <InputSelect
-                                            id="installation"
-                                            label="Git organization"
-                                            options={data.installations.installations.map(
-                                                (entry) => {
-                                                    return {
-                                                        label: entry.organization,
-                                                        value: entry.$id
-                                                    };
-                                                }
-                                            )}
-                                            on:change={() => {
-                                                $installation =
-                                                    data.installations.installations.find(
-                                                        (entry) =>
-                                                            entry.$id === selectedInstallationId
-                                                    );
-                                            }}
-                                            bind:value={selectedInstallationId} />
-                                        <InputText
-                                            id="repositoryName"
-                                            label="Repository name"
-                                            placeholder="my-repository"
-                                            bind:value={repositoryName} />
-                                        <InputChoice
-                                            id="repositoryPrivate"
-                                            label="Keep repository private"
-                                            bind:value={repositoryPrivate} />
-
-                                        <Layout.Stack gap="xl" alignItems="flex-end">
-                                            <Divider />
-
-                                            <Button>Create</Button>
+                    <Details bind:name bind:id bind:framework {options} showFramework />
+                    <Layout.Stack gap="xl">
+                        <ConnectBehaviour bind:connectBehaviour />
+                        {#if connectBehaviour === 'now'}
+                            {#if hasInstallations}
+                                <Fieldset legend="Git repositoy">
+                                    <Layout.Stack gap="l">
+                                        <Layout.Stack direction="row" gap="xl">
+                                            <InputRadio
+                                                label="Create a new repository"
+                                                bind:group={repositoryBehaviour}
+                                                value="new"
+                                                id="new"
+                                                name="new" />
+                                            <InputRadio
+                                                label="Connect to an existing repository"
+                                                bind:group={repositoryBehaviour}
+                                                value="existing"
+                                                id="existing"
+                                                name="existing" />
                                         </Layout.Stack>
-                                    {:else}
-                                        <Repositories
-                                            bind:hasInstallations
-                                            bind:selectedRepository
-                                            action="button"
-                                            callbackState={{
-                                                from: 'github',
-                                                to: 'cover'
-                                            }} />
-                                    {/if}
-                                </Layout.Stack>
-                            </Fieldset>
+                                        {#if repositoryBehaviour === 'new'}
+                                            <InputSelect
+                                                id="installation"
+                                                label="Git organization"
+                                                options={data.installations.installations.map(
+                                                    (entry) => {
+                                                        return {
+                                                            label: entry.organization,
+                                                            value: entry.$id
+                                                        };
+                                                    }
+                                                )}
+                                                on:change={() => {
+                                                    $installation =
+                                                        data.installations.installations.find(
+                                                            (entry) =>
+                                                                entry.$id === selectedInstallationId
+                                                        );
+                                                }}
+                                                bind:value={selectedInstallationId} />
+                                            <InputText
+                                                id="repositoryName"
+                                                label="Repository name"
+                                                placeholder="my-repository"
+                                                bind:value={repositoryName} />
+                                            <InputChoice
+                                                id="repositoryPrivate"
+                                                label="Keep repository private"
+                                                bind:value={repositoryPrivate} />
+
+                                            <Layout.Stack gap="xl" alignItems="flex-end">
+                                                <Divider />
+
+                                                <Button>Create</Button>
+                                            </Layout.Stack>
+                                        {:else}
+                                            <Repositories
+                                                bind:hasInstallations
+                                                bind:selectedRepository
+                                                action="button"
+                                                callbackState={{
+                                                    from: 'github',
+                                                    to: 'cover'
+                                                }}
+                                                on:connect={(e) => {
+                                                    trackEvent('click_connect_repository', {
+                                                        from: 'cover'
+                                                    });
+                                                    repository.set(e.detail);
+                                                    selectedRepository = e.detail.id;
+                                                    showSiteConfig = true;
+                                                }} />
+                                        {/if}
+                                    </Layout.Stack>
+                                </Fieldset>
+                            {/if}
                         {:else}
                             <Card isDashed isTile>
                                 <Empty
@@ -285,32 +246,12 @@
                                 </Empty>
                             </Card>
                         {/if}
-                    {/if}
-                </Layout.Stack>
+                    </Layout.Stack>
+                {/if}
                 <!-- If not template -->
             {:else}
                 <Layout.Stack gap="xl">
-                    <Fieldset legend="Details">
-                        <Layout.Stack>
-                            <InputText
-                                label="Name"
-                                id="name"
-                                name="name"
-                                bind:value={name}
-                                required
-                                placeholder="Enter name" />
-                            {#if showCustomId}
-                                <CustomId bind:id bind:show={showCustomId} name="Site" fullWidth />
-                            {:else}
-                                <div>
-                                    <Pill button on:click={() => (showCustomId = !showCustomId)}>
-                                        <span class="icon-pencil" aria-hidden="true" />
-                                        <span class="text">Site ID </span>
-                                    </Pill>
-                                </div>
-                            {/if}
-                        </Layout.Stack>
-                    </Fieldset>
+                    <Details bind:name bind:id />
 
                     <Fieldset legend="Details">
                         {#await loadBranches()}

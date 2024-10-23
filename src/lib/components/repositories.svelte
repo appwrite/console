@@ -9,6 +9,7 @@
     import { repositories } from '$routes/(console)/project-[project]/functions/function-[function]/store';
     import { installation, installations, repository } from '$lib/stores/vcs';
     import { createEventDispatcher } from 'svelte';
+    import { Layout } from '@appwrite.io/pink-svelte';
 
     const dispatch = createEventDispatcher();
 
@@ -71,138 +72,133 @@
 </script>
 
 {#if hasInstallations}
-    {#await loadInstallations()}
-        <div class="u-flex u-gap-16">
-            <ul class="u-width-full-line">
-                <InputSelect
-                    disabled
-                    id="installation"
-                    label="Select installation"
-                    showLabel={false}
-                    options={[
-                        {
-                            label: 'Loading...',
-                            value: null
-                        }
-                    ]}
-                    value={null} />
-            </ul>
-            <ul class="u-width-full-line">
-                <InputSearch placeholder="Search repositories" disabled />
-            </ul>
-        </div>
-    {:then installations}
-        <div class="u-flex u-gap-16">
-            <ul class="u-width-full-line">
-                <InputSelect
-                    id="installation"
-                    options={installations.map((entry) => {
-                        return {
-                            label: entry.organization,
-                            value: entry.$id
-                        };
-                    })}
-                    on:change={() => {
-                        search = '';
-                        installation.set(
-                            installations.find((entry) => entry.$id === selectedInstallation)
-                        );
-                    }}
-                    bind:value={selectedInstallation} />
-            </ul>
-            <ul class="u-width-full-line">
-                <InputSearch placeholder="Search repositories" bind:value={search} />
-            </ul>
-        </div>
-    {/await}
-    <p class="text u-margin-block-start-16">
-        Manage organization configuration in your <a
-            class="link"
-            href={`${base}/project-${$page.params.project}/settings`}>project settings</a
-        >.
-    </p>
-    {#if selectedInstallation}
-        {#await loadRepositories(selectedInstallation, search)}
-            <div class="u-flex u-gap-8 u-cross-center u-main-center">
-                <div class="loader u-margin-32" />
-            </div>
-        {:then response}
-            {#if response?.length}
-                <ul class="table is-remove-outer-styles common-section">
-                    {#each response as repo, i}
-                        <li
-                            class="table-row"
-                            style:border-block-end={i === response.length - 1 ? 'none' : null}>
-                            <div class="table-col">
-                                <div
-                                    class="u-flex u-cross-center u-gap-8"
-                                    style="margin-block: .75rem;">
-                                    {#if action === 'select'}
-                                        <input
-                                            class="is-small u-margin-inline-end-8"
-                                            type="radio"
-                                            name="repositories"
-                                            bind:group={selectedRepository}
-                                            on:change={() => repository.set(repo)}
-                                            value={repo.id} />
-                                    {/if}
+    <Layout.Stack>
+        <Layout.Stack gap="s">
+            {#await loadInstallations()}
+                <Layout.Stack direction="row">
+                    <InputSelect
+                        disabled
+                        id="installation"
+                        options={[
+                            {
+                                label: 'Loading...',
+                                value: null
+                            }
+                        ]}
+                        value={null} />
+                    <InputSearch placeholder="Search repositories" disabled />
+                </Layout.Stack>
+            {:then installations}
+                <Layout.Stack direction="row">
+                    <InputSelect
+                        id="installation"
+                        options={installations.map((entry) => {
+                            return {
+                                label: entry.organization,
+                                value: entry.$id
+                            };
+                        })}
+                        on:change={() => {
+                            search = '';
+                            installation.set(
+                                installations.find((entry) => entry.$id === selectedInstallation)
+                            );
+                        }}
+                        bind:value={selectedInstallation} />
+                    <InputSearch placeholder="Search repositories" bind:value={search} />
+                </Layout.Stack>
+            {/await}
+            <p>
+                Manage organization configuration in your <a
+                    class="link"
+                    href={`${base}/project-${$page.params.project}/settings`}>project settings</a
+                >.
+            </p>
+        </Layout.Stack>
+        {#if selectedInstallation}
+            {#await loadRepositories(selectedInstallation, search)}
+                <Layout.Stack justifyContent="center" alignContent="center" alignItems="center">
+                    <div class="loader u-margin-32" />
+                </Layout.Stack>
+            {:then response}
+                {#if response?.length}
+                    <ul class="table is-remove-outer-styles">
+                        {#each response as repo, i}
+                            <li
+                                class="table-row"
+                                style:border-block-end={i === response.length - 1 ? 'none' : null}>
+                                <div class="table-col">
                                     <div
-                                        class="avatar is-size-x-small"
-                                        style:--p-text-size="1.25rem"
-                                        class:is-color-empty={!repo.runtime}>
-                                        {#if repo.runtime}
-                                            <img
-                                                src={`${base}/icons/${$app.themeInUse}/color/${
-                                                    repo.runtime.split('-')[0]
-                                                }.svg`}
-                                                alt={repo.name} />
+                                        class="u-flex u-cross-center u-gap-8"
+                                        style="margin-block: .75rem;">
+                                        {#if action === 'select'}
+                                            <input
+                                                class="is-small u-margin-inline-end-8"
+                                                type="radio"
+                                                name="repositories"
+                                                bind:group={selectedRepository}
+                                                on:change={() => repository.set(repo)}
+                                                value={repo.id} />
                                         {/if}
-                                    </div>
-                                    <div class="u-flex u-gap-8 u-cross-center">
-                                        <span class="text u-trim-1">{repo.name}</span>
-                                        {#if repo.private}
-                                            <span
-                                                class="icon-lock-closed"
-                                                style="font-size: var(--icon-size-small)"
-                                                aria-hidden="true" />
-                                        {/if}
-                                        <time
-                                            class="u-color-text-gray u-trim-1"
-                                            datetime={repo.pushedAt}>
-                                            {timeFromNow(repo.pushedAt)}
-                                        </time>
-                                    </div>
-                                    {#if action === 'button'}
-                                        <div class="u-margin-inline-start-auto">
-                                            <Button
-                                                secondary
-                                                on:click={() => dispatch('connect', repo)}>
-                                                Connect
-                                            </Button>
+                                        <div
+                                            class="avatar is-size-x-small"
+                                            style:--p-text-size="1.25rem"
+                                            class:is-color-empty={!repo.runtime}>
+                                            {#if repo.runtime}
+                                                <img
+                                                    src={`${base}/icons/${$app.themeInUse}/color/${
+                                                        repo.runtime.split('-')[0]
+                                                    }.svg`}
+                                                    alt={repo.name} />
+                                            {/if}
                                         </div>
-                                    {/if}
+                                        <div class="u-flex u-gap-8 u-cross-center">
+                                            <span class="text u-trim-1">{repo.name}</span>
+                                            {#if repo.private}
+                                                <span
+                                                    class="icon-lock-closed"
+                                                    style="font-size: var(--icon-size-small)"
+                                                    aria-hidden="true" />
+                                            {/if}
+                                            <time
+                                                class="u-color-text-gray u-trim-1"
+                                                datetime={repo.pushedAt}>
+                                                {timeFromNow(repo.pushedAt)}
+                                            </time>
+                                        </div>
+                                        {#if action === 'button'}
+                                            <div class="u-margin-inline-start-auto">
+                                                <Button
+                                                    secondary
+                                                    on:click={() => dispatch('connect', repo)}>
+                                                    Connect
+                                                </Button>
+                                            </div>
+                                        {/if}
+                                    </div>
                                 </div>
+                            </li>
+                        {/each}
+                    </ul>
+                {:else if search}
+                    <EmptySearch hidePages>
+                        <div class="common-section">
+                            <div class="u-text-center common-section">
+                                <b class="body-text-2 u-bold">Sorry we couldn't find "{search}"</b>
+                                <p>There are no repositories that match your search.</p>
                             </div>
-                        </li>
-                    {/each}
-                </ul>
-            {:else if search}
-                <EmptySearch hidePages>
-                    <div class="common-section">
-                        <div class="u-text-center common-section">
-                            <b class="body-text-2 u-bold">Sorry we couldn't find "{search}"</b>
-                            <p>There are no repositories that match your search.</p>
+                            <div class="u-flex u-gap-16 common-section u-main-center">
+                                <Button secondary on:click={() => (search = '')}
+                                    >Clear search</Button>
+                            </div>
                         </div>
-                        <div class="u-flex u-gap-16 common-section u-main-center">
-                            <Button secondary on:click={() => (search = '')}>Clear search</Button>
-                        </div>
-                    </div>
-                </EmptySearch>
-            {:else}
-                <EmptySearch hidePages />
-            {/if}
-        {/await}
-    {/if}
+                    </EmptySearch>
+                {:else}
+                    <EmptySearch hidePages />
+                {/if}
+            {/await}
+        {/if}
+    </Layout.Stack>
 {:else}
     <div class="u-flex u-cross-center u-flex-vertical u-gap-16">
         <Button href={connectGitHub().toString()} fullWidth secondary>
