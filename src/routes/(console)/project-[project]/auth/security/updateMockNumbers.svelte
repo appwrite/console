@@ -87,7 +87,7 @@
             Generate <b>fictional</b> numbers to simulate phone verification when testing demo
             accounts for submitting your application to the App Store or Google Play.
             <a
-                href="https://appwrite.io/docs/products/auth/security#mock-numbers"
+                href="https://appwrite.io/docs/products/auth/security#mock-phone-numbers"
                 target="_blank"
                 class="u-underline"
                 rel="noopener noreferrer">
