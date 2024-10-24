@@ -1,5 +1,10 @@
 <script lang="ts">
-    import { FormItem, Helper, Label } from '.';
+    import { Selector } from '@appwrite.io/pink-svelte';
+    import type Radio from '@appwrite.io/pink-svelte/dist/selector/Radio.svelte';
+
+    import type { ComponentProps } from 'svelte';
+
+    type Props = ComponentProps<Radio>;
 
     export let label: string = null;
     export let showLabel = true;
@@ -9,6 +14,7 @@
     export let name: string;
     export let required = false;
     export let disabled = false;
+    export let size: Props['size'] = 'medium';
 
     let element: HTMLInputElement;
     let error: string;
@@ -28,45 +34,13 @@
     }
 </script>
 
-<FormItem>
-    <div class="input-text-wrapper">
-        <input
-            {id}
-            {name}
-            {disabled}
-            {required}
-            {value}
-            type="radio"
-            bind:group
-            bind:this={element}
-            on:invalid={handleInvalid} />
-        <Label {required} hide={!showLabel} for={id}>
-            {#if label}
-                {label}
-            {:else}
-                <slot />
-            {/if}
-        </Label>
-        <!-- <label class="choice-item" for={id}>
-            <input
-                {id}
-                {name}
-                {disabled}
-                {required}
-                {value}
-                type="radio"
-                bind:group
-                bind:this={element}
-                on:invalid={handleInvalid} />
-            <div
-                class="choice-item-content u-cross-child-center"
-                class:u-width-full-line={fullWidth}>
-                <div class="choice-item-title">{label}</div>
-                <slot name="description" />
-            </div>
-        </label> -->
-    </div>
-    {#if error}
-        <Helper type="warning">{error}</Helper>
-    {/if}
-</FormItem>
+<Selector.Radio
+    {id}
+    {name}
+    {disabled}
+    {required}
+    {value}
+    {label}
+    {size}
+    bind:group
+    on:invalid={handleInvalid} />

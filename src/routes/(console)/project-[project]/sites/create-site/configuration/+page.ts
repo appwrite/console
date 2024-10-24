@@ -19,9 +19,24 @@ const mockTeplate: {
     name: string;
     frameworks: string[];
     $id: string;
+    variables: Record<string, unknown>[];
 } = {
     preview: 'https://unsplash.it/300/200',
     name: 'Template 1',
     frameworks: ['react', 'vue', 'angular'],
-    $id: '1'
+    $id: '1',
+    variables: [
+        {
+            name: 'API_KEY',
+            type: 'string',
+            default: '12345',
+            description: 'API Key'
+        },
+        {
+            name: 'API_SECRET',
+            type: 'string',
+            default: '12345',
+            description: 'API Secret'
+        }
+    ]
 };

@@ -55,11 +55,11 @@
     let formComponent: Form;
     let isSubmitting = writable(false);
 
-    let name: string;
-    let id: string;
+    let name = data?.template?.name ?? '';
+    let id = data?.template?.$id ?? '';
+    let framework = data?.template?.frameworks[0] ?? '';
     let branch: string;
     let rootDir = '';
-    let framework: string;
     let connectBehaviour: 'now' | 'later' = 'now';
     let repositoryBehaviour: 'new' | 'existing' = 'new';
     let repositoryName = '';
@@ -70,8 +70,6 @@
 
     onMount(() => {
         if (isTemplate) {
-            name = data.template.name;
-            framework = data.template.frameworks[0];
             $installation ??= data.installations[0];
             selectedInstallationId = $installation?.$id;
         }
@@ -166,7 +164,10 @@
                             </Layout.Stack>
                         </Card>
                         <ProductionBranch bind:branch bind:rootDir />
-                        <Configuration />
+                        <Configuration
+                            {framework}
+                            source="template"
+                            variables={data.template.variables} />
                     {:else}
                         {@const options = data.template.frameworks.map((framework) => {
                             return {
@@ -183,12 +184,14 @@
                                     <Layout.Stack gap="l">
                                         <Layout.Stack direction="row" gap="xl">
                                             <InputRadio
+                                                size="small"
                                                 label="Create a new repository"
                                                 bind:group={repositoryBehaviour}
                                                 value="new"
                                                 id="new"
                                                 name="new" />
                                             <InputRadio
+                                                size="small"
                                                 label="Connect to an existing repository"
                                                 bind:group={repositoryBehaviour}
                                                 value="existing"
