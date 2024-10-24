@@ -1,4 +1,4 @@
-import { Query } from '@appwrite.io/console';
+import { Query, type Models } from '@appwrite.io/console';
 import { sdk } from '$lib/stores/sdk';
 
 export const load = async ({ url }) => {
@@ -19,7 +19,7 @@ const mockTeplate: {
     name: string;
     frameworks: string[];
     $id: string;
-    variables: Record<string, unknown>[];
+    variables: Models.TemplateVariable[];
 } = {
     preview: 'https://unsplash.it/300/200',
     name: 'Template 1',
@@ -28,15 +28,19 @@ const mockTeplate: {
     variables: [
         {
             name: 'API_KEY',
-            type: 'string',
-            default: '12345',
-            description: 'API Key'
+            type: 'url',
+            description: 'A very important API Key',
+            placeholder: 'elkfok430r0-i3d',
+            required: false,
+            value: ''
         },
         {
             name: 'API_SECRET',
-            type: 'string',
-            default: '12345',
-            description: 'API Secret'
+            type: 'password',
+            description: 'A very important API Secret',
+            placeholder: '32rd23r32t4',
+            required: true,
+            value: ''
         }
     ]
 };

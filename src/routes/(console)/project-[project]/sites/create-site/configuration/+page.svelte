@@ -23,16 +23,8 @@
     import { sdk } from '$lib/stores/sdk';
     import { installation, repository, sortBranches } from '$lib/stores/vcs';
     // import { consoleVariables } from '$routes/(console)/store';
-    import {
-        Fieldset,
-        Layout,
-        Empty,
-        Icon,
-        Typography,
-        Image,
-        Divider
-    } from '@appwrite.io/pink-svelte';
-    import { IconGitBranch } from '@appwrite.io/pink-icons-svelte';
+    import { Fieldset, Layout, Empty, Icon, Divider } from '@appwrite.io/pink-svelte';
+    import { IconGithub } from '@appwrite.io/pink-icons-svelte';
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
     import Repositories from '$lib/components/repositories.svelte';
@@ -40,6 +32,7 @@
     import ConnectBehaviour from './connectBehaviour.svelte';
     import ProductionBranch from './productionBranch.svelte';
     import Configuration from './configuration.svelte';
+    import Aside from './aside.svelte';
 
     export let data;
 
@@ -67,6 +60,7 @@
     let selectedInstallationId = '';
     let selectedRepository = '';
     let showSiteConfig = false;
+    let variables = [];
 
     onMount(() => {
         if (isTemplate) {
@@ -149,7 +143,7 @@
                                 alignItems="center"
                                 gap="xs">
                                 <Layout.Stack direction="row" alignItems="center">
-                                    <Icon icon={IconGitBranch} />
+                                    <Icon icon={IconGithub} />
                                     <p>
                                         {$repository.name}
                                     </p>
@@ -167,7 +161,8 @@
                         <Configuration
                             {framework}
                             source="template"
-                            variables={data.template.variables} />
+                            bind:variables
+                            templateVariables={data.template.variables} />
                     {:else}
                         {@const options = data.template.frameworks.map((framework) => {
                             return {
@@ -247,6 +242,7 @@
                                                         from: 'cover'
                                                     });
                                                     repository.set(e.detail);
+                                                    repositoryName = e.detail.name;
                                                     selectedRepository = e.detail.id;
                                                     showSiteConfig = true;
                                                 }} />
@@ -264,8 +260,7 @@
                                             secondary
                                             href={connectGitHub().toString()}
                                             size="small">
-                                            <Icon icon={IconGitBranch} />
-                                            <!-- TODO: replace icon -->
+                                            <Icon icon={IconGithub} />
                                             Connect to GitHub
                                         </Button>
                                     </svelte:fragment>
@@ -324,30 +319,14 @@
             {/if}
         </Form>
         <svelte:fragment slot="aside">
-            {#if isTemplate}
-                <Card padding="x-small">
-                    <Layout.Stack gap="m">
-                        <Layout.Stack
-                            direction="row"
-                            justifyContent="space-between"
-                            alignItems="center">
-                            <Typography.Text variant="m-500">
-                                {data.template.name}
-                            </Typography.Text>
-
-                            <Button secondary size="small">View demo</Button>
-                        </Layout.Stack>
-
-                        <Image
-                            src={data.template.preview}
-                            alt={data.template.name}
-                            width={357}
-                            height={200} />
-
-                        <Typography.Caption variant="400">Framework</Typography.Caption>
-                    </Layout.Stack>
-                </Card>
-            {/if}
+            <Aside
+                {isTemplate}
+                template={data.template}
+                {name}
+                {framework}
+                {repositoryName}
+                {branch}
+                {rootDir} />
         </svelte:fragment>
     </WizardSecondaryContent>
 
