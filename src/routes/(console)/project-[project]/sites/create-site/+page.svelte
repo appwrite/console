@@ -118,7 +118,7 @@
                                             runtime: template.name
                                         });
                                     }}
-                                    href={`${base}/project-${$page.params.project}/sites/create-site/settings?template=${template.$id}`}
+                                    href={`${base}/project-${$page.params.project}/sites/create-site/configuration?template=${template.$id}`}
                                     class="box u-width-full-line u-flex u-cross-center u-gap-8"
                                     style:--box-padding="1rem"
                                     style:--box-border-radius="var(--border-radius-small)">

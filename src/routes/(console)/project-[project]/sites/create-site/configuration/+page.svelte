@@ -39,6 +39,7 @@
     import Details from './details.svelte';
     import ConnectBehaviour from './connectBehaviour.svelte';
     import ProductionBranch from './productionBranch.svelte';
+    import Configuration from './configuration.svelte';
 
     export let data;
 
@@ -141,18 +142,40 @@
     <WizardSecondaryContent>
         <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
             {#if isTemplate}
-                {#if selectedRepository && showSiteConfig}
-                    <ProductionBranch bind:branch bind:rootDir />
-                {:else}
-                    {@const options = data.template.frameworks.map((framework) => {
-                        return {
-                            value: framework,
-                            label: framework
-                        };
-                    })}
+                <Layout.Stack gap="xl">
+                    {#if selectedRepository && showSiteConfig}
+                        <Card>
+                            <Layout.Stack
+                                direction="row"
+                                justifyContent="space-between"
+                                alignItems="center"
+                                gap="xs">
+                                <Layout.Stack direction="row" alignItems="center">
+                                    <Icon icon={IconGitBranch} />
+                                    <p>
+                                        {$repository.name}
+                                    </p>
+                                </Layout.Stack>
+                                <Button
+                                    secondary
+                                    on:click={() => {
+                                        showSiteConfig = false;
+                                    }}>
+                                    Change
+                                </Button>
+                            </Layout.Stack>
+                        </Card>
+                        <ProductionBranch bind:branch bind:rootDir />
+                        <Configuration />
+                    {:else}
+                        {@const options = data.template.frameworks.map((framework) => {
+                            return {
+                                value: framework,
+                                label: framework
+                            };
+                        })}
 
-                    <Details bind:name bind:id bind:framework {options} showFramework />
-                    <Layout.Stack gap="xl">
+                        <Details bind:name bind:id bind:framework {options} showFramework />
                         <ConnectBehaviour bind:connectBehaviour />
                         {#if connectBehaviour === 'now'}
                             {#if hasInstallations}
@@ -246,8 +269,8 @@
                                 </Empty>
                             </Card>
                         {/if}
-                    </Layout.Stack>
-                {/if}
+                    {/if}
+                </Layout.Stack>
                 <!-- If not template -->
             {:else}
                 <Layout.Stack gap="xl">
