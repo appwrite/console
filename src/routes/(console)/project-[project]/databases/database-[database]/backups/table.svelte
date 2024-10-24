@@ -322,7 +322,7 @@
             {#each restoreOptions as restoreOption}
                 <div class="u-width-full-line">
                     <LabelCard
-                        padding={1}
+                        padding="small"
                         name="restore"
                         value={restoreOption.id}
                         bind:group={selectedRestoreOption}>

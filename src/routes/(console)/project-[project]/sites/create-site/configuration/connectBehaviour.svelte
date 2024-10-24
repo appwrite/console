@@ -11,8 +11,8 @@
         name="connect-behaviour"
         value="now"
         bind:group={connectBehaviour}
-        disabled={!isVcsEnabled}>
-        <svelte:fragment slot="title">Connect to Git repository</svelte:fragment>
+        disabled={!isVcsEnabled}
+        title="Connect to Git repository">
         Clone the template to a new repository or connect it to an existing one.
     </LabelCard>
     <LabelCard
