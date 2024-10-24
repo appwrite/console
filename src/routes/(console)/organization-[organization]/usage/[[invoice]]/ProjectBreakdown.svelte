@@ -21,10 +21,6 @@
     export let projects: OrganizationUsage['projects'];
     export let metric: Metric;
 
-    function getProjectName(projectId: string): string {
-        return data.projectNames.find((project) => project.$id === projectId)?.name;
-    }
-
     function getProjectUsageLink(projectId: string): string {
         return `${base}/project-${projectId}/settings/usage`;
     }
@@ -69,7 +65,7 @@
                 {#each groupByProject(metric).sort((a, b) => b.usage - a.usage) as project}
                     <TableRow>
                         <TableCellText title="Project" style="padding-left: 0;">
-                            {getProjectName(project.projectId)}
+                            {data.projectNames[project.projectId]?.name ?? 'Unknown'}
                         </TableCellText>
                         <TableCellText title="Usage">{format(project.usage)}</TableCellText>
                         {#if $canSeeProjects}
