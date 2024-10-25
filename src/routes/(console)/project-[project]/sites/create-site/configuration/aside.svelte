@@ -16,16 +16,17 @@
 {#if isTemplate}
     <Card padding="x-small">
         <Layout.Stack gap="m">
-            <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
-                <Typography.Text variant="m-500" truncate>
-                    {name || template.name}
-                </Typography.Text>
+            {#if isTemplate}
+                <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
+                    <Typography.Text variant="m-500" truncate>
+                        {name || template.name}
+                    </Typography.Text>
 
-                <Button secondary size="small">View demo</Button>
-            </Layout.Stack>
+                    <Button secondary size="small">View demo</Button>
+                </Layout.Stack>
 
-            <Image src={template.preview} alt={template.name} width={357} height={200} />
-
+                <Image src={template.preview} alt={template.name} width={357} height={200} />
+            {/if}
             <Layout.Stack gap="s">
                 {#if framework}
                     <Layout.Stack gap="xs">

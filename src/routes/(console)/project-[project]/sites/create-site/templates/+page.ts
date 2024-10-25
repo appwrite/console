@@ -1,13 +1,22 @@
 import { Query } from '@appwrite.io/console';
 import { sdk } from '$lib/stores/sdk';
+import { getPage, getSearch, getView, pageToOffset } from '$lib/helpers/load';
+import { CARD_LIMIT } from '$lib/constants';
 
-export const load = async () => {
+export const load = async ({ url }) => {
+    const limit = CARD_LIMIT;
+    const page = getPage(url);
+    const search = getSearch(url);
+    const offset = pageToOffset(page, limit);
     const templates = {
         templates: mockTemplates,
         total: mockTemplates.length
     };
 
     return {
+        offset,
+        limit,
+        search,
         siteTemplates: templates
     };
 };

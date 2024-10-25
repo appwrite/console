@@ -11,7 +11,7 @@
     import { app } from '$lib/stores/app';
 
     export let show = false;
-    let behaviour: 'repository' | 'template';
+    let behaviour: 'repository' | 'templates';
 
     $: if (!show) {
         behaviour = null;
@@ -38,7 +38,7 @@
                 title="Connect a template"
                 name="connect"
                 bind:group={behaviour}
-                value="templeate">
+                value="templates">
                 Connect to one of your existing Git repositories
             </LabelCard>
         </div>
@@ -47,6 +47,7 @@
         <Button secondary on:click={() => (show = false)}>Cancel</Button>
         <Button
             disabled={!behaviour}
-            href={`${base}/project-${$page.params.project}/sites/create-site`}>Next</Button>
+            href={`${base}/project-${$page.params.project}/sites/create-site/${behaviour}`}
+            >Next</Button>
     </svelte:fragment>
 </Modal>
