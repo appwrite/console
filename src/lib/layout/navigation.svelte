@@ -162,7 +162,7 @@
                                     placement: 'right',
                                     disabled: !narrow
                                 }}>
-                                <span class="icon-appwrite" aria-hidden="true" />
+                                <span class="icon-globe-alt" aria-hidden="true" />
                                 <span class="text">Sites</span>
                             </a>
                         </li>

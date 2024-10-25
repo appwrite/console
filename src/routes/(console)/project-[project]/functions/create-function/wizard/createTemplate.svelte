@@ -4,14 +4,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { wizard } from '$lib/stores/wizard';
     import { goto } from '$app/navigation';
-    import {
-        choices,
-        installation,
-        repository,
-        template,
-        templateConfig,
-        templateStepsComponents
-    } from '../store';
+    import { choices, template, templateConfig, templateStepsComponents } from '../store';
     import { addNotification } from '$lib/stores/notifications';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { base } from '$app/paths';
@@ -23,6 +16,7 @@
     import TemplateDeployment from './steps/templateDeployment.svelte';
     import CreateRepository from './steps/createRepository.svelte';
     import GitConfiguration from './steps/gitConfiguration.svelte';
+    import { installation, repository } from '$lib/stores/vcs';
 
     async function create() {
         try {

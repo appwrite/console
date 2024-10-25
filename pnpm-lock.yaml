@@ -21,8 +21,8 @@ importers:
         specifier: 1.0.0-next.7
         version: 1.0.0-next.7(svelte@4.2.19)
       '@appwrite.io/pink-svelte':
-        specifier: 1.0.0-next.67
-        version: 1.0.0-next.67(react-dom@18.3.1(react@18.3.1))(svelte@4.2.19)
+        specifier: 1.0.0-next.72
+        version: 1.0.0-next.72(react-dom@18.3.1(react@18.3.1))(svelte@4.2.19)
       '@popperjs/core':
         specifier: ^2.11.8
         version: 2.11.8
@@ -205,11 +205,6 @@ packages:
   '@appwrite.io/console@1.4.1':
     resolution: {integrity: sha512-Loh1VpMmj1Evy0F9teOarn0f13toh2KZHOrUdPMzeAOsIoxIQl1+SFVijtHvBGEvrOH1dzBGs8+6y2CRNNomlQ==}
 
-  '@appwrite.io/pink-icons-svelte@1.0.0-next.5':
-    resolution: {integrity: sha512-hihcDmAlVuXhhogPoUuuWPCtINzl+/HfjDdsFyvZsxf70O0PgczNSSICRJ/VQ8A87IsdEimpRcRb5OnFPUEXDA==}
-    peerDependencies:
-      svelte: ^4.0.0
-
   '@appwrite.io/pink-icons-svelte@1.0.0-next.7':
     resolution: {integrity: sha512-Bmff3YGEliIetqc3UyjzJNLg88FIC6UXYwTzGqHm+0QLCRJxwAFpTkfTCLIqMe5PUqGshq6jM9SPyCCSVVS3aw==}
     peerDependencies:
@@ -218,8 +213,8 @@ packages:
   '@appwrite.io/pink-icons@0.25.0':
     resolution: {integrity: sha512-0O3i2oEuh5mWvjO80i+X6rbzrWLJ1m5wmv2/M3a1p2PyBJsFxN8xQMTEmTn3Wl/D26SsM7SpzbdW6gmfgoVU9Q==}
 
-  '@appwrite.io/pink-svelte@1.0.0-next.67':
-    resolution: {integrity: sha512-HZKNUCkpjRsV7wYNx8AomJvU3WkJP6ehAeNDCUV2P5t2bLpN1ZdYU3o5Lhe4nmr/OkIrxDEd4eYumy0W99nAmw==}
+  '@appwrite.io/pink-svelte@1.0.0-next.72':
+    resolution: {integrity: sha512-UZPj0KC9+itySh3jM5YW280GvnCm6gfZcql0lX5HgYiw6QNbRyf6X4ohgr8ELwC6O3yG+195ItKcj3IT3zoZ1w==}
     peerDependencies:
       react-dom: ^18.0.0
       svelte: ^4.0.0
@@ -3869,21 +3864,18 @@ snapshots:
 
   '@appwrite.io/console@1.4.1': {}
 
-  '@appwrite.io/pink-icons-svelte@1.0.0-next.5(svelte@4.2.19)':
-    dependencies:
-      svelte: 4.2.19
-
   '@appwrite.io/pink-icons-svelte@1.0.0-next.7(svelte@4.2.19)':
     dependencies:
       svelte: 4.2.19
 
   '@appwrite.io/pink-icons@0.25.0': {}
 
-  '@appwrite.io/pink-svelte@1.0.0-next.67(react-dom@18.3.1(react@18.3.1))(svelte@4.2.19)':
+  '@appwrite.io/pink-svelte@1.0.0-next.72(react-dom@18.3.1(react@18.3.1))(svelte@4.2.19)':
     dependencies:
-      '@appwrite.io/pink-icons-svelte': 1.0.0-next.5(svelte@4.2.19)
+      '@appwrite.io/pink-icons-svelte': 1.0.0-next.7(svelte@4.2.19)
       '@floating-ui/dom': 1.6.11
       '@melt-ui/svelte': 0.83.0(svelte@4.2.19)
+      pretty-bytes: 6.1.1
       react-dom: 18.3.1(react@18.3.1)
       svelte: 4.2.19
 

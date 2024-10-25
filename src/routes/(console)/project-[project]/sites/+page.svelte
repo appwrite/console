@@ -15,8 +15,10 @@
     import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
+    import CreateSiteModal from './createSiteModal.svelte';
 
     export let data;
+    let show = false;
 
     onMount(async () => {
         // const from = $page.url.searchParams.get('from');
@@ -71,7 +73,7 @@
         title="Sites"
         buttonText={TMPSITEROLES ? 'Create site' : ''}
         buttonEvent="create_site"
-        buttonHref={wizardURL}
+        buttonMethod={() => (show = true)}
         total={data.siteList.total} />
     {#if data.siteList.total}
         <section class="sites-grid">
@@ -115,6 +117,8 @@
             on:click={() => goto(wizardURL)} />
     {/if}
 </Container>
+
+<CreateSiteModal bind:show />
 
 <style lang="scss">
     .sites-grid {

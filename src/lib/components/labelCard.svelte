@@ -18,6 +18,8 @@
     export let backgroundColorHover: string = null;
     export let tooltipText: string = null;
     export let tooltipShow = false;
+    export let src: string = null;
+    export let alt: string = null;
 
     // Pink v2
     export let radius: Props['radius'] = 'medium';
@@ -30,7 +32,14 @@
 </script>
 
 <div use:tooltip={{ content: tooltipText, disabled: !tooltipText || !tooltipShow }}>
-    <Card.Selector {value} {disabled} title={title ?? slotTitle?.innerText} bind:group>
+    <Card.Selector
+        {padding}
+        {src}
+        {alt}
+        {value}
+        {disabled}
+        title={title ?? slotTitle?.innerText}
+        bind:group>
         <p>
             <slot />
         </p>
