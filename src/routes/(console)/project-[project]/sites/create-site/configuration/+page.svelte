@@ -22,7 +22,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { installation, repository, sortBranches } from '$lib/stores/vcs';
-    import { Fieldset, Layout, Icon, Divider } from '@appwrite.io/pink-svelte';
+    import { Fieldset, Layout, Icon, Divider, Empty } from '@appwrite.io/pink-svelte';
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
@@ -82,6 +82,23 @@
         }
 
         return sorted;
+    }
+
+    let callbackState: Record<string, string> = null;
+
+    function connectGitHub() {
+        const redirect = new URL($page.url);
+        if (callbackState) {
+            Object.keys(callbackState).forEach((key) => {
+                redirect.searchParams.append(key, callbackState[key]);
+            });
+        }
+        const target = new URL(`${sdk.forProject.client.config.endpoint}/vcs/github/authorize`);
+        target.searchParams.set('project', $page.params.project);
+        target.searchParams.set('success', redirect.toString());
+        target.searchParams.set('failure', redirect.toString());
+        target.searchParams.set('mode', 'admin');
+        return target;
     }
 
     async function create() {
@@ -231,6 +248,23 @@
                                         {/if}
                                     </Layout.Stack>
                                 </Fieldset>
+                            {:else}
+                                <Card isDashed isTile>
+                                    <Empty
+                                        title={`Connect Git repository`}
+                                        description="Create and deploy a Site with a connected git repository.">
+                                        <svelte:fragment slot="actions">
+                                            <Button
+                                                secondary
+                                                href={connectGitHub().toString()}
+                                                size="small">
+                                                <Icon icon={IconGithub} />
+                                                <!-- TODO: replace icon -->
+                                                Connect to GitHub
+                                            </Button>
+                                        </svelte:fragment>
+                                    </Empty>
+                                </Card>
                             {/if}
                         {:else}
                             <Configuration

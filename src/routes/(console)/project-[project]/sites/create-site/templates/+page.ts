@@ -1,59 +1,70 @@
 import { Query } from '@appwrite.io/console';
 import { sdk } from '$lib/stores/sdk';
-import { getPage, getSearch, getView, pageToOffset } from '$lib/helpers/load';
+import { getPage, getSearch, getView, pageToOffset, View } from '$lib/helpers/load';
 import { CARD_LIMIT } from '$lib/constants';
 
-export const load = async ({ url }) => {
+export const load = async ({ url, route }) => {
     const limit = CARD_LIMIT;
     const page = getPage(url);
     const search = getSearch(url);
+    const view = getView(url, route, View.Grid);
     const offset = pageToOffset(page, limit);
-    const templates = {
-        templates: mockTemplates,
-        total: mockTemplates.length
+    const filter = {
+        useCases: url.searchParams.getAll('useCase'),
+        frameworks: url.searchParams.getAll('framework')
     };
+
+    const siteTemplatesList = await sdk.forProject.sites.listSiteTemplates(
+        undefined,
+        undefined,
+        100
+    );
+
+    console.log(siteTemplatesList);
+
+    const [frameworks, useCases] = siteTemplatesList.templates.reduce(
+        ([fr, uc], next) => {
+            next.useCases.forEach((useCase) => uc.add(useCase));
+            // next.frameworks.forEach((framework) => fr.add(framework.name));
+            return [fr, uc];
+        },
+        [new Set<string>(), new Set<string>()]
+    );
+
+    const templates = siteTemplatesList.templates.filter((template) => {
+        // if (
+        //     filter.framework.length > 0
+        //     && !template.frameworks.some((n) => filter.frameworks.includes(n.name))
+        // ) {
+        //     return false;
+        // }
+
+        const filterLowerCases = filter.useCases.map((n) => n.toLowerCase());
+        if (
+            filter.useCases.length > 0 &&
+            !template.useCases.some((n) => filterLowerCases.includes(n.toLowerCase()))
+        ) {
+            return false;
+        }
+
+        if (search) {
+            return template.name.toLowerCase().includes(search.toLowerCase());
+        } else {
+            return true;
+        }
+    });
+
+    console.log(frameworks, useCases, templates);
 
     return {
         offset,
         limit,
-        search,
-        siteTemplates: templates
+        view,
+        filter,
+        frameworks,
+        useCases,
+        sum: templates.length,
+        templates: templates.splice(((page === 0 ? 1 : page) - 1) * limit, limit),
+        functions: await sdk.forProject.functions.list()
     };
 };
-
-const mockTemplates: {
-    $id: string;
-    name: string;
-    description: string;
-    preview: string;
-    frameworks: string[];
-}[] = [
-    {
-        $id: '1',
-        name: 'Template 1',
-        description: 'This is a description',
-        preview: 'https://unsplash.it/300/200',
-        frameworks: ['react', 'vue', 'angular']
-    },
-    {
-        $id: '2',
-        name: 'Template 2',
-        description: 'Yet another description',
-        preview: 'https://unsplash.it/301/200',
-        frameworks: ['react', 'vue']
-    },
-    {
-        $id: '3',
-        name: 'Template 3',
-        description: 'This is a description too',
-        preview: 'https://unsplash.it/302/200',
-        frameworks: ['react', 'angular']
-    },
-    {
-        $id: '4',
-        name: 'Template 4',
-        description: 'This is a description too but it is very long',
-        preview: 'https://unsplash.it/303/200',
-        frameworks: ['vue', 'angular']
-    }
-];

@@ -12,7 +12,6 @@
     import { Button } from '$lib/elements/forms';
     import { IconDotsHorizontal } from '@appwrite.io/pink-icons-svelte';
     import { Card } from '@appwrite.io/pink-svelte';
-    import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import CreateSiteModal from './createSiteModal.svelte';
@@ -44,13 +43,11 @@
         // }
     });
 
-    const wizardURL = `${base}/project-${$page.params.project}/sites/create-site`;
-
     $: $registerCommands([
         {
             label: 'Create site',
             callback: () => {
-                goto(wizardURL);
+                show = true;
             },
             keys: ['c'],
             disabled:
@@ -114,7 +111,7 @@
             allowCreate={TMPSITEROLES}
             href="https://appwrite.io/docs/products/sites"
             target="site"
-            on:click={() => goto(wizardURL)} />
+            on:click={() => (show = true)} />
     {/if}
 </Container>
 

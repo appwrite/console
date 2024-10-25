@@ -1,25 +1,35 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import { Collapsible, CollapsibleItem, EmptySearch, Pagination } from '$lib/components';
+    import {
+        Collapsible,
+        CollapsibleItem,
+        EmptySearch,
+        Pagination,
+        SvgIcon
+    } from '$lib/components';
     import { Button, InputSearch } from '$lib/elements/forms';
     import { page } from '$app/stores';
-    import { trackEvent } from '$lib/actions/analytics';
-    import type { Models } from '@appwrite.io/console';
     import WizardCover from '$lib/layout/wizardCover.svelte';
     import { goto } from '$app/navigation';
-    import { repository } from '$lib/stores/vcs';
     import { debounce } from '$lib/helpers/debounce.js';
     import { Card } from '@appwrite.io/pink-svelte';
 
     export let data;
-    let hasInstallations: boolean;
-    let selectedRepository: string;
 
-    function connect(event: CustomEvent<Models.ProviderRepository>) {
-        trackEvent('click_connect_repository', {
-            from: 'cover'
-        });
-        repository.set(event.detail);
+    function applyFilter(filter: string, value: string, event: Event) {
+        const add = (event.target as EventTarget & HTMLInputElement).checked;
+        const target = new URL($page.url);
+        if (add) {
+            target.searchParams.append(filter, value);
+        } else {
+            const previous = target.searchParams
+                .getAll(filter)
+                .filter((n) => n.toLowerCase() !== value.toLowerCase());
+            target.searchParams.delete(filter);
+            previous.forEach((n) => target.searchParams.append(filter, n));
+        }
+        target.searchParams.delete('page');
+        goto(target.toString());
     }
 
     function applySearch(event: CustomEvent<string>) {
@@ -37,11 +47,38 @@
         }, 250)();
     }
 
+    function getIconFromFramework(framework: string) {
+        switch (true) {
+            case framework.includes('node'):
+                return 'node';
+            case framework.includes('php'):
+                return 'php';
+            case framework.includes('ruby'):
+                return 'ruby';
+            case framework.includes('python'):
+                return 'python';
+            case framework.includes('dart'):
+                return 'dart';
+            case framework.includes('bun'):
+                return 'bun';
+            case framework.includes('go'):
+                return 'go';
+            default:
+                return undefined;
+        }
+    }
+
     function clearSearch() {
         const target = new URL($page.url);
         target.search = '';
         goto(target.toString());
     }
+
+    $: isChecked = (useCase: string) => {
+        return $page.url.searchParams
+            .getAll('useCase')
+            .some((param) => param.toLowerCase() === useCase.toLowerCase());
+    };
 
     $: getErrorMessage = () => {
         const searchParams = $page.url.searchParams;
@@ -76,7 +113,7 @@
                     <CollapsibleItem>
                         <svelte:fragment slot="title">Use case</svelte:fragment>
                         <ul class="form-list u-row-gap-16">
-                            <!-- {#each [...data.useCases] as useCase}
+                            {#each [...data.useCases] as useCase}
                                 <li class="form-item">
                                     <label class="u-flex u-cross-center u-gap-16">
                                         <input
@@ -87,52 +124,53 @@
                                         <span class="u-trim-1">{useCase}</span>
                                     </label>
                                 </li>
-                            {/each} -->
+                            {/each}
                         </ul>
                     </CollapsibleItem>
                     <CollapsibleItem>
-                        <svelte:fragment slot="title">Runtime</svelte:fragment>
+                        <svelte:fragment slot="title">Framework</svelte:fragment>
                         <ul class="form-list u-row-gap-16">
-                            <!-- {#each [...data.runtimes] as runtime}
-                                {@const icon = getIconFromRuntime(runtime)}
+                            {#each [...data.frameworks] as framework}
+                                {@const icon = getIconFromFramework(framework)}
                                 <li class="form-item">
                                     <label class="u-flex u-cross-center u-gap-16">
                                         <input
                                             type="checkbox"
                                             class="is-small"
                                             checked={$page.url.searchParams
-                                                .getAll('runtime')
-                                                .includes(runtime)}
-                                            on:change={(e) => applyFilter('runtime', runtime, e)} />
+                                                .getAll('framework')
+                                                .includes(framework)}
+                                            on:change={(e) =>
+                                                applyFilter('framework', framework, e)} />
                                         <div class="u-flex u-cross-center u-gap-8">
                                             <div class="avatar is-size-x-small">
                                                 <SvgIcon name={icon} iconSize="small" />
                                             </div>
                                             <div class="u-trim-1 u-capitalize">
-                                                {runtime?.split('-')?.join(' ')}
+                                                {framework?.split('-')?.join(' ')}
                                             </div>
                                         </div>
                                     </label>
                                 </li>
-                            {/each} -->
+                            {/each}
                         </ul>
                     </CollapsibleItem>
                 </Collapsible>
             </div>
         </section>
         <section>
-            {#if data.siteTemplates.templates?.length > 0}
+            {#if data.templates?.length > 0}
                 <ul
                     class="grid-box"
                     style="--grid-item-size:22rem; --grid-item-size-small-screens:19rem">
-                    {#each data.siteTemplates.templates as template}
+                    {#each data.templates as template}
                         <Card.Link
-                            href={`${base}/project-${$page.params.project}/sites/create-site/configuration?template=${template.$id}`}
+                            href={`${base}/project-${$page.params.project}/sites/create-site/configuration?template=${template.id}`}
                             padding="x-small">
                             <Card.Media
                                 title={template.name}
-                                description={template.description}
-                                src={template.preview}
+                                description={template.tagline}
+                                src="https://unsplash.it/300"
                                 alt={template.name}>
                             </Card.Media>
                         </Card.Link>
@@ -152,22 +190,9 @@
                 </EmptySearch>
             {/if}
             <div class="u-flex u-margin-block-start-32 u-main-space-between u-cross-center">
-                <p class="text">Total templates: {data.siteTemplates.templates?.length}</p>
-                <Pagination
-                    limit={data.limit}
-                    offset={data.offset}
-                    sum={data.siteTemplates.templates?.length} />
+                <p class="text">Total templates: {data.templates?.length}</p>
+                <Pagination limit={data.limit} offset={data.offset} sum={data.templates?.length} />
             </div>
         </section>
     </div>
 </WizardCover>
-
-<style lang="scss">
-    .git-container .overlay {
-        background: linear-gradient(
-            0,
-            hsl(var(--p-card-bg-color)) 68.91%,
-            hsl(var(--p-card-bg-color) / 0.5) 92.8%
-        );
-    }
-</style>
