@@ -165,7 +165,9 @@
                         <div
                             class="body-text-2 u-margin-inline-start-auto"
                             style="color: var(--web-green-500, #10B981)">
-                            -{formatCurrency(Math.min(availableCredit, currentInvoice?.amount))}
+                            -{formatCurrency(
+                                Math.min(availableCredit, currentInvoice?.amount ?? 0)
+                            )}
                         </div>
                     </CollapsibleItem>
                 {/if}
@@ -187,7 +189,7 @@
                             : formatCurrency(
                                   Math.max(
                                       (currentInvoice?.amount ?? 0) -
-                                          Math.min(availableCredit, currentInvoice?.amount),
+                                          Math.min(availableCredit, currentInvoice?.amount ?? 0),
                                       0
                                   )
                               )}
