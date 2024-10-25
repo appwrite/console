@@ -5,8 +5,8 @@
     import { IconGithub, IconReact, IconGitBranch } from '@appwrite.io/pink-icons-svelte';
     import type { Models } from '@appwrite.io/console';
 
-    export let isTemplate: boolean;
-    export let template: Models.TemplateSite;
+    export let isTemplate = false;
+    export let template: Models.TemplateSite = {};
     export let name: string;
     export let framework: string;
     export let repositoryName: string;

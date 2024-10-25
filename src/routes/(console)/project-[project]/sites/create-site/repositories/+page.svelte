@@ -7,7 +7,7 @@
     import Repositories from '$lib/components/repositories.svelte';
     import Button from '$lib/elements/forms/button.svelte';
     import { WizardSecondaryContainer, WizardSecondaryContent } from '$lib/layout/index.js';
-    import { repository } from '$lib/stores/vcs.js';
+    import { installation, repository } from '$lib/stores/vcs.js';
     import { Layout, Typography } from '@appwrite.io/pink-svelte';
 
     export let data;
@@ -31,7 +31,9 @@
                     from: 'cover'
                 });
                 repository.set(e.detail);
-                goto(`${base}/project-${$page.params.project}/sites/create-site/configuration`);
+                goto(
+                    `${base}/project-${$page.params.project}/sites/create-site/repositories/repository-${e.detail.id}?installation=${$installation.$id}`
+                );
             }} />
         <svelte:fragment slot="aside">
             <Card>

@@ -5,15 +5,7 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Card } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import {
-        Button,
-        Form,
-        InputChoice,
-        InputRadio,
-        InputSelect,
-        InputSelectSearch,
-        InputText
-    } from '$lib/elements/forms';
+    import { Button, Form, InputSelectSearch, InputText } from '$lib/elements/forms';
     import {
         WizardSecondaryContainer,
         WizardSecondaryContent,
@@ -35,36 +27,30 @@
     import { ID } from '@appwrite.io/console';
 
     export let data;
-
     let showExitModal = false;
     let hasInstallations = !!data?.installations?.total;
 
     let formComponent: Form;
     let isSubmitting = writable(false);
 
-    let name = data?.template?.name ?? '';
+    let name = '';
     let id = '';
-    let framework = data?.template?.frameworks[0] ?? '';
+    let framework = '';
     let branch: string;
     let rootDir = '';
-    let connectBehaviour: 'now' | 'later' = 'now';
-    let repositoryBehaviour: 'new' | 'existing' = 'new';
     let repositoryName = '';
-    let repositoryPrivate = false;
     let selectedInstallationId = '';
     let selectedRepository = '';
-    let showSiteConfig = false;
-    let variables = [];
     let installCommand = '';
     let buildCommand = '';
     let outputDirectory = '';
 
     async function loadBranches() {
         const { branches } = await sdk.forProject.vcs.listRepositoryBranches(
-            data.installations.installations[0].$id,
-            $repository.id
+            data.installation.$id,
+            data.repository.id
         );
-        selectedInstallationId = $installation.$id;
+        selectedInstallationId = data.installation.$id;
         const sorted = sortBranches(branches);
         branch = sorted[0]?.name ?? null;
 
@@ -73,23 +59,6 @@
         }
 
         return sorted;
-    }
-
-    let callbackState: Record<string, string> = null;
-
-    function connectGitHub() {
-        const redirect = new URL($page.url);
-        if (callbackState) {
-            Object.keys(callbackState).forEach((key) => {
-                redirect.searchParams.append(key, callbackState[key]);
-            });
-        }
-        const target = new URL(`${sdk.forProject.client.config.endpoint}/vcs/github/authorize`);
-        target.searchParams.set('project', $page.params.project);
-        target.searchParams.set('success', redirect.toString());
-        target.searchParams.set('failure', redirect.toString());
-        target.searchParams.set('mode', 'admin');
-        return target;
     }
 
     async function create() {
@@ -151,7 +120,7 @@
                         <Layout.Stack direction="row" alignItems="center">
                             <Icon icon={IconGithub} />
                             <p>
-                                {$repository.name}
+                                {data.repository?.name}
                             </p>
                         </Layout.Stack>
                         <Button
@@ -163,58 +132,28 @@
                 </Card>
                 <Details bind:name bind:id />
 
-                <Fieldset legend="Details">
-                    {#await loadBranches()}
-                        <div class="u-flex u-gap-8 u-cross-center u-main-center">
-                            <div class="loader u-margin-32" />
-                        </div>
-                    {:then branches}
-                        {@const options =
-                            branches
-                                ?.map((branch) => {
-                                    return {
-                                        value: branch.name,
-                                        label: branch.name
-                                    };
-                                })
-                                ?.sort((a, b) => {
-                                    return a.label > b.label ? 1 : -1;
-                                }) ?? []}
-                        <Layout.Stack>
-                            <InputSelectSearch
-                                required={true}
-                                id="branch"
-                                label="Production branch"
-                                placeholder="Select branch"
-                                tooltip="Every commit pushed to this branch will activate the deployment after a successful build"
-                                hideRequired
-                                bind:value={branch}
-                                bind:search={branch}
-                                on:select={(event) => {
-                                    branch = event.detail.value;
-                                }}
-                                interactiveOutput
-                                name="branch"
-                                {options} />
-                            <InputText
-                                id="root"
-                                label="Root directory"
-                                placeholder="Select directory"
-                                bind:value={rootDir} />
-                        </Layout.Stack>
-                    {/await}
-                </Fieldset>
+                {#await loadBranches()}
+                    <div class="u-flex u-gap-8 u-cross-center u-main-center">
+                        <div class="loader u-margin-32" />
+                    </div>
+                {:then branches}
+                    {@const options =
+                        branches
+                            ?.map((branch) => {
+                                return {
+                                    value: branch.name,
+                                    label: branch.name
+                                };
+                            })
+                            ?.sort((a, b) => {
+                                return a.label > b.label ? 1 : -1;
+                            }) ?? []}
+                    <ProductionBranch bind:branch bind:rootDir {options} />
+                {/await}
             </Layout.Stack>
         </Form>
         <svelte:fragment slot="aside">
-            <Aside
-                {isTemplate}
-                template={data.template}
-                {name}
-                {framework}
-                {repositoryName}
-                {branch}
-                {rootDir} />
+            <Aside {name} {framework} {repositoryName} {branch} {rootDir} />
         </svelte:fragment>
     </WizardSecondaryContent>
 

@@ -11,7 +11,6 @@
         InputChoice,
         InputRadio,
         InputSelect,
-        InputSelectSearch,
         InputText
     } from '$lib/elements/forms';
     import {
