@@ -1,16 +1,10 @@
 import { sdk } from '$lib/stores/sdk';
-import { getLimit, getPage, pageToOffset } from '$lib/helpers/load';
 import { Dependencies } from '$lib/constants';
 
-export const load = async ({ params }) => {
+export const load = async ({ params, depends }) => {
     depends(Dependencies.SITE);
 
-
-    const site = 
-
     return {
-        site : await sdk.forProject.sites.get([
-       
-    ]);
+        site: await sdk.forProject.sites.get(params.site)
     };
 };

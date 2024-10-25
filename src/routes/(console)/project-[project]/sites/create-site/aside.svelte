@@ -3,9 +3,10 @@
     import { Button } from '$lib/elements/forms';
     import { Icon, Image, Layout, Typography } from '@appwrite.io/pink-svelte';
     import { IconGithub, IconReact, IconGitBranch } from '@appwrite.io/pink-icons-svelte';
+    import type { Models } from '@appwrite.io/console';
 
     export let isTemplate: boolean;
-    export let template: Record<string, string>;
+    export let template: Models.TemplateSite;
     export let name: string;
     export let framework: string;
     export let repositoryName: string;

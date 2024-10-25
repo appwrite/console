@@ -165,7 +165,7 @@
                     style="--grid-item-size:22rem; --grid-item-size-small-screens:19rem">
                     {#each data.templates as template}
                         <Card.Link
-                            href={`${base}/project-${$page.params.project}/sites/create-site/configuration?template=${template.id}`}
+                            href={`${base}/project-${$page.params.project}/sites/create-site/templates/template-${template.id}`}
                             padding="x-small">
                             <Card.Media
                                 title={template.name}

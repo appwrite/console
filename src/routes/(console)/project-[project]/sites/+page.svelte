@@ -76,7 +76,7 @@
         <section class="sites-grid">
             {#each data.siteList.sites as site}
                 <Card.Link
-                    href={`${base}/project-${$page.params.project}/sites/sites-${site.$id}`}
+                    href={`${base}/project-${$page.params.project}/sites/site-${site.$id}`}
                     padding="x-small">
                     <Card.Media
                         title={site.name}

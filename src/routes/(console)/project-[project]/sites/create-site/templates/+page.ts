@@ -1,4 +1,3 @@
-import { Query } from '@appwrite.io/console';
 import { sdk } from '$lib/stores/sdk';
 import { getPage, getSearch, getView, pageToOffset, View } from '$lib/helpers/load';
 import { CARD_LIMIT } from '$lib/constants';
@@ -60,7 +59,6 @@ export const load = async ({ url, route }) => {
         frameworks,
         useCases,
         sum: templates.length,
-        templates: templates.splice(((page === 0 ? 1 : page) - 1) * limit, limit),
-        functions: await sdk.forProject.functions.list()
+        templates: templates.splice(((page === 0 ? 1 : page) - 1) * limit, limit)
     };
 };

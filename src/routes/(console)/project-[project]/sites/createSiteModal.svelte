@@ -11,7 +11,7 @@
     import { app } from '$lib/stores/app';
 
     export let show = false;
-    let behaviour: 'repository' | 'templates';
+    let behaviour: 'repositories' | 'templates';
 
     $: if (!show) {
         behaviour = null;
@@ -19,19 +19,19 @@
 </script>
 
 <Modal title="Create site" size="big" bind:show>
-    <Layout.Stack direction="row" justifyContent="stretch" gap="m">
-        <div style="width: 100%">
+    <Layout.Stack direction="row" gap="m" wrap="wrap">
+        <div style="flex-grow: 1; min-width: 245px">
             <LabelCard
                 padding="small"
                 src={$app?.themeInUse === 'dark' ? RepoDark : RepoLight}
                 title="Connect a repository"
                 name="connect"
                 bind:group={behaviour}
-                value="repository">
+                value="repositories">
                 Connect to one of your existing Git repositories
             </LabelCard>
         </div>
-        <div style="width: 100%">
+        <div style="flex-grow: 1; min-width: 245px">
             <LabelCard
                 padding="small"
                 src={$app?.themeInUse === 'dark' ? TemplateDark : TemplateLight}

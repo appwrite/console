@@ -31,7 +31,7 @@
     import ConnectBehaviour from './connectBehaviour.svelte';
     import ProductionBranch from './productionBranch.svelte';
     import Configuration from './configuration.svelte';
-    import Aside from './aside.svelte';
+    import Aside from '../aside.svelte';
     import { ID } from '@appwrite.io/console';
 
     export let data;
