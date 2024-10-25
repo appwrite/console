@@ -23,7 +23,7 @@ const mockTeplate: {
 } = {
     preview: 'https://unsplash.it/300/200',
     name: 'Template 1',
-    frameworks: ['react', 'vue', 'angular'],
+    frameworks: ['sveltekit', 'nextje'],
     $id: '1',
     variables: [
         {

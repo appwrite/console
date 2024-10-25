@@ -57,6 +57,9 @@
     export let framework = FRAMEWORKS_AVAILABLE[0].id;
     export let variables = [];
     export let templateVariables: Models.TemplateVariable[];
+    export let installCommand = '';
+    export let buildCommand = '';
+    export let outputDirectory = '';
 
     let { requiredVariables, optionalVariables } = templateVariables.reduce(
         (acc, variable) => {
@@ -69,10 +72,6 @@
         },
         { requiredVariables: [], optionalVariables: [] }
     );
-
-    let installCommand = '';
-    let buildCommand = '';
-    let outputDirectory = '';
 
     function selectComponent(variableType: string): typeof SvelteComponent<unknown> {
         switch (variableType) {

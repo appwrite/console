@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { afterNavigate, goto, invalidate, preloadData } from '$app/navigation';
+    import { goto, invalidate, preloadData } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
@@ -32,14 +32,10 @@
     import ProductionBranch from './productionBranch.svelte';
     import Configuration from './configuration.svelte';
     import Aside from './aside.svelte';
+    import { ID } from '@appwrite.io/console';
 
     export let data;
 
-    let previousPage: string = base;
-
-    afterNavigate(({ from }) => {
-        previousPage = from?.url?.pathname || previousPage;
-    });
     let showExitModal = false;
     let isTemplate = !!data?.template;
     let hasInstallations = !!data?.installations?.total;
@@ -48,7 +44,7 @@
     let isSubmitting = writable(false);
 
     let name = data?.template?.name ?? '';
-    let id = data?.template?.$id ?? '';
+    let id = '';
     let framework = data?.template?.frameworks[0] ?? '';
     let branch: string;
     let rootDir = '';
@@ -60,6 +56,9 @@
     let selectedRepository = '';
     let showSiteConfig = false;
     let variables = [];
+    let installCommand = '';
+    let buildCommand = '';
+    let outputDirectory = '';
 
     onMount(() => {
         if (isTemplate) {
@@ -103,9 +102,24 @@
 
     async function create() {
         try {
-            let site;
+            let site = await sdk.forProject.sites.create(
+                id || ID.unique(),
+                name,
+                framework,
+                true,
+                installCommand,
+                buildCommand,
+                outputDirectory,
+                undefined,
+                undefined,
+                selectedInstallationId,
+                selectedRepository,
+                branch,
+                undefined,
+                rootDir
+            );
 
-            trackEvent(Submit.OrganizationCreate, {});
+            trackEvent(Submit.SiteCreate, {});
 
             await invalidate(Dependencies.ACCOUNT);
             await preloadData(`${base}/project-${$page.params.project}/sites/site-${site.$id}`);
@@ -119,7 +133,7 @@
                 type: 'error',
                 message: e.message
             });
-            trackError(e, Submit.OrganizationCreate);
+            trackError(e, Submit.SiteCreate);
         }
     }
 </script>
@@ -128,7 +142,10 @@
     <title>Create site - Appwrite</title>
 </svelte:head>
 
-<WizardSecondaryContainer bind:showExitModal href={previousPage} confirmExit>
+<WizardSecondaryContainer
+    bind:showExitModal
+    href={`${base}/project-${$page.params.project}/sites/`}
+    confirmExit>
     <svelte:fragment slot="title">Create site</svelte:fragment>
     <WizardSecondaryContent>
         <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
@@ -158,6 +175,9 @@
                         </Card>
                         <ProductionBranch bind:branch bind:rootDir />
                         <Configuration
+                            bind:installCommand
+                            bind:buildCommand
+                            bind:outputDirectory
                             {framework}
                             source="template"
                             bind:variables
@@ -268,6 +288,9 @@
                             {/if}
                         {:else}
                             <Configuration
+                                bind:installCommand
+                                bind:buildCommand
+                                bind:outputDirectory
                                 {framework}
                                 source="template"
                                 bind:variables

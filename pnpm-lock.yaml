@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@appwrite.io/console':
-        specifier: npm:khushboo-console@^0.0.5
-        version: khushboo-console@0.0.5
+        specifier: npm:khushboo-console@^0.0.6
+        version: khushboo-console@0.0.6
       '@appwrite.io/pink':
         specifier: 0.25.0
         version: 0.25.0
@@ -2527,8 +2527,8 @@ packages:
   keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
 
-  khushboo-console@0.0.5:
-    resolution: {integrity: sha512-d5lSA5KiEG/bd7VJELVrCO1BKMn5oikxTxRPCM5LJlj9LU13iiQZ/GSjlVVE1cv7DVXHWGw4TZIraqd5BsCKMg==}
+  khushboo-console@0.0.6:
+    resolution: {integrity: sha512-fu2lcV19LeXiPxnOIE/Carxtaf8m0nEZAxJpmT56KtuOsDoRlmn+BLMkNqEk5Ijr9/oq8E7cXFoOQFmJLG0OJg==}
 
   kleur@3.0.3:
     resolution: {integrity: sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==}
@@ -6764,7 +6764,7 @@ snapshots:
     dependencies:
       json-buffer: 3.0.1
 
-  khushboo-console@0.0.5: {}
+  khushboo-console@0.0.6: {}
 
   kleur@3.0.3: {}
 

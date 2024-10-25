@@ -14,11 +14,7 @@ export const load = async ({ url, route }) => {
         frameworks: url.searchParams.getAll('framework')
     };
 
-    const siteTemplatesList = await sdk.forProject.sites.listSiteTemplates(
-        undefined,
-        undefined,
-        100
-    );
+    const siteTemplatesList = await sdk.forProject.sites.listTemplates(undefined, undefined, 100);
 
     console.log(siteTemplatesList);
 
