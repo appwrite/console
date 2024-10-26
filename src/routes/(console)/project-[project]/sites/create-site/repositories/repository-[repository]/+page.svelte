@@ -22,6 +22,7 @@
     import Configuration from '../../configuration.svelte';
     import Aside from '../../aside.svelte';
     import { ID } from '@appwrite.io/console';
+    import type { Models } from '@appwrite.io/console';
 
     export let data;
     let showExitModal = false;
@@ -39,7 +40,18 @@
     let installCommand = '';
     let buildCommand = '';
     let outputDirectory = '';
-    let variables: Record<string, unknown>[] = [];
+    let variables: Partial<Models.TemplateVariable>[] = [
+        {
+            name: 'APPWRITE_ENDPOINT',
+            value: 'fsssf',
+            secret: false
+        },
+        {
+            name: 'APPWRITE_ENDPOINT2',
+            value: '',
+            secret: true
+        }
+    ];
 
     async function loadBranches() {
         const { branches } = await sdk.forProject.vcs.listRepositoryBranches(

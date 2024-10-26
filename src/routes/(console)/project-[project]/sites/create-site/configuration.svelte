@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Collapsible, CollapsibleItem } from '$lib/components';
+    import { Collapsible, CollapsibleItem, Empty } from '$lib/components';
     import {
         Button,
         InputEmail,
@@ -11,9 +11,24 @@
         InputURL
     } from '$lib/elements/forms';
     import type { Models } from '@appwrite.io/console';
-    import { Fieldset, Layout, Tag, Popover, Icon } from '@appwrite.io/pink-svelte';
-    import { IconInfo } from '@appwrite.io/pink-icons-svelte';
+    import {
+        Fieldset,
+        Layout,
+        Tag,
+        Popover,
+        Icon,
+        Table,
+        Badge,
+        HiddenText
+    } from '@appwrite.io/pink-svelte';
+    import {
+        IconInfo,
+        IconDotsHorizontal,
+        IconCode,
+        IconUpload
+    } from '@appwrite.io/pink-icons-svelte';
     import type { SvelteComponent } from 'svelte';
+    import RawVariableEditor from '../../rawVariableEditor.svelte';
 
     export let source: 'repository' | 'template' = 'repository';
 
@@ -24,11 +39,14 @@
         outputDirectory: string;
     } = [];
     export let framework = frameworks[0]?.$id;
-    export let variables = [];
+    export let variables: Partial<Models.TemplateVariable>[] = [];
     export let templateVariables: Models.TemplateVariable[] = [];
     export let installCommand = '';
     export let buildCommand = '';
     export let outputDirectory = '';
+
+    let showEditorModal = false;
+    let showImportModal = false;
 
     let { requiredVariables, optionalVariables } = templateVariables.reduce(
         (acc, variable) => {
@@ -126,7 +144,7 @@
                     </CollapsibleItem>
                 {/if}
                 {#if requiredVariables?.length}
-                    <CollapsibleItem>
+                    <CollapsibleItem open>
                         <svelte:fragment slot="title">
                             Required environment variables
                         </svelte:fragment>
@@ -152,7 +170,7 @@
                                                 autocomplete={false}
                                                 minlength={variable.type === 'password' ? 0 : null}
                                                 showPasswordButton={variable.type === 'password'}
-                                                bind:value={variables[variable.name]} />
+                                                bind:value={variables[variable.name].value} />
                                         </div>
                                     </Layout.Stack>
                                     <Popover placement="bottom-end" let:toggle>
@@ -198,7 +216,7 @@
                                                 autocomplete={false}
                                                 minlength={variable.type === 'password' ? 0 : null}
                                                 showPasswordButton={variable.type === 'password'}
-                                                bind:value={variables[variable.name]} />
+                                                bind:value={variables[variable.name].value} />
                                         </div>
                                     </Layout.Stack>
                                     <Popover placement="bottom-end" let:toggle>
@@ -217,7 +235,89 @@
                         </Layout.Stack>
                     </CollapsibleItem>
                 {/if}
+                {#if source === 'repository'}
+                    <CollapsibleItem>
+                        <svelte:fragment slot="title">
+                            Environment variables <Tag size="small">Optional</Tag>
+                        </svelte:fragment>
+                        <Layout.Stack gap="l">
+                            <Layout.Stack gap="xl">
+                                Set up environment variables to securely manage keys and settings
+                                for your project.
+
+                                {#if variables?.length}
+                                    <Table.Root>
+                                        <svelte:fragment slot="header">
+                                            <Table.Cell>Key</Table.Cell>
+                                            <Table.Cell>Value</Table.Cell>
+                                            <Table.Cell width="10"></Table.Cell>
+                                        </svelte:fragment>
+                                        {#each variables as variable}
+                                            <Table.Row>
+                                                <Table.Cell>{variable.name}</Table.Cell>
+                                                <Table.Cell>
+                                                    <div>
+                                                        {#if variable.secret}
+                                                            <Badge
+                                                                content="Secret"
+                                                                variant="secondary" />
+                                                        {:else}
+                                                            <HiddenText text={variable.value} />
+                                                        {/if}
+                                                    </div>
+                                                </Table.Cell>
+                                                <Table.Cell width="10">
+                                                    <div style="margin-inline-start: auto">
+                                                        <Popover placement="bottom-end" let:toggle>
+                                                            <Button
+                                                                text
+                                                                icon
+                                                                on:click={(e) => {
+                                                                    e.preventDefault();
+                                                                    toggle(e);
+                                                                }}>
+                                                                <Icon
+                                                                    size="small"
+                                                                    icon={IconDotsHorizontal} /></Button>
+                                                            <p slot="tooltip">hi</p>
+                                                        </Popover>
+                                                    </div>
+                                                </Table.Cell>
+                                            </Table.Row>
+                                        {/each}
+                                    </Table.Root>
+                                {:else}
+                                    <Empty>Create variables to get started</Empty>
+                                {/if}
+                            </Layout.Stack>
+                            <Layout.Stack direction="row">
+                                <Button
+                                    secondary
+                                    size="small"
+                                    on:mousedown={() => (showEditorModal = true)}>
+                                    <Icon icon={IconCode} /> Editor
+                                </Button>
+                                <Button
+                                    secondary
+                                    size="small"
+                                    on:mousedown={() => (showImportModal = true)}>
+                                    <Icon icon={IconUpload} /> Import .env
+                                </Button>
+                            </Layout.Stack>
+                        </Layout.Stack>
+                    </CollapsibleItem>
+                {/if}
             </Collapsible>
         </Layout.Stack>
     </Fieldset>
+{/if}
+
+{#if showEditorModal && source === 'repository'}
+    <!-- <RawVariableEditor
+        {isGlobal}
+        {sdkCreateVariable}
+        {sdkUpdateVariable}
+        {sdkDeleteVariable}
+        {variableList}
+        bind:showEditor={showEditorModal} /> -->
 {/if}
