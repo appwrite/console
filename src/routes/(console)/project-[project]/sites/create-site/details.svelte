@@ -2,8 +2,8 @@
     import { CustomId } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { InputSelect, InputText } from '$lib/elements/forms';
-
     import { Fieldset, Layout } from '@appwrite.io/pink-svelte';
+
     export let name: string;
     export let id: string;
     export let showFramework = false;

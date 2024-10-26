@@ -14,61 +14,57 @@
     export let rootDir: string;
 </script>
 
-{#if isTemplate}
-    <Card padding="x-small">
-        <Layout.Stack gap="m">
-            {#if isTemplate}
-                <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
-                    <Typography.Text variant="m-500" truncate>
-                        {name || template.name}
-                    </Typography.Text>
+<Card padding="x-small">
+    <Layout.Stack gap="l">
+        {#if isTemplate}
+            <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
+                <Typography.Text variant="m-500" truncate>
+                    {name || template.name}
+                </Typography.Text>
 
-                    <Button secondary size="small">View demo</Button>
+                <Button secondary size="small">View demo</Button>
+            </Layout.Stack>
+
+            <Image src={template.preview} alt={template.name} width={357} height={200} />
+        {/if}
+        <Layout.Stack gap="l">
+            {#if framework}
+                <Layout.Stack gap="xxxs">
+                    <Typography.Caption variant="400">Framework</Typography.Caption>
+                    <Layout.Stack gap="xs" alignItems="center" direction="row">
+                        <Icon icon={IconReact}></Icon>
+                        {framework}
+                    </Layout.Stack>
                 </Layout.Stack>
-
-                <Image src={template.preview} alt={template.name} width={357} height={200} />
             {/if}
-            <Layout.Stack gap="s">
-                {#if framework}
-                    <Layout.Stack gap="xs">
-                        <Typography.Caption variant="400">Framework</Typography.Caption>
-                        <Layout.Stack gap="xs" alignItems="center" direction="row">
-                            <Icon icon={IconReact}></Icon>
-                            {framework}
-                        </Layout.Stack>
+            {#if repositoryName}
+                <Layout.Stack gap="xxxs">
+                    <Typography.Caption variant="400">Git repository</Typography.Caption>
+                    <Layout.Stack gap="xs" alignItems="center" direction="row">
+                        <Icon icon={IconGithub}></Icon>
+                        <Typography.Text variant="m-500">{repositoryName}</Typography.Text>
                     </Layout.Stack>
-                {/if}
-                {#if repositoryName}
-                    <Layout.Stack gap="xs">
-                        <Typography.Caption variant="400">Git repository</Typography.Caption>
-                        <Layout.Stack gap="xs" alignItems="center" direction="row">
-                            <Icon icon={IconGithub}></Icon>
-                            <Typography.Text variant="m-500">{repositoryName}</Typography.Text>
-                        </Layout.Stack>
-                    </Layout.Stack>
-                {/if}
-                {#if branch}
-                    <Layout.Stack gap="xs">
-                        <Typography.Caption variant="400">Branch</Typography.Caption>
-                        <Layout.Stack gap="xs" alignItems="center" direction="row">
-                            <Icon icon={IconGitBranch}></Icon>
-                            <Typography.Text variant="m-500">
-                                {branch}
-                            </Typography.Text>
-                        </Layout.Stack>
-                    </Layout.Stack>
-                {/if}
-                {#if rootDir}
-                    <Layout.Stack gap="xs">
-                        <Typography.Caption variant="400">Root directory</Typography.Caption>
+                </Layout.Stack>
+            {/if}
+            {#if branch}
+                <Layout.Stack gap="xxxs">
+                    <Typography.Caption variant="400">Branch</Typography.Caption>
+                    <Layout.Stack gap="xs" alignItems="center" direction="row">
+                        <Icon icon={IconGitBranch}></Icon>
                         <Typography.Text variant="m-500">
-                            {rootDir}
+                            {branch}
                         </Typography.Text>
                     </Layout.Stack>
-                {/if}
-            </Layout.Stack>
+                </Layout.Stack>
+            {/if}
+            {#if rootDir}
+                <Layout.Stack gap="xxxs">
+                    <Typography.Caption variant="400">Root directory</Typography.Caption>
+                    <Typography.Text variant="m-500">
+                        {rootDir}
+                    </Typography.Text>
+                </Layout.Stack>
+            {/if}
         </Layout.Stack>
-    </Card>
-{:else}
-    hi :)
-{/if}
+    </Layout.Stack>
+</Card>

@@ -5,7 +5,7 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Card } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, Form, InputSelectSearch, InputText } from '$lib/elements/forms';
+    import { Button, Form } from '$lib/elements/forms';
     import {
         WizardSecondaryContainer,
         WizardSecondaryContent,
@@ -13,14 +13,11 @@
     } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { installation, repository, sortBranches } from '$lib/stores/vcs';
-    import { Fieldset, Layout, Icon, Divider, Empty } from '@appwrite.io/pink-svelte';
+    import { sortBranches } from '$lib/stores/vcs';
+    import { Layout, Icon } from '@appwrite.io/pink-svelte';
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
-    import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
-    import Repositories from '$lib/components/repositories.svelte';
     import Details from '../../details.svelte';
-    import ConnectBehaviour from '../../connectBehaviour.svelte';
     import ProductionBranch from '../../productionBranch.svelte';
     import Configuration from '../../configuration.svelte';
     import Aside from '../../aside.svelte';
@@ -28,7 +25,6 @@
 
     export let data;
     let showExitModal = false;
-    let hasInstallations = !!data?.installations?.total;
 
     let formComponent: Form;
     let isSubmitting = writable(false);
@@ -38,12 +34,12 @@
     let framework = '';
     let branch: string;
     let rootDir = '';
-    let repositoryName = '';
     let selectedInstallationId = '';
     let selectedRepository = '';
     let installCommand = '';
     let buildCommand = '';
     let outputDirectory = '';
+    let variables: Record<string, unknown>[] = [];
 
     async function loadBranches() {
         const { branches } = await sdk.forProject.vcs.listRepositoryBranches(
@@ -97,6 +93,13 @@
             trackError(e, Submit.SiteCreate);
         }
     }
+
+    const options = data.frameworks.frameworks.map((framework) => {
+        return {
+            value: framework.$id,
+            label: framework.name
+        };
+    });
 </script>
 
 <svelte:head>
@@ -150,10 +153,24 @@
                             }) ?? []}
                     <ProductionBranch bind:branch bind:rootDir {options} />
                 {/await}
+
+                <!-- TODO: fix frameworks after backend update -->
+                <Configuration
+                    bind:installCommand
+                    bind:buildCommand
+                    bind:outputDirectory
+                    bind:framework
+                    bind:variables
+                    frameworks={data.frameworks.frameworks.map((f) => {
+                        f.buildCommand = 'npm run build';
+                        f.installCommand = 'npm install';
+                        f.outputDirectory = 'public';
+                        return f;
+                    })} />
             </Layout.Stack>
         </Form>
         <svelte:fragment slot="aside">
-            <Aside {name} {framework} {repositoryName} {branch} {rootDir} />
+            <Aside {name} {framework} repositoryName={data.repository.name} {branch} {rootDir} />
         </svelte:fragment>
     </WizardSecondaryContent>
 

@@ -15,48 +15,17 @@
     import { IconInfo } from '@appwrite.io/pink-icons-svelte';
     import type { SvelteComponent } from 'svelte';
 
-    const FRAMEWORKS_AVAILABLE = [
-        {
-            id: 'react',
-            name: 'React',
-            installCommand: 'npm install react react-dom',
-            buildCommand: 'npm run build',
-            outputDirectory: 'build'
-        },
-        {
-            id: 'vue',
-            name: 'Vue',
-            installCommand: 'npm install vue',
-            buildCommand: 'npm run build',
-            outputDirectory: 'dist'
-        },
-        {
-            id: 'svelte',
-            name: 'Svelte',
-            installCommand: 'npm install svelte',
-            buildCommand: 'npm run build',
-            outputDirectory: 'public'
-        },
-        {
-            id: 'next',
-            name: 'Next.js',
-            installCommand: 'npm install next react react-dom',
-            buildCommand: 'npm run build',
-            outputDirectory: 'out'
-        },
-        {
-            id: 'nuxt',
-            name: 'Nuxt.js',
-            installCommand: 'npm install nuxt',
-            buildCommand: 'npm run build',
-            outputDirectory: 'dist'
-        }
-    ];
+    export let source: 'repository' | 'template' = 'repository';
 
-    export let source: 'custom' | 'template' = 'custom';
-    export let framework = FRAMEWORKS_AVAILABLE[0].id;
+    //TODO: fix type after backend fix
+    export let frameworks: Models.Framework[] & {
+        installCommand: string;
+        buildCommand: string;
+        outputDirectory: string;
+    } = [];
+    export let framework = frameworks[0]?.$id;
     export let variables = [];
-    export let templateVariables: Models.TemplateVariable[];
+    export let templateVariables: Models.TemplateVariable[] = [];
     export let installCommand = '';
     export let buildCommand = '';
     export let outputDirectory = '';
@@ -93,24 +62,24 @@
     }
 </script>
 
-{#if source === 'custom' || templateVariables?.length}
+{#if source === 'repository' || templateVariables?.length}
     <Fieldset legend="Configuration">
         <Layout.Stack gap="l">
-            {#if source === 'custom'}
+            {#if source === 'repository'}
                 <InputSelect
                     id="framework"
                     label="Framework"
                     placeholder="Select framework"
                     bind:value={framework}
-                    options={FRAMEWORKS_AVAILABLE.map((framework) => ({
-                        value: framework.id,
+                    options={frameworks.map((framework) => ({
+                        value: framework.$id,
                         label: framework.name
                     }))} />
             {/if}
 
             <Collapsible>
-                {#if source === 'custom'}
-                    {@const frameworkData = FRAMEWORKS_AVAILABLE.find((f) => f.id === framework)}
+                {#if source === 'repository'}
+                    {@const frameworkData = frameworks.find((f) => f.$id === framework)}
                     <CollapsibleItem>
                         <svelte:fragment slot="title">
                             Build settings <Tag size="small">Optional</Tag>
@@ -122,7 +91,7 @@
                                     id="installCommand"
                                     label="Install command"
                                     bind:value={installCommand}
-                                    placeholder={frameworkData.installCommand} />
+                                    placeholder={frameworkData?.installCommand} />
                                 <Button
                                     secondary
                                     size="small"
@@ -135,7 +104,7 @@
                                     id="buildCommand"
                                     label="Build command"
                                     bind:value={buildCommand}
-                                    placeholder={frameworkData.buildCommand} />
+                                    placeholder={frameworkData?.buildCommand} />
                                 <Button secondary size="small" on:click={() => (buildCommand = '')}>
                                     Reset
                                 </Button>
@@ -145,7 +114,7 @@
                                     id="outputDirectory"
                                     label="Output directory"
                                     bind:value={outputDirectory}
-                                    placeholder={frameworkData.outputDirectory} />
+                                    placeholder={frameworkData?.outputDirectory} />
                                 <Button
                                     secondary
                                     size="small"
