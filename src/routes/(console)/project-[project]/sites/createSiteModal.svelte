@@ -22,7 +22,8 @@
     <Layout.Stack direction="row" gap="m" wrap="wrap">
         <div style="flex-grow: 1; min-width: 245px">
             <LabelCard
-                padding="small"
+                variant="secondary"
+                padding="x-small"
                 src={$app?.themeInUse === 'dark' ? RepoDark : RepoLight}
                 title="Connect a repository"
                 name="connect"
@@ -33,7 +34,8 @@
         </div>
         <div style="flex-grow: 1; min-width: 245px">
             <LabelCard
-                padding="small"
+                variant="secondary"
+                padding="x-small"
                 src={$app?.themeInUse === 'dark' ? TemplateDark : TemplateLight}
                 title="Connect a template"
                 name="connect"

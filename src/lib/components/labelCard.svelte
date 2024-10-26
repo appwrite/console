@@ -24,6 +24,7 @@
     // Pink v2
     export let radius: Props['radius'] = 'medium';
     export let padding: Props['padding'] = 'small';
+    export let variant: Props['variant'] = 'primary';
     //temporarily unefined
     export let title: Props['title'] = undefined;
 
@@ -36,6 +37,7 @@
         {padding}
         {src}
         {alt}
+        {variant}
         {value}
         {disabled}
         title={title ?? slotTitle?.innerText}
