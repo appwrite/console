@@ -19,7 +19,7 @@
     import { writable } from 'svelte/store';
     import Details from '../../details.svelte';
     import ProductionBranch from '../../productionBranch.svelte';
-    import Configuration from '../../configuration.svelte';
+    import Configuration from './configuration.svelte';
     import Aside from '../../aside.svelte';
     import { ID } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
@@ -32,7 +32,7 @@
 
     let name = '';
     let id = '';
-    let framework = '';
+    let framework: Models.Framework;
     let branch: string;
     let rootDir = '';
     let selectedInstallationId = '';
@@ -105,13 +105,6 @@
             trackError(e, Submit.SiteCreate);
         }
     }
-
-    const options = data.frameworks.frameworks.map((framework) => {
-        return {
-            value: framework.$id,
-            label: framework.name
-        };
-    });
 </script>
 
 <svelte:head>

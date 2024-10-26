@@ -2,12 +2,13 @@
     import { CustomId } from '$lib/components';
     import { Pill } from '$lib/elements';
     import { InputSelect, InputText } from '$lib/elements/forms';
+    import type { Models } from '@appwrite.io/console';
     import { Fieldset, Layout } from '@appwrite.io/pink-svelte';
 
     export let name: string;
     export let id: string;
     export let showFramework = false;
-    export let framework = '';
+    export let framework: Models.TemplateFramework | undefined = undefined;
     export let options: {
         value: string;
         label: string;
@@ -40,7 +41,7 @@
                 id="framework"
                 label="Framework"
                 placeholder="Select framework"
-                bind:value={framework}
+                bind:value={framework.name}
                 {options} />
         {/if}
     </Layout.Stack>

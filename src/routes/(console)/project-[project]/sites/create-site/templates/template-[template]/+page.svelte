@@ -20,7 +20,7 @@
     } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { installation, repository, sortBranches } from '$lib/stores/vcs';
+    import { installation, repository } from '$lib/stores/vcs';
     import { Fieldset, Layout, Icon, Divider, Empty } from '@appwrite.io/pink-svelte';
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
     import { onMount } from 'svelte';
@@ -29,7 +29,7 @@
     import Details from '../../details.svelte';
     import ConnectBehaviour from '../../connectBehaviour.svelte';
     import ProductionBranch from '../../productionBranch.svelte';
-    import Configuration from '../../configuration.svelte';
+    import Configuration from './configuration.svelte';
     import Aside from '../../aside.svelte';
     import { ID } from '@appwrite.io/console';
 
@@ -44,7 +44,7 @@
 
     let name = data?.template?.name ?? '';
     let id = '';
-    let framework = data?.template?.frameworks[0] ?? '';
+    let framework = data?.template?.frameworks[0];
     let branch: string;
     let rootDir = '';
     let connectBehaviour: 'now' | 'later' = 'now';
@@ -55,9 +55,6 @@
     let selectedRepository = '';
     let showSiteConfig = false;
     let variables = [];
-    let installCommand = '';
-    let buildCommand = '';
-    let outputDirectory = '';
 
     onMount(() => {
         if (isTemplate) {
@@ -65,22 +62,6 @@
             selectedInstallationId = $installation?.$id;
         }
     });
-
-    async function loadBranches() {
-        const { branches } = await sdk.forProject.vcs.listRepositoryBranches(
-            data.installations.installations[0].$id,
-            $repository.id
-        );
-        selectedInstallationId = $installation.$id;
-        const sorted = sortBranches(branches);
-        branch = sorted[0]?.name ?? null;
-
-        if (!branch) {
-            branch = 'main';
-        }
-
-        return sorted;
-    }
 
     let callbackState: Record<string, string> = null;
 
@@ -104,18 +85,19 @@
             let site = await sdk.forProject.sites.create(
                 id || ID.unique(),
                 name,
-                framework,
+                data.frameworks.frameworks.find((fr) => fr.name === framework.name),
                 true,
-                installCommand,
-                buildCommand,
-                outputDirectory,
-                undefined,
+                framework.installCommand,
+                framework.buildCommand,
+                framework.outputDirectory,
+                framework.fallbackRedirect,
                 undefined,
                 selectedInstallationId,
                 selectedRepository,
                 branch,
                 undefined,
-                rootDir
+                rootDir,
+                framework.providerRootDirectory
             );
 
             trackEvent(Submit.SiteCreate, {});
@@ -172,19 +154,14 @@
                         </Layout.Stack>
                     </Card>
                     <ProductionBranch bind:branch bind:rootDir />
-                    <Configuration
-                        bind:installCommand
-                        bind:buildCommand
-                        bind:outputDirectory
-                        {framework}
-                        source="template"
-                        bind:variables
-                        templateVariables={data.template.variables} />
+                    {#if data.template.variables?.length}
+                        <Configuration bind:variables templateVariables={data.template.variables} />
+                    {/if}
                 {:else}
                     {@const options = data.template.frameworks.map((framework) => {
                         return {
-                            value: framework,
-                            label: framework
+                            value: framework.name,
+                            label: framework.name
                         };
                     })}
 
@@ -284,15 +261,8 @@
                                 </Empty>
                             </Card>
                         {/if}
-                    {:else}
-                        <Configuration
-                            bind:installCommand
-                            bind:buildCommand
-                            bind:outputDirectory
-                            {framework}
-                            source="template"
-                            bind:variables
-                            templateVariables={data.template.variables} />
+                    {:else if data.template.variables?.length}
+                        <Configuration bind:variables templateVariables={data.template.variables} />
                     {/if}
                 {/if}
             </Layout.Stack>
@@ -302,7 +272,7 @@
                 {isTemplate}
                 template={data.template}
                 {name}
-                {framework}
+                framework={framework.name}
                 {repositoryName}
                 {branch}
                 {rootDir} />
