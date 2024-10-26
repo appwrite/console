@@ -74,7 +74,7 @@
             let site = await sdk.forProject.sites.create(
                 id || ID.unique(),
                 name,
-                framework,
+                data.frameworks.frameworks.find((fr) => fr.name === framework.name),
                 true,
                 installCommand,
                 buildCommand,
@@ -166,16 +166,11 @@
                     bind:outputDirectory
                     bind:framework
                     bind:variables
-                    frameworks={data.frameworks.frameworks.map((f) => {
-                        f.buildCommand = 'npm run build';
-                        f.installCommand = 'npm install';
-                        f.outputDirectory = 'public';
-                        return f;
-                    })} />
+                    frameworks={data.frameworks.frameworks} />
             </Layout.Stack>
         </Form>
         <svelte:fragment slot="aside">
-            <Aside {name} {framework} repositoryName={data.repository.name} {branch} {rootDir} />
+            <Aside {framework} repositoryName={data.repository.name} {branch} {rootDir} />
         </svelte:fragment>
     </WizardSecondaryContent>
 

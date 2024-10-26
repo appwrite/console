@@ -21,13 +21,21 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { installation, repository } from '$lib/stores/vcs';
-    import { Fieldset, Layout, Icon, Divider, Empty } from '@appwrite.io/pink-svelte';
+    import {
+        Fieldset,
+        Layout,
+        Icon,
+        Divider,
+        Empty,
+        Typography,
+        Image
+    } from '@appwrite.io/pink-svelte';
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
     import Repositories from '$lib/components/repositories.svelte';
     import Details from '../../details.svelte';
-    import ConnectBehaviour from '../../connectBehaviour.svelte';
+    import ConnectBehaviour from './connectBehaviour.svelte';
     import ProductionBranch from '../../productionBranch.svelte';
     import Configuration from './configuration.svelte';
     import Aside from '../../aside.svelte';
@@ -82,10 +90,13 @@
 
     async function create() {
         try {
+            const siteFramework = data.frameworks.frameworks.find(
+                (fr) => fr.name === framework.name
+            );
             let site = await sdk.forProject.sites.create(
                 id || ID.unique(),
                 name,
-                data.frameworks.frameworks.find((fr) => fr.name === framework.name),
+                siteFramework,
                 true,
                 framework.installCommand,
                 framework.buildCommand,
@@ -268,14 +279,26 @@
             </Layout.Stack>
         </Form>
         <svelte:fragment slot="aside">
-            <Aside
-                {isTemplate}
-                template={data.template}
-                {name}
-                framework={framework.name}
-                {repositoryName}
-                {branch}
-                {rootDir} />
+            <Aside {framework} {repositoryName} {branch} {rootDir}>
+                {#if isTemplate}
+                    <Layout.Stack
+                        direction="row"
+                        justifyContent="space-between"
+                        alignItems="center">
+                        <Typography.Text variant="m-500" truncate>
+                            {name || data.template.name}
+                        </Typography.Text>
+
+                        <Button secondary size="small">View demo</Button>
+                    </Layout.Stack>
+
+                    <Image
+                        src={data.template.preview}
+                        alt={data.template.name}
+                        width={357}
+                        height={200} />
+                {/if}
+            </Aside>
         </svelte:fragment>
     </WizardSecondaryContent>
 

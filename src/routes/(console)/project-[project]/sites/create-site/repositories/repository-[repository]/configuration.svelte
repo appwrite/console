@@ -21,16 +21,11 @@
         IconEyeOff,
         IconPencil
     } from '@appwrite.io/pink-icons-svelte';
-    import RawVariableEditor from '../../rawVariableEditor.svelte';
     import SecretVariableModal from './secretVariableModal.svelte';
 
     //TODO: fix type after backend fix
-    export let frameworks: Models.Framework[] & {
-        installCommand: string;
-        buildCommand: string;
-        outputDirectory: string;
-    } = [];
-    export let framework = frameworks[0]?.$id;
+    export let frameworks: Models.Framework[];
+    export let selectedFramework = frameworks[0];
     export let variables: Partial<Models.TemplateVariable>[] = [];
     export let installCommand = '';
     export let buildCommand = '';
@@ -41,13 +36,13 @@
     let showSecretModal = false;
 
     let currentVariable: Partial<Models.TemplateVariable>;
+    let frameworkId = selectedFramework.$id;
 
     function markAsSecret() {
         let variable = variables.find((v) => v.name === currentVariable.name);
         if (variable) {
             variable.secret = true;
         }
-        console.log(variable);
     }
 
     $: frameworkData = frameworks.find((framework) => framework.$id === framework.$id);
@@ -59,11 +54,14 @@
             id="framework"
             label="Framework"
             placeholder="Select framework"
-            bind:value={framework}
+            bind:value={frameworkId}
             options={frameworks.map((framework) => ({
                 value: framework.$id,
                 label: framework.name
-            }))} />
+            }))}
+            on:change={() => {
+                selectedFramework = frameworks.find((framework) => framework.$id === frameworkId);
+            }} />
 
         <Collapsible>
             <CollapsibleItem>
