@@ -21,8 +21,9 @@
     import ProductionBranch from '../../productionBranch.svelte';
     import Configuration from './configuration.svelte';
     import Aside from '../../aside.svelte';
-    import { Framework, ID } from '@appwrite.io/console';
+    import { ID } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
+    import { getEnumFromModel } from '../../../store';
 
     export let data;
     let showExitModal = false;
@@ -69,16 +70,14 @@
         return sorted;
     }
 
-    function getEnumFromModel(model: Models.Framework): Framework {
-        return Framework[model.name];
-    }
-
     async function create() {
         try {
             let site = await sdk.forProject.sites.create(
                 id || ID.unique(),
                 name,
-                getEnumFromModel(data.frameworks.frameworks.find((fr) => fr.name === framework.name)),
+                getEnumFromModel(
+                    data.frameworks.frameworks.find((fr) => fr.name === framework.name)
+                ),
                 true,
                 30,
                 installCommand,
@@ -165,7 +164,6 @@
                     <ProductionBranch bind:branch bind:rootDir {options} />
                 {/await}
 
-                <!-- TODO: fix frameworks after backend update -->
                 <Configuration
                     bind:installCommand
                     bind:buildCommand

@@ -13,6 +13,7 @@
     import { goto } from '$app/navigation';
     import { debounce } from '$lib/helpers/debounce.js';
     import { Card } from '@appwrite.io/pink-svelte';
+    import { templatesList } from '$lib/stores/templates.js';
 
     export let data;
 
@@ -91,6 +92,7 @@
             return `Sorry, we couldn't find any results with the applied filters.`;
         }
     };
+    $: console.log(templatesList);
 </script>
 
 <svelte:head>
@@ -158,11 +160,12 @@
         <ul class="grid-box" style="--grid-item-size:22rem; --grid-item-size-small-screens:19rem">
             {#each data.templates as template}
                 <Card.Link
+                    variant="secondary"
                     href={`${base}/project-${$page.params.project}/sites/create-site/templates/template-${template.id}`}
                     padding="xs">
                     <Card.Media
                         title={template.name}
-                        description={template.tagline}
+                        description={template?.tagline}
                         src="https://unsplash.it/300"
                         alt={template.name}>
                     </Card.Media>

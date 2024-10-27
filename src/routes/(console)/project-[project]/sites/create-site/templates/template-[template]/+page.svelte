@@ -13,12 +13,7 @@
         InputSelect,
         InputText
     } from '$lib/elements/forms';
-    import {
-        Wizard,
-        WizardSecondaryContainer,
-        WizardSecondaryContent,
-        WizardSecondaryFooter
-    } from '$lib/layout';
+    import { Wizard } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { installation, repository } from '$lib/stores/vcs';
@@ -41,11 +36,11 @@
     import Configuration from './configuration.svelte';
     import Aside from '../../aside.svelte';
     import { ID } from '@appwrite.io/console';
+    import { getEnumFromModel } from '../../../store';
 
     export let data;
 
     let showExitModal = false;
-    let isTemplate = !!data?.template;
     let hasInstallations = !!data?.installations?.total;
 
     let formComponent: Form;
@@ -66,10 +61,8 @@
     let variables = [];
 
     onMount(() => {
-        if (isTemplate) {
-            $installation ??= data.installations[0];
-            selectedInstallationId = $installation?.$id;
-        }
+        $installation ??= data.installations[0];
+        selectedInstallationId = $installation?.$id;
     });
 
     let callbackState: Record<string, string> = null;
@@ -94,19 +87,24 @@
             let site = await sdk.forProject.sites.create(
                 id || ID.unique(),
                 name,
-                siteFramework,
+                getEnumFromModel(
+                    data.frameworks.frameworks.find((fr) => fr.name === framework.name)
+                ),
                 true,
+                undefined,
                 framework.installCommand,
                 framework.buildCommand,
                 framework.outputDirectory,
-                framework.fallbackRedirect,
+                undefined,
+                undefined,
                 undefined,
                 selectedInstallationId,
                 selectedRepository,
                 branch,
                 undefined,
-                rootDir,
-                framework.providerRootDirectory
+                framework.providerRootDirectory,
+                undefined,
+                rootDir
             );
 
             trackEvent(Submit.SiteCreate, {});
@@ -126,8 +124,6 @@
             trackError(e, Submit.SiteCreate);
         }
     }
-
-    $: siteFramework = data.frameworks.frameworks.find((fr) => fr.name === framework.name);
 </script>
 
 <svelte:head>
@@ -272,21 +268,19 @@
     </Form>
     <svelte:fragment slot="aside">
         <Aside {framework} {repositoryName} {branch} {rootDir}>
-            {#if isTemplate}
-                <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
-                    <Typography.Text variant="m-500" truncate>
-                        {name || data.template.name}
-                    </Typography.Text>
+            <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
+                <Typography.Text variant="m-500" truncate>
+                    {name || data.template.name}
+                </Typography.Text>
 
-                    <Button secondary size="s">View demo</Button>
-                </Layout.Stack>
+                <Button secondary size="s">View demo</Button>
+            </Layout.Stack>
 
-                <Image
-                    src={data.template.preview}
-                    alt={data.template.name}
-                    width={357}
-                    height={200} />
-            {/if}
+            <Image
+                src={data.template?.preview ?? 'https://unsplash.it/357/200'}
+                alt={data.template.name}
+                width={357}
+                height={200} />
         </Aside>
     </svelte:fragment>
 
