@@ -21,7 +21,7 @@
     import ProductionBranch from '../../productionBranch.svelte';
     import Configuration from './configuration.svelte';
     import Aside from '../../aside.svelte';
-    import { ID } from '@appwrite.io/console';
+    import { Framework, ID } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
 
     export let data;
@@ -69,16 +69,22 @@
         return sorted;
     }
 
+    function getEnumFromModel(model: Models.Framework): Framework {
+        return Framework[model.name];
+    }
+
     async function create() {
         try {
             let site = await sdk.forProject.sites.create(
                 id || ID.unique(),
                 name,
-                data.frameworks.frameworks.find((fr) => fr.name === framework.name),
+                getEnumFromModel(data.frameworks.frameworks.find((fr) => fr.name === framework.name)),
                 true,
+                30,
                 installCommand,
                 buildCommand,
                 outputDirectory,
+                undefined,
                 undefined,
                 undefined,
                 selectedInstallationId,
@@ -164,7 +170,7 @@
                     bind:installCommand
                     bind:buildCommand
                     bind:outputDirectory
-                    bind:framework
+                    bind:selectedFramework={framework}
                     bind:variables
                     frameworks={data.frameworks.frameworks} />
             </Layout.Stack>
