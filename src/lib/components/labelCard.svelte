@@ -22,8 +22,8 @@
     export let alt: string = null;
 
     // Pink v2
-    export let radius: Props['radius'] = 'medium';
-    export let padding: Props['padding'] = 'small';
+    export let radius: Props['radius'] = 'm';
+    export let padding: Props['padding'] = 's';
     export let variant: Props['variant'] = 'primary';
     //temporarily unefined
     export let title: Props['title'] = undefined;
