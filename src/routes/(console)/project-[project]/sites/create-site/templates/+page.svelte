@@ -9,7 +9,7 @@
     } from '$lib/components';
     import { Button, InputSearch } from '$lib/elements/forms';
     import { page } from '$app/stores';
-    import WizardCover from '$lib/layout/wizardCover.svelte';
+    import Wizard from '$lib/layout/wizard.svelte';
     import { goto } from '$app/navigation';
     import { debounce } from '$lib/helpers/debounce.js';
     import { Card } from '@appwrite.io/pink-svelte';
@@ -97,102 +97,93 @@
     <title>Create site - Appwrite</title>
 </svelte:head>
 
-<WizardCover previousPage={`${base}/project-${$page.params.project}/sites/`}>
-    <svelte:fragment slot="title">Create Site</svelte:fragment>
-    <div class="wizard-container container"></div>
-
-    <div class="grid-300px-1fr u-margin-block-start-24">
-        <section>
-            <InputSearch
-                placeholder="Search templates"
-                value={$page.url.searchParams.get('search')}
-                on:clear={clearSearch}
-                on:change={applySearch} />
-            <div class="u-margin-block-start-24">
-                <Collapsible>
-                    <CollapsibleItem>
-                        <svelte:fragment slot="title">Use case</svelte:fragment>
-                        <ul class="form-list u-row-gap-16">
-                            {#each [...data.useCases] as useCase}
-                                <li class="form-item">
-                                    <label class="u-flex u-cross-center u-gap-16">
-                                        <input
-                                            type="checkbox"
-                                            class="is-small"
-                                            checked={isChecked(useCase)}
-                                            on:change={(e) => applyFilter('useCase', useCase, e)} />
-                                        <span class="u-trim-1">{useCase}</span>
-                                    </label>
-                                </li>
-                            {/each}
-                        </ul>
-                    </CollapsibleItem>
-                    <CollapsibleItem>
-                        <svelte:fragment slot="title">Framework</svelte:fragment>
-                        <ul class="form-list u-row-gap-16">
-                            {#each [...data.frameworks] as framework}
-                                {@const icon = getIconFromFramework(framework)}
-                                <li class="form-item">
-                                    <label class="u-flex u-cross-center u-gap-16">
-                                        <input
-                                            type="checkbox"
-                                            class="is-small"
-                                            checked={$page.url.searchParams
-                                                .getAll('framework')
-                                                .includes(framework)}
-                                            on:change={(e) =>
-                                                applyFilter('framework', framework, e)} />
-                                        <div class="u-flex u-cross-center u-gap-8">
-                                            <div class="avatar is-size-x-small">
-                                                <SvgIcon name={icon} iconSize="small" />
-                                            </div>
-                                            <div class="u-trim-1 u-capitalize">
-                                                {framework?.split('-')?.join(' ')}
-                                            </div>
+<Wizard href={`${base}/project-${$page.params.project}/sites/`} title="Create Site" invertColumns>
+    <svelte:fragment slot="aside">
+        <InputSearch
+            placeholder="Search templates"
+            value={$page.url.searchParams.get('search')}
+            on:clear={clearSearch}
+            on:change={applySearch} />
+        <div class="u-margin-block-start-24">
+            <Collapsible>
+                <CollapsibleItem>
+                    <svelte:fragment slot="title">Use case</svelte:fragment>
+                    <ul class="form-list u-row-gap-16">
+                        {#each [...data.useCases] as useCase}
+                            <li class="form-item">
+                                <label class="u-flex u-cross-center u-gap-16">
+                                    <input
+                                        type="checkbox"
+                                        class="is-small"
+                                        checked={isChecked(useCase)}
+                                        on:change={(e) => applyFilter('useCase', useCase, e)} />
+                                    <span class="u-trim-1">{useCase}</span>
+                                </label>
+                            </li>
+                        {/each}
+                    </ul>
+                </CollapsibleItem>
+                <CollapsibleItem>
+                    <svelte:fragment slot="title">Framework</svelte:fragment>
+                    <ul class="form-list u-row-gap-16">
+                        {#each [...data.frameworks] as framework}
+                            {@const icon = getIconFromFramework(framework)}
+                            <li class="form-item">
+                                <label class="u-flex u-cross-center u-gap-16">
+                                    <input
+                                        type="checkbox"
+                                        class="is-small"
+                                        checked={$page.url.searchParams
+                                            .getAll('framework')
+                                            .includes(framework)}
+                                        on:change={(e) => applyFilter('framework', framework, e)} />
+                                    <div class="u-flex u-cross-center u-gap-8">
+                                        <div class="avatar is-size-x-small">
+                                            <SvgIcon name={icon} iconSize="small" />
                                         </div>
-                                    </label>
-                                </li>
-                            {/each}
-                        </ul>
-                    </CollapsibleItem>
-                </Collapsible>
+                                        <div class="u-trim-1 u-capitalize">
+                                            {framework?.split('-')?.join(' ')}
+                                        </div>
+                                    </div>
+                                </label>
+                            </li>
+                        {/each}
+                    </ul>
+                </CollapsibleItem>
+            </Collapsible>
+        </div>
+    </svelte:fragment>
+
+    {#if data.templates?.length > 0}
+        <ul class="grid-box" style="--grid-item-size:22rem; --grid-item-size-small-screens:19rem">
+            {#each data.templates as template}
+                <Card.Link
+                    href={`${base}/project-${$page.params.project}/sites/create-site/templates/template-${template.id}`}
+                    padding="xs">
+                    <Card.Media
+                        title={template.name}
+                        description={template.tagline}
+                        src="https://unsplash.it/300"
+                        alt={template.name}>
+                    </Card.Media>
+                </Card.Link>
+            {/each}
+        </ul>
+    {:else}
+        <EmptySearch hidePagination>
+            <div class="common-section">
+                <div class="u-text-center common-section">
+                    <b class="body-text-2 u-bold">{getErrorMessage()}</b>
+                    <p>There are no templates that match your search.</p>
+                </div>
+                <div class="u-flex u-gap-16 common-section u-main-center">
+                    <Button secondary on:click={clearSearch}>Clear search</Button>
+                </div>
             </div>
-        </section>
-        <section>
-            {#if data.templates?.length > 0}
-                <ul
-                    class="grid-box"
-                    style="--grid-item-size:22rem; --grid-item-size-small-screens:19rem">
-                    {#each data.templates as template}
-                        <Card.Link
-                            href={`${base}/project-${$page.params.project}/sites/create-site/templates/template-${template.id}`}
-                            padding="xs">
-                            <Card.Media
-                                title={template.name}
-                                description={template.tagline}
-                                src="https://unsplash.it/300"
-                                alt={template.name}>
-                            </Card.Media>
-                        </Card.Link>
-                    {/each}
-                </ul>
-            {:else}
-                <EmptySearch hidePagination>
-                    <div class="common-section">
-                        <div class="u-text-center common-section">
-                            <b class="body-text-2 u-bold">{getErrorMessage()}</b>
-                            <p>There are no templates that match your search.</p>
-                        </div>
-                        <div class="u-flex u-gap-16 common-section u-main-center">
-                            <Button secondary on:click={clearSearch}>Clear search</Button>
-                        </div>
-                    </div>
-                </EmptySearch>
-            {/if}
-            <div class="u-flex u-margin-block-start-32 u-main-space-between u-cross-center">
-                <p class="text">Total templates: {data.templates?.length}</p>
-                <Pagination limit={data.limit} offset={data.offset} sum={data.templates?.length} />
-            </div>
-        </section>
+        </EmptySearch>
+    {/if}
+    <div class="u-flex u-margin-block-start-32 u-main-space-between u-cross-center">
+        <p class="text">Total templates: {data.templates?.length}</p>
+        <Pagination limit={data.limit} offset={data.offset} sum={data.templates?.length} />
     </div>
-</WizardCover>
+</Wizard>

@@ -31,7 +31,7 @@
     let classes = '';
     export { classes as class };
     export let style = '';
-    export let padding: $$Props['padding'] = 'medium';
+    export let padding: $$Props['padding'] = 'm';
 
     $: resolvedClasses = [!isTile && 'common-section', classes].filter(Boolean).join(' ');
 </script>

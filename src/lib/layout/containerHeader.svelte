@@ -116,65 +116,67 @@
     {/if}
 {/if}
 
-<Layout.Stack direction="row">
-    <Heading tag={titleTag} size={titleSize}>{title}</Heading>
-    {#if isCloud && isLimited}
-        <DropList bind:show={showDropdown} width="16">
-            {#if hasProjectLimitation}
-                <Pill button on:click={() => (showDropdown = !showDropdown)}>
-                    <span class="icon-info" />{total}/{limit} created
-                </Pill>
-            {:else}
-                <Pill button on:click={() => (showDropdown = !showDropdown)}>
-                    <span class="icon-info" />Limits applied
-                </Pill>
-            {/if}
-            <svelte:fragment slot="list">
-                <slot name="tooltip" {limit} {tier} {title} {upgradeMethod} {hasUsageFees}>
-                    {#if hasProjectLimitation}
-                        <p class="text">
-                            You are limited to {limit}
-                            {title.toLocaleLowerCase()} per project on the {tier} plan.
-                            {#if $organization?.billingPlan === BillingPlan.FREE}<Link
-                                    href={$upgradeURL}
-                                    event="organization_upgrade"
-                                    eventData={{ from: 'button', source: 'resource_limit_tag' }}
-                                    >Upgrade</Link>
-                                for additional {title.toLocaleLowerCase()}.
-                            {/if}
-                        </p>
-                    {:else if hasUsageFees}
-                        <p class="text">
-                            You are limited to {limit}
-                            {title.toLocaleLowerCase()} per organization on the {tier} plan.
-                            <Link on:mousedown={() => ($showUsageRatesModal = true)}
-                                >Excess usage fees will apply</Link
-                            >.
-                        </p>
-                    {:else}
-                        <p class="text">
-                            You are limited to {limit}
-                            {title.toLocaleLowerCase()} per organization on the {tier} plan.
-                            {#if $organization?.billingPlan === BillingPlan.FREE}
-                                <Link href={$upgradeURL}>Upgrade</Link>
-                                for additional {title.toLocaleLowerCase()}.
-                            {/if}
-                        </p>
-                    {/if}
-                </slot>
-            </svelte:fragment>
-        </DropList>
-    {/if}
-</Layout.Stack>
+<Layout.Stack direction="row" alignContent="center">
+    <Layout.Stack direction="row">
+        <Heading tag={titleTag} size={titleSize}>{title}</Heading>
+        {#if isCloud && isLimited}
+            <DropList bind:show={showDropdown} width="16">
+                {#if hasProjectLimitation}
+                    <Pill button on:click={() => (showDropdown = !showDropdown)}>
+                        <span class="icon-info" />{total}/{limit} created
+                    </Pill>
+                {:else}
+                    <Pill button on:click={() => (showDropdown = !showDropdown)}>
+                        <span class="icon-info" />Limits applied
+                    </Pill>
+                {/if}
+                <svelte:fragment slot="list">
+                    <slot name="tooltip" {limit} {tier} {title} {upgradeMethod} {hasUsageFees}>
+                        {#if hasProjectLimitation}
+                            <p class="text">
+                                You are limited to {limit}
+                                {title.toLocaleLowerCase()} per project on the {tier} plan.
+                                {#if $organization?.billingPlan === BillingPlan.FREE}<Link
+                                        href={$upgradeURL}
+                                        event="organization_upgrade"
+                                        eventData={{ from: 'button', source: 'resource_limit_tag' }}
+                                        >Upgrade</Link>
+                                    for additional {title.toLocaleLowerCase()}.
+                                {/if}
+                            </p>
+                        {:else if hasUsageFees}
+                            <p class="text">
+                                You are limited to {limit}
+                                {title.toLocaleLowerCase()} per organization on the {tier} plan.
+                                <Link on:mousedown={() => ($showUsageRatesModal = true)}
+                                    >Excess usage fees will apply</Link
+                                >.
+                            </p>
+                        {:else}
+                            <p class="text">
+                                You are limited to {limit}
+                                {title.toLocaleLowerCase()} per organization on the {tier} plan.
+                                {#if $organization?.billingPlan === BillingPlan.FREE}
+                                    <Link href={$upgradeURL}>Upgrade</Link>
+                                    for additional {title.toLocaleLowerCase()}.
+                                {/if}
+                            </p>
+                        {/if}
+                    </slot>
+                </svelte:fragment>
+            </DropList>
+        {/if}
+    </Layout.Stack>
 
-<slot {isButtonDisabled}>
-    {#if buttonText}
-        <ContainerButton
-            {title}
-            disabled={isButtonDisabled}
-            {buttonText}
-            {buttonEvent}
-            {buttonMethod}
-            {buttonHref} />
-    {/if}
-</slot>
+    <slot {isButtonDisabled}>
+        {#if buttonText}
+            <ContainerButton
+                {title}
+                disabled={isButtonDisabled}
+                {buttonText}
+                {buttonEvent}
+                {buttonMethod}
+                {buttonHref} />
+        {/if}
+    </slot>
+</Layout.Stack>

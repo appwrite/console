@@ -14,6 +14,7 @@
         InputText
     } from '$lib/elements/forms';
     import {
+        Wizard,
         WizardSecondaryContainer,
         WizardSecondaryContent,
         WizardSecondaryFooter
@@ -133,181 +134,171 @@
     <title>Create site - Appwrite</title>
 </svelte:head>
 
-<WizardSecondaryContainer
+<Wizard
+    title="Create site"
     bind:showExitModal
     href={`${base}/project-${$page.params.project}/sites/`}
     confirmExit>
-    <svelte:fragment slot="title">Create site</svelte:fragment>
-    <WizardSecondaryContent>
-        <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
-            <Layout.Stack gap="xl">
-                {#if selectedRepository && showSiteConfig}
-                    <Card>
-                        <Layout.Stack
-                            direction="row"
-                            justifyContent="space-between"
-                            alignItems="center"
-                            gap="xs">
-                            <Layout.Stack direction="row" alignItems="center">
-                                <Icon icon={IconGithub} />
-                                <p>
-                                    {$repository.name}
-                                </p>
-                            </Layout.Stack>
-                            <Button
-                                secondary
-                                on:click={() => {
-                                    showSiteConfig = false;
-                                }}>
-                                Change
-                            </Button>
-                        </Layout.Stack>
-                    </Card>
-                    <ProductionBranch bind:branch bind:rootDir />
-                    {#if data.template.variables?.length}
-                        <Configuration bind:variables templateVariables={data.template.variables} />
-                    {/if}
-                {:else}
-                    {@const options = data.template.frameworks.map((framework) => {
-                        return {
-                            value: framework.name,
-                            label: framework.name
-                        };
-                    })}
-
-                    <Details bind:name bind:id bind:framework {options} showFramework />
-                    <ConnectBehaviour bind:connectBehaviour />
-                    {#if connectBehaviour === 'now'}
-                        {#if hasInstallations}
-                            <Fieldset legend="Git repositoy">
-                                <Layout.Stack gap="l">
-                                    <Layout.Stack direction="row" gap="xl">
-                                        <InputRadio
-                                            size="s"
-                                            label="Create a new repository"
-                                            bind:group={repositoryBehaviour}
-                                            value="new"
-                                            id="new"
-                                            name="new" />
-                                        <InputRadio
-                                            size="s"
-                                            label="Connect to an existing repository"
-                                            bind:group={repositoryBehaviour}
-                                            value="existing"
-                                            id="existing"
-                                            name="existing" />
-                                    </Layout.Stack>
-                                    {#if repositoryBehaviour === 'new'}
-                                        <InputSelect
-                                            id="installation"
-                                            label="Git organization"
-                                            options={data.installations.installations.map(
-                                                (entry) => {
-                                                    return {
-                                                        label: entry.organization,
-                                                        value: entry.$id
-                                                    };
-                                                }
-                                            )}
-                                            on:change={() => {
-                                                $installation =
-                                                    data.installations.installations.find(
-                                                        (entry) =>
-                                                            entry.$id === selectedInstallationId
-                                                    );
-                                            }}
-                                            bind:value={selectedInstallationId} />
-                                        <InputText
-                                            id="repositoryName"
-                                            label="Repository name"
-                                            placeholder="my-repository"
-                                            bind:value={repositoryName} />
-                                        <InputChoice
-                                            id="repositoryPrivate"
-                                            label="Keep repository private"
-                                            bind:value={repositoryPrivate} />
-
-                                        <Layout.Stack gap="xl" alignItems="flex-end">
-                                            <Divider />
-
-                                            <Button>Create</Button>
-                                        </Layout.Stack>
-                                    {:else}
-                                        <Repositories
-                                            bind:hasInstallations
-                                            bind:selectedRepository
-                                            action="button"
-                                            callbackState={{
-                                                from: 'github',
-                                                to: 'cover'
-                                            }}
-                                            on:connect={(e) => {
-                                                trackEvent('click_connect_repository', {
-                                                    from: 'cover'
-                                                });
-                                                repository.set(e.detail);
-                                                repositoryName = e.detail.name;
-                                                selectedRepository = e.detail.id;
-                                                showSiteConfig = true;
-                                            }} />
-                                    {/if}
-                                </Layout.Stack>
-                            </Fieldset>
-                        {:else}
-                            <Card isDashed isTile>
-                                <Empty
-                                    title={`Connect Git repository`}
-                                    description="Create and deploy a Site with a connected git repository.">
-                                    <svelte:fragment slot="actions">
-                                        <Button
-                                            secondary
-                                            href={connectGitHub().toString()}
-                                            size="s">
-                                            <Icon icon={IconGithub} />
-                                            <!-- TODO: replace icon -->
-                                            Connect to GitHub
-                                        </Button>
-                                    </svelte:fragment>
-                                </Empty>
-                            </Card>
-                        {/if}
-                    {:else if data.template.variables?.length}
-                        <Configuration bind:variables templateVariables={data.template.variables} />
-                    {/if}
-                {/if}
-            </Layout.Stack>
-        </Form>
-        <svelte:fragment slot="aside">
-            <Aside {framework} {repositoryName} {branch} {rootDir}>
-                {#if isTemplate}
+    <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
+        <Layout.Stack gap="xl">
+            {#if selectedRepository && showSiteConfig}
+                <Card>
                     <Layout.Stack
                         direction="row"
                         justifyContent="space-between"
-                        alignItems="center">
-                        <Typography.Text variant="m-500" truncate>
-                            {name || data.template.name}
-                        </Typography.Text>
-
-                        <Button secondary size="s">View demo</Button>
+                        alignItems="center"
+                        gap="xs">
+                        <Layout.Stack direction="row" alignItems="center">
+                            <Icon icon={IconGithub} />
+                            <p>
+                                {$repository.name}
+                            </p>
+                        </Layout.Stack>
+                        <Button
+                            secondary
+                            on:click={() => {
+                                showSiteConfig = false;
+                            }}>
+                            Change
+                        </Button>
                     </Layout.Stack>
-
-                    <Image
-                        src={data.template.preview}
-                        alt={data.template.name}
-                        width={357}
-                        height={200} />
+                </Card>
+                <ProductionBranch bind:branch bind:rootDir />
+                {#if data.template.variables?.length}
+                    <Configuration bind:variables templateVariables={data.template.variables} />
                 {/if}
-            </Aside>
-        </svelte:fragment>
-    </WizardSecondaryContent>
+            {:else}
+                {@const options = data.template.frameworks.map((framework) => {
+                    return {
+                        value: framework.name,
+                        label: framework.name
+                    };
+                })}
 
-    <WizardSecondaryFooter>
-        <Button fullWidthMobile secondary on:click={() => (showExitModal = true)}>Cancel</Button>
+                <Details bind:name bind:id bind:framework {options} showFramework />
+                <ConnectBehaviour bind:connectBehaviour />
+                {#if connectBehaviour === 'now'}
+                    {#if hasInstallations}
+                        <Fieldset legend="Git repositoy">
+                            <Layout.Stack gap="l">
+                                <Layout.Stack direction="row" gap="xl">
+                                    <InputRadio
+                                        size="s"
+                                        label="Create a new repository"
+                                        bind:group={repositoryBehaviour}
+                                        value="new"
+                                        id="new"
+                                        name="new" />
+                                    <InputRadio
+                                        size="s"
+                                        label="Connect to an existing repository"
+                                        bind:group={repositoryBehaviour}
+                                        value="existing"
+                                        id="existing"
+                                        name="existing" />
+                                </Layout.Stack>
+                                {#if repositoryBehaviour === 'new'}
+                                    <InputSelect
+                                        id="installation"
+                                        label="Git organization"
+                                        options={data.installations.installations.map((entry) => {
+                                            return {
+                                                label: entry.organization,
+                                                value: entry.$id
+                                            };
+                                        })}
+                                        on:change={() => {
+                                            $installation = data.installations.installations.find(
+                                                (entry) => entry.$id === selectedInstallationId
+                                            );
+                                        }}
+                                        bind:value={selectedInstallationId} />
+                                    <InputText
+                                        id="repositoryName"
+                                        label="Repository name"
+                                        placeholder="my-repository"
+                                        bind:value={repositoryName} />
+                                    <InputChoice
+                                        id="repositoryPrivate"
+                                        label="Keep repository private"
+                                        bind:value={repositoryPrivate} />
+
+                                    <Layout.Stack gap="xl" alignItems="flex-end">
+                                        <Divider />
+
+                                        <Button>Create</Button>
+                                    </Layout.Stack>
+                                {:else}
+                                    <Repositories
+                                        bind:hasInstallations
+                                        bind:selectedRepository
+                                        action="button"
+                                        callbackState={{
+                                            from: 'github',
+                                            to: 'cover'
+                                        }}
+                                        on:connect={(e) => {
+                                            trackEvent('click_connect_repository', {
+                                                from: 'cover'
+                                            });
+                                            repository.set(e.detail);
+                                            repositoryName = e.detail.name;
+                                            selectedRepository = e.detail.id;
+                                            showSiteConfig = true;
+                                        }} />
+                                {/if}
+                            </Layout.Stack>
+                        </Fieldset>
+                    {:else}
+                        <Card isDashed isTile>
+                            <Empty
+                                title={`Connect Git repository`}
+                                description="Create and deploy a Site with a connected git repository.">
+                                <svelte:fragment slot="actions">
+                                    <Button secondary href={connectGitHub().toString()} size="s">
+                                        <Icon icon={IconGithub} />
+                                        <!-- TODO: replace icon -->
+                                        Connect to GitHub
+                                    </Button>
+                                </svelte:fragment>
+                            </Empty>
+                        </Card>
+                    {/if}
+                {:else if data.template.variables?.length}
+                    <Configuration bind:variables templateVariables={data.template.variables} />
+                {/if}
+            {/if}
+        </Layout.Stack>
+    </Form>
+    <svelte:fragment slot="aside">
+        <Aside {framework} {repositoryName} {branch} {rootDir}>
+            {#if isTemplate}
+                <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
+                    <Typography.Text variant="m-500" truncate>
+                        {name || data.template.name}
+                    </Typography.Text>
+
+                    <Button secondary size="s">View demo</Button>
+                </Layout.Stack>
+
+                <Image
+                    src={data.template.preview}
+                    alt={data.template.name}
+                    width={357}
+                    height={200} />
+            {/if}
+        </Aside>
+    </svelte:fragment>
+
+    <svelte:fragment slot="footer">
+        <Button fullWidthMobile size="s" secondary on:click={() => (showExitModal = true)}
+            >Cancel</Button>
         <Button
             fullWidthMobile
+            size="s"
             on:click={() => formComponent.triggerSubmit()}
             disabled={$isSubmitting}>
             Deploy
         </Button>
-    </WizardSecondaryFooter>
-</WizardSecondaryContainer>
+    </svelte:fragment>
+</Wizard>

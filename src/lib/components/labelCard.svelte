@@ -22,7 +22,8 @@
     export let alt: string = null;
 
     // Pink v2
-    export let radius: Props['radius'] = 'm';
+    export let radius: Props['radius'] = 's';
+    export let imageRadius: Props['imageRadius'] = 'xxs';
     export let padding: Props['padding'] = 's';
     export let variant: Props['variant'] = 'primary';
     //temporarily unefined
@@ -36,6 +37,7 @@
     <Card.Selector
         {padding}
         {src}
+        {imageRadius}
         {alt}
         {variant}
         {value}
