@@ -34,9 +34,15 @@
                     {href}
                     text
                     event="empty_documentation"
-                    size="small"
+                    size="s"
                     ariaLabel="create {target}">Documentation</Button>
-                <Button secondary on:mousedown on:click on:click={track} disabled={!allowCreate} size="small">
+                <Button
+                    secondary
+                    on:mousedown
+                    on:click
+                    on:click={track}
+                    disabled={!allowCreate}
+                    size="s">
                     Create {target}
                 </Button>
             </svelte:fragment>

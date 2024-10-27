@@ -88,7 +88,7 @@
                                             e.preventDefault();
                                             toggle(e);
                                         }}>
-                                        <Icon size="small" icon={IconInfo} /></Button>
+                                        <Icon size="s" icon={IconInfo} /></Button>
                                     <p slot="tooltip">{variable.description}</p>
                                 </Popover>
                             </Layout.Stack>
@@ -99,7 +99,7 @@
             {#if optionalVariables?.length}
                 <CollapsibleItem>
                     <svelte:fragment slot="title">
-                        Environment variables <Tag size="small">Optional</Tag>
+                        Environment variables <Tag size="s">Optional</Tag>
                     </svelte:fragment>
                     <Layout.Stack>
                         Set up environment variables to securely manage keys and settings for your
@@ -134,7 +134,7 @@
                                             e.preventDefault();
                                             toggle(e);
                                         }}>
-                                        <Icon size="small" icon={IconInfo} /></Button>
+                                        <Icon size="s" icon={IconInfo} /></Button>
                                     <p slot="tooltip">{variable.description}</p>
                                 </Popover>
                             </Layout.Stack>

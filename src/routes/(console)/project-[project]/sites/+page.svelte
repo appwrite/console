@@ -87,12 +87,12 @@
                             <Button
                                 text
                                 icon
-                                size="small"
+                                size="s"
                                 on:click={(e) => {
                                     e.preventDefault();
                                     toggle(e);
                                 }}>
-                                <Icon size="small" icon={IconDotsHorizontal} /></Button>
+                                <Icon size="s" icon={IconDotsHorizontal} /></Button>
                             <p slot="tooltip">Tooltip content</p>
                         </Popover>
                     </Card.Media>

@@ -42,7 +42,7 @@
                     <Typography.Caption variant="400">Framework</Typography.Caption>
                     <Layout.Stack gap="xs" alignItems="center" direction="row">
                         {#if frameworkIcon}
-                            <Icon size="small" icon={frameworkIcon}></Icon>
+                            <Icon size="s" icon={frameworkIcon}></Icon>
                         {/if}
                         {framework.name}
                     </Layout.Stack>
@@ -52,7 +52,7 @@
                 <Layout.Stack gap="xxxs">
                     <Typography.Caption variant="400">Git repository</Typography.Caption>
                     <Layout.Stack gap="xs" alignItems="center" direction="row">
-                        <Icon size="small" icon={IconGithub}></Icon>
+                        <Icon size="s" icon={IconGithub}></Icon>
                         <Typography.Text variant="m-500">{repositoryName}</Typography.Text>
                     </Layout.Stack>
                 </Layout.Stack>
@@ -61,7 +61,7 @@
                 <Layout.Stack gap="xxxs">
                     <Typography.Caption variant="400">Branch</Typography.Caption>
                     <Layout.Stack gap="xs" alignItems="center" direction="row">
-                        <Icon size="small" icon={IconGitBranch}></Icon>
+                        <Icon size="s" icon={IconGitBranch}></Icon>
                         <Typography.Text variant="m-500">
                             {branch}
                         </Typography.Text>

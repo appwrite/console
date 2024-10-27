@@ -67,7 +67,7 @@
         <Collapsible>
             <CollapsibleItem>
                 <svelte:fragment slot="title">
-                    Build settings <Tag size="small">Optional</Tag>
+                    Build settings <Tag size="s">Optional</Tag>
                 </svelte:fragment>
                 <Layout.Stack>
                     Set up how your project is built and where the output files are stored.
@@ -77,7 +77,7 @@
                             label="Install command"
                             bind:value={installCommand}
                             placeholder={frameworkData?.installCommand} />
-                        <Button secondary size="small" on:click={() => (installCommand = '')}>
+                        <Button secondary size="s" on:click={() => (installCommand = '')}>
                             Reset
                         </Button>
                     </Layout.Stack>
@@ -87,7 +87,7 @@
                             label="Build command"
                             bind:value={buildCommand}
                             placeholder={frameworkData?.buildCommand} />
-                        <Button secondary size="small" on:click={() => (buildCommand = '')}>
+                        <Button secondary size="s" on:click={() => (buildCommand = '')}>
                             Reset
                         </Button>
                     </Layout.Stack>
@@ -97,7 +97,7 @@
                             label="Output directory"
                             bind:value={outputDirectory}
                             placeholder={frameworkData?.outputDirectory} />
-                        <Button secondary size="small" on:click={() => (outputDirectory = '')}>
+                        <Button secondary size="s" on:click={() => (outputDirectory = '')}>
                             Reset
                         </Button>
                     </Layout.Stack>
@@ -106,7 +106,7 @@
 
             <CollapsibleItem>
                 <svelte:fragment slot="title">
-                    Environment variables <Tag size="small">Optional</Tag>
+                    Environment variables <Tag size="s">Optional</Tag>
                 </svelte:fragment>
                 <Layout.Stack gap="l">
                     <Layout.Stack gap="xl">
@@ -143,7 +143,7 @@
                                                             toggle(e);
                                                         }}>
                                                         <Icon
-                                                            size="small"
+                                                            size="s"
                                                             icon={IconDotsHorizontal} /></Button>
                                                     <svelte:fragment slot="tooltip">
                                                         <Layout.Stack
@@ -189,21 +189,18 @@
                         <Layout.Stack direction="row">
                             <Button
                                 secondary
-                                size="small"
+                                size="s"
                                 on:mousedown={() => (showEditorModal = true)}>
                                 <Icon icon={IconCode} /> Editor
                             </Button>
                             <Button
                                 secondary
-                                size="small"
+                                size="s"
                                 on:mousedown={() => (showImportModal = true)}>
                                 <Icon icon={IconUpload} /> Import .env
                             </Button>
                         </Layout.Stack>
-                        <Button
-                            secondary
-                            size="small"
-                            on:mousedown={() => (showImportModal = true)}>
+                        <Button secondary size="s" on:mousedown={() => (showImportModal = true)}>
                             <Icon icon={IconPlus} /> Create variable
                         </Button>
                     </Layout.Stack>

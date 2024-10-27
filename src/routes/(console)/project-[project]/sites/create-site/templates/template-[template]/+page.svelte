@@ -183,14 +183,14 @@
                                 <Layout.Stack gap="l">
                                     <Layout.Stack direction="row" gap="xl">
                                         <InputRadio
-                                            size="small"
+                                            size="s"
                                             label="Create a new repository"
                                             bind:group={repositoryBehaviour}
                                             value="new"
                                             id="new"
                                             name="new" />
                                         <InputRadio
-                                            size="small"
+                                            size="s"
                                             label="Connect to an existing repository"
                                             bind:group={repositoryBehaviour}
                                             value="existing"
@@ -262,7 +262,7 @@
                                         <Button
                                             secondary
                                             href={connectGitHub().toString()}
-                                            size="small">
+                                            size="s">
                                             <Icon icon={IconGithub} />
                                             <!-- TODO: replace icon -->
                                             Connect to GitHub
@@ -288,7 +288,7 @@
                             {name || data.template.name}
                         </Typography.Text>
 
-                        <Button secondary size="small">View demo</Button>
+                        <Button secondary size="s">View demo</Button>
                     </Layout.Stack>
 
                     <Image

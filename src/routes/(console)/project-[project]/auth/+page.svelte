@@ -96,7 +96,7 @@
                         {#if user.status}
                             {@const success = user.emailVerification || user.phoneVerification}
                             <Badge
-                                size="x-small"
+                                size="xs"
                                 variant="secondary"
                                 type={success ? 'success' : undefined}
                                 content={user.emailVerification && user.phoneVerification
@@ -107,17 +107,13 @@
                                         ? 'verified phone'
                                         : 'unverified'} />
                         {:else}
-                            <Badge
-                                size="x-small"
-                                variant="secondary"
-                                type="error"
-                                content="blocked" />
+                            <Badge size="xs" variant="secondary" type="error" content="blocked" />
                         {/if}
                     </Table.Cell>
                     <Table.Cell>
                         <Copy value={user.$id} event="user">
-                            <Tag size="small">
-                                <Icon size="small" icon={IconDuplicate} />
+                            <Tag size="s">
+                                <Icon size="s" icon={IconDuplicate} />
                                 User ID
                             </Tag>
                         </Copy>
@@ -142,7 +138,7 @@
             total={data.users.total} />
     {:else if data.search}
         <EmptySearch target="users" hidePagination>
-            <Button href={`${base}/project-${projectId}/auth`} size="small" secondary
+            <Button href={`${base}/project-${projectId}/auth`} size="s" secondary
                 >Clear Search</Button>
         </EmptySearch>
     {:else}
