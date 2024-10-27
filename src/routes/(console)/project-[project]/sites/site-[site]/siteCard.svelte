@@ -18,7 +18,7 @@
     let totalSize = humanFileSize(deployment.buildSize + deployment.size);
 </script>
 
-<Card padding="small">
+<Card padding="s">
     <Layout.Stack direction="row" gap="xl">
         <Image
             alt={site.name}
