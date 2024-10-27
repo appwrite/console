@@ -9,7 +9,7 @@
     import Step1 from './wizard/step1.svelte';
     import Step2 from './wizard/step2.svelte';
     import Step3 from './wizard/step3.svelte';
-    import type { WizardStepsType } from '$lib/layout/wizard.svelte';
+    import type { WizardStepsType } from '$lib/layout/wizardWithSteps.svelte';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';

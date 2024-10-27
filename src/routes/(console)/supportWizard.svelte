@@ -7,7 +7,7 @@
         type WeekDay
     } from '$lib/helpers/date';
     import { Wizard } from '$lib/layout';
-    import type { WizardStepsType } from '$lib/layout/wizard.svelte';
+    import type { WizardStepsType } from '$lib/layout/wizardWithSteps.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { organization } from '$lib/stores/organization';
     import { user } from '$lib/stores/user';

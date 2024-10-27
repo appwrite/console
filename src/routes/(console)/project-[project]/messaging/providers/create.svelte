@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Wizard } from '$lib/layout';
-    import type { WizardStepsType } from '$lib/layout/wizard.svelte';
+    import type { WizardStepsType } from '$lib/layout/wizardWithSteps.svelte';
     import Provider from './wizard/provider.svelte';
     import Settings from './wizard/settings.svelte';
     import { sdk } from '$lib/stores/sdk';

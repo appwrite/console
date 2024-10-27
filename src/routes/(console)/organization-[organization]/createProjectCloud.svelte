@@ -5,7 +5,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import Step1 from './wizard/step1.svelte';
     import Step2 from './wizard/step2.svelte';
-    import type { WizardStepsType } from '$lib/layout/wizard.svelte';
+    import type { WizardStepsType } from '$lib/layout/wizardWithSteps.svelte';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { page } from '$app/stores';

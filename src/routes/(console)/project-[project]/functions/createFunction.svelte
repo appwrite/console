@@ -10,7 +10,7 @@
     import Step4 from './wizard/step4.svelte';
     import Step5 from './wizard/step5.svelte';
     import { createFunction } from './wizard/store';
-    import type { WizardStepsType } from '$lib/layout/wizard.svelte';
+    import type { WizardStepsType } from '$lib/layout/wizardWithSteps.svelte';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { base } from '$app/paths';

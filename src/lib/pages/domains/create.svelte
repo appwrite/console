@@ -2,7 +2,7 @@
     import { Wizard } from '$lib/layout';
     import { invalidate } from '$app/navigation';
     import { wizard } from '$lib/stores/wizard';
-    import type { WizardStepsType } from '$lib/layout/wizard.svelte';
+    import type { WizardStepsType } from '$lib/layout/wizardWithSteps.svelte';
     import { dependencyStore, domain } from './wizard/store';
     import Step1 from './wizard/step1.svelte';
     import Step2 from './wizard/step2.svelte';

@@ -1,4 +1,4 @@
-import type { WizardStepsType } from '$lib/layout/wizard.svelte';
+import type { WizardStepsType } from '$lib/layout/wizardWithSteps.svelte';
 import type { Models } from '@appwrite.io/console';
 import { writable, type Writable } from 'svelte/store';
 

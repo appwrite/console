@@ -4,7 +4,7 @@
     import { wizard } from '$lib/stores/wizard';
     import { createPlatform } from './wizard/store';
     import { Dependencies } from '$lib/constants';
-    import type { WizardStepsType } from '$lib/layout/wizard.svelte';
+    import type { WizardStepsType } from '$lib/layout/wizardWithSteps.svelte';
     import Step1 from './wizard/android/step1.svelte';
     import Step2 from './wizard/android/step2.svelte';
     import Step3 from './wizard/android/step3.svelte';
