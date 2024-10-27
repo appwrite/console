@@ -1,6 +1,6 @@
 <script lang="ts">
     import { ID, Runtime } from '@appwrite.io/console';
-    import { Wizard } from '$lib/layout';
+    import { WizardWithSteps } from '$lib/layout';
     import type { WizardStepsType } from '$lib/layout/wizardWithSteps.svelte';
     import { sdk } from '$lib/stores/sdk';
     import { wizard } from '$lib/stores/wizard';
@@ -85,4 +85,8 @@
     });
 </script>
 
-<Wizard title="Create Function" steps={stepsComponents} on:finish={create} on:exit={resetState} />
+<WizardWithSteps
+    title="Create Function"
+    steps={stepsComponents}
+    on:finish={create}
+    on:exit={resetState} />

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Wizard } from '$lib/layout';
+    import { WizardWithSteps } from '$lib/layout';
     import type { WizardStepsType } from '$lib/layout/wizardWithSteps.svelte';
     import { sdk } from '$lib/stores/sdk';
     import { func } from '$routes/(console)/project-[project]/functions/function-[function]/store';
@@ -75,7 +75,7 @@
     });
 </script>
 
-<Wizard
+<WizardWithSteps
     title="Connect Git"
     steps={stepsComponents}
     on:finish={createGitHubInstallation}

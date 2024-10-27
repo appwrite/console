@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Wizard } from '$lib/layout';
+    import { WizardWithSteps } from '$lib/layout';
     import { invalidate } from '$app/navigation';
     import { wizard } from '$lib/stores/wizard';
     import { createPlatform } from './wizard/store';
@@ -39,7 +39,7 @@
     });
 </script>
 
-<Wizard
+<WizardWithSteps
     title="Add a React Native platform"
     steps={stepsComponents}
     on:finish={onFinish}

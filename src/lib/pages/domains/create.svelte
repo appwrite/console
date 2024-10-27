@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Wizard } from '$lib/layout';
+    import { WizardWithSteps } from '$lib/layout';
     import { invalidate } from '$app/navigation';
     import { wizard } from '$lib/stores/wizard';
     import type { WizardStepsType } from '$lib/layout/wizardWithSteps.svelte';
@@ -34,7 +34,7 @@
     });
 </script>
 
-<Wizard
+<WizardWithSteps
     title="Create domain"
     steps={stepsComponents}
     finalAction="Go to console"

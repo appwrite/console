@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Wizard } from '$lib/layout';
+    import { WizardWithSteps } from '$lib/layout';
     import type { WizardStepsType } from '$lib/layout/wizardWithSteps.svelte';
     import Provider from './wizard/provider.svelte';
     import Settings from './wizard/settings.svelte';
@@ -165,4 +165,4 @@
     });
 </script>
 
-<Wizard title="Create provider" steps={stepsComponents} on:finish={create} />
+<WizardWithSteps title="Create provider" steps={stepsComponents} on:finish={create} />

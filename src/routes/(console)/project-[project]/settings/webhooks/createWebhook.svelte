@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Wizard } from '$lib/layout';
+    import { WizardWithSteps } from '$lib/layout';
     import { onDestroy } from 'svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { wizard } from '$lib/stores/wizard';
@@ -72,6 +72,6 @@
     });
 </script>
 
-<Wizard confirmExit title="Create Webhook" steps={stepsComponents} on:finish={create}>
+<WizardWithSteps confirmExit title="Create Webhook" steps={stepsComponents} on:finish={create}>
     <svelte:fragment slot="exit">Are you sure you want to exit from this process?</svelte:fragment>
-</Wizard>
+</WizardWithSteps>
