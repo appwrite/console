@@ -6,11 +6,7 @@
     import { Card } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form } from '$lib/elements/forms';
-    import {
-        WizardSecondaryContainer,
-        WizardSecondaryContent,
-        WizardSecondaryFooter
-    } from '$lib/layout';
+    import { Wizard } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { sortBranches } from '$lib/stores/vcs';
@@ -24,6 +20,7 @@
     import { ID } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
     import { getEnumFromModel } from '../../../store';
+    import Domain from '../../domain.svelte';
 
     export let data;
     let showExitModal = false;
@@ -116,75 +113,77 @@
     <title>Create site - Appwrite</title>
 </svelte:head>
 
-<WizardSecondaryContainer
+<Wizard
+    title="Create site"
     bind:showExitModal
     href={`${base}/project-${$page.params.project}/sites/`}
     confirmExit>
-    <svelte:fragment slot="title">Create site</svelte:fragment>
-    <WizardSecondaryContent>
-        <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
-            <Layout.Stack gap="xl">
-                <Card>
-                    <Layout.Stack
-                        direction="row"
-                        justifyContent="space-between"
-                        alignItems="center"
-                        gap="xs">
-                        <Layout.Stack direction="row" alignItems="center">
-                            <Icon icon={IconGithub} />
-                            <p>
-                                {data.repository?.name}
-                            </p>
-                        </Layout.Stack>
-                        <Button
-                            secondary
-                            href={`${base}/project-${$page.params.project}/sites/create-site/repositories`}>
-                            Change
-                        </Button>
+    <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
+        <Layout.Stack gap="xl">
+            <Card>
+                <Layout.Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    gap="xs">
+                    <Layout.Stack direction="row" alignItems="center">
+                        <Icon icon={IconGithub} />
+                        <p>
+                            {data.repository?.name}
+                        </p>
                     </Layout.Stack>
-                </Card>
-                <Details bind:name bind:id />
+                    <Button
+                        secondary
+                        href={`${base}/project-${$page.params.project}/sites/create-site/repositories`}>
+                        Change
+                    </Button>
+                </Layout.Stack>
+            </Card>
+            <Details bind:name bind:id />
 
-                {#await loadBranches()}
-                    <div class="u-flex u-gap-8 u-cross-center u-main-center">
-                        <div class="loader u-margin-32" />
-                    </div>
-                {:then branches}
-                    {@const options =
-                        branches
-                            ?.map((branch) => {
-                                return {
-                                    value: branch.name,
-                                    label: branch.name
-                                };
-                            })
-                            ?.sort((a, b) => {
-                                return a.label > b.label ? 1 : -1;
-                            }) ?? []}
-                    <ProductionBranch bind:branch bind:rootDir {options} />
-                {/await}
+            {#await loadBranches()}
+                <div class="u-flex u-gap-8 u-cross-center u-main-center">
+                    <div class="loader u-margin-32" />
+                </div>
+            {:then branches}
+                {@const options =
+                    branches
+                        ?.map((branch) => {
+                            return {
+                                value: branch.name,
+                                label: branch.name
+                            };
+                        })
+                        ?.sort((a, b) => {
+                            return a.label > b.label ? 1 : -1;
+                        }) ?? []}
+                <ProductionBranch bind:branch bind:rootDir {options} />
+            {/await}
 
-                <Configuration
-                    bind:installCommand
-                    bind:buildCommand
-                    bind:outputDirectory
-                    bind:selectedFramework={framework}
-                    bind:variables
-                    frameworks={data.frameworks.frameworks} />
-            </Layout.Stack>
-        </Form>
-        <svelte:fragment slot="aside">
-            <Aside {framework} repositoryName={data.repository.name} {branch} {rootDir} />
-        </svelte:fragment>
-    </WizardSecondaryContent>
+            <Configuration
+                bind:installCommand
+                bind:buildCommand
+                bind:outputDirectory
+                bind:selectedFramework={framework}
+                bind:variables
+                frameworks={data.frameworks.frameworks} />
 
-    <WizardSecondaryFooter>
-        <Button fullWidthMobile secondary on:click={() => (showExitModal = true)}>Cancel</Button>
+            <!-- <Domain /> -->
+        </Layout.Stack>
+    </Form>
+    <svelte:fragment slot="aside">
+        <Aside {framework} repositoryName={data.repository.name} {branch} {rootDir} />
+    </svelte:fragment>
+
+    <svelte:fragment slot="footer">
+        <Button size="s" fullWidthMobile secondary on:click={() => (showExitModal = true)}
+            >Cancel</Button>
         <Button
+            size="s"
             fullWidthMobile
             on:click={() => formComponent.triggerSubmit()}
             disabled={$isSubmitting}>
             Deploy
         </Button>
-    </WizardSecondaryFooter>
-</WizardSecondaryContainer>
+    </svelte:fragment>
+</Wizard>

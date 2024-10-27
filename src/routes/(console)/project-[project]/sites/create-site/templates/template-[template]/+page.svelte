@@ -37,6 +37,7 @@
     import Aside from '../../aside.svelte';
     import { ID } from '@appwrite.io/console';
     import { getEnumFromModel } from '../../../store';
+    import Domain from '../../domain.svelte';
 
     export let data;
 
@@ -46,8 +47,9 @@
     let formComponent: Form;
     let isSubmitting = writable(false);
 
-    let name = data?.template?.name ?? '';
-    let id = '';
+    let name = data.template.name;
+    let id = ID.unique();
+    let domain = id;
     let framework = data?.template?.frameworks[0];
     let branch: string;
     let rootDir = '';
@@ -83,20 +85,19 @@
     }
 
     async function create() {
+        console.log(framework.serveRuntime);
         try {
             let site = await sdk.forProject.sites.create(
                 id || ID.unique(),
                 name,
-                getEnumFromModel(
-                    data.frameworks.frameworks.find((fr) => fr.name === framework.name)
-                ),
+                'sveltekit',
+                framework.buildRuntime,
+                framework.serveRuntime,
                 true,
                 undefined,
                 framework.installCommand,
                 framework.buildCommand,
                 framework.outputDirectory,
-                undefined,
-                undefined,
                 undefined,
                 selectedInstallationId,
                 selectedRepository,
@@ -117,6 +118,7 @@
                 message: `${name ?? 'Organization'} has been created`
             });
         } catch (e) {
+            console.log(e);
             addNotification({
                 type: 'error',
                 message: e.message
@@ -138,7 +140,7 @@
     <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
         <Layout.Stack gap="xl">
             {#if selectedRepository && showSiteConfig}
-                <Card>
+                <Card isTile>
                     <Layout.Stack
                         direction="row"
                         justifyContent="space-between"
@@ -253,15 +255,17 @@
                                 <svelte:fragment slot="actions">
                                     <Button secondary href={connectGitHub().toString()} size="s">
                                         <Icon icon={IconGithub} />
-                                        <!-- TODO: replace icon -->
                                         Connect to GitHub
                                     </Button>
                                 </svelte:fragment>
                             </Empty>
                         </Card>
                     {/if}
-                {:else if data.template.variables?.length}
-                    <Configuration bind:variables templateVariables={data.template.variables} />
+                {:else}
+                    {#if data.template.variables?.length}
+                        <Configuration bind:variables templateVariables={data.template.variables} />
+                    {/if}
+                    <Domain bind:domain />
                 {/if}
             {/if}
         </Layout.Stack>
@@ -277,7 +281,9 @@
             </Layout.Stack>
 
             <Image
-                src={data.template?.preview ?? 'https://unsplash.it/357/200'}
+                objectPosition="top"
+                src={data.template?.preview ??
+                    'https://f002.backblazeb2.com/file/meldiron-public/Desktop+-+2.png'}
                 alt={data.template.name}
                 width={357}
                 height={200} />

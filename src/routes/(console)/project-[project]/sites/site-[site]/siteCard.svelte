@@ -6,6 +6,7 @@
     import { calculateTime } from '$lib/helpers/timeConversion';
     import type { Models } from '@appwrite.io/console';
     import { Image, Layout, Typography, Popover, Tooltip } from '@appwrite.io/pink-svelte';
+    import { onMount } from 'svelte';
 
     export let deployment: Models.Deployment;
     export let site: Models.Site;
@@ -13,16 +14,23 @@
 
     let rule = proxyRuleList.rules[0];
 
-    let deploymentSize = humanFileSize(deployment.size);
-    let buildSize = humanFileSize(deployment.buildSize);
-    let totalSize = humanFileSize(deployment.buildSize + deployment.size);
+    let deploymentSize;
+    let buildSize;
+    let totalSize;
+
+    onMount(() => {
+        deploymentSize = humanFileSize(deployment.size);
+        buildSize = humanFileSize(deployment.buildSize);
+        totalSize = humanFileSize(deployment.buildSize + deployment.size);
+    });
 </script>
 
 <Card padding="s">
     <Layout.Stack direction="row" gap="xl">
         <Image
             alt={site.name}
-            src={site?.preview ?? 'https://unsplash.it/545'}
+            src={site?.preview ??
+                'https://f002.backblazeb2.com/file/meldiron-public/Desktop+-+2.png'}
             style="width: 445px; height: 280px;" />
         <div>
             <Layout.Stack gap="xl">
@@ -96,7 +104,7 @@
                             <Typography.Text color="--color-fgcolor-neutral-tertiary">
                                 Total size
                             </Typography.Text>
-                            {totalSize.value + totalSize.unit}
+                            {totalSize?.value + totalSize?.unit}
                             <Tooltip>
                                 <span
                                     class="icon-info"
@@ -105,9 +113,9 @@
                                 <svelte:fragment slot="tooltip">
                                     <p>
                                         <b>Deployment size:</b>
-                                        {deploymentSize.value + deploymentSize.unit}
+                                        {deploymentSize?.value + deploymentSize?.unit}
                                         <b> Build size:</b>
-                                        {buildSize.value + buildSize.unit}
+                                        {buildSize?.value + buildSize?.unit}
                                     </p>
                                 </svelte:fragment>
                             </Tooltip>
