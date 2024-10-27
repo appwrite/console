@@ -166,7 +166,7 @@
                     {#each data.templates as template}
                         <Card.Link
                             href={`${base}/project-${$page.params.project}/sites/create-site/templates/template-${template.id}`}
-                            padding="x-small">
+                            padding="xs">
                             <Card.Media
                                 title={template.name}
                                 description={template.tagline}

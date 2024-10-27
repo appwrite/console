@@ -32,7 +32,7 @@
     }
 </script>
 
-<Card padding="x-small">
+<Card padding="xs">
     <Layout.Stack gap="l">
         <slot />
         <Layout.Stack gap="l">

@@ -77,7 +77,7 @@
             {#each data.siteList.sites as site}
                 <Card.Link
                     href={`${base}/project-${$page.params.project}/sites/site-${site.$id}`}
-                    padding="x-small">
+                    padding="xs">
                     <Card.Media
                         title={site.name}
                         description={site.domain}
