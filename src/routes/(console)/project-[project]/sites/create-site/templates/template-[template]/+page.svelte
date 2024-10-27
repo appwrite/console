@@ -90,9 +90,6 @@
 
     async function create() {
         try {
-            const siteFramework = data.frameworks.frameworks.find(
-                (fr) => fr.name === framework.name
-            );
             let site = await sdk.forProject.sites.create(
                 id || ID.unique(),
                 name,
@@ -128,6 +125,8 @@
             trackError(e, Submit.SiteCreate);
         }
     }
+
+    $: siteFramework = data.frameworks.frameworks.find((fr) => fr.name === framework.name);
 </script>
 
 <svelte:head>

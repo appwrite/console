@@ -40,14 +40,14 @@
     let installCommand = '';
     let buildCommand = '';
     let outputDirectory = '';
-    let variables: Partial<Models.TemplateVariable>[] = [
+    let variables: Partial<Models.Variable>[] = [
         {
-            name: 'APPWRITE_ENDPOINT',
+            key: 'APPWRITE_ENDPOINT',
             value: 'fsssf',
             secret: false
         },
         {
-            name: 'APPWRITE_ENDPOINT2',
+            key: 'APPWRITE_ENDPOINT2',
             value: '',
             secret: true
         }

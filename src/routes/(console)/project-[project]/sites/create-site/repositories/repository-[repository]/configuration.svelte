@@ -22,11 +22,12 @@
         IconPencil
     } from '@appwrite.io/pink-icons-svelte';
     import SecretVariableModal from './secretVariableModal.svelte';
+    import ImportSiteVariablesModal from './importSiteVariablesModal.svelte';
 
     //TODO: fix type after backend fix
     export let frameworks: Models.Framework[];
     export let selectedFramework = frameworks[0];
-    export let variables: Partial<Models.TemplateVariable>[] = [];
+    export let variables: Partial<Models.Variable>[] = [];
     export let installCommand = '';
     export let buildCommand = '';
     export let outputDirectory = '';
@@ -35,11 +36,11 @@
     let showImportModal = false;
     let showSecretModal = false;
 
-    let currentVariable: Partial<Models.TemplateVariable>;
+    let currentVariable: Partial<Models.Variable>;
     let frameworkId = selectedFramework.$id;
 
     function markAsSecret() {
-        let variable = variables.find((v) => v.name === currentVariable.name);
+        let variable = variables.find((v) => v.key === currentVariable.key);
         if (variable) {
             variable.secret = true;
         }
@@ -115,15 +116,15 @@
                         {#if variables?.length}
                             <Table.Root>
                                 <svelte:fragment slot="header">
-                                    <Table.Cell>Key</Table.Cell>
-                                    <Table.Cell>Value</Table.Cell>
-                                    <Table.Cell width="10"></Table.Cell>
+                                    <Table.Header.Cell width="200px">Key</Table.Header.Cell>
+                                    <Table.Header.Cell>Value</Table.Header.Cell>
+                                    <Table.Header.Cell width="10px"></Table.Header.Cell>
                                 </svelte:fragment>
                                 {#each variables as variable}
                                     <Table.Row>
-                                        <Table.Cell>{variable.name}</Table.Cell>
+                                        <Table.Cell>{variable.key}</Table.Cell>
                                         <Table.Cell>
-                                            <div>
+                                            <div style="max-width: 20rem">
                                                 {#if variable.secret}
                                                     <Badge content="Secret" variant="secondary" />
                                                 {:else}
@@ -131,7 +132,7 @@
                                                 {/if}
                                             </div>
                                         </Table.Cell>
-                                        <Table.Cell width="10">
+                                        <Table.Cell>
                                             <div style="margin-inline-start: auto">
                                                 <Popover placement="bottom-end" let:toggle>
                                                     <Button
@@ -227,5 +228,5 @@
 {/if}
 
 {#if showImportModal}
-    <!-- <ImportVariableModal bind:show={showImportModal} /> -->
+    <ImportSiteVariablesModal bind:show={showImportModal} bind:variables />
 {/if}
