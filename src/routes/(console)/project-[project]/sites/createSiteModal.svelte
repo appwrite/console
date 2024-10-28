@@ -41,8 +41,8 @@
                 radius="s"
                 imageRadius="xxs"
                 src={$app?.themeInUse === 'dark' ? TemplateDark : TemplateLight}
-                title="Connect a template"
-                name="connect"
+                title="Clone a template"
+                name="clone"
                 bind:group={behaviour}
                 value="templates">
                 Clone a pre-built template to quickly set up your site
