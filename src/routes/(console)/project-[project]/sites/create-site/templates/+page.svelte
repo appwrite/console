@@ -159,14 +159,15 @@
     {#if data.templates?.length > 0}
         <ul class="grid-box" style="--grid-item-size:22rem; --grid-item-size-small-screens:19rem">
             {#each data.templates as template}
+                {@const templateFrameworks = template.frameworks.map((t) => t.name)}
                 <Card.Link
                     variant="secondary"
                     href={`${base}/project-${$page.params.project}/sites/create-site/templates/template-${template.id}`}
                     padding="xs">
                     <Card.Media
                         title={template.name}
-                        description={template?.tagline}
-                        src="https://unsplash.it/300"
+                        description={templateFrameworks.join(', ')}
+                        src="https://f002.backblazeb2.com/file/meldiron-public/Desktop+-+2.png"
                         alt={template.name}>
                     </Card.Media>
                 </Card.Link>
