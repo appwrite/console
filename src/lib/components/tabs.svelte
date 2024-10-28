@@ -33,7 +33,7 @@
 
 <svelte:window on:resize={throttle(onScroll, 25)} />
 
-<div style="margin-block-start: auto; margin-block-end: 1rem;">
+<div style="margin-block-start: auto; ">
     {#if showLeft}
         <button
             class="tabs-button-scroll is-start"

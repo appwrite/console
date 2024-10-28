@@ -160,21 +160,20 @@
         <ul
             class="grid-box"
             style="--grid-item-size:18rem; --grid-item-size-small-screens:19rem; --grid-gap: 12px">
-            {#each new Array(3) as _}
-                {#each data.templates as template}
-                    {@const templateFrameworks = template.frameworks.map((t) => t.name)}
-                    <Card.Link
-                        variant="secondary"
-                        href={`${base}/project-${$page.params.project}/sites/create-site/templates/template-${template.id}`}
-                        padding="xs">
-                        <Card.Media
-                            title={template.name}
-                            description={templateFrameworks.join(', ')}
-                            src="https://f002.backblazeb2.com/file/meldiron-public/Desktop+-+2.png"
-                            alt={template.name}>
-                        </Card.Media>
-                    </Card.Link>
-                {/each}
+            {#each data.templates as template}
+                {@const templateFrameworks = template.frameworks.map((t) => t.name)}
+                <Card.Link
+                    variant="secondary"
+                    href={`${base}/project-${$page.params.project}/sites/create-site/templates/template-${template.key}`}
+                    padding="xs">
+                    <Card.Media
+                        title={template.name}
+                        description={templateFrameworks.join(', ')}
+                        src={template.preview ??
+                            'https://f002.backblazeb2.com/file/meldiron-public/Desktop+-+2.png'}
+                        alt={template.name}>
+                    </Card.Media>
+                </Card.Link>
             {/each}
         </ul>
     {:else}
