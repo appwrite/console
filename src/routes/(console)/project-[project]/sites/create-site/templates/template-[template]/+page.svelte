@@ -93,19 +93,22 @@
                 'sveltekit',
                 framework.buildRuntime,
                 framework.serveRuntime,
-                true,
+                undefined,
                 undefined,
                 framework.installCommand,
                 framework.buildCommand,
                 framework.outputDirectory,
-                undefined,
+                domain,
                 selectedInstallationId,
                 selectedRepository,
                 branch,
-                undefined,
+                undefined, //TODO: add checkbox
+                rootDir,
+                data.template.providerRepositoryId,
+                data.template.providerOwner,
                 framework.providerRootDirectory,
-                undefined,
-                rootDir
+                data.template.providerVersion,
+                undefined //TODO: add specification
             );
 
             trackEvent(Submit.SiteCreate, {});
