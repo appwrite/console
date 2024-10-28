@@ -2,8 +2,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import type { PageData } from './$types';
-    import WizardSecondaryContainer from '$lib/layout/wizardSecondaryContainer.svelte';
-    import WizardSecondaryContent from '$lib/layout/wizardSecondaryContent.svelte';
+    import { Wizard } from '$lib/layout';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import ansicolor from 'ansicolor';
@@ -19,7 +18,6 @@
 
     onMount(() => {
         const unsubscribe = sdk.forConsole.client.subscribe('console', (response) => {
-            console.log(response);
             if (
                 response.events.includes(
                     `sites.${data.deployment.resourceId}.deployments.${data.deployment.$id}.update`
@@ -87,61 +85,62 @@
     }
 </script>
 
-<WizardSecondaryContainer
+<Wizard
+    title="Create site"
     href={`${base}/project-${$page.params.project}/sites/site-${data.deployment.resourceId}`}>
-    <WizardSecondaryContent>
-        <Layout.Stack gap="xl">
-            <Card.Base padding="s">
-                <Layout.Stack direction="row">
-                    <Layout.Stack direction="row" alignItems="center">
-                        <Typography.Text variant="m-500">{data.site.name}</Typography.Text>
-                        <Tag size="s">{data.site.$id}</Tag>
-                    </Layout.Stack>
-                    <span>
-                        <Button secondary size="s">Change</Button>
-                    </span>
+    <Layout.Stack gap="xl">
+        <Card.Base padding="s">
+            <Layout.Stack direction="row">
+                <Layout.Stack direction="row" alignItems="center">
+                    <Typography.Text variant="m-500">{data.site.name}</Typography.Text>
+                    <Tag size="s">{data.site.$id}</Tag>
                 </Layout.Stack>
-            </Card.Base>
-            <Fieldset legend="Deploy">
-                <Layout.Stack>
-                    <Layout.Stack direction="row">
-                        <Typography.Text variant="m-500">Deployment logs</Typography.Text>
-                        <Badge content={status} size="xs" variant="secondary" />
-                    </Layout.Stack>
-                    <pre><code>{@html formatLogs(buildLogs)}</code></pre>
-                    <!-- <div>
+                <span>
+                    <Button secondary size="s">Change</Button>
+                </span>
+            </Layout.Stack>
+        </Card.Base>
+        <Fieldset legend="Deploy">
+            <Layout.Stack>
+                <Layout.Stack direction="row">
+                    <Typography.Text variant="m-500">Deployment logs</Typography.Text>
+                    <Badge content={status} size="xs" variant="secondary" />
+                </Layout.Stack>
+                <pre><code>{@html formatLogs(buildLogs)}</code></pre>
+                <!-- <div>
                         <Code lang="text" code={buildLogs.replace(/\\n/g, '\n')} />
                     </div> -->
-                    <Layout.Stack alignItems="flex-end">
-                        {#if status === 'ready'}
-                            <Button
-                                href={`${base}/project-${$page.params.project}/sites/create-site/finish?site=${data.site.$id}`}
-                                size="xs"
-                                text>Finish</Button>
-                        {:else}
-                            <Button size="xs" text>Cancel deployment</Button>
-                        {/if}
-                    </Layout.Stack>
+                <Layout.Stack alignItems="flex-end">
+                    {#if status === 'ready'}
+                        <Button
+                            href={`${base}/project-${$page.params.project}/sites/create-site/finish?site=${data.site.$id}`}
+                            size="xs"
+                            text>Finish</Button>
+                    {:else}
+                        <Button size="xs" text>Cancel deployment</Button>
+                    {/if}
                 </Layout.Stack>
-            </Fieldset>
-        </Layout.Stack>
-        <svelte:fragment slot="aside">
-            <Aside
-                framework={data.frameworks.frameworks.find((f) => f.name === data.site.framework)}
-                repositoryName={data.site.providerRepositoryId}
-                branch={data.site.providerBranch}
-                rootDir={data.site.providerRootDirectory}
-                domain={data.deployment.domain} />
-        </svelte:fragment>
-    </WizardSecondaryContent>
-    <svelte:fragment slot="footer">
-        <Typography.Text variant="m-400" color="--color-fgColor-neutral-tertiary"
-            >Deployment will continue in the background</Typography.Text>
-        <Button
-            size="s"
-            fullWidthMobile
-            secondary
-            href="{`${base}/project-${$page.params.project}/sites/site-${$page.params.site}`}}"
-            >Go to dashboard</Button>
+            </Layout.Stack>
+        </Fieldset>
+    </Layout.Stack>
+    <svelte:fragment slot="aside">
+        <Aside
+            framework={data.frameworks.frameworks.find((f) => f.name === data.site.framework)}
+            repositoryName={data.site.providerRepositoryId}
+            branch={data.site.providerBranch}
+            rootDir={data.site.providerRootDirectory}
+            domain={data.deployment.domain} />
     </svelte:fragment>
-</WizardSecondaryContainer>
+    <svelte:fragment slot="footer">
+        <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
+            <Typography.Text variant="m-400" color="--color-fgColor-neutral-tertiary"
+                >Deployment will continue in the background</Typography.Text>
+            <Button
+                size="s"
+                fullWidthMobile
+                secondary
+                href="{`${base}/project-${$page.params.project}/sites/site-${$page.params.site}`}}"
+                >Go to dashboard</Button>
+        </Layout.Stack>
+    </svelte:fragment>
+</Wizard>
