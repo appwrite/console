@@ -1,10 +1,9 @@
 <script lang="ts">
-    import { goto, invalidate, preloadData } from '$app/navigation';
+    import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Card } from '$lib/components';
-    import { Dependencies } from '$lib/constants';
     import { Button, Form } from '$lib/elements/forms';
     import { Wizard } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
@@ -17,10 +16,8 @@
     import ProductionBranch from '../../productionBranch.svelte';
     import Configuration from './configuration.svelte';
     import Aside from '../../aside.svelte';
-    import { ID } from '@appwrite.io/console';
+    import { BuildRuntime, Framework, ID, Query, ServeRuntime } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
-    import { getEnumFromModel } from '../../../store';
-    import Domain from '../../domain.svelte';
 
     export let data;
     let showExitModal = false;
@@ -33,11 +30,9 @@
     let framework: Models.Framework;
     let branch: string;
     let rootDir = '';
-    let selectedInstallationId = '';
-    let selectedRepository = '';
-    let installCommand = '';
-    let buildCommand = '';
-    let outputDirectory = '';
+    let installCommand = 'npm ci';
+    let buildCommand = 'npm run build';
+    let outputDirectory = 'dist';
     let variables: Partial<Models.Variable>[] = [
         {
             key: 'APPWRITE_ENDPOINT',
@@ -57,7 +52,6 @@
             data.installation.$id,
             data.repository.id
         );
-        selectedInstallationId = data.installation.$id;
         const sorted = sortBranches(branches);
         branch = sorted[0]?.name ?? null;
 
@@ -73,33 +67,32 @@
             let site = await sdk.forProject.sites.create(
                 id || ID.unique(),
                 name,
-                getEnumFromModel(
-                    data.frameworks.frameworks.find((fr) => fr.name === framework.name)
-                ),
-                true,
-                30,
+                Framework.Sveltekit,
+                BuildRuntime.Node22,
+                ServeRuntime.Static1,
+                undefined,
+                undefined,
                 installCommand,
                 buildCommand,
                 outputDirectory,
                 undefined,
-                undefined,
-                undefined,
-                selectedInstallationId,
-                selectedRepository,
+                data.installation.providerInstallationId,
+                data.repository.id,
                 branch,
-                undefined,
+                silentMode,
                 rootDir
             );
 
             trackEvent(Submit.SiteCreate, {});
 
-            await invalidate(Dependencies.ACCOUNT);
-            await preloadData(`${base}/project-${$page.params.project}/sites/site-${site.$id}`);
-            await goto(`${base}/project-${$page.params.project}/sites/site-${site.$id}`);
-            addNotification({
-                type: 'success',
-                message: `${name ?? 'Organization'} has been created`
-            });
+            const { deployments } = await sdk.forProject.sites.listDeployments(site.$id, [
+                Query.limit(1)
+            ]);
+            console.log(deployments);
+            const deployment = deployments[0];
+            await goto(
+                `${base}/project-${$page.params.project}/sites/create-site/deploying?site=${site.$id}&deployment=${deployment.$id}`
+            );
         } catch (e) {
             addNotification({
                 type: 'error',

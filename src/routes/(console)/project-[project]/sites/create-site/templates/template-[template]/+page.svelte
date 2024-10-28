@@ -1,10 +1,9 @@
 <script lang="ts">
-    import { goto, invalidate, preloadData } from '$app/navigation';
+    import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Card } from '$lib/components';
-    import { Dependencies } from '$lib/constants';
     import {
         Button,
         Form,
@@ -35,8 +34,7 @@
     import ProductionBranch from '../../productionBranch.svelte';
     import Configuration from './configuration.svelte';
     import Aside from '../../aside.svelte';
-    import { ID } from '@appwrite.io/console';
-    import { getEnumFromModel } from '../../../store';
+    import { BuildRuntime, Framework, ID, Query, ServeRuntime } from '@appwrite.io/console';
     import Domain from '../../domain.svelte';
 
     export let data;
@@ -110,9 +108,9 @@
             let site = await sdk.forProject.sites.create(
                 id || ID.unique(),
                 name,
-                'sveltekit',
-                framework.buildRuntime,
-                framework.serveRuntime,
+                Framework.Sveltekit,
+                BuildRuntime.Node22,
+                ServeRuntime.Static1,
                 undefined,
                 undefined,
                 framework.installCommand,
@@ -133,13 +131,13 @@
 
             trackEvent(Submit.SiteCreate, {});
 
-            await invalidate(Dependencies.ACCOUNT);
-            await preloadData(`${base}/project-${$page.params.project}/sites/site-${site.$id}`);
-            await goto(`${base}/project-${$page.params.project}/sites/site-${site.$id}`);
-            addNotification({
-                type: 'success',
-                message: `${name ?? 'Organization'} has been created`
-            });
+            const { deployments } = await sdk.forProject.sites.listDeployments(site.$id, [
+                Query.limit(1)
+            ]);
+            const deployment = deployments[0];
+            await goto(
+                `${base}/project-${$page.params.project}/sites/create-site/deploying?site=${site.$id}&deployment=${deployment.$id}`
+            );
         } catch (e) {
             console.log(e);
             addNotification({

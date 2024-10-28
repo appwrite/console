@@ -85,7 +85,10 @@
             {#if domain && showAfter}
                 <Layout.Stack gap="xxxs">
                     <Typography.Caption variant="400">Domain</Typography.Caption>
-                    <Typography.Text variant="m-500" color="--color-fgcolor-neutral-primary">
+                    <Typography.Text
+                        variant="m-500"
+                        color="--color-fgcolor-neutral-primary"
+                        truncate>
                         https://{domain}.appwrite.global
                     </Typography.Text>
                 </Layout.Stack>

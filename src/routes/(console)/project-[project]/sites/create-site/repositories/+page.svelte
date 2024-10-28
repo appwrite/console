@@ -8,11 +8,21 @@
     import Button from '$lib/elements/forms/button.svelte';
     import { Wizard } from '$lib/layout';
     import { installation, repository } from '$lib/stores/vcs.js';
+    import type { Models } from '@appwrite.io/console';
     import { Layout, Typography } from '@appwrite.io/pink-svelte';
 
     export let data;
     let hasInstallations = !!data?.installations?.total;
     let selectedRepository: string = null;
+
+    function onConnect(e: CustomEvent<Models.ProviderRepository>) {
+        trackEvent('click_connect_repository', {
+            from: 'cover'
+        });
+        repository.set(e.detail);
+        const target = `${base}/project-${$page.params.project}/sites/create-site/repositories/repository-${e.detail.id}?installation=${$installation.$id}`;
+        goto(target);
+    }
 </script>
 
 <Wizard title="Create site" href={`${base}/project-${$page.params.project}/sites/`}>
@@ -24,15 +34,7 @@
             from: 'github',
             to: 'cover'
         }}
-        on:connect={(e) => {
-            trackEvent('click_connect_repository', {
-                from: 'cover'
-            });
-            repository.set(e.detail);
-            goto(
-                `${base}/project-${$page.params.project}/sites/create-site/repositories/repository-${e.detail.id}?installation=${$installation.$id}`
-            );
-        }} />
+        on:connect={onConnect} />
     <svelte:fragment slot="aside">
         <Card>
             <Layout.Stack gap="m">

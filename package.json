@@ -57,6 +57,7 @@
         "@typescript-eslint/eslint-plugin": "^7.18.0",
         "@typescript-eslint/parser": "^7.18.0",
         "@vitest/ui": "^1.6.0",
+        "ansicolor": "^2.0.3",
         "eslint": "^8.57.1",
         "eslint-config-prettier": "^9.1.0",
         "eslint-plugin-svelte": "^2.44.1",
