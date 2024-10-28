@@ -12,7 +12,7 @@ const handleGithubEducationMembership = async (name: string, email: string) => {
             `${base}/education/error?message=${result.error.message}&code=${result.error.code}`
         );
     } else if (result && '$createdAt' in result) {
-        await sdk.forConsole.billing.setMailinglist('gh-student', name, email);
+        sdk.forConsole.billing.setMailinglist('gh-student', name, email);
     }
 };
 
@@ -28,9 +28,8 @@ export const load: PageLoad = async ({ parent, url }) => {
 
     if (userVisitedEducationPage()) {
         await handleGithubEducationMembership(account.name, account.email);
-    }
-
-    if (organizations.total) {
+        redirect(303, base);
+    } else if (organizations.total) {
         const teamId = account.prefs.organization ?? organizations.teams[0].$id;
         if (!teamId) {
             redirect(303, `${base}/account/organizations${url.search}`);
