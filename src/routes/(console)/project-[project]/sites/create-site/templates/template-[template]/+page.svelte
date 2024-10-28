@@ -56,7 +56,7 @@
     let connectBehaviour: 'now' | 'later' = 'now';
     let repositoryBehaviour: 'new' | 'existing' = 'new';
     let repositoryName = '';
-    let repositoryPrivate = false;
+    let repositoryPrivate = true;
     let selectedInstallationId = '';
     let selectedRepository = '';
     let showSiteConfig = false;
@@ -182,53 +182,58 @@
                 {#if connectBehaviour === 'now'}
                     {#if hasInstallations}
                         <Fieldset legend="Git repositoy">
-                            <Layout.Stack gap="l">
+                            <Layout.Stack gap="xl">
                                 <Layout.Stack direction="row" gap="xl">
                                     <InputRadio
                                         size="s"
-                                        label="Create a new repository"
+                                        label="Create new repository"
                                         bind:group={repositoryBehaviour}
                                         value="new"
                                         id="new"
                                         name="new" />
                                     <InputRadio
                                         size="s"
-                                        label="Connect to an existing repository"
+                                        label="Connect existing repository"
                                         bind:group={repositoryBehaviour}
                                         value="existing"
                                         id="existing"
                                         name="existing" />
                                 </Layout.Stack>
                                 {#if repositoryBehaviour === 'new'}
-                                    <InputSelect
-                                        id="installation"
-                                        label="Git organization"
-                                        options={data.installations.installations.map((entry) => {
-                                            return {
-                                                label: entry.organization,
-                                                value: entry.$id
-                                            };
-                                        })}
-                                        on:change={() => {
-                                            $installation = data.installations.installations.find(
-                                                (entry) => entry.$id === selectedInstallationId
-                                            );
-                                        }}
-                                        bind:value={selectedInstallationId} />
-                                    <InputText
-                                        id="repositoryName"
-                                        label="Repository name"
-                                        placeholder="my-repository"
-                                        bind:value={repositoryName} />
-                                    <InputChoice
-                                        id="repositoryPrivate"
-                                        label="Keep repository private"
-                                        bind:value={repositoryPrivate} />
-
+                                    <Layout.Stack gap="l">
+                                        <InputSelect
+                                            id="installation"
+                                            label="Git organization"
+                                            options={data.installations.installations.map(
+                                                (entry) => {
+                                                    return {
+                                                        label: entry.organization,
+                                                        value: entry.$id
+                                                    };
+                                                }
+                                            )}
+                                            on:change={() => {
+                                                $installation =
+                                                    data.installations.installations.find(
+                                                        (entry) =>
+                                                            entry.$id === selectedInstallationId
+                                                    );
+                                            }}
+                                            bind:value={selectedInstallationId} />
+                                        <InputText
+                                            id="repositoryName"
+                                            label="Repository name"
+                                            placeholder="my-repository"
+                                            bind:value={repositoryName} />
+                                        <InputChoice
+                                            id="repositoryPrivate"
+                                            label="Keep repository private"
+                                            bind:value={repositoryPrivate} />
+                                    </Layout.Stack>
                                     <Layout.Stack gap="xl" alignItems="flex-end">
                                         <Divider />
 
-                                        <Button>Create</Button>
+                                        <Button size="s" on:click>Create</Button>
                                     </Layout.Stack>
                                 {:else}
                                     <Repositories

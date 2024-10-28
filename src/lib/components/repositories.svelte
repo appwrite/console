@@ -169,6 +169,7 @@
                                         {#if action === 'button'}
                                             <div class="u-margin-inline-start-auto">
                                                 <Button
+                                                    size="s"
                                                     secondary
                                                     on:click={() => dispatch('connect', repo)}>
                                                     Connect
