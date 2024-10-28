@@ -8,7 +8,7 @@
     import { wizard } from '$lib/stores/wizard';
     import { onMount } from 'svelte';
     import { canWriteSites } from '$lib/stores/roles.js';
-    import { Icon, Popover } from '@appwrite.io/pink-svelte';
+    import { Icon, Popover, Image } from '@appwrite.io/pink-svelte';
     import { Button } from '$lib/elements/forms';
     import { IconDotsHorizontal } from '@appwrite.io/pink-icons-svelte';
     import { Card } from '@appwrite.io/pink-svelte';
@@ -17,6 +17,9 @@
     import CreateSiteModal from './createSiteModal.svelte';
     import { calculateTime } from '$lib/helpers/timeConversion';
     import { timeFromNow } from '$lib/helpers/date';
+    import EmptyLight from './empty-light.png';
+    import { app } from '$lib/stores/app';
+    import EmptyDark from './empty-dark.png';
 
     export let data;
     let show = false;
@@ -114,7 +117,15 @@
             allowCreate={TMPSITEROLES}
             href="https://appwrite.io/docs/products/sites"
             target="site"
-            on:click={() => (show = true)} />
+            on:click={() => (show = true)}>
+            <svelte:fragment slot="media">
+                {#if $app.themeInUse === 'dark'}
+                    <Image src={EmptyDark} alt="Empty state" height={235} width={1079} />
+                {:else}
+                    <Image src={EmptyLight} alt="Empty state" height={235} width={1079} />
+                {/if}
+            </svelte:fragment>
+        </Empty>
     {/if}
 </Container>
 

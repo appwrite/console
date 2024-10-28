@@ -25,6 +25,7 @@
 
 {#if single}
     <Card.Base padding="none">
+        <slot name="media" />
         <Empty
             title={`Create your first ${target}`}
             description="Need a hand? Learn more in our documentation.">
