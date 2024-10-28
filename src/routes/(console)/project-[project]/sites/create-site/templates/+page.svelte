@@ -169,7 +169,7 @@
                     <Card.Media
                         title={template.name}
                         description={templateFrameworks.join(', ')}
-                        src={template.preview ??
+                        src={template?.preview ??
                             'https://f002.backblazeb2.com/file/meldiron-public/Desktop+-+2.png'}
                         alt={template.name}>
                     </Card.Media>

@@ -45,7 +45,7 @@
                 name="connect"
                 bind:group={behaviour}
                 value="templates">
-                Connect to one of your existing Git repositories
+                Clone a pre-built template to quickly set up your site
             </LabelCard>
         </div>
     </Layout.Stack>
