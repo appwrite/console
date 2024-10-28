@@ -20,11 +20,13 @@
               invertColumns?: boolean;
           };
 
-    export let title: $$Props['title'];
+    export let title: $$Props['title'] = '';
     export let confirmExit: $$Props['confirmExit'] = false;
     export let href: $$Props['href'] = '';
     export let showExitModal: $$Props['showExitModal'] = false;
     export let invertColumns: $$Props['invertColumns'] = false;
+    export let hideAside = false;
+    export let hideFooter = false;
 
     function handleKeydown(event: KeyboardEvent) {
         if (event.key === 'Escape') {
@@ -47,6 +49,8 @@
     <Layout.Wizard
         {title}
         {invertColumns}
+        {hideAside}
+        {hideFooter}
         href={confirmExit ? null : href}
         buttonMethod={() => {
             if (confirmExit) {
