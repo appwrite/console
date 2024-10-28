@@ -710,7 +710,7 @@ export class Billing {
 
     async setMailinglist(listId: string, name: string, email: string): Promise<void> {
         const path = `/mailinglists/${listId}`;
-        const uri = new URL(this.client.config.endpoint + path);
+        const uri = new URL('https://growth.appwrite.io/v1' + path);
         const params = {
             email,
             name
@@ -728,7 +728,7 @@ export class Billing {
 
     async setMembership(
         programId: string
-    ): Promise<{ name: string; email: string } | { error: { code: number; message: string } }> {
+    ): Promise<{ $createdAt: string } | { error: { code: number; message: string } }> {
         const path = `/console/programs/${programId}/memberships`;
         const uri = new URL(this.client.config.endpoint + path);
         try {
