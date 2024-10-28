@@ -25,3 +25,12 @@ export const handleError: HandleClientError = Sentry.handleErrorWithSentry(
         };
     }
 );
+const originalFetch = window.fetch;
+
+const customFetch = async (input, init = {}) => {
+    init.credentials = 'include';
+    console.log('adjusted => ', input);
+    return originalFetch(input, init);
+};
+
+window.fetch = customFetch;

@@ -3,7 +3,7 @@ import { base } from '$app/paths';
 import type { PageLoad } from './$types';
 import { sdk } from '$lib/stores/sdk';
 
-const handleGithubEducationMembership = async () => {
+const handleGithubEducationMembership = async (name: string, email: string) => {
     const result = await sdk.forConsole.billing.setMembership('github-student-developer');
     if (result && 'error' in result) {
         await sdk.forConsole.account.deleteSession('current');
@@ -11,8 +11,8 @@ const handleGithubEducationMembership = async () => {
             303,
             `${base}/education/error?message=${result.error.message}&code=${result.error.code}`
         );
-    } else if (result && 'name' in result) {
-        await sdk.forConsole.billing.setMailinglist('gh-student', result.name, result.email);
+    } else if (result && '$createdAt' in result) {
+        await sdk.forConsole.billing.setMailinglist('gh-student', name, email);
     }
 };
 
@@ -27,8 +27,7 @@ export const load: PageLoad = async ({ parent, url }) => {
     const { organizations, account } = await parent();
 
     if (userVisitedEducationPage()) {
-        console.log('account', account);
-        await handleGithubEducationMembership();
+        await handleGithubEducationMembership(account.name, account.email);
     }
 
     if (organizations.total) {
