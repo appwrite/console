@@ -32,24 +32,30 @@
     export { classes as class };
     export let style = '';
     export let padding: $$Props['padding'] = 'm';
+    export let radius: $$Props['radius'] = 'm';
 
     $: resolvedClasses = [!isTile && 'common-section', classes].filter(Boolean).join(' ');
 </script>
 
 {#if href}
-    <Card.Link class={resolvedClasses} on:click {href} {style} {padding}>
+    <Card.Link class={resolvedClasses} on:click {href} {style} {padding} {radius}>
         <Layout.Stack gap="xl">
             <slot />
         </Layout.Stack>
     </Card.Link>
 {:else if isButton}
-    <Card.Button class={resolvedClasses} {style} {padding} on:click>
+    <Card.Button class={resolvedClasses} {style} {padding} {radius} on:click>
         <Layout.Stack gap="xl">
             <slot />
         </Layout.Stack>
     </Card.Button>
 {:else}
-    <Card.Base class={resolvedClasses} {style} border={isDashed ? 'dashed' : 'solid'} {padding}>
+    <Card.Base
+        class={resolvedClasses}
+        {style}
+        border={isDashed ? 'dashed' : 'solid'}
+        {padding}
+        {radius}>
         <Layout.Stack gap="xl">
             <slot />
         </Layout.Stack>

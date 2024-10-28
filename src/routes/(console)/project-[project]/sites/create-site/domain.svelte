@@ -3,7 +3,7 @@
     import { Button, InputText } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
     import { ResourceType } from '@appwrite.io/console';
-    import { Fieldset, Layout, Divider, Status } from '@appwrite.io/pink-svelte';
+    import { Fieldset, Layout, Divider, Status, Typography } from '@appwrite.io/pink-svelte';
 
     export let domain: string;
     const orginalDomain = domain.split('').join('');
@@ -26,8 +26,14 @@
 {#if showConfig}
     <Fieldset legend="Domains">
         <Layout.Stack>
-            <Layout.Stack gap="xs">
-                <InputText id="domain" placeholder="my-domain" bind:value={domain} />
+            <Layout.Stack gap="s">
+                <InputText id="domain" placeholder="my-domain" bind:value={domain}>
+                    <svelte:fragment slot="end">
+                        <Typography.Text variant="m-400" color="--color-fgcolor-neutral-tertiary">
+                            .appwrite.global
+                        </Typography.Text>
+                    </svelte:fragment>
+                </InputText>
                 <Status
                     status={domainSuccess ? 'complete' : 'failed'}
                     label={domainSuccess ? 'Domain is available' : 'Domain is not available'}>
@@ -47,18 +53,21 @@
         </Layout.Stack>
     </Fieldset>
 {:else}
-    <Card isTile>
+    <Card isTile padding="s" radius="s">
         <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
-            <p>
-                <span class="icon-globe-alt"></span>
-                {domain}.appwrite.global
-            </p>
+            <Typography.Text variant="m-400" color="--color-fgcolor-neutral-primary">
+                <Layout.Stack direction="row" gap="s" alignItems="center">
+                    <span class="icon-globe-alt"></span>
+                    {domain}.appwrite.global
+                </Layout.Stack>
+            </Typography.Text>
             <Button
+                size="s"
                 secondary
                 on:click={() => {
                     showConfig = true;
                 }}>
-                Change
+                Update
             </Button>
         </Layout.Stack>
     </Card>
