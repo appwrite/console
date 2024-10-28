@@ -15,6 +15,8 @@
     export let repositoryName: string;
     export let branch: string;
     export let rootDir: string;
+    export let domain: string;
+    export let showAfter = true;
 
     function getIcon(fr: string) {
         switch (true) {
@@ -50,7 +52,7 @@
                     </Layout.Stack>
                 </Layout.Stack>
             {/if}
-            {#if repositoryName}
+            {#if repositoryName && showAfter}
                 <Layout.Stack gap="xxxs">
                     <Typography.Caption variant="400">Git repository</Typography.Caption>
                     <Layout.Stack gap="xs" alignItems="center" direction="row">
@@ -61,7 +63,7 @@
                     </Layout.Stack>
                 </Layout.Stack>
             {/if}
-            {#if branch}
+            {#if branch && showAfter}
                 <Layout.Stack gap="xxxs">
                     <Typography.Caption variant="400">Branch</Typography.Caption>
                     <Layout.Stack gap="xs" alignItems="center" direction="row">
@@ -72,11 +74,19 @@
                     </Layout.Stack>
                 </Layout.Stack>
             {/if}
-            {#if rootDir}
+            {#if rootDir && showAfter}
                 <Layout.Stack gap="xxxs">
                     <Typography.Caption variant="400">Root directory</Typography.Caption>
                     <Typography.Text variant="m-500" color="--color-fgcolor-neutral-primary">
                         {rootDir}
+                    </Typography.Text>
+                </Layout.Stack>
+            {/if}
+            {#if domain && showAfter}
+                <Layout.Stack gap="xxxs">
+                    <Typography.Caption variant="400">Domain</Typography.Caption>
+                    <Typography.Text variant="m-500" color="--color-fgcolor-neutral-primary">
+                        https://{domain}.appwrite.global
                     </Typography.Text>
                 </Layout.Stack>
             {/if}

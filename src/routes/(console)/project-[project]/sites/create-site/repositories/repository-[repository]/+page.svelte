@@ -50,6 +50,7 @@
             secret: true
         }
     ];
+    let silentMode = false;
 
     async function loadBranches() {
         const { branches } = await sdk.forProject.vcs.listRepositoryBranches(
@@ -157,7 +158,7 @@
                         ?.sort((a, b) => {
                             return a.label > b.label ? 1 : -1;
                         }) ?? []}
-                <ProductionBranch bind:branch bind:rootDir {options} />
+                <ProductionBranch bind:branch bind:rootDir {options} bind:silentMode />
             {/await}
 
             <Configuration

@@ -51,8 +51,8 @@
     let id = ID.unique();
     let domain = id;
     let framework = data?.template?.frameworks[0];
-    let branch: string;
-    let rootDir = '';
+    let branch = 'main';
+    let rootDir = './';
     let connectBehaviour: 'now' | 'later' = 'now';
     let repositoryBehaviour: 'new' | 'existing' = 'new';
     let repositoryName = '';
@@ -61,9 +61,12 @@
     let selectedRepository = '';
     let showSiteConfig = false;
     let variables = [];
+    let silentMode = false;
 
     onMount(() => {
-        $installation ??= data.installations[0];
+        if (!$installation?.$id) {
+            $installation = data.installations.installations[0];
+        }
         selectedInstallationId = $installation?.$id;
     });
 
@@ -84,8 +87,25 @@
         return target;
     }
 
+    async function createRepository() {
+        try {
+            const repo = await sdk.forProject.vcs.createRepository(
+                $installation.$id,
+                repositoryName,
+                repositoryPrivate
+            );
+            repository.set(repo);
+            selectedRepository = repo.id;
+            showSiteConfig = true;
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                message: error.message
+            });
+        }
+    }
+
     async function create() {
-        console.log(framework.serveRuntime);
         try {
             let site = await sdk.forProject.sites.create(
                 id || ID.unique(),
@@ -102,7 +122,7 @@
                 selectedInstallationId,
                 selectedRepository,
                 branch,
-                undefined, //TODO: add checkbox
+                silentMode,
                 rootDir,
                 data.template.providerRepositoryId,
                 data.template.providerOwner,
@@ -129,6 +149,11 @@
             trackError(e, Submit.SiteCreate);
         }
     }
+
+    $: if (repositoryBehaviour === 'new') {
+        selectedInstallationId = $installation?.$id;
+        repositoryName = name.split(' ').join('-').toLowerCase();
+    }
 </script>
 
 <svelte:head>
@@ -143,31 +168,37 @@
     <Form bind:this={formComponent} onSubmit={create} bind:isSubmitting>
         <Layout.Stack gap="xl">
             {#if selectedRepository && showSiteConfig}
-                <Card isTile>
-                    <Layout.Stack
-                        direction="row"
-                        justifyContent="space-between"
-                        alignItems="center"
-                        gap="xs">
-                        <Layout.Stack direction="row" alignItems="center">
-                            <Icon icon={IconGithub} />
-                            <p>
-                                {$repository.name}
-                            </p>
+                <Layout.Stack gap="xxl">
+                    <Card isTile padding="s" radius="s">
+                        <Layout.Stack
+                            direction="row"
+                            justifyContent="space-between"
+                            alignItems="center"
+                            gap="xs">
+                            <Layout.Stack direction="row" alignItems="center" gap="s">
+                                <Icon size="s" icon={IconGithub} />
+                                <Typography.Text
+                                    variant="m-400"
+                                    color="--color-fgcolor-neutral-primary">
+                                    {$repository.name}
+                                </Typography.Text>
+                            </Layout.Stack>
+                            <Button
+                                size="s"
+                                secondary
+                                on:click={() => {
+                                    showSiteConfig = false;
+                                }}>
+                                Update
+                            </Button>
                         </Layout.Stack>
-                        <Button
-                            secondary
-                            on:click={() => {
-                                showSiteConfig = false;
-                            }}>
-                            Change
-                        </Button>
-                    </Layout.Stack>
-                </Card>
-                <ProductionBranch bind:branch bind:rootDir />
-                {#if data.template.variables?.length}
-                    <Configuration bind:variables templateVariables={data.template.variables} />
-                {/if}
+                    </Card>
+                    <ProductionBranch bind:branch bind:rootDir bind:silentMode />
+                    {#if data.template.variables?.length}
+                        <Configuration bind:variables templateVariables={data.template.variables} />
+                    {/if}
+                    <Domain bind:domain />
+                </Layout.Stack>
             {:else}
                 {@const options = data.template.frameworks.map((framework) => {
                     return {
@@ -233,7 +264,12 @@
                                     <Layout.Stack gap="xl" alignItems="flex-end">
                                         <Divider />
 
-                                        <Button size="s" on:click>Create</Button>
+                                        <Button
+                                            size="s"
+                                            on:click={createRepository}
+                                            disabled={!repositoryName || !$installation?.$id}>
+                                            Create
+                                        </Button>
                                     </Layout.Stack>
                                 {:else}
                                     <Repositories
@@ -280,7 +316,7 @@
         </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">
-        <Aside {framework} {repositoryName} {branch} {rootDir}>
+        <Aside {framework} {repositoryName} {branch} {rootDir} {domain} showAfter={showSiteConfig}>
             <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
                 <Typography.Text variant="m-500" truncate>
                     {name || data.template.name}
