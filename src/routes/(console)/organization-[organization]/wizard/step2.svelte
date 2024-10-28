@@ -70,7 +70,14 @@
         <ul
             class="grid-box u-margin-block-start-16"
             style="--p-grid-item-size:12em; --p-grid-item-size-small-screens:12rem; --grid-gap: 1rem;">
-            {#each $regions.regions.filter((r) => r.$id !== 'default') as region}
+            {#each $regions.regions
+                .filter((r) => r.$id !== 'default')
+                .sort((regionA, regionB) => {
+                    if (regionA.disabled >= regionB.disabled) {
+                        return 1;
+                    }
+                    return -1;
+                }) as region}
                 <li>
                     <RegionCard
                         name="region"
