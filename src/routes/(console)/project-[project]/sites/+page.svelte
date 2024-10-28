@@ -15,6 +15,8 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import CreateSiteModal from './createSiteModal.svelte';
+    import { calculateTime } from '$lib/helpers/timeConversion';
+    import { timeFromNow } from '$lib/helpers/date';
 
     export let data;
     let show = false;
@@ -77,11 +79,12 @@
             {#each data.siteList.sites as site}
                 <Card.Link
                     href={`${base}/project-${$page.params.project}/sites/site-${site.$id}`}
-                    padding="xs">
+                    padding="xxs">
                     <Card.Media
                         title={site.name}
-                        description={site.domain}
-                        src={site.preview}
+                        description={`Deployed ${timeFromNow(site.$updatedAt)}`}
+                        src={site.preview ??
+                            'https://f002.backblazeb2.com/file/meldiron-public/Desktop+-+2.png'}
                         alt={site.name}>
                         <Popover placement="bottom-end" let:toggle>
                             <Button

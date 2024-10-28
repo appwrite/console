@@ -19,23 +19,25 @@
 
 <Fieldset legend="Details">
     <Layout.Stack gap="l">
-        <InputText
-            label="Name"
-            id="name"
-            name="name"
-            bind:value={name}
-            required
-            placeholder="Enter name" />
-        {#if showCustomId}
-            <CustomId bind:id bind:show={showCustomId} name="Site" fullWidth />
-        {:else}
-            <div>
-                <Pill button on:click={() => (showCustomId = !showCustomId)}>
-                    <span class="icon-pencil" aria-hidden="true" />
-                    <span class="text">Site ID </span>
-                </Pill>
-            </div>
-        {/if}
+        <Layout.Stack gap="s">
+            <InputText
+                label="Name"
+                id="name"
+                name="name"
+                bind:value={name}
+                required
+                placeholder="Enter name" />
+            {#if showCustomId}
+                <CustomId bind:id bind:show={showCustomId} name="Site" fullWidth />
+            {:else}
+                <div>
+                    <Pill button on:click={() => (showCustomId = !showCustomId)}>
+                        <span class="icon-pencil" aria-hidden="true" />
+                        <span class="text">Site ID </span>
+                    </Pill>
+                </div>
+            {/if}
+        </Layout.Stack>
         {#if showFramework}
             <InputSelect
                 id="framework"

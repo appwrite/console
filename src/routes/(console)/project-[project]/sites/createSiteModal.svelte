@@ -23,7 +23,9 @@
         <div style="flex-grow: 1; min-width: 245px">
             <LabelCard
                 variant="secondary"
-                padding="s"
+                padding="xs"
+                radius="s"
+                imageRadius="xxs"
                 src={$app?.themeInUse === 'dark' ? RepoDark : RepoLight}
                 title="Connect a repository"
                 name="connect"
@@ -35,7 +37,9 @@
         <div style="flex-grow: 1; min-width: 245px">
             <LabelCard
                 variant="secondary"
-                padding="s"
+                padding="xs"
+                radius="s"
+                imageRadius="xxs"
                 src={$app?.themeInUse === 'dark' ? TemplateDark : TemplateLight}
                 title="Connect a template"
                 name="connect"

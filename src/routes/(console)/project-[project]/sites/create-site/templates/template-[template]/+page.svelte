@@ -175,9 +175,10 @@
                         label: framework.name
                     };
                 })}
-
-                <Details bind:name bind:id bind:framework {options} showFramework />
-                <ConnectBehaviour bind:connectBehaviour />
+                <Layout.Stack gap="xxl">
+                    <Details bind:name bind:id bind:framework {options} showFramework />
+                    <ConnectBehaviour bind:connectBehaviour />
+                </Layout.Stack>
                 {#if connectBehaviour === 'now'}
                     {#if hasInstallations}
                         <Fieldset legend="Git repositoy">

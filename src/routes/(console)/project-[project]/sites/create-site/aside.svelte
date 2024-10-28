@@ -44,7 +44,9 @@
                         {#if frameworkIcon}
                             <Icon size="s" icon={frameworkIcon}></Icon>
                         {/if}
-                        {framework.name}
+                        <Typography.Text variant="m-500" color="--color-fgcolor-neutral-primary">
+                            {framework.name}
+                        </Typography.Text>
                     </Layout.Stack>
                 </Layout.Stack>
             {/if}
@@ -53,7 +55,9 @@
                     <Typography.Caption variant="400">Git repository</Typography.Caption>
                     <Layout.Stack gap="xs" alignItems="center" direction="row">
                         <Icon size="s" icon={IconGithub}></Icon>
-                        <Typography.Text variant="m-500">{repositoryName}</Typography.Text>
+                        <Typography.Text variant="m-500" color="--color-fgcolor-neutral-primary">
+                            {repositoryName}
+                        </Typography.Text>
                     </Layout.Stack>
                 </Layout.Stack>
             {/if}
@@ -62,7 +66,7 @@
                     <Typography.Caption variant="400">Branch</Typography.Caption>
                     <Layout.Stack gap="xs" alignItems="center" direction="row">
                         <Icon size="s" icon={IconGitBranch}></Icon>
-                        <Typography.Text variant="m-500">
+                        <Typography.Text variant="m-500" color="--color-fgcolor-neutral-primary">
                             {branch}
                         </Typography.Text>
                     </Layout.Stack>
@@ -71,7 +75,7 @@
             {#if rootDir}
                 <Layout.Stack gap="xxxs">
                     <Typography.Caption variant="400">Root directory</Typography.Caption>
-                    <Typography.Text variant="m-500">
+                    <Typography.Text variant="m-500" color="--color-fgcolor-neutral-primary">
                         {rootDir}
                     </Typography.Text>
                 </Layout.Stack>

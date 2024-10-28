@@ -12,7 +12,7 @@
     import Wizard from '$lib/layout/wizard.svelte';
     import { goto } from '$app/navigation';
     import { debounce } from '$lib/helpers/debounce.js';
-    import { Card } from '@appwrite.io/pink-svelte';
+    import { Card, Layout } from '@appwrite.io/pink-svelte';
     import { templatesList } from '$lib/stores/templates.js';
 
     export let data;
@@ -101,12 +101,12 @@
 
 <Wizard href={`${base}/project-${$page.params.project}/sites/`} title="Create Site" invertColumns>
     <svelte:fragment slot="aside">
-        <InputSearch
-            placeholder="Search templates"
-            value={$page.url.searchParams.get('search')}
-            on:clear={clearSearch}
-            on:change={applySearch} />
-        <div class="u-margin-block-start-24">
+        <Layout.Stack gap="xxl">
+            <InputSearch
+                placeholder="Search templates"
+                value={$page.url.searchParams.get('search')}
+                on:clear={clearSearch}
+                on:change={applySearch} />
             <Collapsible>
                 <CollapsibleItem>
                     <svelte:fragment slot="title">Use case</svelte:fragment>
@@ -153,24 +153,28 @@
                     </ul>
                 </CollapsibleItem>
             </Collapsible>
-        </div>
+        </Layout.Stack>
     </svelte:fragment>
 
     {#if data.templates?.length > 0}
-        <ul class="grid-box" style="--grid-item-size:22rem; --grid-item-size-small-screens:19rem">
-            {#each data.templates as template}
-                {@const templateFrameworks = template.frameworks.map((t) => t.name)}
-                <Card.Link
-                    variant="secondary"
-                    href={`${base}/project-${$page.params.project}/sites/create-site/templates/template-${template.id}`}
-                    padding="xs">
-                    <Card.Media
-                        title={template.name}
-                        description={templateFrameworks.join(', ')}
-                        src="https://f002.backblazeb2.com/file/meldiron-public/Desktop+-+2.png"
-                        alt={template.name}>
-                    </Card.Media>
-                </Card.Link>
+        <ul
+            class="grid-box"
+            style="--grid-item-size:18rem; --grid-item-size-small-screens:19rem; --grid-gap: 12px">
+            {#each new Array(3) as _}
+                {#each data.templates as template}
+                    {@const templateFrameworks = template.frameworks.map((t) => t.name)}
+                    <Card.Link
+                        variant="secondary"
+                        href={`${base}/project-${$page.params.project}/sites/create-site/templates/template-${template.id}`}
+                        padding="xs">
+                        <Card.Media
+                            title={template.name}
+                            description={templateFrameworks.join(', ')}
+                            src="https://f002.backblazeb2.com/file/meldiron-public/Desktop+-+2.png"
+                            alt={template.name}>
+                        </Card.Media>
+                    </Card.Link>
+                {/each}
             {/each}
         </ul>
     {:else}
@@ -186,8 +190,8 @@
             </div>
         </EmptySearch>
     {/if}
-    <div class="u-flex u-margin-block-start-32 u-main-space-between u-cross-center">
+    <!-- <div class="u-flex u-margin-block-start-32 u-main-space-between u-cross-center">
         <p class="text">Total templates: {data.templates?.length}</p>
         <Pagination limit={data.limit} offset={data.offset} sum={data.templates?.length} />
-    </div>
+    </div> -->
 </Wizard>
