@@ -1,8 +1,8 @@
 <script lang="ts">
     import Card from '$lib/components/card.svelte';
     import { Button, InputText } from '$lib/elements/forms';
-    import { debounce } from '$lib/helpers/debounce';
     import { sdk } from '$lib/stores/sdk';
+    import { ResourceType } from '@appwrite.io/console';
     import { Fieldset, Layout, Divider, Status } from '@appwrite.io/pink-svelte';
 
     export let domain: string;
@@ -10,15 +10,16 @@
     let showConfig = false;
     let domainSuccess = true;
 
-    async function checkDomain(domain: string) {
-        const check = await sdk.forProject.proxy.checkSubdomain('site', domain);
-        console.log(check);
-    }
-
+    //TODO: debounce this
     $: if (domain) {
-        console.log('test');
-        checkDomain(domain);
-        debounce(() => checkDomain(domain), 500);
+        sdk.forProject.proxy
+            .checkSubdomain(ResourceType.Site, domain)
+            .then(() => {
+                domainSuccess = true;
+            })
+            .catch(() => {
+                domainSuccess = false;
+            });
     }
 </script>
 
@@ -27,7 +28,10 @@
         <Layout.Stack>
             <Layout.Stack gap="xs">
                 <InputText id="domain" placeholder="my-domain" bind:value={domain} />
-                <Status status={domainSuccess ? 'success' : 'failed'} />
+                <Status
+                    status={domainSuccess ? 'complete' : 'failed'}
+                    label={domainSuccess ? 'Domain is available' : 'Domain is not available'}>
+                </Status>
             </Layout.Stack>
             <Divider />
             <Layout.Stack direction="row" justifyContent="flex-end" gap="s">
@@ -37,10 +41,8 @@
                         domain = orginalDomain;
                         showConfig = false;
                     }}>Cancel</Button>
-                <Button
-                    secondary
-                    disabled={domainStatus !== 'success'}
-                    on:click={() => (showConfig = false)}>Update</Button>
+                <Button secondary disabled={!domainSuccess} on:click={() => (showConfig = false)}
+                    >Update</Button>
             </Layout.Stack>
         </Layout.Stack>
     </Fieldset>

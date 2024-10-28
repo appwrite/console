@@ -6,7 +6,6 @@
     import { calculateTime } from '$lib/helpers/timeConversion';
     import type { Models } from '@appwrite.io/console';
     import { Image, Layout, Typography, Popover, Tooltip } from '@appwrite.io/pink-svelte';
-    import { onMount } from 'svelte';
 
     export let deployment: Models.Deployment;
     export let site: Models.Site;
@@ -14,15 +13,9 @@
 
     let rule = proxyRuleList.rules[0];
 
-    let deploymentSize;
-    let buildSize;
-    let totalSize;
-
-    onMount(() => {
-        deploymentSize = humanFileSize(deployment.size);
-        buildSize = humanFileSize(deployment.buildSize);
-        totalSize = humanFileSize(deployment.buildSize + deployment.size);
-    });
+    $: deploymentSize = humanFileSize(deployment?.size ?? 0);
+    $: buildSize = humanFileSize(deployment?.buildSize ?? 0);
+    $: totalSize = humanFileSize((deployment?.buildSize ?? 0) + (deployment?.size ?? 0));
 </script>
 
 <Card padding="s">
