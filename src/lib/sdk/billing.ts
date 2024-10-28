@@ -983,7 +983,7 @@ export class Billing {
         };
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
-            'post',
+            'patch',
             uri,
             {
                 'content-type': 'application/json'
