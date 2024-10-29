@@ -12,7 +12,7 @@ const handleGithubEducationMembership = async (name: string, email: string) => {
             `${base}/education/error?message=${result.error.message}&code=${result.error.code}`
         );
     } else if (result && '$createdAt' in result) {
-        sdk.forConsole.billing.setMailinglist('gh-student', name, email);
+        setToGhStudentMailingList(name, email);
     }
 };
 
@@ -39,4 +39,16 @@ export const load: PageLoad = async ({ parent, url }) => {
     } else {
         redirect(303, `${base}/onboarding${url.search}`);
     }
+};
+
+const setToGhStudentMailingList = async (name: string, email: string) => {
+    const path = `/mailinglists/gh-student`;
+    const body = name !== '' ? { name, email } : { email };
+    return fetch('https://growth.appwrite.io/v1' + path, {
+        method: 'POST',
+        body: JSON.stringify(body),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
 };

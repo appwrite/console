@@ -708,27 +708,6 @@ export class Billing {
         );
     }
 
-    async setMailinglist(listId: string, name: string, email: string): Promise<void> {
-        const path = `/mailinglists/${listId}`;
-        const uri = new URL('https://growth.appwrite.io/v1' + path);
-        const params =
-            name !== ''
-                ? {
-                      email,
-                      name
-                  }
-                : { email };
-
-        return await this.client.call(
-            'POST',
-            uri,
-            {
-                'content-type': 'application/json'
-            },
-            params
-        );
-    }
-
     async setMembership(
         programId: string
     ): Promise<{ $createdAt: string } | { error: { code: number; message: string } }> {
