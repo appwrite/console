@@ -3,9 +3,9 @@ import { render } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
 import { InputId } from '../../../src/lib/elements/forms';
 
-const validStrings = ['valid-string', 'validstring', 'validstring123', 'valid-'];
+const validStrings = ['valid_string', 'valid-string', 'valid.string', 'validstring123', 'valid_'];
 
-const invalidStrings = ['-invalid', '.invalid', 'in_valid', 'in.va.lid'];
+const invalidStrings = ['-invalid', '.invalid', '_invalid'];
 
 test('shows id input', () => {
     const { getByPlaceholderText } = render(InputId);
