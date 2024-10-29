@@ -11,8 +11,8 @@ export async function load({ depends }) {
             Query.equal('source', ['Appwrite', 'Firebase', 'NHost', 'Supabase']),
             Query.or([
                 Query.equal('destination', ['Appwrite', 'Firebase', 'NHost', 'Supabase']),
-                Query.isNull('destination'),
-            ]),
+                Query.isNull('destination')
+            ])
         ]);
 
         return {
