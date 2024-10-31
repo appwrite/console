@@ -42,37 +42,6 @@
                 type: 'success',
                 message: `Attribute ${key ?? data?.key} has been created`
             });
-            if ($option.type === 'relationship') {
-                let counter = localStorage.getItem('createRelationshipCounter');
-
-                if (counter) {
-                    const parsedCounter = parseInt(counter);
-                    if (parsedCounter === 2) {
-                        addNotification({
-                            type: 'info',
-                            icon: 'question-mark-circle',
-                            message: `How is your experience with our new "Relationships" feature? We'd love to hear your feedback!`,
-                            timeout: 15000,
-                            buttons: [
-                                {
-                                    name: 'Give Feedback',
-                                    method: () => {
-                                        feedback.toggleFeedback();
-                                        dismissAllNotifications();
-                                    }
-                                }
-                            ]
-                        });
-                    } else if (parsedCounter < 2) {
-                        localStorage.setItem(
-                            'createRelationshipCounter',
-                            (parsedCounter + 1).toString()
-                        );
-                    }
-                } else {
-                    localStorage.setItem('createRelationshipCounter', '1');
-                }
-            }
             showCreate = false;
             trackEvent(Submit.AttributeCreate);
         } catch (e) {
