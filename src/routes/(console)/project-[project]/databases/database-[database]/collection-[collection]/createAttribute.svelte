@@ -5,12 +5,11 @@
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { page } from '$app/stores';
-    import { addNotification, dismissAllNotifications } from '$lib/stores/notifications';
+    import { addNotification } from '$lib/stores/notifications';
     import { base } from '$app/paths';
     import type { Attributes } from './store';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { preferences } from '$lib/stores/preferences';
-    import { feedback } from '$lib/stores/feedback';
 
     export let showCreate = false;
     export let selectedOption: Option['name'] = null;
