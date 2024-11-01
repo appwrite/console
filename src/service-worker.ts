@@ -22,7 +22,11 @@ sw.addEventListener('install', (event) => {
         await cache.addAll(ASSETS);
     }
 
-    event.waitUntil(addFilesToCache());
+    // Check if the page URL does not match the exclusion path
+    const shouldCache = !/\/console\/auth\/oauth2\/.*/.test(location.pathname);
+    if (shouldCache) {
+        event.waitUntil(addFilesToCache());
+    }
 });
 
 sw.addEventListener('activate', (event) => {
