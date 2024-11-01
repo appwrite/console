@@ -209,6 +209,10 @@
                         </div>
                     </CollapsibleItem>
                 </Collapsible>
+            {:else}
+                <div class="u-flex u-main-center">
+                    <div class="loader"></div>
+                </div>
             {/if}
         </svelte:fragment>
         <svelte:fragment slot="actions">
