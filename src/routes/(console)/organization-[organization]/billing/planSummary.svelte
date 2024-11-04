@@ -210,7 +210,7 @@
                     </CollapsibleItem>
                 </Collapsible>
             {:else}
-                <div class="u-flex u-main-center">
+                <div class="u-flex u-main-center loader-container">
                     <div class="loader"></div>
                 </div>
             {/if}
@@ -253,3 +253,10 @@
         </svelte:fragment>
     </CardGrid>
 {/if}
+
+<style>
+    .loader-container {
+        flex-grow: 1;
+        align-items: center;
+    }
+</style>
