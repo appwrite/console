@@ -38,7 +38,7 @@
         availableCredit = creditList.available;
     });
 
-    $: extraUsage = (currentInvoice?.amount ?? 0) - (currentPlan?.price ?? 0);
+    $: extraUsage = currentInvoice && currentPlan ? currentInvoice.amount - currentPlan.price : 0;
     $: extraAddons = currentInvoice?.usage?.length ?? 0;
     $: isTrial =
         new Date($organization?.billingStartDate).getTime() - today.getTime() > 0 &&
@@ -66,7 +66,9 @@
                     <div class="body-text-2 u-margin-inline-start-auto">
                         {isTrial || $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION
                             ? formatCurrency(0)
-                            : formatCurrency(currentPlan?.price)}
+                            : currentPlan
+                              ? formatCurrency(currentPlan?.price)
+                              : ''}
                     </div>
                 </CollapsibleItem>
                 {#if $organization?.billingPlan !== BillingPlan.FREE && $organization?.billingPlan !== BillingPlan.GITHUB_EDUCATION && extraUsage > 0}

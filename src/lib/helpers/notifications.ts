@@ -14,10 +14,15 @@ export type NotificationCoolOffOptions = {
     exponentialBackoffFactor?: number;
 };
 
-const userPreferences = () => get(user).prefs;
+const userPreferences = () => get(user)?.prefs;
 
 const notificationPrefs = (): Record<string, NotificationPrefItem> => {
     const prefs = userPreferences();
+
+    if (prefs === null) {
+        return {};
+    }
+
     // for some reason, the prefs become array as default or on all clear. let's reset.
     return Array.isArray(prefs.notificationPrefs) ? {} : prefs.notificationPrefs || {};
 };
