@@ -13,9 +13,16 @@ export const load: LayoutLoad = async ({ params, depends }) => {
 
     try {
         const project = await sdk.forConsole.projects.get(params.project);
-        const prefs = await sdk.forConsole.account.getPrefs();
-        const newPrefs = { ...prefs, organization: project.teamId };
-        sdk.forConsole.account.updatePrefs(newPrefs);
+        const [organization, prefs] = await Promise.all([
+            sdk.forConsole.teams.get(project.teamId) as Promise<Organization>,
+            sdk.forConsole.account.getPrefs()
+        ]);
+        if (prefs?.organization !== project.teamId) {
+            sdk.forConsole.account.updatePrefs({
+                ...prefs,
+                organization: project.teamId
+            });
+        }
         preferences.loadTeamPrefs(project.teamId);
         let roles = isCloud ? [] : defaultRoles;
         let scopes = isCloud ? [] : defaultScopes;
@@ -30,7 +37,7 @@ export const load: LayoutLoad = async ({ params, depends }) => {
 
         return {
             project,
-            organization: await (sdk.forConsole.teams.get(project.teamId) as Promise<Organization>),
+            organization,
             roles,
             scopes
         };
