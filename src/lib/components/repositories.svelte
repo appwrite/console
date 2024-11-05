@@ -124,12 +124,7 @@
             {:then response}
                 {#if response?.length}
                     <Table.Root>
-                        <!-- <svelte:fragment slot="header">
-                                    <Table.Header.Cell width="200px">Key</Table.Header.Cell>
-                                    <Table.Header.Cell>Value</Table.Header.Cell>
-                                    <Table.Header.Cell width="10px"></Table.Header.Cell>
-                                </svelte:fragment> -->
-                        {#each response as repo, i}
+                        {#each response as repo}
                             <Table.Row>
                                 <Table.Cell>
                                     <Layout.Stack direction="row" alignItems="center">
@@ -185,65 +180,6 @@
                             </Table.Row>
                         {/each}
                     </Table.Root>
-                    <ul class="table is-remove-outer-styles">
-                        {#each response as repo, i}
-                            <li
-                                class="table-row"
-                                style:border-block-end={i === response.length - 1 ? 'none' : null}>
-                                <div class="table-col">
-                                    <div
-                                        class="u-flex u-cross-center u-gap-8"
-                                        style="margin-block: .75rem;">
-                                        {#if action === 'select'}
-                                            <input
-                                                class="is-small u-margin-inline-end-8"
-                                                type="radio"
-                                                name="repositories"
-                                                bind:group={selectedRepository}
-                                                on:change={() => repository.set(repo)}
-                                                value={repo.id} />
-                                        {/if}
-                                        <div
-                                            class="avatar is-size-x-small"
-                                            style:--p-text-size="1.25rem"
-                                            class:is-color-empty={!repo.runtime}>
-                                            {#if repo.runtime}
-                                                <img
-                                                    src={`${base}/icons/${$app.themeInUse}/color/${
-                                                        repo.runtime.split('-')[0]
-                                                    }.svg`}
-                                                    alt={repo.name} />
-                                            {/if}
-                                        </div>
-                                        <div class="u-flex u-gap-8 u-cross-center">
-                                            <span class="text u-trim-1">{repo.name}</span>
-                                            {#if repo.private}
-                                                <span
-                                                    class="icon-lock-closed"
-                                                    style="font-size: var(--icon-size-small)"
-                                                    aria-hidden="true" />
-                                            {/if}
-                                            <time
-                                                class="u-color-text-gray u-trim-1"
-                                                datetime={repo.pushedAt}>
-                                                {timeFromNow(repo.pushedAt)}
-                                            </time>
-                                        </div>
-                                        {#if action === 'button'}
-                                            <div class="u-margin-inline-start-auto">
-                                                <Button
-                                                    size="s"
-                                                    secondary
-                                                    on:click={() => dispatch('connect', repo)}>
-                                                    Connect
-                                                </Button>
-                                            </div>
-                                        {/if}
-                                    </div>
-                                </div>
-                            </li>
-                        {/each}
-                    </ul>
                 {:else if search}
                     <EmptySearch hidePages>
                         <div class="common-section">
@@ -252,8 +188,9 @@
                                 <p>There are no repositories that match your search.</p>
                             </div>
                             <div class="u-flex u-gap-16 common-section u-main-center">
-                                <Button secondary on:click={() => (search = '')}
-                                    >Clear search</Button>
+                                <Button secondary on:click={() => (search = '')}>
+                                    Clear search
+                                </Button>
                             </div>
                         </div>
                     </EmptySearch>
