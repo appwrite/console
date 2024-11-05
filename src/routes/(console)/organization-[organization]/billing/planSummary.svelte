@@ -60,7 +60,11 @@
                     $organization?.billingNextInvoiceDate
                 )}
             </p>
-            {#if !isLoading}
+            {#if isLoading}
+                <div class="u-flex u-main-center u-stretch u-cross-center">
+                    <div class="loader"></div>
+                </div>
+            {:else}
                 <Collapsible>
                     <CollapsibleItem noContent>
                         <span class="body-text-2">
@@ -209,10 +213,6 @@
                         </div>
                     </CollapsibleItem>
                 </Collapsible>
-            {:else}
-                <div class="u-flex u-main-center loader-container">
-                    <div class="loader"></div>
-                </div>
             {/if}
         </svelte:fragment>
         <svelte:fragment slot="actions">
@@ -253,10 +253,3 @@
         </svelte:fragment>
     </CardGrid>
 {/if}
-
-<style>
-    .loader-container {
-        flex-grow: 1;
-        align-items: center;
-    }
-</style>
