@@ -9,7 +9,8 @@
     import { repositories } from '$routes/(console)/project-[project]/functions/function-[function]/store';
     import { installation, installations, repository } from '$lib/stores/vcs';
     import { createEventDispatcher } from 'svelte';
-    import { Layout } from '@appwrite.io/pink-svelte';
+    import { Layout, Table, Typography, Icon, Avatar } from '@appwrite.io/pink-svelte';
+    import { IconLockClosed } from '@appwrite.io/pink-icons-svelte';
 
     const dispatch = createEventDispatcher();
 
@@ -122,6 +123,68 @@
                 </Layout.Stack>
             {:then response}
                 {#if response?.length}
+                    <Table.Root>
+                        <!-- <svelte:fragment slot="header">
+                                    <Table.Header.Cell width="200px">Key</Table.Header.Cell>
+                                    <Table.Header.Cell>Value</Table.Header.Cell>
+                                    <Table.Header.Cell width="10px"></Table.Header.Cell>
+                                </svelte:fragment> -->
+                        {#each response as repo, i}
+                            <Table.Row>
+                                <Table.Cell>
+                                    <Layout.Stack direction="row" alignItems="center">
+                                        {#if action === 'select'}
+                                            <input
+                                                class="is-small u-margin-inline-end-8"
+                                                type="radio"
+                                                name="repositories"
+                                                bind:group={selectedRepository}
+                                                on:change={() => repository.set(repo)}
+                                                value={repo.id} />
+                                        {/if}
+
+                                        <Avatar
+                                            size="xs"
+                                            src={repo?.runtime
+                                                ? `${base}/icons/${$app.themeInUse}/color/${
+                                                      repo.runtime.split('-')[0]
+                                                  }.svg`
+                                                : ''}
+                                            alt={repo.name} />
+
+                                        <Layout.Stack gap="s" direction="row" alignItems="center">
+                                            <Typography.Text truncate>
+                                                {repo.name}
+                                            </Typography.Text>
+                                            {#if repo.private}
+                                                <Icon
+                                                    size="s"
+                                                    icon={IconLockClosed}
+                                                    color="--color-fgcolor-neutral-tertiary" />
+                                            {/if}
+                                            <time datetime={repo.pushedAt}>
+                                                <Typography.Text
+                                                    truncate
+                                                    color="--color-fgcolor-neutral-tertiary">
+                                                    {timeFromNow(repo.pushedAt)}
+                                                </Typography.Text>
+                                            </time>
+                                        </Layout.Stack>
+                                        {#if action === 'button'}
+                                            <div class="u-margin-inline-start-auto">
+                                                <Button
+                                                    size="s"
+                                                    secondary
+                                                    on:click={() => dispatch('connect', repo)}>
+                                                    Connect
+                                                </Button>
+                                            </div>
+                                        {/if}
+                                    </Layout.Stack>
+                                </Table.Cell>
+                            </Table.Row>
+                        {/each}
+                    </Table.Root>
                     <ul class="table is-remove-outer-styles">
                         {#each response as repo, i}
                             <li

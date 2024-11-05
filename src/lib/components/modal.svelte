@@ -4,6 +4,7 @@
     import { Form } from '$lib/elements/forms';
     import { disableCommands } from '$lib/commandCenter';
     import { beforeNavigate } from '$app/navigation';
+    import { Dialog } from '@appwrite.io/pink-svelte';
 
     export let show = false;
     export let size: 'small' | 'big' | 'huge' = null;
@@ -12,6 +13,7 @@
     export let error: string = null;
     export let closable = true;
     export let headerDivider = true;
+    export let open = false;
     export let onSubmit: (e: SubmitEvent) => Promise<void> | void = function () {
         return;
     };
@@ -30,6 +32,8 @@
         alert?.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
     }
 </script>
+
+<!-- <Dialog {title} bind:open /> -->
 
 <ModalWrapper bind:show {size} {headerDivider} let:close>
     <Form isModal {onSubmit}>
