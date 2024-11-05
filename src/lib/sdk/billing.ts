@@ -708,6 +708,20 @@ export class Billing {
         );
     }
 
+    async setMembership(
+        programId: string
+    ): Promise<{ $createdAt: string } | { error: { code: number; message: string } }> {
+        const path = `/console/programs/${programId}/memberships`;
+        const uri = new URL(this.client.config.endpoint + path);
+        try {
+            return await this.client.call('POST', uri, {
+                'content-type': 'application/json'
+            });
+        } catch (e) {
+            return { error: { code: e.code, message: e.message } };
+        }
+    }
+
     async getCoupon(couponId: string): Promise<Coupon> {
         const path = `/console/coupons/${couponId}`;
         const params = {

@@ -469,6 +469,7 @@ export enum BillingPlan {
     FREE = 'tier-0',
     PRO = 'tier-1',
     SCALE = 'tier-2',
+    GITHUB_EDUCATION = 'auto-1',
     CUSTOM = 'cont-1'
 }
 
