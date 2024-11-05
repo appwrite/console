@@ -1,38 +1,10 @@
 <script lang="ts">
-    import { app } from '$lib/stores/app';
     import {
         ArtworkDark,
         ArtworkDarkMobile,
         ArtworkLightMobile,
         ArtworkLight
     } from '$lib/images/github-education-program';
-
-    let artworkImageSrc;
-    getArtworkImageSrc();
-    monitorResize();
-
-    function getArtworkImageSrc() {
-        let isMobile = window.matchMedia('(max-width: 767px)').matches;
-        if ($app.themeInUse === 'light' && isMobile) {
-            artworkImageSrc = ArtworkLightMobile;
-        } else if ($app.themeInUse === 'light' && !isMobile) {
-            artworkImageSrc = ArtworkLight;
-        } else if ($app.themeInUse === 'dark' && isMobile) {
-            artworkImageSrc = ArtworkDarkMobile;
-        } else {
-            artworkImageSrc = ArtworkDark;
-        }
-    }
-
-    function monitorResize() {
-        window.addEventListener('resize', getArtworkImageSrc);
-
-        return {
-            destroy() {
-                window.removeEventListener('resize', getArtworkImageSrc);
-            }
-        };
-    }
 </script>
 
 <svelte:head>
@@ -40,7 +12,14 @@
 </svelte:head>
 <section class="github-education-container">
     <div class="artwork">
-        <img src={artworkImageSrc} alt="" />
+        <div class="is-only-mobile">
+            <img src={ArtworkDarkMobile} alt="" class=" u-only-dark" />
+            <img src={ArtworkLightMobile} alt="" class="u-only-light" />
+        </div>
+        <div class="is-not-mobile">
+            <img src={ArtworkDark} alt="" class="u-only-dark" />
+            <img src={ArtworkLight} alt="" class="u-only-light" />
+        </div>
         <div class="mobile-gradient" />
     </div>
     <div class="content-container">
