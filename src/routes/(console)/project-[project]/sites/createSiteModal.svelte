@@ -50,10 +50,12 @@
         </div>
     </Layout.Stack>
     <svelte:fragment slot="footer">
-        <Button secondary on:click={() => (show = false)}>Cancel</Button>
+        <Button text size="s" on:click={() => (show = false)}>Cancel</Button>
         <Button
             disabled={!behaviour}
-            href={`${base}/project-${$page.params.project}/sites/create-site/${behaviour}`}
-            >Next</Button>
+            size="s"
+            href={`${base}/project-${$page.params.project}/sites/create-site/${behaviour}`}>
+            Next
+        </Button>
     </svelte:fragment>
 </Modal>
