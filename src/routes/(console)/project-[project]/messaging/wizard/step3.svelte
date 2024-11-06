@@ -16,7 +16,7 @@
     let time: string;
     let dateTime: Date;
     let docsUrl = `https://appwrite.io/docs/products/messaging`;
-    let showConfimation = false;
+    let showConfirmation = false;
 
     let totalTargets = $messageParams[$providerType].targets?.length ?? 0;
 
@@ -60,14 +60,14 @@
 
     async function askForConfirmation() {
         $wizard.interceptorNotificationEnabled = false;
-        showConfimation = true;
+        showConfirmation = true;
         throw 'Show confirmation';
     }
 
     async function submit() {
         $wizard.interceptorNotificationEnabled = true;
         await $wizard.finalAction();
-        showConfimation = false;
+        showConfirmation = false;
     }
 
     $: if (when === 'now') {
@@ -127,14 +127,14 @@
     </Helper>
 </WizardStep>
 
-<Modal title="Send message" bind:show={showConfimation} headerDivider={false} onSubmit={submit}>
+<Modal title="Send message" bind:show={showConfirmation} headerDivider={false} onSubmit={submit}>
     <p>
         You are about to send a message to an estimated <span class="u-bold">{totalTargets}</span> recipients.
         Would you like to proceed?
     </p>
     <p class="u-bold">This action is irreversible.</p>
     <svelte:fragment slot="footer">
-        <Button text on:click={() => (showConfimation = false)}>Cancel</Button>
+        <Button text on:click={() => (showConfirmation = false)}>Cancel</Button>
         <Button secondary submit>Send</Button>
     </svelte:fragment>
 </Modal>

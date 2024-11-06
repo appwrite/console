@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { BottomModalAlert, MigrationBox, UploadBox } from '$lib/components';
+    import { BackupRestoreBox, MigrationBox, UploadBox } from '$lib/components';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { project, stats } from './store';
@@ -16,6 +16,13 @@
     } from '$lib/commandCenter/searchers';
     import { page } from '$app/stores';
     import { base } from '$app/paths';
+    import {
+        canSeeBuckets,
+        canSeeDatabases,
+        canSeeFunctions,
+        canSeeMessages,
+        canWriteProjects
+    } from '$lib/stores/roles';
 
     onMount(() => {
         return sdk.forConsole.client.subscribe(['project', 'console'], (response) => {
@@ -42,7 +49,8 @@
                 goto(`${base}/project-${$project.$id}/databases`);
             },
             keys: ['g', 'd'],
-            group: 'navigation'
+            group: 'navigation',
+            disabled: !$canSeeDatabases
         },
         {
             label: 'Go to Functions',
@@ -50,7 +58,8 @@
                 goto(`${base}/project-${$project.$id}/functions`);
             },
             keys: ['g', 'f'],
-            group: 'navigation'
+            group: 'navigation',
+            disabled: !$canSeeFunctions
         },
         {
             label: 'Go to Messaging',
@@ -58,7 +67,7 @@
                 goto(`${base}/project-${$project.$id}/messaging`);
             },
             keys: ['g', 'm'],
-            disabled: $page.url.pathname.endsWith('messaging'),
+            disabled: $page.url.pathname.endsWith('messaging') || !$canSeeMessages,
             group: 'navigation'
         },
         {
@@ -67,7 +76,8 @@
                 goto(`${base}/project-${$project.$id}/storage`);
             },
             keys: ['g', 's'],
-            group: 'navigation'
+            group: 'navigation',
+            disabled: !$canSeeBuckets
         },
         {
             label: 'Go to Settings',
@@ -75,7 +85,8 @@
                 goto(`${base}/project-${$project.$id}/settings`);
             },
             keys: ['g', 'e'],
-            group: 'navigation'
+            group: 'navigation',
+            disabled: !$canWriteProjects
         },
         {
             label: 'Go to Overview',
@@ -92,7 +103,29 @@
 
 <slot />
 
-<UploadBox />
-<MigrationBox />
+<div class="layout-level-progress-bars">
+    <UploadBox />
+    <MigrationBox />
 
-<BottomModalAlert />
+    <BackupRestoreBox />
+</div>
+
+<style>
+    .layout-level-progress-bars {
+        gap: 1rem;
+        display: flex;
+        flex-direction: column;
+
+        right: 0;
+        bottom: 0;
+        position: fixed;
+        padding: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .layout-level-progress-bars {
+            position: relative;
+            align-items: center;
+        }
+    }
+</style>

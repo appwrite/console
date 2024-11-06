@@ -5,10 +5,12 @@
 
     export let series: BarSeriesOption[];
     export let options: EChartsOption = null;
+    export let formatted: 'days' | 'hours' = 'days';
 </script>
 
 <Base
     {options}
+    {formatted}
     series={series.map((s) => {
         s.type = 'bar';
         s.stack = 'total';

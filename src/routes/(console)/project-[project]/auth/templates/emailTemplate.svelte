@@ -87,7 +87,7 @@
 
     $: isButtonDisabled = deepEqual($emailTemplate, $baseEmailTemplate);
 
-    $: isSmtpEnabled = $project.smtpEnabled;
+    $: isSmtpEnabled = $project?.smtpEnabled;
 </script>
 
 <Box class="u-position-relative">

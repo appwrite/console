@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { isCloud } from '$lib/system';
     import { Button } from '$lib/elements/forms/index';
     import { hideNotification, shouldShowNotification } from '$lib/helpers/notifications';
     import { app } from '$lib/stores/app';
@@ -13,28 +12,51 @@
     import { organization } from '$lib/stores/organization';
     import { BillingPlan } from '$lib/constants';
     import { upgradeURL } from '$lib/stores/billing';
-    import { addBottomModalAlerts } from '$routes/(console)/project-[project]/bottomAlerts';
+    import { addBottomModalAlerts } from '$routes/(console)/bottomAlerts';
+    import { project } from '$routes/(console)/project-[project]/store';
+    import { page } from '$app/stores';
+    import { trackEvent } from '$lib/actions/analytics';
 
     let currentIndex = 0;
     let openModalOnMobile = false;
 
-    $: filteredModalAlerts = $bottomModalAlerts
-        .sort((a, b) => b.importance - a.importance)
-        .filter((alert) => alert.show && shouldShowNotification(alert.id));
+    function getPageScope(pathname: string) {
+        const isProjectPage = pathname.includes('project-[project]');
+        const isOrganizationPage = pathname.includes('organization-[organization]');
+
+        return { isProjectPage, isOrganizationPage };
+    }
+
+    function filterModalAlerts(alerts: BottomModalAlertItem[], pathname: string) {
+        const { isProjectPage, isOrganizationPage } = getPageScope(pathname);
+
+        return alerts
+            .sort((a, b) => b.importance - a.importance)
+            .filter((alert) => {
+                return (
+                    alert.show &&
+                    shouldShowNotification(alert.id) &&
+                    // if no scope > show in projects & org pages.
+                    ((!alert.scope && (isProjectPage || isOrganizationPage)) ||
+                        // project scope, show only in project pages
+                        (isProjectPage && alert.scope === 'project') ||
+                        // organization scope, show only in organization pages
+                        (isOrganizationPage && alert.scope === 'organization'))
+                );
+            });
+    }
+
+    $: filteredModalAlerts = filterModalAlerts($bottomModalAlerts, $page.route.id);
 
     $: currentModalAlert = filteredModalAlerts[currentIndex] as BottomModalAlertItem;
 
     function handleClose() {
-        const modalAlert = currentModalAlert;
-        dismissBottomModalAlert(modalAlert.id);
-        hideNotification(modalAlert.id);
-        if (modalAlert.closed) modalAlert.closed();
-
-        if (currentIndex === filteredModalAlerts.length - 1 && filteredModalAlerts.length > 1) {
-            currentIndex = currentIndex - 1;
-        } else {
-            currentIndex = currentIndex % filteredModalAlerts.length;
-        }
+        filteredModalAlerts.forEach((alert) => {
+            const modalAlert = alert;
+            dismissBottomModalAlert(modalAlert.id);
+            hideNotification(modalAlert.id, { coolOffPeriod: 24 * 365 });
+            if (modalAlert.closed) modalAlert.closed();
+        });
     }
 
     function showNext() {
@@ -139,23 +161,34 @@
                             <Button
                                 secondary
                                 class="button"
-                                href={shouldShowUpgrade ? $upgradeURL : currentModalAlert.cta.link}
-                                external={!isCloud}
+                                href={shouldShowUpgrade
+                                    ? $upgradeURL
+                                    : currentModalAlert.cta.link({
+                                          organization: $organization,
+                                          project: $project
+                                      })}
+                                external={!!currentModalAlert.cta.external}
                                 fullWidthMobile
-                                on:click={() => handleClose()}>
-                                {shouldShowUpgrade ? 'Upgrade plan' : currentModalAlert.cta.text}
+                                on:click={() => {
+                                    trackEvent('click_promo', {
+                                        promo: currentModalAlert.id,
+                                        type: shouldShowUpgrade ? 'upgrade' : 'try_now'
+                                    });
+                                }}>
+                                {currentModalAlert.cta.text}
                             </Button>
 
-                            {#if currentModalAlert.learnMore && currentModalAlert.learnMore.link}
+                            {#if currentModalAlert.learnMore}
                                 <Button
                                     text
                                     class="button"
                                     external
                                     fullWidthMobile
-                                    href={currentModalAlert.learnMore.link}>
-                                    {currentModalAlert.learnMore.text
-                                        ? currentModalAlert.learnMore.text
-                                        : 'Learn More'}
+                                    href={currentModalAlert.learnMore.link({
+                                        organization: $organization,
+                                        project: $project
+                                    })}>
+                                    {currentModalAlert.learnMore.text}
                                 </Button>
                             {/if}
                         </div>
@@ -241,25 +274,36 @@
                                     class="button"
                                     href={shouldShowUpgrade
                                         ? $upgradeURL
-                                        : currentModalAlert.cta.link}
-                                    external={!isCloud}
+                                        : currentModalAlert.cta.link({
+                                              organization: $organization,
+                                              project: $project
+                                          })}
+                                    external={!!currentModalAlert.cta.external}
                                     fullWidthMobile
-                                    on:click={() => handleClose()}>
+                                    on:click={() => {
+                                        openModalOnMobile = false;
+                                        trackEvent('click_promo', {
+                                            promo: currentModalAlert.id,
+                                            type: shouldShowUpgrade ? 'upgrade' : 'try_now'
+                                        });
+                                    }}>
                                     {shouldShowUpgrade
                                         ? 'Upgrade plan'
                                         : currentModalAlert.cta.text}
                                 </Button>
 
-                                {#if currentModalAlert.learnMore && currentModalAlert.learnMore.link}
+                                {#if currentModalAlert.learnMore}
                                     <Button
                                         text
                                         class="button"
                                         external
                                         fullWidthMobile
-                                        href={currentModalAlert.learnMore.link}>
-                                        {currentModalAlert.learnMore.text
-                                            ? currentModalAlert.learnMore.text
-                                            : 'Learn More'}
+                                        on:click={() => (openModalOnMobile = false)}
+                                        href={currentModalAlert.learnMore.link({
+                                            organization: $organization,
+                                            project: $project
+                                        })}>
+                                        {currentModalAlert.learnMore.text}
                                     </Button>
                                 {/if}
                             </div>
@@ -274,14 +318,14 @@
                 on:click={() => (openModalOnMobile = true)}>
                 <div class="u-flex-vertical u-gap-4">
                     <div class="u-flex u-cross-center u-main-space-between">
-                        <h3 class="body-text-2 u-bold">Early access</h3>
+                        <h3 class="body-text-2 u-bold">New features available</h3>
                         <button on:click={hideAllModalAlerts}>
                             <span class="icon-x" />
                         </button>
                     </div>
 
                     <span class="u-width-fit-content">
-                        Opt-in to experiments, new features, and more.
+                        Explore new features to enhance your projects and improve security.
                     </span>
                 </div>
             </button>
@@ -300,11 +344,6 @@
         bottom: 1rem;
         position: fixed;
         max-width: 289px;
-    }
-
-    .showcase-image {
-        height: 132px;
-        min-width: 273px;
     }
 
     .feature-count-tag {
@@ -378,7 +417,7 @@
         }
 
         .alert-container {
-            max-width: 289px;
+            max-width: 90vw;
         }
     }
 </style>

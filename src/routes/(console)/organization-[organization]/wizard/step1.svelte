@@ -33,6 +33,7 @@
             <CustomId
                 bind:show={showCustomId}
                 name="Project"
+                isProject={true}
                 bind:id={$createProject.id}
                 fullWidth />
         {/if}

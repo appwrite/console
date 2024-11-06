@@ -1,6 +1,7 @@
 <script lang="ts">
     import { addSubPanel, registerCommands } from '$lib/commandCenter';
     import { FunctionsPanel } from '$lib/commandCenter/panels';
+    import { canSeeFunctions } from '$lib/stores/roles';
 
     $registerCommands([
         {
@@ -9,7 +10,8 @@
                 addSubPanel(FunctionsPanel);
             },
             group: 'functions',
-            rank: -1
+            rank: -1,
+            disabled: !$canSeeFunctions
         }
     ]);
 </script>

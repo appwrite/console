@@ -268,7 +268,7 @@
                     </div>
                 </div>
             {/if}
-            {#if selectedOrg?.billingPlan !== BillingPlan.FREE}
+            {#if selectedOrg?.$id && selectedOrg?.billingPlan !== BillingPlan.FREE}
                 <section
                     class="card u-margin-block-start-24"
                     style:--p-card-padding="1.5rem"
@@ -284,7 +284,7 @@
                     {/if}
                 </section>
             {:else if selectedOrgId}
-                <div class:u-margin-block-start={campaign?.template === 'card'}>
+                <div class:u-margin-block-start-24={campaign?.template === 'card'}>
                     <EstimatedTotalBox
                         fixedCoupon={!!data?.couponData?.code}
                         billingPlan={BillingPlan.PRO}

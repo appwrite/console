@@ -22,7 +22,6 @@
 
     let numbers: Models.MockNumber[] = $project?.authMockNumbers ?? [];
     let initialNumbers = [];
-    let projectId: string = $project.$id;
 
     $: initialNumbers = $project?.authMockNumbers?.map((num) => ({ ...num })) ?? [];
     $: isSubmitDisabled = JSON.stringify(numbers) === JSON.stringify(initialNumbers);
@@ -39,7 +38,7 @@
 
     async function updateMockNumbers() {
         try {
-            await sdk.forConsole.projects.updateMockNumbers(projectId, numbers);
+            await sdk.forConsole.projects.updateMockNumbers($project.$id, numbers);
             await invalidate(Dependencies.PROJECT);
             addNotification({
                 type: 'success',
@@ -88,7 +87,7 @@
             Generate <b>fictional</b> numbers to simulate phone verification when testing demo
             accounts for submitting your application to the App Store or Google Play.
             <a
-                href="https://appwrite.io/docs/products/auth/security#mock-numbers"
+                href="https://appwrite.io/docs/products/auth/security#mock-phone-numbers"
                 target="_blank"
                 class="u-underline"
                 rel="noopener noreferrer">

@@ -42,7 +42,7 @@ export const ResourcesFriendly = {
     file: { singular: 'File', plural: 'Files' },
     bucket: { singular: 'Bucket', plural: 'Buckets' },
     function: { singular: 'Function', plural: 'Functions' },
-    'environment variable': { singular: 'Environment Variable', plural: 'Environment Variables' },
+    'environment-variable': { singular: 'Environment Variable', plural: 'Environment Variables' },
     deployment: { singular: 'Deployment', plural: 'Deployments' },
     database: { singular: 'Database', plural: 'Databases' },
     collection: { singular: 'Collection', plural: 'Collections' },
@@ -102,7 +102,7 @@ export const migrationFormToResources = (
         addResource('function');
     }
     if (formData.functions.env) {
-        addResource('environment variable');
+        addResource('environment-variable');
     }
     if (formData.functions.inactive) {
         addResource('deployment');
@@ -156,7 +156,7 @@ export const resourcesToMigrationForm = (
     if (resources.includes('function') && isVersionAtLeast(version, '1.4.0')) {
         formData.functions.root = true;
     }
-    if (resources.includes('environment variable') && isVersionAtLeast(version, '1.4.0')) {
+    if (resources.includes('environment-variable') && isVersionAtLeast(version, '1.4.0')) {
         formData.functions.env = true;
     }
     if (resources.includes('deployment') && isVersionAtLeast(version, '1.4.0')) {

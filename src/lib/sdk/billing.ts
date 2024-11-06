@@ -10,6 +10,7 @@ export type PaymentMethodData = {
     $updatedAt: string;
     providerMethodId: string;
     providerUserId: string;
+    userId: string;
     expiryMonth: number;
     expiryYear: number;
     expired: boolean;
@@ -146,7 +147,7 @@ export type Aggregation = {
      */
     amount: number;
     /**
-     * Price for addional members
+     * Price for additional members
      */
     additionalMembers: number;
     /**
@@ -182,6 +183,9 @@ export type OrganizationUsage = {
     filesStorageTotal: number;
     buildsStorageTotal: number;
     deploymentsStorageTotal: number;
+    executionsMBSecondsTotal: number;
+    buildsMBSecondsTotal: number;
+    backupsStorageTotal: number;
     storageTotal: number;
     users: Array<Models.Metric>;
     usersTotal: number;
@@ -232,6 +236,7 @@ export type Address = {
     city: string;
     state?: string;
     postalCode: string;
+    userId: string;
 };
 
 export type AddressesList = {
@@ -274,6 +279,8 @@ export type Plan = {
         users: AdditionalResource;
     };
     trialDays: number;
+    isAvailable: boolean;
+    selfService: boolean;
 };
 
 export type PlansInfo = {
@@ -282,6 +289,11 @@ export type PlansInfo = {
 };
 
 export type PlansMap = Map<Tier, Plan>;
+
+export type Roles = {
+    scopes: string[];
+    roles: string[];
+};
 
 export class Billing {
     client: Client;
@@ -362,6 +374,14 @@ export class Billing {
             },
             params
         );
+    }
+
+    async getRoles(organizationId: string): Promise<Roles> {
+        const path = `/organizations/${organizationId}/roles`;
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call('get', uri, {
+            'content-type': 'application/json'
+        });
     }
 
     async updatePlan(
@@ -697,6 +717,20 @@ export class Billing {
         });
     }
 
+    async setMembership(
+        programId: string
+    ): Promise<{ $createdAt: string } | { error: { code: number; message: string } }> {
+        const path = `/console/programs/${programId}/memberships`;
+        const uri = new URL(this.client.config.endpoint + path);
+        try {
+            return await this.client.call('POST', uri, {
+                'content-type': 'application/json'
+            });
+        } catch (e) {
+            return { error: { code: e.code, message: e.message } };
+        }
+    }
+
     async getCoupon(couponId: string): Promise<Coupon> {
         const path = `/console/coupons/${couponId}`;
         const params = {
@@ -940,7 +974,7 @@ export class Billing {
         };
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
-            'post',
+            'patch',
             uri,
             {
                 'content-type': 'application/json'

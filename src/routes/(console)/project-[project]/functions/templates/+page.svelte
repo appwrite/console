@@ -16,9 +16,11 @@
     import { app } from '$lib/stores/app';
     import { isServiceLimited } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
+    import { canWriteFunctions } from '$lib/stores/roles';
     import { connectTemplate } from '$lib/wizards/functions/cover.svelte';
     import type { Models } from '@appwrite.io/console';
     import { functionsList } from '../store';
+    import { debounce } from '$lib/helpers/debounce';
 
     export let data;
 
@@ -28,7 +30,9 @@
         if (add) {
             target.searchParams.append(filter, value);
         } else {
-            const previous = target.searchParams.getAll(filter).filter((n) => n !== value);
+            const previous = target.searchParams
+                .getAll(filter)
+                .filter((n) => n.toLowerCase() !== value.toLowerCase());
             target.searchParams.delete(filter);
             previous.forEach((n) => target.searchParams.append(filter, n));
         }
@@ -38,8 +42,7 @@
 
     function clearSearch() {
         const target = new URL($page.url);
-        target.searchParams.delete('page');
-        target.searchParams.delete('search');
+        target.search = '';
         goto(target.toString());
     }
 
@@ -69,23 +72,45 @@
                 return 'dart';
             case runtime.includes('bun'):
                 return 'bun';
+            case runtime.includes('go'):
+                return 'go';
             default:
                 return undefined;
         }
     }
 
     function applySearch(event: CustomEvent<string>) {
-        const value = event.detail;
-        const target = new URL($page.url);
+        debounce(() => {
+            const value = event.detail;
+            const target = new URL($page.url);
 
-        if (value.length > 0) {
-            target.searchParams.set('search', value);
-        } else {
-            target.searchParams.delete('search');
-        }
-        target.searchParams.delete('page');
-        goto(target.toString(), { keepFocus: true });
+            if (value.length > 0) {
+                target.searchParams.set('search', value);
+            } else {
+                target.searchParams.delete('search');
+            }
+            target.searchParams.delete('page');
+            goto(target.toString(), { keepFocus: true });
+        }, 250)();
     }
+
+    $: isChecked = (useCase: string) => {
+        return $page.url.searchParams
+            .getAll('useCase')
+            .some((param) => param.toLowerCase() === useCase.toLowerCase());
+    };
+
+    $: getErrorMessage = () => {
+        const searchParams = $page.url.searchParams;
+        const paramsArray = Array.from(searchParams.entries());
+
+        if (paramsArray.length === 1) {
+            const [_, value] = paramsArray[0];
+            return `Sorry, we couldn't find "${value}".`;
+        } else if (paramsArray.length > 1) {
+            return `Sorry, we couldn't find any results with the applied filters.`;
+        }
+    };
 
     $: buttonDisabled = isServiceLimited(
         'functions',
@@ -105,6 +130,7 @@
         <section>
             <InputSearch
                 placeholder="Search templates"
+                value={$page.url.searchParams.get('search')}
                 on:clear={clearSearch}
                 on:change={applySearch} />
             <div class="u-margin-block-start-24">
@@ -118,11 +144,9 @@
                                         <input
                                             type="checkbox"
                                             class="is-small"
-                                            value={$page.url.searchParams
-                                                .getAll('useCase')
-                                                .includes(useCase)}
+                                            checked={isChecked(useCase)}
                                             on:change={(e) => applyFilter('useCase', useCase, e)} />
-                                        <div class="u-trim-1">{useCase}</div>
+                                        <span class="u-trim-1">{useCase}</span>
                                     </label>
                                 </li>
                             {/each}
@@ -226,15 +250,16 @@
                                         text>
                                         <span class="text">View details</span>
                                     </Button>
-
-                                    <ContainerButton
-                                        title="functions"
-                                        disabled={buttonDisabled}
-                                        buttonType="secondary"
-                                        buttonMethod={() => connectTemplate(template)}
-                                        showIcon={false}
-                                        buttonText="Create function"
-                                        buttonEvent="create_function" />
+                                    {#if $canWriteFunctions}
+                                        <ContainerButton
+                                            title="functions"
+                                            disabled={buttonDisabled}
+                                            buttonType="secondary"
+                                            buttonMethod={() => connectTemplate(template)}
+                                            showIcon={false}
+                                            buttonText="Create function"
+                                            buttonEvent="create_function" />
+                                    {/if}
                                 </div>
                             </article>
                         </li>
@@ -244,8 +269,7 @@
                 <EmptySearch hidePagination>
                     <div class="common-section">
                         <div class="u-text-center common-section">
-                            <b class="body-text-2 u-bold"
-                                >Sorry we couldn't find "{$page.url.searchParams.get('search')}"</b>
+                            <b class="body-text-2 u-bold">{getErrorMessage()}</b>
                             <p>There are no templates that match your search.</p>
                         </div>
                         <div class="u-flex u-gap-16 common-section u-main-center">

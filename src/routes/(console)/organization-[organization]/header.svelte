@@ -32,6 +32,13 @@
         organization,
         organizationList
     } from '$lib/stores/organization';
+    import {
+        canSeeBilling,
+        canSeeProjects,
+        canSeeTeams,
+        isBilling,
+        isOwner
+    } from '$lib/stores/roles';
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
 
     let areMembersLimited: boolean;
@@ -54,45 +61,41 @@
     $: avatars = $members.memberships?.map((m) => m.userName) ?? [];
     $: organizationId = $page.params.organization;
     $: path = `${base}/organization-${organizationId}`;
-    $: permanentTabSettings = [
-        {
-            href: `${path}/settings`,
-            event: 'settings',
-            title: 'Settings'
-        }
-    ];
-    $: permanentTabs = [
+    $: tabs = [
         {
             href: path,
             title: 'Projects',
             event: 'projects',
-            hasChildren: true
+            hasChildren: true,
+            disabled: !$canSeeProjects
         },
         {
             href: `${path}/members`,
             title: 'Members',
             event: 'members',
-            hasChildren: true
+            hasChildren: true,
+            disabled: !$canSeeTeams
+        },
+        {
+            href: `${path}/usage`,
+            event: 'usage',
+            title: 'Usage',
+            hasChildren: true,
+            disabled: !(isCloud && ($isOwner || $isBilling))
+        },
+        {
+            href: `${path}/billing`,
+            event: 'billing',
+            title: 'Billing',
+            disabled: !(isCloud && $canSeeBilling)
+        },
+        {
+            href: `${path}/settings`,
+            event: 'settings',
+            title: 'Settings',
+            disabled: !$isOwner
         }
-    ];
-
-    $: tabs = isCloud
-        ? [
-              ...permanentTabs,
-              {
-                  href: `${path}/usage`,
-                  event: 'usage',
-                  title: 'Usage',
-                  hasChildren: true
-              },
-              {
-                  href: `${path}/billing`,
-                  event: 'billing',
-                  title: 'Billing'
-              },
-              ...permanentTabSettings
-          ]
-        : [...permanentTabs, ...permanentTabSettings];
+    ].filter((tab) => !tab.disabled);
 </script>
 
 {#if $organization?.$id}
@@ -107,7 +110,10 @@
                             <span class="u-trim">
                                 {$organization.name}
                             </span>
-                            {#if isCloud && $organization?.billingPlan === BillingPlan.FREE}
+                            {#if isCloud && $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
+                                <Pill class="eyebrow-heading-3"
+                                    ><span class="icon-github" aria-hidden="true" /> EDUCATION</Pill>
+                            {:else if isCloud && $organization?.billingPlan === BillingPlan.FREE}
                                 <Pill class="eyebrow-heading-3">FREE</Pill>
                             {/if}
                             {#if isCloud && $organization?.billingTrialStartDate && $daysLeftInTrial > 0 && $organization.billingPlan !== BillingPlan.FREE && $plansInfo.get($organization.billingPlan)?.trialDays}
@@ -160,16 +166,19 @@
                                       } plan`,
                             disabled: !areMembersLimited
                         }}>
-                        <Button
-                            secondary
-                            on:click={() => newMemberModal.set(true)}
-                            disabled={areMembersLimited}>
-                            <span class="icon-plus" aria-hidden="true" />
-                            <span class="text">Invite</span>
-                        </Button>
+                        {#if $isOwner}
+                            <Button
+                                secondary
+                                on:click={() => newMemberModal.set(true)}
+                                disabled={areMembersLimited}>
+                                <span class="icon-plus" aria-hidden="true" />
+                                <span class="text">Invite</span>
+                            </Button>
+                        {/if}
                     </div>
                 </div>
-            </div></svelte:fragment>
+            </div>
+        </svelte:fragment>
         <Tabs>
             {#each tabs as tab}
                 <Tab
