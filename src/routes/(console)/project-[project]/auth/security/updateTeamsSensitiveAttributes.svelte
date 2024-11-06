@@ -9,7 +9,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { project } from '../../store';
 
-    let authTeamsSensitiveAttributes = $project?.teamsSensitiveAttributes ?? false;
+    let authTeamsSensitiveAttributes = $project?.teamsSensitiveAttributes ?? true;
 
     async function updateTeamsSensitiveAttributes() {
         try {
@@ -44,9 +44,9 @@
                     label="Show sensitive attributes in teams" />
             </FormList>
             <p class="text">
-                When enabled, sensitive data attributes are provided in team membership response
-                model. This includes <code>userName</code>, <code>userEmail</code>, and
-                <code>mfa</code>.
+                When enabled, sensitive attributes are provided in team membership response model.
+                This includes the <code>userName</code>, <code>userEmail</code>, and
+                <code>mfa</code> attributes.
             </p>
         </svelte:fragment>
 
