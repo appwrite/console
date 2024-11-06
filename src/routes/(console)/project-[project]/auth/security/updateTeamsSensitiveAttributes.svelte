@@ -20,7 +20,7 @@
             await invalidate(Dependencies.PROJECT);
             addNotification({
                 type: 'success',
-                message: 'Toggled personal data checks for passwords'
+                message: 'Toggled teams sensitive attributes'
             });
             trackEvent(Submit.AuthTeamsSensitiveAttributesUpdate);
         } catch (error) {
@@ -35,18 +35,18 @@
 
 <Form onSubmit={updateTeamsSensitiveAttributes}>
     <CardGrid>
-        <Heading tag="h2" size="7" id="personal-data">Personal data</Heading>
+        <Heading tag="h2" size="7" id="personal-data">Teams sensitive attributes</Heading>
         <svelte:fragment slot="aside">
             <FormList>
                 <InputSwitch
                     bind:value={authTeamsSensitiveAttributes}
                     id="teamsSensitiveAttributes"
-                    label="Show sensitive data in teams" />
+                    label="Show sensitive attributes in teams" />
             </FormList>
             <p class="text">
-                When enabled, sensitive data attributes (<code>userName</code>,
-                <code>userEmail</code>, and <code>mfa</code> are provided in team membership response
-                model.
+                When enabled, sensitive data attributes are provided in team membership response
+                model. This includes <code>userName</code>, <code>userEmail</code>, and
+                <code>mfa</code>.
             </p>
         </svelte:fragment>
 
