@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { organization } from '$lib/stores/organization';
+    import { BillingPlan } from '$lib/constants';
     import { Container } from '$lib/layout';
     import UpdateMockNumbers from './updateMockNumbers.svelte';
     import UpdatePasswordDictionary from './updatePasswordDictionary.svelte';
@@ -20,5 +22,7 @@
     <UpdatePersonalDataCheck />
     <UpdateSessionAlerts />
     <UpdateMockNumbers />
-    <UpdateTeamsSensitiveAttributes />
+    {#if $organization.billingPlan === BillingPlan.SCALE}
+        <UpdateTeamsSensitiveAttributes />
+    {/if}
 </Container>
