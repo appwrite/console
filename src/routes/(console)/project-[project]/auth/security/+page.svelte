@@ -7,6 +7,7 @@
     import UpdateSessionAlerts from './updateSessionAlerts.svelte';
     import UpdateSessionLength from './updateSessionLength.svelte';
     import UpdateSessionsLimit from './updateSessionsLimit.svelte';
+    import UpdateTeamsSensitiveAttributes from './updateTeamsSensitiveAttributes.svelte';
     import UpdateUsersLimit from './updateUsersLimit.svelte';
 </script>
 
@@ -19,4 +20,5 @@
     <UpdatePersonalDataCheck />
     <UpdateSessionAlerts />
     <UpdateMockNumbers />
+    <UpdateTeamsSensitiveAttributes />
 </Container>
