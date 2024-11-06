@@ -22,7 +22,7 @@
     <UpdatePersonalDataCheck />
     <UpdateSessionAlerts />
     <UpdateMockNumbers />
-    {#if $organization.billingPlan === BillingPlan.SCALE}
+    {#if $organization.billingPlan !== BillingPlan.SCALE}
         <UpdateTeamsSensitiveAttributes />
     {/if}
 </Container>
