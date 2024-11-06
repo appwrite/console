@@ -52,15 +52,17 @@
         }
 
         if (result) {
-            await invalidate(Dependencies.ACCOUNT_SESSIONS);
             trackEvent(Submit.AccountDeleteSession);
             if (session.current) {
+                await invalidate(Dependencies.ACCOUNT);
                 await goto(`${base}/login`);
+            } else {
+                await invalidate(Dependencies.ACCOUNT_SESSIONS);
+                addNotification({
+                    type: 'success',
+                    message: `User session has been deleted`
+                });
             }
-            addNotification({
-                type: 'success',
-                message: `User session has been deleted`
-            });
         }
     }
 
