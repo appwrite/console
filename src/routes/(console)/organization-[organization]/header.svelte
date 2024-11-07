@@ -90,6 +90,12 @@
             disabled: !(isCloud && $canSeeBilling)
         },
         {
+            href: `${path}/addons`,
+            event: 'addons',
+            title: 'Addons',
+            disabled: !(isCloud && $canSeeBilling)
+        },
+        {
             href: `${path}/settings`,
             event: 'settings',
             title: 'Settings',
