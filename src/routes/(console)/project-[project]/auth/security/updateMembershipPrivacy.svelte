@@ -49,7 +49,7 @@
                     bind:value={authMembershipsUserName}
                     id="membershipsUserName"
                     label="Name">
-                    Display team members'names to other team members
+                    Display team members' names to other team members
                 </InputChoice>
                 <InputChoice
                     bind:value={authMembershipsUserEmail}
