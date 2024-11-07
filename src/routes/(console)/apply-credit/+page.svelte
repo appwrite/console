@@ -287,7 +287,7 @@
                 <div class:u-margin-block-start-24={campaign?.template === 'card'}>
                     <EstimatedTotalBox
                         fixedCoupon={!!data?.couponData?.code}
-                        billingPlan={BillingPlan.PRO}
+                        {billingPlan}
                         {collaborators}
                         bind:couponData
                         bind:billingBudget>
