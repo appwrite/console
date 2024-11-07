@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { page } from '$app/stores';
     import { Alert, Box, Modal } from '$lib/components';
     import { Button, InputText, InputTextarea } from '$lib/elements/forms';
     import { getFormData } from '$lib/helpers/form';
@@ -52,7 +53,7 @@
         const { endpoint, feedback: message } = formData;
 
         try {
-            await feedback.submitFeedback(`feedback-${$feedback.type}`, message);
+            await feedback.submitFeedback(`feedback-${$feedback.type}`, message, $page.url.href);
         } catch (error) {
             console.error(
                 'Feedback could not be submitted, but we continue to redirect to do export.'

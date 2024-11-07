@@ -112,12 +112,12 @@ function createFeedbackStore() {
         submitFeedback: async (
             subject: string,
             message: string,
+            currentPage: string,
             name?: string,
             email?: string,
             // eslint-disable-next-line
             // @ts-expect-error
             billingPlan?: string,
-            currentPage?: string,
             value?: number
         ) => {
             if (!VARS.GROWTH_ENDPOINT) return;
@@ -133,7 +133,7 @@ function createFeedbackStore() {
                     // billingPlan,
                     firstname: name || 'Unknown',
                     customFields: [
-                        { id: '47364', value: currentPage ?? '' },
+                        { id: '47364', value: currentPage },
                         ...(value ? [{ id: '40655', value }] : [])
                     ],
                     metaFields: {
