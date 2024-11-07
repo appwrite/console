@@ -44,7 +44,7 @@
                 return;
             }
             if (data?.campaign) {
-                await goto(`${base}/apply-credit?campaign=${data.campaign}`);
+                await goto(`${base}/apply-credit?campaign=${data.campaign.$id}`);
                 return;
             }
             if ($page.url.searchParams) {
