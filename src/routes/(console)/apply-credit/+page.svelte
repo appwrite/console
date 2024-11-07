@@ -189,6 +189,8 @@
     $: selectedOrg = $organizationList?.teams?.find(
         (team) => team.$id === selectedOrgId
     ) as Organization;
+
+    $: console.log(billingPlan);
 </script>
 
 <svelte:head>
@@ -287,7 +289,7 @@
                 <div class:u-margin-block-start-24={campaign?.template === 'card'}>
                     <EstimatedTotalBox
                         fixedCoupon={!!data?.couponData?.code}
-                        billingPlan={BillingPlan.PRO}
+                        {billingPlan}
                         {collaborators}
                         bind:couponData
                         bind:billingBudget>
