@@ -49,4 +49,7 @@
         {/if}
         <slot />
     </Form>
+    <svelte:fragment slot="footer">
+        <slot name="footer" />
+    </svelte:fragment>
 </Modal>

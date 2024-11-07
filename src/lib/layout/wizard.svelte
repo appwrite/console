@@ -11,7 +11,8 @@
               showExitModal: boolean;
               href?: string;
               invertColumns?: boolean;
-              hideAside: boolean;
+              hideAside?: boolean;
+              hideFooter?: boolean;
           }
         | {
               title: string;
@@ -19,7 +20,8 @@
               confirmExit?: boolean;
               showExitModal?: boolean;
               invertColumns?: boolean;
-              hideAside: boolean;
+              hideAside?: boolean;
+              hideFooter?: boolean;
           };
 
     export let title: $$Props['title'] = '';

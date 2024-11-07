@@ -6,11 +6,23 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import ansicolor from 'ansicolor';
-    import { Fieldset, Card, Layout, Tag, Typography, Badge } from '@appwrite.io/pink-svelte';
+    import {
+        Fieldset,
+        Card,
+        Layout,
+        Tag,
+        Typography,
+        Badge,
+        Spinner,
+        Icon
+    } from '@appwrite.io/pink-svelte';
+    import { IconExclamationCircle } from '@appwrite.io/pink-icons-svelte';
     import Button from '$lib/elements/forms/button.svelte';
     import Aside from '../aside.svelte';
     import { app } from '$lib/stores/app';
     import { goto } from '$app/navigation';
+    import { calculateTime } from '$lib/helpers/timeConversion';
+    import { timer } from '$lib/actions/timer';
 
     export let data: PageData;
 
@@ -23,8 +35,10 @@
                     `sites.${data.deployment.resourceId}.deployments.${data.deployment.$id}.update`
                 )
             ) {
+                console.log(response.payload);
                 buildLogs = response.payload.logs;
                 status = response.payload.status;
+
                 if (status === 'ready') {
                     goto(
                         `${base}/project-${$page.params.project}/sites/create-site/finish?site=${data.site.$id}`
@@ -83,6 +97,8 @@
         }
         return output;
     }
+
+    $: console.log(data.deployment);
 </script>
 
 <Wizard
@@ -102,9 +118,28 @@
         </Card.Base>
         <Fieldset legend="Deploy">
             <Layout.Stack>
-                <Layout.Stack direction="row">
-                    <Typography.Text variant="m-500">Deployment logs</Typography.Text>
-                    <Badge content={status} size="xs" variant="secondary" />
+                <Layout.Stack direction="row" justifyContent="space-between">
+                    <Layout.Stack direction="row">
+                        <Typography.Text variant="m-500">Deployment logs</Typography.Text>
+                        <Badge content={status} size="xs" variant="secondary" />
+                    </Layout.Stack>
+                    <div>
+                        <Layout.Stack direction="row" alignItems="center">
+                            {#if ['processing', 'building'].includes(data.deployment.status)}
+                                <span use:timer={{ start: data.deployment.$createdAt }} />
+                                <Spinner />
+                            {:else if ['failed'].includes(data.deployment.status)}
+                                <p>Deployment failed</p>
+                                <span style:color="var(--color-bgcolor-error)">
+                                    <Icon
+                                        icon={IconExclamationCircle}
+                                        color="--color-bgcolor-error" />
+                                </span>
+                            {:else}
+                                {calculateTime(data.deployment.buildTime)}
+                            {/if}
+                        </Layout.Stack>
+                    </div>
                 </Layout.Stack>
                 <pre><code>{@html formatLogs(buildLogs)}</code></pre>
                 <!-- <div>
