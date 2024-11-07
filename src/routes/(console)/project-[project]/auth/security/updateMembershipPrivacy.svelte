@@ -3,9 +3,8 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, Form } from '$lib/elements/forms';
+    import { Button, Form, InputChoice } from '$lib/elements/forms';
     import { FormList } from '$lib/elements/forms';
-    import InputCheckbox from '$lib/elements/forms/inputCheckbox.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { project } from '../../store';
@@ -46,34 +45,23 @@
         </p>
         <svelte:fragment slot="aside">
             <FormList>
-                <div class="u-flex-vertical u-gap-8 body-text-2">
-                    <InputCheckbox
-                        bind:checked={authMembershipsUserName}
-                        id="membershipsUserName"
-                        label="Name" />
-                    <p class="u-margin-inline-28">Display team members' usernames to to others</p>
-                </div>
-                <div class="u-flex-vertical u-gap-8 body-text-2">
-                    <InputCheckbox
-                        bind:checked={authMembershipsUserEmail}
-                        id="membershipsUserEmail"
-                        label="Email" />
-                    <p class="u-margin-inline-28">
-                        Allow team members to view each other's email addresses
-                    </p>
-                </div>
-                <div class="u-flex-vertical u-gap-8 body-text-2">
-                    <InputCheckbox
-                        bind:checked={authMembershipsMfa}
-                        id="membershipsMfa"
-                        label="MFA status" />
-                    <p class="u-margin-inline-28">
-                        Show if team members have multi-factor authentication enabled
-                    </p>
-                </div>
+                <InputChoice
+                    bind:value={authMembershipsUserName}
+                    id="membershipsUserName"
+                    label="Name">
+                    Display team members'names to other team members
+                </InputChoice>
+                <InputChoice
+                    bind:value={authMembershipsUserEmail}
+                    id="membershipsUserEmail"
+                    label="Email">
+                    Allow team members to view each other's email addresses
+                </InputChoice>
+                <InputChoice bind:value={authMembershipsMfa} id="membershipsMfa" label="MFA status">
+                    Show if team members have multi-factor authentication enabled
+                </InputChoice>
             </FormList>
         </svelte:fragment>
-
         <svelte:fragment slot="actions">
             <Button
                 disabled={authMembershipsUserName === ($project?.authMembershipsUserName ?? true) &&
