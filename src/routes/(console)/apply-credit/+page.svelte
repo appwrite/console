@@ -189,8 +189,6 @@
     $: selectedOrg = $organizationList?.teams?.find(
         (team) => team.$id === selectedOrgId
     ) as Organization;
-
-    $: console.log(billingPlan);
 </script>
 
 <svelte:head>
