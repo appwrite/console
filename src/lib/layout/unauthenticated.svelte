@@ -194,7 +194,7 @@
 
                 <ul
                     class="inline-links is-center is-with-sep u-margin-block-start-32"
-                    class:u-hide={!$$slots.links}>
+                    class:u-hide={!$$slots?.links}>
                     <slot name="links" />
                 </ul>
             </div>
