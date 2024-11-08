@@ -9,7 +9,6 @@
     import { app } from '$lib/stores/app';
     import type { Campaign } from '$lib/stores/campaigns';
     import { getApiEndpoint } from '$lib/stores/sdk';
-    import { VARS } from '$lib/system';
 
     export const imgLight = LoginLight;
     export const imgDark = LoginDark;
