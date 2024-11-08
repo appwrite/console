@@ -8,7 +8,7 @@
     import type { Coupon } from '$lib/sdk/billing';
     import { app } from '$lib/stores/app';
     import type { Campaign } from '$lib/stores/campaigns';
-    import { VARS } from '$lib/system';
+    import { getApiEndpoint } from '$lib/stores/sdk';
 
     export const imgLight = LoginLight;
     export const imgDark = LoginDark;
@@ -40,7 +40,8 @@
     }
 
     function getImage(image: string) {
-        const url = new URL(image, VARS.APPWRITE_ENDPOINT);
+        const endpoint = getApiEndpoint();
+        const url = new URL(image, endpoint);
         return url.toString();
     }
 </script>
@@ -194,7 +195,7 @@
 
                 <ul
                     class="inline-links is-center is-with-sep u-margin-block-start-32"
-                    class:u-hide={!$$slots.links}>
+                    class:u-hide={!$$slots?.links}>
                     <slot name="links" />
                 </ul>
             </div>
