@@ -108,7 +108,7 @@
                 );
             }
             // Upgrade existing org
-            else if (selectedOrg?.billingPlan === BillingPlan.FREE) {
+            else if (selectedOrg?.billingPlan === billingPlan) {
                 org = await sdk.forConsole.billing.updatePlan(
                     selectedOrg.$id,
                     billingPlan,
