@@ -50,6 +50,7 @@
     {maxlength}
     {label}
     {nullable}
+    {readonly}
     autofocus={autofocus || undefined}
     autocomplete={autocomplete ? 'on' : 'off'}
     helper={error}

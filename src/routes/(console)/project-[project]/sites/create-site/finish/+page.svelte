@@ -13,10 +13,14 @@
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { calculateTime } from '$lib/helpers/timeConversion';
     import ConnectRepoModal from './(components)/connectRepoModal.svelte';
+    import OpenOnMobileModal from './(components)/openOnMobileModal.svelte';
 
     export let data: PageData;
 
     let showConnectRepositry = false;
+    let showOpenOnMobile = false;
+    let showInviteCollaborator = false;
+    let showAddDomain = false;
 
     $: size = humanFileSize(data.deployment.buildSize);
 </script>
@@ -103,21 +107,23 @@
 
         {#if !data.deployment.providerCommitHash}
             <Layout.Stack direction="row">
-                <Card isTile radius="s" isButton on:click={() => (showConnectRepositry = true)}>
-                    <Layout.Stack gap="s">
-                        <Layout.Stack
-                            direction="row"
-                            justifyContent="space-between"
-                            alignItems="center">
-                            <Typography.Title size="s">Connect to repository</Typography.Title>
-                            <Icon icon={IconArrowSmRight} />
+                {#if !data.site.installationId}
+                    <Card isTile radius="s" isButton on:click={() => (showConnectRepositry = true)}>
+                        <Layout.Stack gap="s">
+                            <Layout.Stack
+                                direction="row"
+                                justifyContent="space-between"
+                                alignItems="center">
+                                <Typography.Title size="s">Connect to repository</Typography.Title>
+                                <Icon icon={IconArrowSmRight} />
+                            </Layout.Stack>
+                            <Typography.Text variant="m-400">
+                                Connect to a new repository or an existing one.
+                            </Typography.Text>
                         </Layout.Stack>
-                        <Typography.Text variant="m-400">
-                            Connect to a new repository or an existing one.
-                        </Typography.Text>
-                    </Layout.Stack>
-                </Card>
-                <Card isTile radius="s" isButton>
+                    </Card>
+                {/if}
+                <Card isTile radius="s" isButton on:click={() => (showAddDomain = true)}>
                     <Layout.Stack gap="s">
                         <Layout.Stack
                             direction="row"
@@ -131,7 +137,7 @@
                         </Typography.Text>
                     </Layout.Stack>
                 </Card>
-                <Card isTile radius="s" isButton>
+                <Card isTile radius="s" isButton on:click={() => (showInviteCollaborator = true)}>
                     <Layout.Stack gap="s">
                         <Layout.Stack
                             direction="row"
@@ -145,7 +151,7 @@
                         </Typography.Text>
                     </Layout.Stack>
                 </Card>
-                <Card isTile radius="s" isButton>
+                <Card isTile radius="s" isButton on:click={() => (showOpenOnMobile = true)}>
                     <Layout.Stack gap="s">
                         <Layout.Stack
                             direction="row"
@@ -166,11 +172,15 @@
         <Button
             size="s"
             fullWidthMobile
-            href="{`${base}/project-${$page.params.project}/sites/site-${$page.params.site}`}}"
-            >Close</Button>
+            href="{`${base}/project-${$page.params.project}/sites/site-${$page.params.site}`}}">
+            Close
+        </Button>
     </svelte:fragment>
 </Wizard>
 
 {#if showConnectRepositry}
     <ConnectRepoModal bind:show={showConnectRepositry} site={data.site} />
+{/if}
+{#if showOpenOnMobile}
+    <OpenOnMobileModal bind:show={showOpenOnMobile} siteURL={data.deployment.domain} />
 {/if}

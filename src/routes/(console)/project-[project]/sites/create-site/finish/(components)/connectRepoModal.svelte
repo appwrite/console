@@ -74,7 +74,11 @@
     });
 </script>
 
-<Modal title="Create site" description="Connect to a new repository or an existing one." bind:show>
+<Modal
+    title="Create site"
+    description="Connect to a new repository or an existing one."
+    bind:show
+    onSubmit={connectRepo}>
     <Layout.Stack gap="xl">
         <Layout.Stack direction="row" gap="xl">
             <InputRadio
@@ -149,10 +153,7 @@
             </Layout.Stack>
         {:else if repositoryBehaviour === 'new'}
             <Button text size="s" on:click={() => (show = false)}>Cancel</Button>
-            <Button
-                size="s"
-                on:click={connectRepo}
-                disabled={!repositoryName || !$installation?.$id}>
+            <Button size="s" submit disabled={!repositoryName || !$installation?.$id}>
                 Create
             </Button>
         {/if}
