@@ -14,6 +14,7 @@ export const ssr = false;
 
 export const load: LayoutLoad = async ({ depends, url, route }) => {
     depends(Dependencies.ACCOUNT);
+    
     console.log(getApiEndpoint());
     sdk.forProject.client.setEndpoint(getApiEndpoint());
 
