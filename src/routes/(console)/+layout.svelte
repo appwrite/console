@@ -319,8 +319,9 @@
         !$page?.params.organization &&
         !$page.url.pathname.includes('/console/account') &&
         !$page.url.pathname.includes('/console/card') &&
-        !$page.url.pathname.includes('/console/onboarding')}>
-    <Header slot="header" />
+        !$page.url.pathname.includes('/console/onboarding')}
+    showHeader={!$page.url.pathname.includes('/console/onboarding')}>
+    <Header slot="header" s />
     <SideNavigation slot="side" bind:isOpen />
     <slot />
     <Footer slot="footer" />

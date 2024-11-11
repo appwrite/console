@@ -10,6 +10,7 @@
 
     export let isOpen = false;
     export let showSideNavigation = false;
+    export let showHeader = true;
 
     let y: number;
 
@@ -59,16 +60,18 @@
     {#if $activeHeaderAlert?.show}
         <svelte:component this={$activeHeaderAlert.component} />
     {/if}
-    <header class="main-header u-padding-inline-end-0">
-        <button
-            class:u-hide={!showSideNavigation}
-            class="icon-button is-not-desktop"
-            aria-label="Open Menu"
-            on:click={toggleMenu}>
-            <span class:icon-x={isOpen} class:icon-menu={!isOpen} aria-hidden="true" />
-        </button>
-        <slot name="header" />
-    </header>
+    {#if showHeader}
+        <header class="main-header u-padding-inline-end-0">
+            <button
+                class:u-hide={!showSideNavigation}
+                class="icon-button is-not-desktop"
+                aria-label="Open Menu"
+                on:click={toggleMenu}>
+                <span class:icon-x={isOpen} class:icon-menu={!isOpen} aria-hidden="true" />
+            </button>
+            <slot name="header" />
+        </header>
+    {/if}
     {#if showSideNavigation}
         <nav class="main-side">
             <slot name="side" />
