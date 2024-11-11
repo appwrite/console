@@ -28,7 +28,6 @@
     import { onMount } from 'svelte';
     import { trackEvent } from '$lib/actions/analytics';
     import { selectedInvoice, showRetryModal } from './store';
-    import { organization } from '$lib/stores/organization';
 
     let showDropdown = [];
     let showFailedError = false;
