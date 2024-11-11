@@ -68,8 +68,3 @@
         </div>
     </div>
 </Copy>
-
-<style>
-    .text {
-    }
-</style>
