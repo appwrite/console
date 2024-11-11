@@ -18,7 +18,6 @@
     } from '$lib/layout';
     import { type PaymentList } from '$lib/sdk/billing';
     import { app } from '$lib/stores/app';
-    import { campaigns } from '$lib/stores/campaigns';
     import { addNotification } from '$lib/stores/notifications';
     import { organizationList, type Organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
@@ -68,7 +67,7 @@
     let name: string;
     let coupon: string;
     let couponData = data?.couponData;
-    let campaign = campaigns.get(data?.couponData?.campaign ?? data?.campaign);
+    let campaign = data?.campaign;
     let billingPlan = BillingPlan.PRO;
 
     onMount(async () => {
@@ -109,7 +108,7 @@
                 );
             }
             // Upgrade existing org
-            else if (selectedOrg?.billingPlan === BillingPlan.FREE) {
+            else if (selectedOrg?.billingPlan !== billingPlan) {
                 org = await sdk.forConsole.billing.updatePlan(
                     selectedOrg.$id,
                     billingPlan,
@@ -190,8 +189,6 @@
     $: selectedOrg = $organizationList?.teams?.find(
         (team) => team.$id === selectedOrgId
     ) as Organization;
-
-    $: campaign = campaigns.get(data?.couponData?.campaign ?? data?.campaign);
 </script>
 
 <svelte:head>
@@ -258,7 +255,7 @@
                     <div class="card-bg"></div>
                     <div class="u-flex u-flex-vertical u-gap-24 u-cross-center u-position-relative">
                         <img
-                            src={`${base}/images/campaigns/${data?.couponData?.campaign ?? data?.campaign}/${$app.themeInUse}.png`}
+                            src={campaign?.image[$app.themeInUse]}
                             class="u-block u-image-object-fit-cover card-img"
                             alt="promo" />
                         <p class="text">
@@ -271,7 +268,7 @@
                     </div>
                 </div>
             {/if}
-            {#if selectedOrg?.billingPlan !== BillingPlan.FREE}
+            {#if selectedOrg?.$id && selectedOrg?.billingPlan !== BillingPlan.FREE}
                 <section
                     class="card u-margin-block-start-24"
                     style:--p-card-padding="1.5rem"
@@ -287,21 +284,21 @@
                     {/if}
                 </section>
             {:else if selectedOrgId}
-                <div class:u-margin-block-start={campaign?.template === 'card'}>
+                <div class:u-margin-block-start-24={campaign?.template === 'card'}>
                     <EstimatedTotalBox
                         fixedCoupon={!!data?.couponData?.code}
-                        billingPlan={BillingPlan.PRO}
+                        {billingPlan}
                         {collaborators}
                         bind:couponData
                         bind:billingBudget>
-                        {#if campaign?.template === 'review' && (campaign?.data?.cta || campaign?.data?.claimed || campaign?.data?.unclaimed)}
+                        {#if campaign?.template === 'review' && (campaign?.cta || campaign?.claimed || campaign?.unclaimed)}
                             <div class="u-margin-block-end-24">
-                                <p class="body-text-1 u-bold">{campaign?.data?.cta}</p>
+                                <p class="body-text-1 u-bold">{campaign?.cta}</p>
                                 <p class="text u-margin-block-start-8">
-                                    {#if couponData?.code && couponData?.status === 'active' && campaign?.data?.claimed}
-                                        {campaign?.data?.claimed}
-                                    {:else if campaign?.data?.unclaimed}
-                                        {campaign?.data?.unclaimed}
+                                    {#if couponData?.code && couponData?.status === 'active' && campaign?.claimed}
+                                        {campaign?.claimed}
+                                    {:else if campaign?.unclaimed}
+                                        {campaign?.unclaimed}
                                     {/if}
                                 </p>
                             </div>

@@ -14,6 +14,8 @@
     import type { Models } from '@appwrite.io/console';
     import MfaRegenerateCodes from './mfaRegenerateCodes.svelte';
     import { Pill } from '$lib/elements';
+    import { page } from '$app/stores';
+    import { onMount } from 'svelte';
 
     let showSetup: boolean = false;
     let showDelete: boolean = false;
@@ -25,6 +27,56 @@
         .filter(([_, enabled]) => enabled)
         .map(([factor, _]) => factor);
     $: enabledMethods = enabledFactors.filter((factor) => factor !== 'recoveryCode');
+
+    $: cleanUrl = $page.url.origin + $page.url.pathname;
+
+    let creatingVerification = false;
+
+    async function createVerification() {
+        creatingVerification = true;
+
+        try {
+            await sdk.forConsole.account.createVerification(cleanUrl);
+            addNotification({
+                message: 'Verification email has been sent',
+                type: 'success'
+            });
+        } catch (error) {
+            addNotification({
+                message: error.message,
+                type: 'error'
+            });
+        } finally {
+            creatingVerification = false;
+        }
+    }
+
+    async function updateEmailVerification() {
+        const searchParams = $page.url.searchParams;
+        const userId = searchParams.get('userId');
+        const secret = searchParams.get('secret');
+
+        history.replaceState(null, '', cleanUrl);
+
+        if (userId && secret) {
+            try {
+                await sdk.forConsole.account.updateVerification(userId, secret);
+                addNotification({
+                    message: 'Email verified successfully',
+                    type: 'success'
+                });
+                await Promise.all([
+                    invalidate(Dependencies.ACCOUNT),
+                    invalidate(Dependencies.FACTORS)
+                ]);
+            } catch (error) {
+                addNotification({
+                    message: error.message,
+                    type: 'error'
+                });
+            }
+        }
+    }
 
     async function updateMfa() {
         try {
@@ -77,6 +129,10 @@
     $: if (!showRecoveryCodes) {
         codes = null;
     }
+
+    onMount(() => {
+        updateEmailVerification();
+    });
 </script>
 
 <CardGrid>
@@ -159,13 +215,34 @@
                                 </div>
                             </div>
                         </div>
+                    {:else if !$user.emailVerification}
+                        <div
+                            class="u-flex u-main-space-between u-sep-block-end"
+                            style="padding-block-end: 16px">
+                            <div class="u-flex u-gap-8 u-cross-baseline">
+                                <div class="avatar is-size-x-small">
+                                    <span class="icon-mail" aria-hidden="true" />
+                                </div>
+                                <div class="u-flex-vertical u-gap-4">
+                                    <div class="u-flex u-gap-4 u-cross-center">
+                                        <span class="body-text-2 u-bold">Email</span>
+                                        <Pill>unverified</Pill>
+                                    </div>
+                                    <span>Verify your email to receive login MFA codes.</span>
+                                </div>
+                            </div>
+                            <Button
+                                secondary
+                                disabled={creatingVerification}
+                                on:click={() => createVerification()}>Verify</Button>
+                        </div>
                     {/if}
 
                     {#if $factors.phone}
                         <div
                             class="u-flex u-main-space-between u-sep-block-end"
                             style="padding-block-end: 16px">
-                            <div class="u-flex u-gap-8">
+                            <div class="u-flex u-gap-8 u-cross-baseline">
                                 <div class="avatar is-size-x-small">
                                     <span class="icon-send" aria-hidden="true" />
                                 </div>

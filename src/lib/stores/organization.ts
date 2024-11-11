@@ -50,5 +50,6 @@ export const organizationList = derived(
     page,
     ($page) => $page.data.organizations as Models.TeamList<Record<string, unknown>>
 );
+
 export const organization = derived(page, ($page) => $page.data?.organization as Organization);
 export const members = derived(page, ($page) => $page.data.members as Models.MembershipList);

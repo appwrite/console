@@ -36,7 +36,7 @@ export async function initializeStripe() {
     // Set up the options for the stripe elements
     const options = {
         clientSecret: clientSecret,
-        appearance: get(app).themeInUse === 'dark' ? apperanceDark : apperanceLight
+        appearance: get(app).themeInUse === 'dark' ? appearanceDark : appearanceLight
     };
     // Set up Elements and then create form
     elements = get(stripe).elements(options);
@@ -188,7 +188,7 @@ export async function confirmSetup(
     }
 }
 
-const apperanceLight = {
+const appearanceLight = {
     variables: {
         colorPrimary: '#606a7b',
         colorText: 'rgb(107, 107, 112)',
@@ -217,7 +217,7 @@ const apperanceLight = {
     }
 };
 
-const apperanceDark = {
+const appearanceDark = {
     variables: {
         colorPrimary: '#606a7b',
         colorText: 'rgb(195, 195, 198)',

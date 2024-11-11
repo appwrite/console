@@ -184,6 +184,7 @@ export enum Submit {
     ProjectUpdateSMTP = 'submit_project_update_smtp',
     MemberCreate = 'submit_member_create',
     MemberDelete = 'submit_member_delete',
+    MembershipUpdate = 'submit_membership_update',
     MembershipUpdateStatus = 'submit_membership_update_status',
     ProviderUpdate = 'submit_provider_update',
     TeamCreate = 'submit_team_create',
@@ -195,6 +196,7 @@ export enum Submit {
     AuthPasswordDictionaryUpdate = 'submit_auth_password_dictionary_update',
     AuthPersonalDataCheckUpdate = 'submit_auth_personal_data_check_update',
     AuthSessionAlertsUpdate = 'submit_auth_session_alerts_update',
+    AuthMembershipPrivacyUpdate = 'submit_auth_membership_privacy_update',
     AuthMockNumbersUpdate = 'submit_auth_mock_numbers_update',
     SessionsLengthUpdate = 'submit_sessions_length_update',
     SessionsLimitUpdate = 'submit_sessions_limit_update',
@@ -320,5 +322,7 @@ export enum Submit {
     MessagingTopicUpdatePermissions = 'submit_messaging_topic_update_permissions',
     MessagingTopicSubscriberAdd = 'submit_messaging_topic_subscriber_add',
     MessagingTopicSubscriberDelete = 'submit_messaging_topic_subscriber_delete',
-    ApplyQuickFilter = 'submit_apply_quick_filter'
+    ApplyQuickFilter = 'submit_apply_quick_filter',
+    RequestBAA = 'submit_request_baa',
+    RequestSoc2 = 'submit_request_soc2'
 }

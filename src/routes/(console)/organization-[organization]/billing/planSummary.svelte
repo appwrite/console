@@ -16,7 +16,10 @@
     import { tooltip } from '$lib/actions/tooltip';
 
     let currentInvoice: Invoice;
-    let extraMembers = 0;
+    let extraMembers;
+    let currentPlan;
+    let availableCredit = 0;
+    let isLoading = true;
     const today = new Date();
     onMount(async () => {
         const invoices = await sdk.forConsole.billing.listInvoices($organization.$id, [
@@ -26,11 +29,18 @@
         currentInvoice = invoices.invoices[0];
         const members = await sdk.forConsole.teams.listMemberships($organization.$id, []);
         extraMembers = members.total > 1 ? members.total - 1 : 0;
+
+        currentPlan = await sdk.forConsole.billing.getPlan($organization?.$id);
+
+        const creditList = await sdk.forConsole.billing.listCredits($organization.$id, [
+            Query.offset(0)
+        ]);
+        availableCredit = creditList.available;
+        isLoading = false;
     });
 
-    $: currentPlan = $plansInfo?.get($organization?.billingPlan);
-    $: extraUsage = (currentInvoice?.amount ?? 0) - (currentPlan?.price ?? 0);
-    $: extraAddons = currentInvoice?.usage?.length ?? 0;
+    $: extraUsage = currentInvoice?.amount - currentPlan?.price;
+    $: extraAddons = currentInvoice?.usage?.length;
     $: isTrial =
         new Date($organization?.billingStartDate).getTime() - today.getTime() > 0 &&
         $plansInfo.get($organization.billingPlan)?.trialDays;
@@ -50,109 +60,161 @@
                     $organization?.billingNextInvoiceDate
                 )}
             </p>
-            <Collapsible>
-                <CollapsibleItem noContent>
-                    <span class="body-text-2">
-                        {tierToPlan($organization?.billingPlan)?.name} plan</span>
-                    <div class="body-text-2 u-margin-inline-start-auto">
-                        {isTrial ? formatCurrency(0) : formatCurrency(currentPlan?.price)}
-                    </div>
-                </CollapsibleItem>
-                {#if $organization?.billingPlan !== BillingPlan.FREE && extraUsage > 0}
-                    <CollapsibleItem isInfo gap={8}>
-                        <svelte:fragment slot="beforetitle">
-                            <span class="body-text-2"><b>Add-ons</b></span><span class="inline-tag"
-                                >{extraMembers ? extraAddons + 1 : extraAddons}</span>
-                            <div class="icon">
-                                <span class="icon-cheveron-down" aria-hidden="true"></span>
-                            </div>
-                        </svelte:fragment>
-                        <svelte:fragment slot="end">
-                            <div class="body-text-2 u-margin-inline-start-auto">
-                                <b>
-                                    {formatCurrency(extraUsage >= 0 ? extraUsage : 0)}
-                                </b>
-                            </div>
-                        </svelte:fragment>
-
-                        <ul>
-                            {#if extraMembers}
-                                <li class="u-flex-vertical u-gap-4 u-padding-block-8">
-                                    <div class="u-flex u-gap-4">
-                                        <h5 class="body-text-2 u-stretch">Additional members</h5>
-                                        <div>
-                                            {formatCurrency(
-                                                extraMembers * currentPlan.addons.member.price
-                                            )}
-                                        </div>
-                                    </div>
-                                    <div class="u-flex u-gap-4">
-                                        <h5 class="body-text-2 u-stretch u-color-text-offline">
-                                            {extraMembers}
-                                        </h5>
-                                    </div>
-                                </li>
-                            {/if}
-                            {#if currentInvoice?.usage}
-                                {#each currentInvoice.usage as excess, i}
-                                    <li
-                                        class="u-flex-vertical u-gap-4 {extraMembers
-                                            ? 'u-padding-block-8'
-                                            : 'u-padding-block-start-8'}"
-                                        class:u-sep-block-start={i > 0 || extraMembers}>
-                                        {#if ['storage', 'bandwidth'].includes(excess.name)}
-                                            {@const excessValue = humanFileSize(excess.value)}
-                                            <div class="u-flex u-main-space-between">
-                                                <h5 class="body-text-2 u-stretch u-capitalize">
-                                                    {excess.name}
-                                                </h5>
-                                                {formatCurrency(excess.amount)}
-                                            </div>
-                                            <h5
-                                                class="body-text-2 u-stretch u-color-text-offline"
-                                                title={formatNumberWithCommas(excess.value ?? 0) +
-                                                    'bytes'}>
-                                                {excessValue.value ?? 0}{excessValue.unit}
-                                            </h5>
-                                        {/if}
-                                        {#if ['users', 'executions'].includes(excess.name)}
-                                            <div class="u-flex u-main-space-between">
-                                                <h5 class="body-text-2 u-stretch u-capitalize">
-                                                    {excess.name}
-                                                </h5>
-                                                {formatCurrency(excess.amount)}
-                                            </div>
-                                            <h5
-                                                class="body-text-2 u-stretch u-color-text-offline"
-                                                title={formatNumberWithCommas(excess.value)}>
-                                                {abbreviateNumber(excess.value)}
-                                            </h5>
-                                        {/if}
-                                    </li>
-                                {/each}
-                            {/if}
-                        </ul>
+            {#if isLoading}
+                <div class="u-flex u-main-center u-stretch u-cross-center">
+                    <div class="loader"></div>
+                </div>
+            {:else}
+                <Collapsible>
+                    <CollapsibleItem noContent>
+                        <span class="body-text-2">
+                            {tierToPlan($organization?.billingPlan)?.name} plan</span>
+                        <div class="body-text-2 u-margin-inline-start-auto">
+                            {isTrial || $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION
+                                ? formatCurrency(0)
+                                : currentPlan
+                                  ? formatCurrency(currentPlan?.price)
+                                  : ''}
+                        </div>
                     </CollapsibleItem>
-                {/if}
+                    {#if $organization?.billingPlan !== BillingPlan.FREE && $organization?.billingPlan !== BillingPlan.GITHUB_EDUCATION && extraUsage > 0}
+                        <CollapsibleItem isInfo gap={8}>
+                            <svelte:fragment slot="beforetitle">
+                                <span class="body-text-2"><b>Add-ons</b></span><span
+                                    class="inline-tag"
+                                    >{extraMembers ? extraAddons + 1 : extraAddons}</span>
+                                <div class="icon">
+                                    <span class="icon-cheveron-down" aria-hidden="true"></span>
+                                </div>
+                            </svelte:fragment>
+                            <svelte:fragment slot="end">
+                                <div class="body-text-2 u-margin-inline-start-auto">
+                                    <b>
+                                        {formatCurrency(extraUsage >= 0 ? extraUsage : 0)}
+                                    </b>
+                                </div>
+                            </svelte:fragment>
 
-                <CollapsibleItem noContent gap={4}>
-                    <span class="body-text-2">Current total (USD)</span>
-                    <span class="tooltip u-cross-center" aria-label="total info">
-                        <span
-                            class="icon-info"
-                            aria-hidden="true"
-                            use:tooltip={{
-                                content:
-                                    'Totals displayed are estimates updated every 24 hours and may not accurately reflect your invoice.'
-                            }}></span>
-                    </span>
-                    <div class="body-text-2 u-margin-inline-start-auto">
-                        {$organization?.billingPlan === BillingPlan.FREE
-                            ? formatCurrency(0)
-                            : formatCurrency(currentInvoice?.amount ?? 0)}
-                    </div>
-                </CollapsibleItem>
-            </Collapsible>
+                            <ul>
+                                {#if extraMembers}
+                                    <li class="u-flex-vertical u-gap-4 u-padding-block-8">
+                                        <div class="u-flex u-gap-4">
+                                            <h5 class="body-text-2 u-stretch">
+                                                Additional members
+                                            </h5>
+                                            <div>
+                                                {formatCurrency(
+                                                    extraMembers *
+                                                        (currentPlan?.addons?.member?.price ?? 0)
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div class="u-flex u-gap-4">
+                                            <h5 class="body-text-2 u-stretch u-color-text-offline">
+                                                {extraMembers}
+                                            </h5>
+                                        </div>
+                                    </li>
+                                {/if}
+                                {#if currentInvoice?.usage}
+                                    {#each currentInvoice.usage as excess, i}
+                                        <li
+                                            class="u-flex-vertical u-gap-4 {extraMembers
+                                                ? 'u-padding-block-8'
+                                                : 'u-padding-block-start-8'}"
+                                            class:u-sep-block-start={i > 0 || extraMembers}>
+                                            {#if ['storage', 'bandwidth'].includes(excess.name)}
+                                                {@const excessValue = humanFileSize(excess.value)}
+                                                <div class="u-flex u-main-space-between">
+                                                    <h5 class="body-text-2 u-stretch u-capitalize">
+                                                        {excess.name}
+                                                    </h5>
+                                                    {formatCurrency(excess.amount)}
+                                                </div>
+                                                <h5
+                                                    class="body-text-2 u-stretch u-color-text-offline"
+                                                    title={formatNumberWithCommas(
+                                                        excess.value ?? 0
+                                                    ) + 'bytes'}>
+                                                    {excessValue.value ?? 0}{excessValue.unit}
+                                                </h5>
+                                            {/if}
+                                            {#if ['users', 'executions'].includes(excess.name)}
+                                                <div class="u-flex u-main-space-between">
+                                                    <h5 class="body-text-2 u-stretch u-capitalize">
+                                                        {excess.name}
+                                                    </h5>
+                                                    {formatCurrency(excess.amount)}
+                                                </div>
+                                                <h5
+                                                    class="body-text-2 u-stretch u-color-text-offline"
+                                                    title={formatNumberWithCommas(excess.value)}>
+                                                    {abbreviateNumber(excess.value)}
+                                                </h5>
+                                            {/if}
+                                        </li>
+                                    {/each}
+                                {/if}
+                            </ul>
+                        </CollapsibleItem>
+                    {/if}
+
+                    {#if $organization?.billingPlan !== BillingPlan.FREE && availableCredit > 0}
+                        <CollapsibleItem noContent gap={4}>
+                            <span class="body-text-2 u-flex u-cross-center u-gap-2"
+                                ><svg
+                                    width="16"
+                                    height="17"
+                                    viewBox="0 0 16 17"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        fill-rule="evenodd"
+                                        clip-rule="evenodd"
+                                        d="M14.166 7.93434C14.4784 8.24676 14.4784 8.75329 14.166 9.06571L8.56603 14.6657C8.25361 14.9781 7.74708 14.9781 7.43466 14.6657L1.83466 9.06571C1.67842 8.90947 1.60032 8.70469 1.60034 8.49992V4.50002C1.60034 3.17454 2.67486 2.10002 4.00034 2.10002H8.00056C8.20523 2.10008 8.40987 2.17818 8.56603 2.33434L14.166 7.93434ZM4.00034 5.30002C4.44217 5.30002 4.80034 4.94185 4.80034 4.50002C4.80034 4.05819 4.44217 3.70002 4.00034 3.70002C3.55851 3.70002 3.20034 4.05819 3.20034 4.50002C3.20034 4.94185 3.55851 5.30002 4.00034 5.30002Z"
+                                        fill="#00BC5D" />
+                                </svg>
+                                Credits to be applied</span>
+
+                            <div
+                                class="body-text-2 u-margin-inline-start-auto"
+                                style="color: var(--web-green-500, #10B981)">
+                                -{formatCurrency(
+                                    Math.min(availableCredit, currentInvoice?.amount ?? 0)
+                                )}
+                            </div>
+                        </CollapsibleItem>
+                    {/if}
+
+                    <CollapsibleItem noContent gap={4}>
+                        <span class="body-text-2">Current total (USD)</span>
+                        <span class="tooltip u-cross-center" aria-label="total info">
+                            <span
+                                class="icon-info"
+                                aria-hidden="true"
+                                use:tooltip={{
+                                    content:
+                                        'Totals displayed are estimates updated every 24 hours and may not accurately reflect your invoice.'
+                                }}></span>
+                        </span>
+                        <div class="body-text-2 u-margin-inline-start-auto">
+                            {$organization?.billingPlan === BillingPlan.FREE ||
+                            $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION
+                                ? formatCurrency(0)
+                                : formatCurrency(
+                                      Math.max(
+                                          (currentInvoice?.amount ?? 0) -
+                                              Math.min(
+                                                  availableCredit,
+                                                  currentInvoice?.amount ?? 0
+                                              ),
+                                          0
+                                      )
+                                  )}
+                        </div>
+                    </CollapsibleItem>
+                </Collapsible>
+            {/if}
         </svelte:fragment>
         <svelte:fragment slot="actions">
             {#if $organization?.billingPlan === BillingPlan.FREE}
@@ -171,7 +233,7 @@
                         Upgrade
                     </Button>
                 </div>
-            {:else}
+            {:else if $organization?.billingPlan !== BillingPlan.GITHUB_EDUCATION}
                 <div class="u-flex u-gap-16 u-flex-wrap">
                     <Button
                         text

@@ -1,6 +1,7 @@
 <script lang="ts">
+    import { page } from '$app/stores';
     import { Alert, Box, Modal } from '$lib/components';
-    import { Button, InputText, InputTextarea } from '$lib/elements/forms';
+    import { Button, FormList, InputText, InputTextarea } from '$lib/elements/forms';
     import { getFormData } from '$lib/helpers/form';
     import { feedback } from '$lib/stores/feedback';
     import { sdk } from '$lib/stores/sdk';
@@ -52,10 +53,10 @@
         const { endpoint, feedback: message } = formData;
 
         try {
-            await feedback.submitFeedback(`feedback-${$feedback.type}`, message);
+            await feedback.submitFeedback(`feedback-${$feedback.type}`, message, $page.url.href);
         } catch (error) {
             console.error(
-                'Feedback cound bot be submitted, but we continue to reditect to do export.'
+                'Feedback could not be submitted, but we continue to redirect to do export.'
             );
             console.error(error);
         }
@@ -105,35 +106,33 @@
 </script>
 
 <Modal title="Export to self-hosted instance" bind:show {onSubmit}>
-    <div class="modal-contents">
+    <FormList gap={24}>
         <Alert isStandalone>
             <svelte:fragment slot="title">API key creation</svelte:fragment>
             By initiating the transfer, an API key will be automatically generated in the background,
             which you can delete after completion
         </Alert>
 
-        <div class="u-margin-block-start-24">
-            <InputText
-                label="Endpoint self-hosted instance"
-                required
-                id="endpoint"
-                placeholder="https://[YOUR_APPWRITE_HOSTNAME]"
-                autofocus
-                on:input={(e) => {
-                    if (!submitted) return;
-                    const input = e.target;
-                    const value = input.value;
+        <InputText
+            label="Endpoint self-hosted instance"
+            required
+            id="endpoint"
+            placeholder="https://[YOUR_APPWRITE_HOSTNAME]"
+            autofocus
+            on:input={(e) => {
+                if (!submitted) return;
+                const input = e.target;
+                const value = input.value;
 
-                    if (!isValidEndpoint(value)) {
-                        input.setCustomValidity('Please enter a valid endpoint');
-                    } else {
-                        input.setCustomValidity('');
-                    }
-                    input.reportValidity();
-                }} />
-        </div>
+                if (!isValidEndpoint(value)) {
+                    input.setCustomValidity('Please enter a valid endpoint');
+                } else {
+                    input.setCustomValidity('');
+                }
+                input.reportValidity();
+            }} />
 
-        <Box class="u-margin-block-start-24">
+        <Box>
             <p class="u-bold">
                 Share your feedback: why our self-hosted solution works better for you
             </p>
@@ -147,7 +146,7 @@
                 <InputTextarea id="feedback" label="Your feedback" placeholder="Type here..." />
             </div>
         </Box>
-    </div>
+    </FormList>
 
     <div class="u-flex u-gap-16 u-cross-center" slot="footer">
         <span> You will be redirected to your self-hosted instance </span>

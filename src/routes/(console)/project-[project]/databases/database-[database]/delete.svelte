@@ -4,13 +4,16 @@
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
-    import { Button } from '$lib/elements/forms';
+    import { Button, InputCheckbox } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { database } from './store';
+    import { FormList } from '$lib/elements/forms/index.js';
+
     const databaseId = $page.params.database;
 
     export let showDelete = false;
+    let confirmedDeletion = false;
 
     const handleDelete = async () => {
         try {
@@ -36,14 +39,34 @@
     title="Delete database"
     icon="exclamation"
     state="warning"
+    size="small"
     bind:show={showDelete}
     onSubmit={handleDelete}
     headerDivider={false}>
-    <p class="text" data-private>
-        Are you sure you want to delete <b>{$database.name}</b>?
-    </p>
+    <FormList>
+        <p class="text" data-private>
+            Are you sure you want to delete <b>{$database.name}</b>?
+        </p>
+
+        <p class="text">
+            <b>
+                Once deleted, this database and its backups cannot be restored. This action is
+                irreversible.
+            </b>
+        </p>
+
+        <div class="input-check-box-friction">
+            <InputCheckbox
+                required
+                size="small"
+                id="delete_policy"
+                bind:checked={confirmedDeletion}
+                label="I understand and confirm" />
+        </div>
+    </FormList>
+
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-        <Button secondary submit>Delete</Button>
+        <Button secondary submit disabled={!confirmedDeletion}>Delete</Button>
     </svelte:fragment>
 </Modal>

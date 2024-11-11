@@ -29,7 +29,7 @@
         await sdk.forProject.databases.updateFloatAttribute(
             databaseId,
             collectionId,
-            data.key,
+            originalKey,
             data.required,
             data.min,
             data.max,
