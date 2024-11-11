@@ -1,10 +1,10 @@
 <script lang="ts">
-    import { Alert, ModalWrapper } from '$lib/components';
+    import { Alert } from '$lib/components';
     import { trackEvent } from '$lib/actions/analytics';
     import { Form } from '$lib/elements/forms';
     import { disableCommands } from '$lib/commandCenter';
     import { beforeNavigate } from '$app/navigation';
-    import { Modal } from '@appwrite.io/pink-svelte';
+    import { Layout, Modal } from '@appwrite.io/pink-svelte';
 
     export let show = false;
     export let size: 'small' | 'big' | 'huge' = null;
@@ -33,7 +33,7 @@
     }
 </script>
 
-<Modal {title} bind:open={show} description="test">
+<Modal {title} {description} bind:open={show}>
     <Form isModal {onSubmit}>
         {#if error}
             <div bind:this={alert}>
@@ -50,6 +50,8 @@
         <slot />
     </Form>
     <svelte:fragment slot="footer">
-        <slot name="footer" />
+        <Layout.Stack direction="row" justifyContent="flex-end">
+            <slot name="footer" />
+        </Layout.Stack>
     </svelte:fragment>
 </Modal>
