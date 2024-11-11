@@ -27,9 +27,9 @@ import { Sources } from '$lib/sdk/sources';
 
 export function getApiEndpoint(region?: string): string {
     if (VARS.APPWRITE_ENDPOINT) return VARS.APPWRITE_ENDPOINT;
-    let protocol = globalThis?.location?.protocol;
-    let hostname = globalThis?.location?.hostname;
-    let subdomain = getSubdomain(region);
+    const protocol = globalThis?.location?.protocol;
+    const hostname = globalThis?.location?.hostname;
+    const subdomain = getSubdomain(region);
     return `${protocol}://${subdomain}${hostname}/v1`;
 }
 
