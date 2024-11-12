@@ -38,7 +38,7 @@ export function getApiEndpoint(region?: string): string {
     const protocol = globalThis?.location?.protocol;
     const hostname = globalThis?.location?.hostname;
     const subdomain = getSubdomain(region);
-    return `${protocol}://${subdomain}${hostname}/v1`;
+    return `${protocol}//${subdomain}${hostname}/v1`;
 }
 
 const getSubdomain = (region?: string) => {
