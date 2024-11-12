@@ -33,14 +33,22 @@ export function getApiEndpoint(region?: string): string {
     return `${protocol}://${subdomain}${hostname}/v1`;
 }
 
+const REGION_FRA = 'fra';
+const REGION_SYD = 'syd';
+const REGION_NYC = 'nyc';
+
+const SUBDOMAIN_FRA = 'fra.';
+const SUBDOMAIN_SYD = 'syd.';
+const SUBDOMAIN_NYC = 'nyc.';
+
 const getSubdomain = (region?: string) => {
     switch (region) {
-        case 'fra':
-            return 'fra.';
-        case 'syd':
-            return 'syd.';
-        case 'nyc':
-            return 'nyc.';
+        case REGION_FRA:
+            return SUBDOMAIN_FRA;
+        case REGION_SYD:
+            return SUBDOMAIN_SYD;
+        case REGION_NYC:
+            return SUBDOMAIN_NYC;
         default:
             return '';
     }
