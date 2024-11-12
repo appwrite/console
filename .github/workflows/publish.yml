@@ -62,9 +62,9 @@ jobs:
               with:
                   images: appwrite/console-cloud
                   tags: |
-                      type=semver,pattern={{major}}.{{minor}}.{{patch}}-stage
-                      type=semver,pattern={{major}}.{{minor}}-stage
-                      type=semver,pattern={{major}}-stage
+                      type=semver,pattern={{major}}.{{minor}}.{{patch}}.stage
+                      type=semver,pattern={{major}}.{{minor}}.stage
+                      type=semver,pattern={{major}}.stage
             - name: Build and push Docker image
               id: push
               uses: docker/build-push-action@v6
