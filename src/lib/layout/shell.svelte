@@ -11,6 +11,7 @@
     export let isOpen = false;
     export let showSideNavigation = false;
     export let showHeader = true;
+    export let showFooter = true;
 
     let y: number;
 
@@ -83,7 +84,9 @@
         {/if}
 
         <slot />
-        <slot name="footer" />
+        {#if showFooter}
+            <slot name="footer" />
+        {/if}
     </section>
 </main>
 

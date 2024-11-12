@@ -320,8 +320,9 @@
         !$page.url.pathname.includes('/console/account') &&
         !$page.url.pathname.includes('/console/card') &&
         !$page.url.pathname.includes('/console/onboarding')}
-    showHeader={!$page.url.pathname.includes('/console/onboarding')}>
-    <Header slot="header" s />
+    showHeader={!$page.url.pathname.includes('/console/onboarding')}
+    showFooter={!$page.url.pathname.includes('/console/onboarding')}>
+    <Header slot="header" />
     <SideNavigation slot="side" bind:isOpen />
     <slot />
     <Footer slot="footer" />
