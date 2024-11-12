@@ -24,7 +24,14 @@ import {
 import { Billing } from '../sdk/billing';
 import { Backups } from '../sdk/backups';
 import { Sources } from '$lib/sdk/sources';
-import { REGION_FRA, REGION_NYC, REGION_SYD, SUBDOMAIN_FRA, SUBDOMAIN_NYC, SUBDOMAIN_SYD } from '$lib/constants';
+import {
+    REGION_FRA,
+    REGION_NYC,
+    REGION_SYD,
+    SUBDOMAIN_FRA,
+    SUBDOMAIN_NYC,
+    SUBDOMAIN_SYD
+} from '$lib/constants';
 
 export function getApiEndpoint(region?: string): string {
     if (VARS.APPWRITE_ENDPOINT) return VARS.APPWRITE_ENDPOINT;
