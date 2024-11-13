@@ -87,7 +87,7 @@
                         <TableCell>
                             <Button
                                 text
-                                round
+                                icon
                                 ariaLabel="Delete item"
                                 on:click={() => {
                                     selectedSessionId = session.$id;

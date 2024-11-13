@@ -323,5 +323,16 @@ export enum Submit {
     MessagingTopicSubscriberDelete = 'submit_messaging_topic_subscriber_delete',
     ApplyQuickFilter = 'submit_apply_quick_filter',
     RequestBAA = 'submit_request_baa',
-    RequestSoc2 = 'submit_request_soc2'
+    RequestSoc2 = 'submit_request_soc2',
+    SiteCreate = 'submit_site_create',
+    SiteDelete = 'submit_site_delete',
+    SiteUpdateName = 'submit_site_update_name',
+    SiteUpdatePermissions = 'submit_site_update_permissions',
+    SiteUpdateSchedule = 'submit_site_update_schedule',
+    SiteUpdateConfiguration = 'submit_site_update_configuration',
+    SiteUpdateLogging = 'submit_site_update_logging',
+    SiteUpdateTimeout = 'submit_site_update_timeout',
+    SiteUpdateEvents = 'submit_site_update_events',
+    SiteUpdateScopes = 'submit_site_key_update_scopes',
+    SiteConnectRepo = 'submit_site_connect_repo'
 }

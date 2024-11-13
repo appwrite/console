@@ -1,5 +1,5 @@
 import { page } from '$app/stores';
-import type { WizardStepsType } from '$lib/layout/wizard.svelte';
+import type { WizardStepsType } from '$lib/layout/wizardWithSteps.svelte';
 import type { Models } from '@appwrite.io/console';
 import { derived, writable, type Writable } from 'svelte/store';
 

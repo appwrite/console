@@ -121,7 +121,7 @@
                                 <TableCell>
                                     <Button
                                         text
-                                        round
+                                        icon
                                         ariaLabel="remove alert"
                                         on:click={() =>
                                             (alerts = alerts.filter((a) => a !== alert))}>

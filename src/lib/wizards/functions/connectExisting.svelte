@@ -1,8 +1,8 @@
 <script lang="ts">
-    import { Wizard } from '$lib/layout';
+    import { WizardWithSteps } from '$lib/layout';
     import SelectRepository from './steps/selectRepository.svelte';
     import GitConfiguration from './steps/gitConfiguration.svelte';
-    import type { WizardStepsType } from '$lib/layout/wizard.svelte';
+    import type { WizardStepsType } from '$lib/layout/wizardWithSteps.svelte';
     import { sdk } from '$lib/stores/sdk';
     import { func } from '$routes/(console)/project-[project]/functions/function-[function]/store';
     import { choices, installation, repository } from './store';
@@ -74,7 +74,7 @@
     });
 </script>
 
-<Wizard
+<WizardWithSteps
     title="Connect Git"
     steps={stepsComponents}
     on:finish={createGitHubInstallation}

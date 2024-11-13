@@ -25,6 +25,7 @@
 
 {#if single}
     <Card.Base padding="none">
+        <slot name="media" />
         <Empty
             title={`Create your first ${target}`}
             description="Need a hand? Learn more in our documentation.">
@@ -34,9 +35,15 @@
                     {href}
                     text
                     event="empty_documentation"
-                    size="small"
+                    size="s"
                     ariaLabel="create {target}">Documentation</Button>
-                <Button secondary on:mousedown on:click on:click={track} disabled={!allowCreate} size="small">
+                <Button
+                    secondary
+                    on:mousedown
+                    on:click
+                    on:click={track}
+                    disabled={!allowCreate}
+                    size="s">
                     Create {target}
                 </Button>
             </svelte:fragment>

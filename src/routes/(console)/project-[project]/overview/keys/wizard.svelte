@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { Wizard } from '$lib/layout';
+    import { WizardWithSteps } from '$lib/layout';
     import { goto, invalidate } from '$app/navigation';
-    import type { WizardStepsType } from '$lib/layout/wizard.svelte';
+    import type { WizardStepsType } from '$lib/layout/wizardWithSteps.svelte';
     import Step1 from './wizard/step1.svelte';
     import Step2 from './wizard/step2.svelte';
     import { key } from './wizard/store';
@@ -53,4 +53,4 @@
     });
 </script>
 
-<Wizard title="Create an API key" steps={stepsComponents} on:finish={onFinish} />
+<WizardWithSteps title="Create an API key" steps={stepsComponents} on:finish={onFinish} />
