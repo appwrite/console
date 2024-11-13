@@ -158,13 +158,13 @@
                     {/if}
                     <div class="u-flex u-gap-8">
                         {#if singleCondition}
-                            <Button text on:click={toggleDropdown}>Cancel</Button>
+                            <Button size="s" text on:click={toggleDropdown}>Cancel</Button>
                         {:else}
-                            <Button disabled={applied === 0} text on:click={clearAll}>
+                            <Button size="s" disabled={applied === 0} text on:click={clearAll}>
                                 Clear all
                             </Button>
                         {/if}
-                        <Button on:click={apply} disabled={isButtonDisabled}>Apply</Button>
+                        <Button size="s" on:click={apply} disabled={isButtonDisabled}>Apply</Button>
                     </div>
                 </div>
             </div>
@@ -174,7 +174,7 @@
 
 <div class="is-only-mobile">
     <slot name="mobile" {disabled} toggle={toggleMobileModal}>
-        <Button secondary on:click={toggleMobileModal} {fullWidthMobile}>
+        <Button size="s" secondary on:click={toggleMobileModal} {fullWidthMobile}>
             <i class="icon-filter u-opacity-50" />
             Filters
             {#if applied > 0}
@@ -219,11 +219,12 @@
                 {/if}
                 <div class="u-flex u-gap-8">
                     {#if singleCondition}
-                        <Button text on:click={() => (showFiltersMobile = false)}>Cancel</Button>
+                        <Button size="s" text on:click={() => (showFiltersMobile = false)}
+                            >Cancel</Button>
                     {:else}
-                        <Button text on:click={clearAll}>Clear all</Button>
+                        <Button size="s" text on:click={clearAll}>Clear all</Button>
                     {/if}
-                    <Button on:click={apply} disabled={isButtonDisabled}>Apply</Button>
+                    <Button size="s" on:click={apply} disabled={isButtonDisabled}>Apply</Button>
                 </div>
             </div>
         </svelte:fragment>

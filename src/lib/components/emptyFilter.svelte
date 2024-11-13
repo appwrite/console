@@ -1,26 +1,28 @@
 <script lang="ts">
+    import { Card, Empty, Layout } from '@appwrite.io/pink-svelte';
     import { Button } from '$lib/elements/forms';
-    import { EmptySearch } from '.';
     import { queries } from './filters';
 
     export let resource: string;
 </script>
 
-<EmptySearch hidePages>
-    <div class="common-section">
-        <div class="u-text-center common-section">
-            <b class="body-text-2 u-bold">Sorry, we couldn't find any {resource}.</b>
-            <p>There are no {resource} that match your filters.</p>
-        </div>
-        <div class="u-flex common-section u-main-center">
-            <Button
-                secondary
-                on:click={() => {
-                    queries.clearAll();
-                    queries.apply();
-                }}>
-                Clear filters
-            </Button>
-        </div>
-    </div>
-</EmptySearch>
+<Card.Base padding="none">
+    <Empty
+        title={`Sorry, we couldn't find any ${resource}`}
+        description={`There are no ${resource} that match your filters.`}
+        type="secondary">
+        <svelte:fragment slot="actions">
+            <Layout.Stack direction="row" justifyContent="center">
+                <Button
+                    secondary
+                    on:click={() => {
+                        queries.clearAll();
+                        queries.apply();
+                    }}>
+                    Clear filters
+                </Button>
+                <slot />
+            </Layout.Stack>
+        </svelte:fragment>
+    </Empty>
+</Card.Base>
