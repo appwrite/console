@@ -22,7 +22,7 @@
     const extraMembers = members.total > 1 ? members.total - 1 : 0;
     const availableCredit = creditList.available;
     const today = new Date();
-    let isTrial =
+    const isTrial =
         new Date($organization?.billingStartDate).getTime() - today.getTime() > 0 &&
         $plansInfo.get($organization.billingPlan)?.trialDays;
     const extraUsage = currentInvoice.amount - currentPlan?.price;
