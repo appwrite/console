@@ -23,7 +23,7 @@ sw.addEventListener('install', (event) => {
     }
 
     // Check if the page URL does not match the exclusion path
-    const shouldCache = !base.startsWith('/console/auth');
+    const shouldCache = !location.pathname.startsWith(`${base}/auth`);
     if (shouldCache) {
         event.waitUntil(addFilesToCache());
     }
