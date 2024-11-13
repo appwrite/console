@@ -3,7 +3,7 @@
 /// <reference lib="esnext" />
 /// <reference lib="webworker" />
 
-import { build, files, version } from '$service-worker';
+import { build, files, version, base } from '$service-worker';
 
 const sw = self as unknown as ServiceWorkerGlobalScope;
 
@@ -22,7 +22,11 @@ sw.addEventListener('install', (event) => {
         await cache.addAll(ASSETS);
     }
 
-    event.waitUntil(addFilesToCache());
+    // Check if the page URL does not match the exclusion path
+    const shouldCache = !location.pathname.startsWith(`${base}/auth`);
+    if (shouldCache) {
+        event.waitUntil(addFilesToCache());
+    }
 });
 
 sw.addEventListener('activate', (event) => {
