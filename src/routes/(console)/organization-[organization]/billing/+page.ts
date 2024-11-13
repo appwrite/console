@@ -39,7 +39,7 @@ export const load: PageLoad = async ({ parent, depends }) => {
         sdk.forConsole.billing.listAggregation(organization.$id),
         billingAddressPromise,
         sdk.forConsole.billing.getPlan(organization.$id),
-        sdk.forConsole.billing.listCredits(organization.$id, [Query.offset(0)]),
+        sdk.forConsole.billing.listCredits(organization.$id),
         sdk.forConsole.billing.listInvoices(organization.$id, [
             Query.limit(1),
             Query.equal('from', organization.billingCurrentInvoiceDate)
