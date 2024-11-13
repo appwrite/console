@@ -4,6 +4,7 @@ import type { Organization } from '$lib/stores/organization';
 import { sdk } from '$lib/stores/sdk';
 import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
+import { Query } from '@appwrite.io/console';
 
 export const load: PageLoad = async ({ parent, depends }) => {
     const { organization, scopes } = await parent();
@@ -24,17 +25,34 @@ export const load: PageLoad = async ({ parent, depends }) => {
               .catch(() => null)
         : null;
 
-    const [paymentMethods, addressList, aggregationList, billingAddress] = await Promise.all([
+    const [
+        paymentMethods,
+        addressList,
+        aggregationList,
+        billingAddress,
+        currentPlan,
+        creditList,
+        invoices
+    ] = await Promise.all([
         sdk.forConsole.billing.listPaymentMethods(),
         sdk.forConsole.billing.listAddresses(),
         sdk.forConsole.billing.listAggregation(organization.$id),
-        billingAddressPromise
+        billingAddressPromise,
+        sdk.forConsole.billing.getPlan(organization.$id),
+        sdk.forConsole.billing.listCredits(organization.$id, [Query.offset(0)]),
+        sdk.forConsole.billing.listInvoices(organization.$id, [
+            Query.limit(1),
+            Query.equal('from', organization.billingCurrentInvoiceDate)
+        ])
     ]);
 
     return {
         paymentMethods,
         addressList,
         aggregationList,
-        billingAddress
+        billingAddress,
+        currentPlan,
+        creditList,
+        invoices
     };
 };
