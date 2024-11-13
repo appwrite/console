@@ -5,7 +5,6 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { plansInfo, tierToPlan, upgradeURL } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
-    import { onMount } from 'svelte';
     import type { CreditList, Invoice, Plan } from '$lib/sdk/billing';
     import { abbreviateNumber, formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
@@ -14,29 +13,20 @@
     import { tooltip } from '$lib/actions/tooltip';
     import { type Models } from '@appwrite.io/console';
 
-    let currentInvoice: Invoice;
-    let extraMembers;
-    let availableCredit = 0;
-    const today = new Date();
-    let isTrial = 0;
-    let extraUsage;
-    let extraAddons;
-
     export let invoices: Array<Invoice>;
     export let members: Models.MembershipList;
     export let currentPlan: Plan;
     export let creditList: CreditList;
 
-    onMount(async () => {
-        currentInvoice = invoices[0];
-        extraMembers = members.total > 1 ? members.total - 1 : 0;
-        availableCredit = creditList.available;
-        isTrial =
-            new Date($organization?.billingStartDate).getTime() - today.getTime() > 0 &&
-            $plansInfo.get($organization.billingPlan)?.trialDays;
-        extraUsage = currentInvoice.amount - currentPlan?.price;
-        extraAddons = currentInvoice.usage?.length;
-    });
+    const currentInvoice: Invoice = invoices[0];
+    const extraMembers = members.total > 1 ? members.total - 1 : 0;
+    const availableCredit = creditList.available;
+    const today = new Date();
+    let isTrial =
+        new Date($organization?.billingStartDate).getTime() - today.getTime() > 0 &&
+        $plansInfo.get($organization.billingPlan)?.trialDays;
+    const extraUsage = currentInvoice.amount - currentPlan?.price;
+    const extraAddons = currentInvoice.usage?.length;
 </script>
 
 {#if $organization}
