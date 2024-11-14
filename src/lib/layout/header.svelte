@@ -1,12 +1,12 @@
 <script lang="ts">
-    import { goto, invalidate } from '$app/navigation';
+    import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { AvatarInitials, DropList, DropListItem, DropListLink, Support } from '$lib/components';
     import { app } from '$lib/stores/app';
     import { user } from '$lib/stores/user';
     import { organizationList, organization, newOrgModal } from '$lib/stores/organization';
     import { page } from '$app/stores';
-    import { Submit, trackEvent } from '$lib/actions/analytics';
+    import { trackEvent } from '$lib/actions/analytics';
     import { tooltip } from '$lib/actions/tooltip';
     import { toggleCommandCenter } from '$lib/commandCenter/commandCenter.svelte';
     import Button from '$lib/elements/forms/button.svelte';
@@ -18,10 +18,10 @@
     import SystemMode from '$lib/images/mode/system-mode.svg';
     import { feedback } from '$lib/stores/feedback';
     import { slide } from 'svelte/transition';
-    import { sdk } from '$lib/stores/sdk';
     import { isCloud } from '$lib/system';
     import { Feedback } from '$lib/components/feedback';
-    import { BillingPlan, Dependencies } from '$lib/constants';
+    import { BillingPlan } from '$lib/constants';
+    import { logout } from '$lib/helpers/logout';
     import { upgradeURL } from '$lib/stores/billing';
 
     let showDropdown = false;
@@ -34,13 +34,6 @@
             feedback.toggleNotification();
             feedback.addVisualization();
         }
-    }
-
-    async function logout() {
-        await sdk.forConsole.account.deleteSession('current');
-        await invalidate(Dependencies.ACCOUNT);
-        trackEvent(Submit.AccountLogout);
-        await goto(`${base}/login`);
     }
 
     function onBlur(event: MouseEvent) {
