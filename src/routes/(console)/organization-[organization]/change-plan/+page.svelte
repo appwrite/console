@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { afterNavigate, goto, invalidate } from '$app/navigation';
+    import { afterNavigate, goto, invalidate, preloadData } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
@@ -32,8 +32,14 @@
     import { type Coupon, type PaymentList } from '$lib/sdk/billing';
     import { plansInfo, tierToPlan, type Tier } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
-    import { organization, organizationList, type Organization } from '$lib/stores/organization';
+    import {
+        organization,
+        organizationList,
+        type Organization,
+        type OrganizationError
+    } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
+    import { confirmPayment } from '$lib/stores/stripe.js';
     import { user } from '$lib/stores/user';
     import { VARS } from '$lib/system';
     import { onMount } from 'svelte';
@@ -171,61 +177,89 @@
         }
     }
 
+    function isOrganization(org: Organization | OrganizationError): org is Organization {
+        return (org as Organization).$id !== undefined;
+    }
+
+    async function validate(organizationId: string, invites: string[]) {
+        try {
+            let org = await sdk.forConsole.billing.validateOrganization(organizationId, invites);
+            if (isOrganization(org)) {
+                await invalidate(Dependencies.ACCOUNT);
+                await invalidate(Dependencies.ORGANIZATION);
+
+                await goto(previousPage);
+                addNotification({
+                    type: 'success',
+                    message: 'Your organization has been upgraded'
+                });
+
+                trackEvent(Submit.OrganizationUpgrade, {
+                    plan: tierToPlan(billingPlan)?.name
+                });
+            }
+        } catch (e) {
+            addNotification({
+                type: 'error',
+                message: e.message
+            });
+            trackError(e, Submit.OrganizationCreate);
+        }
+    }
+
     async function upgrade() {
         try {
+            //Add collaborators
+            var newCollaborators = [];
+            if (collaborators?.length) {
+                newCollaborators = collaborators.filter(
+                    (collaborator) =>
+                        !data?.members?.memberships?.find((m) => m.userEmail === collaborator)
+                );
+            }
             const org = await sdk.forConsole.billing.updatePlan(
                 $organization.$id,
                 billingPlan,
                 paymentMethodId,
-                null
+                null,
+                couponData?.code,
+                newCollaborators,
+                billingBudget,
+                taxId
             );
 
-            //Add coupon
-            if (couponData?.code) {
-                await sdk.forConsole.billing.addCredit(org.$id, couponData.code);
-                trackEvent(Submit.CreditRedeem);
-            }
-
-            //Add budget
-            if (billingBudget) {
-                await sdk.forConsole.billing.updateBudget(org.$id, billingBudget, [75]);
-            }
-
-            //Add collaborators
-            if (collaborators?.length) {
-                const newCollaborators = collaborators.filter(
-                    (collaborator) =>
-                        !data?.members?.memberships?.find((m) => m.userEmail === collaborator)
+            if (!isOrganization(org) && org.status == 402) {
+                let clientSecret = org.clientSecret;
+                let params = new URLSearchParams();
+                params.append('type', 'payment_confirmed');
+                params.append('id', org.teamId);
+                for (let index = 0; index < collaborators.length; index++) {
+                    const invite = collaborators[index];
+                    params.append('invites', invite);
+                }
+                await confirmPayment(
+                    '',
+                    clientSecret,
+                    paymentMethodId,
+                    '/console/create-organization?' + params.toString()
                 );
-                newCollaborators.forEach(async (collaborator) => {
-                    await sdk.forConsole.teams.createMembership(
-                        org.$id,
-                        ['owner'],
-                        collaborator,
-                        undefined,
-                        undefined,
-                        `${$page.url.origin}/${base}/organization-${org.$id}`
-                    );
+                await validate(org.teamId, collaborators);
+            }
+
+            if (isOrganization(org)) {
+                await invalidate(Dependencies.ACCOUNT);
+                await invalidate(Dependencies.ORGANIZATION);
+
+                await goto(previousPage);
+                addNotification({
+                    type: 'success',
+                    message: 'Your organization has been upgraded'
+                });
+
+                trackEvent(Submit.OrganizationUpgrade, {
+                    plan: tierToPlan(billingPlan)?.name
                 });
             }
-
-            //Add tax ID
-            if (taxId) {
-                await sdk.forConsole.billing.updateTaxId(org.$id, taxId);
-            }
-
-            await invalidate(Dependencies.ACCOUNT);
-            await invalidate(Dependencies.ORGANIZATION);
-
-            await goto(previousPage);
-            addNotification({
-                type: 'success',
-                message: 'Your organization has been upgraded'
-            });
-
-            trackEvent(Submit.OrganizationUpgrade, {
-                plan: tierToPlan(billingPlan)?.name
-            });
         } catch (e) {
             addNotification({
                 type: 'error',

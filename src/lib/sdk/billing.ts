@@ -416,14 +416,22 @@ export class Billing {
         organizationId: string,
         billingPlan: string,
         paymentMethodId: string,
-        billingAddressId: string = undefined
-    ): Promise<Organization> {
+        billingAddressId: string = undefined,
+        couponId: string = null,
+        invites: Array<string> = [],
+        budget: number = undefined,
+        taxId: string = null
+    ): Promise<Organization | OrganizationError> {
         const path = `/organizations/${organizationId}/plan`;
         const params = {
             organizationId,
             billingPlan,
             paymentMethodId,
-            billingAddressId
+            billingAddressId,
+            couponId,
+            invites,
+            budget,
+            taxId
         };
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
