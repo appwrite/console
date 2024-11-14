@@ -1,13 +1,11 @@
 <script lang="ts">
     import { Alert } from '$lib/components';
-    import { trackEvent } from '$lib/actions/analytics';
     import { Form } from '$lib/elements/forms';
     import { disableCommands } from '$lib/commandCenter';
     import { beforeNavigate } from '$app/navigation';
     import { Layout, Modal } from '@appwrite.io/pink-svelte';
 
     export let show = false;
-    export let size: 'small' | 'big' | 'huge' = null;
     export let icon: string = null;
     export let state: 'success' | 'warning' | 'error' | 'info' = null;
     export let error: string = null;
@@ -18,7 +16,6 @@
         return;
     };
     export let title = '';
-    export let description = '';
 
     let alert: HTMLElement;
 
@@ -33,7 +30,10 @@
     }
 </script>
 
-<Modal {title} {description} bind:open={show}>
+<Modal {title} bind:open={show}>
+    <svelte:fragment slot="description">
+        <slot name="description" />
+    </svelte:fragment>
     <Form isModal {onSubmit}>
         {#if error}
             <div bind:this={alert}>

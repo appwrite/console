@@ -185,11 +185,8 @@
         </Button>
     </slot>
 
-    <Modal
-        title="Filters"
-        description="Apply filter rules to refine the table view"
-        bind:show={showFiltersMobile}
-        size="big">
+    <Modal title="Filters" bind:show={showFiltersMobile} size="big">
+        <span slot="description"> Apply filter rules to refine the table view </span>
         {#if displayQuickFilters}
             <slot name="quick" />
         {:else}

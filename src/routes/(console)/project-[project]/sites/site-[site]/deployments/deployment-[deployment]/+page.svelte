@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { CardGrid } from '$lib/components';
     import { Container } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';

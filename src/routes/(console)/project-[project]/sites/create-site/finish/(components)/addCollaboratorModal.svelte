@@ -61,12 +61,10 @@
     }
 </script>
 
-<Modal
-    title="Add collaborators"
-    description="Share your progress and start collaborating by adding members to your organization."
-    {error}
-    bind:show={showCreate}
-    onSubmit={create}>
+<Modal title="Add collaborators" {error} bind:show={showCreate} onSubmit={create}>
+    <span slot="description">
+        Share your progress and start collaborating by adding members to your organization.
+    </span>
     <InputEmail
         required
         id="email"

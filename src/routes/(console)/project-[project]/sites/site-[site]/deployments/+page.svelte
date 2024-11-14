@@ -15,10 +15,12 @@
     import { onMount } from 'svelte';
     import Table from './table.svelte';
     import { Layout } from '@appwrite.io/pink-svelte';
+    import CreateGitDeploymentModal from './createGitDeploymentModal.svelte';
 
     export let data;
 
     let showRedeploy = false;
+    let showCreateDeployment = false;
 
     let selectedDeployment: Models.Deployment = null;
 
@@ -33,6 +35,16 @@
             array: true,
             format: 'enum',
             elements: ['ready', 'processing', 'building', 'waiting', 'cancelled', 'failed'],
+            filter: false
+        },
+        {
+            id: 'domains',
+            title: 'Domains',
+            type: 'string',
+            show: true,
+            width: 15,
+            array: true,
+            format: 'string',
             filter: false
         },
         {
@@ -124,7 +136,7 @@
 </script>
 
 <Container>
-    <ContainerHeader title="Deployments"></ContainerHeader>
+    <ContainerHeader title="Deployments" />
     <Layout.Stack justifyContent="space-between" direction="row">
         <Layout.Stack alignItems="center" direction="row" gap="s">
             <QuickFilters {columns} />
@@ -145,6 +157,7 @@
             </Filters>
         </Layout.Stack>
         <ViewSelector view={View.Table} {columns} hideView allowNoColumns hideText />
+        <Button size="s" on:click={() => (showCreateDeployment = true)}>Create deployment</Button>
     </Layout.Stack>
     <div class="is-only-mobile">
         <Layout.Stack justifyContent="space-between" direction="row">
@@ -195,4 +208,8 @@
 
 {#if selectedDeployment}
     <RedeployModal {selectedDeployment} bind:show={showRedeploy} />
+{/if}
+
+{#if showCreateDeployment}
+    <CreateGitDeploymentModal bind:show={showCreateDeployment} />
 {/if}

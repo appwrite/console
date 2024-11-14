@@ -74,11 +74,8 @@
     });
 </script>
 
-<Modal
-    title="Create site"
-    description="Connect to a new repository or an existing one."
-    bind:show
-    onSubmit={connectRepo}>
+<Modal title="Create site" bind:show onSubmit={connectRepo}>
+    <span slot="description"> Connect to a new repository or an existing one. </span>
     <Layout.Stack gap="xl">
         <Layout.Stack direction="row" gap="xl">
             <InputRadio
