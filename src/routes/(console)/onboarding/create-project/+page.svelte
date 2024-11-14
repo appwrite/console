@@ -1,5 +1,6 @@
 <script lang="ts">
-    import { Card, Layout, Typography, Input } from '@appwrite.io/pink-svelte';
+    import { Card, Layout, Typography, Input, Tag, Icon, Button } from '@appwrite.io/pink-svelte';
+    import { IconPencil } from '@appwrite.io/pink-icons-svelte';
     import { CustomId } from '$lib/components/index.js';
     import type { RegionList } from '$lib/sdk/billing';
     import { onMount } from 'svelte';
@@ -8,7 +9,7 @@
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { Flag } from '@appwrite.io/console';
 
-    let showCustomId = true;
+    let showCustomId = false;
     let id: string;
 
     let regions: RegionList;
@@ -42,10 +43,19 @@
             <Typography.Title size="l">Create your project</Typography.Title>
             <form>
                 <Layout.Stack direction="column" gap="xl">
-                    <div>
+                    <Layout.Stack direction="column" gap="s">
                         <Input.Text label="Name" placeholder="Project name" />
+                        {#if !showCustomId}
+                            <div>
+                                <Tag
+                                    size="s"
+                                    on:click={() => {
+                                        showCustomId = true;
+                                    }}><Icon icon={IconPencil} /> Project ID</Tag>
+                            </div>
+                        {/if}
                         <CustomId bind:show={showCustomId} name="Project" isProject bind:id />
-                    </div>
+                    </Layout.Stack>
                     {#if regions}
                         <Input.Select
                             placeholder="Select a region"
@@ -67,6 +77,10 @@
                                 })}
                             label="Region" />
                     {/if}
+                    <div class="button-container">
+                        <Button.Button type="button" variant="primary" size="m"
+                            >Create</Button.Button>
+                    </div>
                 </Layout.Stack>
             </form>
         </Layout.Stack></Card.Base>
@@ -84,5 +98,9 @@
         @media #{$break2open} {
             width: 700px;
         }
+    }
+    .button-container {
+        display: flex;
+        justify-content: end;
     }
 </style>
