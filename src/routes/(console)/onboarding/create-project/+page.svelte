@@ -5,7 +5,9 @@
     import { onMount } from 'svelte';
     import { isCloud } from '$lib/system';
     import { sdk } from '$lib/stores/sdk';
-    import { Flag } from '$lib/elements';
+    import { isValueOfStringEnum } from '$lib/helpers/types';
+    import { Flag } from '@appwrite.io/console';
+
     let showCustomId = true;
     let id: string;
 
@@ -15,6 +17,11 @@
             regions = await sdk.forConsole.billing.listRegions();
         }
     });
+
+    function getFlagUrl(countryCode: string) {
+        if (!isValueOfStringEnum(Flag, countryCode)) return '';
+        return sdk.forProject.avatars.getFlag(countryCode, 22, 15, 100)?.toString();
+    }
 </script>
 
 <div class="page-container u-flex-vertical u-cross-child-center u-main-center u-cross-center">
@@ -39,13 +46,26 @@
                         <Input.Text label="Name" placeholder="Project name" />
                         <CustomId bind:show={showCustomId} name="Project" isProject bind:id />
                     </div>
-                    <Input.Select
-                        options={[{ label: '🇩️Region 1', value: 'region1' }]}
-                        label="Region" />
                     {#if regions}
-                        ja regions! {regions.total}
-                    {:else}
-                        geen regions
+                        <Input.Select
+                            placeholder="Select a region"
+                            options={regions.regions
+                                .filter((region) => region.$id !== 'default')
+                                .sort((regionA, regionB) => {
+                                    if (regionA.disabled && !regionB.disabled) {
+                                        return 1;
+                                    }
+                                    return regionA.name > regionB.name ? 1 : -1;
+                                })
+                                .map((region) => {
+                                    return {
+                                        label: region.name,
+                                        value: region.$id,
+                                        leadingHtml: `<img src='${getFlagUrl(region.flag)}' alt='Region flag'/>`,
+                                        disabled: region.disabled
+                                    };
+                                })}
+                            label="Region" />
                     {/if}
                 </Layout.Stack>
             </form>
