@@ -20,6 +20,9 @@
         if (isCloud) {
             regions = await sdk.forConsole.billing.listRegions();
         }
+        setTimeout(() => {
+            startAnimation = true;
+        }, 3000);
     });
 
     function getFlagUrl(countryCode: string) {
@@ -30,10 +33,6 @@
 
 <div class="page-container u-flex-vertical u-cross-child-center u-main-center u-cross-center">
     {#if isLoading}
-        <button
-            on:click={() => {
-                startAnimation = !startAnimation;
-            }}>Toggle animation</button>
         <Loading {startAnimation} />
     {:else}
         <img

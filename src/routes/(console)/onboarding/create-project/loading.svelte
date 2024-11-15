@@ -6,6 +6,14 @@
 </script>
 
 <div class="grid-container" class:start-animation={startAnimation}>
+    <div class="static-loader">
+        <Spinner />
+        <Typography.Title size="l">Creating your project</Typography.Title>
+        <span id="subtitle">Setting up 20 authentication methods...</span>
+    </div>
+    <div class="title-container">
+        <Typography.Title size="l">Welcome to Appwrite</Typography.Title>
+    </div>
     <div class="grid">
         <div class="border-right" style="grid-row: 1 / 6; grid-column-start: 1; " />
         <div class="border-right" style="grid-row: 1 / 6; grid-column-start: 2; " />
@@ -82,8 +90,10 @@
 <style lang="scss">
     .grid-container {
         display: flex;
+        flex-direction: column;
         justify-content: center;
         align-items: center;
+        color: var(--color-fgcolor-neutral-primary, #2d2d31);
 
         --cell-dimension: 40px;
         --triple-cell-dimension: 120px;
@@ -92,6 +102,16 @@
         --icon-width: 16px;
         --border-radius-container: 11px;
         --border-radius-content: 7px;
+
+        @media (min-width: 600px) {
+            --cell-dimension: 60px;
+            --triple-cell-dimension: 180px;
+            --negative-cell-dimension: -60px;
+            --negative-triple-cell-dimension: -180px;
+            --icon-width: 24px;
+            --border-radius-container: 16px;
+            --border-radius-content: 11px;
+        }
 
         @media (min-width: 1023px) {
             --cell-dimension: 120px;
@@ -102,6 +122,27 @@
             --border-radius-container: 32px;
             --border-radius-content: 22px;
         }
+    }
+    .static-loader {
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 50px;
+        transition: opacity 0.5s ease-in;
+    }
+    .start-animation .static-loader {
+        opacity: 0;
+    }
+    .title-container {
+        margin-bottom: -100px;
+        z-index: 1;
+        opacity: 0;
+    }
+    .start-animation .title-container {
+        opacity: 1;
+        transition: opacity 0.5s ease-in 1.5s;
     }
     .grid {
         display: grid;
