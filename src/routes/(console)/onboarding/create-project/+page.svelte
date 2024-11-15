@@ -7,27 +7,66 @@
     import { isCloud } from '$lib/system';
     import { sdk } from '$lib/stores/sdk';
     import { isValueOfStringEnum } from '$lib/helpers/types';
-    import { Flag } from '@appwrite.io/console';
+    import { Flag, ID, Region } from '@appwrite.io/console';
     import Loading from './loading.svelte';
+    import { BillingPlan } from '$lib/constants';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
+    import { addNotification } from '$lib/stores/notifications';
+    import { goto } from '$app/navigation';
+    import { base } from '$app/paths';
 
     let showCustomId = false;
-    let isLoading = true;
+    let isLoading = false;
     let id: string;
     let startAnimation = false;
+    let projectName = '';
 
     let regions: RegionList;
     onMount(async () => {
         if (isCloud) {
             regions = await sdk.forConsole.billing.listRegions();
         }
-        setTimeout(() => {
-            startAnimation = true;
-        }, 3000);
     });
 
     function getFlagUrl(countryCode: string) {
         if (!isValueOfStringEnum(Flag, countryCode)) return '';
         return sdk.forProject.avatars.getFlag(countryCode, 22, 15, 100)?.toString();
+    }
+
+    async function createProject() {
+        isLoading = true;
+        //create new org
+        let org = await sdk.forConsole.billing.createOrganization(
+            ID.unique(),
+            'Personal Projects',
+            BillingPlan.FREE,
+            null,
+            null
+        );
+
+        const teamId = org.$id;
+        try {
+            const project = await sdk.forConsole.projects.create(
+                id ?? ID.unique(),
+                projectName,
+                teamId,
+                Region.Default
+            );
+            trackEvent(Submit.ProjectCreate, {
+                customId: !!id,
+                teamId
+            });
+
+            startAnimation = true;
+
+            setTimeout(() => {
+                goto(`${base}/project-${project.$id}`);
+            }, 3000);
+        } catch (e) {
+            // error = e.message;
+            trackError(e, Submit.ProjectCreate);
+            // disabled = false;
+        }
     }
 </script>
 
@@ -53,7 +92,10 @@
                 <form>
                     <Layout.Stack direction="column" gap="xl">
                         <Layout.Stack direction="column" gap="s">
-                            <Input.Text label="Name" placeholder="Project name" />
+                            <Input.Text
+                                label="Name"
+                                placeholder="Project name"
+                                bind:value={projectName} />
                             {#if !showCustomId}
                                 <div>
                                     <Tag
@@ -87,8 +129,12 @@
                                 label="Region" />
                         {/if}
                         <div class="u-flex u-main-end">
-                            <Button.Button type="button" variant="primary" size="m"
-                                >Create</Button.Button>
+                            <Button.Button
+                                type="button"
+                                variant="primary"
+                                size="m"
+                                on:click={createProject}>
+                                Create</Button.Button>
                         </div>
                     </Layout.Stack>
                 </form>
@@ -104,6 +150,7 @@
         margin: 0 1rem;
         min-height: 100vh;
         gap: 4.5rem;
+        color: var(--color-fgcolor-neutral-primary, #2d2d31);
 
         @media #{$break2open} {
             width: 700px;
