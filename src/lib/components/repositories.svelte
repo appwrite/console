@@ -18,19 +18,32 @@
     export let selectedRepository: string = null;
     export let hasInstallations = false;
     export let action: 'button' | 'select' = 'select';
+    export let installationList = $installations;
 
     $: {
-        hasInstallations = $installations?.total > 0;
+        hasInstallations = installationList?.total > 0;
     }
 
     let selectedInstallation = null;
     async function loadInstallations() {
-        const { installations } = await sdk.forProject.vcs.listInstallations();
-        if (installations.length) {
-            selectedInstallation = installations[0].$id;
-            installation.set(installations.find((entry) => entry.$id === selectedInstallation));
+        if (installationList) {
+            if (installationList.installations.length) {
+                selectedInstallation = installationList.installations[0].$id;
+                installation.set(
+                    installationList.installations.find(
+                        (entry) => entry.$id === selectedInstallation
+                    )
+                );
+            }
+            return installationList.installations;
+        } else {
+            const { installations } = await sdk.forProject.vcs.listInstallations();
+            if (installations.length) {
+                selectedInstallation = installations[0].$id;
+                installation.set(installations.find((entry) => entry.$id === selectedInstallation));
+            }
+            return installations;
         }
-        return installations;
     }
 
     let search = '';
