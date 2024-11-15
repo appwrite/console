@@ -1,0 +1,222 @@
+<script lang="ts">
+    import { base } from '$app/paths';
+    import { page } from '$app/stores';
+    import { EmptySearch } from '$lib/components';
+    import { Button, InputSearch, InputSelect } from '$lib/elements/forms';
+    import { timeFromNow } from '$lib/helpers/date';
+    import { app } from '$lib/stores/app';
+    import { sdk } from '$lib/stores/sdk';
+    import { repositories } from '$routes/(console)/project-[project]/functions/function-[function]/store';
+    import { installation, installations, repository } from '$lib/stores/vcs';
+    import { createEventDispatcher } from 'svelte';
+    import { Layout, Table, Typography, Icon, Avatar } from '@appwrite.io/pink-svelte';
+    import { IconLockClosed } from '@appwrite.io/pink-icons-svelte';
+
+    const dispatch = createEventDispatcher();
+
+    export let callbackState: Record<string, string> = null;
+    export let selectedRepository: string = null;
+    export let hasInstallations = false;
+    export let action: 'button' | 'select' = 'select';
+
+    $: {
+        hasInstallations = $installations?.total > 0;
+    }
+
+    let selectedInstallation = null;
+    async function loadInstallations() {
+        const { installations } = await sdk.forProject.vcs.listInstallations();
+        if (installations.length) {
+            selectedInstallation = installations[0].$id;
+            installation.set(installations.find((entry) => entry.$id === selectedInstallation));
+        }
+        return installations;
+    }
+
+    let search = '';
+    async function loadRepositories(installationId: string, search: string) {
+        if (
+            !$repositories ||
+            $repositories.installationId !== installationId ||
+            $repositories.search !== search
+        ) {
+            $repositories.repositories = (
+                await sdk.forProject.vcs.listRepositories(installationId, search || undefined)
+            ).providerRepositories;
+        }
+
+        $repositories.search = search;
+        $repositories.installationId = installationId;
+
+        if ($repositories.repositories.length) {
+            selectedRepository = $repositories.repositories[0].id;
+            $repository = $repositories.repositories[0];
+        }
+
+        return $repositories.repositories.slice(0, 4);
+    }
+
+    function connectGitHub() {
+        const redirect = new URL($page.url);
+        if (callbackState) {
+            Object.keys(callbackState).forEach((key) => {
+                redirect.searchParams.append(key, callbackState[key]);
+            });
+        }
+        const target = new URL(`${sdk.forProject.client.config.endpoint}/vcs/github/authorize`);
+        target.searchParams.set('project', $page.params.project);
+        target.searchParams.set('success', redirect.toString());
+        target.searchParams.set('failure', redirect.toString());
+        target.searchParams.set('mode', 'admin');
+        return target;
+    }
+</script>
+
+{#if hasInstallations}
+    <Layout.Stack>
+        <Layout.Stack gap="s">
+            {#await loadInstallations()}
+                <Layout.Stack direction="row">
+                    <InputSelect
+                        disabled
+                        id="installation"
+                        options={[
+                            {
+                                label: 'Loading...',
+                                value: null
+                            }
+                        ]}
+                        value={null} />
+                    <InputSearch placeholder="Search repositories" disabled />
+                </Layout.Stack>
+            {:then installations}
+                <Layout.Stack direction="row">
+                    <InputSelect
+                        id="installation"
+                        options={installations.map((entry) => {
+                            return {
+                                label: entry.organization,
+                                value: entry.$id
+                            };
+                        })}
+                        on:change={() => {
+                            search = '';
+                            installation.set(
+                                installations.find((entry) => entry.$id === selectedInstallation)
+                            );
+                        }}
+                        bind:value={selectedInstallation} />
+                    <InputSearch placeholder="Search repositories" bind:value={search} />
+                </Layout.Stack>
+            {/await}
+            <p>
+                Manage organization configuration in your <a
+                    class="link"
+                    href={`${base}/project-${$page.params.project}/settings`}>project settings</a
+                >.
+            </p>
+        </Layout.Stack>
+        {#if selectedInstallation}
+            {#await loadRepositories(selectedInstallation, search)}
+                <Layout.Stack justifyContent="center" alignContent="center" alignItems="center">
+                    <div class="loader u-margin-32" />
+                </Layout.Stack>
+            {:then response}
+                {#if response?.length}
+                    <Table.Root>
+                        {#each response as repo}
+                            <Table.Row>
+                                <Table.Cell>
+                                    <Layout.Stack direction="row" alignItems="center">
+                                        {#if action === 'select'}
+                                            <input
+                                                class="is-small u-margin-inline-end-8"
+                                                type="radio"
+                                                name="repositories"
+                                                bind:group={selectedRepository}
+                                                on:change={() => repository.set(repo)}
+                                                value={repo.id} />
+                                        {/if}
+
+                                        <Avatar
+                                            size="xs"
+                                            src={repo?.runtime
+                                                ? `${base}/icons/${$app.themeInUse}/color/${
+                                                      repo.runtime.split('-')[0]
+                                                  }.svg`
+                                                : ''}
+                                            alt={repo.name} />
+
+                                        <Layout.Stack gap="s" direction="row" alignItems="center">
+                                            <Typography.Text truncate>
+                                                {repo.name}
+                                            </Typography.Text>
+                                            {#if repo.private}
+                                                <Icon
+                                                    size="s"
+                                                    icon={IconLockClosed}
+                                                    color="--color-fgcolor-neutral-tertiary" />
+                                            {/if}
+                                            <time datetime={repo.pushedAt}>
+                                                <Typography.Text
+                                                    truncate
+                                                    color="--color-fgcolor-neutral-tertiary">
+                                                    {timeFromNow(repo.pushedAt)}
+                                                </Typography.Text>
+                                            </time>
+                                        </Layout.Stack>
+                                        {#if action === 'button'}
+                                            <div class="u-margin-inline-start-auto">
+                                                <Button
+                                                    size="s"
+                                                    secondary
+                                                    on:click={() => dispatch('connect', repo)}>
+                                                    Connect
+                                                </Button>
+                                            </div>
+                                        {/if}
+                                    </Layout.Stack>
+                                </Table.Cell>
+                            </Table.Row>
+                        {/each}
+                    </Table.Root>
+                {:else if search}
+                    <EmptySearch hidePages>
+                        <div class="common-section">
+                            <div class="u-text-center common-section">
+                                <b class="body-text-2 u-bold">Sorry we couldn't find "{search}"</b>
+                                <p>There are no repositories that match your search.</p>
+                            </div>
+                            <div class="u-flex u-gap-16 common-section u-main-center">
+                                <Button secondary on:click={() => (search = '')}>
+                                    Clear search
+                                </Button>
+                            </div>
+                        </div>
+                    </EmptySearch>
+                {:else}
+                    <EmptySearch hidePages />
+                {/if}
+            {/await}
+        {/if}
+    </Layout.Stack>
+{:else}
+    <div class="u-flex u-cross-center u-flex-vertical u-gap-16">
+        <Button href={connectGitHub().toString()} fullWidth secondary>
+            <span class="icon-github" aria-hidden="true" />
+            <span class="text">GitHub</span>
+        </Button>
+        <Button disabled fullWidth secondary>
+            <span class="icon-gitlab" aria-hidden="true" />
+            <span class="text">GitLab (coming soon)</span>
+        </Button>
+        <Button disabled fullWidth secondary>
+            <span class="icon-bitBucket" aria-hidden="true" />
+            <span class="text">BitBucket (coming soon)</span>
+        </Button>
+        <Button disabled fullWidth secondary>
+            <span class="icon-azure" aria-hidden="true" />
+            <span class="text">Azure (coming soon)</span>
+        </Button>
+    </div>
+{/if}

@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { IconX } from '@appwrite.io/pink-icons-svelte';
-    import { Input } from '@appwrite.io/pink-svelte';
+    import { IconX, IconSearch } from '@appwrite.io/pink-icons-svelte';
+    import { Input, Icon } from '@appwrite.io/pink-svelte';
     import { createEventDispatcher } from 'svelte';
     import { onDestroy } from 'svelte';
 
@@ -12,6 +12,7 @@
     export let autofocus = false;
     export let isWithEndButton = true;
     export let style: string = '';
+    export let label: string = '';
 
     const dispatch = createEventDispatcher();
     let element: HTMLInputElement;
@@ -49,9 +50,13 @@
     {disabled}
     {required}
     {autofocus}
+    {label}
     type="search"
     bind:value
     on:input={valueChange}>
+    <svelte:fragment slot="start">
+        <Icon icon={IconSearch} />
+    </svelte:fragment>
     <svelte:fragment slot="end">
         {#if value}
             <Input.Action icon={IconX} on:click={clearSearch} />

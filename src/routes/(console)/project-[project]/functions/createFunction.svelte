@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Wizard } from '$lib/layout';
+    import { WizardWithSteps } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { onDestroy } from 'svelte';
     import { addNotification } from '$lib/stores/notifications';
@@ -10,7 +10,7 @@
     import Step4 from './wizard/step4.svelte';
     import Step5 from './wizard/step5.svelte';
     import { createFunction } from './wizard/store';
-    import type { WizardStepsType } from '$lib/layout/wizard.svelte';
+    import type { WizardStepsType } from '$lib/layout/wizardWithSteps.svelte';
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { base } from '$app/paths';
@@ -107,4 +107,8 @@
     });
 </script>
 
-<Wizard title="Create Function" steps={stepsComponents} on:finish={create} on:exit={onFinish} />
+<WizardWithSteps
+    title="Create Function"
+    steps={stepsComponents}
+    on:finish={create}
+    on:exit={onFinish} />

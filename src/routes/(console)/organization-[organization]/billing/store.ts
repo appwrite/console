@@ -1,5 +1,5 @@
 import { page } from '$app/stores';
-import type { WizardStepsType } from '$lib/layout/wizard.svelte';
+import type { WizardStepsType } from '$lib/layout/wizardWithSteps.svelte';
 import type { AggregationList, Invoice } from '$lib/sdk/billing';
 import { derived, writable } from 'svelte/store';
 

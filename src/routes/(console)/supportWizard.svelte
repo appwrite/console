@@ -6,8 +6,8 @@
         utcWeekDayToLocaleWeekDay,
         type WeekDay
     } from '$lib/helpers/date';
-    import { Wizard } from '$lib/layout';
-    import type { WizardStepsType } from '$lib/layout/wizard.svelte';
+    import { WizardWithSteps } from '$lib/layout';
+    import type { WizardStepsType } from '$lib/layout/wizardWithSteps.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { organization } from '$lib/stores/organization';
     import { user } from '$lib/stores/user';
@@ -94,7 +94,11 @@
     $: supportWeekDays = `${utcWeekDayToLocaleWeekDay(workTimings.startDay, workTimings.start)} - ${utcWeekDayToLocaleWeekDay(workTimings.endDay, workTimings.end)}`;
 </script>
 
-<Wizard title="Contact us" steps={stepsComponents} finalAction="Submit" on:exit={resetData}>
+<WizardWithSteps
+    title="Contact us"
+    steps={stepsComponents}
+    finalAction="Submit"
+    on:exit={resetData}>
     <svelte:fragment slot="aside">
         <h4 class="body-text-1 u-bold">Contact the Appwrite Team</h4>
         <p class="text u-margin-block-start-16">
@@ -115,4 +119,4 @@
             {/if}
         </div>
     </svelte:fragment>
-</Wizard>
+</WizardWithSteps>

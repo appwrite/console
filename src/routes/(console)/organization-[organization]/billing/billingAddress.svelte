@@ -75,7 +75,7 @@
                         placement="bottom-start"
                         noArrow>
                         <Button
-                            round
+                            icon
                             text
                             ariaLabel="More options"
                             on:click={() => {
@@ -121,7 +121,7 @@
                         <DropList bind:show={showDropdown} placement="bottom-start">
                             <Button
                                 secondary
-                                round
+                                icon
                                 on:click={() => {
                                     if ($addressList.total) {
                                         showDropdown = !showDropdown;

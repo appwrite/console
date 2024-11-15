@@ -50,10 +50,15 @@
     {maxlength}
     {label}
     {nullable}
+    {readonly}
     autofocus={autofocus || undefined}
     autocomplete={autocomplete ? 'on' : 'off'}
     helper={error}
     state={error ? 'error' : 'default'}
     on:invalid={handleInvalid}
     on:input
-    bind:value />
+    bind:value>
+    <svelte:fragment slot="end">
+        <slot name="end" />
+    </svelte:fragment>
+</Input.Text>

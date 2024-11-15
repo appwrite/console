@@ -12,9 +12,9 @@
     export let secondary = false;
     export let text = false;
     export let danger = false;
-    export let round = false;
+    export let icon = false;
     export let link = false;
-    export let size: Props['size'] = 'medium';
+    export let size: Props['size'] = 'm';
     export let disabled = false;
     export let external = false;
     export let href: string = null;
@@ -23,6 +23,7 @@
     export let fullWidthMobile = false;
     export let ariaLabel: string = null;
     export let event: string = null;
+    export let eventData: Record<string, unknown> = {};
     let classes: string = '';
     export { classes as class };
     export let submissionLoader = false;
@@ -39,7 +40,8 @@
         }
 
         trackEvent(`click_${event}`, {
-            from: 'button'
+            from: 'button',
+            ...eventData
         });
     }
 
@@ -60,6 +62,7 @@
         {href}
         {download}
         {size}
+        {icon}
         disabled={internalDisabled}
         variant={secondary ? 'secondary' : text ? 'text' : 'primary'}
         target={external ? '_blank' : ''}
@@ -75,6 +78,7 @@
         on:mousedown
         on:click={track}
         {size}
+        {icon}
         disabled={internalDisabled}
         variant={secondary ? 'secondary' : text ? 'text' : 'primary'}
         class={resolvedClasses}

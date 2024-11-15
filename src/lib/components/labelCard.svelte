@@ -1,13 +1,15 @@
 <script lang="ts">
     import { tooltip } from '$lib/actions/tooltip';
-    import { app } from '$lib/stores/app';
-    import { base } from '$app/paths';
+    import { Card } from '@appwrite.io/pink-svelte';
+    import { type ComponentProps } from 'svelte';
+    import type Selector from '@appwrite.io/pink-svelte/dist/card/Selector.svelte';
+
+    type Props = ComponentProps<Selector>;
 
     export let name: string;
     export let group: string;
     export let value: string | number | boolean;
     export let disabled = false;
-    export let padding = 1;
     export let icon: string = null;
     export let imageIcon: string = null;
     export let fullHeight = true;
@@ -16,21 +18,45 @@
     export let backgroundColorHover: string = null;
     export let tooltipText: string = null;
     export let tooltipShow = false;
+    export let src: string = null;
+    export let alt: string = null;
 
-    enum Radius {
-        xsmall = '--border-radius-xsmall',
-        small = '--border-radius-small',
-        medium = '--border-radius-medium',
-        large = '--border-radius-large'
-    }
+    // Pink v2
+    export let radius: Props['radius'] = 's';
+    export let imageRadius: Props['imageRadius'] = 'xxs';
+    export let padding: Props['padding'] = 's';
+    export let variant: Props['variant'] = 'primary';
+    //temporarily unefined
+    export let title: Props['title'] = undefined;
+
+    // TODO: remove after label card migration
+    let slotTitle: HTMLSpanElement;
 </script>
 
-<label
+<div use:tooltip={{ content: tooltipText, disabled: !tooltipText || !tooltipShow }}>
+    <Card.Selector
+        {padding}
+        {src}
+        {imageRadius}
+        {alt}
+        {variant}
+        {value}
+        {disabled}
+        title={title ?? slotTitle?.innerText}
+        bind:group>
+        <p>
+            <slot />
+        </p>
+    </Card.Selector>
+</div>
+<span style="display: none" bind:this={slotTitle}>
+    <slot name="title" />
+</span>
+<!-- <label
     class="card u-cursor-pointer"
     class:is-allow-focus={!disabled}
     class:is-disabled={disabled}
     class:u-height-100-percent={fullHeight}
-    style:--card-padding={`${padding}rem`}
     style:--card-border-radius={`var(${Radius[borderRadius]})`}
     style:--p-card-bg-color-default={backgroundColor}
     style:--p-card-bg-color-hover={backgroundColorHover}
@@ -70,4 +96,4 @@
             {/if}
         {/if}
     </div>
-</label>
+</label> -->

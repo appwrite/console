@@ -1,5 +1,6 @@
 <script lang="ts">
     import { tooltip as tooltipAction } from '$lib/actions/tooltip';
+    import { Input, Selector } from '@appwrite.io/pink-svelte';
     import { Helper } from '.';
 
     export let type: 'checkbox' | 'switchbox' = 'checkbox';
@@ -30,17 +31,28 @@
 </script>
 
 <label class="choice-item" for={id}>
-    <input
-        {id}
-        {disabled}
-        {required}
-        type="checkbox"
-        class:switch={type === 'switchbox'}
-        aria-checked={value}
-        bind:this={element}
-        bind:checked={value}
-        on:change
-        on:invalid={handleInvalid} />
+    {#if type === 'switchbox'}
+        <input
+            {id}
+            {disabled}
+            {required}
+            type="checkbox"
+            class:switch={type === 'switchbox'}
+            aria-checked={value}
+            bind:this={element}
+            bind:checked={value}
+            on:change
+            on:invalid={handleInvalid} />
+    {:else}
+        <Selector.Checkbox
+            {id}
+            {disabled}
+            size="s"
+            {required}
+            bind:value
+            bind:checked={value}
+            on:change />
+    {/if}
 
     <div class="choice-item-content" class:u-width-full-line={fullWidth}>
         {#if (label && showLabel) || tooltip}
