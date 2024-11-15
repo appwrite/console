@@ -32,12 +32,10 @@
     $: disabled = !value || $groups.has(value);
 </script>
 
-<Modal
-    title="Label"
-    description="Labels allow you to grant access to users with the specified label."
-    bind:show
-    on:close={reset}
-    onSubmit={create}>
+<Modal title="Label" bind:show on:close={reset} onSubmit={create}>
+    <span slot="description">
+        Labels allow you to grant access to users with the specified label.
+    </span>
     <FormList>
         <FormItem>
             <InputText id="label" label="Label" placeholder="Enter label" bind:value />

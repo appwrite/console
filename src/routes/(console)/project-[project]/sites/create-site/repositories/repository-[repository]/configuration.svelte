@@ -142,9 +142,8 @@
                                                             e.preventDefault();
                                                             toggle(e);
                                                         }}>
-                                                        <Icon
-                                                            size="s"
-                                                            icon={IconDotsHorizontal} /></Button>
+                                                        <Icon size="s" icon={IconDotsHorizontal} />
+                                                    </Button>
                                                     <svelte:fragment slot="tooltip">
                                                         <Layout.Stack
                                                             gap="s"

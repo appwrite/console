@@ -9,7 +9,7 @@
 
 <Card.Base padding="none">
     <Empty
-        title={`Sorry, we couldn't find ‘${search}’`}
+        title={`Sorry, we couldn't find ${search ? `‘${search}’` : `any ${target}`}`}
         description={`There are no ${target} that match your search.`}
         type="secondary">
         <svelte:fragment slot="actions">
