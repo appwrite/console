@@ -79,18 +79,34 @@
     </div>
 </div>
 
-<style>
+<style lang="scss">
     .grid-container {
         display: flex;
         justify-content: center;
         align-items: center;
-        width: 100vw;
-        height: 100vh;
+
+        --cell-dimension: 40px;
+        --triple-cell-dimension: 120px;
+        --negative-cell-dimension: -40px;
+        --negative-triple-cell-dimension: -120px;
+        --icon-width: 16px;
+        --border-radius-container: 11px;
+        --border-radius-content: 7px;
+
+        @media (min-width: 1023px) {
+            --cell-dimension: 120px;
+            --triple-cell-dimension: 360px;
+            --negative-cell-dimension: -120px;
+            --negative-triple-cell-dimension: -360px;
+            --icon-width: 48px;
+            --border-radius-container: 32px;
+            --border-radius-content: 22px;
+        }
     }
     .grid {
         display: grid;
-        grid-template-columns: repeat(9, 120px);
-        grid-template-rows: 180px repeat(4, 120px);
+        grid-template-columns: repeat(9, var(--cell-dimension));
+        grid-template-rows: 180px repeat(4, var(--cell-dimension));
     }
 
     .icon {
@@ -121,14 +137,14 @@
     }
 
     .icon-container {
-        width: 140px;
-        height: 140px;
+        width: calc(var(--cell-dimension) + 20px);
+        aspect-ratio: 1/1;
         display: flex;
         justify-content: center;
         align-items: center;
         margin-top: -10px;
         margin-left: -10px;
-        border-radius: var(--padding-cards-desktop, 32px);
+        border-radius: var(--border-radius-container);
         border: 2.5px solid rgba(255, 255, 255, 0.08);
         background: rgba(255, 255, 255, 0.5);
         box-shadow: 0 13px 13px 0 rgba(0, 0, 0, 0.04);
@@ -137,9 +153,9 @@
     }
 
     .icon-content {
-        width: 120px;
-        height: 120px;
-        border-radius: 22px;
+        width: var(--cell-dimension);
+        aspect-ratio: 1/1;
+        border-radius: var(--border-radius-content);
         border: 0.5px solid #ededf0;
         background: #fff;
         box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.05);
@@ -148,6 +164,10 @@
         align-items: center;
         filter: grayscale(1);
         transition: filter 0.5s ease-in;
+
+        img {
+            width: var(--icon-width);
+        }
     }
 
     .start-animation .icon-container {
@@ -155,22 +175,24 @@
     }
 
     .start-animation .icon1 {
-        transform: translateY(120px) translateX(360px);
+        transform: translateY(var(--cell-dimension)) translateX(var(--triple-cell-dimension));
     }
     .start-animation .icon2 {
-        transform: translateY(120px) translateX(120px);
+        transform: translateY(var(--cell-dimension)) translateX(var(--cell-dimension));
     }
     .start-animation .icon3 {
-        transform: translateY(120px) translateX(-120px);
+        transform: translateY(var(--cell-dimension)) translateX(var(--negative-cell-dimension));
     }
     .start-animation .icon4 {
-        transform: translateY(120px) translateX(-360px);
+        transform: translateY(var(--cell-dimension))
+            translateX(var(--negative-triple-cell-dimension));
     }
     .start-animation .icon5 {
-        transform: translateY(-120px) translateX(120px);
+        transform: translateY(var(--negative-cell-dimension)) translateX(var(--cell-dimension));
     }
     .start-animation .icon6 {
-        transform: translateY(-120px) translateX(-120px);
+        transform: translateY(var(--negative-cell-dimension))
+            translateX(var(--negative-cell-dimension));
     }
 
     .start-animation .icon:not(.icon6) .icon-content {
