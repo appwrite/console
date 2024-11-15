@@ -8,9 +8,12 @@
     import { sdk } from '$lib/stores/sdk';
     import { isValueOfStringEnum } from '$lib/helpers/types';
     import { Flag } from '@appwrite.io/console';
+    import Loading from './loading.svelte';
 
     let showCustomId = false;
+    let isLoading = true;
     let id: string;
+    let startAnimation = false;
 
     let regions: RegionList;
     onMount(async () => {
@@ -26,64 +29,72 @@
 </script>
 
 <div class="page-container u-flex-vertical u-cross-child-center u-main-center u-cross-center">
-    <img
-        src="/console/images/appwrite-logo-light.svg"
-        width="120"
-        height="22"
-        class="u-only-light"
-        alt="Appwrite Logo" />
-    <img
-        src="/console/images/appwrite-logo-dark.svg"
-        width="120"
-        height="22"
-        class="u-only-dark"
-        alt="Appwrite Logo" />
-    <Card.Base variant="primary"
-        ><Layout.Stack direction="column" gap="xxl">
-            <Typography.Title size="l">Create your project</Typography.Title>
-            <form>
-                <Layout.Stack direction="column" gap="xl">
-                    <Layout.Stack direction="column" gap="s">
-                        <Input.Text label="Name" placeholder="Project name" />
-                        {#if !showCustomId}
-                            <div>
-                                <Tag
-                                    size="s"
-                                    on:click={() => {
-                                        showCustomId = true;
-                                    }}><Icon icon={IconPencil} /> Project ID</Tag>
-                            </div>
+    {#if isLoading}
+        <button
+            on:click={() => {
+                startAnimation = !startAnimation;
+            }}>Toggle animation</button>
+        <Loading {startAnimation} />
+    {:else}
+        <img
+            src="/console/images/appwrite-logo-light.svg"
+            width="120"
+            height="22"
+            class="u-only-light"
+            alt="Appwrite Logo" />
+        <img
+            src="/console/images/appwrite-logo-dark.svg"
+            width="120"
+            height="22"
+            class="u-only-dark"
+            alt="Appwrite Logo" />
+        <Card.Base variant="primary"
+            ><Layout.Stack direction="column" gap="xxl">
+                <Typography.Title size="l">Create your project</Typography.Title>
+                <form>
+                    <Layout.Stack direction="column" gap="xl">
+                        <Layout.Stack direction="column" gap="s">
+                            <Input.Text label="Name" placeholder="Project name" />
+                            {#if !showCustomId}
+                                <div>
+                                    <Tag
+                                        size="s"
+                                        on:click={() => {
+                                            showCustomId = true;
+                                        }}><Icon icon={IconPencil} /> Project ID</Tag>
+                                </div>
+                            {/if}
+                            <CustomId bind:show={showCustomId} name="Project" isProject bind:id />
+                        </Layout.Stack>
+                        {#if regions}
+                            <Input.Select
+                                placeholder="Select a region"
+                                options={regions.regions
+                                    .filter((region) => region.$id !== 'default')
+                                    .sort((regionA, regionB) => {
+                                        if (regionA.disabled && !regionB.disabled) {
+                                            return 1;
+                                        }
+                                        return regionA.name > regionB.name ? 1 : -1;
+                                    })
+                                    .map((region) => {
+                                        return {
+                                            label: region.name,
+                                            value: region.$id,
+                                            leadingHtml: `<img src='${getFlagUrl(region.flag)}' alt='Region flag'/>`,
+                                            disabled: region.disabled
+                                        };
+                                    })}
+                                label="Region" />
                         {/if}
-                        <CustomId bind:show={showCustomId} name="Project" isProject bind:id />
+                        <div class="u-flex u-main-end">
+                            <Button.Button type="button" variant="primary" size="m"
+                                >Create</Button.Button>
+                        </div>
                     </Layout.Stack>
-                    {#if regions}
-                        <Input.Select
-                            placeholder="Select a region"
-                            options={regions.regions
-                                .filter((region) => region.$id !== 'default')
-                                .sort((regionA, regionB) => {
-                                    if (regionA.disabled && !regionB.disabled) {
-                                        return 1;
-                                    }
-                                    return regionA.name > regionB.name ? 1 : -1;
-                                })
-                                .map((region) => {
-                                    return {
-                                        label: region.name,
-                                        value: region.$id,
-                                        leadingHtml: `<img src='${getFlagUrl(region.flag)}' alt='Region flag'/>`,
-                                        disabled: region.disabled
-                                    };
-                                })}
-                            label="Region" />
-                    {/if}
-                    <div class="button-container">
-                        <Button.Button type="button" variant="primary" size="m"
-                            >Create</Button.Button>
-                    </div>
-                </Layout.Stack>
-            </form>
-        </Layout.Stack></Card.Base>
+                </form>
+            </Layout.Stack></Card.Base>
+    {/if}
 </div>
 
 <style lang="scss">
@@ -98,9 +109,5 @@
         @media #{$break2open} {
             width: 700px;
         }
-    }
-    .button-container {
-        display: flex;
-        justify-content: end;
     }
 </style>
