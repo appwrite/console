@@ -19,12 +19,12 @@ const userPreferences = () => get(user)?.prefs;
 const notificationPrefs = (): Record<string, NotificationPrefItem> => {
     const prefs = userPreferences();
 
-    if (prefs === null) {
+    // due to php backend, empty object can be returnd as an empty array
+    if (prefs?.notificationPrefs === null || Array.isArray(prefs?.notificationPrefs)) {
         return {};
     }
 
-    // for some reason, the prefs become array as default or on all clear. let's reset.
-    return Array.isArray(prefs?.notificationPrefs) ? {} : (prefs?.notificationPrefs ?? {});
+    return prefs.notificationPrefs;
 };
 
 function updateNotificationPrefs(parsedPrefs: Record<string, NotificationPrefItem>) {
