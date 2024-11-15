@@ -18,9 +18,9 @@ const userPreferences = () => get(user)?.prefs;
 
 const notificationPrefs = (): Record<string, NotificationPrefItem> => {
     const prefs = userPreferences();
-
+    console.log(prefs);
     // due to php backend, empty object can be returnd as an empty array
-    if (prefs?.notificationPrefs === null || Array.isArray(prefs?.notificationPrefs)) {
+    if (!prefs?.notificationPrefs || Array.isArray(prefs.notificationPrefs)) {
         return {};
     }
 
