@@ -48,8 +48,11 @@
             Are you sure you want to delete <b>{$database.name}</b>?
         </p>
 
-        <p class="text" data-private>
-            <b>Once deleted, this database cannot be restored. This action is irreversible.</b>
+        <p class="text">
+            <b>
+                Once deleted, this database and its backups cannot be restored. This action is
+                irreversible.
+            </b>
         </p>
 
         <div class="input-check-box-friction">

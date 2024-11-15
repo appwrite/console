@@ -47,7 +47,7 @@
             if ($organizationList?.total > 1) {
                 await goto(`${base}/account/organizations`);
             } else {
-                await goto(`${base}/onboarding`);
+                await goto(`${base}/onboarding/create-project`);
             }
             await invalidate(Dependencies.ACCOUNT);
             await invalidate(Dependencies.ORGANIZATION);

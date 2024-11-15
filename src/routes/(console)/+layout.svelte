@@ -319,7 +319,9 @@
         !$page?.params.organization &&
         !$page.url.pathname.includes('/console/account') &&
         !$page.url.pathname.includes('/console/card') &&
-        !$page.url.pathname.includes('/console/onboarding')}>
+        !$page.url.pathname.includes('/console/onboarding')}
+    showHeader={!$page.url.pathname.includes('/console/onboarding')}
+    showFooter={!$page.url.pathname.includes('/console/onboarding')}>
     <Header slot="header" />
     <SideNavigation slot="side" bind:isOpen />
     <slot />

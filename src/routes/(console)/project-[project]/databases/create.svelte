@@ -60,7 +60,7 @@
             cronExpression(policy);
 
             return sdk.forProject.backups.createPolicy(
-                policy.id,
+                ID.unique(),
                 ['databases'],
                 policy.retained,
                 policy.schedule,
