@@ -14,8 +14,8 @@
 
     export let data;
 
-    const sdkCreateVariable = async (key: string, value: string) => {
-        await sdk.forProject.sites.createVariable($page.params.site, key, value);
+    const sdkCreateVariable = async (key: string, value: string, secret: boolean) => {
+        await sdk.forProject.sites.createVariable($page.params.site, key, value, secret);
         await Promise.all([invalidate(Dependencies.VARIABLES), invalidate(Dependencies.SITE)]);
     };
 
@@ -42,7 +42,8 @@
         {sdkDeleteVariable}
         isGlobal={false}
         globalVariableList={data.globalVariables}
-        variableList={data.variables} />
+        variableList={data.variables}
+        product="site" />
     <UpdateTimeout site={data.site} />
     <UpdateRuntimeSettings site={data.site} frameworks={data.frameworks.frameworks} />
     <DangerZone site={data.site} />

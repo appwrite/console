@@ -124,11 +124,14 @@
                                     <Table.Row>
                                         <Table.Cell>{variable.key}</Table.Cell>
                                         <Table.Cell>
+                                            <!-- TODO: fix max width -->
                                             <div style="max-width: 20rem">
                                                 {#if variable.secret}
                                                     <Badge content="Secret" variant="secondary" />
                                                 {:else}
-                                                    <HiddenText text={variable.value} />
+                                                    <HiddenText
+                                                        isVisible={false}
+                                                        text={variable.value} />
                                                 {/if}
                                             </div>
                                         </Table.Cell>

@@ -10,7 +10,6 @@
     import { setContext } from 'svelte';
     import { writable } from 'svelte/store';
 
-    export let noMargin = false;
     export let noStyle = false;
     export let isModal = false;
     export let onSubmit: (e: SubmitEvent) => Promise<void> | void;
@@ -46,3 +45,9 @@
     on:submit|preventDefault={submit}>
     <slot />
 </form>
+
+<style>
+    .modal-form {
+        position: absolute;
+    }
+</style>

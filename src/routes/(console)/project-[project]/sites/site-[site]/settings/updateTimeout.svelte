@@ -3,16 +3,17 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, Form, FormList, InputNumber } from '$lib/elements/forms';
+    import { Button, Form, InputNumber } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { BuildRuntime, Framework, ServeRuntime, type Models } from '@appwrite.io/console';
 
     export let site: Models.Site;
-    let timeout: number = null;
+    let timeout = site.timeout;
 
     onMount(async () => {
+        console.log(timeout);
         timeout ??= site.timeout;
     });
 
@@ -57,14 +58,13 @@
         <Heading tag="h6" size="7" id="timeout">Timeout</Heading>
         <p>Set a time limit for the execution of your site. The maximum value is 30 seconds.</p>
         <svelte:fragment slot="aside">
-            <FormList>
-                <InputNumber
-                    min={1}
-                    max={30}
-                    id="time"
-                    label="Time (in seconds)"
-                    bind:value={timeout} />
-            </FormList>
+            <InputNumber
+                min={1}
+                max={30}
+                id="time"
+                label="Time (in seconds)"
+                placeholder="Enter timeout"
+                bind:value={timeout} />
         </svelte:fragment>
 
         <svelte:fragment slot="actions">

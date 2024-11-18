@@ -129,13 +129,7 @@
         ) ?? null;
 </script>
 
-<Modal
-    title="Git configuration"
-    headerDivider={false}
-    bind:show
-    size="big"
-    bind:error
-    onSubmit={handleSubmit}>
+<Modal title="Git configuration" headerDivider={false} bind:show bind:error onSubmit={handleSubmit}>
     <p class="text">
         Configure a Git repository that will trigger your function deployments when updated.
     </p>

@@ -30,11 +30,11 @@
     }
 </script>
 
-<Modal {title} bind:open={show}>
-    <svelte:fragment slot="description">
-        <slot name="description" />
-    </svelte:fragment>
-    <Form isModal {onSubmit}>
+<Form isModal {onSubmit}>
+    <Modal {title} bind:open={show}>
+        <svelte:fragment slot="description">
+            <slot name="description" />
+        </svelte:fragment>
         {#if error}
             <div bind:this={alert}>
                 <Alert
@@ -48,10 +48,10 @@
             </div>
         {/if}
         <slot />
-    </Form>
-    <svelte:fragment slot="footer">
-        <Layout.Stack direction="row" justifyContent="flex-end">
-            <slot name="footer" />
-        </Layout.Stack>
-    </svelte:fragment>
-</Modal>
+        <svelte:fragment slot="footer">
+            <Layout.Stack direction="row" justifyContent="flex-end">
+                <slot name="footer" />
+            </Layout.Stack>
+        </svelte:fragment>
+    </Modal>
+</Form>
