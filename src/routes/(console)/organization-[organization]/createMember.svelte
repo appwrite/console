@@ -19,8 +19,6 @@
 
     const dispatch = createEventDispatcher();
 
-    const url = `${$page.url.origin}${base}/invite`;
-
     let email: string,
         name: string,
         error: string,
@@ -34,7 +32,7 @@
                 email,
                 undefined,
                 undefined,
-                url,
+                `${$page.url.origin}${base}/invite`,
                 name || undefined
             );
             await invalidate(Dependencies.ACCOUNT);
