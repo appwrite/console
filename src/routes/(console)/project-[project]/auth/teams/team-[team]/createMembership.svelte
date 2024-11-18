@@ -17,8 +17,6 @@
     let error: string;
 
     async function create() {
-        const url = `${$page.url.origin}${base}/project-${$page.params.project}/auth/teams/team-${$page.params.team}/members`;
-
         try {
             const user = await sdk.forProject.teams.createMembership(
                 teamId,
@@ -26,7 +24,7 @@
                 email || undefined,
                 undefined,
                 undefined,
-                url,
+                `${$page.url.origin}${base}/invite`,
                 name || undefined
             );
             addNotification({
