@@ -33,7 +33,7 @@
     let showEdit = false;
     let showDropdown = [];
     let showPopover = false;
-    const url = `${$page.url.origin}/${base}/`;
+    const url = `${$page.url.origin}${base}/`;
     const resend = async (member: Models.Membership) => {
         try {
             await sdk.forConsole.teams.createMembership(

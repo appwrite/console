@@ -204,7 +204,7 @@
                         collaborator,
                         undefined,
                         undefined,
-                        `${$page.url.origin}/${base}/organization-${org.$id}`
+                        `${$page.url.origin}${base}/organization-${org.$id}`
                     );
                 });
             }
