@@ -8,6 +8,9 @@
     import { invalidate } from '$app/navigation';
     import { Heading } from '$lib/components';
     import { page } from '$app/stores';
+    import UpdateBuildSettings from './updateBuildSettings.svelte';
+    import UpdateTimeout from './updateTimeout.svelte';
+    import UpdateRuntimeSettings from './updateRuntimeSettings.svelte';
 
     export let data;
 
@@ -25,11 +28,14 @@
         await sdk.forProject.sites.deleteVariable($page.params.site, variableId);
         await Promise.all([invalidate(Dependencies.VARIABLES), invalidate(Dependencies.SITE)]);
     };
+
+    $: console.log(data);
 </script>
 
 <Container>
     <Heading tag="h2" size="5">Settings</Heading>
     <UpdateName site={data.site} />
+    <UpdateBuildSettings site={data.site} frameworks={data.frameworks.frameworks} />
     <UpdateVariables
         {sdkCreateVariable}
         {sdkUpdateVariable}
@@ -37,5 +43,7 @@
         isGlobal={false}
         globalVariableList={data.globalVariables}
         variableList={data.variables} />
+    <UpdateTimeout site={data.site} />
+    <UpdateRuntimeSettings site={data.site} frameworks={data.frameworks.frameworks} />
     <DangerZone site={data.site} />
 </Container>

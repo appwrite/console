@@ -14,7 +14,7 @@
     export let danger = false;
     export let icon = false;
     export let link = false;
-    export let size: Props['size'] = 'm';
+    export let size: Props['size'] = 's';
     export let disabled = false;
     export let external = false;
     export let href: string = null;

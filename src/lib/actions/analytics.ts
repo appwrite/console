@@ -334,5 +334,6 @@ export enum Submit {
     SiteUpdateTimeout = 'submit_site_update_timeout',
     SiteUpdateEvents = 'submit_site_update_events',
     SiteUpdateScopes = 'submit_site_key_update_scopes',
+    SiteUpdateBuildSettings = 'submit_site_update_build_settings',
     SiteConnectRepo = 'submit_site_connect_repo'
 }

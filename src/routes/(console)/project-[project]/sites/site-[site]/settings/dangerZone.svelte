@@ -3,16 +3,17 @@
     import Heading from '$lib/components/heading.svelte';
     import { Button } from '$lib/elements/forms';
     import { toLocaleDateTime } from '$lib/helpers/date';
+    import type { Models } from '@appwrite.io/console';
     import Delete from './deleteModal.svelte';
 
-    export let site;
+    export let site: Models.Site;
     let showDelete = false;
 </script>
 
 <CardGrid danger>
     <Heading tag="h6" size="7">Delete site</Heading>
     <p>
-        The function will be permanently deleted, including all deployments associated with it. This
+        The site will be permanently deleted, including all deployments associated with it. This
         action is irreversible.
     </p>
     <svelte:fragment slot="aside">

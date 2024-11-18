@@ -3,27 +3,27 @@
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { CardGrid, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
-    import { Button, Form, InputText } from '$lib/elements/forms';
+    import { Button, Form, FormList, InputNumber } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { BuildRuntime, Framework, ServeRuntime, type Models } from '@appwrite.io/console';
 
     export let site: Models.Site;
-    let siteName: string = null;
+    let timeout: number = null;
 
     onMount(async () => {
-        siteName ??= site.name;
+        timeout ??= site.timeout;
     });
 
-    async function updateName() {
+    async function updateTimeout() {
         try {
             await sdk.forProject.sites.update(
                 site.$id,
-                siteName,
-                Framework[site?.framework],
+                site.name,
+                Framework[site?.framework] || undefined,
                 site.enabled || undefined,
-                site.timeout || undefined,
+                timeout || undefined,
                 site.installCommand || undefined,
                 site.buildCommand || undefined,
                 site.outputDirectory || undefined,
@@ -38,37 +38,37 @@
             );
             await invalidate(Dependencies.SITE);
             addNotification({
-                message: 'Name has been updated',
-                type: 'success'
+                type: 'success',
+                message: 'Timeout has been updated'
             });
-            trackEvent(Submit.SiteUpdateName);
+            trackEvent(Submit.SiteUpdateTimeout);
         } catch (error) {
             addNotification({
-                message: error.message,
-                type: 'error'
+                type: 'error',
+                message: error.message
             });
-            trackError(error, Submit.SiteUpdateName);
+            trackError(error, Submit.SiteUpdateTimeout);
         }
     }
 </script>
 
-<Form onSubmit={updateName}>
+<Form onSubmit={updateTimeout}>
     <CardGrid>
-        <Heading tag="h6" size="7">Name</Heading>
-
+        <Heading tag="h6" size="7" id="timeout">Timeout</Heading>
+        <p>Set a time limit for the execution of your site. The maximum value is 30 seconds.</p>
         <svelte:fragment slot="aside">
-            <ul>
-                <InputText
-                    id="name"
-                    label="Name"
-                    placeholder="Enter name"
-                    autocomplete={false}
-                    bind:value={siteName} />
-            </ul>
+            <FormList>
+                <InputNumber
+                    min={1}
+                    max={30}
+                    id="time"
+                    label="Time (in seconds)"
+                    bind:value={timeout} />
+            </FormList>
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={siteName === site.name || !siteName} submit>Update</Button>
+            <Button disabled={site.timeout === timeout || timeout < 1} submit>Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>

@@ -6,9 +6,10 @@ export const load = async ({ params, depends, parent }) => {
     depends(Dependencies.SITE);
     const { site } = await parent();
 
-    const [globalVariables, variables] = await Promise.all([
+    const [globalVariables, variables, frameworks] = await Promise.all([
         sdk.forProject.projectApi.listVariables(),
-        sdk.forProject.sites.listVariables(params.site)
+        sdk.forProject.sites.listVariables(params.site),
+        sdk.forProject.sites.listFrameworks()
     ]);
 
     // Conflicting variables first
@@ -30,8 +31,9 @@ export const load = async ({ params, depends, parent }) => {
     });
 
     return {
+        site,
+        frameworks,
         variables,
-        globalVariables,
-        site
+        globalVariables
     };
 };
