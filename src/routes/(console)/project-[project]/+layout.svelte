@@ -106,7 +106,6 @@
 <div class="layout-level-progress-bars">
     <UploadBox />
     <MigrationBox />
-
     <BackupRestoreBox />
 </div>
 
