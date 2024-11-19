@@ -8,19 +8,22 @@
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
     import { BuildRuntime, Framework, ServeRuntime, type Models } from '@appwrite.io/console';
+    import InputChoice from '$lib/elements/forms/inputChoice.svelte';
+    import { Layout } from '@appwrite.io/pink-svelte';
 
     export let site: Models.Site;
-    let siteName: string = null;
+    let spa = false;
+    let fallback = '';
 
     onMount(async () => {
-        siteName ??= site.name;
+        fallback ??= site.name; //TODO: fix
     });
 
-    async function updateName() {
+    async function updateSPA() {
         try {
             await sdk.forProject.sites.update(
                 site.$id,
-                siteName,
+                site.name,
                 Framework[site?.framework],
                 site.enabled || undefined,
                 site.timeout || undefined,
@@ -38,34 +41,47 @@
             );
             await invalidate(Dependencies.SITE);
             addNotification({
-                message: 'Name has been updated',
+                message: 'Settings have been updated',
                 type: 'success'
             });
-            trackEvent(Submit.SiteUpdateName);
+            trackEvent(Submit.SiteUpdateSinglePageApplication);
         } catch (error) {
             addNotification({
                 message: error.message,
                 type: 'error'
             });
-            trackError(error, Submit.SiteUpdateName);
+            trackError(error, Submit.SiteUpdateSinglePageApplication);
         }
     }
 </script>
 
-<Form onSubmit={updateName}>
+<Form onSubmit={updateSPA}>
     <CardGrid>
-        <Heading tag="h6" size="7">Name</Heading>
+        <Heading tag="h6" size="7">Single page application</Heading>
+
         <svelte:fragment slot="aside">
-            <InputText
-                id="name"
-                label="Name"
-                placeholder="Enter name"
-                autocomplete={false}
-                bind:value={siteName} />
+            <InputChoice
+                id="spa"
+                type="switchbox"
+                label="Single page application (SPA)"
+                bind:value={spa}>
+                <Layout.Stack>
+                    Provide a fallback file for advanced routing and proper page handling in SPA
+                    mode.
+                    {#if spa}
+                        <InputText
+                            id="fallback"
+                            label="Fallback"
+                            placeholder="Enter fallback"
+                            required
+                            bind:value={fallback} />
+                    {/if}
+                </Layout.Stack>
+            </InputChoice>
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={siteName === site.name || !siteName} submit>Update</Button>
+            <Button submit>Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>
