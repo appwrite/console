@@ -35,6 +35,7 @@
     let countryOptions = [];
 
     let role = '';
+    let website = '';
 
     let error: string;
 
@@ -60,10 +61,10 @@
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                subject: 'support',
+                subject: 'SOC-2 Request',
                 email: email,
                 firstName: $user?.name ?? '',
-                message: 'SOC-2',
+                message: `SOC-2 request for ${$organization?.name ?? ''} (${$organization?.$id ?? ''})`,
                 tags: ['cloud'],
                 customFields: [
                     { id: '41612', value: 'SOC-2' },
@@ -74,7 +75,8 @@
                 metaFields: {
                     employees: employees,
                     country: country,
-                    role: role
+                    role: role,
+                    website: website
                 }
             })
         });
@@ -122,7 +124,7 @@
             id="role"
             bind:value={role}
             required />
-        <InputText label="Website" placeholder="Enter website" id="website" />
+        <InputText label="Website" placeholder="Enter website" id="website" bind:value={website} />
     </FormList>
     <svelte:fragment slot="footer">
         <Button submit>
