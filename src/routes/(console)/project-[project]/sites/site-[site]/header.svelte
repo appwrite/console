@@ -14,20 +14,15 @@
             event: 'overview'
         },
         {
-            href: `${path}/logs`,
-            title: 'Logs',
-            event: 'logs'
-        },
-        {
             href: `${path}/deployments`,
             title: 'Deployments',
             event: 'deployments'
         },
-        {
-            href: `${path}/analytics`,
-            title: 'Analytics',
-            event: 'analytics'
-        },
+        // {
+        //     href: `${path}/analytics`,
+        //     title: 'Analytics',
+        //     event: 'analytics'
+        // },
         {
             href: `${path}/logs`,
             title: 'Logs',
