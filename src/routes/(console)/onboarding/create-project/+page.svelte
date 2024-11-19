@@ -16,7 +16,7 @@
     import { base } from '$app/paths';
 
     let showCustomId = false;
-    let isLoading = false;
+    let isLoading = true;
     let id: string;
     let startAnimation = false;
     let projectName = '';
@@ -72,6 +72,10 @@
 
 <div class="page-container u-flex-vertical u-cross-child-center u-main-center u-cross-center">
     {#if isLoading}
+        <button
+            on:click={() => {
+                startAnimation = !startAnimation;
+            }}>toggle</button>
         <Loading {startAnimation} />
     {:else}
         <img
