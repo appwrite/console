@@ -204,6 +204,22 @@
         </p>
     {/if}
     <svelte:fragment slot="aside">
+        <Layout.Stack justifyContent="space-between" direction="row">
+            <Layout.Stack direction="row" gap="s">
+                <Button secondary on:click={() => (showEditorModal = true)}>
+                    <Icon size="s" icon={IconCode} />
+                    <span class="text">Editor</span>
+                </Button>
+                <Button secondary on:click={() => (showVariablesUpload = true)}>
+                    <Icon size="s" icon={IconUpload} />
+                    <span class="text">Import .env file</span>
+                </Button>
+            </Layout.Stack>
+            <Button secondary on:click={() => (showVariablesModal = true)}>
+                <Icon size="s" icon={IconPlus} />
+                <span class="text">Create variable</span>
+            </Button>
+        </Layout.Stack>
         {@const sum = variableList.total}
         {#if sum}
             <Layout.Stack gap="l">
@@ -322,22 +338,6 @@
                 Create a {isGlobal ? 'global variable' : 'variable'} to get started
             </Empty>
         {/if}
-        <Layout.Stack justifyContent="space-between" direction="row">
-            <Layout.Stack direction="row" gap="s">
-                <Button secondary on:click={() => (showEditorModal = true)}>
-                    <Icon size="s" icon={IconCode} />
-                    <span class="text">Editor</span>
-                </Button>
-                <Button secondary on:click={() => (showVariablesUpload = true)}>
-                    <Icon size="s" icon={IconUpload} />
-                    <span class="text">Import .env file</span>
-                </Button>
-            </Layout.Stack>
-            <Button secondary on:click={() => (showVariablesModal = true)}>
-                <Icon size="s" icon={IconPlus} />
-                <span class="text">Create variable</span>
-            </Button>
-        </Layout.Stack>
     </svelte:fragment>
 </CardGrid>
 

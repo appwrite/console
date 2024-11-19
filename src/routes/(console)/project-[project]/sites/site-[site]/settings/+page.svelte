@@ -11,6 +11,7 @@
     import UpdateBuildSettings from './updateBuildSettings.svelte';
     import UpdateTimeout from './updateTimeout.svelte';
     import UpdateRuntimeSettings from './updateRuntimeSettings.svelte';
+    import UpdateRepository from './updateRepository.svelte';
 
     export let data;
 
@@ -35,6 +36,7 @@
 <Container>
     <Heading tag="h2" size="5">Settings</Heading>
     <UpdateName site={data.site} />
+    <UpdateRepository site={data.site} />
     <UpdateBuildSettings site={data.site} frameworks={data.frameworks.frameworks} />
     <UpdateVariables
         {sdkCreateVariable}

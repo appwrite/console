@@ -1,47 +1,21 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { page } from '$app/stores';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
-    import { sdk } from '$lib/stores/sdk';
+    import type { Models } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
-    import { func } from '../store';
-    import { isValueOfStringEnum } from '$lib/helpers/types';
-    import { Runtime } from '@appwrite.io/console';
 
     export let show = false;
-    const functionId = $page.params.function;
+    export let site: Models.Site;
     let error = '';
 
     const dispatch = createEventDispatcher();
 
     const handleSubmit = async () => {
         try {
-            if (!isValueOfStringEnum(Runtime, $func.runtime)) {
-                throw new Error(`Invalid runtime: ${$func.runtime}`);
-            }
-            await sdk.forProject.functions.update(
-                functionId,
-                $func.name,
-                $func.runtime,
-                $func.execute || undefined,
-                $func.events || undefined,
-                $func.schedule || undefined,
-                $func.timeout || undefined,
-                $func.enabled || undefined,
-                $func.logging || undefined,
-                $func.entrypoint,
-                $func.commands || undefined,
-                $func.scopes || undefined,
-                '',
-                '',
-                '',
-                true,
-                ''
-            );
             await invalidate(Dependencies.FUNCTION);
             dispatch('success');
             addNotification({
@@ -70,8 +44,8 @@
     state="warning"
     headerDivider={false}>
     <p data-private>
-        Are you sure you want to disconnect <b>{$func.name}</b>? This will affect future deployments
-        to this function.
+        Are you sure you want to disconnect <b>{site.name}</b>? This will affect future deployments
+        to this site.
     </p>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (show = false)}>Cancel</Button>
