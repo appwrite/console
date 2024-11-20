@@ -135,9 +135,7 @@ export function getServiceLimit(serviceId: PlanServices, tier: Tier = null, plan
     if (!serviceId) return 0;
     const info = get(plansInfo);
     if (!info) return 0;
-    if (!plan) {
-        plan = info.get(tier ?? get(organization)?.billingPlan);
-    }
+    plan ??= info.get(tier ?? get(organization)?.billingPlan);
     return plan?.[serviceId];
 }
 
