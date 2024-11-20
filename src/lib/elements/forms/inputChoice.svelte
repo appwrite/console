@@ -1,6 +1,6 @@
 <script lang="ts">
     import { tooltip as tooltipAction } from '$lib/actions/tooltip';
-    import { Input, Layout, Selector } from '@appwrite.io/pink-svelte';
+    import { Layout, Selector } from '@appwrite.io/pink-svelte';
     import { Helper } from '.';
 
     export let type: 'checkbox' | 'switchbox' = 'checkbox';

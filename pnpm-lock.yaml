@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@appwrite.io/console':
-        specifier: npm:khushboo-console@^0.0.9
-        version: khushboo-console@0.0.9
+        specifier: https://pkg.pr.new/appwrite/appwrite/@appwrite.io/console@8859
+        version: https://pkg.pr.new/appwrite/appwrite/@appwrite.io/console@8859
       '@appwrite.io/pink':
         specifier: 0.25.0
         version: 0.25.0
@@ -201,6 +201,10 @@ packages:
 
   '@analytics/type-utils@0.6.2':
     resolution: {integrity: sha512-TD+xbmsBLyYy/IxFimW/YL/9L2IEnM7/EoV9Aeh56U64Ify8o27HJcKjo38XY9Tcn0uOq1AX3thkKgvtWvwFQg==}
+
+  '@appwrite.io/console@https://pkg.pr.new/appwrite/appwrite/@appwrite.io/console@8859':
+    resolution: {tarball: https://pkg.pr.new/appwrite/appwrite/@appwrite.io/console@8859}
+    version: 1.2.1
 
   '@appwrite.io/pink-icons-svelte@1.0.0-next.7':
     resolution: {integrity: sha512-Bmff3YGEliIetqc3UyjzJNLg88FIC6UXYwTzGqHm+0QLCRJxwAFpTkfTCLIqMe5PUqGshq6jM9SPyCCSVVS3aw==}
@@ -2530,9 +2534,6 @@ packages:
   keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
 
-  khushboo-console@0.0.9:
-    resolution: {integrity: sha512-igFlM6MCFvbhG0kqzH+/xP9xJMjTN3L0spyQPEmfQkZWG55vqCmdixhBff9aNn4UNp38UOL4U/STXIyF7l7MMA==}
-
   kleur@3.0.3:
     resolution: {integrity: sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==}
     engines: {node: '>=6'}
@@ -3864,6 +3865,8 @@ snapshots:
       '@analytics/type-utils': 0.6.2
 
   '@analytics/type-utils@0.6.2': {}
+
+  '@appwrite.io/console@https://pkg.pr.new/appwrite/appwrite/@appwrite.io/console@8859': {}
 
   '@appwrite.io/pink-icons-svelte@1.0.0-next.7(svelte@4.2.19)':
     dependencies:
@@ -6769,8 +6772,6 @@ snapshots:
   keyv@4.5.4:
     dependencies:
       json-buffer: 3.0.1
-
-  khushboo-console@0.0.9: {}
 
   kleur@3.0.3: {}
 

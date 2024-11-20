@@ -173,7 +173,6 @@
     });
 
     async function fetchUsage() {
-        console.log('test');
         metrics.forEach((metric) => {
             metric.value = null;
         });
