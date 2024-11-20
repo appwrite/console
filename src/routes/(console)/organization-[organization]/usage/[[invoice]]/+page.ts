@@ -41,12 +41,11 @@ export const load: PageLoad = async ({ params, parent }) => {
         startDate = currentInvoice.from;
         endDate = currentInvoice.to;
     }
-    const plan = await sdk.forConsole.billing.getPlan(org.$id);
-
-    const [invoices, usage, organizationMembers] = await Promise.all([
+    const [invoices, usage, organizationMembers, plan] = await Promise.all([
         sdk.forConsole.billing.listInvoices(org.$id, [Query.orderDesc('from')]),
         sdk.forConsole.billing.listUsage(params.organization, startDate, endDate),
-        sdk.forConsole.teams.listMemberships(params.organization)
+        sdk.forConsole.teams.listMemberships(params.organization),
+        sdk.forConsole.billing.getPlan(org.$id)
     ]);
 
     const projectNames: { [key: string]: Models.Project } = {};
