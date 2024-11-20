@@ -118,6 +118,7 @@
                 framework.outputDirectory,
                 domain,
                 selectedInstallationId,
+                undefined,
                 selectedRepository,
                 branch,
                 silentMode,

@@ -28,7 +28,7 @@
 <Wizard
     title="Create a site"
     hideAside={true}
-    href={`${base}/project-${$page.params.project}/sites/site-${$page.params.site}`}>
+    href={`${base}/project-${$page.params.project}/sites/site-${data.site.$id}`}>
     <Layout.Stack gap="l">
         <Layout.Stack gap="xxl">
             <Layout.Stack gap="l" direction="column" alignItems="center">
@@ -172,7 +172,7 @@
         <Button
             size="s"
             fullWidthMobile
-            href="{`${base}/project-${$page.params.project}/sites/site-${$page.params.site}`}}">
+            href={`${base}/project-${$page.params.project}/sites/site-${data.site.$id}`}>
             Close
         </Button>
     </svelte:fragment>
