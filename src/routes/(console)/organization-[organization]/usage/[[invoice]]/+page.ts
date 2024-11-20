@@ -1,7 +1,7 @@
 import { sdk } from '$lib/stores/sdk';
 import { Query, type Models } from '@appwrite.io/console';
 import type { PageLoad } from './$types';
-import type { Organization } from '$lib/stores/organization';
+import { type Organization } from '$lib/stores/organization';
 import type { Invoice } from '$lib/sdk/billing';
 
 export const load: PageLoad = async ({ params, parent }) => {
@@ -41,6 +41,7 @@ export const load: PageLoad = async ({ params, parent }) => {
         startDate = currentInvoice.from;
         endDate = currentInvoice.to;
     }
+    const plan = await sdk.forConsole.billing.getPlan(org.$id);
 
     const [invoices, usage, organizationMembers] = await Promise.all([
         sdk.forConsole.billing.listInvoices(org.$id, [Query.orderDesc('from')]),
@@ -77,6 +78,7 @@ export const load: PageLoad = async ({ params, parent }) => {
         projectNames,
         invoices,
         currentInvoice,
-        organizationMembers
+        organizationMembers,
+        plan
     };
 };
