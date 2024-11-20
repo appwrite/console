@@ -76,6 +76,7 @@
                 site.outputDirectory || undefined,
                 BuildRuntime[site?.buildRuntime] || undefined,
                 ServeRuntime[site?.serveRuntime] || undefined,
+                site.fallbackFile || undefined,
                 site.installationId || undefined,
                 site.providerRepositoryId || undefined,
                 selectedBranch || undefined,

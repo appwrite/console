@@ -8,7 +8,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { trackEvent } from '$lib/actions/analytics';
     import { onMount } from 'svelte';
-    import type { Models } from '@appwrite.io/console';
+    import { BuildRuntime, Framework, ServeRuntime, type Models } from '@appwrite.io/console';
     import { IconArrowSmRight } from '@appwrite.io/pink-icons-svelte';
     import { Link } from '$lib/elements';
 
@@ -38,14 +38,15 @@
             await sdk.forProject.sites.update(
                 site.$id,
                 site.name,
-                site.framework,
+                Framework[site.framework],
                 site.enabled,
                 site.timeout,
                 site.installCommand,
                 site.buildCommand,
                 site.outputDirectory,
-                site.buildRuntime,
-                site.serveRuntime,
+                BuildRuntime[site.buildRuntime],
+                ServeRuntime[site.serveRuntime],
+                site.fallbackFile,
                 selectedInstallationId,
                 selectedRepository
             );

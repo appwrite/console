@@ -16,7 +16,8 @@
     let fallback = '';
 
     onMount(async () => {
-        fallback ??= site.name; //TODO: fix
+        fallback ??= site.fallbackFile;
+        if (fallback !== undefined) spa = true;
     });
 
     async function updateSPA() {
@@ -32,6 +33,7 @@
                 site.outputDirectory || undefined,
                 BuildRuntime[site?.buildRuntime] || undefined,
                 ServeRuntime[site?.serveRuntime] || undefined,
+                fallback,
                 site.installationId || undefined,
                 site.providerRepositoryId || undefined,
                 site.providerBranch || undefined,
