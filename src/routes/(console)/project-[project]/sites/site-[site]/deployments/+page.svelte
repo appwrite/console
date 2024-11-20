@@ -9,17 +9,17 @@
     import { Filters } from '$lib/components/filters';
     import { queries, tags } from '$lib/components/filters/store';
     import { View } from '$lib/helpers/load';
-    import RedeployModal from './redeployModal.svelte';
-    import QuickFilters from './quickFilters.svelte';
     import { Pill } from '$lib/elements';
     import { onMount } from 'svelte';
-    import Table from './table.svelte';
     import { Layout, Typography } from '@appwrite.io/pink-svelte';
-    import CreateGitDeploymentModal from './createGitDeploymentModal.svelte';
-    import UsageCard from './usageCard.svelte';
     import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/stores';
     import { toLocaleDate } from '$lib/helpers/date';
+    import Table from './table.svelte';
+    import QuickFilters from './quickFilters.svelte';
+    import RedeployModal from './redeployModal.svelte';
+    import CreateGitDeploymentModal from './createGitDeploymentModal.svelte';
+    import UsageCard from './usageCard.svelte';
 
     export let data;
 

@@ -14,7 +14,7 @@
 </script>
 
 <Layout.Stack gap="xxs" direction="row" alignItems="center">
-    <Link external href={`${protocol}${domains.rules[0].domain}`}>
+    <Link external href={`${protocol}${domains.rules[0].domain}`} variant="muted">
         <Layout.Stack gap="xxs" direction="row" alignItems="center">
             <Trim alternativeTrim>
                 {domains.rules[0].domain}

@@ -7,6 +7,7 @@
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { deployment } from './store';
+    import SiteCard from '../../../(components)/siteCard.svelte';
 
     export let data;
 
@@ -20,7 +21,7 @@
         return sdk.forConsole.client.subscribe<Models.Deployment>('console', (message) => {
             if (
                 message.events.includes(
-                    `functions.${$page.params.site}.deployments.${$page.params.deployment}.update`
+                    `sites.${$page.params.site}.deployments.${$page.params.deployment}.update`
                 )
             ) {
                 logs = message.payload['logs'];
@@ -33,5 +34,5 @@
 </script>
 
 <Container>
-    {JSON.stringify(data.deployment)}
+    <SiteCard site={data.site} deployment={data.deployment} proxyRuleList={data.proxyRuleList} />
 </Container>

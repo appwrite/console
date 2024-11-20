@@ -1,39 +1,35 @@
 <script lang="ts">
-    import { DropList, DropListItem, DropListLink, Id } from '$lib/components';
+    import { Id } from '$lib/components';
     import type { PageData } from './$types';
     import { type Models } from '@appwrite.io/console';
     import type { Column } from '$lib/helpers/types';
     import { calculateTime } from '$lib/helpers/timeConversion';
     import DeploymentSource from '../../(components)/deploymentSource.svelte';
-    import DeploymentCreatedBy from './deploymentCreatedBy.svelte';
+    import DeploymentCreatedBy from '../../(components)/deploymentCreatedBy.svelte';
     import { timer } from '$lib/actions/timer';
     import { calculateSize } from '$lib/helpers/sizeConvertion';
-    import { func } from './store';
     import { page } from '$app/stores';
     import Delete from './delete.svelte';
     import RedeployModal from './redeployModal.svelte';
     import Cancel from './cancel.svelte';
-    import { sdk } from '$lib/stores/sdk';
     import { base } from '$app/paths';
-    import { Status, Table } from '@appwrite.io/pink-svelte';
+    import { ActionMenu, Popover, Status, Table } from '@appwrite.io/pink-svelte';
+    import {
+        IconLightningBolt,
+        IconRefresh,
+        IconTrash,
+        IconXCircle
+    } from '@appwrite.io/pink-icons-svelte';
 
     export let columns: Column[];
     export let data: PageData;
 
-    let showDropdown = [];
     let showDelete = false;
     // let showActivate = false;
     let showRedeploy = false;
     let showCancel = false;
 
     let selectedDeployment: Models.Deployment = null;
-
-    function getDownload(deploymentId: string) {
-        return (
-            sdk.forProject.functions.getDeploymentDownload($func.$id, deploymentId).toString() +
-            '&mode=admin'
-        );
-    }
 </script>
 
 <Table.Root>
@@ -105,72 +101,59 @@
                 {/if}
             {/each}
             <Table.Cell>
-                <DropList bind:show={showDropdown[index]} placement="bottom-start" noArrow>
+                <Popover let:toggle placement="bottom-start">
                     <button
                         class="button is-only-icon is-text"
                         aria-label="More options"
-                        on:click|preventDefault={() => {
-                            showDropdown[index] = !showDropdown[index];
-                        }}>
+                        on:click|preventDefault={toggle}>
                         <span class="icon-dots-horizontal" aria-hidden="true" />
                     </button>
-                    <svelte:fragment slot="list">
-                        <DropListItem
-                            icon="refresh"
-                            on:click={() => {
-                                selectedDeployment = deployment;
-                                showRedeploy = true;
-                                showDropdown = [];
-                            }}>
-                            Redeploy
-                        </DropListItem>
-                        {#if deployment.status === 'ready' && deployment.$id !== $func.deployment}
-                            <DropListItem
-                                icon="lightning-bolt"
+                    <svelte:fragment slot="tooltip">
+                        <ActionMenu.Root>
+                            <ActionMenu.Item.Button
+                                leadingIcon={IconRefresh}
                                 on:click={() => {
                                     selectedDeployment = deployment;
-                                    // showActivate = true;
-                                    showDropdown = [];
+                                    showRedeploy = true;
                                 }}>
-                                Activate
-                            </DropListItem>
-                        {/if}
-                        <DropListLink
-                            icon="terminal"
-                            href={`${base}/project-${$page.params.project}/functions/function-${$page.params.function}/deployment-${deployment.$id}`}>
-                            Logs
-                        </DropListLink>
-                        <DropListLink
-                            icon="download"
-                            href={getDownload(deployment.$id)}
-                            on:click={() => (showDropdown[index] = false)}>
-                            Download
-                        </DropListLink>
-                        {#if deployment.status === 'processing' || deployment.status === 'building' || deployment.status === 'waiting'}
-                            <DropListItem
-                                icon="x-circle"
-                                event="deployment_cancel"
-                                on:click={() => {
-                                    selectedDeployment = deployment;
-                                    showDropdown = [];
-                                    showCancel = true;
-                                }}>
-                                Cancel
-                            </DropListItem>
-                        {/if}
-                        {#if deployment.status !== 'building' && deployment.status !== 'processing' && deployment.status !== 'waiting'}
-                            <DropListItem
-                                icon="trash"
-                                on:click={() => {
-                                    selectedDeployment = deployment;
-                                    showDropdown = [];
-                                    showDelete = true;
-                                }}>
-                                Delete
-                            </DropListItem>
-                        {/if}
+                                Redeploy
+                            </ActionMenu.Item.Button>
+                            {#if deployment?.status === 'ready' && deployment?.$id !== data.site.deploymentId}
+                                <ActionMenu.Item.Button
+                                    leadingIcon={IconLightningBolt}
+                                    on:click={() => {
+                                        selectedDeployment = deployment;
+                                        // showActivate = true;
+                                    }}>
+                                    Activate
+                                </ActionMenu.Item.Button>
+                            {/if}
+
+                            {#if deployment?.status === 'processing' || deployment?.status === 'building' || deployment.status === 'waiting'}
+                                <ActionMenu.Item.Button
+                                    leadingIcon={IconXCircle}
+                                    status="danger"
+                                    on:click={() => {
+                                        selectedDeployment = deployment;
+                                        showCancel = true;
+                                    }}>
+                                    Cancel
+                                </ActionMenu.Item.Button>
+                            {/if}
+                            {#if deployment.status !== 'building' && deployment.status !== 'processing' && deployment?.status !== 'waiting'}
+                                <ActionMenu.Item.Button
+                                    status="danger"
+                                    leadingIcon={IconTrash}
+                                    on:click={() => {
+                                        selectedDeployment = deployment;
+                                        showDelete = true;
+                                    }}>
+                                    Delete
+                                </ActionMenu.Item.Button>
+                            {/if}
+                        </ActionMenu.Root>
                     </svelte:fragment>
-                </DropList>
+                </Popover>
             </Table.Cell>
         </Table.Link>
     {/each}
