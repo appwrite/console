@@ -3,17 +3,15 @@
     import { page } from '$app/stores';
     import Card from '$lib/components/card.svelte';
     import { Wizard } from '$lib/layout';
-    import { Layout, Typography, Image, Icon } from '@appwrite.io/pink-svelte';
+    import { Layout, Typography, Icon } from '@appwrite.io/pink-svelte';
     import { IconArrowSmRight } from '@appwrite.io/pink-icons-svelte';
     import Check from './(components)/check.svelte';
-    import { timeFromNow } from '$lib/helpers/date';
     import type { PageData } from './$types';
     import Button from '$lib/elements/forms/button.svelte';
-    import Link from '$lib/elements/link.svelte';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
-    import { calculateTime } from '$lib/helpers/timeConversion';
     import ConnectRepoModal from './(components)/connectRepoModal.svelte';
-    import OpenOnMobileModal from './(components)/openOnMobileModal.svelte';
+    import OpenOnMobileModal from '../../openOnMobileModal.svelte';
+    import SiteCard from '../../(components)/siteCard.svelte';
 
     export let data: PageData;
 
@@ -39,70 +37,7 @@
                         >You deployed your Site successfully.</Typography.Text>
                 </Layout.Stack>
             </Layout.Stack>
-            <Card padding="xs">
-                <Layout.Stack gap="m" direction="row">
-                    <Image
-                        width={445}
-                        height={280}
-                        src="https://f002.backblazeb2.com/file/meldiron-public/Desktop+-+2.png"
-                        alt="Screenshot" />
-                    <Layout.Stack justifyContent="center">
-                        <Layout.Stack gap="xs">
-                            <Typography.Text
-                                variant="m-400"
-                                color="--color-fgcolor-neutral-tertiary">
-                                Deployed
-                            </Typography.Text>
-                            {#if data.deployment.providerCommitAuthor}
-                                <Typography.Text variant="m-400">
-                                    {timeFromNow(data.deployment.$updatedAt)} ago by {data
-                                        .deployment.providerCommitAuthor}
-                                </Typography.Text>
-                            {:else}
-                                <Typography.Text variant="m-400">
-                                    {timeFromNow(data.deployment.$updatedAt)}
-                                </Typography.Text>
-                            {/if}
-                        </Layout.Stack>
-                        <Layout.Stack gap="xs">
-                            <Typography.Text
-                                variant="m-400"
-                                color="--color-fgcolor-neutral-tertiary">Domains</Typography.Text>
-                            <Link href="https://{data.rule.domain}">{data.rule.domain}</Link>
-                        </Layout.Stack>
-                        <Layout.Stack gap="xl" direction="row">
-                            <Layout.Stack gap="xs" inline>
-                                <Typography.Text
-                                    variant="m-400"
-                                    color="--color-fgcolor-neutral-tertiary"
-                                    >Build time</Typography.Text>
-                                <Typography.Text variant="m-400"
-                                    >{calculateTime(data.deployment.buildTime)}</Typography.Text>
-                            </Layout.Stack>
-                            <Layout.Stack gap="xs" inline>
-                                <Typography.Text
-                                    variant="m-400"
-                                    color="--color-fgcolor-neutral-tertiary"
-                                    >Total size</Typography.Text>
-                                <Typography.Text variant="m-400"
-                                    >{size.value}{size.unit}</Typography.Text>
-                            </Layout.Stack>
-                        </Layout.Stack>
-                        {#if data.deployment.providerCommitHash}
-                            <Layout.Stack gap="xs">
-                                <Typography.Text
-                                    variant="m-400"
-                                    color="--color-fgcolor-neutral-tertiary"
-                                    >Source</Typography.Text>
-                                <Typography.Text variant="m-400"
-                                    >{data.deployment.providerBranch} branch</Typography.Text>
-                                <Typography.Text variant="m-400"
-                                    >{data.deployment.providerCommitHash} initial commit</Typography.Text>
-                            </Layout.Stack>
-                        {/if}
-                    </Layout.Stack>
-                </Layout.Stack>
-            </Card>
+            <SiteCard deployment={data.deployment} site={data.site} />
         </Layout.Stack>
 
         {#if !data.deployment.providerCommitHash}

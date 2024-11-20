@@ -8,18 +8,17 @@
     import { wizard } from '$lib/stores/wizard';
     import { onMount } from 'svelte';
     import { canWriteSites } from '$lib/stores/roles.js';
-    import { Icon, Popover, Image } from '@appwrite.io/pink-svelte';
+    import { Icon, Popover, Image, ActionMenu } from '@appwrite.io/pink-svelte';
     import { Button } from '$lib/elements/forms';
-    import { IconDotsHorizontal } from '@appwrite.io/pink-icons-svelte';
+    import { IconDotsHorizontal, IconRefresh } from '@appwrite.io/pink-icons-svelte';
     import { Card } from '@appwrite.io/pink-svelte';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import CreateSiteModal from './createSiteModal.svelte';
-    import { calculateTime } from '$lib/helpers/timeConversion';
     import { timeFromNow } from '$lib/helpers/date';
-    import EmptyLight from './empty-light.png';
+    import EmptyLight from './(images)/empty-light.png';
     import { app } from '$lib/stores/app';
-    import EmptyDark from './empty-dark.png';
+    import EmptyDark from './(images)/empty-dark.png';
 
     export let data;
     let show = false;
@@ -99,7 +98,13 @@
                                     toggle(e);
                                 }}>
                                 <Icon size="s" icon={IconDotsHorizontal} /></Button>
-                            <p slot="tooltip">Tooltip content</p>
+                            <svelte:fragment slot="tooltip">
+                                <ActionMenu.Root>
+                                    <ActionMenu.Item.Button leadingIcon={IconRefresh} disabled>
+                                        Redeploy
+                                    </ActionMenu.Item.Button>
+                                </ActionMenu.Root>
+                            </svelte:fragment>
                         </Popover>
                     </Card.Media>
                 </Card.Link>

@@ -3,18 +3,15 @@
     import type { PageData } from './$types';
     import { type Models } from '@appwrite.io/console';
     import type { Column } from '$lib/helpers/types';
-    import { Pill } from '$lib/elements';
     import { calculateTime } from '$lib/helpers/timeConversion';
-    import DeploymentSource from './deploymentSource.svelte';
+    import DeploymentSource from '../../(components)/deploymentSource.svelte';
     import DeploymentCreatedBy from './deploymentCreatedBy.svelte';
     import { timer } from '$lib/actions/timer';
     import { calculateSize } from '$lib/helpers/sizeConvertion';
-    import { func, proxyRuleList } from './store';
+    import { func } from './store';
     import { page } from '$app/stores';
     import Delete from './delete.svelte';
     import RedeployModal from './redeployModal.svelte';
-    import { invalidate } from '$app/navigation';
-    import { Dependencies } from '$lib/constants';
     import Cancel from './cancel.svelte';
     import { sdk } from '$lib/stores/sdk';
     import { base } from '$app/paths';
@@ -25,15 +22,11 @@
 
     let showDropdown = [];
     let showDelete = false;
-    let showActivate = false;
+    // let showActivate = false;
     let showRedeploy = false;
     let showCancel = false;
 
     let selectedDeployment: Models.Deployment = null;
-
-    function handleActivate() {
-        invalidate(Dependencies.DEPLOYMENTS);
-    }
 
     function getDownload(deploymentId: string) {
         return (
@@ -82,7 +75,7 @@
                         </Table.Cell>
                     {:else if column.id === 'domains'}
                         <Table.Cell width={column?.width?.toString() ?? ''}>
-                            {JSON.stringify($proxyRuleList)}
+                            {deployment.domain}
                         </Table.Cell>
                     {:else if column.id === 'type'}
                         <Table.Cell width={column?.width?.toString() ?? ''}>
@@ -136,7 +129,7 @@
                                 icon="lightning-bolt"
                                 on:click={() => {
                                     selectedDeployment = deployment;
-                                    showActivate = true;
+                                    // showActivate = true;
                                     showDropdown = [];
                                 }}>
                                 Activate

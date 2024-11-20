@@ -1,6 +1,6 @@
 <script lang="ts">
     import Container from '$lib/layout/container.svelte';
-    import SiteCard from './siteCard.svelte';
+    import SiteCard from '../(components)/siteCard.svelte';
 
     export let data;
 
@@ -12,6 +12,3 @@
 <Container>
     <SiteCard site={data.site} deployment={data.deployment} proxyRuleList={data.proxyRuleList} />
 </Container>
-
-<style>
-</style>

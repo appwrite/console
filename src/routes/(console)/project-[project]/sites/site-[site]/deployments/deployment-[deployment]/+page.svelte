@@ -32,4 +32,6 @@
     });
 </script>
 
-<Container></Container>
+<Container>
+    {JSON.stringify(data.deployment)}
+</Container>
