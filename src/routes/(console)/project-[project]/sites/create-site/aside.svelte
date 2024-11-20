@@ -10,6 +10,7 @@
         IconGitBranch
     } from '@appwrite.io/pink-icons-svelte';
     import type { Models } from '@appwrite.io/console';
+    import { consoleVariables } from '$routes/(console)/store';
 
     export let framework: Models.Framework;
     export let repositoryName: string;
@@ -89,7 +90,9 @@
                         variant="m-500"
                         color="--color-fgcolor-neutral-primary"
                         truncate>
-                        https://{domain}.appwrite.global
+                        {$consoleVariables._APP_OPTIONS_FORCE_HTTPS
+                            ? 'https'
+                            : 'http'}{domain}.{$consoleVariables._APP_DOMAIN_TARGET}
                     </Typography.Text>
                 </Layout.Stack>
             {/if}

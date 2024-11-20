@@ -319,8 +319,8 @@
                 <Typography.Text variant="m-500" truncate>
                     {name || data.template.name}
                 </Typography.Text>
-
-                <Button secondary size="s">View demo</Button>
+                <!-- TODO: re-enable -->
+                <Button secondary size="s" disabled>View demo</Button>
             </Layout.Stack>
 
             <Image
