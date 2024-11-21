@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { SvelteComponent, onMount } from 'svelte';
+    import { SvelteComponent, onMount, tick } from 'svelte';
     import { FormItem, FormItemPart, Helper, Label } from '.';
     import NullCheckbox from './nullCheckbox.svelte';
     import TextCounter from './textCounter.svelte';
@@ -30,8 +30,9 @@
     let error: string;
     let show = false;
 
-    onMount(() => {
+    onMount(async () => {
         if (element && autofocus) {
+            await tick();
             element.focus();
         }
     });
