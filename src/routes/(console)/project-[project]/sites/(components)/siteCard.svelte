@@ -9,7 +9,7 @@
     import DeploymentCreatedBy from './deploymentCreatedBy.svelte';
     import { Button } from '$lib/elements/forms';
     import { IconExternalLink, IconQrcode } from '@appwrite.io/pink-icons-svelte';
-    import OpenOnMobileModal from '../openOnMobileModal.svelte';
+    import OpenOnMobileModal from './openOnMobileModal.svelte';
     import DeploymentDomains from './deploymentDomains.svelte';
     import { consoleVariables } from '$routes/(console)/store';
 
@@ -82,14 +82,12 @@
                     </Typography.Text>
                 </Layout.Stack>
             </Layout.Stack>
-            {#if deployment.providerCommitHash}
-                <Layout.Stack gap="xs">
-                    <Typography.Text variant="m-400" color="--color-fgcolor-neutral-tertiary">
-                        Source
-                    </Typography.Text>
-                    <DeploymentSource {deployment} />
-                </Layout.Stack>
-            {/if}
+            <Layout.Stack gap="xs">
+                <Typography.Text variant="m-400" color="--color-fgcolor-neutral-tertiary">
+                    Source
+                </Typography.Text>
+                <DeploymentSource {deployment} />
+            </Layout.Stack>
         </Layout.Stack>
     </Layout.Stack>
 </Card>

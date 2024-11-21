@@ -28,7 +28,6 @@
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
-    import Repositories from '$lib/components/repositories.svelte';
     import Details from '../../details.svelte';
     import ConnectBehaviour from './connectBehaviour.svelte';
     import ProductionBranch from '../../productionBranch.svelte';
@@ -36,6 +35,7 @@
     import Aside from '../../aside.svelte';
     import { BuildRuntime, Framework, ID, Query, ServeRuntime } from '@appwrite.io/console';
     import Domain from '../../domain.svelte';
+    import { Repositories } from '$lib/components/git';
 
     export let data;
 

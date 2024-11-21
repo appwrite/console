@@ -1,9 +1,10 @@
 import { sdk } from '$lib/stores/sdk';
 import { error } from '@sveltejs/kit';
-import type { PageLoad } from './$types';
 import { Query } from '@appwrite.io/console';
+import { Dependencies } from '$lib/constants';
 
-export const load: PageLoad = async ({ url }) => {
+export const load = async ({ url, depends }) => {
+    depends(Dependencies.SITE);
     if (!url.searchParams.has('site')) error(404, 'Deployment is not optional');
     const siteId = url.searchParams.get('site');
     const site = await sdk.forProject.sites.get(siteId);

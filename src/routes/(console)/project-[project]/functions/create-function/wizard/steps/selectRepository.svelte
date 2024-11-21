@@ -1,6 +1,6 @@
 <script lang="ts">
+    import { Repositories } from '$lib/components/git';
     import { WizardStep } from '$lib/layout';
-    import Repositories from '$lib/components/repositories.svelte';
 
     let hasInstallations: boolean;
     let selectedRepository: string;

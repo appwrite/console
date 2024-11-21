@@ -8,10 +8,10 @@
     import Check from './(components)/check.svelte';
     import type { PageData } from './$types';
     import Button from '$lib/elements/forms/button.svelte';
-    import { humanFileSize } from '$lib/helpers/sizeConvertion';
-    import ConnectRepoModal from './(components)/connectRepoModal.svelte';
-    import OpenOnMobileModal from '../../openOnMobileModal.svelte';
+    import OpenOnMobileModal from '../../(components)/openOnMobileModal.svelte';
     import SiteCard from '../../(components)/siteCard.svelte';
+    import ConnectRepoModal from '../../(components)/connectRepoModal.svelte';
+    import { onMount } from 'svelte';
 
     export let data: PageData;
 
@@ -20,7 +20,14 @@
     let showInviteCollaborator = false;
     let showAddDomain = false;
 
-    $: size = humanFileSize(data.deployment.buildSize);
+    onMount(() => {
+        if (
+            $page.url.searchParams.has('connectRepo') &&
+            $page.url.searchParams.get('connectRepo') === 'true'
+        ) {
+            showConnectRepositry = true;
+        }
+    });
 </script>
 
 <Wizard
@@ -42,7 +49,7 @@
 
         {#if !data.deployment.providerCommitHash}
             <Layout.Stack direction="row">
-                {#if !data.site.installationId}
+                {#if !data.site.installationId && !data.site.providerRepositoryId}
                     <Card isTile radius="s" isButton on:click={() => (showConnectRepositry = true)}>
                         <Layout.Stack gap="s">
                             <Layout.Stack
@@ -58,7 +65,10 @@
                         </Layout.Stack>
                     </Card>
                 {/if}
-                <Card isTile radius="s" isButton on:click={() => (showAddDomain = true)}>
+                <Card
+                    isTile
+                    radius="s"
+                    href={`${base}/project-${$page.params.project}/sites/site-${data.site.$id}/domains`}>
                     <Layout.Stack gap="s">
                         <Layout.Stack
                             direction="row"
@@ -114,7 +124,10 @@
 </Wizard>
 
 {#if showConnectRepositry}
-    <ConnectRepoModal bind:show={showConnectRepositry} site={data.site} />
+    <ConnectRepoModal
+        bind:show={showConnectRepositry}
+        site={data.site}
+        callbackState={{ connectRepo: 'true' }} />
 {/if}
 {#if showOpenOnMobile}
     <OpenOnMobileModal bind:show={showOpenOnMobile} siteURL={data.deployment.domain} />

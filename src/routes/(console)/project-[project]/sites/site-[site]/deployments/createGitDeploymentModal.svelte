@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Modal, Card } from '$lib/components';
-    import Repositories from '$lib/components/repositories.svelte';
+    import { Repositories } from '$lib/components/git';
     import { Link } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';

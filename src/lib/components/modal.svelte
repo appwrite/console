@@ -16,6 +16,7 @@
         return;
     };
     export let title = '';
+    export let hideFooter = false;
 
     let alert: HTMLElement;
 
@@ -31,7 +32,7 @@
 </script>
 
 <Form isModal {onSubmit}>
-    <Modal {title} bind:open={show}>
+    <Modal {title} bind:open={show} {hideFooter}>
         <svelte:fragment slot="description">
             <slot name="description" />
         </svelte:fragment>

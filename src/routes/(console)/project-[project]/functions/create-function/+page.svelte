@@ -44,8 +44,8 @@
     import { afterNavigate } from '$app/navigation';
     import CreateGit from './wizard/createGit.svelte';
     import CreateManual from './wizard/createManual.svelte';
-    import Repositories from '../../../../../lib/components/repositories.svelte';
     import { repository } from '$lib/stores/vcs';
+    import { Repositories } from '$lib/components/git';
 
     const isVcsEnabled = $consoleVariables?._APP_VCS_ENABLED === true;
     let hasInstallations: boolean;

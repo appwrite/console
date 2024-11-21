@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Trim } from '$lib/components';
+    import { Link } from '$lib/elements';
     import type { Models } from '@appwrite.io/console';
     import {
         IconCode,
@@ -11,13 +12,15 @@
     import { ActionMenu, Layout, Popover, Icon } from '@appwrite.io/pink-svelte';
 
     export let deployment: Models.Deployment;
+
+    $: console.log(deployment);
 </script>
 
 {#if deployment.type === 'vcs'}
     <Popover let:toggle>
-        <button on:click={toggle} type="button" class="u-flex u-gap-4 u-cross-center">
-            <span class="icon-github" aria-hidden="true" /> <span class="link">GitHub</span>
-        </button>
+        <Link on:click={toggle}>
+            <Icon icon={IconGithub} /> GitHub
+        </Link>
         <svelte:fragment slot="popover">
             <ActionMenu.Root>
                 <ActionMenu.Item.Anchor
