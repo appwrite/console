@@ -91,8 +91,8 @@
                         color="--color-fgcolor-neutral-primary"
                         truncate>
                         {$consoleVariables._APP_OPTIONS_FORCE_HTTPS
-                            ? 'https'
-                            : 'http'}{domain}.{$consoleVariables._APP_DOMAIN_TARGET}
+                            ? 'https://'
+                            : 'http://'}{domain}.{$consoleVariables._APP_DOMAIN_TARGET}
                     </Typography.Text>
                 </Layout.Stack>
             {/if}

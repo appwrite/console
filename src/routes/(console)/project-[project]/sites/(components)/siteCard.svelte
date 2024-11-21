@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Card } from '$lib/components/index.js';
+    import { Card, Trim } from '$lib/components/index.js';
     import Link from '$lib/elements/link.svelte';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { calculateTime } from '$lib/helpers/timeConversion';
@@ -8,15 +8,16 @@
     import DeploymentSource from './deploymentSource.svelte';
     import DeploymentCreatedBy from './deploymentCreatedBy.svelte';
     import { Button } from '$lib/elements/forms';
-    import { IconQrcode } from '@appwrite.io/pink-icons-svelte';
+    import { IconExternalLink, IconQrcode } from '@appwrite.io/pink-icons-svelte';
     import OpenOnMobileModal from '../openOnMobileModal.svelte';
     import DeploymentDomains from './deploymentDomains.svelte';
+    import { consoleVariables } from '$routes/(console)/store';
 
     export let deployment: Models.Deployment;
     export let site: Models.Site;
     export let proxyRuleList: Models.ProxyRuleList;
 
-    let rule = proxyRuleList.rules[0];
+    let rule = proxyRuleList?.total ? proxyRuleList.rules[0] : null;
     let show = false;
 
     $: totalSize = humanFileSize((deployment?.buildSize ?? 0) + (deployment?.size ?? 0));
@@ -39,12 +40,33 @@
                 </Layout.Stack>
                 <Button icon text on:click={() => (show = true)}><Icon icon={IconQrcode} /></Button>
             </Layout.Stack>
-            <Layout.Stack gap="xs">
-                <Typography.Text variant="m-400" color="--color-fgcolor-neutral-tertiary">
-                    Domains
-                </Typography.Text>
-                <DeploymentDomains domains={proxyRuleList} />
-            </Layout.Stack>
+            {#if proxyRuleList?.total}
+                <Layout.Stack gap="xs">
+                    <Typography.Text variant="m-400" color="--color-fgcolor-neutral-tertiary">
+                        Domains
+                    </Typography.Text>
+                    <DeploymentDomains domains={proxyRuleList} />
+                </Layout.Stack>
+            {:else if deployment.domain}
+                <Layout.Stack gap="xs">
+                    <Typography.Text variant="m-400" color="--color-fgcolor-neutral-tertiary">
+                        Domains
+                    </Typography.Text>
+                    <Link
+                        external
+                        href={`${
+                            $consoleVariables?._APP_OPTIONS_FORCE_HTTPS ? 'https://' : 'http://'
+                        }${deployment.domain}`}
+                        variant="muted">
+                        <Layout.Stack gap="xxs" direction="row" alignItems="center">
+                            <Trim alternativeTrim>
+                                {deployment.domain}
+                            </Trim>
+                            <Icon icon={IconExternalLink} size="s" />
+                        </Layout.Stack>
+                    </Link>
+                </Layout.Stack>
+            {/if}
             <Layout.Stack gap="xl" direction="row">
                 <Layout.Stack gap="xs" inline>
                     <Typography.Text variant="m-400" color="--color-fgcolor-neutral-tertiary"
