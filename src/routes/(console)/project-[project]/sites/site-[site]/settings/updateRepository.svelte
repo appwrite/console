@@ -21,6 +21,7 @@
     import { Empty, Fieldset, Icon, Layout, Skeleton, Typography } from '@appwrite.io/pink-svelte';
     import Card from '$lib/components/card.svelte';
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
+    import { ConnectGit } from '$lib/components/git';
 
     export let site: Models.Site;
     const isVcsEnabled = $consoleVariables?._APP_VCS_ENABLED === true;
@@ -217,40 +218,7 @@
                     </Fieldset>
                 </Layout.Stack>
             {:else}
-                <Layout.Stack>
-                    {#if isSelfHosted && !isVcsEnabled}
-                        <Alert class="common-section" type="info">
-                            <svelte:fragment slot="title">
-                                Installing Git to a self-hosted instance
-                            </svelte:fragment>
-                            When installing Git in a locally hosted Appwrite project, you must first
-                            configure your environment variables.
-                            <svelte:fragment slot="buttons">
-                                <Button
-                                    href="https://appwrite.io/docs/advanced/self-hosting/functions"
-                                    external
-                                    text>
-                                    Learn more
-                                </Button>
-                            </svelte:fragment>
-                        </Alert>
-                    {/if}
-                    <Card isDashed padding="xxs">
-                        <Empty
-                            title="No repository is connected to this site yet"
-                            description="Connect to enable automatic deployments">
-                            <svelte:fragment slot="actions">
-                                <Button
-                                    secondary
-                                    disabled={isSelfHosted && !isVcsEnabled}
-                                    href={connectGitHub().toString()}>
-                                    <Icon icon={IconGithub} />
-                                    <span class="text">Connect GitHub</span>
-                                </Button>
-                            </svelte:fragment>
-                        </Empty>
-                    </Card>
-                </Layout.Stack>
+                <ConnectGit />
             {/if}
         </svelte:fragment>
 

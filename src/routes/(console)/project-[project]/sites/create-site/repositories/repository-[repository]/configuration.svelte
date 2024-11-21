@@ -37,7 +37,7 @@
     let showSecretModal = false;
 
     let currentVariable: Partial<Models.Variable>;
-    let frameworkId = selectedFramework.$id;
+    let frameworkId = selectedFramework.key;
 
     function markAsSecret() {
         let variable = variables.find((v) => v.key === currentVariable.key);
@@ -46,7 +46,7 @@
         }
     }
 
-    $: frameworkData = frameworks.find((framework) => framework.$id === framework.$id);
+    $: frameworkData = frameworks.find((framework) => framework.key === selectedFramework.key);
 </script>
 
 <Fieldset legend="Configuration">
@@ -57,11 +57,11 @@
             placeholder="Select framework"
             bind:value={frameworkId}
             options={frameworks.map((framework) => ({
-                value: framework.$id,
+                value: framework.key,
                 label: framework.name
             }))}
             on:change={() => {
-                selectedFramework = frameworks.find((framework) => framework.$id === frameworkId);
+                selectedFramework = frameworks.find((framework) => framework.key === frameworkId);
             }} />
 
         <Collapsible>

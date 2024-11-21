@@ -4,14 +4,7 @@
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Card } from '$lib/components';
-    import {
-        Button,
-        Form,
-        InputChoice,
-        InputRadio,
-        InputSelect,
-        InputText
-    } from '$lib/elements/forms';
+    import { Button, Form } from '$lib/elements/forms';
     import { Wizard } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
@@ -35,7 +28,7 @@
     import Aside from '../../aside.svelte';
     import { BuildRuntime, Framework, ID, Query, ServeRuntime } from '@appwrite.io/console';
     import Domain from '../../domain.svelte';
-    import { Repositories } from '$lib/components/git';
+    import { NewRepository, Repositories, RepositoryBehaviour } from '$lib/components/git';
 
     export let data;
 
@@ -127,7 +120,7 @@
                 data.template.providerOwner,
                 framework.providerRootDirectory,
                 data.template.providerVersion,
-                undefined //TODO: add specification
+                undefined
             );
 
             trackEvent(Submit.SiteCreate, {});
@@ -213,53 +206,13 @@
                     {#if hasInstallations}
                         <Fieldset legend="Git repositoy">
                             <Layout.Stack gap="xl">
-                                <Layout.Stack direction="row" gap="xl">
-                                    <InputRadio
-                                        size="s"
-                                        label="Create new repository"
-                                        bind:group={repositoryBehaviour}
-                                        value="new"
-                                        id="new"
-                                        name="new" />
-                                    <InputRadio
-                                        size="s"
-                                        label="Connect existing repository"
-                                        bind:group={repositoryBehaviour}
-                                        value="existing"
-                                        id="existing"
-                                        name="existing" />
-                                </Layout.Stack>
+                                <RepositoryBehaviour bind:repositoryBehaviour />
                                 {#if repositoryBehaviour === 'new'}
-                                    <Layout.Stack gap="l">
-                                        <InputSelect
-                                            id="installation"
-                                            label="Git organization"
-                                            options={data.installations.installations.map(
-                                                (entry) => {
-                                                    return {
-                                                        label: entry.organization,
-                                                        value: entry.$id
-                                                    };
-                                                }
-                                            )}
-                                            on:change={() => {
-                                                $installation =
-                                                    data.installations.installations.find(
-                                                        (entry) =>
-                                                            entry.$id === selectedInstallationId
-                                                    );
-                                            }}
-                                            bind:value={selectedInstallationId} />
-                                        <InputText
-                                            id="repositoryName"
-                                            label="Repository name"
-                                            placeholder="my-repository"
-                                            bind:value={repositoryName} />
-                                        <InputChoice
-                                            id="repositoryPrivate"
-                                            label="Keep repository private"
-                                            bind:value={repositoryPrivate} />
-                                    </Layout.Stack>
+                                    <NewRepository
+                                        bind:selectedInstallationId
+                                        installations={data.installations}
+                                        bind:repositoryName
+                                        bind:repositoryPrivate />
                                     <Layout.Stack gap="xl" alignItems="flex-end">
                                         <Divider />
 
@@ -275,13 +228,9 @@
                                         bind:hasInstallations
                                         bind:selectedRepository
                                         action="button"
-                                        callbackState={{
-                                            from: 'github',
-                                            to: 'cover'
-                                        }}
                                         on:connect={(e) => {
                                             trackEvent('click_connect_repository', {
-                                                from: 'cover'
+                                                from: 'template-wizard'
                                             });
                                             repository.set(e.detail);
                                             repositoryName = e.detail.name;

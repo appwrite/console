@@ -12,6 +12,7 @@
     import SiteCard from '../../(components)/siteCard.svelte';
     import ConnectRepoModal from '../../(components)/connectRepoModal.svelte';
     import { onMount } from 'svelte';
+    import AddCollaboratorModal from './(components)/addCollaboratorModal.svelte';
 
     export let data: PageData;
 
@@ -130,4 +131,8 @@
 {/if}
 {#if showOpenOnMobile}
     <OpenOnMobileModal bind:show={showOpenOnMobile} siteURL={data.deployment.domain} />
+{/if}
+
+{#if showInviteCollaborator}
+    <AddCollaboratorModal bind:show={showInviteCollaborator} />
 {/if}

@@ -8,6 +8,8 @@
     import { Dependencies } from '$lib/constants';
     import { deployment } from './store';
     import SiteCard from '../../../(components)/siteCard.svelte';
+    import Logs from '../../../(components)/logs.svelte';
+    import Card from '$lib/components/card.svelte';
 
     export let data;
 
@@ -34,5 +36,8 @@
 </script>
 
 <Container>
-    <SiteCard site={data.site} deployment={data.deployment} proxyRuleList={data.proxyRuleList} />
+    <SiteCard deployment={data.deployment} proxyRuleList={data.proxyRuleList} />
+    <Card isTile>
+        <Logs site={data.site} deployment={data.deployment} />
+    </Card>
 </Container>
