@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Alert, CardGrid, Empty, Heading, PaginationInline, Status } from '$lib/components';
+    import { Alert, CardGrid, Empty, Heading, PaginationInline } from '$lib/components';
     import {
         TableBody,
         TableCellHead,
