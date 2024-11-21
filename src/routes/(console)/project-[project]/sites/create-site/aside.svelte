@@ -16,7 +16,7 @@
     export let repositoryName: string;
     export let branch: string;
     export let rootDir: string;
-    export let domain: string;
+    export let domain: string = '';
     export let showAfter = true;
 
     function getIcon(fr: string) {

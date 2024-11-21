@@ -43,7 +43,7 @@
         {/each}
         <Table.Header.Cell width="40" />
     </svelte:fragment>
-    {#each data.deploymentList.deployments as deployment, index (deployment.$id)}
+    {#each data.deploymentList.deployments as deployment, _i (deployment.$id)}
         <Table.Link
             href={`${base}/project-${$page.params.project}/sites/site-${$page.params.site}/deployments/deployment-${deployment.$id}`}>
             {#each columns as column}
@@ -101,29 +101,33 @@
                 {/if}
             {/each}
             <Table.Cell>
-                <Popover let:toggle placement="bottom-start">
+                <Popover let:toggle placement="bottom-start" padding="none">
                     <button
                         class="button is-only-icon is-text"
                         aria-label="More options"
                         on:click|preventDefault={toggle}>
                         <span class="icon-dots-horizontal" aria-hidden="true" />
                     </button>
-                    <svelte:fragment slot="tooltip">
+                    <svelte:fragment slot="tooltip" let:toggle>
                         <ActionMenu.Root>
                             <ActionMenu.Item.Button
                                 leadingIcon={IconRefresh}
-                                on:click={() => {
+                                on:click={(e) => {
+                                    e.preventDefault();
                                     selectedDeployment = deployment;
                                     showRedeploy = true;
+                                    toggle(e);
                                 }}>
                                 Redeploy
                             </ActionMenu.Item.Button>
                             {#if deployment?.status === 'ready' && deployment?.$id !== data.site.deploymentId}
                                 <ActionMenu.Item.Button
                                     leadingIcon={IconLightningBolt}
-                                    on:click={() => {
+                                    on:click={(e) => {
+                                        e.preventDefault();
                                         selectedDeployment = deployment;
                                         // showActivate = true;
+                                        toggle(e);
                                     }}>
                                     Activate
                                 </ActionMenu.Item.Button>
@@ -133,9 +137,11 @@
                                 <ActionMenu.Item.Button
                                     leadingIcon={IconXCircle}
                                     status="danger"
-                                    on:click={() => {
+                                    on:click={(e) => {
+                                        e.preventDefault();
                                         selectedDeployment = deployment;
                                         showCancel = true;
+                                        toggle(e);
                                     }}>
                                     Cancel
                                 </ActionMenu.Item.Button>
@@ -144,9 +150,11 @@
                                 <ActionMenu.Item.Button
                                     status="danger"
                                     leadingIcon={IconTrash}
-                                    on:click={() => {
+                                    on:click={(e) => {
+                                        e.preventDefault();
                                         selectedDeployment = deployment;
                                         showDelete = true;
+                                        toggle(e);
                                     }}>
                                     Delete
                                 </ActionMenu.Item.Button>
@@ -163,5 +171,5 @@
     <Delete {selectedDeployment} bind:showDelete />
     <!-- <Activate {selectedDeployment} bind:showActivate on:activated={handleActivate} /> -->
     <Cancel {selectedDeployment} bind:showCancel />
-    <RedeployModal {selectedDeployment} bind:show={showRedeploy} />
+    <RedeployModal {selectedDeployment} bind:show={showRedeploy} site={data.site} />
 {/if}

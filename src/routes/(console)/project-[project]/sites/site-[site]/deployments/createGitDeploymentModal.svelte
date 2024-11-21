@@ -40,8 +40,7 @@
         installationList={installations}
         action="button"
         callbackState={{
-            from: 'github',
-            to: 'cover'
+            createDeployment: 'true'
         }}
         on:connect={() => console.log('test')} />
     <svelte:fragment slot="footer">

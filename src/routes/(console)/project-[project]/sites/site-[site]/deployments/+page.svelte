@@ -20,13 +20,15 @@
     import RedeployModal from './redeployModal.svelte';
     import CreateGitDeploymentModal from './createGitDeploymentModal.svelte';
     import UsageCard from './usageCard.svelte';
+    import ConnectRepoModal from '../../(components)/connectRepoModal.svelte';
 
     export let data;
 
     let showRedeploy = false;
     let showCreateDeployment = false;
-
+    let showConnectRepo = false;
     let selectedDeployment: Models.Deployment = null;
+    let hasInstallation = !!data.installations?.total;
 
     const columns = writable<Column[]>([
         { id: '$id', title: 'Deployment ID', type: 'string', show: true, width: 150 },
@@ -253,8 +255,17 @@
                     </Filters>
                 </Layout.Stack>
                 <ViewSelector view={View.Table} {columns} hideView allowNoColumns hideText />
-                <Button size="s" on:click={() => (showCreateDeployment = true)}
-                    >Create deployment</Button>
+                <Button
+                    size="s"
+                    on:click={() => {
+                        if (!hasInstallation) {
+                            showConnectRepo = true;
+                        } else {
+                            showCreateDeployment = true;
+                        }
+                    }}>
+                    Create deployment
+                </Button>
             </Layout.Stack>
             <div class="is-only-mobile">
                 <Layout.Stack justifyContent="space-between" direction="row">
@@ -306,6 +317,13 @@
 </Container>
 {#if selectedDeployment}
     <RedeployModal {selectedDeployment} bind:show={showRedeploy} />
+{/if}
+
+{#if showConnectRepo}
+    <ConnectRepoModal
+        bind:show={showConnectRepo}
+        site={data.site}
+        callbackState={{ connectRepo: 'true' }} />
 {/if}
 
 {#if showCreateDeployment}

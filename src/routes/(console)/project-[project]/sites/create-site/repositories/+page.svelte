@@ -30,10 +30,6 @@
         bind:hasInstallations
         bind:selectedRepository
         action="button"
-        callbackState={{
-            from: 'github',
-            to: 'cover'
-        }}
         on:connect={onConnect} />
     <svelte:fragment slot="aside">
         <Card>

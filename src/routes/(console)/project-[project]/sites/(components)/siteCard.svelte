@@ -14,10 +14,8 @@
     import { consoleVariables } from '$routes/(console)/store';
 
     export let deployment: Models.Deployment;
-    export let site: Models.Site;
-    export let proxyRuleList: Models.ProxyRuleList;
+    export let proxyRuleList: Models.ProxyRuleList = { total: 0, rules: [] };
 
-    let rule = proxyRuleList?.total ? proxyRuleList.rules[0] : null;
     let show = false;
 
     $: totalSize = humanFileSize((deployment?.buildSize ?? 0) + (deployment?.size ?? 0));

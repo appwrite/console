@@ -14,6 +14,17 @@ export const load = async ({ params, depends, url, route, parent }) => {
 
     const parsedQueries = queryParamToMap(query || '[]');
     queries.set(parsedQueries);
+
+    const [deploymentList, installations] = await Promise.all([
+        sdk.forProject.sites.listDeployments(params.site, [
+            Query.limit(limit),
+            Query.offset(offset),
+            Query.orderDesc(''),
+            ...parsedQueries.values()
+        ]),
+        sdk.forProject.vcs.listInstallations()
+    ]);
+
     return {
         offset,
         limit,
@@ -21,11 +32,7 @@ export const load = async ({ params, depends, url, route, parent }) => {
         activeDeployment: data.site.deploymentId
             ? await sdk.forProject.sites.getDeployment(params.site, data.site.deploymentId)
             : null,
-        deploymentList: await sdk.forProject.sites.listDeployments(params.site, [
-            Query.limit(limit),
-            Query.offset(offset),
-            Query.orderDesc(''),
-            ...parsedQueries.values()
-        ])
+        deploymentList,
+        installations
     };
 };

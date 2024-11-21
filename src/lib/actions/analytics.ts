@@ -336,5 +336,6 @@ export enum Submit {
     SiteUpdateScopes = 'submit_site_key_update_scopes',
     SiteUpdateBuildSettings = 'submit_site_update_build_settings',
     SiteUpdateSinglePageApplication = 'submit_site_update_single_page_application',
-    SiteConnectRepo = 'submit_site_connect_repo'
+    SiteConnectRepo = 'submit_site_connect_repo',
+    SiteRedeploy = 'submit_site_redeploy'
 }

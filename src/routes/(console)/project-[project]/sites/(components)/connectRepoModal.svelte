@@ -7,13 +7,14 @@
     import { createEventDispatcher, onMount } from 'svelte';
     import { IconArrowSmRight } from '@appwrite.io/pink-icons-svelte';
     import { Link } from '$lib/elements';
-    import { Repositories } from '$lib/components/git';
+    import { NewRepository, Repositories } from '$lib/components/git';
     import ConnectGit from '$lib/components/git/connectGit.svelte';
     import { BuildRuntime, Framework, ServeRuntime, type Models } from '@appwrite.io/console';
     import { addNotification } from '$lib/stores/notifications';
     import { trackEvent } from '$lib/actions/analytics';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
+    import RepositoryBehaviour from '$lib/components/git/repositoryBehaviour.svelte';
 
     const dispatch = createEventDispatcher();
 
@@ -89,51 +90,13 @@
     <span slot="description"> Connect to a new repository or an existing one. </span>
     {#if hasInstallations}
         <Layout.Stack gap="xl">
-            <Layout.Stack direction="row" gap="xl">
-                <InputRadio
-                    size="s"
-                    label="Create new repository"
-                    bind:group={repositoryBehaviour}
-                    value="new"
-                    id="new"
-                    name="new" />
-                <InputRadio
-                    size="s"
-                    label="Connect existing repository"
-                    bind:group={repositoryBehaviour}
-                    value="existing"
-                    id="existing"
-                    name="existing" />
-            </Layout.Stack>
+            <RepositoryBehaviour bind:repositoryBehaviour />
             {#if repositoryBehaviour === 'new'}
-                <Layout.Stack gap="l">
-                    {#key selectedInstallationId}
-                        <InputSelect
-                            id="installation"
-                            label="Git organization"
-                            options={installations.installations.map((entry) => {
-                                return {
-                                    label: entry.organization,
-                                    value: entry.$id
-                                };
-                            })}
-                            on:change={() => {
-                                $installation = installations.installations.find(
-                                    (entry) => entry.$id === selectedInstallationId
-                                );
-                            }}
-                            bind:value={selectedInstallationId} />
-                    {/key}
-                    <InputText
-                        id="repositoryName"
-                        label="Repository name"
-                        placeholder="my-repository"
-                        bind:value={repositoryName} />
-                    <InputChoice
-                        id="repositoryPrivate"
-                        label="Keep repository private"
-                        bind:value={repositoryPrivate} />
-                </Layout.Stack>
+                <NewRepository
+                    bind:repositoryName
+                    bind:repositoryPrivate
+                    bind:selectedInstallationId
+                    {installations} />
             {:else}
                 <Repositories
                     bind:hasInstallations

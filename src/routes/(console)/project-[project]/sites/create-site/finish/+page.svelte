@@ -18,7 +18,6 @@
     let showConnectRepositry = false;
     let showOpenOnMobile = false;
     let showInviteCollaborator = false;
-    let showAddDomain = false;
 
     onMount(() => {
         if (
@@ -44,7 +43,7 @@
                         >You deployed your Site successfully.</Typography.Text>
                 </Layout.Stack>
             </Layout.Stack>
-            <SiteCard deployment={data.deployment} site={data.site} />
+            <SiteCard deployment={data.deployment} />
         </Layout.Stack>
 
         {#if !data.deployment.providerCommitHash}
