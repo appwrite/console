@@ -34,8 +34,7 @@
         <Heading tag="h2" size="6">Payment estimates</Heading>
 
         <p class="text">
-            A breakdown of your estimated upcoming payment for the current billing period. Totals
-            displayed exclude accumulated credits.
+            A breakdown of your estimated upcoming payment for the current billing period.
         </p>
         <svelte:fragment slot="aside">
             <p class="text u-bold">
