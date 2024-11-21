@@ -27,7 +27,7 @@ test('shows text input - disabled', () => {
 
 test('shows text input - autofocus', async () => {
     const { getByLabelText } = render(InputText, { id: 'input', label: 'input', autofocus: true });
-	await tick();
+    await tick();
     expect(getByLabelText('input')).toHaveFocus();
 });
 
