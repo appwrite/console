@@ -2,6 +2,7 @@ import { expect, test } from 'vitest';
 import { render } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
 import { InputText } from '../../../src/lib/elements/forms';
+import { tick } from 'svelte';
 
 test('shows text input', () => {
     const { getByText, getByLabelText } = render(InputText, { id: 'input', label: 'input' });
@@ -24,9 +25,9 @@ test('shows text input - disabled', () => {
     expect(getByLabelText('input')).toBeDisabled();
 });
 
-test('shows text input - autofocus', () => {
+test('shows text input - autofocus', async () => {
     const { getByLabelText } = render(InputText, { id: 'input', label: 'input', autofocus: true });
-
+	await tick();
     expect(getByLabelText('input')).toHaveFocus();
 });
 
