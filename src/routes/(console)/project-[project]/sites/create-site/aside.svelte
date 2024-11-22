@@ -10,8 +10,9 @@
         IconGitBranch
     } from '@appwrite.io/pink-icons-svelte';
     import { consoleVariables } from '$routes/(console)/store';
+    import type { Models } from '@appwrite.io/console';
 
-    export let frameworkName: string = '';
+    export let framework: Partial<Models.Framework>;
     export let repositoryName: string;
     export let branch: string;
     export let rootDir: string;
@@ -38,8 +39,8 @@
     <Layout.Stack gap="l">
         <slot />
         <Layout.Stack gap="l">
-            {#if frameworkName}
-                {@const frameworkIcon = getIcon(frameworkName)}
+            {#if framework?.name}
+                {@const frameworkIcon = getIcon(framework.key)}
                 <Layout.Stack gap="xxxs">
                     <Typography.Caption variant="400">Framework</Typography.Caption>
                     <Layout.Stack gap="xs" alignItems="center" direction="row">
@@ -47,7 +48,7 @@
                             <Icon size="s" icon={frameworkIcon}></Icon>
                         {/if}
                         <Typography.Text variant="m-500" color="--color-fgcolor-neutral-primary">
-                            {frameworkName}
+                            {framework.name}
                         </Typography.Text>
                     </Layout.Stack>
                 </Layout.Stack>
