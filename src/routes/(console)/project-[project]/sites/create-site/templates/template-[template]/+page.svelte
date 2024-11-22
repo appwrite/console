@@ -98,10 +98,11 @@
 
     async function create() {
         try {
+            const fr = Object.values(Framework).find((f) => f === framework.key);
             let site = await sdk.forProject.sites.create(
                 id || ID.unique(),
                 name,
-                Framework.Sveltekit,
+                fr,
                 BuildRuntime.Node22,
                 ServeRuntime.Static1,
                 undefined,
@@ -116,13 +117,15 @@
                 branch || undefined,
                 selectedRepository ? silentMode : undefined,
                 rootDir || undefined,
-                data.template.providerRepositoryId,
-                data.template.providerOwner,
-                framework.providerRootDirectory,
-                data.template.providerVersion
+                data.template.providerRepositoryId || undefined,
+                data.template.providerOwner || undefined,
+                framework.providerRootDirectory || undefined,
+                data.template.providerVersion || undefined
             );
 
-            trackEvent(Submit.SiteCreate, {});
+            trackEvent(Submit.SiteCreate, {
+                source: 'template'
+            });
 
             const { deployments } = await sdk.forProject.sites.listDeployments(site.$id, [
                 Query.limit(1)
