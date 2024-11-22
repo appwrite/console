@@ -110,17 +110,16 @@
                 framework.buildCommand,
                 framework.outputDirectory,
                 domain,
-                selectedInstallationId,
-                undefined,
-                selectedRepository,
-                branch,
-                silentMode,
-                rootDir,
+                selectedInstallationId || undefined,
+                null,
+                selectedRepository || undefined,
+                branch || undefined,
+                selectedRepository ? silentMode : undefined,
+                rootDir || undefined,
                 data.template.providerRepositoryId,
                 data.template.providerOwner,
                 framework.providerRootDirectory,
-                data.template.providerVersion,
-                undefined
+                data.template.providerVersion
             );
 
             trackEvent(Submit.SiteCreate, {});
