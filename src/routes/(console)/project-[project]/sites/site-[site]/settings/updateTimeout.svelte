@@ -10,11 +10,10 @@
     import { BuildRuntime, Framework, ServeRuntime, type Models } from '@appwrite.io/console';
 
     export let site: Models.Site;
-    let timeout = site.timeout;
-
+    let timeout = 0;
     onMount(async () => {
+        timeout = site.timeout;
         console.log(timeout);
-        timeout ??= site.timeout;
     });
 
     async function updateTimeout() {
@@ -22,14 +21,14 @@
             await sdk.forProject.sites.update(
                 site.$id,
                 site.name,
-                Framework[site?.framework] || undefined,
+                site?.framework as Framework,
                 site.enabled || undefined,
                 timeout || undefined,
                 site.installCommand || undefined,
                 site.buildCommand || undefined,
                 site.outputDirectory || undefined,
-                BuildRuntime[site?.buildRuntime] || undefined,
-                ServeRuntime[site?.serveRuntime] || undefined,
+                (site?.buildRuntime as BuildRuntime) || undefined,
+                (site?.serveRuntime as ServeRuntime) || undefined,
                 site.fallbackFile || undefined,
                 site.installationId || undefined,
                 site.providerRepositoryId || undefined,
@@ -64,6 +63,7 @@
                 id="time"
                 label="Time (in seconds)"
                 placeholder="Enter timeout"
+                required
                 bind:value={timeout} />
         </svelte:fragment>
 

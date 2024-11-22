@@ -11,40 +11,36 @@
 
     export let site: Models.Site;
     export let frameworks: Models.Framework[];
-    let buildRuntime: string = null;
-    let serveRuntime: string = null;
+    const framework = frameworks.find((framework) => framework.key === site.framework);
+    let buildRuntime = site?.buildRuntime;
+    let serveRuntime = site?.serveRuntime;
 
-    let buildRuntimeOptions = [];
-    let serveRuntimeOptions = [];
+    let buildRuntimeOptions = framework.buildRuntimes.map((runtime) => ({
+        label: runtime,
+        value: runtime
+    }));
+    let serveRuntimeOptions = framework.serveRuntimes.map((runtime) => ({
+        label: runtime,
+        value: runtime
+    }));
 
     onMount(async () => {
-        buildRuntime ??= site.buildRuntime;
-        serveRuntime ??= site.serveRuntime;
-
-        const framework = frameworks.find((framework) => framework.key === site.framework);
-
-        buildRuntimeOptions = framework.buildRuntimes.map((runtime) => ({
-            label: runtime,
-            value: runtime
-        }));
-        serveRuntimeOptions = framework.serveRuntimes.map((runtime) => ({
-            label: runtime,
-            value: runtime
-        }));
+        buildRuntime ??= framework.defaultBuildRuntime;
+        serveRuntime ??= framework.defaultBuildCommand;
     });
     async function updateRuntime() {
         try {
             await sdk.forProject.sites.update(
                 site.$id,
                 site.name,
-                Framework[site?.framework] || undefined,
+                site?.framework as Framework,
                 site.enabled || undefined,
                 site.timeout || undefined,
                 site.installCommand || undefined,
                 site.buildCommand || undefined,
                 site.outputDirectory || undefined,
-                BuildRuntime[site?.buildRuntime] || undefined,
-                ServeRuntime[site?.serveRuntime] || undefined,
+                (buildRuntime as BuildRuntime) || undefined,
+                (serveRuntime as ServeRuntime) || undefined,
                 site.fallbackFile || undefined,
                 site.installationId || undefined,
                 site.providerRepositoryId || undefined,
@@ -66,6 +62,8 @@
             trackError(error, Submit.SiteUpdateTimeout);
         }
     }
+
+    $: console.log('test');
 </script>
 
 <Form onSubmit={updateRuntime}>

@@ -12,7 +12,7 @@
 
     export let site: Models.Site;
     export let frameworks: Models.Framework[];
-    let selectedFramework = null;
+    let selectedFramework: Models.Framework = null;
     let installCommand = undefined;
     let buildCommand = undefined;
     let outputDirectory = undefined;
@@ -22,10 +22,9 @@
     onMount(async () => {
         selectedFramework ??= frameworks.find((framework) => framework.key === site.framework);
 
-        // TODO: ask backend to add missing defaults
-        installCommand = site?.installCommand ?? selectedFramework.installCommand;
-        buildCommand = site?.buildCommand ?? selectedFramework.buildCommand;
-        outputDirectory = site?.outputDirectory ?? selectedFramework.outputDirectory;
+        installCommand = site?.installCommand ?? selectedFramework.defaultInstallCommand;
+        buildCommand = site?.buildCommand ?? selectedFramework.defaultBuildCommand;
+        outputDirectory = site?.outputDirectory ?? selectedFramework.defaultOutputDirectory;
     });
 
     async function updateName() {
@@ -33,14 +32,14 @@
             await sdk.forProject.sites.update(
                 site.$id,
                 site.name,
-                Framework[selectedFramework.key],
+                selectedFramework.key as Framework,
                 site.enabled || undefined,
                 site.timeout || undefined,
                 installCommand || undefined,
                 buildCommand || undefined,
                 outputDirectory || undefined,
-                BuildRuntime[site?.buildRuntime] || undefined,
-                ServeRuntime[site?.serveRuntime] || undefined,
+                (site?.buildRuntime as BuildRuntime) || undefined,
+                (site?.serveRuntime as ServeRuntime) || undefined,
                 site.fallbackFile || undefined,
                 site.installationId || undefined,
                 site.providerRepositoryId || undefined,
@@ -104,7 +103,7 @@
                     id="installCommand"
                     label="Install command"
                     bind:value={installCommand}
-                    placeholder={frameworkData?.installCommand} />
+                    placeholder={frameworkData.defaultInstallCommand} />
                 <Button secondary size="s" on:click={() => (installCommand = '')}>Reset</Button>
             </Layout.Stack>
             <Layout.Stack gap="s" direction="row" alignItems="flex-end">
@@ -112,7 +111,7 @@
                     id="buildCommand"
                     label="Build command"
                     bind:value={buildCommand}
-                    placeholder={frameworkData?.buildCommand} />
+                    placeholder={frameworkData.defaultBuildCommand} />
                 <Button secondary size="s" on:click={() => (buildCommand = '')}>Reset</Button>
             </Layout.Stack>
             <Layout.Stack gap="s" direction="row" alignItems="flex-end">
@@ -120,7 +119,7 @@
                     id="outputDirectory"
                     label="Output directory"
                     bind:value={outputDirectory}
-                    placeholder={frameworkData?.outputDirectory} />
+                    placeholder={frameworkData.defaultOutputDirectory} />
                 <Button secondary size="s" on:click={() => (outputDirectory = '')}>Reset</Button>
             </Layout.Stack>
         </svelte:fragment>
