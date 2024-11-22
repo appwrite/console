@@ -86,7 +86,7 @@
                         title={site.name}
                         description={`Deployed ${timeFromNow(site.$updatedAt)}`}
                         src={site.preview ??
-                            'https://f002.backblazeb2.com/file/meldiron-public/Desktop+-+2.png'}
+                            `https://placehold.co/600x400/111/bbb?text=Screenshot+coming+soon&font=inter`}
                         alt={site.name}>
                         <Popover placement="bottom-end" let:toggle>
                             <Button

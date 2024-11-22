@@ -26,7 +26,7 @@
         <Image
             width={445}
             height={280}
-            src="https://f002.backblazeb2.com/file/meldiron-public/Desktop+-+2.png"
+            src={`https://placehold.co/600x400/111/bbb?text=Screenshot+coming+soon&font=inter`}
             alt="Screenshot" />
         <Layout.Stack>
             <Layout.Stack direction="row" justifyContent="space-between" alignItems="flex-start">
