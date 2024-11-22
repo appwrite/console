@@ -48,7 +48,7 @@
 <Container>
     <Heading tag="h2" size="5">Settings</Heading>
     <UpdateName site={data.site} />
-    <UpdateRepository site={data.site} />
+    <UpdateRepository site={data.site} installations={data.installations} />
     <UpdateBuildSettings site={data.site} frameworks={data.frameworks.frameworks} />
     <UpdateVariables
         {sdkCreateVariable}

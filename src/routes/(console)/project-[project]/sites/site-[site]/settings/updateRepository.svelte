@@ -28,13 +28,13 @@
     import { showConnectRepo } from './store';
 
     export let site: Models.Site;
+    export let installations: Models.InstallationList;
 
     let branchesList: Models.BranchList;
     let selectedBranch: string;
     let silentMode = false;
     let selectedDir: string;
     let showDisconnect = false;
-
     let repository: Models.ProviderRepository | null | false = false;
 
     onMount(() => {
@@ -203,7 +203,7 @@
                         </Layout.Stack>
                     </Fieldset>
                 </Layout.Stack>
-            {:else if site.installationId}
+            {:else if site.installationId || installations?.total}
                 <PinkCard.Base padding="none" border="dashed">
                     <Empty
                         title="No repository is connected to this site yet"

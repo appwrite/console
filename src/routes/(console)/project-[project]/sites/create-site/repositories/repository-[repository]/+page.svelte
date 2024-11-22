@@ -27,12 +27,14 @@
 
     let name = '';
     let id = '';
-    let framework: Models.Framework;
+    let framework: Models.Framework =
+        data.frameworks.frameworks.find((f) => f.key === Framework.Static) ||
+        data.frameworks.frameworks[0];
     let branch: string;
-    let rootDir = '';
-    let installCommand = framework?.defaultInstallCommand ?? 'npm ci';
-    let buildCommand = framework?.defaultBuildCommand ?? 'npm run build';
-    let outputDirectory = framework?.defaultOutputDirectory ?? 'build';
+    let rootDir = './';
+    let installCommand = framework?.defaultInstallCommand;
+    let buildCommand = framework?.defaultBuildCommand;
+    let outputDirectory = framework?.defaultOutputDirectory;
     let variables: Partial<Models.Variable>[] = [];
     let silentMode = false;
 
@@ -72,7 +74,7 @@
                 buildCommand,
                 outputDirectory,
                 undefined,
-                data.installation.providerInstallationId,
+                data.installation.$id,
                 null,
                 data.repository.id,
                 branch,

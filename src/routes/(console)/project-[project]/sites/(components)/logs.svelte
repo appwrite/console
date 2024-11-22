@@ -128,5 +128,7 @@
     pre {
         max-height: 600px;
         overflow-y: scroll;
+        display: flex;
+        flex-direction: column-reverse;
     }
 </style>

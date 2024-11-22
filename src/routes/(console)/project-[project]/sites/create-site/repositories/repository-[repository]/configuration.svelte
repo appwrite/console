@@ -1,7 +1,6 @@
 <script lang="ts">
     import { Collapsible, CollapsibleItem, Empty } from '$lib/components';
     import { Button, InputSelect, InputText } from '$lib/elements/forms';
-    import { Framework, type Models } from '@appwrite.io/console';
     import {
         Fieldset,
         Layout,
@@ -23,10 +22,11 @@
     } from '@appwrite.io/pink-icons-svelte';
     import SecretVariableModal from './secretVariableModal.svelte';
     import ImportSiteVariablesModal from './importSiteVariablesModal.svelte';
+    import type { Models } from '@appwrite.io/console';
 
     export let frameworks: Models.Framework[];
-    export let selectedFramework =
-        frameworks.find((f) => f.key === Framework.Static) || frameworks[0];
+    export let selectedFramework: Models.Framework;
+
     export let variables: Partial<Models.Variable>[] = [];
     export let installCommand = '';
     export let buildCommand = '';
