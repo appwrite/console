@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Modal } from '$lib/components';
-    import { Button, InputChoice, InputRadio, InputSelect, InputText } from '$lib/elements/forms';
+    import { Button } from '$lib/elements/forms';
     import { Icon, Layout } from '@appwrite.io/pink-svelte';
     import { installation, repository } from '$lib/stores/vcs';
     import { sdk } from '$lib/stores/sdk';

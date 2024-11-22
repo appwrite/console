@@ -263,7 +263,13 @@
         </Layout.Stack>
     </Form>
     <svelte:fragment slot="aside">
-        <Aside {framework} {repositoryName} {branch} {rootDir} {domain} showAfter={showSiteConfig}>
+        <Aside
+            frameworkName={framework.name}
+            {repositoryName}
+            {branch}
+            {rootDir}
+            {domain}
+            showAfter={showSiteConfig}>
             <Layout.Stack direction="row" justifyContent="space-between" alignItems="center">
                 <Typography.Text variant="m-500" truncate>
                     {name || data.template.name}
