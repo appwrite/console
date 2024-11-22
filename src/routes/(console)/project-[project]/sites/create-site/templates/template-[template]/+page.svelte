@@ -111,7 +111,7 @@
                 framework.outputDirectory,
                 domain,
                 selectedInstallationId || undefined,
-                null,
+                framework.fallbackFile,
                 selectedRepository || undefined,
                 branch || undefined,
                 selectedRepository ? silentMode : undefined,

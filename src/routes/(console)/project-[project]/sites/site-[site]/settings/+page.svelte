@@ -12,7 +12,7 @@
     import UpdateTimeout from './updateTimeout.svelte';
     import UpdateRuntimeSettings from './updateRuntimeSettings.svelte';
     import UpdateRepository from './updateRepository.svelte';
-    import UpdateSpa from './updateSPA.svelte';
+    // import UpdateSpa from './updateSPA.svelte';
 
     export let data;
 
@@ -48,7 +48,7 @@
         variableList={data.variables}
         product="site" />
     <UpdateTimeout site={data.site} />
-    <UpdateSpa site={data.site} />
+    <!-- <UpdateSpa site={data.site} /> -->
     <UpdateRuntimeSettings site={data.site} frameworks={data.frameworks.frameworks} />
     <DangerZone site={data.site} />
 </Container>
