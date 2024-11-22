@@ -10,5 +10,5 @@
 </script>
 
 <Container>
-    <SiteCard site={data.site} deployment={data.deployment} proxyRuleList={data.proxyRuleList} />
+    <SiteCard deployment={data.deployment} proxyRuleList={data.proxyRuleList} />
 </Container>

@@ -6,6 +6,7 @@
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
     import { Card, Empty, Icon } from '@appwrite.io/pink-svelte';
     import Alert from '../alert.svelte';
+    import { isSelfHosted } from '$lib/system';
 
     export let callbackState: Record<string, string> = null;
 
@@ -26,7 +27,7 @@
     }
 </script>
 
-{#if !isVcsEnabled}
+{#if !isVcsEnabled && isSelfHosted}
     <Alert>
         <span slot="title"> Installing Git on a self-hosted instance </span>
         <p>

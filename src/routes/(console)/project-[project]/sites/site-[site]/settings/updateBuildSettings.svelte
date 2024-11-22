@@ -46,8 +46,7 @@
                 site.providerRepositoryId || undefined,
                 site.providerBranch || undefined,
                 site.providerSilentMode || undefined,
-                site.providerRootDirectory || undefined,
-                site.specification || undefined
+                site.providerRootDirectory || undefined
             );
             await invalidate(Dependencies.SITE);
             addNotification({
@@ -64,7 +63,7 @@
         }
     }
 
-    $: frameworkData = frameworks.find((framework) => framework.$id === framework.$id);
+    $: frameworkData = frameworks.find((framework) => framework.key === framework.key);
     $: if (
         installCommand === site?.installCommand &&
         buildCommand === site?.buildCommand &&

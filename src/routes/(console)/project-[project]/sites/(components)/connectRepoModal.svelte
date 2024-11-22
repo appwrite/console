@@ -36,7 +36,10 @@
             $installation = installations.installations[0];
         }
         selectedInstallationId = installations.total ? installations.installations[0]?.$id : '';
-
+        hasInstallations = !!installations?.total;
+        if (hasInstallations) {
+            repositoryBehaviour = 'existing';
+        }
         console.log(selectedInstallationId);
     });
 
@@ -51,6 +54,8 @@
                 repository.set(repo);
                 selectedRepository = repo.id;
             }
+            console.log(Object.keys(Framework));
+
             const s = await sdk.forProject.sites.update(
                 site.$id,
                 site.name,
@@ -66,6 +71,7 @@
                 selectedInstallationId,
                 selectedRepository
             );
+            console.log('test');
             invalidate(Dependencies.SITE);
             show = false;
             dispatch('connect', s);
@@ -85,8 +91,8 @@
 <Modal
     title="Connect repository"
     bind:show
-    onSubmit={connectRepo}
-    hideFooter={!repositoryBehaviour}>
+    hideFooter={!repositoryBehaviour}
+    onSubmit={connectRepo}>
     <span slot="description"> Connect to a new repository or an existing one. </span>
     {#if hasInstallations}
         <Layout.Stack gap="xl">
@@ -110,6 +116,7 @@
                         repository.set(e.detail);
                         repositoryName = e.detail.name;
                         selectedRepository = e.detail.id;
+                        connectRepo();
                     }} />
             {/if}
         </Layout.Stack>

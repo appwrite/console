@@ -50,8 +50,7 @@
                 site.providerRepositoryId || undefined,
                 site.providerBranch || undefined,
                 site.providerSilentMode || undefined,
-                site.providerRootDirectory || undefined,
-                site.specification || undefined
+                site.providerRootDirectory || undefined
             );
             await invalidate(Dependencies.SITE);
             addNotification({

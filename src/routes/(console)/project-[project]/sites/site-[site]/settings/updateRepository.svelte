@@ -1,8 +1,7 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { Alert, CardGrid, Heading } from '$lib/components';
+    import { CardGrid, Heading } from '$lib/components';
     import { Dependencies } from '$lib/constants';
     import { Button, Form, InputChoice, InputText } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
@@ -11,22 +10,25 @@
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { onMount } from 'svelte';
     import DisconnectRepo from './disconnectRepo.svelte';
-    import { wizard } from '$lib/stores/wizard';
-    import ConnectExisting from '$lib/wizards/functions/connectExisting.svelte';
     import InputSelectSearch from '$lib/elements/forms/inputSelectSearch.svelte';
-    import { installations } from '$lib/wizards/functions/store';
-    import { isSelfHosted } from '$lib/system';
-    import { consoleVariables } from '$routes/(console)/store';
     import { sortBranches } from '$lib/stores/vcs';
-    import { Empty, Fieldset, Icon, Layout, Skeleton, Typography } from '@appwrite.io/pink-svelte';
+    import {
+        Empty,
+        Fieldset,
+        Icon,
+        Layout,
+        Skeleton,
+        Typography,
+        Card as PinkCard
+    } from '@appwrite.io/pink-svelte';
     import Card from '$lib/components/card.svelte';
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
     import { ConnectGit } from '$lib/components/git';
+    import ConnectRepoModal from '../../(components)/connectRepoModal.svelte';
+    import { showConnectRepo } from './store';
 
     export let site: Models.Site;
-    const isVcsEnabled = $consoleVariables?._APP_VCS_ENABLED === true;
 
-    let showGit = false;
     let branchesList: Models.BranchList;
     let selectedBranch: string;
     let silentMode = false;
@@ -39,10 +41,6 @@
         selectedBranch = site?.providerBranch;
         silentMode = site?.providerSilentMode ?? false;
         selectedDir = site?.providerRootDirectory;
-
-        if ($page.url.searchParams.has('github-installed')) {
-            wizard.start(ConnectExisting);
-        }
 
         loadRepository();
     });
@@ -82,8 +80,7 @@
                 site.providerRepositoryId || undefined,
                 selectedBranch || undefined,
                 silentMode || undefined,
-                selectedDir || undefined,
-                site.specification || undefined
+                selectedDir || undefined
             );
             await invalidate(Dependencies.FUNCTION);
             addNotification({
@@ -115,17 +112,6 @@
         selectedBranch !== site?.providerBranch ||
         silentMode !== site?.providerSilentMode ||
         selectedDir !== site?.providerRootDirectory;
-
-    function connectGitHub() {
-        const redirect = new URL($page.url);
-
-        const target = new URL(`${sdk.forProject.client.config.endpoint}/vcs/github/authorize`);
-        target.searchParams.set('project', $page.params.project);
-        target.searchParams.set('success', redirect.toString());
-        target.searchParams.set('failure', redirect.toString());
-        target.searchParams.set('mode', 'admin');
-        return target;
-    }
 </script>
 
 <Form onSubmit={updateConfiguration}>
@@ -217,8 +203,21 @@
                         </Layout.Stack>
                     </Fieldset>
                 </Layout.Stack>
+            {:else if site.installationId}
+                <PinkCard.Base padding="none" border="dashed">
+                    <Empty
+                        title="No repository is connected to this site yet"
+                        description="Connect to enable automatic deployments">
+                        <svelte:fragment slot="actions">
+                            <Button secondary on:click={() => showConnectRepo.set(true)}>
+                                <Icon icon={IconGithub} size="s" />
+                                Connect repository
+                            </Button>
+                        </svelte:fragment>
+                    </Empty>
+                </PinkCard.Base>
             {:else}
-                <ConnectGit />
+                <ConnectGit callbackState={{ newInstallation: 'true' }} />
             {/if}
         </svelte:fragment>
 
@@ -228,10 +227,8 @@
     </CardGrid>
 </Form>
 
-{#if !$installations?.total && showGit}
-    <!-- <GitInstallationModal bind:showGitInstall={showGit} /> -->
-{:else}
-    <!-- <GitConfigurationModal bind:show={showGit} {site} /> -->
+{#if showConnectRepo}
+    <ConnectRepoModal bind:show={$showConnectRepo} {site} />
 {/if}
 
 {#if showDisconnect}

@@ -1,12 +1,6 @@
 <script lang="ts">
     import { base } from '$app/paths';
-    import {
-        Collapsible,
-        CollapsibleItem,
-        EmptySearch,
-        Pagination,
-        SvgIcon
-    } from '$lib/components';
+    import { Collapsible, CollapsibleItem, EmptySearch, SvgIcon } from '$lib/components';
     import { Button, InputSearch } from '$lib/elements/forms';
     import { page } from '$app/stores';
     import Wizard from '$lib/layout/wizard.svelte';
@@ -169,8 +163,7 @@
                     <Card.Media
                         title={template.name}
                         description={templateFrameworks.join(', ')}
-                        src={template?.preview ??
-                            'https://f002.backblazeb2.com/file/meldiron-public/Desktop+-+2.png'}
+                        src={template.demoImage}
                         alt={template.name}>
                     </Card.Media>
                 </Card.Link>

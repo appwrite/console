@@ -12,6 +12,8 @@
     import UpdateTimeout from './updateTimeout.svelte';
     import UpdateRuntimeSettings from './updateRuntimeSettings.svelte';
     import UpdateRepository from './updateRepository.svelte';
+    import { onMount } from 'svelte';
+    import { showConnectRepo } from './store';
     // import UpdateSpa from './updateSPA.svelte';
 
     export let data;
@@ -30,6 +32,15 @@
         await sdk.forProject.sites.deleteVariable($page.params.site, variableId);
         await Promise.all([invalidate(Dependencies.VARIABLES), invalidate(Dependencies.SITE)]);
     };
+
+    onMount(async () => {
+        if (
+            $page.url.searchParams.has('newInstallation') &&
+            $page.url.searchParams.get('newInstallation') === 'true'
+        ) {
+            showConnectRepo.set(true);
+        }
+    });
 
     $: console.log(data);
 </script>

@@ -269,13 +269,12 @@
                     {name || data.template.name}
                 </Typography.Text>
                 <!-- TODO: re-enable -->
-                <Button secondary size="s" disabled>View demo</Button>
+                <Button secondary size="s" href={data.template.demoUrl} disabled>View demo</Button>
             </Layout.Stack>
 
             <Image
                 objectPosition="top"
-                src={data.template?.preview ??
-                    'https://f002.backblazeb2.com/file/meldiron-public/Desktop+-+2.png'}
+                src={data.template.demoImage}
                 alt={data.template.name}
                 width={357}
                 height={200} />
