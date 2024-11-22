@@ -30,21 +30,10 @@
     let framework: Models.Framework;
     let branch: string;
     let rootDir = '';
-    let installCommand = 'npm ci';
-    let buildCommand = 'npm run build';
-    let outputDirectory = 'dist';
-    let variables: Partial<Models.Variable>[] = [
-        {
-            key: 'APPWRITE_ENDPOINT',
-            value: 'fsssf',
-            secret: false
-        },
-        {
-            key: 'APPWRITE_ENDPOINT2',
-            value: '',
-            secret: true
-        }
-    ];
+    let installCommand = framework?.defaultInstallCommand ?? 'npm ci';
+    let buildCommand = framework?.defaultBuildCommand ?? 'npm run build';
+    let outputDirectory = framework?.defaultOutputDirectory ?? 'build';
+    let variables: Partial<Models.Variable>[] = [];
     let silentMode = false;
 
     async function loadBranches() {
@@ -64,12 +53,19 @@
 
     async function create() {
         try {
+            const fr = Object.values(Framework).find((f) => f === framework.key);
+            const buildRuntime = Object.values(BuildRuntime).find(
+                (f) => f === framework.defaultBuildRuntime
+            );
+            const serveRuntime = Object.values(ServeRuntime).find(
+                (f) => f === framework.defaultServeRuntime
+            );
             let site = await sdk.forProject.sites.create(
                 id || ID.unique(),
                 name,
-                Framework.Sveltekit,
-                BuildRuntime.Node22,
-                ServeRuntime.Static1,
+                fr,
+                buildRuntime,
+                serveRuntime,
                 undefined,
                 undefined,
                 installCommand,

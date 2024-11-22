@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Collapsible, CollapsibleItem, Empty } from '$lib/components';
     import { Button, InputSelect, InputText } from '$lib/elements/forms';
-    import type { Models } from '@appwrite.io/console';
+    import { Framework, type Models } from '@appwrite.io/console';
     import {
         Fieldset,
         Layout,
@@ -24,9 +24,9 @@
     import SecretVariableModal from './secretVariableModal.svelte';
     import ImportSiteVariablesModal from './importSiteVariablesModal.svelte';
 
-    //TODO: fix type after backend fix
     export let frameworks: Models.Framework[];
-    export let selectedFramework = frameworks[0];
+    export let selectedFramework =
+        frameworks.find((f) => f.key === Framework.Static) || frameworks[0];
     export let variables: Partial<Models.Variable>[] = [];
     export let installCommand = '';
     export let buildCommand = '';
@@ -76,7 +76,7 @@
                             id="installCommand"
                             label="Install command"
                             bind:value={installCommand}
-                            placeholder={frameworkData?.installCommand} />
+                            placeholder={frameworkData?.defaultInstallCommand} />
                         <Button secondary size="s" on:click={() => (installCommand = '')}>
                             Reset
                         </Button>
@@ -86,7 +86,7 @@
                             id="buildCommand"
                             label="Build command"
                             bind:value={buildCommand}
-                            placeholder={frameworkData?.buildCommand} />
+                            placeholder={frameworkData?.defaultBuildCommand} />
                         <Button secondary size="s" on:click={() => (buildCommand = '')}>
                             Reset
                         </Button>
@@ -96,7 +96,7 @@
                             id="outputDirectory"
                             label="Output directory"
                             bind:value={outputDirectory}
-                            placeholder={frameworkData?.outputDirectory} />
+                            placeholder={frameworkData?.defaultOutputDirectory} />
                         <Button secondary size="s" on:click={() => (outputDirectory = '')}>
                             Reset
                         </Button>

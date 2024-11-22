@@ -4,13 +4,16 @@
     import Link from '$lib/elements/link.svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import Container from '$lib/layout/container.svelte';
-    import { IconExternalLink } from '@appwrite.io/pink-icons-svelte';
-    import { Icon, Layout, Table } from '@appwrite.io/pink-svelte';
+    import type { Models } from '@appwrite.io/console';
+    import { IconExternalLink, IconTrash } from '@appwrite.io/pink-icons-svelte';
+    import { ActionMenu, Icon, Layout, Popover, Table } from '@appwrite.io/pink-svelte';
 
     export let data;
     $: console.log(data);
 
     let search = '';
+    let showDelete = false;
+    let selectedDomain: Models.ProxyRule = null;
 </script>
 
 <Container>
@@ -41,7 +44,32 @@
                     </Layout.Stack>
                 </Table.Cell>
                 <Table.Cell>{toLocaleDateTime(domain.$updatedAt)}</Table.Cell>
-                <Table.Cell>asd</Table.Cell>
+                <Table.Cell>
+                    <Popover let:toggle placement="bottom-start" padding="none">
+                        <button
+                            class="button is-only-icon is-text"
+                            aria-label="More options"
+                            on:click|preventDefault={toggle}>
+                            <span class="icon-dots-horizontal" aria-hidden="true" />
+                        </button>
+                        <svelte:fragment slot="tooltip" let:toggle>
+                            <ActionMenu.Root>
+                                <ActionMenu.Item.Button
+                                    disabled
+                                    status="danger"
+                                    leadingIcon={IconTrash}
+                                    on:click={(e) => {
+                                        e.preventDefault();
+                                        selectedDomain = domain;
+                                        showDelete = true;
+                                        toggle(e);
+                                    }}>
+                                    Delete
+                                </ActionMenu.Item.Button>
+                            </ActionMenu.Root>
+                        </svelte:fragment>
+                    </Popover>
+                </Table.Cell>
             </Table.Row>
         {/each}
     </Table.Root>

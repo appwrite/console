@@ -29,6 +29,7 @@
     <Repositories
         bind:hasInstallations
         bind:selectedRepository
+        product="sites"
         action="button"
         on:connect={onConnect} />
     <svelte:fragment slot="aside">

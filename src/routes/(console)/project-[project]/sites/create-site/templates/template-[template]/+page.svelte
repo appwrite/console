@@ -99,12 +99,18 @@
     async function create() {
         try {
             const fr = Object.values(Framework).find((f) => f === framework.key);
+            const buildRuntime = Object.values(BuildRuntime).find(
+                (f) => f === framework.buildRuntime
+            );
+            const serveRuntime = Object.values(ServeRuntime).find(
+                (f) => f === framework.serveRuntime
+            );
             let site = await sdk.forProject.sites.create(
                 id || ID.unique(),
                 name,
                 fr,
-                BuildRuntime.Node22,
-                ServeRuntime.Static1,
+                buildRuntime,
+                serveRuntime,
                 undefined,
                 undefined,
                 framework.installCommand,
@@ -229,6 +235,7 @@
                                     <Repositories
                                         bind:hasInstallations
                                         bind:selectedRepository
+                                        product="sites"
                                         action="button"
                                         on:connect={(e) => {
                                             trackEvent('click_connect_repository', {

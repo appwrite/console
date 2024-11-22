@@ -21,6 +21,7 @@
     export let hasInstallations = false;
     export let action: 'button' | 'select' = 'select';
     export let installationList = $installations;
+    export let product: 'functions' | 'sites' = 'functions';
 
     $: {
         hasInstallations = installationList?.total > 0;
@@ -136,16 +137,18 @@
                                                 on:change={() => repository.set(repo)}
                                                 value={repo.id} />
                                         {/if}
-
-                                        <Avatar
-                                            size="xs"
-                                            src={repo?.runtime
-                                                ? `${base}/icons/${$app.themeInUse}/color/${
-                                                      repo.runtime.split('-')[0]
-                                                  }.svg`
-                                                : ''}
-                                            alt={repo.name} />
-
+                                        {#if product === 'sites'}
+                                            <Avatar size="xs" alt={repo.name} />
+                                        {:else}
+                                            <Avatar
+                                                size="xs"
+                                                src={repo?.runtime
+                                                    ? `${base}/icons/${$app.themeInUse}/color/${
+                                                          repo.runtime.split('-')[0]
+                                                      }.svg`
+                                                    : ''}
+                                                alt={repo.name} />
+                                        {/if}
                                         <Layout.Stack gap="s" direction="row" alignItems="center">
                                             <Typography.Text truncate>
                                                 {repo.name}
