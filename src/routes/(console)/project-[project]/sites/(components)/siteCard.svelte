@@ -86,7 +86,7 @@
             {/if}
             <Layout.Stack gap="xl" direction="row">
                 <Layout.Stack gap="xs" inline>
-                    {#if deployment.buidTime}
+                    {#if deployment.buildTime}
                         <Typography.Text variant="m-400" color="--color-fgcolor-neutral-tertiary">
                             Build time
                         </Typography.Text>
