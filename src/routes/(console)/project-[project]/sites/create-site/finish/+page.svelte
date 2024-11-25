@@ -117,8 +117,9 @@
         <Button
             size="s"
             fullWidthMobile
+            secondary
             href={`${base}/project-${$page.params.project}/sites/site-${data.site.$id}`}>
-            Close
+            Go to dashboard
         </Button>
     </svelte:fragment>
 </Wizard>

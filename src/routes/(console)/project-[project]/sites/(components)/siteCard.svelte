@@ -4,7 +4,7 @@
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { calculateTime } from '$lib/helpers/timeConversion';
     import type { Models } from '@appwrite.io/console';
-    import { Icon, Image, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { Icon, Image, Layout, Status, Typography } from '@appwrite.io/pink-svelte';
     import DeploymentSource from './deploymentSource.svelte';
     import DeploymentCreatedBy from './deploymentCreatedBy.svelte';
     import { Button } from '$lib/elements/forms';
@@ -29,12 +29,31 @@
             src={`https://placehold.co/600x400/111/bbb?text=Screenshot+coming+soon&font=inter`}
             alt="Screenshot" />
         <Layout.Stack>
-            <Layout.Stack direction="row" justifyContent="space-between" alignItems="flex-start">
-                <Layout.Stack gap="xs">
-                    <Typography.Text variant="m-400" color="--color-fgcolor-neutral-tertiary">
-                        Deployed
-                    </Typography.Text>
-                    <DeploymentCreatedBy {deployment} />
+            <Layout.Stack direction="row" alignItems="flex-start">
+                <Layout.Stack direction="row" gap="xl">
+                    {#if deployment.status === 'failed'}
+                        <div>
+                            <Layout.Stack gap="xs">
+                                <Typography.Text
+                                    variant="m-400"
+                                    color="--color-fgcolor-neutral-tertiary">
+                                    Status
+                                </Typography.Text>
+                                <Typography.Text variant="m-400">
+                                    <Status status={deployment.status} label={deployment.status} />
+                                </Typography.Text>
+                            </Layout.Stack>
+                        </div>
+                    {:else}
+                        <Layout.Stack gap="xs">
+                            <Typography.Text
+                                variant="m-400"
+                                color="--color-fgcolor-neutral-tertiary">
+                                Deployed
+                            </Typography.Text>
+                            <DeploymentCreatedBy {deployment} />
+                        </Layout.Stack>
+                    {/if}
                 </Layout.Stack>
                 <Button icon text on:click={() => (show = true)}><Icon icon={IconQrcode} /></Button>
             </Layout.Stack>
@@ -67,14 +86,19 @@
             {/if}
             <Layout.Stack gap="xl" direction="row">
                 <Layout.Stack gap="xs" inline>
-                    <Typography.Text variant="m-400" color="--color-fgcolor-neutral-tertiary"
-                        >Build time</Typography.Text>
-                    <Typography.Text variant="m-400"
-                        >{calculateTime(deployment.buildTime)}</Typography.Text>
+                    {#if deployment.buidTime}
+                        <Typography.Text variant="m-400" color="--color-fgcolor-neutral-tertiary">
+                            Build time
+                        </Typography.Text>
+                        <Typography.Text variant="m-400">
+                            {calculateTime(deployment.buildTime)}
+                        </Typography.Text>
+                    {/if}
                 </Layout.Stack>
                 <Layout.Stack gap="xs" inline>
-                    <Typography.Text variant="m-400" color="--color-fgcolor-neutral-tertiary"
-                        >Total size</Typography.Text>
+                    <Typography.Text variant="m-400" color="--color-fgcolor-neutral-tertiary">
+                        Total size
+                    </Typography.Text>
                     <Typography.Text variant="m-400">
                         {totalSize.value}{totalSize.unit}
                     </Typography.Text>

@@ -8,8 +8,7 @@
     import { app } from '$lib/stores/app';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
-    import { IconExclamationCircle } from '@appwrite.io/pink-icons-svelte';
-    import { Badge, Icon, Layout, Spinner, Typography } from '@appwrite.io/pink-svelte';
+    import { Badge, Layout, Spinner, Typography } from '@appwrite.io/pink-svelte';
     import ansicolor from 'ansicolor';
     import { onMount } from 'svelte';
 
@@ -92,7 +91,7 @@
 
 <Layout.Stack>
     <Layout.Stack direction="row" justifyContent="space-between">
-        <Layout.Stack direction="row">
+        <Layout.Stack direction="row" alignItems="center">
             <Typography.Text variant="m-500">Deployment logs</Typography.Text>
             <Badge
                 content={status}
@@ -105,11 +104,6 @@
                 {#if ['processing', 'building'].includes(status)}
                     <span use:timer={{ start: deployment.$createdAt }} />
                     <Spinner />
-                {:else if status === 'failed'}
-                    <p>Deployment failed</p>
-                    <span style:color="var(--color-bgcolor-error)">
-                        <Icon icon={IconExclamationCircle} color="--color-bgcolor-error" />
-                    </span>
                 {:else}
                     {calculateTime(deployment.buildTime)}
                 {/if}

@@ -61,4 +61,6 @@
     <Layout.Stack gap="s" direction="row" alignItems="center">
         <Icon icon={IconTerminal} size="s" /> <span>CLI</span>
     </Layout.Stack>
+{:else}
+    <span>N/A</span>
 {/if}
