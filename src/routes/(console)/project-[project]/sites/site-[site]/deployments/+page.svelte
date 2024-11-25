@@ -227,5 +227,5 @@
 {/if}
 
 {#if showCreateDeployment}
-    <CreateGitDeploymentModal bind:show={showCreateDeployment} />
+    <CreateGitDeploymentModal bind:show={showCreateDeployment} site={data.site} />
 {/if}
