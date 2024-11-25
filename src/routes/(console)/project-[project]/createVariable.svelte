@@ -70,7 +70,12 @@
             required
             autofocus
             autocomplete={false} />
-        <InputPassword id="value" label="Value" placeholder="Enter value" bind:value={pair.value} />
+        <InputPassword
+            id="value"
+            label="Value"
+            placeholder="Enter value"
+            bind:value={pair.value}
+            minlength={0} />
         <InputChoice id="secret" label="Secret" bind:value={pair.secret}>
             If selected, you and your team won't be able to read the values after creation.</InputChoice>
     </Layout.Stack>
