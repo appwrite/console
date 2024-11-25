@@ -32,20 +32,18 @@
             <Layout.Stack direction="row" alignItems="flex-start">
                 <Layout.Stack direction="row" gap="xl">
                     {#if deployment.status === 'failed'}
-                        <div>
-                            <Layout.Stack gap="xs">
-                                <Typography.Text
-                                    variant="m-400"
-                                    color="--color-fgcolor-neutral-tertiary">
-                                    Status
-                                </Typography.Text>
-                                <Typography.Text variant="m-400">
-                                    <Status status={deployment.status} label={deployment.status} />
-                                </Typography.Text>
-                            </Layout.Stack>
-                        </div>
+                        <Layout.Stack gap="xs" inline>
+                            <Typography.Text
+                                variant="m-400"
+                                color="--color-fgcolor-neutral-tertiary">
+                                Status
+                            </Typography.Text>
+                            <Typography.Text variant="m-400">
+                                <Status status={deployment.status} label={deployment.status} />
+                            </Typography.Text>
+                        </Layout.Stack>
                     {:else}
-                        <Layout.Stack gap="xs">
+                        <Layout.Stack gap="xs" inline>
                             <Typography.Text
                                 variant="m-400"
                                 color="--color-fgcolor-neutral-tertiary">
@@ -85,16 +83,16 @@
                 </Layout.Stack>
             {/if}
             <Layout.Stack gap="xl" direction="row">
-                <Layout.Stack gap="xs" inline>
-                    {#if deployment.buildTime}
+                {#if deployment?.buildTime}
+                    <Layout.Stack gap="xs" inline>
                         <Typography.Text variant="m-400" color="--color-fgcolor-neutral-tertiary">
                             Build time
                         </Typography.Text>
                         <Typography.Text variant="m-400">
                             {calculateTime(deployment.buildTime)}
                         </Typography.Text>
-                    {/if}
-                </Layout.Stack>
+                    </Layout.Stack>
+                {/if}
                 <Layout.Stack gap="xs" inline>
                     <Typography.Text variant="m-400" color="--color-fgcolor-neutral-tertiary">
                         Total size
