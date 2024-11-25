@@ -57,6 +57,7 @@
             style:white-space="nowrap"
             class="text u-line-height-1-5"
             style:overflow="hidden"
+            style:word-break="break-all"
             use:truncateText>
             <slot />
         </span>

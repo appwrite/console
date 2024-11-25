@@ -4,7 +4,7 @@
     import {
         getServiceLimit,
         showUsageRatesModal,
-        tierToPlan,
+        type Tier,
         upgradeURL
     } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
@@ -21,23 +21,10 @@
 
     export let data;
 
-    const tier = data?.currentInvoice?.plan ?? $organization?.billingPlan;
-    const plan = tierToPlan(tier).name;
-
-    // let invoice = null;
-    // async function handlePeriodChange() {
-    //     const target = invoice
-    //         ? `/console/organization-${$organization.$id}/usage/${invoice}`
-    //         : `/console/organization-${$organization.$id}/usage`;
-    //     if ($page.url.pathname !== target) {
-    //         await goto(target);
-    //     }
-    // }
-
-    // const cycles = data.invoices.invoices.map((invoice) => ({
-    //     label: toLocaleDate(invoice.from),
-    //     value: invoice.$id
-    // }));
+    const tier = data?.plan
+        ? (data.plan.$id as Tier)
+        : (data?.currentInvoice?.plan ?? $organization?.billingPlan);
+    const plan = data?.plan ?? undefined;
 
     $: project = (data.organizationUsage as OrganizationUsage).projects;
 </script>
@@ -78,29 +65,11 @@
             </p>
         {:else if $organization.billingPlan === BillingPlan.FREE}
             <p class="text">
-                If you exceed the limits of the {plan} plan, services for your organization's projects
+                If you exceed the limits of the Free plan, services for your organization's projects
                 may be disrupted.
                 <a href={$upgradeURL} class="link">Upgrade for greater capacity</a>.
             </p>
         {/if}
-
-        <!--<div class="u-flex u-gap-8 u-cross-center">
-            <p class="text">Usage period:</p>
-            <InputSelect
-                wrapperTag="div"
-                id="period"
-                label="Usage period"
-                showLabel={false}
-                bind:value={invoice}
-                on:change={handlePeriodChange}
-                options={[
-                    {
-                        label: 'Current billing cycle',
-                        value: null
-                    },
-                    ...cycles
-                ]} />
-                </div>-->
     </div>
 
     <CardGrid>
@@ -115,7 +84,7 @@
             {#if data.organizationUsage.bandwidth}
                 {@const current = total(data.organizationUsage.bandwidth)}
                 {@const currentHumanized = humanFileSize(current)}
-                {@const max = getServiceLimit('bandwidth', tier)}
+                {@const max = getServiceLimit('bandwidth', tier, plan)}
                 <ProgressBarBig
                     currentUnit={currentHumanized.unit}
                     currentValue={currentHumanized.value}
@@ -178,7 +147,7 @@
         <svelte:fragment slot="aside">
             {#if data.organizationUsage.users}
                 {@const current = data.organizationUsage.usersTotal}
-                {@const max = getServiceLimit('users', tier)}
+                {@const max = getServiceLimit('users', tier, plan)}
                 <ProgressBarBig
                     currentUnit="Users"
                     currentValue={formatNum(current)}
@@ -233,7 +202,7 @@
         <svelte:fragment slot="aside">
             {#if data.organizationUsage.executionsTotal}
                 {@const current = data.organizationUsage.executionsTotal}
-                {@const max = getServiceLimit('executions', tier)}
+                {@const max = getServiceLimit('executions', tier, plan)}
                 <ProgressBarBig
                     currentUnit="Executions"
                     currentValue={formatNum(current)}
@@ -290,7 +259,7 @@
             {#if data.organizationUsage.storageTotal}
                 {@const current = data.organizationUsage.storageTotal}
                 {@const currentHumanized = humanFileSize(current)}
-                {@const max = getServiceLimit('storage', tier)}
+                {@const max = getServiceLimit('storage', tier, plan)}
                 {@const progressBarStorageDate = [
                     {
                         size: bytesToSize(data.organizationUsage.filesStorageTotal, 'GB'),

@@ -381,3 +381,9 @@
         {variableList}
         bind:show={showVariablesUpload} />
 {/if}
+
+<style>
+    .padding-start {
+        margin-left: -1rem;
+    }
+</style>

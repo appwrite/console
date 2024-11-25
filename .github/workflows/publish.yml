@@ -60,11 +60,11 @@ jobs:
               id: meta
               uses: docker/metadata-action@v5
               with:
-                  images: appwrite/console-cloud
+                  images: appwrite/console-cloud-stage
                   tags: |
-                      type=semver,pattern={{major}}.{{minor}}.{{patch}}-stage
-                      type=semver,pattern={{major}}.{{minor}}-stage
-                      type=semver,pattern={{major}}-stage
+                      type=semver,pattern={{major}}.{{minor}}.{{patch}}
+                      type=semver,pattern={{major}}.{{minor}}
+                      type=semver,pattern={{major}}
             - name: Build and push Docker image
               id: push
               uses: docker/build-push-action@v6

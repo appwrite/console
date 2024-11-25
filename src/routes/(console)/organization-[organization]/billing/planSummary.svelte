@@ -5,38 +5,28 @@
     import { toLocaleDate } from '$lib/helpers/date';
     import { plansInfo, tierToPlan, upgradeURL } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
-    import { onMount } from 'svelte';
-    import { sdk } from '$lib/stores/sdk';
-    import type { Invoice } from '$lib/sdk/billing';
-    import { Query } from '@appwrite.io/console';
+    import type { CreditList, Invoice, Plan } from '$lib/sdk/billing';
     import { abbreviateNumber, formatCurrency, formatNumberWithCommas } from '$lib/helpers/numbers';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import { BillingPlan } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
     import { tooltip } from '$lib/actions/tooltip';
+    import { type Models } from '@appwrite.io/console';
 
-    let currentInvoice: Invoice;
-    let extraMembers = 0;
-    let currentPlan;
+    export let invoices: Array<Invoice>;
+    export let members: Models.MembershipList;
+    export let currentPlan: Plan;
+    export let creditList: CreditList;
 
+    const currentInvoice: Invoice = invoices[0];
+    const extraMembers = members.total > 1 ? members.total - 1 : 0;
+    const availableCredit = creditList.available;
     const today = new Date();
-    onMount(async () => {
-        const invoices = await sdk.forConsole.billing.listInvoices($organization.$id, [
-            Query.limit(1),
-            Query.equal('from', $organization.billingCurrentInvoiceDate)
-        ]);
-        currentInvoice = invoices.invoices[0];
-        const members = await sdk.forConsole.teams.listMemberships($organization.$id, []);
-        extraMembers = members.total > 1 ? members.total - 1 : 0;
-
-        currentPlan = await sdk.forConsole.billing.getPlan($organization?.$id);
-    });
-
-    $: extraUsage = (currentInvoice?.amount ?? 0) - (currentPlan?.price ?? 0);
-    $: extraAddons = currentInvoice?.usage?.length ?? 0;
-    $: isTrial =
+    const isTrial =
         new Date($organization?.billingStartDate).getTime() - today.getTime() > 0 &&
         $plansInfo.get($organization.billingPlan)?.trialDays;
+    const extraUsage = currentInvoice.amount - currentPlan?.price;
+    const extraAddons = currentInvoice.usage?.length;
 </script>
 
 {#if $organization}
@@ -44,8 +34,7 @@
         <Heading tag="h2" size="6">Payment estimates</Heading>
 
         <p class="text">
-            A breakdown of your estimated upcoming payment for the current billing period. Totals
-            displayed exclude accumulated credits.
+            A breakdown of your estimated upcoming payment for the current billing period.
         </p>
         <svelte:fragment slot="aside">
             <p class="text u-bold">
@@ -58,10 +47,14 @@
                     <span class="body-text-2">
                         {tierToPlan($organization?.billingPlan)?.name} plan</span>
                     <div class="body-text-2 u-margin-inline-start-auto">
-                        {isTrial ? formatCurrency(0) : formatCurrency(currentPlan?.price)}
+                        {isTrial || $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION
+                            ? formatCurrency(0)
+                            : currentPlan
+                              ? formatCurrency(currentPlan?.price)
+                              : ''}
                     </div>
                 </CollapsibleItem>
-                {#if $organization?.billingPlan !== BillingPlan.FREE && extraUsage > 0}
+                {#if $organization?.billingPlan !== BillingPlan.FREE && $organization?.billingPlan !== BillingPlan.GITHUB_EDUCATION && extraUsage > 0}
                     <CollapsibleItem isInfo gap={8}>
                         <svelte:fragment slot="beforetitle">
                             <span class="body-text-2"><b>Add-ons</b></span><span class="inline-tag"
@@ -139,6 +132,33 @@
                     </CollapsibleItem>
                 {/if}
 
+                {#if $organization?.billingPlan !== BillingPlan.FREE && availableCredit > 0}
+                    <CollapsibleItem noContent gap={4}>
+                        <span class="body-text-2 u-flex u-cross-center u-gap-2"
+                            ><svg
+                                width="16"
+                                height="17"
+                                viewBox="0 0 16 17"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    fill-rule="evenodd"
+                                    clip-rule="evenodd"
+                                    d="M14.166 7.93434C14.4784 8.24676 14.4784 8.75329 14.166 9.06571L8.56603 14.6657C8.25361 14.9781 7.74708 14.9781 7.43466 14.6657L1.83466 9.06571C1.67842 8.90947 1.60032 8.70469 1.60034 8.49992V4.50002C1.60034 3.17454 2.67486 2.10002 4.00034 2.10002H8.00056C8.20523 2.10008 8.40987 2.17818 8.56603 2.33434L14.166 7.93434ZM4.00034 5.30002C4.44217 5.30002 4.80034 4.94185 4.80034 4.50002C4.80034 4.05819 4.44217 3.70002 4.00034 3.70002C3.55851 3.70002 3.20034 4.05819 3.20034 4.50002C3.20034 4.94185 3.55851 5.30002 4.00034 5.30002Z"
+                                    fill="#00BC5D" />
+                            </svg>
+                            Credits to be applied</span>
+
+                        <div
+                            class="body-text-2 u-margin-inline-start-auto"
+                            style="color: var(--web-green-500, #10B981)">
+                            -{formatCurrency(
+                                Math.min(availableCredit, currentInvoice?.amount ?? 0)
+                            )}
+                        </div>
+                    </CollapsibleItem>
+                {/if}
+
                 <CollapsibleItem noContent gap={4}>
                     <span class="body-text-2">Current total (USD)</span>
                     <span class="tooltip u-cross-center" aria-label="total info">
@@ -151,9 +171,16 @@
                             }}></span>
                     </span>
                     <div class="body-text-2 u-margin-inline-start-auto">
-                        {$organization?.billingPlan === BillingPlan.FREE
+                        {$organization?.billingPlan === BillingPlan.FREE ||
+                        $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION
                             ? formatCurrency(0)
-                            : formatCurrency(currentInvoice?.amount ?? 0)}
+                            : formatCurrency(
+                                  Math.max(
+                                      (currentInvoice?.amount ?? 0) -
+                                          Math.min(availableCredit, currentInvoice?.amount ?? 0),
+                                      0
+                                  )
+                              )}
                     </div>
                 </CollapsibleItem>
             </Collapsible>
@@ -175,7 +202,7 @@
                         Upgrade
                     </Button>
                 </div>
-            {:else}
+            {:else if $organization?.billingPlan !== BillingPlan.GITHUB_EDUCATION}
                 <div class="u-flex u-gap-16 u-flex-wrap">
                     <Button
                         text

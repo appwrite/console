@@ -1,7 +1,6 @@
 <script lang="ts">
-    import { SvelteComponent } from 'svelte';
     import { Input } from '@appwrite.io/pink-svelte';
-
+    import { SvelteComponent, onMount, tick } from 'svelte';
     export let label: string = undefined;
     export let optionalText: string | undefined = undefined;
     export let showLabel = true;
@@ -25,7 +24,15 @@
 
     let error: string;
 
-    const handleInvalid = (event: Event & { currentTarget: EventTarget & HTMLInputElement }) => {
+    // TODO: re-enable
+    // onMount(async () => {
+    //     if (element && autofocus) {
+    //         await tick();
+    //         element.focus();
+    //     }
+    // });
+
+    const handleInvalid = (event: Event) => {
         event.preventDefault();
 
         if (event.currentTarget.validity.valueMissing) {

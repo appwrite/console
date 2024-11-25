@@ -120,7 +120,11 @@
     <div class="common-section">
         <Heading tag="h2" size="5">Billing</Heading>
     </div>
-    <PlanSummary />
+    <PlanSummary
+        creditList={data?.creditList}
+        members={data?.members}
+        currentPlan={data?.currentPlan}
+        invoices={data?.invoices.invoices} />
     <PaymentHistory />
     <PaymentMethods />
     <BillingAddress billingAddress={data?.billingAddress} />

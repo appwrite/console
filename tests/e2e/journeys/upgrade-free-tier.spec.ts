@@ -14,6 +14,6 @@ test('upgrade - free tier', async ({ page }) => {
         await enterCreditCard(page);
         // skip members
         await page.getByRole('button', { name: 'change plan' }).click();
-        await page.waitForURL('./organization-**');
+        await page.waitForURL('**/console/project-*/overview/platforms');
     });
 });

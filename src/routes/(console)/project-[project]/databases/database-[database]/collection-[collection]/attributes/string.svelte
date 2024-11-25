@@ -72,7 +72,12 @@
     $: handleDefaultState($required || $array);
 </script>
 
-<InputNumber id="size" label="Size" placeholder="Enter size" bind:value={data.size} />
+<InputNumber
+    id="size"
+    label="Size"
+    placeholder="Enter size"
+    bind:value={data.size}
+    required={true} />
 {#if data.size >= 50}
     <InputTextarea
         id="default"

@@ -112,12 +112,12 @@ function createFeedbackStore() {
         submitFeedback: async (
             subject: string,
             message: string,
+            currentPage: string,
             name?: string,
             email?: string,
             // eslint-disable-next-line
             // @ts-expect-error
             billingPlan?: string,
-            currentPage?: string,
             value?: number
         ) => {
             if (!VARS.GROWTH_ENDPOINT) return;

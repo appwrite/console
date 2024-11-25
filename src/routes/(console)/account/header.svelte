@@ -1,13 +1,11 @@
 <script lang="ts">
-    import { goto } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
-    import { Submit, trackEvent } from '$lib/actions/analytics';
     import { Tab, Tabs } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover, CoverTitle } from '$lib/layout';
-    import { sdk } from '$lib/stores/sdk';
+    import { logout } from '$lib/helpers/logout';
     import { user } from '$lib/stores/user';
     import { isCloud } from '$lib/system';
 
@@ -49,12 +47,6 @@
               }
           ]
         : permanentTabs;
-
-    async function logout() {
-        await sdk.forConsole.account.deleteSession('current');
-        trackEvent(Submit.AccountLogout);
-        await goto(`${base}/login`);
-    }
 </script>
 
 <Cover>
