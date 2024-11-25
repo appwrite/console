@@ -127,11 +127,11 @@
             var(--icons-fade-out-delay) + 0.4s
         ); //delay before the last icon start disappearing before the appwrite logo shows up
         --appwrite-icon-fade-in-delay: calc(
-            var(--final-icon-fade-out-delay) + 0.05s
+            var(--final-icon-fade-out-delay) - 0.1s
         ); //delay before the appwrite logo appears
         --welcome-to-appwrite-delay: calc(var(--icon-move-to-center-delay) + 0.3s);
 
-        --cell-dimension: 75px;
+        --cell-dimension: 65px;
         --icon-width: 26px;
         --border-radius-container: 17px;
         --border-radius-content: 12px;
@@ -176,7 +176,9 @@
     }
     .grid {
         display: grid;
-        grid-template-columns: 7px repeat(5, var(--cell-dimension)) 7px;
+        grid-template-columns: var(--half-cell-dimension) repeat(5, var(--cell-dimension)) var(
+                --half-cell-dimension
+            );
         grid-template-rows: 180px repeat(4, var(--cell-dimension));
 
         @media (min-width: 768px) {
