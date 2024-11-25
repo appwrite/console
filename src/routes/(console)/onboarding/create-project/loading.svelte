@@ -278,37 +278,20 @@
 
     .start-animation .icon1 {
         transform: translateY(var(--cell-dimension)) translateX(var(--double-cell-dimension));
-        @media (min-width: 768px) {
-            transform: translateY(var(--cell-dimension)) translateX(var(--quadriple-cell-dimension));
-        }
     }
     .start-animation .icon2 {
         transform: translateY(var(--cell-dimension)) translateX(0);
-        @media (min-width: 768px) {
-            transform: translateY(var(--cell-dimension)) translateX(var(--double-cell-dimension));
-        }
     }
     .start-animation .icon3 {
         transform: translateY(var(--cell-dimension))
             translateX(var(--negative-double-cell-dimension));
-        @media (min-width: 768px) {
-            transform: translateY(var(--cell-dimension)) translateX(0);
-        }
     }
     .start-animation .icon4 {
         transform: translateY(var(--negative-cell-dimension))
             translateX(var(--double-cell-dimension));
-        @media (min-width: 768px) {
-            transform: translateY(var(--cell-dimension))
-                translateX(var(--negative-double-cell-dimension));
-        }
     }
     .start-animation .icon5 {
         transform: translateY(var(--negative-cell-dimension)) translateX(0);
-        @media (min-width: 768px) {
-            transform: translateY(var(--cell-dimension))
-                translateX(var(--negative-quadriple-cell-dimension));
-        }
     }
     .start-animation .icon6 {
         transform: translateY(var(--negative-cell-dimension))
@@ -321,10 +304,6 @@
     .start-animation .icon8 {
         transform: translateY(var(--negative-cell-dimension))
             translateX(var(--negative-double-cell-dimension));
-        @media (min-width: 768px) {
-            transform: translateY(var(--negative-cell-dimension))
-                translateX(var(--negative-double-cell-dimension));
-        }
     }
 
     .start-animation .icon:not(.icon8) .icon-container {
@@ -356,7 +335,7 @@
 
         @media (min-width: 768px) {
             grid-row-start: 2;
-            grid-column-start: 1;
+            grid-column-start: 3;
         }
     }
 
@@ -365,7 +344,7 @@
         grid-column-start: 4;
         @media (min-width: 768px) {
             grid-row-start: 2;
-            grid-column-start: 3;
+            grid-column-start: 5;
         }
     }
 
@@ -374,7 +353,7 @@
         grid-column-start: 6;
         @media (min-width: 768px) {
             grid-row-start: 2;
-            grid-column-start: 5;
+            grid-column-start: 7;
         }
     }
 
@@ -382,35 +361,25 @@
         grid-row-start: 4;
         grid-column-start: 2;
         @media (min-width: 768px) {
-            grid-row-start: 2;
-            grid-column-start: 7;
+            grid-row-start: 4;
+            grid-column-start: 3;
         }
     }
     .icon5 {
         grid-row-start: 4;
         grid-column-start: 4;
         @media (min-width: 768px) {
-            grid-row-start: 2;
-            grid-column-start: 9;
+            grid-row-start: 4;
+            grid-column-start: 5;
         }
     }
 
     .icon6 {
         display: none;
-        @media (min-width: 768px) {
-            display: block;
-            grid-row-start: 4;
-            grid-column-start: 3;
-        }
     }
 
     .icon7 {
         display: none;
-        @media (min-width: 768px) {
-            display: block;
-            grid-row-start: 4;
-            grid-column-start: 5;
-        }
     }
 
     .icon8 {

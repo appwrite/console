@@ -16,7 +16,7 @@
     import { base } from '$app/paths';
 
     let showCustomId = false;
-    let isLoading = true;
+    let isLoading = false;
     let id: string;
     let startAnimation = false;
     let projectName = '';
@@ -70,7 +70,8 @@
     }
 </script>
 
-<div class="page-container u-flex-vertical u-cross-child-center u-main-center u-cross-center">
+<div
+    class="page-container u-flex-vertical u-cross-child-center u-cross-center u-margin-block-start-96">
     {#if isLoading}
         <button
             on:click={() => {
@@ -109,7 +110,12 @@
                                         }}><Icon icon={IconPencil} /> Project ID</Tag>
                                 </div>
                             {/if}
-                            <CustomId bind:show={showCustomId} name="Project" isProject bind:id />
+                            <CustomId
+                                bind:show={showCustomId}
+                                name="Project"
+                                isProject
+                                bind:id
+                                fullWidth={true} />
                         </Layout.Stack>
                         {#if regions}
                             <Input.Select
