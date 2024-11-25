@@ -10,7 +10,7 @@
     import { invalidate } from '$app/navigation';
     import { BillingPlan, Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { isCloud } from '$lib/system';
+    import { isCloud, isSelfHosted } from '$lib/system';
     import { roles } from '$lib/stores/billing';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
     import Roles from '$lib/components/roles/roles.svelte';
@@ -28,7 +28,7 @@
         try {
             const team = await sdk.forConsole.teams.createMembership(
                 $organization.$id,
-                [role],
+                isSelfHosted ? [] : [role],
                 email,
                 undefined,
                 undefined,
@@ -89,7 +89,13 @@
             label="Name (optional)"
             placeholder="Enter name"
             bind:value={name} />
-        <InputSelect popover={Roles} id="role" label="Role" options={roles} bind:value={role} />
+        <InputSelect
+            popover={Roles}
+            id="role"
+            label="Role"
+            options={roles}
+            bind:value={role}
+            disabled={isSelfHosted} />
     </FormList>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
