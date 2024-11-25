@@ -4,6 +4,7 @@
     import Link from '$lib/elements/link.svelte';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import Container from '$lib/layout/container.svelte';
+    import { consoleVariables } from '$routes/(console)/store.js';
     import type { Models } from '@appwrite.io/console';
     import { IconExternalLink, IconTrash } from '@appwrite.io/pink-icons-svelte';
     import { ActionMenu, Icon, Layout, Popover, Table } from '@appwrite.io/pink-svelte';
@@ -37,7 +38,13 @@
                 </Table.Cell>
                 <Table.Cell>
                     <Layout.Stack direction="row" alignItems="center" gap="xs">
-                        <Link href={domain.domain} size="s" variant="quiet">
+                        <Link
+                            external
+                            href={`${
+                                $consoleVariables?._APP_OPTIONS_FORCE_HTTPS ? 'https://' : 'http://'
+                            }${domain.domain}`}
+                            size="s"
+                            variant="quiet">
                             {domain.domain}
                         </Link>
                         <Icon icon={IconExternalLink} size="s" />
