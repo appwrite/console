@@ -245,7 +245,6 @@
         margin-left: -10px;
         border-radius: var(--border-radius-container);
         border: 2.5px solid rgba(255, 255, 255, 0.08);
-        background: rgba(255, 255, 255, 0.5);
         box-shadow: 0 13px 13px 0 rgba(0, 0, 0, 0.04);
         opacity: 0.2;
         transition:
@@ -258,7 +257,6 @@
         aspect-ratio: 1/1;
         border-radius: var(--border-radius-content);
         border: 0.5px solid #ededf0;
-        background: #fff;
         box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.05);
         display: flex;
         justify-content: center;
@@ -273,6 +271,7 @@
 
     .start-animation .icon-container {
         opacity: 1;
+        background: rgba(255, 255, 255, 0.5);
     }
 
     .start-animation .icon1 {
