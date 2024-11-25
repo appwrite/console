@@ -1,9 +1,12 @@
 <script lang="ts">
+    import { invalidate } from '$app/navigation';
     import { Modal, Card } from '$lib/components';
     import { Repositories } from '$lib/components/git';
+    import { Dependencies } from '$lib/constants';
     import { Link } from '$lib/elements';
     import { Button } from '$lib/elements/forms';
     import InputSelectSearch from '$lib/elements/forms/inputSelectSearch.svelte';
+    import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { installation, repository, sortBranches } from '$lib/stores/vcs';
     import type { BuildRuntime, Framework, Models, ServeRuntime } from '@appwrite.io/console';
@@ -62,10 +65,17 @@
                     undefined //TODO: add dir?
                 );
             }
-
-            await sdk.forProject.sites.createDeployment();
+            show = false;
+            invalidate(Dependencies.DEPLOYMENTS);
+            addNotification({
+                message: 'Deployment has been created successfully',
+                type: 'success'
+            });
         } catch (error) {
-            console.error(error);
+            addNotification({
+                message: error.message,
+                type: 'error'
+            });
         }
     }
 </script>
