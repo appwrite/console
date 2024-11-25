@@ -18,10 +18,14 @@
 
 {#if deployment.type === 'vcs'}
     <Popover let:toggle>
-        <Link on:click={toggle}>
+        <Link
+            on:click={(e) => {
+                e.preventDefault();
+                toggle(e);
+            }}>
             <Icon icon={IconGithub} /> GitHub
         </Link>
-        <svelte:fragment slot="popover">
+        <svelte:fragment slot="tooltip">
             <ActionMenu.Root>
                 <ActionMenu.Item.Anchor
                     href={deployment.providerRepositoryUrl}

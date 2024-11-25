@@ -94,14 +94,18 @@
     <Layout.Stack direction="row" justifyContent="space-between">
         <Layout.Stack direction="row">
             <Typography.Text variant="m-500">Deployment logs</Typography.Text>
-            <Badge content={status} size="xs" variant="secondary" />
+            <Badge
+                content={status}
+                size="xs"
+                variant="secondary"
+                type={status === 'failed' ? 'error' : undefined} />
         </Layout.Stack>
         <div>
             <Layout.Stack direction="row" alignItems="center">
-                {#if ['processing', 'building'].includes(deployment.status)}
+                {#if ['processing', 'building'].includes(status)}
                     <span use:timer={{ start: deployment.$createdAt }} />
                     <Spinner />
-                {:else if ['failed'].includes(deployment.status)}
+                {:else if status === 'failed'}
                     <p>Deployment failed</p>
                     <span style:color="var(--color-bgcolor-error)">
                         <Icon icon={IconExclamationCircle} color="--color-bgcolor-error" />

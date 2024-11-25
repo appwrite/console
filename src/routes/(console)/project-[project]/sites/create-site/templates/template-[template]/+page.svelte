@@ -97,6 +97,13 @@
     }
 
     async function create() {
+        if (connectBehaviour === 'now' && !selectedRepository) {
+            addNotification({
+                type: 'error',
+                message: 'Please select a repository'
+            });
+            return;
+        }
         try {
             const fr = Object.values(Framework).find((f) => f === framework.key);
             const buildRuntime = Object.values(BuildRuntime).find(
@@ -292,8 +299,9 @@
     </svelte:fragment>
 
     <svelte:fragment slot="footer">
-        <Button fullWidthMobile size="s" secondary on:click={() => (showExitModal = true)}
-            >Cancel</Button>
+        <Button fullWidthMobile size="s" secondary on:click={() => (showExitModal = true)}>
+            Cancel
+        </Button>
         <Button
             fullWidthMobile
             size="s"

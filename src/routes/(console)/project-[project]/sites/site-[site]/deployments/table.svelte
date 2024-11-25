@@ -1,8 +1,7 @@
 <script lang="ts">
-    import { Id } from '$lib/components';
+    import { Id, Trim } from '$lib/components';
     import type { PageData } from './$types';
     import { type Models } from '@appwrite.io/console';
-    import type { Column } from '$lib/helpers/types';
     import { calculateTime } from '$lib/helpers/timeConversion';
     import DeploymentSource from '../../(components)/deploymentSource.svelte';
     import DeploymentCreatedBy from '../../(components)/deploymentCreatedBy.svelte';
@@ -20,8 +19,8 @@
         IconTrash,
         IconXCircle
     } from '@appwrite.io/pink-icons-svelte';
+    import { columns } from './store';
 
-    export let columns: Column[];
     export let data: PageData;
 
     let showDelete = false;
@@ -34,7 +33,7 @@
 
 <Table.Root>
     <svelte:fragment slot="header">
-        {#each columns as column}
+        {#each $columns as column}
             {#if column.show}
                 <Table.Header.Cell width={column?.width?.toString() ?? ''}>
                     {column.title}
@@ -43,10 +42,10 @@
         {/each}
         <Table.Header.Cell width="40" />
     </svelte:fragment>
-    {#each data.deploymentList.deployments as deployment, _i (deployment.$id)}
+    {#each data.deploymentList.deployments as deployment}
         <Table.Link
             href={`${base}/project-${$page.params.project}/sites/site-${$page.params.site}/deployments/deployment-${deployment.$id}`}>
-            {#each columns as column}
+            {#each $columns as column}
                 {#if column.show}
                     {#if column.id === '$id'}
                         {#key column.id}
@@ -71,7 +70,11 @@
                         </Table.Cell>
                     {:else if column.id === 'domains'}
                         <Table.Cell width={column?.width?.toString() ?? ''}>
-                            {deployment.domain}
+                            <div style="max-width: 50px">
+                                <Trim>
+                                    {deployment.domain}
+                                </Trim>
+                            </div>
                         </Table.Cell>
                     {:else if column.id === 'type'}
                         <Table.Cell width={column?.width?.toString() ?? ''}>

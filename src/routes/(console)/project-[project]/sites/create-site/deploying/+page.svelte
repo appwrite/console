@@ -38,14 +38,16 @@
     </svelte:fragment>
     <svelte:fragment slot="footer">
         <Layout.Stack direction="row" alignItems="center" justifyContent="flex-end">
-            <Typography.Text variant="m-400" color="--color-fgColor-neutral-tertiary"
-                >Deployment will continue in the background</Typography.Text>
+            <Typography.Text variant="m-400" color="--color-fgColor-neutral-tertiary">
+                Deployment will continue in the background
+            </Typography.Text>
             <Button
                 size="s"
                 fullWidthMobile
                 secondary
-                href="{`${base}/project-${$page.params.project}/sites/site-${data.site.$id}`}}"
-                >Go to dashboard</Button>
+                href="{`${base}/project-${$page.params.project}/sites/site-${data.site.$id}`}}">
+                Go to dashboard
+            </Button>
         </Layout.Stack>
     </svelte:fragment>
 </Wizard>
