@@ -65,7 +65,7 @@
         <svelte:fragment slot="actions">
             <Button
                 disabled={authMembershipsUserName === ($project?.authMembershipsUserName ?? true) &&
-                    authMembershipsUserEmail === ($project?.authMembershipsUserName ?? true) &&
+                    authMembershipsUserEmail === ($project?.authMembershipsUserEmail ?? true) &&
                     authMembershipsMfa === ($project?.authMembershipsMfa ?? true)}
                 submit>Update</Button>
         </svelte:fragment>

@@ -222,8 +222,7 @@
 </main>
 
 <style lang="scss">
-    @import '@appwrite.io/pink/src/abstract/variables/_devices.scss';
-    @import '@appwrite.io/pink/src/abstract/variables/_common.scss';
+    @use '@appwrite.io/pink/src/abstract/variables/devices';
 
     .side-bg {
         position: relative;
@@ -251,7 +250,7 @@
                 block-size: 32%;
                 background: radial-gradient(49.55% 43.54% at 47% 50.69%, #e7f8f7 0%, #85dbd8 100%);
                 filter: blur(150px);
-                @media #{$break1} {
+                @media #{devices.$break1} {
                     filter: blur(100px);
                 }
             }
@@ -270,7 +269,7 @@
                 );
                 filter: blur(200px);
 
-                @media #{$break1} {
+                @media #{devices.$break1} {
                     filter: blur(100px);
                 }
             }
@@ -278,10 +277,10 @@
         &-img {
             padding-inline: 6.25rem;
             max-width: 40rem;
-            @media #{$break2} {
+            @media #{devices.$break2} {
                 max-width: 28rem;
             }
-            @media #{$break1} {
+            @media #{devices.$break1} {
                 margin-block-start: 3rem;
                 max-inline-size: 23rem;
                 padding-inline: 4rem;
@@ -326,7 +325,7 @@
     }
 
     /* for smaller screens */
-    @media #{$break2open} {
+    @media #{devices.$break2open} {
         .side-default {
             background: var(--url);
             background-repeat: no-repeat;
@@ -344,7 +343,7 @@
     }
 
     /* for larger screens */
-    @media #{$break3open} {
+    @media #{devices.$break3open} {
         .side-default {
             div {
                 padding-inline-start: 5.625rem;
@@ -379,7 +378,7 @@
     .logo-variation {
         padding-block-start: 2rem;
 
-        @media #{$break1} {
+        @media #{devices.$break1} {
             padding-block-start: 0rem;
             & img {
                 scale: 0.7;
@@ -389,7 +388,7 @@
 
     .review-footer-container {
         padding-block-start: 10rem;
-        @media #{$break1} {
+        @media #{devices.$break1} {
             padding-block-start: 5rem;
         }
     }

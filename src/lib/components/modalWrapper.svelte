@@ -84,13 +84,13 @@
 </dialog>
 
 <style lang="scss">
-    @import '@appwrite.io/pink/src/abstract/variables/_devices.scss';
+    @use '@appwrite.io/pink/src/abstract/variables/devices';
 
     .modal.is-huge {
         block-size: 100%;
         min-block-size: 80vh;
 
-        @media #{$break1}, #{$break2} {
+        @media #{devices.$break1}, #{devices.$break2} {
             min-inline-size: 100%;
             min-block-size: 100%;
             border-radius: 0;
