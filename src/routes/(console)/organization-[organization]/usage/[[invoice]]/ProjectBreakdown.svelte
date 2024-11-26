@@ -77,8 +77,8 @@
                             </TableCell>
                             <TableCell title="Usage">{format(project.usage)}</TableCell>
                             <TableCell right={true}>
-                            <span
-                                class="icon-cheveron-right u-cross-child-center ignore-icon-rotate" />
+                                <span
+                                    class="icon-cheveron-right u-cross-child-center ignore-icon-rotate" />
                             </TableCell>
                         </TableRowLink>
                     {/if}
