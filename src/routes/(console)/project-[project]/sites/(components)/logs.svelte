@@ -25,9 +25,11 @@
                 )
             ) {
                 console.log(response.payload);
-                buildLogs = response.payload.logs;
-                status = response.payload.status;
-
+                // buildLogs = response.payload.logs;
+                // status = response.payload.status;
+                const payload = response.payload as Models.Deployment;
+                buildLogs = payload.buildLogs;
+                status = payload.status;
                 if (status === 'ready') {
                     goto(
                         `${base}/project-${$page.params.project}/sites/create-site/finish?site=${site.$id}`

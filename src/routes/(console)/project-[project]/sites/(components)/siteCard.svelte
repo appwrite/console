@@ -112,6 +112,6 @@
     </Layout.Stack>
 </Card>
 
-{#if show}
+{#if show && deployment.domain}
     <OpenOnMobileModal bind:show siteURL={deployment.domain} />
 {/if}

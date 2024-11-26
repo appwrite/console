@@ -130,7 +130,7 @@
         site={data.site}
         callbackState={{ connectRepo: 'true' }} />
 {/if}
-{#if showOpenOnMobile}
+{#if showOpenOnMobile && data.deployment.domain}
     <OpenOnMobileModal bind:show={showOpenOnMobile} siteURL={data.deployment.domain} />
 {/if}
 

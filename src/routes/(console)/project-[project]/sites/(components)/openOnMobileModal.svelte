@@ -16,7 +16,7 @@
 
     let image = '';
     onMount(() => {
-        image = sdk.forProject.avatars.getQR(siteURL, 352);
+        image = sdk.forProject.avatars.getQR(url, 352);
     });
 </script>
 
