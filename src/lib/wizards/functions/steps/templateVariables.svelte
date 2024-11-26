@@ -56,80 +56,34 @@
     </svelte:fragment>
     {#if $template?.variables?.length}
         {#if requiredVariables?.length}
-            {#if requiredVariables?.length === 1 || requiredVariables.every((variable) => variable.required)}
-                <div class="collapsible-item">
-                    <div class="collapsible-wrapper">
-                        <div class="collapsible-button">
-                            <div>
-                                <span class="text">Required variables</span>
-                                <span class="collapsible-button-optional">
-                                    <span class="inline-tag">{requiredVariables.length}</span>
-                                </span>
-                            </div>
-                        </div>
-                        <div class="collapsible-content">
-                            <FormList>
-                                {#each requiredVariables as variable}
-                                    {#if variable.name === 'APPWRITE_API_KEY'}
-                                        <AppwriteVariable appwriteVariable={variable} />
-                                    {:else}
-                                        <div>
-                                            <svelte:component
-                                                this={selectComponent(variable.type)}
-                                                id={variable.name}
-                                                label={variable.name}
-                                                placeholder={variable.placeholder ?? 'Enter value'}
-                                                required={variable.required}
-                                                autocomplete={false}
-                                                minlength={variable.type === 'password' ? 0 : null}
-                                                showPasswordButton={variable.type === 'password'}
-                                                bind:value={$templateConfig.variables[
-                                                    variable.name
-                                                ]} />
-                                            <Helper type="neutral">
-                                                {@html variable.description}
-                                            </Helper>
-                                        </div>
-                                    {/if}
-                                {/each}
-                            </FormList>
-                        </div>
-                    </div>
-                </div>
-            {:else if requiredVariables?.length > 1}
-                <Collapsible>
-                    <CollapsibleItem open={true}>
-                        <svelte:fragment slot="title">Required variables</svelte:fragment>
-                        <svelte:fragment slot="subtitle">
-                            <span class="inline-tag">{requiredVariables.length}</span>
-                        </svelte:fragment>
+            <Collapsible>
+                <CollapsibleItem open={true}>
+                    <svelte:fragment slot="title">Required variables</svelte:fragment>
+                    <svelte:fragment slot="subtitle">
+                        <span class="inline-tag">{requiredVariables.length}</span>
+                    </svelte:fragment>
 
-                        <FormList>
-                            {#each requiredVariables as variable}
-                                {#if variable.name === 'APPWRITE_API_KEY'}
-                                    <AppwriteVariable appwriteVariable={variable} />
-                                {:else}
-                                    <div>
-                                        <svelte:component
-                                            this={selectComponent(variable.type)}
-                                            id={variable.name}
-                                            label={variable.name}
-                                            placeholder={variable.placeholder ?? 'Enter value'}
-                                            required={variable.required}
-                                            autocomplete={false}
-                                            minlength={variable.type === 'password' ? 0 : null}
-                                            showPasswordButton={variable.type === 'password'}
-                                            bind:value={$templateConfig.variables[variable.name]} />
-                                        <Helper type="neutral">
-                                            {@html variable.description}
-                                        </Helper>
-                                    </div>
-                                {/if}
-                            {/each}
-                        </FormList>
-                    </CollapsibleItem>
-                </Collapsible>
-            {/if}
+                    <FormList>
+                        {#each requiredVariables as variable}
+                            <div>
+                                <svelte:component
+                                    this={selectComponent(variable.type)}
+                                    id={variable.name}
+                                    label={variable.name}
+                                    placeholder={variable.placeholder ?? 'Enter value'}
+                                    required={variable.required}
+                                    autocomplete={false}
+                                    minlength={variable.type === 'password' ? 0 : null}
+                                    showPasswordButton={variable.type === 'password'}
+                                    bind:value={$templateConfig.variables[variable.name]} />
+                                <Helper type="neutral">
+                                    {@html variable.description}
+                                </Helper>
+                            </div>
+                        {/each}
+                    </FormList>
+                </CollapsibleItem>
+            </Collapsible>
         {/if}
 
         {#if optionalVariables?.length}
@@ -142,25 +96,21 @@
 
                     <FormList>
                         {#each optionalVariables as variable}
-                            {#if variable.name === 'APPWRITE_API_KEY'}
-                                <AppwriteVariable appwriteVariable={variable} />
-                            {:else}
-                                <div>
-                                    <svelte:component
-                                        this={selectComponent(variable.type)}
-                                        id={variable.name}
-                                        label={variable.name}
-                                        placeholder={variable.placeholder ?? 'Enter value'}
-                                        required={variable.required}
-                                        autocomplete={false}
-                                        showPasswordButton={variable.type === 'password'}
-                                        bind:value={$templateConfig.variables[variable.name]} />
+                            <div>
+                                <svelte:component
+                                    this={selectComponent(variable.type)}
+                                    id={variable.name}
+                                    label={variable.name}
+                                    placeholder={variable.placeholder ?? 'Enter value'}
+                                    required={variable.required}
+                                    autocomplete={false}
+                                    showPasswordButton={variable.type === 'password'}
+                                    bind:value={$templateConfig.variables[variable.name]} />
 
-                                    <Helper type="neutral">
-                                        {@html variable.description}
-                                    </Helper>
-                                </div>
-                            {/if}
+                                <Helper type="neutral">
+                                    {@html variable.description}
+                                </Helper>
+                            </div>
                         {/each}
                     </FormList>
                 </CollapsibleItem>
@@ -172,9 +122,3 @@
         </Card>
     {/if}
 </WizardStep>
-
-<style>
-    .collapsible-button div {
-        padding: 3px 0;
-    }
-</style>
