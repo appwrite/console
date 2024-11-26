@@ -46,7 +46,7 @@
                 size="s"
                 fullWidthMobile
                 secondary
-                href="{`${base}/project-${$page.params.project}/sites/site-${data.site.$id}`}}">
+                href={`${base}/project-${$page.params.project}/sites/site-${data.site.$id}`}>
                 Go to dashboard
             </Button>
         </Layout.Stack>
