@@ -2,27 +2,30 @@
     import { invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
+    import { tooltip } from '$lib/actions/tooltip';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Id, Modal } from '$lib/components';
     import FloatingActionBar from '$lib/components/floatingActionBar.svelte';
     import { Dependencies } from '$lib/constants';
-    import { Button } from '$lib/elements/forms';
+    import { Button, FormList, InputCheckbox } from '$lib/elements/forms';
     import {
         TableBody,
         TableCell,
+        TableCellCheck,
         TableCellHead,
         TableCellHeadCheck,
         TableCellText,
         TableHeader,
         TableRowLink,
-        TableScroll,
-        TableCellCheck
+        TableScroll
     } from '$lib/elements/table';
     import { toLocaleDateTime } from '$lib/helpers/date';
     import { addNotification } from '$lib/stores/notifications';
+    import { canWriteDatabases } from '$lib/stores/roles';
     import { sdk } from '$lib/stores/sdk';
     import type { PageData } from './$types';
     import { columns } from './store';
+    import Cell from '$lib/elements/table/cell.svelte';
 
     export let data: PageData;
     const projectId = $page.params.project;
@@ -30,6 +33,7 @@
     let selected: string[] = [];
     let showDelete = false;
     let deleting = false;
+    let confirmedDeletion = false;
 
     async function handleDelete() {
         showDelete = false;
@@ -52,15 +56,27 @@
         } finally {
             selected = [];
             showDelete = false;
+            confirmedDeletion = false;
         }
+    }
+
+    function getPolicyDescription(cron: string): string {
+        const [minute, hour, dayOfMonth, , dayOfWeek] = cron.split(' ');
+
+        if (dayOfMonth !== '*') return 'Monthly';
+        if (dayOfWeek !== '*') return 'Weekly on Mondays';
+        if (minute !== '*' && hour === '*') return 'Hourly';
+        if (hour !== '*') return 'Daily';
     }
 </script>
 
 <TableScroll>
     <TableHeader>
-        <TableCellHeadCheck
-            bind:selected
-            pageItemsIds={data.databases.databases.map((c) => c.$id)} />
+        {#if $canWriteDatabases}
+            <TableCellHeadCheck
+                bind:selected
+                pageItemsIds={data.databases.databases.map((c) => c.$id)} />
+        {/if}
         {#each $columns as column}
             {#if column.show}
                 <TableCellHead width={column.width}>{column.title}</TableCellHead>
@@ -70,7 +86,9 @@
     <TableBody>
         {#each data.databases.databases as database}
             <TableRowLink href={`${base}/project-${projectId}/databases/database-${database.$id}`}>
-                <TableCellCheck bind:selectedIds={selected} id={database.$id} />
+                {#if $canWriteDatabases}
+                    <TableCellCheck bind:selectedIds={selected} id={database.$id} />
+                {/if}
                 {#each $columns as column}
                     {#if column.show}
                         {#if column.id === '$id'}
@@ -85,6 +103,28 @@
                             <TableCellText width={column.width} title={column.title}>
                                 {database.name}
                             </TableCellText>
+                        {:else if column.id === 'backup'}
+                            {@const policies = data.policies?.[database.$id] ?? null}
+                            {@const lastBackup = data.lastBackups?.[database.$id] ?? null}
+                            {@const description = policies
+                                ?.map((policy) => getPolicyDescription(policy.schedule))
+                                .join(', ')}
+
+                            <Cell title={column.title} width={column.width}>
+                                <span
+                                    class="u-trim"
+                                    use:tooltip={{
+                                        placement: 'bottom',
+                                        disabled: !policies || !lastBackup,
+                                        content: `Last backup: ${lastBackup}`
+                                    }}>
+                                    {#if !policies}
+                                        <span class="icon-exclamation" /> No backup policies
+                                    {:else}
+                                        {description}
+                                    {/if}
+                                </span>
+                            </Cell>
                         {:else}
                             <TableCellText width={column.width} title={column.title}>
                                 {toLocaleDateTime(database[column.id])}
@@ -122,17 +162,36 @@
     title="Delete Database"
     icon="exclamation"
     state="warning"
+    size="small"
     bind:show={showDelete}
     onSubmit={handleDelete}
     headerDivider={false}
     closable={!deleting}>
-    <p class="text" data-private>
-        Are you sure you want to delete <b>{selected.length}</b>
-        {selected.length > 1 ? 'databases' : 'database'}?
-    </p>
+    <FormList>
+        <p class="text" data-private>
+            Are you sure you want to delete <b>{selected.length}</b>
+            {selected.length > 1 ? 'databases' : 'database'}?
+        </p>
+
+        <p class="text">
+            <b>
+                Once deleted, {selected.length > 1 ? 'these databases' : 'this database'} and its backups
+                cannot be restored. This action is irreversible.
+            </b>
+        </p>
+
+        <div class="input-check-box-friction">
+            <InputCheckbox
+                required
+                size="small"
+                id="delete_policy"
+                bind:checked={confirmedDeletion}
+                label="I understand and confirm" />
+        </div>
+    </FormList>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)} disabled={deleting}>Cancel</Button>
-        <Button secondary submit disabled={deleting}>Delete</Button>
+        <Button secondary submit disabled={deleting || !confirmedDeletion}>Delete</Button>
     </svelte:fragment>
 </Modal>
 
@@ -146,5 +205,9 @@
             padding: 0rem 0.375rem;
             display: inline-block;
         }
+    }
+
+    .icon-exclamation {
+        color: hsl(var(--color-warning-100)) !important;
     }
 </style>

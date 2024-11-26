@@ -1,6 +1,6 @@
 import { browser } from '$app/environment';
 import { VARS } from '$lib/system';
-import { writable } from 'svelte/store';
+import { get, writable } from 'svelte/store';
 import type { SvelteComponent } from 'svelte';
 import FeedbackGeneral from '$lib/components/feedback/feedbackGeneral.svelte';
 import FeedbackNps from '$lib/components/feedback/feedbackNPS.svelte';
@@ -11,12 +11,11 @@ export type Feedback = {
     notification: boolean;
     type: 'nps' | 'general';
     show: boolean;
+    source: string;
 };
 
 export type FeedbackData = {
     message: string;
-    name?: string;
-    email?: string;
     value?: number;
 };
 
@@ -47,8 +46,6 @@ export const selectedFeedback = writable<FeedbackOption>();
 function createFeedbackDataStore() {
     const { set, subscribe, update } = writable<FeedbackData>({
         message: '',
-        name: '',
-        email: '',
         value: null
     });
     return {
@@ -58,8 +55,6 @@ function createFeedbackDataStore() {
         reset: () => {
             update((feedbackData) => {
                 feedbackData.message = '';
-                feedbackData.name = '';
-                feedbackData.email = '';
                 feedbackData.value = null;
                 return feedbackData;
             });
@@ -75,13 +70,15 @@ function createFeedbackStore() {
         visualized: browser ? (parseInt(localStorage.getItem('feedbackVisualized')) ?? 0) : 0,
         notification: false,
         type: 'general',
-        show: false
+        show: false,
+        source: 'n/a'
     });
     return {
         subscribe,
         update,
-        toggleFeedback: () => {
+        toggleFeedback: (source: string = 'n/a') => {
             update((feedback) => {
+                feedback.source = source;
                 feedback.show = !feedback.show;
                 return feedback;
             });
@@ -110,11 +107,17 @@ function createFeedbackStore() {
                 return feedback;
             });
         },
+        // TODO: update growth server to accept `billingPlan`.
+        // TODO: update growth server to accept `source` key to know the feedback source area.
         submitFeedback: async (
             subject: string,
             message: string,
-            firstname?: string,
+            currentPage: string,
+            name?: string,
             email?: string,
+            // eslint-disable-next-line
+            // @ts-expect-error
+            billingPlan?: string,
             value?: number
         ) => {
             if (!VARS.GROWTH_ENDPOINT) return;
@@ -127,14 +130,26 @@ function createFeedbackStore() {
                     subject,
                     message,
                     email,
-                    firstname: firstname ? firstname : undefined,
-                    customFields: value ? [{ id: '40655', value }] : undefined
+                    // billingPlan,
+                    firstname: name || 'Unknown',
+                    customFields: [
+                        { id: '47364', value: currentPage },
+                        ...(value ? [{ id: '40655', value }] : [])
+                    ],
+                    metaFields: {
+                        source: get(feedback).source
+                    }
                 })
             });
+
+            // reset the state
+            get(feedback).source = 'n/a';
+
             if (response.status >= 400) {
                 throw new Error('Failed to submit feedback');
             }
         }
     };
 }
+
 export const feedback = createFeedbackStore();

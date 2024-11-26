@@ -1,6 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { registerCommands, updateCommandGroupRanks } from '$lib/commandCenter';
+    import { canWriteProjects } from '$lib/stores/roles';
     import { openWebhooksWizard } from './webhooks/+page.svelte';
 
     $: $registerCommands([
@@ -11,7 +12,8 @@
             callback: () => {
                 openWebhooksWizard();
             },
-            group: 'webhooks'
+            group: 'webhooks',
+            disabled: !$canWriteProjects
         }
     ]);
 

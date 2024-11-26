@@ -14,6 +14,8 @@
     import CreateCollection from './createCollection.svelte';
     import { showCreate } from './store';
     import { CollectionsPanel } from '$lib/commandCenter/panels';
+    import { canWriteCollections, canWriteDatabases } from '$lib/stores/roles';
+    import { showCreateBackup, showCreatePolicy } from './backups/store';
 
     const project = $page.params.project;
     const databaseId = $page.params.database;
@@ -36,9 +38,35 @@
                 }
             },
             keys: $page.url.pathname.endsWith(databaseId) ? ['c'] : ['c', 'c'],
-            disabled: $page.url.pathname.includes('collection-'),
-            group: 'collections',
+            disabled: $page.url.pathname.includes('collection-') || !$canWriteCollections,
+            group: 'databases',
             icon: 'plus'
+        },
+        {
+            label: 'Create backup policy',
+            callback: async () => {
+                if (!$page.url.pathname.endsWith('backups')) {
+                    goto(`${base}/project-${project}/databases/database-${databaseId}/backups`);
+                }
+                showCreatePolicy.set(true);
+            },
+            keys: $page.url.pathname.endsWith('backups') ? ['c'] : ['c', 'p'],
+            group: 'databases',
+            icon: 'plus',
+            rank: $page.url.pathname.endsWith('backups') ? 10 : 0
+        },
+        {
+            label: 'Create manual backup',
+            callback: async () => {
+                if (!$page.url.pathname.endsWith('backups')) {
+                    goto(`${base}/project-${project}/databases/database-${databaseId}/backups`);
+                }
+                showCreateBackup.set(true);
+            },
+            keys: $page.url.pathname.endsWith('backups') ? ['c'] : ['c', 'b'],
+            group: 'databases',
+            icon: 'plus',
+            rank: $page.url.pathname.endsWith('backups') ? 10 : 0
         },
         {
             label: 'Go to collections',
@@ -49,7 +77,7 @@
                 $page.url.pathname.endsWith(databaseId) ||
                 $page.url.pathname.includes('collection-'),
             keys: ['g', 'c'],
-            group: 'collections'
+            group: 'databases'
         },
         {
             label: 'Go to usage',
@@ -59,7 +87,18 @@
             disabled:
                 $page.url.pathname.includes('/usage') || $page.url.pathname.includes('collection-'),
             keys: ['g', 'u'],
-            group: 'collections'
+            group: 'databases'
+        },
+        {
+            label: 'Go to backups',
+            callback() {
+                goto(`${base}/project-${project}/databases/database-${databaseId}/backups`);
+            },
+            disabled:
+                $page.url.pathname.includes('/backups') ||
+                $page.url.pathname.includes('collection-'),
+            keys: ['g', 'b'],
+            group: 'databases'
         },
         {
             label: 'Go to settings',
@@ -68,16 +107,17 @@
             },
             disabled:
                 $page.url.pathname.includes('/settings') ||
-                $page.url.pathname.includes('collection-'),
+                $page.url.pathname.includes('collection-') ||
+                !$canWriteDatabases,
             keys: ['g', 's'],
-            group: 'collections'
+            group: 'databases'
         },
         {
             label: 'Find collections',
             callback: () => {
                 addSubPanel(CollectionsPanel);
             },
-            group: 'collections',
+            group: 'databases',
             rank: -1
         }
     ]);

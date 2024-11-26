@@ -14,6 +14,7 @@
         TableRow
     } from '$lib/elements/table';
     import { Container } from '$lib/layout';
+    import { canWriteCollections } from '$lib/stores/roles';
     import Create from '../createAttribute.svelte';
     import { isRelationship } from '../document-[document]/attributes/store';
     import FailedModal from '../failedModal.svelte';
@@ -51,7 +52,9 @@
     <div class="u-flex u-gap-12 common-section u-main-space-between">
         <Heading tag="h2" size="5">Attributes</Heading>
 
-        <CreateAttributeDropdown bind:showCreateDropdown bind:selectedOption bind:showCreate />
+        {#if $canWriteCollections}
+            <CreateAttributeDropdown bind:showCreateDropdown bind:selectedOption bind:showCreate />
+        {/if}
     </div>
 
     {#if $attributes.length}
@@ -159,7 +162,7 @@
                                             showEdit = true;
                                             showDropdown[index] = false;
                                         }}>
-                                        Edit
+                                        Update
                                     </DropListItem>
                                     {#if !isRelationship(attribute)}
                                         <DropListItem
@@ -194,7 +197,11 @@
             <p class="text">Total results: {$attributes.length}</p>
         </div>
     {:else}
-        <Empty single target="attribute" on:click={() => (showEmptyCreateDropdown = true)}>
+        <Empty
+            allowCreate={$canWriteCollections}
+            single
+            target="attribute"
+            on:click={() => (showEmptyCreateDropdown = true)}>
             <div class="u-text-center">
                 <Heading size="7" tag="h2">Create your first attribute to get started.</Heading>
                 <p class="body-text-2 u-bold u-margin-block-start-4">
@@ -208,19 +215,21 @@
                     text
                     event="empty_documentation"
                     ariaLabel={`create {target}`}>Documentation</Button>
-                <CreateAttributeDropdown
-                    bind:showCreateDropdown={showEmptyCreateDropdown}
-                    bind:selectedOption
-                    bind:showCreate>
-                    <Button
-                        secondary
-                        event="create_attribute"
-                        on:click={() => {
-                            showEmptyCreateDropdown = !showEmptyCreateDropdown;
-                        }}>
-                        Create attribute
-                    </Button>
-                </CreateAttributeDropdown>
+                {#if $canWriteCollections}
+                    <CreateAttributeDropdown
+                        bind:showCreateDropdown={showEmptyCreateDropdown}
+                        bind:selectedOption
+                        bind:showCreate>
+                        <Button
+                            secondary
+                            event="create_attribute"
+                            on:click={() => {
+                                showEmptyCreateDropdown = !showEmptyCreateDropdown;
+                            }}>
+                            Create attribute
+                        </Button>
+                    </CreateAttributeDropdown>
+                {/if}
             </div>
         </Empty>
     {/if}

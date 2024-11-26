@@ -35,9 +35,10 @@ export const load: PageLoad = async ({ url, route, depends, parent }) => {
             return false;
         }
 
+        const filterLowerCases = filter.useCases.map((n) => n.toLowerCase());
         if (
             filter.useCases.length > 0 &&
-            !template.useCases.some((n) => filter.useCases.includes(n))
+            !template.useCases.some((n) => filterLowerCases.includes(n.toLowerCase()))
         ) {
             return false;
         }

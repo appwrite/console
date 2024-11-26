@@ -18,7 +18,6 @@
     import EditAddressModal from './editAddressModal.svelte';
     import type { Address } from '$lib/sdk/billing';
     import { organizationList, type Organization } from '$lib/stores/organization';
-    import { tooltip } from '$lib/actions/tooltip';
     import { base } from '$app/paths';
     import { Pill } from '$lib/elements';
 
@@ -29,6 +28,7 @@
     let showDelete = false;
     let showDropdown = [];
     let countryList: Models.CountryList;
+    let showLinked = [];
 
     onMount(async () => {
         countryList = await sdk.forProject.locale.listCountries();
@@ -76,26 +76,28 @@
                             </TableCell>
                             <TableCell style="vertical-align: top;">
                                 {#if linkedOrgs?.length > 0}
-                                    <div
-                                        use:tooltip={{
-                                            interactive: true,
-                                            allowHTML: true,
-                                            trigger: 'click',
-                                            content: `
-                                    <div class="u-flex u-flex-vertical u-gap-8">
-                                        <p class="text">This billing address is linked to the following organizations:</p>
-                                        ${linkedOrgs
-                                            .map(
-                                                (org) =>
-                                                    `<a href="${base}/organization-${org.$id}/billing" class="link">${org.name}</a>`
-                                            )
-                                            .join('')}
-                                                </div>`
-                                        }}>
-                                        <Pill button>
+                                    <DropList bind:show={showLinked[i]} width="20" scrollable>
+                                        <Pill
+                                            button
+                                            on:click={() => (showLinked[i] = !showLinked[i])}>
                                             <span class="icon-info" /> linked to organization
                                         </Pill>
-                                    </div>
+                                        <svelte:fragment slot="list">
+                                            <p class="u-break-word">
+                                                This billing address is linked to the following
+                                                organizations:
+                                            </p>
+                                            <div class="u-flex u-flex-vertical u-gap-4">
+                                                {#each linkedOrgs as org}
+                                                    <a
+                                                        class="u-underline u-trim"
+                                                        href={`${base}/console/organization-${org.$id}/billing`}>
+                                                        {org.name}
+                                                    </a>
+                                                {/each}
+                                            </div>
+                                        </svelte:fragment>
+                                    </DropList>
                                 {/if}
                             </TableCell>
                             <TableCell style="vertical-align: top;">

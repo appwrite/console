@@ -30,6 +30,7 @@
     import { attributes, collection, columns } from './store';
     import { clickOnEnter } from '$lib/helpers/a11y';
     import type { ColumnType } from '$lib/helpers/types';
+    import { toLocaleDateTime } from '$lib/helpers/date';
 
     export let data: PageData;
 
@@ -154,6 +155,8 @@
                 <TableCellHead eyebrow={false}>{column.title}</TableCellHead>
             {/if}
         {/each}
+        <TableCellHead eyebrow={false}>Created</TableCellHead>
+        <TableCellHead eyebrow={false}>Updated</TableCellHead>
     </TableHeader>
     <TableBody>
         {#each data.documents.documents as document}
@@ -231,6 +234,12 @@
                         {/if}
                     {/if}
                 {/each}
+                <TableCellText>
+                    {toLocaleDateTime(document.$createdAt)}
+                </TableCellText>
+                <TableCellText>
+                    {toLocaleDateTime(document.$updatedAt)}
+                </TableCellText>
             </TableRowLink>
         {/each}
     </TableBody>
@@ -319,8 +328,9 @@
 
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)} disabled={deleting}>Cancel</Button>
-        <Button secondary submit disabled={deleting || (relAttributes?.length && !checked)}
-            >Delete</Button>
+        <Button secondary submit disabled={deleting || (relAttributes?.length && !checked)}>
+            Delete
+        </Button>
     </svelte:fragment>
 </Modal>
 

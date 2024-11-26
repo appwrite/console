@@ -3,25 +3,23 @@
     import { Collapsible, CollapsibleItem } from '$lib/components';
     import {
         TableBody,
+        TableCell,
         TableCellHead,
         TableHeader,
-        TableScroll,
+        TableRow,
         TableRowLink,
-        TableCell
+        TableScroll
     } from '$lib/elements/table';
     import { abbreviateNumber } from '$lib/helpers/numbers';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import type { OrganizationUsage } from '$lib/sdk/billing';
     import { base } from '$app/paths';
+    import { canSeeProjects } from '$lib/stores/roles';
 
     type Metric = 'users' | 'storage' | 'bandwidth' | 'executions';
     export let data: PageData;
     export let projects: OrganizationUsage['projects'];
     export let metric: Metric;
-
-    function getProjectName(projectId: string): string {
-        return data.projectNames.find((project) => project.$id === projectId)?.name;
-    }
 
     function getProjectUsageLink(projectId: string): string {
         return `${base}/project-${projectId}/settings/usage`;
@@ -59,20 +57,31 @@
             <TableHeader>
                 <TableCellHead>Project</TableCellHead>
                 <TableCellHead>Usage</TableCellHead>
-                <TableCellHead />
+                {#if $canSeeProjects}
+                    <TableCellHead />
+                {/if}
             </TableHeader>
             <TableBody>
                 {#each groupByProject(metric).sort((a, b) => b.usage - a.usage) as project}
-                    <TableRowLink href={getProjectUsageLink(project.projectId)}>
-                        <TableCell title="Project">
-                            {getProjectName(project.projectId)}
-                        </TableCell>
-                        <TableCell title="Usage">{format(project.usage)}</TableCell>
-                        <TableCell right={true}>
+                    {#if !$canSeeProjects}
+                        <TableRow>
+                            <TableCell title="Project">
+                                {data.projectNames[project.projectId]?.name ?? 'Unknown'}
+                            </TableCell>
+                            <TableCell title="Usage">{format(project.usage)}</TableCell>
+                        </TableRow>
+                    {:else}
+                        <TableRowLink href={getProjectUsageLink(project.projectId)}>
+                            <TableCell title="Project">
+                                {data.projectNames[project.projectId]?.name ?? 'Unknown'}
+                            </TableCell>
+                            <TableCell title="Usage">{format(project.usage)}</TableCell>
+                            <TableCell right={true}>
                             <span
                                 class="icon-cheveron-right u-cross-child-center ignore-icon-rotate" />
-                        </TableCell>
-                    </TableRowLink>
+                            </TableCell>
+                        </TableRowLink>
+                    {/if}
                 {/each}
             </TableBody>
         </TableScroll>

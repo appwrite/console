@@ -231,7 +231,7 @@
 <svelte:window on:keydown={windowKeyDown} />
 
 <div class="cb-card" class:active class:interacting style={styles} bind:this={cardEl}>
-    <div class="card__translater">
+    <div class="card__translator">
         <button
             class="card__rotator"
             aria-label="Expand the Card"
@@ -320,12 +320,12 @@
         }
     }
 
-    .cb-card.active .card__translater,
+    .cb-card.active .card__translator,
     .cb-card.active .card__rotator {
         touch-action: none;
     }
 
-    .card__translater,
+    .card__translator,
     .card__rotator {
         display: grid;
         perspective: 600px;
@@ -334,7 +334,7 @@
         will-change: transform;
     }
 
-    .card__translater {
+    .card__translator {
         width: auto;
         position: relative;
         transform: translate3d(var(--tx), var(--ty), 0) scale(var(--s));

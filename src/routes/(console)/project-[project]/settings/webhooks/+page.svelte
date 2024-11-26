@@ -1,5 +1,8 @@
 <script lang="ts" context="module">
     export function openWebhooksWizard() {
+        if (!get(canWriteWebhooks)) {
+            return;
+        }
         wizard.start(Create);
     }
 </script>
@@ -28,6 +31,8 @@
     import Create from './createWebhook.svelte';
     import FailedModal from './failedModal.svelte';
     import MessageStatusPill from './messageStatusPill.svelte';
+    import { canWriteWebhooks } from '$lib/stores/roles';
+    import { get } from 'svelte/store';
 
     export let data: PageData;
 
@@ -35,6 +40,9 @@
     let selectedWebhook: Models.Webhook;
 
     function openWizard() {
+        if (!$canWriteWebhooks) {
+            return;
+        }
         wizard.start(Create);
     }
 
@@ -49,10 +57,12 @@
 
 <Container>
     <GridHeader title="Webhooks" {columns} view={data.view} hideColumns={false} hideView={true}>
-        <Button on:click={openWizard} event="create_webhook">
-            <span class="icon-plus" aria-hidden="true" />
-            <span class="text">Create webhook</span>
-        </Button>
+        {#if $canWriteWebhooks}
+            <Button on:click={openWizard} event="create_webhook">
+                <span class="icon-plus" aria-hidden="true" />
+                <span class="text">Create webhook</span>
+            </Button>
+        {/if}
     </GridHeader>
 
     {#if data.webhooks.total}

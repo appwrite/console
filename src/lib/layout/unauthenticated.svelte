@@ -7,36 +7,42 @@
     import LoginLight from '$lib/images/login/login-light-mode.png';
     import type { Coupon } from '$lib/sdk/billing';
     import { app } from '$lib/stores/app';
-    import { campaigns, type CampaignData } from '$lib/stores/campaigns';
+    import type { Campaign } from '$lib/stores/campaigns';
+    import { getApiEndpoint } from '$lib/stores/sdk';
 
     export const imgLight = LoginLight;
     export const imgDark = LoginDark;
 
-    export let campaign: string = null;
+    export let campaign: Campaign = null;
     export let coupon: Coupon = null;
 
-    $: selectedCampaign = campaigns.get(coupon?.campaign ?? campaign);
-    $: variation = ((coupon?.campaign ?? campaign) ? selectedCampaign?.template : 'default') as
+    $: variation = ((coupon?.campaign ?? campaign) ? campaign?.template : 'default') as
         | 'default'
-        | CampaignData['template'];
+        | Campaign['template'];
 
     let currentReviewNumber = 0;
-    $: currentReview = selectedCampaign?.data?.reviews?.[currentReviewNumber];
+    $: currentReview = campaign?.reviews?.[currentReviewNumber];
 
     function generateTitle() {
         if (coupon?.credits) {
-            return selectedCampaign.title.replace('VALUE', coupon.credits.toString());
+            return campaign.title.replace('VALUE', coupon.credits.toString());
         } else {
-            return selectedCampaign.title;
+            return campaign.title;
         }
     }
 
     function generateDesc() {
         if (coupon?.credits) {
-            return selectedCampaign.description.replace('VALUE', coupon.credits.toString());
+            return campaign.description.replace('VALUE', coupon.credits.toString());
         } else {
-            return selectedCampaign.description;
+            return campaign.description;
         }
+    }
+
+    function getImage(image: string) {
+        const endpoint = getApiEndpoint();
+        const url = new URL(image, endpoint);
+        return url.toString();
     }
 </script>
 
@@ -80,7 +86,7 @@
             <section
                 class="u-flex u-flex-vertical u-main-center u-cross-center u-height-100-percent u-width-full-line">
                 <img
-                    src={`${base}/images/campaigns/${coupon?.campaign ?? campaign}/${$app.themeInUse}.png`}
+                    src={getImage(campaign?.image[$app.themeInUse])}
                     class="u-block u-image-object-fit-cover side-bg-img"
                     alt="promo" />
 
@@ -143,9 +149,9 @@
                             {currentReview.review}
                         </p>
                         <div class="u-margin-block-start-16 u-flex u-gap-16">
-                            {#if currentReview?.img}
+                            {#if currentReview?.image}
                                 <Avatar
-                                    src={`${base}/images/campaigns/${coupon?.campaign ?? campaign}/reviewers/${currentReview.img}`}
+                                    src={getImage(currentReview?.image)}
                                     name={currentReview.name}
                                     size={40} />
                             {:else}
@@ -153,19 +159,19 @@
                             {/if}
                             <div>
                                 <p class="body-text-2 u-bold">{currentReview.name}</p>
-                                <p class="body-text-2">{currentReview.desc}</p>
+                                <p class="body-text-2">{currentReview.description}</p>
                             </div>
                         </div>
                     </Card>
                 </div>
-                {#if selectedCampaign?.footer}
+                {#if campaign?.footer}
                     <div
                         class="u-flex u-gap-16 u-cross-center u-main-center review-footer-container">
                         <p class="u-bold" style:text-transform="uppercase">provided to you by</p>
                         <img
                             style:max-block-size="2.5rem"
-                            src={`${base}/images/campaigns/${coupon?.campaign ?? campaign}/footer/${$app.themeInUse}.png`}
-                            alt={coupon?.campaign ?? campaign} />
+                            src={getImage(campaign?.image[$app.themeInUse])}
+                            alt={coupon?.campaign ?? campaign.$id} />
                     </div>
                 {/if}
             </section>
@@ -189,7 +195,7 @@
 
                 <ul
                     class="inline-links is-center is-with-sep u-margin-block-start-32"
-                    class:u-hide={!$$slots.links}>
+                    class:u-hide={!$$slots?.links}>
                     <slot name="links" />
                 </ul>
             </div>

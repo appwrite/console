@@ -3,13 +3,17 @@
     import Id from '$lib/components/id.svelte';
     import { WizardStep } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
+    import { isCloud } from '$lib/system';
 
     const { endpoint, project } = sdk.forProject.client.config;
     const code = `const client = new Client();
-
-client
+${
+    isCloud
+        ? `client.setProject('${project}');`
+        : `client
     .setEndpoint('${endpoint}')
-    .setProject('${project}');`;
+    .setProject('${project}');`
+}`;
 </script>
 
 <WizardStep>
