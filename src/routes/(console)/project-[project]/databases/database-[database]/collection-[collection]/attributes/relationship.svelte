@@ -198,9 +198,7 @@
             <span
                 class="icon-info u-cross-center u-margin-block-start-2 u-line-height-1 u-icon-small"
                 aria-hidden="true" />
-            <span class="text u-line-height-1-5">
-                Allowed characters: a-z, A-Z, 0-9, -, .
-            </span>
+            <span class="text u-line-height-1-5">Allowed characters: a-z, A-Z, 0-9, -, .</span>
         </div>
     </div>
     {#if way === 'two'}
