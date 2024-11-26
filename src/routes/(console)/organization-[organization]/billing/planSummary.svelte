@@ -18,15 +18,15 @@
     export let currentPlan: Plan;
     export let creditList: CreditList;
 
-    const currentInvoice: Invoice = invoices[0];
+    const currentInvoice: Invoice | undefined = invoices.length > 0 ? invoices[0] : undefined;
     const extraMembers = members.total > 1 ? members.total - 1 : 0;
     const availableCredit = creditList.available;
     const today = new Date();
     const isTrial =
         new Date($organization?.billingStartDate).getTime() - today.getTime() > 0 &&
         $plansInfo.get($organization.billingPlan)?.trialDays;
-    const extraUsage = currentInvoice.amount - currentPlan?.price;
-    const extraAddons = currentInvoice.usage?.length;
+    const extraUsage = currentInvoice ? currentInvoice.amount - currentPlan?.price : 0;
+    const extraAddons = currentInvoice ? currentInvoice.usage?.length : 0;
 </script>
 
 {#if $organization}
