@@ -27,9 +27,9 @@
     <svelte:fragment slot="footer">
         <Button text on:click={() => (show = false)}>Cancel</Button>
         {#if href}
-            <Button secondary {href}>Exit</Button>
+            <Button secondary size="s" {href}>Exit</Button>
         {:else}
-            <Button secondary submit>Exit</Button>
+            <Button secondary size="s" submit>Exit</Button>
         {/if}
     </svelte:fragment>
 </Modal>

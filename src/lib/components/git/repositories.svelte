@@ -1,0 +1,201 @@
+<script lang="ts">
+    import { base } from '$app/paths';
+    import { page } from '$app/stores';
+    import { EmptySearch } from '$lib/components';
+    import { Button, InputSearch, InputSelect } from '$lib/elements/forms';
+    import { timeFromNow } from '$lib/helpers/date';
+    import { app } from '$lib/stores/app';
+    import { sdk } from '$lib/stores/sdk';
+    import { repositories } from '$routes/(console)/project-[project]/functions/function-[function]/store';
+    import { installation, installations, repository } from '$lib/stores/vcs';
+    import { createEventDispatcher } from 'svelte';
+    import { Layout, Table, Typography, Icon, Avatar } from '@appwrite.io/pink-svelte';
+    import { IconLockClosed } from '@appwrite.io/pink-icons-svelte';
+    import ConnectGit from './connectGit.svelte';
+    import Link from '$lib/elements/link.svelte';
+
+    const dispatch = createEventDispatcher();
+
+    export let callbackState: Record<string, string> = null;
+    export let selectedRepository: string = null;
+    export let hasInstallations = false;
+    export let action: 'button' | 'select' = 'select';
+    export let installationList = $installations;
+    export let product: 'functions' | 'sites' = 'functions';
+
+    $: {
+        hasInstallations = installationList?.total > 0;
+    }
+
+    let selectedInstallation = null;
+    async function loadInstallations() {
+        if (installationList) {
+            if (installationList.installations.length) {
+                selectedInstallation = installationList.installations[0].$id;
+                installation.set(
+                    installationList.installations.find(
+                        (entry) => entry.$id === selectedInstallation
+                    )
+                );
+            }
+            return installationList.installations;
+        } else {
+            const { installations } = await sdk.forProject.vcs.listInstallations();
+            if (installations.length) {
+                selectedInstallation = installations[0].$id;
+                installation.set(installations.find((entry) => entry.$id === selectedInstallation));
+            }
+            return installations;
+        }
+    }
+
+    let search = '';
+    async function loadRepositories(installationId: string, search: string) {
+        if (
+            !$repositories ||
+            $repositories.installationId !== installationId ||
+            $repositories.search !== search
+        ) {
+            $repositories.repositories = (
+                await sdk.forProject.vcs.listRepositories(installationId, search || undefined)
+            ).providerRepositories;
+        }
+
+        $repositories.search = search;
+        $repositories.installationId = installationId;
+
+        if ($repositories.repositories.length) {
+            selectedRepository = $repositories.repositories[0].id;
+            $repository = $repositories.repositories[0];
+        }
+
+        return $repositories.repositories.slice(0, 4);
+    }
+</script>
+
+{#if hasInstallations}
+    <Layout.Stack>
+        <Layout.Stack gap="s">
+            {#await loadInstallations()}
+                <Layout.Stack direction="row">
+                    <InputSelect
+                        disabled
+                        id="installation"
+                        options={[
+                            {
+                                label: 'Loading...',
+                                value: null
+                            }
+                        ]}
+                        value={null} />
+                    <InputSearch placeholder="Search repositories" disabled />
+                </Layout.Stack>
+            {:then installations}
+                <Layout.Stack direction="row">
+                    <InputSelect
+                        id="installation"
+                        options={installations.map((entry) => {
+                            return {
+                                label: entry.organization,
+                                value: entry.$id
+                            };
+                        })}
+                        on:change={() => {
+                            search = '';
+                            installation.set(
+                                installations.find((entry) => entry.$id === selectedInstallation)
+                            );
+                        }}
+                        bind:value={selectedInstallation} />
+                    <InputSearch placeholder="Search repositories" bind:value={search} />
+                </Layout.Stack>
+            {/await}
+            <p>
+                Manage organization configuration in your <Link
+                    href={`${base}/project-${$page.params.project}/settings`}>project settings</Link
+                >.
+            </p>
+        </Layout.Stack>
+        {#if selectedInstallation}
+            {#await loadRepositories(selectedInstallation, search)}
+                <Layout.Stack justifyContent="center" alignContent="center" alignItems="center">
+                    <div class="loader u-margin-32" />
+                </Layout.Stack>
+            {:then response}
+                {#if response?.length}
+                    <Table.Root>
+                        {#each response as repo}
+                            <Table.Row>
+                                <Table.Cell>
+                                    <Layout.Stack direction="row" alignItems="center">
+                                        {#if action === 'select'}
+                                            <input
+                                                class="is-small u-margin-inline-end-8"
+                                                type="radio"
+                                                name="repositories"
+                                                bind:group={selectedRepository}
+                                                on:change={() => repository.set(repo)}
+                                                value={repo.id} />
+                                        {/if}
+                                        {#if product === 'sites'}
+                                            <Avatar size="xs" alt={repo.name} />
+                                        {:else}
+                                            <Avatar
+                                                size="xs"
+                                                src={repo?.runtime
+                                                    ? `${base}/icons/${$app.themeInUse}/color/${
+                                                          repo.runtime.split('-')[0]
+                                                      }.svg`
+                                                    : ''}
+                                                alt={repo.name} />
+                                        {/if}
+                                        <Layout.Stack gap="s" direction="row" alignItems="center">
+                                            <Typography.Text truncate>
+                                                {repo.name}
+                                            </Typography.Text>
+                                            {#if repo.private}
+                                                <Icon
+                                                    size="s"
+                                                    icon={IconLockClosed}
+                                                    color="--color-fgcolor-neutral-tertiary" />
+                                            {/if}
+                                            <time datetime={repo.pushedAt}>
+                                                <Typography.Text
+                                                    truncate
+                                                    color="--color-fgcolor-neutral-tertiary">
+                                                    {timeFromNow(repo.pushedAt)}
+                                                </Typography.Text>
+                                            </time>
+                                        </Layout.Stack>
+                                        {#if action === 'button'}
+                                            <Layout.Stack direction="row" justifyContent="flex-end">
+                                                <Button
+                                                    size="s"
+                                                    secondary
+                                                    on:click={() => dispatch('connect', repo)}>
+                                                    Connect
+                                                </Button>
+                                            </Layout.Stack>
+                                        {/if}
+                                    </Layout.Stack>
+                                </Table.Cell>
+                            </Table.Row>
+                        {/each}
+                    </Table.Root>
+                {:else}
+                    <EmptySearch hidePages bind:search target="repositories">
+                        <svelte:fragment slot="actions">
+                            {#if search}
+                                <Button secondary on:click={() => (search = '')}>
+                                    Clear search
+                                </Button>
+                            {/if}
+                        </svelte:fragment>
+                    </EmptySearch>
+                {/if}
+            {/await}
+        {/if}
+    </Layout.Stack>
+{:else}
+    <ConnectGit {callbackState} />
+{/if}

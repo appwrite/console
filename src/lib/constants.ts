@@ -59,7 +59,9 @@ export enum Dependencies {
     MESSAGING_MESSAGE = 'dependency:messaging_message',
     MESSAGING_TOPICS = 'dependency:messaging_topics',
     MESSAGING_TOPIC = 'dependency:messaging_topic',
-    MESSAGING_TOPIC_SUBSCRIBERS = 'dependency:messaging_topic_subscribers'
+    MESSAGING_TOPIC_SUBSCRIBERS = 'dependency:messaging_topic_subscribers',
+    SITE = 'dependency:site',
+    SITES = 'dependency:sites'
 }
 
 export const defaultScopes: string[] = [
@@ -116,7 +118,9 @@ export const defaultScopes: string[] = [
     'topics.read',
     'topics.write',
     'billing.read',
-    'billing.write'
+    'billing.write',
+    'sites:read',
+    'sites:write'
 ];
 
 export const defaultRoles: string[] = ['owner'];
@@ -357,6 +361,18 @@ export const scopes: {
         scope: 'migrations.write',
         description: 'Access to create migrations',
         category: 'Other',
+        icon: 'globe'
+    },
+    {
+        scope: 'sites:read',
+        description: "Access to read your project's sites and deployments",
+        category: 'Sites',
+        icon: 'globe'
+    },
+    {
+        scope: 'sites:write',
+        description: "Access to create, update, and delete your project's sites and deployments",
+        category: 'Sites',
         icon: 'globe'
     }
 ];

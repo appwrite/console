@@ -153,6 +153,23 @@
                             <a
                                 class="drop-button"
                                 class:is-selected={$page.url.pathname.startsWith(
+                                    `${projectPath}/sites`
+                                )}
+                                on:click={() => trackEvent('click_menu_sites')}
+                                href={`${projectPath}/sites`}
+                                use:tooltip={{
+                                    content: 'Sites',
+                                    placement: 'right',
+                                    disabled: !narrow
+                                }}>
+                                <span class="icon-globe-alt" aria-hidden="true" />
+                                <span class="text">Sites</span>
+                            </a>
+                        </li>
+                        <li class="drop-list-item">
+                            <a
+                                class="drop-button"
+                                class:is-selected={$page.url.pathname.startsWith(
                                     `${projectPath}/storage`
                                 )}
                                 on:click={() => trackEvent('click_menu_storage')}

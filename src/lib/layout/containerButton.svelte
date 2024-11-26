@@ -28,6 +28,7 @@
         disabled: !disabled
     }}>
     <Button
+        size="s"
         text={buttonType === 'text'}
         secondary={buttonType === 'secondary'}
         on:click={buttonMethod}

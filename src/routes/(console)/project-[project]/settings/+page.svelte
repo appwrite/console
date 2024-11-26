@@ -58,8 +58,8 @@
         }
     });
 
-    async function sdkCreateVariable(key: string, value: string) {
-        await sdk.forProject.projectApi.createVariable(key, value);
+    async function sdkCreateVariable(key: string, value: string, secret: boolean) {
+        await sdk.forProject.projectApi.createVariable(key, value, secret);
         await invalidate(Dependencies.PROJECT_VARIABLES);
     }
 

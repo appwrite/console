@@ -5,7 +5,7 @@
     import { page } from '$app/stores';
     import { trackPageView } from '$lib/actions/analytics';
     import { Notifications, Progress } from '$lib/layout';
-    import { app } from '$lib/stores/app';
+    import { app, type AppStore } from '$lib/stores/app';
     import { isCloud } from '$lib/system';
     import { onMount } from 'svelte';
     import { requestedMigration } from './store';
@@ -13,6 +13,17 @@
     import { sdk } from '$lib/stores/sdk';
     import { user } from '$lib/stores/user';
     import { loading } from '$routes/store';
+    import { Root } from '@appwrite.io/pink-svelte';
+    import { ThemeDark, ThemeLight, ThemeDarkCloud, ThemeLightCloud } from '../themes';
+
+    function resolveTheme(theme: AppStore['themeInUse']) {
+        switch (theme) {
+            case 'dark':
+                return isCloud ? ThemeDarkCloud : ThemeDark;
+            case 'light':
+                return isCloud ? ThemeLightCloud : ThemeLight;
+        }
+    }
 
     onMount(async () => {
         // handle sources
@@ -94,14 +105,16 @@
     }
 </script>
 
-<Notifications />
-<!-- {#if isCloud}
-    <Consent />
-{/if} -->
+<Root theme={resolveTheme($app.themeInUse)}>
+    <Notifications />
+    <!-- {#if isCloud}
+        <Consent />
+    {/if} -->
 
-<slot />
+    <slot />
 
-<Progress />
+    <Progress />
+</Root>
 
 <style lang="scss" global>
     @use '@appwrite.io/pink/src/abstract/variables/devices';

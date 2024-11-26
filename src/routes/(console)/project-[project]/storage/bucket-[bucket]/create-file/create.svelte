@@ -3,8 +3,8 @@
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Dependencies } from '$lib/constants';
-    import type { WizardStepsType } from '$lib/layout/wizard.svelte';
-    import Wizard from '$lib/layout/wizard.svelte';
+    import type { WizardStepsType } from '$lib/layout/wizardWithSteps.svelte';
+    import Wizard from '$lib/layout/wizardWithSteps.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { uploader } from '$lib/stores/uploader';
     import { wizard } from '$lib/stores/wizard';

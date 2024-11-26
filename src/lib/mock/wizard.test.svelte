@@ -1,9 +1,9 @@
 <script lang="ts">
-    import Wizard from '$lib/layout/wizard.svelte';
+    import Wizard from '$lib/layout/wizardWithSteps.svelte';
     import Step1 from './wizard.step1.test.svelte';
     import Step2 from './wizard.step2.test.svelte';
     import { wizard } from '$lib/stores/wizard';
-    import type { WizardStepsType } from '$lib/layout/wizard.svelte';
+    import type { WizardStepsType } from '$lib/layout/wizardWithSteps.svelte';
 
     const stepsComponents: WizardStepsType = new Map();
 

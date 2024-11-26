@@ -3,8 +3,8 @@
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Dependencies } from '$lib/constants';
-    import { Wizard } from '$lib/layout';
-    import type { WizardStepsType } from '$lib/layout/wizard.svelte';
+    import { WizardWithSteps } from '$lib/layout';
+    import type { WizardStepsType } from '$lib/layout/wizardWithSteps.svelte';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { wizard } from '$lib/stores/wizard';
@@ -80,4 +80,4 @@
     });
 </script>
 
-<Wizard title="Create document" steps={stepsComponents} on:finish={create} />
+<WizardWithSteps title="Create document" steps={stepsComponents} on:finish={create} />

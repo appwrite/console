@@ -1,15 +1,3 @@
-<script context="module" lang="ts">
-    export function sortBranches(branches: Models.Branch[]) {
-        return branches.sort((a, b) => {
-            if (a.name === 'main' || a.name === 'master') {
-                return -1;
-            }
-
-            return a.name > b.name ? 1 : -1;
-        });
-    }
-</script>
-
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { page } from '$app/stores';
@@ -51,6 +39,7 @@
     import { isSelfHosted } from '$lib/system';
     import { consoleVariables } from '$routes/(console)/store';
     import { isValueOfStringEnum } from '$lib/helpers/types';
+    import { sortBranches } from '$lib/stores/vcs';
 
     const functionId = $page.params.function;
     const isVcsEnabled = $consoleVariables?._APP_VCS_ENABLED === true;

@@ -1,6 +1,6 @@
 <script lang="ts">
-    import type { WizardStepsType } from '$lib/layout/wizard.svelte';
-    import Wizard from '$lib/layout/wizard.svelte';
+    import type { WizardStepsType } from '$lib/layout/wizardWithSteps.svelte';
+    import Wizard from '$lib/layout/wizardWithSteps.svelte';
     import { sdk } from '$lib/stores/sdk';
     import { wizard } from '$lib/stores/wizard';
     import { onDestroy } from 'svelte';

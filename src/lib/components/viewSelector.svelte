@@ -78,6 +78,7 @@
         {#if $columns?.length}
             <DropList bind:show={showSelectColumns} scrollable wrapperFullWidth={fullWidthMobile}>
                 <Button
+                    size="s"
                     secondary
                     on:click={() => (showSelectColumns = !showSelectColumns)}
                     {fullWidthMobile}>

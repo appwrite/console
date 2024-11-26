@@ -104,7 +104,7 @@
                 <CreditCardInfo isBox paymentMethod={defaultPaymentMethod}>
                     <DropList bind:show={showDropdown} placement="bottom-start" noArrow>
                         <Button
-                            round
+                            icon
                             text
                             ariaLabel="More options"
                             on:click={() => {
@@ -155,7 +155,7 @@
                             <DropList bind:show={showDropdown} placement="bottom-start">
                                 <Button
                                     secondary
-                                    round
+                                    icon
                                     on:click={() => {
                                         if (filteredPaymentMethods.length) {
                                             showDropdown = !showDropdown;
@@ -202,7 +202,7 @@
                 <CreditCardInfo isBox paymentMethod={backupPaymentMethod}>
                     <DropList bind:show={showDropdownBackup} placement="bottom-start" noArrow>
                         <Button
-                            round
+                            icon
                             text
                             ariaLabel="More options"
                             on:click={() => {
@@ -253,7 +253,7 @@
                             <DropList bind:show={showDropdownBackup} placement="bottom-start">
                                 <Button
                                     secondary
-                                    round
+                                    icon
                                     on:click={() => {
                                         if (filteredPaymentMethods.length) {
                                             showDropdownBackup = !showDropdownBackup;

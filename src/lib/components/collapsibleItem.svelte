@@ -12,7 +12,7 @@
 <li class="collapsible-item" class:is-info={isInfo}>
     {#if noContent}
         <div class="collapsible-wrapper">
-            <div class={`collapsible-button u-gap-${gap}`}>
+            <div class={`collapsible-button u-gap-${gap}`} style="padding: 0">
                 <slot />
             </div>
         </div>
@@ -21,6 +21,7 @@
             <!-- svelte-ignore a11y-no-redundant-roles -->
             <summary
                 class={`collapsible-button u-position-relative u-gap-${gap}`}
+                style="padding: 0"
                 on:keyup={clickOnEnter}
                 on:click
                 role="button"

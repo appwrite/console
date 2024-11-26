@@ -1,5 +1,5 @@
 import { trackEvent } from '$lib/actions/analytics';
-import type { WizardStepsType } from '$lib/layout/wizard.svelte';
+import type { WizardStepsType } from '$lib/layout/wizardWithSteps.svelte';
 import type { SvelteComponent } from 'svelte';
 import { writable } from 'svelte/store';
 
