@@ -22,13 +22,13 @@
     let email: string,
         name: string,
         error: string,
-        role: string = 'developer';
+        role: string = isSelfHosted ? 'owner' : 'developer';
 
     async function create() {
         try {
             const team = await sdk.forConsole.teams.createMembership(
                 $organization.$id,
-                isSelfHosted ? [] : [role],
+                [role],
                 email,
                 undefined,
                 undefined,
@@ -89,13 +89,9 @@
             label="Name (optional)"
             placeholder="Enter name"
             bind:value={name} />
-        <InputSelect
-            popover={Roles}
-            id="role"
-            label="Role"
-            options={roles}
-            bind:value={role}
-            disabled={isSelfHosted} />
+        {#if isCloud}
+            <InputSelect popover={Roles} id="role" label="Role" options={roles} bind:value={role} />
+        {/if}
     </FormList>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
