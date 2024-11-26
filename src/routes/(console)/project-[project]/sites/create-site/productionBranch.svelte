@@ -1,11 +1,14 @@
 <script lang="ts">
     import { Button, InputChoice, InputSelectSearch, InputText } from '$lib/elements/forms';
     import { Fieldset, Layout } from '@appwrite.io/pink-svelte';
+    import SelectRootModal from '../(components)/selectRootModal.svelte';
 
     export let branch: string;
     export let rootDir: string;
     export let options: { value: string; label: string }[] = [];
     export let silentMode: boolean;
+
+    let show = false;
 </script>
 
 <Fieldset legend="Branch">
@@ -30,8 +33,12 @@
                 label="Root directory"
                 placeholder="Select directory"
                 bind:value={rootDir} />
-            <Button secondary size="s">Select</Button>
+            <Button secondary size="s" on:click={() => (show = true)}>Select</Button>
         </Layout.Stack>
         <InputChoice id="silentMode" label="Silent mode" bind:value={silentMode} />
     </Layout.Stack>
 </Fieldset>
+
+{#if show}
+    <SelectRootModal bind:show bind:rootDir />
+{/if}

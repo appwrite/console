@@ -8,7 +8,7 @@
     import { Wizard } from '$lib/layout';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
-    import { sortBranches } from '$lib/stores/vcs';
+    import { installation, repository, sortBranches } from '$lib/stores/vcs';
     import { Layout, Icon } from '@appwrite.io/pink-svelte';
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
     import { writable } from 'svelte/store';
@@ -18,6 +18,7 @@
     import Aside from '../../aside.svelte';
     import { BuildRuntime, Framework, ID, Query, ServeRuntime } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
+    import { onMount } from 'svelte';
 
     export let data;
     let showExitModal = false;
@@ -37,6 +38,11 @@
     let outputDirectory = framework?.defaultOutputDirectory;
     let variables: Partial<Models.Variable>[] = [];
     let silentMode = false;
+
+    onMount(() => {
+        installation.set(data.installation);
+        repository.set(data.repository);
+    });
 
     async function loadBranches() {
         const { branches } = await sdk.forProject.vcs.listRepositoryBranches(
@@ -169,8 +175,9 @@
     </svelte:fragment>
 
     <svelte:fragment slot="footer">
-        <Button size="s" fullWidthMobile secondary on:click={() => (showExitModal = true)}
-            >Cancel</Button>
+        <Button size="s" fullWidthMobile secondary on:click={() => (showExitModal = true)}>
+            Cancel
+        </Button>
         <Button
             size="s"
             fullWidthMobile
