@@ -5,6 +5,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { members, organization } from '$lib/stores/organization';
+    import { projects } from '../store';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { onMount } from 'svelte';
@@ -42,6 +43,8 @@
     }
 
     $: avatars = $members.memberships.map((team) => team.userName);
+    $: orgProjects = `${$projects.total} ${$projects.total === 1 ? 'project' : 'projects'}`;
+    $: orgMembers = `${$organization.total} ${$organization.total === 1 ? 'member' : 'members'}`;
 </script>
 
 <Container>
@@ -89,7 +92,7 @@
                     <svelte:fragment slot="title">
                         <h6 class="u-bold u-trim-1" data-private>{$organization.name}</h6>
                     </svelte:fragment>
-                    <p>{$organization.total} members</p>
+                    <p>{orgMembers}, {orgProjects}</p>
                 </BoxAvatar>
             </svelte:fragment>
 

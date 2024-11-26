@@ -8,7 +8,8 @@
     import Shell from '$lib/layout/shell.svelte';
     import { app } from '$lib/stores/app';
     import { log } from '$lib/stores/logs';
-    import { newOrgModal, organization } from '$lib/stores/organization';
+    import { newOrgModal, organization, type Organization } from '$lib/stores/organization';
+    import { database, checkForDatabaseBackupPolicies } from '$lib/stores/database';
     import { wizard } from '$lib/stores/wizard';
     import { afterUpdate, onMount } from 'svelte';
     import { loading } from '$routes/store';
@@ -268,9 +269,18 @@
         }
     }
 
-    organization.subscribe(async (org) => {
+    database.subscribe(async (database) => {
+        if (!database) return;
+        // the component checks `isCloud` internally.
+        await checkForDatabaseBackupPolicies(database);
+    });
+
+    let currentOrganizationId = null;
+    async function checkForUsageLimits(org: Organization) {
         if (!org) return;
+        if (currentOrganizationId === org.$id) return;
         if (isCloud) {
+            currentOrganizationId = org.$id;
             await checkForUsageLimit(org);
             checkForMarkedForDeletion(org);
             await checkForNewDevUpgradePro(org);
@@ -286,7 +296,9 @@
             }
             $activeHeaderAlert = headerAlert.get();
         }
-    });
+    }
+
+    $: checkForUsageLimits($organization);
 
     $: if (!$log.show) {
         $log.data = null;

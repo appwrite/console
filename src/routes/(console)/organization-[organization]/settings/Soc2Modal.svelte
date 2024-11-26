@@ -63,10 +63,10 @@
                 subject: 'support',
                 email: email,
                 firstName: $user?.name ?? '',
-                message: 'Soc-2',
+                message: 'SOC-2',
                 tags: ['cloud'],
                 customFields: [
-                    { id: '41612', value: 'Soc-2' },
+                    { id: '41612', value: 'SOC-2' },
                     { id: '48493', value: $user?.name ?? '' },
                     { id: '48492', value: $organization?.$id ?? '' },
                     { id: '48490', value: $user?.$id ?? '' }
@@ -99,7 +99,7 @@
     onSubmit={handleSubmit}
     size="big"
     headerDivider={false}
-    title="Request Soc-2">
+    title="Request SOC-2">
     <FormList>
         <InputEmail label="Email" placeholder="Enter email" id="email" bind:value={email} />
         <InputSelect

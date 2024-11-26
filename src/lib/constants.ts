@@ -50,6 +50,7 @@ export enum Dependencies {
     WEBHOOKS = 'dependency:webhooks',
     MIGRATIONS = 'dependency:migrations',
     COLLECTIONS = 'dependency:collections',
+    BACKUPS = 'dependency:backups',
     RUNTIMES = 'dependency:runtimes',
     CONSOLE_VARIABLES = 'dependency:console_variables',
     MESSAGING_PROVIDERS = 'dependency:messaging_providers',
@@ -467,7 +468,9 @@ export const eventServices: Array<EventService> = [
 export enum BillingPlan {
     FREE = 'tier-0',
     PRO = 'tier-1',
-    SCALE = 'tier-2'
+    SCALE = 'tier-2',
+    GITHUB_EDUCATION = 'auto-1',
+    CUSTOM = 'cont-1'
 }
 
 export const feedbackDowngradeOptions = [

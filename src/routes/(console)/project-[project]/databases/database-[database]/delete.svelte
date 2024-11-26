@@ -4,10 +4,11 @@
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
-    import { Button, FormList, InputText } from '$lib/elements/forms';
+    import { Button, FormList, InputText, InputCheckbox } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { database } from './store';
+
     import {
         TableBody,
         TableCell,
@@ -21,6 +22,7 @@
     const databaseId = $page.params.database;
 
     export let showDelete = false;
+    let confirmedDeletion = false;
 
     let error = null;
     let databaseName: string = null;
@@ -112,7 +114,7 @@
             <div class="u-flex u-main-center">
                 <div class="loader" />
             </div>
-        {:then}
+        {:then _}
             {#if error}
                 <p class="text" data-private>
                     Are you sure you want to delete <b>{$database.name}</b>?

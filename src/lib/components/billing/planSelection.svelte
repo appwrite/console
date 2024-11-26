@@ -8,6 +8,7 @@
     export let billingPlan: Tier;
     export let anyOrgFree = false;
     export let isNewOrg = false;
+    export let selfService = true;
     let classes: string = '';
     export { classes as class };
 
@@ -22,7 +23,7 @@
             <LabelCard
                 name="plan"
                 bind:group={billingPlan}
-                disabled={anyOrgFree}
+                disabled={anyOrgFree || !selfService}
                 value={BillingPlan.FREE}
                 tooltipShow={anyOrgFree}
                 tooltipText="You are limited to 1 Free organization per account."
@@ -49,9 +50,16 @@
         </li>
 
         <li>
-            <LabelCard name="plan" bind:group={billingPlan} value={BillingPlan.PRO} padding={1.5}>
-                <svelte:fragment slot="custom">
-                    <div class="u-flex u-flex-vertical u-gap-4 u-width-full-line">
+            <LabelCard
+                name="plan"
+                disabled={!selfService}
+                bind:group={billingPlan}
+                value={BillingPlan.PRO}
+                padding={1.5}>
+                <svelte:fragment slot="custom" let:disabled>
+                    <div
+                        class="u-flex u-flex-vertical u-gap-4 u-width-full-line"
+                        class:u-opacity-50={disabled}>
                         <h4 class="body-text-2 u-bold">
                             {tierPro.name}
                             {#if $organization?.billingPlan === BillingPlan.PRO && !isNewOrg}

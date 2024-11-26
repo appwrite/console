@@ -52,17 +52,28 @@
     {/if}
     <div class="u-sep-block-start" />
     <span class="u-flex u-main-space-between">
-        <p class="text">Estimated total</p>
+        <p class="text">
+            Upcoming charge<br /><span class="u-color-text-gray"
+                >Due on {!currentPlan.trialDays
+                    ? toLocaleDate(billingPayDate.toString())
+                    : toLocaleDate(trialEndDate.toString())}</span>
+        </p>
         <p class="text">
             {formatCurrency(estimatedTotal)}
         </p>
     </span>
 
     <p class="text u-margin-block-start-16">
-        Your payment method will be charged this amount plus usage fees every 30 days {!currentPlan.trialDays
-            ? `starting ${toLocaleDate(billingPayDate.toString())}`
-            : ` after your trial period ends on ${toLocaleDate(trialEndDate.toString())}`}.
+        You'll pay <span class="u-bold">{formatCurrency(estimatedTotal)}</span> now, with our first
+        billing cycle starting on
+        <span class="u-bold"
+            >{!currentPlan.trialDays
+                ? toLocaleDate(billingPayDate.toString())
+                : toLocaleDate(trialEndDate.toString())}</span
+        >. Once your credits run out, you'll be charged
+        <span class="u-bold">{formatCurrency(currentPlan.price)}</span> plus usage fees every 30 days.
     </p>
+
     <FormList class="u-margin-block-start-24">
         <InputChoice
             type="switchbox"

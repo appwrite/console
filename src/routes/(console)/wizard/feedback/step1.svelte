@@ -18,10 +18,10 @@
             await feedback.submitFeedback(
                 `feedback-${$feedback.type}`,
                 $feedbackData.message,
+                $page.url.href,
                 $user.name,
                 $user.email,
                 $organization.billingPlan,
-                $page.url.href,
                 $feedbackData.value
             );
             addNotification({

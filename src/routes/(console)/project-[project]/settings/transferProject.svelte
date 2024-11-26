@@ -18,7 +18,7 @@
             show = false;
             addNotification({
                 type: 'success',
-                message: `${$project.name} has been transfered to ${teamName}`
+                message: `${$project.name} has been transferred to ${teamName}`
             });
             trackEvent(Submit.ProjectUpdateTeam);
             await goto(`${base}/organization-${teamId}`);
