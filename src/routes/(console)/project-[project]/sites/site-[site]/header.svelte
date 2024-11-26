@@ -4,6 +4,7 @@
     import { Tab, Tabs } from '$lib/components';
     import { isTabSelected } from '$lib/helpers/load';
     import { Cover, CoverTitle } from '$lib/layout';
+    import { site } from './store';
 
     $: projectId = $page.params.project;
     $: path = `${base}/project-${projectId}/sites/site-${$page.params.site}`;
@@ -43,7 +44,7 @@
 
 <Cover>
     <svelte:fragment slot="header">
-        <CoverTitle>Sites</CoverTitle>
+        <CoverTitle href={`${base}/project-${projectId}/sites`}>{$site.name}</CoverTitle>
     </svelte:fragment>
 
     <Tabs>
