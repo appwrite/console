@@ -48,6 +48,10 @@
         return queries;
     }
 
+    function unescapeNewLines(logs: string) {
+        return logs.replace(/\\n/g, '\n');
+    }
+
     beforeNavigate((n) => {
         if (!$log.show) return;
         if (n.type === 'popstate') {
@@ -351,7 +355,7 @@
                                         allowScroll
                                         withCopy
                                         noMargin
-                                        code={execution.logs}
+                                        code={unescapeNewLines(execution.logs)}
                                         language="sh"
                                         class="limited-code-height" />
                                 {:else}
@@ -365,7 +369,7 @@
                                         allowScroll
                                         withCopy
                                         noMargin
-                                        code={execution.errors}
+                                        code={unescapeNewLines(execution.errors)}
                                         language="sh"
                                         class="limited-code-height" />
                                 {:else}

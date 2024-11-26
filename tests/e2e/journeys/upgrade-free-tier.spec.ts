@@ -7,13 +7,13 @@ test('upgrade - free tier', async ({ page }) => {
     await registerUserStep(page);
     await createFreeProject(page);
     await test.step('upgrade project', async () => {
-        await page.getByRole('link', { name: 'upgrade' }).click();
+        await page.getByRole('link', { name: 'Upgrade', exact: true }).click();
         await page.waitForURL('./organization-**/change-plan');
         await page.locator('input[value="tier-1"]').click();
         await page.getByRole('button', { name: 'add' }).first().click();
         await enterCreditCard(page);
         // skip members
         await page.getByRole('button', { name: 'change plan' }).click();
-        await page.waitForURL('./organization-**');
+        await page.waitForURL('**/console/project-*/overview/platforms');
     });
 });

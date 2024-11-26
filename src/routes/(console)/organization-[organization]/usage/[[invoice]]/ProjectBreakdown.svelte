@@ -14,15 +14,12 @@
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
     import type { OrganizationUsage } from '$lib/sdk/billing';
     import { base } from '$app/paths';
+    import { canSeeProjects } from '$lib/stores/roles';
 
     type Metric = 'users' | 'storage' | 'bandwidth' | 'executions';
     export let data: PageData;
     export let projects: OrganizationUsage['projects'];
     export let metric: Metric;
-
-    function getProjectName(projectId: string): string {
-        return data.projectNames.find((project) => project.$id === projectId)?.name;
-    }
 
     function getProjectUsageLink(projectId: string): string {
         return `${base}/project-${projectId}/settings/usage`;
@@ -58,22 +55,26 @@
         <svelte:fragment slot="title">Project breakdown</svelte:fragment>
         <TableScroll noMargin>
             <TableHeader>
-                <TableCellHead width={185}>Project</TableCellHead>
+                <TableCellHead width={185} style="padding-left: 0;">Project</TableCellHead>
                 <TableCellHead width={100}>Usage</TableCellHead>
-                <TableCellHead width={140} />
+                {#if $canSeeProjects}
+                    <TableCellHead width={140} />
+                {/if}
             </TableHeader>
             <TableBody>
                 {#each groupByProject(metric).sort((a, b) => b.usage - a.usage) as project}
                     <TableRow>
-                        <TableCellText title="Project">
-                            {getProjectName(project.projectId)}
+                        <TableCellText title="Project" style="padding-left: 0;">
+                            {data.projectNames[project.projectId]?.name ?? 'Unknown'}
                         </TableCellText>
                         <TableCellText title="Usage">{format(project.usage)}</TableCellText>
-                        <TableCellLink
-                            title="Go to project usage"
-                            href={getProjectUsageLink(project.projectId)}>
-                            View project usage
-                        </TableCellLink>
+                        {#if $canSeeProjects}
+                            <TableCellLink
+                                title="Go to project usage"
+                                href={getProjectUsageLink(project.projectId)}>
+                                View project usage
+                            </TableCellLink>
+                        {/if}
                     </TableRow>
                 {/each}
             </TableBody>

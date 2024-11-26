@@ -159,7 +159,7 @@
                                             </div>
                                             <div class="body-text-2">
                                                 {runtimeDetail.name}
-                                                {#if runtimeDetail.name.toLowerCase() === 'go'}
+                                                {#if runtimeDetail.name.toLowerCase() === 'deno'}
                                                     <span class="inline-tag">New</span>
                                                 {/if}
                                             </div>
@@ -192,7 +192,7 @@
                     <Button
                         text
                         class="u-margin-block-start-24 u-margin-inline-start-auto"
-                        href={`${base}/project-${$page.params.project}/functions/templates?useCase=Starter`}>
+                        href={`${base}/project-${$page.params.project}/functions/templates?useCase=starter`}>
                         All starter templates <span class="icon-cheveron-right" />
                     </Button>
                     <div class="u-sep-block-start common-section" />

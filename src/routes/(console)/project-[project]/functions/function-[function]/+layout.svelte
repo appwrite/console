@@ -9,6 +9,7 @@
     import { project } from '../../store';
     import type { Models } from '@appwrite.io/console';
     import { base } from '$app/paths';
+    import { canWriteFunctions } from '$lib/stores/roles';
 
     onMount(() => {
         let previousStatus = null;
@@ -47,7 +48,8 @@
             },
             keys: $page.url.pathname.endsWith($func.$id) ? ['c'] : ['c', 'd'],
             group: 'functions',
-            icon: 'plus'
+            icon: 'plus',
+            disabled: !$canWriteFunctions
         },
         {
             label: 'Permissions',
@@ -58,7 +60,8 @@
                 scrollBy({ top: -100 });
             },
             icon: 'search',
-            group: 'functions'
+            group: 'functions',
+            disabled: !$canWriteFunctions
         },
         {
             label: 'Events',
@@ -69,7 +72,8 @@
                 scrollBy({ top: -100 });
             },
             icon: 'calendar',
-            group: 'functions'
+            group: 'functions',
+            disabled: !$canWriteFunctions
         },
         {
             label: 'Variables',
@@ -79,7 +83,8 @@
                 );
             },
             icon: 'list',
-            group: 'functions'
+            group: 'functions',
+            disabled: !$canWriteFunctions
         },
         {
             label: 'Timeout',
@@ -89,7 +94,8 @@
                 );
             },
             icon: 'x-circle',
-            group: 'functions'
+            group: 'functions',
+            disabled: !$canWriteFunctions
         },
         {
             label: 'Schedule',
@@ -100,7 +106,8 @@
                 scrollBy({ top: -100 });
             },
             icon: 'clock',
-            group: 'functions'
+            group: 'functions',
+            disabled: !$canWriteFunctions
         },
         {
             label: 'Go to deployments',
@@ -140,7 +147,7 @@
             keys: ['g', 's'],
             group: 'navigation',
             rank: 10,
-            disabled: $page.url.pathname.endsWith('settings')
+            disabled: $page.url.pathname.endsWith('settings') || !$canWriteFunctions
         }
     ]);
 </script>

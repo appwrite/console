@@ -101,6 +101,7 @@
             <div class="u-margin-block-start-16" />
             <div class="chart-container">
                 <BarChart
+                    formatted={$page.params.period === '24h' ? 'hours' : 'days'}
                     series={[
                         {
                             name: countMetadata.legend,

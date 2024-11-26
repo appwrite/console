@@ -22,15 +22,17 @@
     export async function updateEnum(
         databaseId: string,
         collectionId: string,
-        data: Partial<Models.AttributeEnum>
+        data: Partial<Models.AttributeEnum>,
+        originalKey?: string
     ) {
         await sdk.forProject.databases.updateEnumAttribute(
             databaseId,
             collectionId,
-            data.key,
+            originalKey,
             data.elements,
             data.required,
-            data.default
+            data.default,
+            data.key !== originalKey ? data.key : undefined
         );
     }
 </script>
@@ -86,7 +88,7 @@
     label="Elements"
     bind:tags={data.elements}
     placeholder="Add elements here"
-    tooltip="Enum elements have a maxiumum length of 255 characters. This limit can not be exceeded."
+    tooltip="Enum elements have a maximum length of 255 characters. This limit can not be exceeded."
     required>
 </InputTags>
 

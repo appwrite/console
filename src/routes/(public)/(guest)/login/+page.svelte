@@ -47,20 +47,9 @@
                 await goto(`${base}/apply-credit?code=${data?.couponData?.code}`);
                 return;
             }
-            if (data?.campaign) {
-                await goto(`${base}/apply-credit?campaign=${data.campaign}`);
+            if (data?.campaign?.$id) {
+                await goto(`${base}/apply-credit?campaign=${data.campaign?.$id}`);
                 return;
-            }
-            if ($page.url.searchParams) {
-                const redirect = $page.url.searchParams.get('redirect');
-                $page.url.searchParams.delete('redirect');
-                if (redirect) {
-                    await goto(`${redirect}${$page.url.search}`);
-                } else {
-                    await goto(`${base}${$page.url.search ?? ''}`);
-                }
-            } else {
-                await goto(base);
             }
         } catch (error) {
             disabled = false;

@@ -12,6 +12,7 @@
     import PlanExcess from '$lib/components/billing/planExcess.svelte';
     import PlanSelection from '$lib/components/billing/planSelection.svelte';
     import ValidateCreditModal from '$lib/components/billing/validateCreditModal.svelte';
+    import Default from '$lib/components/roles/default.svelte';
     import { BillingPlan, Dependencies, feedbackDowngradeOptions } from '$lib/constants';
     import {
         Button,
@@ -72,6 +73,7 @@
 
     let feedbackDowngradeReason: string;
     let feedbackMessage: string;
+    let selfService: boolean;
 
     onMount(async () => {
         if ($page.url.searchParams.has('code')) {
@@ -98,6 +100,9 @@
         } else {
             billingPlan = BillingPlan.PRO;
         }
+
+        const currentPlan = await sdk.forConsole.billing.getPlan($organization?.$id);
+        selfService = currentPlan.selfService;
     });
 
     async function loadPaymentMethods() {
@@ -144,14 +149,14 @@
                 })
             });
 
-            await goto(`${base}/organization-${$organization.$id}`);
+            await goto(previousPage);
             addNotification({
                 type: 'success',
                 isHtml: true,
                 message: `
-                    <b>${$organization.name}</b> has been changed to ${
-                        tierToPlan(billingPlan).name
-                    } plan.`
+                        <b>${$organization.name}</b> will change to ${
+                            tierToPlan(billingPlan).name
+                        } plan at the end of the current billing cycle.`
             });
 
             trackEvent(Submit.OrganizationDowngrade, {
@@ -162,7 +167,7 @@
                 type: 'error',
                 message: e.message
             });
-            trackError(e, isUpgrade ? Submit.OrganizationUpgrade : Submit.OrganizationDowngrade);
+            trackError(e, Submit.OrganizationDowngrade);
         }
     }
 
@@ -212,23 +217,13 @@
             await invalidate(Dependencies.ACCOUNT);
             await invalidate(Dependencies.ORGANIZATION);
 
-            await goto(`${base}/organization-${org.$id}`);
-            if (isUpgrade) {
-                addNotification({
-                    type: 'success',
-                    message: 'Your organization has been upgraded'
-                });
-            } else {
-                addNotification({
-                    type: 'success',
-                    isHtml: true,
-                    message: `
-                        <b>${$organization.name}</b> will change to ${
-                            tierToPlan(billingPlan).name
-                        } plan at the end of the current billing cycle.`
-                });
-            }
-            trackEvent(isUpgrade ? Submit.OrganizationUpgrade : Submit.OrganizationDowngrade, {
+            await goto(previousPage);
+            addNotification({
+                type: 'success',
+                message: 'Your organization has been upgraded'
+            });
+
+            trackEvent(Submit.OrganizationUpgrade, {
                 plan: tierToPlan(billingPlan)?.name
             });
         } catch (e) {
@@ -236,7 +231,7 @@
                 type: 'error',
                 message: e.message
             });
-            trackError(e, isUpgrade ? Submit.OrganizationUpgrade : Submit.OrganizationDowngrade);
+            trackError(e, Submit.OrganizationUpgrade);
         }
     }
 
@@ -261,8 +256,14 @@
                 For more details on our plans, visit our
                 <Button href="https://appwrite.io/pricing" external link>pricing page</Button>.
             </p>
+            {#if !selfService}
+                <Alert class="u-position-relative u-margin-block-start-16" type="info"
+                    >Your contract is not eligible for manual changes. Please reach out to schedule
+                    a call or setup a dialog.</Alert>
+            {/if}
             <PlanSelection
                 bind:billingPlan
+                bind:selfService
                 anyOrgFree={!!anyOrgFree}
                 class={anyOrgFree && billingPlan !== BillingPlan.FREE
                     ? 'u-margin-block-start-16'
@@ -296,7 +297,7 @@
                     <InputTags
                         bind:tags={collaborators}
                         label="Invite members by email"
-                        tooltip="Invited members will have access to all services and payment data within your organization"
+                        popover={Default}
                         placeholder="Enter email address(es)"
                         validityRegex={emailRegex}
                         validityMessage="Invalid email address"
@@ -324,6 +325,7 @@
                         bind:value={feedbackDowngradeReason} />
                     <InputTextarea
                         id="comment"
+                        required
                         label="If you need to elaborate, please do so here"
                         placeholder="Enter feedback"
                         bind:value={feedbackMessage} />
@@ -331,14 +333,14 @@
             {/if}
         </Form>
         <svelte:fragment slot="aside">
-            {#if billingPlan !== BillingPlan.FREE && $organization.billingPlan !== billingPlan}
+            {#if billingPlan !== BillingPlan.FREE && $organization.billingPlan !== billingPlan && $organization.billingPlan !== BillingPlan.CUSTOM}
                 <EstimatedTotalBox
                     {billingPlan}
                     {collaborators}
                     bind:couponData
                     bind:billingBudget
                     {isDowngrade} />
-            {:else}
+            {:else if $organization.billingPlan !== BillingPlan.CUSTOM}
                 <PlanComparisonBox downgrade={isDowngrade} />
             {/if}
         </svelte:fragment>
@@ -349,7 +351,7 @@
         <Button
             fullWidthMobile
             on:click={() => formComponent.triggerSubmit()}
-            disabled={$isSubmitting || isButtonDisabled}>
+            disabled={$isSubmitting || isButtonDisabled || !selfService}>
             Change plan
         </Button>
     </WizardSecondaryFooter>

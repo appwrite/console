@@ -16,7 +16,6 @@
     import Create from './create.svelte';
     import { GRACE_PERIOD_OVERRIDE, isCloud } from '$lib/system';
     import { readOnly } from '$lib/stores/billing';
-    import { project } from '../../store';
     import { writable } from 'svelte/store';
     import type { Column } from '$lib/helpers/types';
     import Table from './table.svelte';
@@ -28,6 +27,7 @@
     import QuickFilters from './quickFilters.svelte';
     import { Pill } from '$lib/elements';
     import { onMount } from 'svelte';
+    import { canWriteFunctions } from '$lib/stores/roles';
 
     export let data;
 
@@ -96,7 +96,7 @@
         },
         {
             id: 'size',
-            title: 'Deployment size',
+            title: 'Size',
             type: 'integer',
             show: true,
             width: 140,
@@ -185,18 +185,20 @@
                             href={`${base}/project-${$page.params.project}/functions/function-${$page.params.function}/deployment-${activeDeployment.$id}`}>
                             Build logs
                         </Button>
-                        <Button
-                            text
-                            class="u-margin-inline-end-16"
-                            on:click={() => {
-                                selectedDeployment = activeDeployment;
-                                showRedeploy = true;
-                            }}>
-                            Redeploy
-                        </Button>
+                        {#if $canWriteFunctions}
+                            <Button
+                                text
+                                class="u-margin-inline-end-16"
+                                on:click={() => {
+                                    selectedDeployment = activeDeployment;
+                                    showRedeploy = true;
+                                }}>
+                                Redeploy
+                            </Button>
+                        {/if}
                         <Button
                             secondary
-                            href={`${base}/project-${$project.$id}/functions/function-${$func.$id}/executions/execute-function`}
+                            href={`${base}/project-${$page.params.project}/functions/function-${$func.$id}/executions/execute-function`}
                             disabled={isCloud && $readOnly && !GRACE_PERIOD_OVERRIDE}>
                             Execute
                         </Button>

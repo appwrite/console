@@ -10,10 +10,10 @@
     import { sdk } from '$lib/stores/sdk';
     import { user } from './store';
 
-    let showVerifcationDropdown = false;
+    let showVerificationDropdown = false;
 
     async function updateVerificationEmail() {
-        showVerifcationDropdown = false;
+        showVerificationDropdown = false;
         try {
             await sdk.forProject.users.updateEmailVerification($user.$id, !$user.emailVerification);
             await invalidate(Dependencies.USER);
@@ -33,7 +33,7 @@
         }
     }
     async function updateVerificationPhone() {
-        showVerifcationDropdown = false;
+        showVerificationDropdown = false;
         try {
             await sdk.forProject.users.updatePhoneVerification($user.$id, !$user.phoneVerification);
             await invalidate(Dependencies.USER);
@@ -135,10 +135,10 @@
         </Button>
         {#if $user.status}
             {#if $user.phone && $user.email}
-                <DropList bind:show={showVerifcationDropdown} placement="top-start">
+                <DropList bind:show={showVerificationDropdown} placement="top-start">
                     <Button
                         secondary
-                        on:click={() => (showVerifcationDropdown = !showVerifcationDropdown)}>
+                        on:click={() => (showVerificationDropdown = !showVerificationDropdown)}>
                         {$user.emailVerification && $user.phoneVerification ? 'Unverify' : 'Verify'}
                         account
                     </Button>

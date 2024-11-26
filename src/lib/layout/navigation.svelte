@@ -8,6 +8,7 @@
     import { slide } from '$lib/helpers/transition';
     import { upgradeURL } from '$lib/stores/billing';
     import { organization } from '$lib/stores/organization';
+    import { canSeeDatabases } from '$lib/stores/roles';
     import { wizard } from '$lib/stores/wizard';
     import { isCloud } from '$lib/system';
     import Create from '$routes/(console)/feedbackWizard.svelte';
@@ -95,23 +96,25 @@
                                 <span class="text">Auth</span>
                             </a>
                         </li>
-                        <li class="drop-list-item">
-                            <a
-                                class="drop-button"
-                                class:is-selected={$page.url.pathname.startsWith(
-                                    `${projectPath}/databases`
-                                )}
-                                on:click={() => trackEvent('click_menu_databases')}
-                                href={`${projectPath}/databases`}
-                                use:tooltip={{
-                                    content: 'Databases',
-                                    placement: 'right',
-                                    disabled: !narrow
-                                }}>
-                                <span class="icon-database" aria-hidden="true" />
-                                <span class="text">Databases</span>
-                            </a>
-                        </li>
+                        {#if $canSeeDatabases}
+                            <li class="drop-list-item">
+                                <a
+                                    class="drop-button"
+                                    class:is-selected={$page.url.pathname.startsWith(
+                                        `${projectPath}/databases`
+                                    )}
+                                    on:click={() => trackEvent('click_menu_databases')}
+                                    href={`${projectPath}/databases`}
+                                    use:tooltip={{
+                                        content: 'Databases',
+                                        placement: 'right',
+                                        disabled: !narrow
+                                    }}>
+                                    <span class="icon-database" aria-hidden="true" />
+                                    <span class="text">Databases</span>
+                                </a>
+                            </li>
+                        {/if}
                         <li class="drop-list-item">
                             <a
                                 class="drop-button"

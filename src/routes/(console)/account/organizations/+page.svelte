@@ -17,7 +17,7 @@
     import { Pill } from '$lib/elements';
     import type { Models } from '@appwrite.io/console';
     import type { Organization } from '$lib/stores/organization';
-    import { daysLeftInTrial, plansInfo } from '$lib/stores/billing';
+    import { daysLeftInTrial, plansInfo, tierToPlan } from '$lib/stores/billing';
     import { tooltip } from '$lib/actions/tooltip';
     import { toLocaleDate } from '$lib/helpers/date';
     import { BillingPlan } from '$lib/constants';
@@ -71,14 +71,15 @@
                     </svelte:fragment>
                     <svelte:fragment slot="status">
                         {#if isCloudOrg(organization)}
-                            {#if organization?.billingPlan === BillingPlan.FREE}
+                            {#if organization?.billingPlan === BillingPlan.FREE || organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
                                 <div
                                     class="u-flex u-cross-center"
                                     use:tooltip={{
                                         content:
                                             'You are limited to 1 free organization per account'
                                     }}>
-                                    <Pill>FREE</Pill>
+                                    <Pill class="eyebrow-heading-3"
+                                        >{tierToPlan(organization?.billingPlan)?.name}</Pill>
                                 </div>
                             {/if}
                             {#if organization?.billingTrialStartDate && $daysLeftInTrial > 0 && organization.billingPlan !== BillingPlan.FREE && $plansInfo.get(organization.billingPlan)?.trialDays}
@@ -89,7 +90,7 @@
                                             organization.billingStartDate
                                         )}. ${$daysLeftInTrial} days remaining.`
                                     }}>
-                                    <Pill>TRIAL</Pill>
+                                    <Pill class="eyebrow-heading-3">TRIAL</Pill>
                                 </div>
                             {/if}
                         {/if}
