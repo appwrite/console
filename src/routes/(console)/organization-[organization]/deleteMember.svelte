@@ -1,6 +1,5 @@
 <script lang="ts">
-    import { base } from '$app/paths';
-    import { goto, invalidate } from '$app/navigation';
+    import { invalidate } from '$app/navigation';
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
@@ -13,6 +12,7 @@
     import { checkForUsageLimit } from '$lib/stores/billing';
     import { isCloud } from '$lib/system';
     import { organization } from '$lib/stores/organization';
+    import { logout } from '$lib/helpers/logout';
 
     const dispatch = createEventDispatcher();
 
@@ -24,8 +24,7 @@
             await sdk.forConsole.teams.deleteMembership(selectedMember.teamId, selectedMember.$id);
 
             if (isUser) {
-                await sdk.forConsole.account.deleteSession('current');
-                await goto(`${base}/login`);
+                logout();
             } else {
                 dispatch('deleted');
             }

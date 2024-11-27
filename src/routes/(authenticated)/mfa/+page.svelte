@@ -70,7 +70,8 @@
 </Unauthenticated>
 
 <style lang="scss">
-    @import '@appwrite.io/pink/src/abstract/variables/_devices.scss';
+    @use '@appwrite.io/pink/src/abstract/variables/devices';
+
     .top {
         inset-block-start: 5.85rem;
         inline-size: 100%;
@@ -89,7 +90,7 @@
     }
 
     /* for smaller screens */
-    @media #{$break2open} {
+    @media #{devices.$break2open} {
         .top {
             inset-block-start: 5.85rem;
             padding-inline: 0;

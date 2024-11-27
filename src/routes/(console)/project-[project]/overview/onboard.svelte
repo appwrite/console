@@ -187,7 +187,7 @@
     alt="statistics" />
 
 <style lang="scss">
-    @import '@appwrite.io/pink/src/abstract/variables/_devices.scss';
+    @use '@appwrite.io/pink/src/abstract/variables/devices';
 
     .card {
         :global(.theme-dark) & {
@@ -215,7 +215,7 @@
         margin-inline: 4rem;
     }
 
-    @media #{$break2open} {
+    @media #{devices.$break2open} {
         .card-header {
             background-image: var(--url);
             background-repeat: no-repeat;
@@ -234,11 +234,11 @@
         z-index: 1;
         position: absolute;
 
-        @media #{$break1} {
+        @media #{devices.$break1} {
             margin-block-start: 15%;
         }
 
-        @media #{$break2open} {
+        @media #{devices.$break2open} {
             margin-block-start: 2rem;
         }
     }

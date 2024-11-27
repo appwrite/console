@@ -3,9 +3,12 @@ import BackupsDark from '$lib/images/backups/promo/backups-dark.png';
 import BackupsLight from '$lib/images/backups/promo/backups-light.png';
 
 import { type BottomModalAlertItem, showBottomModalAlert } from '$lib/stores/bottom-alerts';
+import { isCloud } from '$lib/system';
 
-const listOfPromotions: BottomModalAlertItem[] = [
-    {
+const listOfPromotions: BottomModalAlertItem[] = [];
+
+if (isCloud) {
+    listOfPromotions.push({
         id: 'modal:databaseBackups',
         src: {
             dark: BackupsDark,
@@ -24,8 +27,8 @@ const listOfPromotions: BottomModalAlertItem[] = [
             text: 'Learn more',
             link: () => 'http://appwrite.io/docs/products/databases/backups'
         }
-    }
-];
+    });
+}
 
 export function addBottomModalAlerts() {
     listOfPromotions.forEach((promotion) => showBottomModalAlert(promotion));

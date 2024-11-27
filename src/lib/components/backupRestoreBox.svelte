@@ -1,6 +1,6 @@
 <script lang="ts">
     import { sdk } from '$lib/stores/sdk';
-    import { type Payload, Query } from '@appwrite.io/console';
+    import { type Payload } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { isCloud, isSelfHosted } from '$lib/system';
     import { organization } from '$lib/stores/organization';
@@ -51,39 +51,6 @@
             });
         }
     }
-
-    async function fetchBackupRestores() {
-        try {
-            const query = [
-                Query.equal('status', 'pending'),
-                Query.equal('status', 'uploading'),
-                Query.equal('status', 'processing')
-            ];
-
-            const [archivesResponse, restorationsResponse] = await Promise.all([
-                sdk.forProject.backups.listArchives([
-                    ...query,
-                    // only manual backups
-                    Query.isNull('policyId')
-                ]),
-                sdk.forProject.backups.listRestorations(query)
-            ]);
-
-            // this is a one time op.
-            backupRestoreItems.archives = new Map(
-                archivesResponse.archives.map((item) => [item.$id, item])
-            );
-
-            backupRestoreItems.restorations = new Map(
-                restorationsResponse.restorations.map((item) => [item.$id, item])
-            );
-        } catch (e) {
-            // ignore?
-        }
-    }
-
-    // fresh fetch.
-    fetchBackupRestores();
 
     function updateOrAddItem(payload: Payload) {
         const { $id, status, $collection, policyId } = payload;
@@ -155,8 +122,7 @@
         // fast path: don't subscribe if org is on a free plan or is self-hosted.
         if (isSelfHosted || (isCloud && $organization.billingPlan === BillingPlan.FREE)) return;
 
-        sdk.forConsole.client.subscribe('console', (response) => {
-            // nice!
+        return sdk.forConsole.client.subscribe('console', (response) => {
             if (!response.channels.includes(`projects.${getProjectId()}`)) return;
 
             if (
