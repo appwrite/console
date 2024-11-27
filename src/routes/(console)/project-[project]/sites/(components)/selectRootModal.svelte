@@ -1,6 +1,7 @@
 <script lang="ts">
     import { Modal } from '$lib/components';
     import { Button } from '$lib/elements/forms';
+    import { iconPath } from '$lib/stores/app';
     import { sdk } from '$lib/stores/sdk';
     import { installation, repository } from '$lib/stores/vcs';
     import { DirectoryPicker } from '@appwrite.io/pink-svelte';
@@ -27,41 +28,86 @@
             children: []
         }
     ];
+    let currentPath: string = './';
 
     onMount(async () => {
         try {
-            const baseRoute = './';
             const content = await sdk.forProject.vcs.getRepositoryContents(
                 $installation.$id,
                 $repository.id,
-                baseRoute
+                currentPath
             );
-            console.log(content);
-            directories[0].fileCount = content.contents.length;
-            directories[0].children = content.contents.map((element) => ({
-                id: element.name,
-                title: element.name,
-                fullPath: baseRoute + element.name,
-                fileCount: element.size,
-                thumbnailUrl: element.name
-            }));
-            console.log(directories);
+            // console.log(content);
+            directories[0].fileCount = content.contents?.length ?? 0;
+            directories[0].children = content.contents
+                .filter((e) => e.isDirectory)
+                .map((dir) => ({
+                    title: dir.name,
+                    fullPath: currentPath + dir.name,
+                    fileCount: undefined,
+                    thumbnailUrl: dir.name
+                }));
+            // console.log(directories);
             isLoading = false;
         } catch (e) {
             console.log(e);
         }
     });
 
-    async function fectchContents() {}
+    async function fetchContents(e: CustomEvent) {
+        const path = e.detail.fullPath;
+        currentPath = path;
+        try {
+            const content = await sdk.forProject.vcs.getRepositoryContents(
+                $installation.$id,
+                $repository.id,
+                path
+            );
+            // console.log(content);
+            const fileCount = content.contents?.length ?? 0;
+            const contentDirectories = content.contents.filter((e) => e.isDirectory);
 
-    $: console.log(rootDir);
+            if (contentDirectories.length === 0) {
+                return;
+            }
+            let currentDir = directories[0];
+            for (let i = 1; i < path.split('/').length; i++) {
+                const dir = path.split('/')[i];
+                currentDir = currentDir.children.find((d) => d.title === dir);
+            }
+
+            currentDir.fileCount = fileCount;
+            currentDir.children = contentDirectories.map((dir) => ({
+                title: dir.name,
+                fullPath: path + '/' + dir.name,
+                fileCount: undefined,
+                thumbnailUrl: undefined
+            }));
+            //     const runtime = await sdk.forProject.vcs.createRepositoryDetection(
+            //         $installation.$id,
+            //         $repository.id,
+            //         path
+            //     );
+
+            //     currentDir.children.forEach((dir)=>
+            //     {
+            //         dir.thumbnailHtml = $iconPath(runtime.runtime, 'color')
+            //     }
+            // )
+            directories = [...directories];
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    // $: console.log(rootDir);
 </script>
 
 <Modal title="Root directory" bind:show>
     <span slot="description">
         Select the directory where your site code is located using the menu below.
     </span>
-    <DirectoryPicker {directories} {isLoading} bind:value={rootDir} />
+    <DirectoryPicker {directories} {isLoading} on:select={fetchContents} />
 
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (show = false)}>Cancel</Button>
