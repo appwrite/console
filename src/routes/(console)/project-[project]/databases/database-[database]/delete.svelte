@@ -4,7 +4,7 @@
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
-    import { Button, FormList, InputText, InputCheckbox } from '$lib/elements/forms';
+    import { Button, FormList, InputCheckbox } from '$lib/elements/forms';
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { database } from './store';
@@ -19,13 +19,13 @@
     } from '$lib/elements/table';
     import { toLocaleDate } from '$lib/helpers/date';
     import { type Models, Query } from '@appwrite.io/console';
+
     const databaseId = $page.params.database;
 
     export let showDelete = false;
     let confirmedDeletion = false;
 
     let error = null;
-    let databaseName: string = null;
     let isLoadingDocumentsCount = false;
 
     /* enable overflow-x */
@@ -96,7 +96,6 @@
     /* reset data on modal close */
     $: if (!showDelete) {
         collections = null;
-        databaseName = null;
         collectionItems = [];
     }
 </script>
@@ -114,16 +113,15 @@
             <div class="u-flex u-main-center">
                 <div class="loader" />
             </div>
-        {:then _}
+        {:then}
             {#if error}
                 <p class="text" data-private>
                     Are you sure you want to delete <b>{$database.name}</b>?
                 </p>
             {:else if collectionItems.length > 0}
                 <p class="text" data-private>
-                    The following collections and all data associated with <b>{$database.name}</b>
-                    will be permanently deleted. This includes backups.
-                    <b>This action is irreversible.</b>
+                    The following collections and all data associated with <b>{$database.name}</b>,
+                    will be permanently deleted.
                 </p>
 
                 <div class="u-flex-vertical u-gap-16">
@@ -156,7 +154,7 @@
                                 <div class="loader is-small" />
                             {/if}
                         </div>
-                    {:else}
+                    {:else if collectionItems.length > 25}
                         <button
                             class="u-underline"
                             on:click={() => {
@@ -167,15 +165,6 @@
                         </button>
                     {/if}
                 </div>
-
-                <FormList>
-                    <InputText
-                        label={`Confirm the database name to continue`}
-                        placeholder="Enter {$database.name} to continue"
-                        id="database-name"
-                        required
-                        bind:value={databaseName} />
-                </FormList>
             {:else}
                 <p class="text" data-private>
                     Are you sure you want to delete <b>{$database.name}</b>?
@@ -183,17 +172,29 @@
             {/if}
         {/await}
 
+        {#if !isLoadingDocumentsCount}
+            <p class="text" data-private>
+                <b>
+                    Once deleted, this database and its backups cannot be restored. This action is
+                    irreversible.
+                </b>
+            </p>
+
+            <FormList>
+                <div class="input-check-box-friction">
+                    <InputCheckbox
+                        required
+                        size="small"
+                        id="delete_policy"
+                        bind:checked={confirmedDeletion}
+                        label="I understand and confirm" />
+                </div>
+            </FormList>
+        {/if}
+
         <svelte:fragment slot="footer">
             <Button text on:click={() => (showDelete = false)}>Cancel</Button>
-            <Button
-                secondary
-                submit
-                disabled={isLoadingDocumentsCount ||
-                    (collections.total > 0 &&
-                        !error &&
-                        (!databaseName || databaseName !== $database.name))}>
-                Delete
-            </Button>
+            <Button secondary submit disabled={!confirmedDeletion}>Delete</Button>
         </svelte:fragment>
     </Modal>
 </div>
