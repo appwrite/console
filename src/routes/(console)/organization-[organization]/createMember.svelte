@@ -10,7 +10,7 @@
     import { invalidate } from '$app/navigation';
     import { BillingPlan, Dependencies } from '$lib/constants';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
-    import { isCloud } from '$lib/system';
+    import { isCloud, isSelfHosted } from '$lib/system';
     import { roles } from '$lib/stores/billing';
     import InputSelect from '$lib/elements/forms/inputSelect.svelte';
     import Roles from '$lib/components/roles/roles.svelte';
@@ -22,7 +22,7 @@
     let email: string,
         name: string,
         error: string,
-        role: string = 'developer';
+        role: string = isSelfHosted ? 'owner' : 'developer';
 
     async function create() {
         try {
@@ -89,7 +89,9 @@
             label="Name (optional)"
             placeholder="Enter name"
             bind:value={name} />
-        <InputSelect popover={Roles} id="role" label="Role" options={roles} bind:value={role} />
+        {#if isCloud}
+            <InputSelect popover={Roles} id="role" label="Role" options={roles} bind:value={role} />
+        {/if}
     </FormList>
     <svelte:fragment slot="footer">
         <Button secondary on:click={() => (showCreate = false)}>Cancel</Button>
