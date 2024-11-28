@@ -1,6 +1,6 @@
 <script lang="ts">
     import { sdk } from '$lib/stores/sdk';
-    import { type Payload, Query } from '@appwrite.io/console';
+    import { type Payload } from '@appwrite.io/console';
     import { onMount } from 'svelte';
     import { isCloud, isSelfHosted } from '$lib/system';
     import { organization } from '$lib/stores/organization';
@@ -11,8 +11,9 @@
     import { addNotification } from '$lib/stores/notifications';
     import { base } from '$app/paths';
     import { getProjectId } from '$lib/helpers/project';
+    import { toLocaleDate } from '$lib/helpers/date';
 
-    let backupRestoreItems: {
+    const backupRestoreItems: {
         archives: Map<string, BackupArchive>;
         restorations: Map<string, BackupRestoration>;
     } = {
@@ -20,7 +21,7 @@
         restorations: new Map()
     };
 
-    let openStates = {
+    const openStates = {
         archives: true,
         restorations: true
     };
@@ -30,7 +31,7 @@
 
     let lastDatabaseRestorationId = null;
 
-    const showRestoreNotification = (newDatabaseId: string, newDatabaseName: string) => {
+    function showRestoreNotification(newDatabaseId: string, newDatabaseName: string) {
         if (newDatabaseId && newDatabaseName && lastDatabaseRestorationId !== newDatabaseId) {
             const project = $page.params.project;
             lastDatabaseRestorationId = newDatabaseId;
@@ -49,42 +50,9 @@
                 ]
             });
         }
-    };
+    }
 
-    const fetchBackupRestores = async () => {
-        try {
-            const query = [
-                Query.equal('status', 'pending'),
-                Query.equal('status', 'uploading'),
-                Query.equal('status', 'processing')
-            ];
-
-            const [archivesResponse, restorationsResponse] = await Promise.all([
-                sdk.forProject.backups.listArchives([
-                    ...query,
-                    // only manual backups
-                    Query.isNull('policyId')
-                ]),
-                sdk.forProject.backups.listRestorations(query)
-            ]);
-
-            // this is a one time op.
-            backupRestoreItems.archives = new Map(
-                archivesResponse.archives.map((item) => [item.$id, item])
-            );
-
-            backupRestoreItems.restorations = new Map(
-                restorationsResponse.restorations.map((item) => [item.$id, item])
-            );
-        } catch (e) {
-            // ignore?
-        }
-    };
-
-    // fresh fetch.
-    fetchBackupRestores();
-
-    const updateOrAddItem = (payload: Payload) => {
+    function updateOrAddItem(payload: Payload) {
         const { $id, status, $collection, policyId } = payload;
         if ($collection === 'archives' && policyId !== null) {
             return;
@@ -110,9 +78,9 @@
             }
             backupRestoreItems[$collection] = collectionMap;
         }
-    };
+    }
 
-    const graphSize = (status: string) => {
+    function graphSize(status: string): number {
         switch (status) {
             case 'pending':
                 return 10;
@@ -126,9 +94,9 @@
             default:
                 return 0;
         }
-    };
+    }
 
-    const text = (status: string, key: string) => {
+    function text(status: string, key: string) {
         const service = key === 'archives' ? 'backup' : 'restore';
         if (status === 'completed') {
             return `Database ${service} complete`;
@@ -137,26 +105,24 @@
         } else {
             return 'Preparing database...';
         }
-    };
+    }
 
-    const handleClose = (which: string) => {
+    function handleClose(which: string) {
         backupRestoreItems[which] = new Map();
         if (which === 'restorations') lastDatabaseRestorationId = null;
-    };
+    }
 
-    // TODO: `startedAt` is probably not correct here. need more info.
-    const backupName = (item: BackupArchive | BackupRestoration, key: string) => {
+    function backupName(item: BackupArchive | BackupRestoration, key: string) {
         const attribute = key === 'archives' ? '$createdAt' : 'startedAt';
-        const date = new Date(item[attribute]);
-        return `${date.toDateString().slice(4, 10)}, ${date.toTimeString().slice(0, 5)}`;
-    };
+
+        return toLocaleDate(item[attribute]);
+    }
 
     onMount(() => {
         // fast path: don't subscribe if org is on a free plan or is self-hosted.
         if (isSelfHosted || (isCloud && $organization.billingPlan === BillingPlan.FREE)) return;
 
-        sdk.forConsole.client.subscribe('console', (response) => {
-            // nice!
+        return sdk.forConsole.client.subscribe('console', (response) => {
             if (!response.channels.includes(`projects.${getProjectId()}`)) return;
 
             if (

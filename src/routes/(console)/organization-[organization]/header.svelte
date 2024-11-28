@@ -110,8 +110,13 @@
                             <span class="u-trim">
                                 {$organization.name}
                             </span>
-                            {#if isCloud && $organization?.billingPlan === BillingPlan.FREE}
-                                <Pill class="eyebrow-heading-3">FREE</Pill>
+                            {#if isCloud && $organization?.billingPlan === BillingPlan.GITHUB_EDUCATION}
+                                <Pill class="eyebrow-heading-3" style="--p-tag-content-height:2rem">
+                                    <span class="icon-github" aria-hidden="true" />EDUCATION
+                                </Pill>
+                            {:else if isCloud && $organization?.billingPlan === BillingPlan.FREE}
+                                <Pill class="eyebrow-heading-3" style="--p-tag-content-height:2rem"
+                                    >FREE</Pill>
                             {/if}
                             {#if isCloud && $organization?.billingTrialStartDate && $daysLeftInTrial > 0 && $organization.billingPlan !== BillingPlan.FREE && $plansInfo.get($organization.billingPlan)?.trialDays}
                                 <div
@@ -121,7 +126,9 @@
                                             $organization.billingStartDate
                                         )}. ${$daysLeftInTrial} days remaining.`
                                     }}>
-                                    <Pill class="eyebrow-heading-3">TRIAL</Pill>
+                                    <Pill
+                                        class="eyebrow-heading-3"
+                                        style="--p-tag-content-height:2rem">TRIAL</Pill>
                                 </div>
                             {/if}
                         </span>

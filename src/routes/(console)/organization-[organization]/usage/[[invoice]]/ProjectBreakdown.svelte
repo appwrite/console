@@ -3,12 +3,12 @@
     import { Collapsible, CollapsibleItem } from '$lib/components';
     import {
         TableBody,
-        TableCellLink,
+        TableCell,
         TableCellHead,
         TableHeader,
         TableRow,
-        TableScroll,
-        TableCellText
+        TableRowLink,
+        TableScroll
     } from '$lib/elements/table';
     import { abbreviateNumber } from '$lib/helpers/numbers';
     import { humanFileSize } from '$lib/helpers/sizeConvertion';
@@ -20,10 +20,6 @@
     export let data: PageData;
     export let projects: OrganizationUsage['projects'];
     export let metric: Metric;
-
-    function getProjectName(projectId: string): string {
-        return data.projectNames.find((project) => project.$id === projectId)?.name;
-    }
 
     function getProjectUsageLink(projectId: string): string {
         return `${base}/project-${projectId}/settings/usage`;
@@ -57,31 +53,43 @@
 <Collapsible>
     <CollapsibleItem>
         <svelte:fragment slot="title">Project breakdown</svelte:fragment>
-        <TableScroll noMargin>
+        <TableScroll noMargin style="table-layout: auto">
             <TableHeader>
-                <TableCellHead width={185} style="padding-left: 0;">Project</TableCellHead>
-                <TableCellHead width={100}>Usage</TableCellHead>
+                <TableCellHead>Project</TableCellHead>
+                <TableCellHead>Usage</TableCellHead>
                 {#if $canSeeProjects}
-                    <TableCellHead width={140} />
+                    <TableCellHead />
                 {/if}
             </TableHeader>
             <TableBody>
                 {#each groupByProject(metric).sort((a, b) => b.usage - a.usage) as project}
-                    <TableRow>
-                        <TableCellText title="Project" style="padding-left: 0;">
-                            {getProjectName(project.projectId)}
-                        </TableCellText>
-                        <TableCellText title="Usage">{format(project.usage)}</TableCellText>
-                        {#if $canSeeProjects}
-                            <TableCellLink
-                                title="Go to project usage"
-                                href={getProjectUsageLink(project.projectId)}>
-                                View project usage
-                            </TableCellLink>
-                        {/if}
-                    </TableRow>
+                    {#if !$canSeeProjects}
+                        <TableRow>
+                            <TableCell title="Project">
+                                {data.projectNames[project.projectId]?.name ?? 'Unknown'}
+                            </TableCell>
+                            <TableCell title="Usage">{format(project.usage)}</TableCell>
+                        </TableRow>
+                    {:else}
+                        <TableRowLink href={getProjectUsageLink(project.projectId)}>
+                            <TableCell title="Project">
+                                {data.projectNames[project.projectId]?.name ?? 'Unknown'}
+                            </TableCell>
+                            <TableCell title="Usage">{format(project.usage)}</TableCell>
+                            <TableCell right={true}>
+                                <span
+                                    class="icon-cheveron-right u-cross-child-center ignore-icon-rotate" />
+                            </TableCell>
+                        </TableRowLink>
+                    {/if}
                 {/each}
             </TableBody>
         </TableScroll>
     </CollapsibleItem>
 </Collapsible>
+
+<style>
+    .ignore-icon-rotate {
+        rotate: unset !important;
+    }
+</style>

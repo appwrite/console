@@ -61,7 +61,7 @@
                 <Button href={`${base}/register`}>Sign up to Appwrite</Button>
             </div>
         {:else}
-            <p class="text">You have been invited to join a team project on Appwrite</p>
+            <p class="text">You have been invited to join an organization on Appwrite</p>
             <Form onSubmit={acceptInvite}>
                 <FormList>
                     <InputChoice

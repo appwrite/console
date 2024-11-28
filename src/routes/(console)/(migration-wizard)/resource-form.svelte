@@ -344,7 +344,7 @@
             <div />
             <span>Import all functions and their active deployment</span>
             <ul>
-                {#if resources?.includes('environment variable')}
+                {#if resources?.includes('environment-variable')}
                     <li class="checkbox-field">
                         <input
                             type="checkbox"

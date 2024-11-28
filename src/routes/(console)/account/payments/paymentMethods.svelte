@@ -87,7 +87,7 @@
                                                         {#each linkedOrgs as org}
                                                             <a
                                                                 class="u-underline u-trim"
-                                                                href={`${base}/console/organization-${org.$id}/billing`}>
+                                                                href={`${base}/organization-${org.$id}/billing`}>
                                                                 {org.name}
                                                             </a>
                                                         {/each}

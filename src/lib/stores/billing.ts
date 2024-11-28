@@ -34,7 +34,7 @@ import { user } from './user';
 import { browser } from '$app/environment';
 import { canSeeBilling } from './roles';
 
-export type Tier = 'tier-0' | 'tier-1' | 'tier-2' | 'cont-1';
+export type Tier = 'tier-0' | 'tier-1' | 'tier-2' | 'auto-1' | 'cont-1';
 
 export const roles = [
     {
@@ -77,6 +77,8 @@ export function tierToPlan(tier: Tier) {
             return tierPro;
         case BillingPlan.SCALE:
             return tierScale;
+        case BillingPlan.GITHUB_EDUCATION:
+            return tierGitHubEducation;
         case BillingPlan.CUSTOM:
             return tierCustom;
         default:
@@ -128,12 +130,12 @@ export type PlanServices =
     | 'usersAddon'
     | 'webhooks';
 
-export function getServiceLimit(serviceId: PlanServices, tier: Tier = null): number {
+export function getServiceLimit(serviceId: PlanServices, tier: Tier = null, plan?: Plan): number {
     if (!isCloud) return 0;
     if (!serviceId) return 0;
     const info = get(plansInfo);
     if (!info) return 0;
-    const plan = info.get(tier ?? get(organization)?.billingPlan);
+    plan ??= info.get(tier ?? get(organization)?.billingPlan);
     return plan?.[serviceId];
 }
 
@@ -173,6 +175,11 @@ export type TierData = {
 export const tierFree: TierData = {
     name: 'Free',
     description: 'For personal hobby projects of small scale and students.'
+};
+
+export const tierGitHubEducation: TierData = {
+    name: 'GitHub Education',
+    description: 'For members of GitHub student developers program.'
 };
 
 export const tierPro: TierData = {

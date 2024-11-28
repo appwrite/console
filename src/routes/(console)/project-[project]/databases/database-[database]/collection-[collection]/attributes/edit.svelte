@@ -65,19 +65,19 @@
     }
 </script>
 
-{#if selectedAttribute}
-    <Modal {error} size="big" bind:show={showEdit} onSubmit={submit} icon={option?.icon}>
-        <svelte:fragment slot="title">
-            <div class="u-flex u-cross-center u-gap-8">
-                {option?.name}
-                {#if option?.type === 'relationship'}
-                    <div class="tag eyebrow-heading-3">
-                        <span class="text u-x-small">Beta</span>
-                    </div>
-                {/if}
-            </div>
-        </svelte:fragment>
-        <FormList>
+<Modal {error} size="big" bind:show={showEdit} onSubmit={submit} icon={option?.icon}>
+    <svelte:fragment slot="title">
+        <div class="u-flex u-cross-center u-gap-8">
+            {option?.name}
+            {#if option?.type === 'relationship'}
+                <div class="tag eyebrow-heading-3">
+                    <span class="text u-x-small">Beta</span>
+                </div>
+            {/if}
+        </div>
+    </svelte:fragment>
+    <FormList>
+        {#if selectedAttribute}
             {#if selectedAttribute?.type !== 'relationship'}
                 <InputText
                     id="key"
@@ -93,10 +93,10 @@
                     bind:data={selectedAttribute}
                     on:close={() => (option = null)} />
             {/if}
-        </FormList>
-        <svelte:fragment slot="footer">
-            <Button secondary on:click={() => (showEdit = false)}>Cancel</Button>
-            <Button submit disabled={deepEqual(currentAttr, selectedAttribute)}>Update</Button>
-        </svelte:fragment>
-    </Modal>
-{/if}
+        {/if}
+    </FormList>
+    <svelte:fragment slot="footer">
+        <Button secondary on:click={() => (showEdit = false)}>Cancel</Button>
+        <Button submit disabled={deepEqual(currentAttr, selectedAttribute)}>Update</Button>
+    </svelte:fragment>
+</Modal>
