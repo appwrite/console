@@ -434,36 +434,36 @@
 
 <style>
     :global(.limited-code-height) {
+        overflow: auto;
         max-height: 50vh;
-        overflow: auto !important;
     }
 
     .code-panel-compact-header .u-flex {
-        gap: 1.5rem !important;
+        gap: 1.5rem;
     }
 
     @media (max-width: 768px) {
         .code-panel-compact-header {
             row-gap: 1rem;
-            flex-direction: column !important;
+            flex-direction: column;
         }
 
         .code-panel-content {
-            padding: unset !important;
-            padding-block: 1.5rem !important;
+            padding: unset;
+            padding-block: 1.5rem;
         }
 
         .mobile-only-inline-20-padding {
-            padding-inline: 1.5rem !important;
+            padding-inline: 1.5rem;
         }
 
         .mobile-only-block-start-20-padding {
-            padding-block-start: 1.5rem !important;
+            padding-block-start: 1.5rem;
         }
 
         .code-panel-content.grid-1-2 {
-            display: unset !important;
-            row-gap: unset !important;
+            display: unset;
+            row-gap: unset;
         }
     }
 </style>
