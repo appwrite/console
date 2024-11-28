@@ -125,7 +125,7 @@
     </p>
     {#if selectedInstallation}
         {#await loadRepositories(selectedInstallation, search)}
-            <div class="u-flex u-gap-8 u-cross-center u-main-center" style="height: 50vh; ">
+            <div class="u-flex u-gap-8 u-cross-center u-main-center" style:height="50vh">
                 <div class="loader u-margin-32" />
             </div>
         {:then response}
