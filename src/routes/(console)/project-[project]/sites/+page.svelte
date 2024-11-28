@@ -6,7 +6,6 @@
     // import { templatesList } from '$lib/stores/templates';
     import { organization } from '$lib/stores/organization';
     import { wizard } from '$lib/stores/wizard';
-    import { onMount } from 'svelte';
     import { canWriteSites } from '$lib/stores/roles.js';
     import { Icon, Popover, Image, ActionMenu } from '@appwrite.io/pink-svelte';
     import { Button } from '$lib/elements/forms';
@@ -22,30 +21,6 @@
 
     export let data;
     let show = false;
-
-    onMount(async () => {
-        // const from = $page.url.searchParams.get('from');
-        // if (from === 'github') {
-        //     const to = $page.url.searchParams.get('to');
-        //     switch (to) {
-        //         case 'template': {
-        //             const step = $page.url.searchParams.get('step');
-        //             const template = $page.url.searchParams.get('template');
-        //             const templateConfig = $page.url.searchParams.get('templateConfig');
-        //             templateStore.set(
-        //                 (await $templatesList).templates.find((item) => item.id === template)
-        //             );
-        //             templateConfigStore.set(JSON.parse(templateConfig));
-        //             wizard.start(CreateTemplate);
-        //             wizard.setStep(Number(step));
-        //             break;
-        //         }
-        //         case 'cover':
-        //             openWizard();
-        //             break;
-        //     }
-        // }
-    });
 
     $: $registerCommands([
         {

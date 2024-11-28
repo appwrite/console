@@ -5,7 +5,7 @@ import { Dependencies, PAGE_LIMIT } from '$lib/constants';
 import { queries, queryParamToMap } from '$lib/components/filters';
 
 export const load = async ({ params, depends, url, route }) => {
-    depends(Dependencies.DOMAINS);
+    depends(Dependencies.SITES_DOMAINS);
     const page = getPage(url);
     const limit = getLimit(url, route, PAGE_LIMIT);
     const offset = pageToOffset(page, limit);
