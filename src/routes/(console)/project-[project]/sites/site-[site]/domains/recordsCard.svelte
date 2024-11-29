@@ -1,7 +1,8 @@
 <script lang="ts">
+    import { Copy } from '$lib/components';
     import Card from '$lib/components/card.svelte';
     import type { Models } from '@appwrite.io/console';
-    import { Badge, Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { Badge, Layout, Typography, Table } from '@appwrite.io/pink-svelte';
 
     export let domain: Models.ProxyRule;
 </script>
@@ -17,6 +18,21 @@
             hours to take effect. You can periodically check the verification status in your domain
             settings.
         </p>
+
+        <Table.Root>
+            <svelte:fragment slot="header">
+                <Table.Header.Cell>Type</Table.Header.Cell>
+                <Table.Header.Cell>Name</Table.Header.Cell>
+                <Table.Header.Cell>Value</Table.Header.Cell>
+            </svelte:fragment>
+            <Table.Row>
+                <Table.Cell>CNAME</Table.Cell>
+                <Table.Cell>{domain.domain}</Table.Cell>
+                <Table.Cell>
+                    <Copy value={globalThis?.location?.origin}>{globalThis?.location?.origin}</Copy>
+                </Table.Cell>
+            </Table.Row>
+        </Table.Root>
     </Layout.Stack>
     <slot />
 </Card>
