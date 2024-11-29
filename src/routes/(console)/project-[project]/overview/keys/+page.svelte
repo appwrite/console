@@ -76,6 +76,6 @@
         single
         allowCreate={$canWriteKeys}
         href="https://appwrite.io/docs/advanced/platform/api-keys"
-        target={$isStandardApiKey ? 'API key' : 'Dev key'}
+        target="{$isStandardApiKey ? 'API' : 'Dev'} key"
         on:click={createApiKey} />
 {/if}
