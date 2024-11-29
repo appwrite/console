@@ -47,7 +47,7 @@
 
     function createKey(isDevKey: boolean = false) {
         wizard.start(Wizard);
-        isStandardApiKey.set(!isDevKey)
+        isStandardApiKey.set(!isDevKey);
     }
 
     $: onBoardImage1Mobile = $app.themeInUse === 'dark' ? OnboardDark1Mobile : OnboardLight1Mobile;
