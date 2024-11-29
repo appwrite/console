@@ -24,6 +24,7 @@
     import { get } from 'svelte/store';
     import type { PageData } from './$types';
     import Wizard from './wizard.svelte';
+    import { isStandardApiKey } from '../store';
 
     export let data: PageData;
 </script>
@@ -34,7 +35,9 @@
         <span class="u-margin-inline-start-auto">
             <Button on:click={createApiKey}>
                 <span class="icon-plus" aria-hidden="true" />
-                <span class="text">Create API key</span>
+                <span class="text">
+                    Create {$isStandardApiKey ? 'API' : 'Dev'} key
+                </span>
             </Button>
         </span>
     {/if}
@@ -68,10 +71,11 @@
         </TableBody>
     </Table>
 {:else}
+    <!-- TODO: create correct links and createDevelopmentKey method -->
     <Empty
         single
         allowCreate={$canWriteKeys}
         href="https://appwrite.io/docs/advanced/platform/api-keys"
-        target="API key"
+        target={$isStandardApiKey ? 'API key' : 'Dev key'}
         on:click={createApiKey} />
 {/if}

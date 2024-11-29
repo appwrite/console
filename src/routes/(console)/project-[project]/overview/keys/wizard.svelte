@@ -11,9 +11,14 @@
     import { onDestroy } from 'svelte';
     import { onboarding } from '../../store';
     import { Dependencies } from '$lib/constants';
-    import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
+    import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { base } from '$app/paths';
+    import { isStandardApiKey } from '../store';
 
+    // TODO: check onFinish as to which key type was generated, standard or development.
+    //  Based on that, call appropriate creator method and update notification.
+
+    // TODO: also check if we should add different keys for events based on standard/dev keys.
     async function onFinish() {
         try {
             const { $id } = await sdk.forConsole.projects.createKey(
@@ -53,4 +58,7 @@
     });
 </script>
 
-<Wizard title="Create an API key" steps={stepsComponents} on:finish={onFinish} />
+<Wizard
+    title="Create an {$isStandardApiKey ? 'API' : 'Dev'} key"
+    steps={stepsComponents}
+    on:finish={onFinish} />

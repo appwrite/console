@@ -3,16 +3,23 @@
     import { WizardStep } from '$lib/layout';
     import ExpirationInput from '../expirationInput.svelte';
     import { key } from './store';
+    import { isStandardApiKey } from '../../store';
 </script>
 
 <WizardStep>
-    <svelte:fragment slot="title">API key</svelte:fragment>
-    <svelte:fragment slot="subtitle">Let's create an API key.</svelte:fragment>
+    <svelte:fragment slot="title">{$isStandardApiKey ? 'API' : 'Dev'} key</svelte:fragment>
+    <svelte:fragment slot="subtitle">
+        {#if $isStandardApiKey}
+            Generate API keys to authenticate your application.
+        {:else}
+            Generate Dev keys, suited for improved debugging.
+        {/if}
+    </svelte:fragment>
     <FormList>
         <InputText
             id="name"
             label="Name"
-            placeholder="API key name"
+            placeholder="{$isStandardApiKey ? 'API' : 'Dev'} key name"
             required
             bind:value={$key.name} />
         <ExpirationInput bind:value={$key.expire} />
