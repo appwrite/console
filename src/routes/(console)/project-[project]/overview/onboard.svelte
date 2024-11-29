@@ -13,6 +13,7 @@
     import Wizard from './keys/wizard.svelte';
     import { canWriteKeys, canWritePlatforms } from '$lib/stores/roles';
     import { base } from '$app/paths';
+    import { isStandardApiKey } from './store';
 
     export let projectId: string;
 
@@ -44,8 +45,9 @@
         }
     ];
 
-    function createKey() {
+    function createKey(isDevKey: boolean = false) {
         wizard.start(Wizard);
+        isStandardApiKey.set(!isDevKey)
     }
 
     $: onBoardImage1Mobile = $app.themeInUse === 'dark' ? OnboardDark1Mobile : OnboardLight1Mobile;
@@ -121,7 +123,7 @@
                             <button
                                 type="button"
                                 class="card u-width-full-line"
-                                on:click={createKey}>
+                                on:click={() => createKey()}>
                                 <span class="u-flex u-cross-center u-gap-16">
                                     <div class="avatar is-medium" aria-hidden="true">
                                         <img
@@ -129,6 +131,25 @@
                                             alt="technology" />
                                     </div>
                                     <span class="text">API key</span>
+                                    <span
+                                        class="icon-plus u-margin-inline-start-auto"
+                                        style="font-size: var(--icon-size-large);"
+                                        aria-hidden="true" />
+                                </span>
+                            </button>
+                        </li>
+                        <li class="grid-box-item">
+                            <button
+                                type="button"
+                                class="card u-width-full-line"
+                                on:click={() => createKey(true)}>
+                                <span class="u-flex u-cross-center u-gap-16">
+                                    <div class="avatar is-medium" aria-hidden="true">
+                                        <img
+                                            src={`${base}/icons/${$app.themeInUse}/grayscale/code.svg`}
+                                            alt="technology" />
+                                    </div>
+                                    <span class="text">Dev key</span>
                                     <span
                                         class="icon-plus u-margin-inline-start-auto"
                                         style="font-size: var(--icon-size-large);"
