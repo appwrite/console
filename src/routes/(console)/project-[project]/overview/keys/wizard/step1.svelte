@@ -12,7 +12,7 @@
         {#if $isStandardApiKey}
             Generate API keys to authenticate your application.
         {:else}
-            Generate Dev keys, suited for improved debugging.
+            Generate Dev keys for improved debugging while still developing.
         {/if}
     </svelte:fragment>
     <FormList>

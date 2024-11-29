@@ -59,6 +59,6 @@
 </script>
 
 <Wizard
-    title="Create an {$isStandardApiKey ? 'API' : 'Dev'} key"
+    title="Create {$isStandardApiKey ? 'an API' : 'a Dev'} key"
     steps={stepsComponents}
     on:finish={onFinish} />

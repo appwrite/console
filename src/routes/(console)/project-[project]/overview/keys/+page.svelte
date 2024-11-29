@@ -71,7 +71,7 @@
         </TableBody>
     </Table>
 {:else}
-    <!-- TODO: create correct links and createDevelopmentKey method -->
+    <!-- TODO: create correct links method -->
     <Empty
         single
         allowCreate={$canWriteKeys}
