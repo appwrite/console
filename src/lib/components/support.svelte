@@ -5,15 +5,14 @@
     import SupportWizard from '$routes/(console)/supportWizard.svelte';
     import { showSupportModal } from '$routes/(console)/wizard/support/store';
     import { isCloud } from '$lib/system';
-    import { organization } from '$lib/stores/organization';
-    import { BillingPlan } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
     import { localeTimezoneName, utcHourToLocaleHour } from '$lib/helpers/date';
     import { upgradeURL } from '$lib/stores/billing';
+    import { currentPlan } from '$lib/stores/organization';
 
     export let show = false;
 
-    $: hasPremiumSupport = $organization?.billingPlan.premiumSupport ?? false;
+    $: hasPremiumSupport = $currentPlan?.premiumSupport ?? false;
 
     $: supportTimings = `${utcHourToLocaleHour('16:00')} - ${utcHourToLocaleHour('00:00')} ${localeTimezoneName()}`;
 </script>
