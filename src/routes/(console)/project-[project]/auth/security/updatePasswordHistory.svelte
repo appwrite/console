@@ -8,6 +8,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { project } from '../../store';
+    import { tick } from 'svelte';
 
     let passwordHistory = $project?.authPasswordHistory < 1 ? 5 : $project?.authPasswordHistory;
     let passwordHistoryEnabled = ($project?.authPasswordHistory ?? 0) !== 0;
@@ -34,6 +35,14 @@
             trackError(error, Submit.AuthPasswordHistoryUpdate);
         }
     }
+
+    let maxSessionInputField: InputNumber | null = null;
+
+    $: if (passwordHistoryEnabled && maxSessionInputField) {
+        tick().then(() => {
+            maxSessionInputField.addInputFocus();
+        });
+    }
 </script>
 
 <Form onSubmit={updatePasswordHistoryLimit}>
@@ -59,6 +68,7 @@
                     min={1}
                     id="max-session"
                     label="Limit"
+                    bind:this={maxSessionInputField}
                     disabled={!passwordHistoryEnabled}
                     bind:value={passwordHistory} />
             </FormList>
