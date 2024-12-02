@@ -1,8 +1,9 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { CardGrid, Heading } from '$lib/components';
-    import { Dependencies } from '$lib/constants';
+    import { Alert, CardGrid, Heading } from '$lib/components';
+    import { BillingPlan, Dependencies } from '$lib/constants';
+    import { upgradeURL } from '$lib/stores/billing';
     import { Button, Form, FormList, InputSelectSearch } from '$lib/elements/forms';
     import {
         Table,
@@ -85,58 +86,87 @@
             specified budget cap. You can set a maximum of 3 alerts.
         </p>
         <svelte:fragment slot="aside">
-            <FormList>
-                <div class="u-flex u-gap-16">
-                    <InputSelectSearch
-                        label="Percentage (%) of budget cap"
-                        placeholder="Select a percentage"
-                        id="alerts"
-                        {options}
-                        bind:search
-                        bind:value={selectedAlert}
-                        on:select={() => (search = selectedAlert.toString())} />
-                    <div style="align-self: flex-end">
-                        <Button
-                            secondary
-                            disabled={alerts.length > 2 || (!search && !selectedAlert)}
-                            on:click={addAlert}>
-                            Add alert
-                        </Button>
+            {#if $organization?.billingPlan === BillingPlan.FREE}
+                <Alert type="info">
+                    <svelte:fragment slot="title"
+                        >Budget alerts are a Pro plan feature
+                    </svelte:fragment>
+                    Upgrade to a Pro plan to set a budget alerts for your organization. For more information
+                    on what you can do with a Pro plan,
+                    <a
+                        class="link"
+                        href="https://appwrite.io/pricing"
+                        target="_blank"
+                        rel="noopener noreferrer">view our pricing guide.</a>
+                </Alert>
+            {:else}
+                <FormList>
+                    <div class="u-flex u-gap-16">
+                        <InputSelectSearch
+                            label="Percentage (%) of budget cap"
+                            placeholder="Select a percentage"
+                            id="alerts"
+                            {options}
+                            bind:search
+                            bind:value={selectedAlert}
+                            on:select={() => (search = selectedAlert.toString())} />
+                        <div style="align-self: flex-end">
+                            <Button
+                                secondary
+                                disabled={alerts.length > 2 || (!search && !selectedAlert)}
+                                on:click={addAlert}>
+                                Add alert
+                            </Button>
+                        </div>
                     </div>
-                </div>
-            </FormList>
+                </FormList>
 
-            {#if alerts.length}
-                <Table noMargin noStyles transparent>
-                    <TableHeader>
-                        <TableCellHead>Alert at budget cap %</TableCellHead>
-                        <TableCellHead width={30} />
-                    </TableHeader>
-                    <TableBody>
-                        {#each alerts.sort() as alert}
-                            <TableRow>
-                                <TableCellText title="Percentage">
-                                    {alert}%
-                                </TableCellText>
-                                <TableCell>
-                                    <Button
-                                        text
-                                        round
-                                        ariaLabel="remove alert"
-                                        on:click={() =>
-                                            (alerts = alerts.filter((a) => a !== alert))}>
-                                        <span class="icon-x" aria-hidden="true" />
-                                    </Button>
-                                </TableCell>
-                            </TableRow>
-                        {/each}
-                    </TableBody>
-                </Table>
+                {#if alerts.length}
+                    <Table noMargin noStyles transparent>
+                        <TableHeader>
+                            <TableCellHead>Alert at budget cap %</TableCellHead>
+                            <TableCellHead width={30} />
+                        </TableHeader>
+                        <TableBody>
+                            {#each alerts.sort() as alert}
+                                <TableRow>
+                                    <TableCellText title="Percentage">
+                                        {alert}%
+                                    </TableCellText>
+                                    <TableCell>
+                                        <Button
+                                            text
+                                            round
+                                            ariaLabel="remove alert"
+                                            on:click={() =>
+                                                (alerts = alerts.filter((a) => a !== alert))}>
+                                            <span class="icon-x" aria-hidden="true" />
+                                        </Button>
+                                    </TableCell>
+                                </TableRow>
+                            {/each}
+                        </TableBody>
+                    </Table>
+                {/if}
             {/if}
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button disabled={isButtonDisabled} submit>Update</Button>
+            {#if $organization?.billingPlan === BillingPlan.FREE}
+                <Button
+                    secondary
+                    href={$upgradeURL}
+                    on:click={() => {
+                        trackEvent('click_organization_upgrade', {
+                            from: 'button',
+                            source: 'billing_alerts_card'
+                        });
+                    }}
+                    >Upgrade to Pro
+                </Button>
+            {:else}
+                <Button disabled={isButtonDisabled} submit>Update</Button>
+            {/if}
         </svelte:fragment>
     </CardGrid>
 </Form>

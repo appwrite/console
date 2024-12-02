@@ -7,12 +7,15 @@
     export let noContent = false;
     export let isInfo = false;
     export let gap = 16;
+
+    export let style = null;
+    export let wrapperStyle = null;
 </script>
 
 <li class="collapsible-item" class:is-info={isInfo}>
     {#if noContent}
-        <div class="collapsible-wrapper">
-            <div class={`collapsible-button u-gap-${gap}`}>
+        <div class="collapsible-wrapper" style={wrapperStyle}>
+            <div class={`collapsible-button u-gap-${gap}`} {style}>
                 <slot />
             </div>
         </div>

@@ -130,9 +130,7 @@
     <BillingAddress billingAddress={data?.billingAddress} />
     <TaxId />
     <BudgetCap />
-    {#if $organization?.billingPlan !== BillingPlan.FREE && !!$organization?.billingBudget}
-        <BudgetAlert />
-    {/if}
+    <BudgetAlert />
     <AvailableCredit />
 </Container>
 

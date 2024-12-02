@@ -53,10 +53,10 @@
         <Heading tag="h2" size="6">Budget cap</Heading>
 
         <p class="text">
-            Restrict your resource usage by setting a budget cap. <button
-                on:click={() => ($showUsageRatesModal = true)}
-                type="button"
-                class="link">Learn more about usage rates.</button>
+            Restrict your resource usage by setting a budget cap. Cap usage is reset at the
+            beginning of each billing cycle.
+            <button class="link" type="button" on:click={() => ($showUsageRatesModal = true)}
+                >Learn more about usage rates.</button>
         </p>
         <svelte:fragment slot="aside">
             {#if $organization?.billingPlan === BillingPlan.FREE}
@@ -101,7 +101,9 @@
                             from: 'button',
                             source: 'billing_budget_cap'
                         });
-                    }}>Upgrade to Pro</Button>
+                    }}
+                    >Upgrade to Pro
+                </Button>
             {:else}
                 <Button disabled={$organization?.billingBudget === budget} submit>Update</Button>
             {/if}
