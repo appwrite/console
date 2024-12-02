@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { afterNavigate, goto, invalidate, preloadData } from '$app/navigation';
+    import { afterNavigate, goto, invalidate } from '$app/navigation';
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
@@ -225,7 +225,7 @@
                 couponData?.code,
                 newCollaborators,
                 billingBudget,
-                taxId
+                taxId ? taxId : null
             );
 
             if (!isOrganization(org) && org.status == 402) {
