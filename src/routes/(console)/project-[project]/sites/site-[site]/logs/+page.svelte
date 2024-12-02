@@ -1,25 +1,21 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { EmptySearch, PaginationWithLimit, SearchQuery } from '$lib/components';
-    import { BillingPlan, Dependencies } from '$lib/constants';
+    import { EmptySearch, PaginationWithLimit } from '$lib/components';
+    import { Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
-    import { hoursToDays } from '$lib/helpers/date';
-    import { Container, ContainerHeader } from '$lib/layout';
+    import { Container } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import { organization } from '$lib/stores/organization';
-    import { getServiceLimit, showUsageRatesModal } from '$lib/stores/billing';
-    import { abbreviateNumber } from '$lib/helpers/numbers';
+    // import { getServiceLimit } from '$lib/stores/billing';
     import { writable } from 'svelte/store';
     import type { Column } from '$lib/helpers/types';
     import Table from './table.svelte';
-    import Link from '$lib/elements/link.svelte';
     import Empty from '$lib/components/empty.svelte';
     import { queries } from '$lib/components/filters';
 
     export let data;
 
-    const logs = getServiceLimit('logs');
+    // const logs = getServiceLimit('logs');
 
     const columns = writable<Column[]>([
         { id: '$id', title: 'Log ID', type: 'string', show: true, width: 150 },
