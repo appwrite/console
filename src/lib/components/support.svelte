@@ -13,9 +13,7 @@
 
     export let show = false;
 
-    $: isPaid =
-        $organization?.billingPlan === BillingPlan.PRO ||
-        $organization?.billingPlan === BillingPlan.SCALE;
+    $: hasPremiumSupport = $organization?.billingPlan.premiumSupport ?? false;
 
     $: supportTimings = `${utcHourToLocaleHour('16:00')} - ${utcHourToLocaleHour('00:00')} ${localeTimezoneName()}`;
 </script>
@@ -24,13 +22,13 @@
     <section class="drop-section u-grid u-gap-24 u-padding-24">
         <div>
             <h4 class="eyebrow-heading-3">Premium support</h4>
-            {#if isPaid}
+            {#if hasPremiumSupport}
                 <p class="u-line-height-1-5 u-margin-block-start-8">
                     Get personalized support from the Appwrite team from <b>{supportTimings}</b>
                 </p>
             {/if}
         </div>
-        {#if $organization?.billingPlan === BillingPlan.FREE}
+        {#if !hasPremiumSupport}
             <Button
                 fullWidth
                 href={$upgradeURL}
