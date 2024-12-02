@@ -26,7 +26,7 @@
     import ProductionBranch from '../../productionBranch.svelte';
     import Configuration from './configuration.svelte';
     import Aside from '../../aside.svelte';
-    import { Framework, ID, Query } from '@appwrite.io/console';
+    import { BuildRuntime, Framework, ID, Query } from '@appwrite.io/console';
     import Domain from '../../domain.svelte';
     import { NewRepository, Repositories, RepositoryBehaviour } from '$lib/components/git';
 
@@ -106,19 +106,21 @@
         }
         try {
             const fr = Object.values(Framework).find((f) => f === framework.key);
-
+            const buildRuntime = Object.values(BuildRuntime).find(
+                (f) => f === framework.buildRuntime
+            );
             let site = await sdk.forProject.sites.create(
                 id || ID.unique(),
                 name,
                 fr,
-                undefined,
-                framework.buildRuntime,
+                buildRuntime,
                 undefined,
                 undefined,
                 framework.installCommand,
                 framework.buildCommand,
                 framework.outputDirectory,
                 domain,
+                undefined,
                 selectedInstallationId || undefined,
                 framework.fallbackFile,
                 selectedRepository || undefined,

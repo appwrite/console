@@ -16,7 +16,7 @@
     import ProductionBranch from '../../productionBranch.svelte';
     import Configuration from './configuration.svelte';
     import Aside from '../../aside.svelte';
-    import { Framework, ID, Query } from '@appwrite.io/console';
+    import { BuildRuntime, Framework, ID, Query } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
 
@@ -61,18 +61,20 @@
     async function create() {
         try {
             const fr = Object.values(Framework).find((f) => f === framework.key);
-
+            const buildRuntime = Object.values(BuildRuntime).find(
+                (f) => f === framework.buildRuntime
+            );
             let site = await sdk.forProject.sites.create(
                 id || ID.unique(),
                 name,
                 fr,
-                undefined,
-                framework.buildRuntime,
+                buildRuntime,
                 undefined,
                 undefined,
                 installCommand,
                 buildCommand,
                 outputDirectory,
+                undefined,
                 undefined,
                 data.installation.$id,
                 null,
