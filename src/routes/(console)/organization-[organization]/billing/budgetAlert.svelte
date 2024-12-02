@@ -82,8 +82,13 @@
         <Heading tag="h2" size="6">Budget alerts</Heading>
 
         <p class="text">
-            Get notified by email when your organization reaches or exceeds a percent of your
-            specified budget cap. You can set a maximum of 3 alerts.
+            {#if $organization?.billingPlan === BillingPlan.FREE}
+                Get notified by email when your organization meets a percentage of your budget cap. <b
+                    >Free organizations will receive one notification at 75% resource usage.</b>
+            {:else}
+                Get notified by email when your organization meets or exceeds a percentage of your
+                specified billing alert(s).
+            {/if}
         </p>
         <svelte:fragment slot="aside">
             {#if $organization?.billingPlan === BillingPlan.FREE}
@@ -101,6 +106,11 @@
                 </Alert>
             {:else}
                 <FormList>
+                    <!-- TODO: confirm copy, design mentions only Pro plan -->
+                    <Alert type="info">
+                        You can set a maximum of 4 billing alerts per organization.
+                    </Alert>
+
                     <div class="u-flex u-gap-16">
                         <InputSelectSearch
                             label="Percentage (%) of budget cap"

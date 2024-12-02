@@ -34,7 +34,8 @@
         <Heading tag="h2" size="6">Payment estimates</Heading>
 
         <p class="text">
-            A breakdown of your estimated upcoming payment for the current billing period.
+            A breakdown of your estimated upcoming payment for the current billing period. Totals
+            displayed exclude accumulated credits and applicable taxes.
         </p>
         <svelte:fragment slot="aside">
             <p class="text u-bold">
@@ -196,11 +197,14 @@
         </svelte:fragment>
         <svelte:fragment slot="actions">
             {#if $organization?.billingPlan === BillingPlan.FREE}
-                <div class="u-flex u-gap-16 u-flex-wrap">
-                    <Button text href={`${base}/organization-${$organization?.$id}/usage`}>
+                <!-- TODO: make center on mobile and have different styles. -->
+                <div
+                    class="u-flex u-flex-vertical-mobile u-cross-center u-gap-16 u-flex-wrap u-width-full-line">
+                    <Button secondary href={`${base}/organization-${$organization?.$id}/usage`}>
                         View estimated usage
                     </Button>
                     <Button
+                        text
                         disabled={$organization?.markedForDeletion}
                         href={$upgradeURL}
                         on:click={() =>

@@ -91,7 +91,7 @@
 
 <CardGrid hideFooter={$organization?.billingPlan !== BillingPlan.FREE}>
     <Heading tag="h2" size="6">
-        {$organization?.billingPlan === BillingPlan.FREE ? 'Credit' : 'Available credit'}
+        {$organization?.billingPlan === BillingPlan.FREE ? 'Credits' : 'Available credit'}
     </Heading>
 
     <p class="text">Appwrite credit will automatically be applied to your next invoice.</p>
