@@ -9,7 +9,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { installation, repository, sortBranches } from '$lib/stores/vcs';
-    import type { BuildRuntime, Framework, Models, ServeRuntime } from '@appwrite.io/console';
+    import type { BuildRuntime, Framework, Models } from '@appwrite.io/console';
     import { IconGithub } from '@appwrite.io/pink-icons-svelte';
     import { Icon, InlineCode, Layout, Spinner, Typography } from '@appwrite.io/pink-svelte';
     import { onMount } from 'svelte';
@@ -56,7 +56,7 @@
                     site.buildCommand || undefined,
                     site.outputDirectory || undefined,
                     (site?.buildRuntime as BuildRuntime) || undefined,
-                    (site?.serveRuntime as ServeRuntime) || undefined,
+                    site.adapter || undefined,
                     site.fallbackFile || undefined,
                     site.installationId || $installation.$id || undefined,
                     site.providerRepositoryId || $repository.id || undefined,

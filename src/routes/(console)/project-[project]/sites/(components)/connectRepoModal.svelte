@@ -9,7 +9,7 @@
     import { Link } from '$lib/elements';
     import { NewRepository, Repositories } from '$lib/components/git';
     import ConnectGit from '$lib/components/git/connectGit.svelte';
-    import { BuildRuntime, Framework, ServeRuntime, type Models } from '@appwrite.io/console';
+    import { BuildRuntime, Framework, type Models } from '@appwrite.io/console';
     import { addNotification } from '$lib/stores/notifications';
     import { trackEvent } from '$lib/actions/analytics';
     import { invalidate } from '$app/navigation';
@@ -66,7 +66,7 @@
                 site.buildCommand,
                 site.outputDirectory,
                 BuildRuntime[site.buildRuntime],
-                ServeRuntime[site.serveRuntime],
+                site.adapter,
                 site.fallbackFile,
                 selectedInstallationId,
                 selectedRepository
