@@ -1,6 +1,6 @@
 <script lang="ts">
     import { invalidate } from '$app/navigation';
-    import { EmptySearch, PaginationWithLimit } from '$lib/components';
+    import { EmptySearch, PaginationWithLimit, SearchQuery } from '$lib/components';
     import { BillingPlan, Dependencies } from '$lib/constants';
     import { Button } from '$lib/elements/forms';
     import { hoursToDays } from '$lib/helpers/date';
@@ -67,6 +67,7 @@
 </script>
 
 <Container>
+    <!-- <SearchQuery search={data.search} placeholder="Search by path"></SearchQuery> -->
     <!-- <ContainerHeader title="Executions">
         <svelte:fragment slot="tooltip" let:tier let:limit let:upgradeMethod>
             <p class="u-bold">The {tier} plan has limits</p>

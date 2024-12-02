@@ -3,10 +3,11 @@
     import { TableRow } from '$lib/elements/table';
     import { timeFromNow } from '$lib/helpers/date';
     import type { Column } from '$lib/helpers/types';
+    import type { Models } from '@appwrite.io/console';
     import { Badge, InlineCode, Layout, Table } from '@appwrite.io/pink-svelte';
 
     export let columns: Column[];
-    export let executions;
+    export let executions: Models.ExecutionList;
 </script>
 
 <Table.Root>
@@ -40,10 +41,8 @@
                             <Layout.Stack direction="row" alignItems="center" gap="s">
                                 <Badge
                                     variant="secondary"
-                                    type={parseInt(execution.responseStatusCode) >= 400
-                                        ? 'error'
-                                        : 'success'}
-                                    content={execution.responseStatusCode} />
+                                    type={execution.responseStatusCode >= 400 ? 'error' : 'success'}
+                                    content={execution.responseStatusCode.toString()} />
                                 <InlineCode code={execution.requestMethod} />
                                 <InlineCode code={execution.requestPath} />
                             </Layout.Stack>
