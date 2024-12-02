@@ -7,7 +7,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import { BuildRuntime, Framework, ServeRuntime, type Models } from '@appwrite.io/console';
+    import { BuildRuntime, Framework, type Models } from '@appwrite.io/console';
     import { Layout } from '@appwrite.io/pink-svelte';
 
     export let site: Models.Site;
@@ -22,9 +22,13 @@
     onMount(async () => {
         selectedFramework ??= frameworks.find((framework) => framework.key === site.framework);
 
-        installCommand = site?.installCommand ?? selectedFramework.defaultInstallCommand;
-        buildCommand = site?.buildCommand ?? selectedFramework.defaultBuildCommand;
-        outputDirectory = site?.outputDirectory ?? selectedFramework.defaultOutputDirectory;
+        installCommand =
+            site?.installCommand ?? selectedFramework.adapters[site.adapter].defaultInstallCommand;
+        buildCommand =
+            site?.buildCommand ?? selectedFramework.adapters[site.adapter].defaultBuildCommand;
+        outputDirectory =
+            site?.outputDirectory ??
+            selectedFramework.adapters[site.adapter].defaultOutputDirectory;
     });
 
     async function updateName() {
@@ -33,13 +37,13 @@
                 site.$id,
                 site.name,
                 selectedFramework.key as Framework,
+                site.adapter,
                 site.enabled || undefined,
                 site.timeout || undefined,
                 installCommand || undefined,
                 buildCommand || undefined,
                 outputDirectory || undefined,
                 (site?.buildRuntime as BuildRuntime) || undefined,
-                (site?.serveRuntime as ServeRuntime) || undefined,
                 site.fallbackFile || undefined,
                 site.installationId || undefined,
                 site.providerRepositoryId || undefined,
@@ -103,7 +107,7 @@
                     id="installCommand"
                     label="Install command"
                     bind:value={installCommand}
-                    placeholder={frameworkData.defaultInstallCommand} />
+                    placeholder={frameworkData.adapters[site.adapter].defaultInstallCommand} />
                 <Button secondary size="s" on:click={() => (installCommand = '')}>Reset</Button>
             </Layout.Stack>
             <Layout.Stack gap="s" direction="row" alignItems="flex-end">
@@ -111,7 +115,7 @@
                     id="buildCommand"
                     label="Build command"
                     bind:value={buildCommand}
-                    placeholder={frameworkData.defaultBuildCommand} />
+                    placeholder={frameworkData.adapters[site.adapter].defaultBuildCommand} />
                 <Button secondary size="s" on:click={() => (buildCommand = '')}>Reset</Button>
             </Layout.Stack>
             <Layout.Stack gap="s" direction="row" alignItems="flex-end">
@@ -119,7 +123,7 @@
                     id="outputDirectory"
                     label="Output directory"
                     bind:value={outputDirectory}
-                    placeholder={frameworkData.defaultOutputDirectory} />
+                    placeholder={frameworkData.adapters[site.adapter].defaultOutputDirectory} />
                 <Button secondary size="s" on:click={() => (outputDirectory = '')}>Reset</Button>
             </Layout.Stack>
         </svelte:fragment>

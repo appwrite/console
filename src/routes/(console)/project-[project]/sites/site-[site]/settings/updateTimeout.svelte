@@ -7,7 +7,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import { BuildRuntime, Framework, ServeRuntime, type Models } from '@appwrite.io/console';
+    import { BuildRuntime, Framework, type Models } from '@appwrite.io/console';
 
     export let site: Models.Site;
     let timeout = 0;
@@ -22,13 +22,13 @@
                 site.$id,
                 site.name,
                 site?.framework as Framework,
+                site.adapter,
                 site.enabled || undefined,
                 timeout || undefined,
                 site.installCommand || undefined,
                 site.buildCommand || undefined,
                 site.outputDirectory || undefined,
                 (site?.buildRuntime as BuildRuntime) || undefined,
-                (site?.serveRuntime as ServeRuntime) || undefined,
                 site.fallbackFile || undefined,
                 site.installationId || undefined,
                 site.providerRepositoryId || undefined,

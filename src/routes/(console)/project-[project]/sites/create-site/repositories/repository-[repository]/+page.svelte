@@ -16,7 +16,7 @@
     import ProductionBranch from '../../productionBranch.svelte';
     import Configuration from './configuration.svelte';
     import Aside from '../../aside.svelte';
-    import { BuildRuntime, Framework, ID, Query, ServeRuntime } from '@appwrite.io/console';
+    import { Framework, ID, Query } from '@appwrite.io/console';
     import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
 
@@ -28,14 +28,13 @@
 
     let name = '';
     let id = '';
-    let framework: Models.Framework =
-        data.frameworks.frameworks.find((f) => f.key === Framework.Static) ||
-        data.frameworks.frameworks[0];
+    let framework: Models.Framework = data.frameworks.frameworks[0];
+    let adapter = framework?.adapters[0];
     let branch: string;
     let rootDir = './';
-    let installCommand = framework?.defaultInstallCommand;
-    let buildCommand = framework?.defaultBuildCommand;
-    let outputDirectory = framework?.defaultOutputDirectory;
+    let installCommand = adapter?.installCommand;
+    let buildCommand = adapter?.buildCommand;
+    let outputDirectory = adapter?.outputDirectory;
     let variables: Partial<Models.Variable>[] = [];
     let silentMode = false;
 
@@ -62,18 +61,13 @@
     async function create() {
         try {
             const fr = Object.values(Framework).find((f) => f === framework.key);
-            const buildRuntime = Object.values(BuildRuntime).find(
-                (f) => f === framework.defaultBuildRuntime
-            );
-            const serveRuntime = Object.values(ServeRuntime).find(
-                (f) => f === framework.defaultServeRuntime
-            );
+
             let site = await sdk.forProject.sites.create(
                 id || ID.unique(),
                 name,
                 fr,
-                buildRuntime,
-                serveRuntime,
+                undefined,
+                framework.buildRuntime,
                 undefined,
                 undefined,
                 installCommand,

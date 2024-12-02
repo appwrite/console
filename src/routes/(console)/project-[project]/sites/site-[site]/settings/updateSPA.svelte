@@ -7,7 +7,7 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import { BuildRuntime, Framework, ServeRuntime, type Models } from '@appwrite.io/console';
+    import { BuildRuntime, Framework, type Models } from '@appwrite.io/console';
     import InputChoice from '$lib/elements/forms/inputChoice.svelte';
     import { Layout } from '@appwrite.io/pink-svelte';
 
@@ -16,6 +16,7 @@
     let fallback = '';
 
     onMount(async () => {
+        spa = site?.adapter === 'static';
         fallback ??= site.fallbackFile;
         if (fallback !== undefined) spa = true;
     });
@@ -26,13 +27,13 @@
                 site.$id,
                 site.name,
                 site?.framework as Framework,
+                spa ? 'static' : 'ssr',
                 site.enabled || undefined,
                 site.timeout || undefined,
                 site.installCommand || undefined,
                 site.buildCommand || undefined,
                 site.outputDirectory || undefined,
                 (site?.buildRuntime as BuildRuntime) || undefined,
-                (site?.serveRuntime as ServeRuntime) || undefined,
                 fallback,
                 site.installationId || undefined,
                 site.providerRepositoryId || undefined,

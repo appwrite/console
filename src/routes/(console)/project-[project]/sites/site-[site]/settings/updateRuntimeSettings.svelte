@@ -7,26 +7,20 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { onMount } from 'svelte';
-    import { BuildRuntime, Framework, ServeRuntime, type Models } from '@appwrite.io/console';
+    import { BuildRuntime, Framework, type Models } from '@appwrite.io/console';
 
     export let site: Models.Site;
     export let frameworks: Models.Framework[];
     const framework = frameworks.find((framework) => framework.key === site.framework);
     let buildRuntime = site?.buildRuntime;
-    let serveRuntime = site?.serveRuntime;
 
-    let buildRuntimeOptions = framework.buildRuntimes.map((runtime) => ({
-        label: runtime,
-        value: runtime
-    }));
-    let serveRuntimeOptions = framework.serveRuntimes.map((runtime) => ({
+    let buildRuntimeOptions = framework.runtimes.map((runtime) => ({
         label: runtime,
         value: runtime
     }));
 
     onMount(async () => {
-        buildRuntime ??= framework.defaultBuildRuntime;
-        serveRuntime ??= framework.defaultBuildCommand;
+        buildRuntime ??= framework.buildRuntime;
     });
     async function updateRuntime() {
         try {
@@ -34,13 +28,13 @@
                 site.$id,
                 site.name,
                 site?.framework as Framework,
+                site.adapter,
                 site.enabled || undefined,
                 site.timeout || undefined,
                 site.installCommand || undefined,
                 site.buildCommand || undefined,
                 site.outputDirectory || undefined,
                 (buildRuntime as BuildRuntime) || undefined,
-                (serveRuntime as ServeRuntime) || undefined,
                 site.fallbackFile || undefined,
                 site.installationId || undefined,
                 site.providerRepositoryId || undefined,
@@ -62,8 +56,6 @@
             trackError(error, Submit.SiteUpdateTimeout);
         }
     }
-
-    $: console.log('test');
 </script>
 
 <Form onSubmit={updateRuntime}>
@@ -83,20 +75,10 @@
                 options={buildRuntimeOptions}
                 required
                 hideRequired />
-            <InputSelect
-                label="Serve runtime"
-                id="serve-runtime"
-                placeholder="Select runtime"
-                bind:value={serveRuntime}
-                options={serveRuntimeOptions}
-                required
-                hideRequired />
         </svelte:fragment>
 
         <svelte:fragment slot="actions">
-            <Button
-                disabled={buildRuntime === site.buildRuntime && serveRuntime === site.serveRuntime}
-                submit>Update</Button>
+            <Button disabled={buildRuntime === site.buildRuntime} submit>Update</Button>
         </svelte:fragment>
     </CardGrid>
 </Form>
