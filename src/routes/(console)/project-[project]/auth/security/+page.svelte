@@ -23,7 +23,5 @@
     <UpdatePersonalDataCheck />
     <UpdateSessionAlerts />
     <UpdateMockNumbers />
-    {#if isCloud && $organization.billingPlan === BillingPlan.SCALE}
-        <UpdateMembershipPrivacy />
-    {/if}
+    <UpdateMembershipPrivacy />
 </Container>
