@@ -120,7 +120,7 @@
                 framework.buildCommand,
                 framework.outputDirectory,
                 domain,
-                undefined,
+                framework.adapter,
                 selectedInstallationId || undefined,
                 framework.fallbackFile,
                 selectedRepository || undefined,
