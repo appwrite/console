@@ -365,13 +365,13 @@ export const scopes: {
         icon: 'globe'
     },
     {
-        scope: 'sites:read',
+        scope: 'sites.read',
         description: "Access to read your project's sites and deployments",
         category: 'Sites',
         icon: 'globe'
     },
     {
-        scope: 'sites:write',
+        scope: 'sites.write',
         description: "Access to create, update, and delete your project's sites and deployments",
         category: 'Sites',
         icon: 'globe'
