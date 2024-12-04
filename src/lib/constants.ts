@@ -120,8 +120,8 @@ export const defaultScopes: string[] = [
     'topics.write',
     'billing.read',
     'billing.write',
-    'sites:read',
-    'sites:write'
+    'sites.read',
+    'sites.write'
 ];
 
 export const defaultRoles: string[] = ['owner'];
