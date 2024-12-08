@@ -1,5 +1,5 @@
 import type { Client, Models } from '@appwrite.io/console';
-import type { Organization, OrganizationList } from '../stores/organization';
+import type { OrganizationError, Organization, OrganizationList } from '../stores/organization';
 import type { PaymentMethod } from '@stripe/stripe-js';
 import type { Tier } from '$lib/stores/billing';
 import type { Campaign } from '$lib/stores/campaigns';
@@ -318,20 +318,48 @@ export class Billing {
         );
     }
 
+    async validateOrganization(
+        organizationId: string,
+        invites: string[],
+    ): Promise<Organization> {
+        const path = `/organizations/${organizationId}/validate`;
+        const params = {
+            organizationId,
+            invites,
+        };
+        const uri = new URL(this.client.config.endpoint + path);
+        return await this.client.call(
+            'PATCH',
+            uri,
+            {
+                'content-type': 'application/json'
+            },
+            params
+        );
+    }
+
     async createOrganization(
         organizationId: string,
         name: string,
         billingPlan: string,
         paymentMethodId: string,
-        billingAddressId: string = undefined
-    ): Promise<Organization> {
+        billingAddressId: string = null,
+        couponId: string = null,
+        invites: Array<string> = [],
+        budget: number = undefined,
+        taxId: string = null
+    ): Promise<Organization | OrganizationError> {
         const path = `/organizations`;
         const params = {
             organizationId,
             name,
             billingPlan,
             paymentMethodId,
-            billingAddressId
+            billingAddressId,
+            couponId,
+            invites,
+            budget,
+            taxId
         };
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(
@@ -388,14 +416,22 @@ export class Billing {
         organizationId: string,
         billingPlan: string,
         paymentMethodId: string,
-        billingAddressId: string = undefined
-    ): Promise<Organization> {
+        billingAddressId: string = undefined,
+        couponId: string = null,
+        invites: Array<string> = [],
+        budget: number = undefined,
+        taxId: string = null
+    ): Promise<Organization | OrganizationError> {
         const path = `/organizations/${organizationId}/plan`;
         const params = {
             organizationId,
             billingPlan,
             paymentMethodId,
-            billingAddressId
+            billingAddressId,
+            couponId,
+            invites,
+            budget,
+            taxId
         };
         const uri = new URL(this.client.config.endpoint + path);
         return await this.client.call(

@@ -55,10 +55,7 @@
             showDelete = false;
             addNotification({
                 type: 'success',
-                message:
-                    $organization.billingPlan === BillingPlan.FREE
-                        ? `${$organization.name} has been deleted`
-                        : `${$organization.name} has been flagged for deletion`
+                message: `${$organization.name} has been deleted`
             });
         } catch (e) {
             error = e.message;
