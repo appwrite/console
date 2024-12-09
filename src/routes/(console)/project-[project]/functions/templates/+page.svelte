@@ -74,6 +74,8 @@
                 return 'bun';
             case runtime.includes('go'):
                 return 'go';
+            case runtime.includes('deno'):
+                return 'deno';
             default:
                 return undefined;
         }

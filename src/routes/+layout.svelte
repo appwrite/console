@@ -103,9 +103,9 @@
 
 <Progress />
 
-<!-- svelte-ignore css-unused-selector -->
 <style lang="scss" global>
-    @import '@appwrite.io/pink/src/abstract/variables/_devices.scss';
+    @use '@appwrite.io/pink/src/abstract/variables/devices';
+
     .tippy-box {
         --p-tooltip-text-color: var(--color-neutral-10);
         --p-tooltip--bg-color: var(--color-neutral-80);
@@ -186,7 +186,7 @@
     .is-cloud {
         --heading-font: 'Aeonik Pro', arial, sans-serif;
         .heading-level {
-            @media #{$break3open} {
+            @media #{devices.$break3open} {
                 &-1,
                 &-2,
                 &-3,
