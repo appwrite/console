@@ -1,14 +1,18 @@
 import { goto } from '$app/navigation';
-import { database } from '$routes/(console)/project-[project]/databases/database-[database]/store';
-import { project } from '$routes/(console)/project-[project]/store';
+import { database } from '$routes/(console)/project-[region]-[project]/databases/database-[database]/store';
+import { project } from '$routes/(console)/project-[region]-[project]/store';
 import { get } from 'svelte/store';
 import type { Searcher } from '../commands';
 import { sdk } from '$lib/stores/sdk';
 import { base } from '$app/paths';
+import { page } from '$app/stores';
 
 export const collectionsSearcher = (async (query: string) => {
     const databaseId = get(database).$id;
-    const { collections } = await sdk.forProject.databases.listCollections(databaseId);
+    const $page = get(page);
+    const { collections } = await sdk
+        .forProject($page.params.region, $page.params.project)
+        .databases.listCollections(databaseId);
 
     const projectId = get(project).$id;
     return collections

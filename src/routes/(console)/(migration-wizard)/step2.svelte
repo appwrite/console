@@ -1,7 +1,6 @@
 <script lang="ts">
     import { WizardStep } from '$lib/layout';
-    import { getSdkForProject } from '$lib/stores/sdk';
-
+    import { sdk } from '$lib/stores/sdk';
     import { formData, provider, selectedProject } from '.';
     import ResourceForm from './resource-form.svelte';
 </script>
@@ -18,5 +17,5 @@
             Learn about which resources are supported</a
         >.
     </svelte:fragment>
-    <ResourceForm {provider} {formData} projectSdk={getSdkForProject($selectedProject)} />
+    <ResourceForm {provider} {formData} projectSdk={sdk.forProject('fra1', $selectedProject)} />
 </WizardStep>

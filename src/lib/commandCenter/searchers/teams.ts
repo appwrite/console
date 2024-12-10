@@ -1,10 +1,11 @@
 import { goto } from '$app/navigation';
 import { sdk } from '$lib/stores/sdk';
-import { project } from '$routes/(console)/project-[project]/store';
+import { project } from '$routes/(console)/project-[region]-[project]/store';
 import { get } from 'svelte/store';
 import type { Command, Searcher } from '../commands';
 import type { Models } from '@appwrite.io/console';
 import { base } from '$app/paths';
+import { page } from '$app/stores';
 
 const getTeamCommand = (team: Models.Team<Models.Preferences>, projectId: string) =>
     ({
@@ -17,8 +18,11 @@ const getTeamCommand = (team: Models.Team<Models.Preferences>, projectId: string
     }) satisfies Command;
 
 export const teamSearcher = (async (query: string) => {
-    const { teams } = await sdk.forProject.teams.list([], query);
+    const $page = get(page);
     const projectId = get(project).$id;
+    const { teams } = await sdk
+        .forProject($page.params.region, $page.params.project)
+        .teams.list([], query);
 
     if (teams.length === 1) {
         return [

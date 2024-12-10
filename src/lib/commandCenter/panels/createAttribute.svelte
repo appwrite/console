@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { initCreateAttribute } from '$routes/(console)/project-[project]/databases/database-[database]/collection-[collection]/+layout.svelte';
-    import { attributeOptions } from '$routes/(console)/project-[project]/databases/database-[database]/collection-[collection]/attributes/store';
+    import { initCreateAttribute } from '$routes/(console)/project-[region]-[project]/databases/database-[database]/collection-[collection]/+layout.svelte';
+    import { attributeOptions } from '$routes/(console)/project-[region]-[project]/databases/database-[database]/collection-[collection]/attributes/store';
     import Template from './template.svelte';
 
     let search = '';

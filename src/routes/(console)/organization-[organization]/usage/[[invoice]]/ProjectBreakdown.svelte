@@ -21,8 +21,8 @@
     export let projects: OrganizationUsage['projects'];
     export let metric: Metric;
 
-    function getProjectUsageLink(projectId: string): string {
-        return `${base}/project-${projectId}/settings/usage`;
+    function getProjectUsageLink(region: string, projectId: string): string {
+        return `${base}/project-${region}-${projectId}/settings/usage`;
     }
 
     function groupByProject(metric: Metric): Array<{ projectId: string; usage: number }> {
@@ -71,7 +71,8 @@
                             <TableCell title="Usage">{format(project.usage)}</TableCell>
                         </TableRow>
                     {:else}
-                        <TableRowLink href={getProjectUsageLink(project.projectId)}>
+                        <TableRowLink
+                            href={getProjectUsageLink(project.region ?? 'fra1', project.projectId)}>
                             <TableCell title="Project">
                                 {data.projectNames[project.projectId]?.name ?? 'Unknown'}
                             </TableCell>

@@ -1,11 +1,11 @@
 import { goto } from '$app/navigation';
 import { sdk } from '$lib/stores/sdk';
-import { project } from '$routes/(console)/project-[project]/store';
+import { project } from '$routes/(console)/project-[region]-[project]/store';
 import { get } from 'svelte/store';
 import type { Searcher } from '../commands';
 import type { Models } from '@appwrite.io/console';
 import { page } from '$app/stores';
-import { showCreateDeployment } from '$routes/(console)/project-[project]/functions/function-[function]/store';
+import { showCreateDeployment } from '$routes/(console)/project-[region]-[project]/functions/function-[function]/store';
 import { base } from '$app/paths';
 
 const getFunctionCommand = (fn: Models.Function, projectId: string) => {
@@ -20,9 +20,11 @@ const getFunctionCommand = (fn: Models.Function, projectId: string) => {
 };
 
 export const functionsSearcher = (async (query: string) => {
-    const { functions } = await sdk.forProject.functions.list();
-
+    const $page = get(page);
     const projectId = get(project).$id;
+    const { functions } = await sdk
+        .forProject($page.params.region, $page.params.project)
+        .functions.list();
 
     const filtered = functions.filter((fn) => fn.name.toLowerCase().includes(query.toLowerCase()));
 

@@ -5,10 +5,11 @@
     import { WizardStep } from '$lib/layout';
     import { sdk } from '$lib/stores/sdk';
     import { isSelfHosted } from '$lib/system';
-    import { func } from '$routes/(console)/project-[project]/functions/function-[function]/store';
+    import { func } from '$routes/(console)/project-[region]-[project]/functions/function-[function]/store';
     import { domain, typeStore } from './store';
     import { consoleVariables } from '$routes/(console)/store';
     import { ResourceType } from '@appwrite.io/console';
+    import { page } from '$app/stores';
 
     let error = null;
     const isDomainsEnabled = $consoleVariables?._APP_DOMAIN_ENABLED === true;
@@ -16,14 +17,18 @@
     async function createDomain() {
         try {
             if ($domain.$id) {
-                await sdk.forProject.proxy.deleteRule($domain.$id);
+                await sdk
+                    .forProject($page.params.region, $page.params.project)
+                    .proxy.deleteRule($domain.$id);
             }
 
-            $domain = await sdk.forProject.proxy.createRule(
-                $domain.domain,
-                $typeStore,
-                $typeStore === ResourceType.Function ? $func.$id : undefined
-            );
+            $domain = await sdk
+                .forProject($page.params.region, $page.params.project)
+                .proxy.createRule(
+                    $domain.domain,
+                    $typeStore,
+                    $typeStore === ResourceType.Function ? $func.$id : undefined
+                );
 
             trackEvent(Submit.DomainCreate);
         } catch (e) {

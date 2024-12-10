@@ -6,7 +6,7 @@
     import { timeFromNow } from '$lib/helpers/date';
     import { app } from '$lib/stores/app';
     import { sdk } from '$lib/stores/sdk';
-    import { repositories } from '$routes/(console)/project-[project]/functions/function-[function]/store';
+    import { repositories } from '$routes/(console)/project-[region]-[project]/functions/function-[function]/store';
     import { installation, installations, repository } from '../store';
     import { createEventDispatcher } from 'svelte';
 
@@ -23,7 +23,9 @@
 
     let selectedInstallation = null;
     async function loadInstallations() {
-        const { installations } = await sdk.forProject.vcs.listInstallations();
+        const { installations } = await sdk
+            .forProject($page.params.region, $page.params.project)
+            .vcs.listInstallations();
         if (installations.length) {
             selectedInstallation = installations[0].$id;
             installation.set(installations.find((entry) => entry.$id === selectedInstallation));
@@ -39,7 +41,9 @@
             $repositories.search !== search
         ) {
             $repositories.repositories = (
-                await sdk.forProject.vcs.listRepositories(installationId, search || undefined)
+                await sdk
+                    .forProject($page.params.region, $page.params.project)
+                    .vcs.listRepositories(installationId, search || undefined)
             ).providerRepositories;
         }
 
@@ -61,7 +65,9 @@
                 redirect.searchParams.append(key, callbackState[key]);
             });
         }
-        const target = new URL(`${sdk.forProject.client.config.endpoint}/vcs/github/authorize`);
+        const target = new URL(
+            `${sdk.forProject($page.params.region, $page.params.project).client.config.endpoint}/vcs/github/authorize`
+        );
         target.searchParams.set('project', $page.params.project);
         target.searchParams.set('success', redirect.toString());
         target.searchParams.set('failure', redirect.toString());
@@ -120,7 +126,8 @@
     <p class="text u-margin-block-start-16">
         Manage organization configuration in your <a
             class="link"
-            href={`${base}/project-${$page.params.project}/settings`}>project settings</a
+            href={`${base}/project-${$page.params.region}-${$page.params.project}/settings`}
+            >project settings</a
         >.
     </p>
     {#if selectedInstallation}

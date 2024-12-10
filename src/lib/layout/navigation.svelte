@@ -18,8 +18,7 @@
 
     export let isOpen = false;
 
-    $: project = $page.params.project;
-    $: projectPath = `${base}/project-${project}`;
+    $: projectPath = `${base}/project-${$page.params.region}-${$page.params.project}`;
 
     $: subNavigation = $page.data.subNavigation;
     // We need to have this second variable, because we only want narrow
@@ -58,7 +57,7 @@
 
 <div class="side-nav" class:is-open-level-2={hasSubNavigation}>
     <div class="side-nav-level-1" class:is-narrow={narrow}>
-        {#if project}
+        {#if $page.params.project}
             <div class="side-nav-main">
                 <section class="drop-section">
                     <ul class="drop-list">

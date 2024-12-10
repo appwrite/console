@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
     import { Modal } from '$lib/components';
     import { Button, FormList, InputEmail, InputSelect, InputText } from '$lib/elements/forms';
@@ -39,8 +40,10 @@
     let error: string;
 
     onMount(async () => {
-        const countryList = await sdk.forProject.locale.listCountries();
-        const locale = await sdk.forProject.locale.get();
+        const countryList = await sdk
+            .forProject($page.params.region, $page.params.project)
+            .locale.listCountries();
+        const locale = await sdk.forProject($page.params.region, $page.params.project).locale.get();
         if (locale.countryCode) {
             country = locale.countryCode;
         }

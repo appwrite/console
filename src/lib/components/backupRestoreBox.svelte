@@ -33,6 +33,7 @@
 
     function showRestoreNotification(newDatabaseId: string, newDatabaseName: string) {
         if (newDatabaseId && newDatabaseName && lastDatabaseRestorationId !== newDatabaseId) {
+            const region = $page.params.region;
             const project = $page.params.project;
             lastDatabaseRestorationId = newDatabaseId;
 
@@ -44,7 +45,9 @@
                     {
                         name: 'View restored data',
                         method: () => {
-                            goto(`${base}/project-${project}/databases/database-${newDatabaseId}`);
+                            goto(
+                                `${base}/project-${region}-${project}/databases/database-${newDatabaseId}`
+                            );
                         }
                     }
                 ]

@@ -192,7 +192,7 @@
                     <Button
                         text
                         class="u-margin-block-start-24 u-margin-inline-start-auto"
-                        href={`${base}/project-${$page.params.project}/functions/templates?useCase=starter`}>
+                        href={`${base}/project-${$page.params.region}-${$page.params.project}/functions/templates?useCase=starter`}>
                         All starter templates <span class="icon-cheveron-right" />
                     </Button>
                     <div class="u-sep-block-start common-section" />
@@ -259,7 +259,7 @@
                         text
                         noMargin
                         class="u-margin-inline-start-auto u-margin-block-start-16"
-                        href={`${base}/project-${$page.params.project}/functions/templates`}>
+                        href={`${base}/project-${$page.params.region}-${$page.params.project}/functions/templates`}>
                         <span> All templates </span>
                         <span class="icon-cheveron-right" aria-hidden="true" />
                     </Button>
