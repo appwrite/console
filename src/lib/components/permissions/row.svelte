@@ -5,6 +5,7 @@
     import { tick } from 'svelte';
     import { AvatarInitials } from '../';
     import Output from '../output.svelte';
+    import { page } from '$app/stores';
 
     export let role: string;
 
@@ -20,11 +21,15 @@
         const role = permission.split(':')[0];
         const id = permission.split(':')[1].split('/')[0];
         if (role === 'user') {
-            const user = await sdk.forProject.users.get(id);
+            const user = await sdk
+                .forProject($page.params.region, $page.params.project)
+                .users.get(id);
             return user;
         }
         if (role === 'team') {
-            const team = await sdk.forProject.teams.get(id);
+            const team = await sdk
+                .forProject($page.params.region, $page.params.project)
+                .teams.get(id);
             return team;
         }
     }

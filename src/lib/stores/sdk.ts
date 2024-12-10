@@ -1,4 +1,3 @@
-import { getProjectId } from '$lib/helpers/project';
 import { VARS } from '$lib/system';
 import {
     Account,
@@ -34,10 +33,13 @@ import {
 } from '$lib/constants';
 
 export function getApiEndpoint(region?: string): string {
-    if (VARS.APPWRITE_ENDPOINT) return VARS.APPWRITE_ENDPOINT;
-    const protocol = globalThis?.location?.protocol;
-    const hostname = globalThis?.location?.hostname;
+    const url = new URL(
+        VARS.APPWRITE_ENDPOINT ? VARS.APPWRITE_ENDPOINT : globalThis?.location.toString()
+    );
+    const protocol = url.protocol;
+    const hostname = url.hostname;
     const subdomain = getSubdomain(region);
+
     return `${protocol}//${subdomain}${hostname}/v1`;
 }
 
@@ -60,7 +62,7 @@ const clientConsole = new Client();
 clientConsole.setEndpoint(endpoint).setProject('console');
 
 const clientProject = new Client();
-clientProject.setEndpoint(endpoint).setMode('admin');
+clientProject.setMode('admin');
 
 const sdkForProject = {
     client: clientProject,
@@ -82,14 +84,6 @@ const sdkForProject = {
     migrations: new Migrations(clientProject)
 };
 
-export const getSdkForProject = (projectId: string) => {
-    if (projectId && projectId !== clientProject.config.project) {
-        clientProject.setProject(projectId);
-    }
-
-    return sdkForProject;
-};
-
 export const sdk = {
     forConsole: {
         client: clientConsole,
@@ -107,8 +101,15 @@ export const sdk = {
         billing: new Billing(clientConsole),
         sources: new Sources(clientConsole)
     },
-    get forProject() {
-        const projectId = getProjectId();
-        return getSdkForProject(projectId);
+    forProject(region: string, projectId: string) {
+        const endpoint = getApiEndpoint(region);
+        if (endpoint !== clientProject.config.endpoint) {
+            clientProject.setEndpoint(endpoint);
+        }
+        if (projectId !== clientProject.config.project) {
+            clientProject.setProject(projectId);
+        }
+
+        return sdkForProject;
     }
 };

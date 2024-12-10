@@ -49,9 +49,12 @@ function createPreferences() {
         set,
         update,
         get: (route?: Page['route']): Preferences => {
-            const parsedRoute = route ?? get(page).route;
+            const $page = get(page);
+            const projectId = $page.params.project;
+            const routeId = route?.id ?? $page.route.id;
+
             return (
-                preferences[sdk.forProject.client.config.project]?.[parsedRoute.id] ?? {
+                preferences[projectId]?.[routeId] ?? {
                     limit: null,
                     view: null,
                     columns: null
@@ -60,15 +63,17 @@ function createPreferences() {
         },
 
         getCustomCollectionColumns: (collectionId: string): Preferences['columns'] => {
-            return (
-                preferences[sdk.forProject.client.config.project]?.collections?.[collectionId] ??
-                null
-            );
+            const $page = get(page);
+            const projectId = $page.params.project;
+
+            return preferences[projectId]?.collections?.[collectionId] ?? null;
         },
         setLimit: (limit: Preferences['limit']) =>
             update((n) => {
-                const path = get(page).route.id;
-                const project = sdk.forProject.client.config.project;
+                const $page = get(page);
+                const path = $page.route.id;
+                const project = $page.params.project;
+
                 if (!n[project]?.[path]) {
                     n[project] ??= {};
                     n[project][path] ??= {};
@@ -80,8 +85,9 @@ function createPreferences() {
             }),
         setView: (view: Preferences['view']) =>
             update((n) => {
-                const path = get(page).route.id;
-                const project = sdk.forProject.client.config.project;
+                const $page = get(page);
+                const path = $page.route.id;
+                const project = $page.params.project;
                 if (!n[project]?.[path]) {
                     n[project] ??= {};
                     n[project][path] ??= {};
@@ -93,8 +99,9 @@ function createPreferences() {
             }),
         setColumns: (columns: Preferences['columns']) =>
             update((n) => {
-                const path = get(page).route.id;
-                const project = sdk.forProject.client.config.project;
+                const $page = get(page);
+                const path = $page.route.id;
+                const project = $page.params.project;
                 if (!n[project]?.[path]) {
                     n[project] ??= {};
                     n[project][path] ??= {};
@@ -106,9 +113,10 @@ function createPreferences() {
             }),
         setCustomCollectionColumns: (columns: Preferences['columns']) =>
             update((n) => {
-                const current = get(page);
-                const project = sdk.forProject.client.config.project;
-                const collection = current.params.collection;
+                const $page = get(page);
+                const project = $page.params.project;
+                const collection = $page.params.collection;
+
                 if (!n[project]?.collections?.[collection]) {
                     n[project] ??= {};
                     n[project].collections ??= {};

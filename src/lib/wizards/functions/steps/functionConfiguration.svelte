@@ -8,6 +8,7 @@
     import { sdk } from '$lib/stores/sdk';
     import { choices, createFunction, installation, repository } from '../store';
     import { runtimesList } from '$lib/stores/runtimes';
+    import { page } from '$app/stores';
 
     let showCustomId = false;
 
@@ -17,11 +18,9 @@
         repositoryId: string,
         rootDirectory: string
     ) {
-        const detection = await sdk.forProject.vcs.createRepositoryDetection(
-            installationId,
-            repositoryId,
-            rootDirectory
-        );
+        const detection = await sdk
+            .forProject($page.params.region, $page.params.project)
+            .vcs.createRepositoryDetection(installationId, repositoryId, rootDirectory);
 
         return detection;
     }
