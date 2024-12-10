@@ -39,7 +39,7 @@
         {/each}
     </TableHeader>
     <TableBody>
-        {#each data.databases.databases as database}
+        {#each data.databases.databases as database (database.$id)}
             <TableRowLink
                 href={`${base}/project-${$page.params.region}-${projectId}/databases/database-${database.$id}`}>
                 {#each $columns as column}

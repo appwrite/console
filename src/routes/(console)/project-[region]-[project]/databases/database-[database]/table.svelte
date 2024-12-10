@@ -76,7 +76,7 @@
         {/each}
     </TableHeader>
     <TableBody>
-        {#each data.collections.collections as collection}
+        {#each data.collections.collections as collection (collection.$id)}
             <TableRowLink
                 href={`${base}/project-${$page.params.region}-${projectId}/databases/database-${databaseId}/collection-${collection.$id}`}>
                 {#if $canWriteCollections}
