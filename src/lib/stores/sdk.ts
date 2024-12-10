@@ -1,4 +1,3 @@
-import { getProjectId } from '$lib/helpers/project';
 import { VARS } from '$lib/system';
 import {
     Account,
@@ -40,7 +39,7 @@ export function getApiEndpoint(region?: string): string {
     const protocol = url.protocol;
     const hostname = url.hostname;
     const subdomain = getSubdomain(region);
-    console.log(`${protocol}//${subdomain}${hostname}/v1`);
+
     return `${protocol}//${subdomain}${hostname}/v1`;
 }
 
@@ -63,7 +62,7 @@ const clientConsole = new Client();
 clientConsole.setEndpoint(endpoint).setProject('console');
 
 const clientProject = new Client();
-clientProject.setEndpoint(endpoint).setMode('admin');
+clientProject.setMode('admin');
 
 const sdkForProject = {
     client: clientProject,

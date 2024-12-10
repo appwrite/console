@@ -50,10 +50,11 @@ function createPreferences() {
         update,
         get: (route?: Page['route']): Preferences => {
             const $page = get(page);
-            const projectId = get(page).params.project;
-            route ??= $page.route;
+            const projectId = $page.params.project;
+            const routeId = route?.id ?? $page.route.id;
+
             return (
-                preferences[projectId]?.[route.id] ?? {
+                preferences[projectId]?.[routeId] ?? {
                     limit: null,
                     view: null,
                     columns: null
@@ -64,6 +65,7 @@ function createPreferences() {
         getCustomCollectionColumns: (collectionId: string): Preferences['columns'] => {
             const $page = get(page);
             const projectId = $page.params.project;
+
             return preferences[projectId]?.collections?.[collectionId] ?? null;
         },
         setLimit: (limit: Preferences['limit']) =>
