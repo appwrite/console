@@ -63,7 +63,7 @@
 </script>
 
 <Form onSubmit={update}>
-    <CardGrid hideFooter={message.status != 'draft'}>
+    <CardGrid hideFooter={message.status !== 'draft'}>
         <div class="grid-1-2-col-1 u-flex u-cross-center u-gap-16">
             <Heading tag="h6" size="7">Message</Heading>
         </div>
@@ -72,12 +72,12 @@
                 <InputText
                     id="subject"
                     label="Subject"
-                    disabled={message.status != 'draft'}
+                    disabled={message.status !== 'draft'}
                     bind:value={subject}></InputText>
                 <InputTextarea
                     id="message"
                     label="Message"
-                    disabled={message.status != 'draft'}
+                    disabled={message.status !== 'draft'}
                     bind:value={content}></InputTextarea>
                 <InputSwitch label="HTML mode" id="html" bind:value={html}>
                     <svelte:fragment slot="description">

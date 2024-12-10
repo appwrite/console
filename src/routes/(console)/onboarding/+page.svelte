@@ -125,7 +125,12 @@
                         </Pill>
                     </div>
                 {:else}
-                    <CustomId bind:show={showCustomId} name="Organization" isProject bind:id />
+                    <CustomId
+                        autofocus
+                        bind:show={showCustomId}
+                        name="Organization"
+                        isProject
+                        bind:id />
                 {/if}
                 {#if isCloud}
                     <div class="u-margin-block-start-8">

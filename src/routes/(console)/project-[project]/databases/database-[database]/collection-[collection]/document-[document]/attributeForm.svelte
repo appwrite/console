@@ -29,7 +29,7 @@
                     </Pill>
                 </div>
             {:else}
-                <CustomId bind:show={showCustomId} name="Document" bind:id={customId} />
+                <CustomId autofocus bind:show={showCustomId} name="Document" bind:id={customId} />
             {/if}
         {/if}
     </ul>

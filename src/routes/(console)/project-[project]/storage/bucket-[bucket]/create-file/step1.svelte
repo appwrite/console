@@ -62,7 +62,7 @@
             </div>
         {:else}
             <div class="custom-id-wrapper">
-                <CustomId bind:show={showCustomId} name="File" bind:id={$createFile.id} />
+                <CustomId autofocus bind:show={showCustomId} name="File" bind:id={$createFile.id} />
             </div>
         {/if}
     </FormList>
