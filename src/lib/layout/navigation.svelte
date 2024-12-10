@@ -12,7 +12,7 @@
     import { wizard } from '$lib/stores/wizard';
     import { isCloud } from '$lib/system';
     import Create from '$routes/(console)/feedbackWizard.svelte';
-    import { showSupportModal } from '$routes/(console)/wizard/support/store';
+    import { showSupportModal } from '$routes/(console)/store';
     import { getContext } from 'svelte';
     import type { Writable } from 'svelte/store';
 

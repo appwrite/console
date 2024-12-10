@@ -2,10 +2,10 @@
     import { Button } from '$lib/elements/forms';
     import { DropList } from '$lib/components';
     import { Pill } from '$lib/elements';
-    import { wizard } from '$lib/stores/wizard';
-    import SupportWizard from '$routes/(console)/supportWizard.svelte';
     import { BillingPlan } from '$lib/constants';
     import { organization } from '$lib/stores/organization';
+    import { base } from '$app/paths';
+    import { page } from '$app/stores';
 
     export let isFlex = true;
     export let title: string;
@@ -27,7 +27,7 @@
     <div class="u-flex u-cross-child-center u-cross-center u-gap-12">
         <div class="body-text-1 u-bold backups-title">{title}</div>
 
-        {#if hasLimitations && $organization.billingPlan === BillingPlan.PRO}
+        {#if hasLimitations && $organization?.billingPlan === BillingPlan.PRO}
             <div style="height: 40px; padding-block-start: 4px">
                 <DropList bind:show={showDropdown} width="16">
                     <Pill button on:click={() => (showDropdown = true)}>
@@ -37,13 +37,13 @@
                         <slot name="tooltip">
                             <span>
                                 You are limited to one policy on Pro plan.
-                                <button
-                                    class="u-underline"
+                                <a
+                                    class="link"
+                                    href={`${base}/support?org=${$organization?.$id}&project=${$page.params.project}`}
                                     on:click={() => {
                                         showDropdown = !showDropdown;
-                                        wizard.start(SupportWizard);
-                                    }}>Contact support</button> to upgrade your plan and add customized
-                                backup policies.
+                                    }}>Contact support</a> to upgrade your plan and add customized backup
+                                policies.
                             </span>
                         </slot>
                     </svelte:fragment>

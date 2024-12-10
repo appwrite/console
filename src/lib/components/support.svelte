@@ -1,17 +1,27 @@
 <script lang="ts">
     import { Button } from '$lib/elements/forms';
     import { app } from '$lib/stores/app';
-    import { wizard } from '$lib/stores/wizard';
-    import SupportWizard from '$routes/(console)/supportWizard.svelte';
-    import { showSupportModal } from '$routes/(console)/wizard/support/store';
     import { isCloud } from '$lib/system';
     import { organization } from '$lib/stores/organization';
     import { BillingPlan } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
     import { localeTimezoneName, utcHourToLocaleHour } from '$lib/helpers/date';
     import { upgradeURL } from '$lib/stores/billing';
+    import { base } from '$app/paths';
+    import { project } from '$routes/(console)/project-[project]/store';
 
     export let show = false;
+
+    function supportURL() {
+        let url = `${base}/support`;
+        if ($organization?.$id) {
+            url += `?org=${$organization?.$id}`;
+            if ($project?.$id) {
+                url += `&project=${$project?.$id}`;
+            }
+        }
+        return url;
+    }
 
     $: isPaid =
         $organization?.billingPlan === BillingPlan.PRO ||
@@ -46,54 +56,45 @@
             <Button
                 secondary
                 fullWidth
+                href={supportURL()}
                 on:click={() => {
                     show = false;
-                    $showSupportModal = false;
-                    wizard.start(SupportWizard);
                 }}>
-                <span class="text">Contact our Support Team</span>
+                <span class="text">Email support</span>
             </Button>
         {/if}
     </section>
 {/if}
-<section class="drop-section u-grid u-gap-24 u-padding-24">
-    <div>
-        <h4 class="eyebrow-heading-3">Troubleshooting</h4>
+<section class="drop-section u-flex u-flex-vertical u-gap-16 u-padding-24">
+    <h4 class="eyebrow-heading-3">Troubleshooting</h4>
 
-        <div class="u-margin-block-start-8 u-width-full-line">
-            {#key $app.themeInUse}
-                <iframe
-                    style="color-scheme: none"
-                    title="Appwrite Status"
-                    src={`https://status.appwrite.online/badge?theme=${
-                        $app.themeInUse === 'dark' ? 'dark' : 'light'
-                    }`}
-                    width="250"
-                    height="30"
-                    frameborder="0"
-                    scrolling="no">
-                </iframe>
-            {/key}
-        </div>
+    <div class="u-margin-block-start-8 u-width-full-line">
+        {#key $app.themeInUse}
+            <iframe
+                style="color-scheme: none"
+                title="Appwrite Status"
+                src={`https://status.appwrite.online/badge?theme=${
+                    $app.themeInUse === 'dark' ? 'dark' : 'light'
+                }`}
+                width="250"
+                height="30"
+                frameborder="0"
+                scrolling="no">
+            </iframe>
+        {/key}
     </div>
 
-    <div class="u-flex u-gap-16">
-        <a
-            href="https://appwrite.io/docs"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="button is-secondary u-padding-inline-12 u-stretch u-main-center u-gap-4 u-flex-basis-auto">
-            <span class="icon-book-open" aria-hidden="true" />
-            <span class="text">Docs</span>
+    <div class="u-flex u-flex-vertical u-gap-8">
+        <a href="https://appwrite.io/docs" target="_blank" rel="noopener noreferrer" class="link">
+            Visit our docs
         </a>
         <a
             href="https://github.com/appwrite/appwrite/issues"
             aria-label="Open issue on GitHub"
             target="_blank"
             rel="noopener noreferrer"
-            class="button is-secondary u-padding-inline-12 u-stretch u-main-center u-gap-4 u-flex-basis-auto">
-            <span class="icon-github" aria-hidden="true" />
-            <span class="text">Open issue</span>
+            class="link">
+            Open a GitHub issue
         </a>
     </div>
 </section>

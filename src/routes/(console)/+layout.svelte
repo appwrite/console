@@ -38,9 +38,8 @@
     import { feedback } from '$lib/stores/feedback';
     import { hasStripePublicKey, isCloud, VARS } from '$lib/system';
     import { stripe } from '$lib/stores/stripe';
-    import MobileSupportModal from './wizard/support/mobileSupportModal.svelte';
-    import { showSupportModal } from './wizard/support/store';
-    import { activeHeaderAlert, consoleVariables } from './store';
+    import MobileSupportModal from '$lib/components/mobileSupportModal.svelte';
+    import { activeHeaderAlert, consoleVariables, showSupportModal } from './store';
     import { headerAlert } from '$lib/stores/headerAlert';
     import { UsageRates } from '$lib/components/billing';
     import { base } from '$app/paths';
