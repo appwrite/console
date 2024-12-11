@@ -31,10 +31,12 @@ import {
     SUBDOMAIN_NYC,
     SUBDOMAIN_SYD
 } from '$lib/constants';
+import { building } from '$app/environment';
 
 export function getApiEndpoint(region?: string): string {
+    if (building) return '';
     const url = new URL(
-        VARS.APPWRITE_ENDPOINT ? VARS.APPWRITE_ENDPOINT : globalThis?.location.toString()
+        VARS.APPWRITE_ENDPOINT ? VARS.APPWRITE_ENDPOINT : globalThis?.location?.toString()
     );
     const protocol = url.protocol;
     const hostname = url.hostname;
