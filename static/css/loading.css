@@ -9,9 +9,13 @@ body {
 
 .theme-dark .page-loader {
     --p-page-loader-background-color: hsl(240 5.7% 10.4%);
+    --base-gradient-color: #fff;
+    --base-color: #999;
 }
 .theme-light .page-loader {
     --p-page-loader-background-color: #fff;
+    --base-gradient-color: #000;
+    --base-color: #aaa;
 }
 
 .theme-light .page-loader {
@@ -53,8 +57,6 @@ body {
 
     .message {
         --spread: 50px;
-        --base-gradient-color: #fff;
-        --base-color: #999;
         --bg: linear-gradient(
             90deg,
             #0000 calc(50% - var(--spread)),
