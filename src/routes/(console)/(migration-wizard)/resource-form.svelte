@@ -2,11 +2,7 @@
     import { Alert, Box, EyebrowHeading } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { deepMap } from '$lib/helpers/object';
-    import type { WritableValue } from '$lib/helpers/types';
-    import { type getSdkForProject } from '$lib/stores/sdk';
-
     import { onMount } from 'svelte';
-
     import {
         createMigrationFormStore,
         createMigrationProviderStore,
@@ -16,10 +12,12 @@
     } from '$lib/stores/migration';
     import { wizard } from '$lib/stores/wizard';
     import type { Models } from '@appwrite.io/console';
+    import type { sdk } from '$lib/stores/sdk';
+    import type { WritableValue } from '$lib/helpers/types';
 
     export let formData: ReturnType<typeof createMigrationFormStore>;
     export let provider: ReturnType<typeof createMigrationProviderStore>;
-    export let projectSdk: ReturnType<typeof getSdkForProject>;
+    export let projectSdk: ReturnType<typeof sdk.forProject>;
 
     type ValueOf<T> = T[keyof T];
     type FormData = WritableValue<typeof formData>;

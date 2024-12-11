@@ -1,12 +1,16 @@
 import { goto } from '$app/navigation';
-import { project } from '$routes/(console)/project-[project]/store';
+import { project } from '$routes/(console)/project-[region]-[project]/store';
 import { get } from 'svelte/store';
 import type { Searcher } from '../commands';
 import { sdk } from '$lib/stores/sdk';
 import { base } from '$app/paths';
+import { page } from '$app/stores';
 
 export const dbSearcher = (async (query: string) => {
-    const { databases } = await sdk.forProject.databases.list();
+    const $page = get(page);
+    const { databases } = await sdk
+        .forProject($page.params.region, $page.params.project)
+        .databases.list();
 
     return databases
         .filter((db) => db.name.toLowerCase().includes(query.toLowerCase()))

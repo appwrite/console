@@ -26,7 +26,7 @@
     import { loading } from '$routes/store';
     import type { Models } from '@appwrite.io/console';
     import { ID, Region } from '@appwrite.io/console';
-    import { openImportWizard } from '../project-[project]/settings/migrations/(import)';
+    import { openImportWizard } from '../project-[region]-[project]/settings/migrations/(import)';
     import { readOnly } from '$lib/stores/billing';
     import type { RegionList } from '$lib/sdk/billing';
     import { onMount } from 'svelte';
@@ -111,7 +111,7 @@
             trackEvent(Submit.ProjectCreate, {
                 teamId: $page.params.organization
             });
-            await goto(`${base}/project-${project.$id}/settings/migrations`);
+            await goto(`${base}/project-${project.region}-${project.$id}/settings/migrations`);
             openImportWizard();
             loading.set(false);
         } catch (e) {
@@ -175,7 +175,7 @@
                         project.platforms.map((platform) => getPlatformInfo(platform.type))
                     )}
                     <li>
-                        <GridItem1 href={`${base}/project-${project.$id}`}>
+                        <GridItem1 href={`${base}/project-${project.region}-${project.$id}`}>
                             <svelte:fragment slot="eyebrow">
                                 {project?.platforms?.length ? project?.platforms?.length : 'No'} apps
                             </svelte:fragment>

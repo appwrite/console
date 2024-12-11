@@ -13,7 +13,7 @@
     import { BillingPlan } from '$lib/constants';
     import { upgradeURL } from '$lib/stores/billing';
     import { addBottomModalAlerts } from '$routes/(console)/bottomAlerts';
-    import { project } from '$routes/(console)/project-[project]/store';
+    import { project } from '$routes/(console)/project-[region]-[project]/store';
     import { page } from '$app/stores';
     import { trackEvent } from '$lib/actions/analytics';
 
