@@ -22,9 +22,10 @@
     <div class="grid-300px-1fr">
         <section>
             <Collapsible>
-                <li class="collapsible-item">
-                    <h3 class="body-text-2 u-bold u-padding-block-12">
-                        Use cases <span class="inline-tag">{$template.useCases.length}</span>
+                <li class="collapsible-item-divider collapsible-item">
+                    <h3 class="u-flex u-gap-16 body-text-2 u-bold u-padding-block-12">
+                        Use cases
+                        <span class="inline-tag">{$template.useCases.length}</span>
                     </h3>
                     <div class="collapsible-content u-flex u-flex-wrap u-gap-8">
                         {#each $template.useCases as useCase}
@@ -32,9 +33,10 @@
                         {/each}
                     </div>
                 </li>
-                <li class="collapsible-item">
-                    <h3 class="body-text-2 u-bold u-padding-block-12">
-                        Runtimes <span class="inline-tag">{$template.runtimes.length}</span>
+                <li class="collapsible-item-divider collapsible-item">
+                    <h3 class="u-flex u-gap-16 body-text-2 u-bold u-padding-block-12">
+                        Runtimes
+                        <span class="inline-tag">{$template.runtimes.length}</span>
                     </h3>
                     <div class="collapsible-content u-flex u-flex-wrap u-gap-8">
                         {#each $template.runtimes as runtime}
@@ -42,12 +44,12 @@
                         {/each}
                     </div>
                 </li>
-                <li class="collapsible-item">
+                <li class="collapsible-item-divider collapsible-item">
                     <section class="card u-margin-block-start-24">
                         <h4 class="body-text-1 u-bold">Published by</h4>
                         <img
                             class="u-margin-block-start-8"
-                            src={$app.themeInUse == 'dark' ? AppwriteLogoDark : AppwriteLogoLight}
+                            src={$app.themeInUse === 'dark' ? AppwriteLogoDark : AppwriteLogoLight}
                             width="120"
                             height="22"
                             alt="Appwrite" />
@@ -58,7 +60,7 @@
         <section>
             <Card>
                 <Heading size="7" tag="h3">
-                    <span class="u-flex u-cross-center u-gap-8">
+                    <span class="u-flex u-cross-center u-gap-16 functions-avatar-holder">
                         <div class="avatar is-size-small">
                             <span
                                 style:--p-text-size="20px"
@@ -92,3 +94,13 @@
         </section>
     </div>
 </Container>
+
+<style>
+    :global(.theme-dark .collapsible-item-divider:where(:not(:last-child))) {
+        border-block-end: solid 0.0625rem hsl(var(--color-neutral-85));
+    }
+
+    :global(.theme-light .collapsible-item-divider:where(:not(:last-child))) {
+        border-block-end: solid 0.0625rem hsl(var(--color-neutral-10));
+    }
+</style>
