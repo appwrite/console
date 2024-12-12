@@ -3,13 +3,13 @@ import { getPage, getSearch, getView, pageToOffset, View } from '$lib/helpers/lo
 import { sdk } from '$lib/stores/sdk';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ url, route, depends, parent }) => {
+export const load: PageLoad = async ({ url, route, depends, parent, params }) => {
     depends(Dependencies.FUNCTIONS);
 
     const limit = CARD_LIMIT;
     const page = getPage(url);
     const search = getSearch(url);
-    const view = getView(url, route, View.Grid);
+    const view = getView(params.project, url, route, View.Grid);
     const offset = pageToOffset(page, limit);
     const filter = {
         useCases: url.searchParams.getAll('useCase'),

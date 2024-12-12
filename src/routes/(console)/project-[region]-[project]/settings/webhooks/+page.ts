@@ -7,7 +7,7 @@ export const load: PageLoad = async ({ params, url, route, depends }) => {
     depends(Dependencies.WEBHOOKS);
 
     const page = getPage(url);
-    const view = getView(url, route, View.Grid);
+    const view = getView(params.project, url, route, View.Grid);
 
     return {
         page,

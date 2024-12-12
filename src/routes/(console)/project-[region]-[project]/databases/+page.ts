@@ -10,8 +10,8 @@ export const load: PageLoad = async ({ url, route, depends, params }) => {
     depends(Dependencies.DATABASES);
 
     const page = getPage(url);
-    const limit = getLimit(url, route, CARD_LIMIT);
-    const view = getView(url, route, View.Grid);
+    const limit = getLimit(params.project, url, route, CARD_LIMIT);
+    const view = getView(params.project, url, route, View.Grid);
     const offset = pageToOffset(page, limit);
 
     const { databases, policies, lastBackups } = await fetchDatabasesAndBackups(

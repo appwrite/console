@@ -32,6 +32,8 @@
 
         try {
             const uploadPromise = uploader.uploadFile(
+                $page.params.region,
+                $page.params.project,
                 bucketId,
                 fileId,
                 $createFile.files[0],

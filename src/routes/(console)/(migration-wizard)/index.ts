@@ -3,7 +3,6 @@ import { wizard } from '$lib/stores/wizard';
 import { requestedMigration } from '$routes/store';
 import { get, writable } from 'svelte/store';
 import Wizard from './wizard.svelte';
-import type { Models } from '@appwrite.io/console';
 
 export const formData = createMigrationFormStore();
 

@@ -23,7 +23,10 @@
     let showCreateDropdown = false;
     let selectedAttribute: Option['name'] = null;
 
-    $: selected = preferences.getCustomCollectionColumns($page.params.collection);
+    $: selected = preferences.getCustomCollectionColumns(
+        $page.params.project,
+        $page.params.collection
+    );
     $: columns.set(
         $collection.attributes.map((attribute) => ({
             id: attribute.key,

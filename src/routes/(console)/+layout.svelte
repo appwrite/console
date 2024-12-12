@@ -272,9 +272,9 @@
     }
 
     database.subscribe(async (database) => {
-        if (!database) return;
+        if (!database || !$page.params.region || !$page.params.project) return;
         // the component checks `isCloud` internally.
-        await checkForDatabaseBackupPolicies(database);
+        await checkForDatabaseBackupPolicies($page.params.region, $page.params.project, database);
     });
 
     let currentOrganizationId = null;

@@ -18,7 +18,6 @@
     import DeleteAllSessions from '../deleteAllSessions.svelte';
     import DeleteSessions from '../deleteSession.svelte';
     import type { PageData } from './$types';
-    import { page } from '$app/stores';
 
     export let data: PageData;
 
@@ -29,9 +28,8 @@
     function getBrowser(clientCode: string) {
         const code = clientCode.toLowerCase();
         if (!isValueOfStringEnum(Browser, code)) return '';
-        return sdk
-            .forProject($page.params.region, $page.params.project)
-            .avatars.getBrowser(code, 40, 40);
+
+        return sdk.forConsole.avatars.getBrowser(code, 40, 40);
     }
 </script>
 

@@ -29,9 +29,8 @@
     function getBrowser(clientCode: string) {
         const code = clientCode.toLowerCase();
         if (!isValueOfStringEnum(Browser, code)) return '';
-        return sdk
-            .forProject($page.params.region, $page.params.project)
-            .avatars.getBrowser(code, 40, 40);
+
+        return sdk.forConsole.avatars.getBrowser(code, 40, 40);
     }
 
     function logoutSessionId(sessionId: string) {

@@ -71,8 +71,8 @@
                             <TableCell title="Usage">{format(project.usage)}</TableCell>
                         </TableRow>
                     {:else}
-                        <TableRowLink
-                            href={getProjectUsageLink(project.region ?? 'fra1', project.projectId)}>
+                        <!-- TODO: hardcoded region -->
+                        <TableRowLink href={getProjectUsageLink('fra1', project.projectId)}>
                             <TableCell title="Project">
                                 {data.projectNames[project.projectId]?.name ?? 'Unknown'}
                             </TableCell>

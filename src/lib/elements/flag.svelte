@@ -14,14 +14,10 @@
 
     export function getFlag(country: string, width: number, height: number, quality: number) {
         if (!isValueOfStringEnum(Flag, country)) return '';
-        let flag = sdk
-            .forProject($page.params.region, $page.params.project)
-            .avatars.getFlag(country, width * 2, height * 2, quality)
-            ?.toString();
-        flag?.includes('&project=')
-            ? (flag = flag.replace('&project=', '&mode=admin'))
-            : flag + '&mode=admin';
-        return flag;
+
+        return sdk
+            .forProject($page.params.region, 'console')
+            .avatars.getFlag(country, width * 2, height * 2, quality);
     }
 </script>
 

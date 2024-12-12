@@ -99,7 +99,10 @@
         };
     }
 
-    $: selected = preferences.getCustomCollectionColumns($page.params.collection);
+    $: selected = preferences.getCustomCollectionColumns(
+        $page.params.project,
+        $page.params.collection
+    );
 
     $: {
         columns.set(
