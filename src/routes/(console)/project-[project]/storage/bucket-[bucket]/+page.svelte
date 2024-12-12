@@ -282,7 +282,7 @@
                 <span class="indicator body-text-2 u-bold">{selected.length}</span>
                 <p>
                     <span class="is-only-desktop">
-                        {selected.length > 1 ? 'collections' : 'collection'}
+                        file{selected.length > 1 ? 's' : ''}
                     </span>
                     selected
                 </p>

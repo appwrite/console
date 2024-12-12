@@ -47,7 +47,7 @@
     headerDivider={false}>
     <p data-private>
         Are you sure you want to delete <b
-            >{!singleFile ? `${multipleFiles.length} files` : singleFile.name}</b
+            >{!singleFile ? `${multipleFiles.length} file${multipleFiles.length > 1 ? 's' : ''}` : singleFile.name}</b
         >?
     </p>
     <svelte:fragment slot="footer">
