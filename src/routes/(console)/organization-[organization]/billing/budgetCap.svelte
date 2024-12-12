@@ -55,8 +55,6 @@
         <p class="text">
             Restrict your resource usage by setting a budget cap. Cap usage is reset at the
             beginning of each billing cycle.
-            <button class="link" type="button" on:click={() => ($showUsageRatesModal = true)}
-                >Learn more about usage rates.</button>
         </p>
         <svelte:fragment slot="aside">
             {#if $organization?.billingPlan === BillingPlan.FREE}
@@ -76,8 +74,12 @@
                 <FormList>
                     <InputSwitch id="cap-active" label="Enable budget cap" bind:value={capActive}>
                         <svelte:fragment slot="description">
-                            Budget cap limits do not include the base amount of your plan. Cap usage
-                            is reset at the beginning of each billing cycle.
+                            Budget cap limits do not include the base amount of your plan. <button
+                                class="link"
+                                type="button"
+                                on:click={() => ($showUsageRatesModal = true)}
+                                >Learn more about usage rates.
+                            </button>
                         </svelte:fragment>
                     </InputSwitch>
                     {#if capActive}

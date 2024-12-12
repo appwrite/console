@@ -79,7 +79,7 @@
 
 <Form onSubmit={updateBudget}>
     <CardGrid>
-        <Heading tag="h2" size="6">Budget alerts</Heading>
+        <Heading tag="h2" size="6">Billing alerts</Heading>
 
         <p class="text">
             {#if $organization?.billingPlan === BillingPlan.FREE}
@@ -94,15 +94,9 @@
             {#if $organization?.billingPlan === BillingPlan.FREE}
                 <Alert type="info">
                     <svelte:fragment slot="title"
-                        >Budget alerts are a Pro plan feature
+                        >Billing alerts are a Pro plan feature
                     </svelte:fragment>
-                    Upgrade to a Pro plan to set a budget alerts for your organization. For more information
-                    on what you can do with a Pro plan,
-                    <a
-                        class="link"
-                        href="https://appwrite.io/pricing"
-                        target="_blank"
-                        rel="noopener noreferrer">view our pricing guide.</a>
+                    Upgrade to a Pro plan to manage when you receive billing alerts for your organization.
                 </Alert>
             {:else}
                 <FormList>

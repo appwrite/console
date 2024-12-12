@@ -199,7 +199,7 @@
             {#if $organization?.billingPlan === BillingPlan.FREE}
                 <!-- TODO: make center on mobile and have different styles. -->
                 <div
-                    class="u-flex u-flex-vertical-mobile u-cross-center u-gap-16 u-flex-wrap u-width-full-line">
+                    class="u-flex u-flex-vertical-mobile u-cross-center u-gap-16 u-flex-wrap u-width-full-line u-main-end">
                     <Button secondary href={`${base}/organization-${$organization?.$id}/usage`}>
                         View estimated usage
                     </Button>
@@ -216,7 +216,8 @@
                     </Button>
                 </div>
             {:else if $organization?.billingPlan !== BillingPlan.GITHUB_EDUCATION}
-                <div class="u-flex u-gap-16 u-flex-wrap">
+                <div
+                    class="u-flex u-flex-vertical-mobile u-cross-center u-gap-16 u-flex-wrap u-width-full-line u-main-end">
                     <Button
                         text
                         disabled={$organization?.markedForDeletion}
