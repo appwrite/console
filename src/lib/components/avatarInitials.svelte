@@ -7,7 +7,7 @@
     export let background: string | undefined = undefined;
     export let color = 'black';
 
-    $: src = sdk.forConsole.avatars.getInitials(name, size * 2, size * 2, background).toString();
+    $: src = sdk.forConsole.avatars.getInitials(name, size * 2, size * 2, background);
 </script>
 
 <Avatar {name} {size} {src} {color} />
