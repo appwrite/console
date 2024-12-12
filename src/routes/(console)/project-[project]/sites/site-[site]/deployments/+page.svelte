@@ -8,7 +8,7 @@
     import { View } from '$lib/helpers/load';
     import { Pill } from '$lib/elements';
     import { onMount } from 'svelte';
-    import { Layout, Typography } from '@appwrite.io/pink-svelte';
+    import { ActionMenu, Layout, Popover, Typography } from '@appwrite.io/pink-svelte';
     import { sdk } from '$lib/stores/sdk';
     import { page } from '$app/stores';
     import { toLocaleDate } from '$lib/helpers/date';
@@ -19,6 +19,7 @@
     import UsageCard from './usageCard.svelte';
     import ConnectRepoModal from '../../(components)/connectRepoModal.svelte';
     import { columns } from './store';
+    import CreateManualDeploymentModal from './createManualDeploymentModal.svelte';
 
     export let data;
 
@@ -27,7 +28,8 @@
     let showConnectRepo = false;
     let selectedDeployment: Models.Deployment = null;
     let hasInstallation = !!data.installations?.total;
-
+    let showConnectCLI = false;
+    let showConnectManual = false;
     let showMobileFilters = false;
 
     let range = SiteUsageRange.ThirtyDays;
@@ -155,17 +157,36 @@
                     </Filters>
                 </Layout.Stack>
                 <ViewSelector view={View.Table} {columns} hideView allowNoColumns hideText />
-                <Button
-                    size="s"
-                    on:click={() => {
-                        if (!hasInstallation) {
-                            showConnectRepo = true;
-                        } else {
-                            showCreateDeployment = true;
-                        }
-                    }}>
-                    Create deployment
-                </Button>
+                <Popover let:toggle>
+                    <Button size="s" on:click={toggle}>Create deployment</Button>
+                    <svelte:fragment slot="tooltip">
+                        <ActionMenu.Root>
+                            <ActionMenu.Item.Button
+                                badge="Recommended"
+                                on:click={() => {
+                                    if (!hasInstallation) {
+                                        showConnectRepo = true;
+                                    } else {
+                                        showCreateDeployment = true;
+                                    }
+                                }}>
+                                Git
+                            </ActionMenu.Item.Button>
+                            <ActionMenu.Item.Button
+                                on:click={() => {
+                                    showConnectCLI = true;
+                                }}>
+                                CLI
+                            </ActionMenu.Item.Button>
+                            <ActionMenu.Item.Button
+                                on:click={() => {
+                                    showConnectManual = true;
+                                }}>
+                                Manual
+                            </ActionMenu.Item.Button>
+                        </ActionMenu.Root>
+                    </svelte:fragment>
+                </Popover>
             </Layout.Stack>
             <div class="is-only-mobile">
                 <Layout.Stack justifyContent="space-between" direction="row">
@@ -228,4 +249,7 @@
 
 {#if showCreateDeployment}
     <CreateGitDeploymentModal bind:show={showCreateDeployment} site={data.site} />
+{/if}
+{#if showConnectManual}
+    <CreateManualDeploymentModal bind:show={showConnectManual} site={data.site} />
 {/if}

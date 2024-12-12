@@ -41,7 +41,7 @@
     $updateCommandGroupRanks({ sites: 1000 });
 
     // TODO: remove
-    const TMPSITEROLES = !$canWriteSites;
+    const TMPSITEROLES = true;
 </script>
 
 <Container>

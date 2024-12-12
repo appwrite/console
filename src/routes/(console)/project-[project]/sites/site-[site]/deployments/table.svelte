@@ -8,9 +8,9 @@
     import { timer } from '$lib/actions/timer';
     import { calculateSize } from '$lib/helpers/sizeConvertion';
     import { page } from '$app/stores';
-    import Delete from './delete.svelte';
+    import Delete from './deleteDeploymentModal.svelte';
     import RedeployModal from './redeployModal.svelte';
-    import Cancel from './cancel.svelte';
+    import Cancel from './cancelDeploymentModal.svelte';
     import { base } from '$app/paths';
     import { ActionMenu, Popover, Status, Table } from '@appwrite.io/pink-svelte';
     import {

@@ -40,7 +40,7 @@
 </script>
 
 <div>
-    <label class="choice-item" for={id}>
+    <div class="choice-item">
         <div class="input-text-wrapper">
             <Selector.Checkbox
                 bind:checked
@@ -57,7 +57,7 @@
         <div class="choice-item-content">
             <slot name="description" />
         </div>
-    </label>
+    </div>
     {#if error}
         <Helper type="warning">{error}</Helper>
     {/if}
