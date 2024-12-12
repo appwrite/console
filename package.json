@@ -35,11 +35,11 @@
         "echarts": "^5.5.1",
         "envfile": "^7.1.0",
         "nanoid": "^5.0.8",
+        "nanotar": "^0.1.1",
         "plausible-tracker": "^0.3.9",
         "pretty-bytes": "^6.1.1",
         "prismjs": "^1.29.0",
         "svelte-confetti": "^1.4.0",
-        "tar": "^7.4.3",
         "tippy.js": "^6.3.7"
     },
     "devDependencies": {
