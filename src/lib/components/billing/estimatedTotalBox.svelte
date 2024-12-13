@@ -37,9 +37,7 @@
             ? selectedPlan.price + extraSeatsCost - unUsedBalances
             : selectedPlan.price + extraSeatsCost;
     $: estimatedTotal =
-        couponData?.status === 'active'
-            ? Math.max(0, grossCost - couponData.credits)
-            : grossCost;
+        couponData?.status === 'active' ? Math.max(0, grossCost - couponData.credits) : grossCost;
     $: trialEndDate = new Date(
         billingPayDate.getTime() + selectedPlan.trialDays * 24 * 60 * 60 * 1000
     );
@@ -69,14 +67,14 @@
     </div>
 
     {#if isScaleUpgrade}
+        {@const currentPlanName = currentOrgPlan.name}
         <div class="u-flex u-main-space-between">
             <div class="text">
-                <span>Unused {currentOrgPlan.name} plan balance</span>
+                <span>Unused {currentPlanName} plan balance</span>
                 <span
                     use:tooltip={{
                         placement: 'bottom',
-                        content:
-                            'This discount reflects the unused portion of your Pro plan and add-ons. Future credits for extra seats and features will apply automatically.'
+                        content: `This discount reflects the unused portion of your ${currentPlanName} plan and add-ons. Future credits for extra seats and features will apply automatically.`
                     }}
                     class="icon-info">
                 </span>
