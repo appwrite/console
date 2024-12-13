@@ -29,7 +29,7 @@
         WizardSecondaryContent,
         WizardSecondaryFooter
     } from '$lib/layout';
-    import { type Coupon, type PaymentList } from '$lib/sdk/billing';
+    import { type Coupon, type PaymentList, type Plan } from '$lib/sdk/billing';
     import { plansInfo, tierToPlan, type Tier } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { organization, organizationList, type Organization } from '$lib/stores/organization';
@@ -73,6 +73,8 @@
 
     let feedbackDowngradeReason: string;
     let feedbackMessage: string;
+
+    let currentOrgPlan: Plan;
     let selfService: boolean;
 
     onMount(async () => {
@@ -101,8 +103,8 @@
             billingPlan = BillingPlan.PRO;
         }
 
-        const currentPlan = await sdk.forConsole.billing.getPlan($organization?.$id);
-        selfService = currentPlan.selfService;
+        currentOrgPlan = await sdk.forConsole.billing.getPlan($organization?.$id);
+        selfService = currentOrgPlan.selfService;
     });
 
     async function loadPaymentMethods() {
@@ -197,6 +199,7 @@
                     (collaborator) =>
                         !data?.members?.memberships?.find((m) => m.userEmail === collaborator)
                 );
+                // noinspection ES6MissingAwait
                 newCollaborators.forEach(async (collaborator) => {
                     await sdk.forConsole.teams.createMembership(
                         org.$id,
@@ -337,6 +340,7 @@
                 <EstimatedTotalBox
                     {billingPlan}
                     {collaborators}
+                    {currentOrgPlan}
                     bind:couponData
                     bind:billingBudget
                     {isDowngrade} />
