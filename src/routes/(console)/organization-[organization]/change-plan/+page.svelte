@@ -29,7 +29,7 @@
         WizardSecondaryContent,
         WizardSecondaryFooter
     } from '$lib/layout';
-    import { type Coupon, type PaymentList, type Plan } from '$lib/sdk/billing';
+    import { type Coupon, type PaymentList } from '$lib/sdk/billing';
     import { plansInfo, tierToPlan, type Tier } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { organization, organizationList, type Organization } from '$lib/stores/organization';
@@ -74,7 +74,6 @@
     let feedbackDowngradeReason: string;
     let feedbackMessage: string;
 
-    let currentOrgPlan: Plan;
     let selfService: boolean;
 
     onMount(async () => {
@@ -103,7 +102,7 @@
             billingPlan = BillingPlan.PRO;
         }
 
-        currentOrgPlan = await sdk.forConsole.billing.getPlan($organization?.$id);
+        const currentOrgPlan = await sdk.forConsole.billing.getPlan($organization?.$id);
         selfService = currentOrgPlan.selfService;
     });
 
@@ -338,12 +337,12 @@
         <svelte:fragment slot="aside">
             {#if billingPlan !== BillingPlan.FREE && $organization.billingPlan !== billingPlan && $organization.billingPlan !== BillingPlan.CUSTOM}
                 <EstimatedTotalBox
+                    {isDowngrade}
                     {billingPlan}
                     {collaborators}
-                    {currentOrgPlan}
                     bind:couponData
                     bind:billingBudget
-                    {isDowngrade} />
+                    currentTier={$organization.billingPlan} />
             {:else if $organization.billingPlan !== BillingPlan.CUSTOM}
                 <PlanComparisonBox downgrade={isDowngrade} />
             {/if}

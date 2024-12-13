@@ -2,14 +2,15 @@
     import { FormList, InputChoice, InputNumber } from '$lib/elements/forms';
     import { toLocaleDate } from '$lib/helpers/date';
     import { formatCurrency } from '$lib/helpers/numbers';
-    import type { Coupon, Plan } from '$lib/sdk/billing';
+    import type { Coupon } from '$lib/sdk/billing';
     import { plansInfo, type Tier } from '$lib/stores/billing';
     import { CreditsApplied } from '.';
     import { BillingPlan } from '$lib/constants';
     import { tooltip } from '$lib/actions/tooltip';
 
+    // undefined as we only need this on `change-plan`
+    export let currentTier: Tier | undefined = undefined;
     export let billingPlan: Tier;
-    export let currentOrgPlan: Plan;
     export let collaborators: string[];
     export let couponData: Partial<Coupon>;
     export let billingBudget: number;
@@ -24,6 +25,7 @@
     let budgetEnabled = false;
 
     $: selectedPlan = $plansInfo.get(billingPlan);
+    $: currentOrgPlan = $plansInfo.get(currentTier);
     $: unUsedBalances = isScaleUpgrade
         ? currentOrgPlan.price +
           (collaborators?.length ?? 0) * (currentOrgPlan?.addons?.member?.price ?? 0)
