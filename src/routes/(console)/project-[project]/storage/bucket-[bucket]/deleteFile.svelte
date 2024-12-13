@@ -7,20 +7,26 @@
     import type { Models } from '@appwrite.io/console';
     import { createEventDispatcher } from 'svelte';
 
-    export let file: Models.File;
+    export let singleFile: Models.File;
+    export let multipleFiles: string[];
     export let showDelete = false;
+    export let bucketId: string;
 
     const dispatch = createEventDispatcher();
 
     const deleteFile = async () => {
+        const promises = !singleFile
+            ? multipleFiles.map((fileId) => sdk.forProject.storage.deleteFile(bucketId, fileId))
+            : [await sdk.forProject.storage.deleteFile(bucketId, singleFile.$id)];
+        showDelete = false;
         try {
-            await sdk.forProject.storage.deleteFile(file.bucketId, file.$id);
-            showDelete = false;
-            dispatch('deleted', file);
+            await Promise.all(promises);
+            dispatch('deleted');
             addNotification({
                 type: 'success',
-                message: `${file.name} has been deleted`
+                message: `${!singleFile ? multipleFiles.length : singleFile.name} has been deleted`
             });
+            multipleFiles = [];
             trackEvent(Submit.FileDelete);
         } catch (error) {
             addNotification({
@@ -39,7 +45,11 @@
     icon="exclamation"
     state="warning"
     headerDivider={false}>
-    <p data-private>Are you sure you want to delete <b>{file.name}</b>?</p>
+    <p data-private>
+        Are you sure you want to delete <b
+            >{!singleFile ? `${multipleFiles.length} file${multipleFiles.length > 1 ? 's' : ''}` : singleFile.name}</b
+        >?
+    </p>
     <svelte:fragment slot="footer">
         <Button text on:click={() => (showDelete = false)}>Cancel</Button>
         <Button secondary submit>Delete</Button>
