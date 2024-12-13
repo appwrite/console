@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Empty, PaginationWithLimit, SearchQuery, ViewSelector } from '$lib/components';
+    import { Empty, PaginationWithLimit, SearchQuery, ViewSelector, EmptySearch } from '$lib/components';
     import { Button } from '$lib/elements/forms';
     import { Container, ContainerHeader } from '$lib/layout';
     import { columns, showCreate } from './store';
@@ -7,6 +7,8 @@
     import Grid from './grid.svelte';
     import type { PageData } from './$types';
     import { canWriteCollections } from '$lib/stores/roles';
+    import { base } from '$app/paths';
+    import { page } from '$app/stores';
 
     export let data: PageData;
 </script>
@@ -44,6 +46,26 @@
             limit={data.limit}
             offset={data.offset}
             total={data.collections.total} />
+    {:else if data.search}
+        <EmptySearch>
+            <div class="u-text-center">
+                <b>Sorry, we couldn't find '{data.search}'</b>
+                <p>There are no collections that match your search.</p>
+            </div>
+            <div class="u-flex u-gap-16">
+                <Button
+                    external
+                    href="https://appwrite.io/docs/products/databases/collections"
+                    text>
+                    Documentation
+                </Button>
+                <Button
+                    secondary
+                    href={`${base}/project-${$page.params.project}/databases/database-${$page.params.database}`}>
+                    Clear Search
+                </Button>
+            </div>
+        </EmptySearch>
     {:else}
         <Empty
             single
