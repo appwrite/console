@@ -37,7 +37,7 @@
         } catch (error) {
             addNotification({
                 type: 'error',
-                message: `There was an error enabling your budget cap`
+                message: error.message
             });
             trackError(error, Submit.BudgetCapUpdate);
         }
