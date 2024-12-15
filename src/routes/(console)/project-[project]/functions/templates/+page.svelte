@@ -21,6 +21,7 @@
     import type { Models } from '@appwrite.io/console';
     import { functionsList } from '../store';
     import { debounce } from '$lib/helpers/debounce';
+    import { capitalize } from '$lib/helpers/string';
 
     export let data;
 
@@ -148,7 +149,7 @@
                                             class="is-small"
                                             checked={isChecked(useCase)}
                                             on:change={(e) => applyFilter('useCase', useCase, e)} />
-                                        <span class="u-trim-1">{useCase}</span>
+                                        <span class="u-trim-1">{capitalize(useCase)}</span>
                                     </label>
                                 </li>
                             {/each}
