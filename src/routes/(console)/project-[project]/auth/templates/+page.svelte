@@ -268,6 +268,7 @@
             </Collapsible>
         </svelte:fragment>
     </CardGrid>-->
+    <!--    // TODO change check to plan details emailBranding property-->
     {#if isCloud && $organization?.billingPlan === BillingPlan.FREE}
         <EmailSignature />
     {/if}

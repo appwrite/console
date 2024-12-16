@@ -24,12 +24,14 @@
 
     let policyCreateError: string;
     let totalPolicies: UserBackupPolicy[] = [];
+    // TODO: check the plan to see if the custom policies are disabled
     let isDisabled = isSelfHosted || (isCloud && $organization?.billingPlan === BillingPlan.FREE);
 
     export let data: PageData;
 
     $: hasPolicyCreationLimitations = () => {
         // allow when on Pro and no policy exists
+        // TODO: check the plan to see if the custom policies are disabled and limitations
         if ($organization?.billingPlan === BillingPlan.PRO) {
             return data.policies.total > 0;
         } else if ($organization?.billingPlan === BillingPlan.SCALE) {

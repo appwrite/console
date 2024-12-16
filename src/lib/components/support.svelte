@@ -13,6 +13,7 @@
 
     export let show = false;
 
+    // TODO: fix to use plan details with 'premiumSupport' property
     $: isPaid =
         $organization?.billingPlan === BillingPlan.PRO ||
         $organization?.billingPlan === BillingPlan.SCALE;
@@ -30,6 +31,7 @@
                 </p>
             {/if}
         </div>
+        <!-- TODO: fix to use plan details with 'premiumSupport' property -->
         {#if $organization?.billingPlan === BillingPlan.FREE}
             <Button
                 fullWidth
