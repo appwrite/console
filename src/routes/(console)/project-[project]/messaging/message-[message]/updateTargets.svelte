@@ -93,11 +93,13 @@
         }
     }
 
+    $: isDraft = message.status === 'draft';
+
     $: disabled = symmetricDifference(targetIds, Object.keys(selectedTargetsById)).length === 0;
 </script>
 
 <Form onSubmit={update}>
-    <CardGrid hideFooter={message.status != 'draft'}>
+    <CardGrid hideFooter={!isDraft}>
         <Heading tag="h6" size="7" id="variables">Targets</Heading>
         <svelte:fragment slot="aside">
             {@const sum = targetIds.length}
@@ -106,7 +108,7 @@
                     <div>
                         <span class="eyebrow-heading-3">Target</span>
                     </div>
-                    {#if message.status == 'draft'}
+                    {#if isDraft}
                         <Button
                             text
                             noMargin
@@ -143,7 +145,7 @@
                                         </div>
                                     </TableCell>
                                     <TableCell title="Remove">
-                                        {#if message.status === 'draft'}
+                                        {#if isDraft}
                                             <div
                                                 class="u-flex u-main-end"
                                                 style="--p-button-size: 1.25rem">
@@ -151,7 +153,7 @@
                                                     text
                                                     class="is-only-icon"
                                                     ariaLabel="delete"
-                                                    disabled={message.status != 'draft'}
+                                                    disabled={!isDraft}
                                                     on:click={() => removeTarget(target.$id)}>
                                                     <span
                                                         class="icon-x u-font-size-20"
@@ -169,7 +171,7 @@
                         <PaginationInline {sum} {limit} bind:offset />
                     </div>
                 </div>
-            {:else if message.status == 'draft'}
+            {:else if isDraft}
                 <Empty on:click={() => (showTargets = true)}>Add a target</Empty>
             {:else}
                 <EmptySearch hidePagination>
