@@ -2,7 +2,7 @@
     import { messageParams, providerType } from './store';
     import { Button, FormList, InputEmail, InputRadio, InputTextarea } from '$lib/elements/forms';
     import { Pill } from '$lib/elements';
-    import { Modal } from '$lib/components';
+    import { CustomId, Modal } from '$lib/components';
     import { user } from '$lib/stores/user';
     import { clickOnEnter } from '$lib/helpers/a11y';
     import { ID, MessagingProviderType } from '@appwrite.io/console';
@@ -91,6 +91,12 @@
                         Message ID
                     </span></Pill>
             </div>
+        {:else}
+            <CustomId
+                bind:show={showCustomId}
+                name="Message"
+                bind:id={$messageParams[$providerType].messageId}
+                fullWidth />
         {/if}
     </FormList>
     <SMSPhone content={$messageParams[$providerType]['content']} classes="is-only-desktop" />
