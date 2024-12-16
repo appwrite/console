@@ -41,13 +41,21 @@ export const load: LayoutLoad = async ({ params, depends }) => {
             })
         );
 
-        await Promise.allSettled(usersPromise);
+        const messageRecipients: Record<string, Models.User<Models.Preferences>> = {};
+        const messageRecipientsPromise = Object.values(message.users).map((userId) =>
+            sdk.forProject.users.get(userId).then((user) => {
+                messageRecipients[user.$id] = user;
+            })
+        );
+
+        await Promise.allSettled([usersPromise, messageRecipientsPromise]);
 
         return {
             message,
             topicsById,
             targetsById,
             usersById,
+            messageRecipients,
             header: Header,
             breadcrumbs: Breadcrumbs
         };
