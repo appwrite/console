@@ -128,6 +128,11 @@ export const localeTimezoneName = () => {
     return dateWithTimezone.split(', ')[1];
 };
 
+export const localeShortTimezoneName = () => {
+    const timezone = localeTimezoneName();
+    return timezone.match(/[A-Z]/g)?.join('') || timezone;
+};
+
 export const isSameDay = (date1: Date, date2: Date) => {
     return (
         date1.getFullYear() === date2.getFullYear() &&
