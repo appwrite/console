@@ -36,7 +36,7 @@
     async function createProject() {
         isLoading = true;
         //create new org
-        let org = await sdk.forConsole.billing.createOrganization(
+        const org = await sdk.forConsole.billing.createOrganization(
             ID.unique(),
             'Personal Projects',
             BillingPlan.FREE,
