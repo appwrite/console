@@ -21,14 +21,17 @@
     export async function updateString(
         databaseId: string,
         collectionId: string,
-        data: Partial<Models.AttributeString>
+        data: Partial<Models.AttributeString>,
+        originalKey?: string
     ) {
         await sdk.forProject.databases.updateStringAttribute(
             databaseId,
             collectionId,
-            data.key,
+            originalKey,
             data.required,
-            data.default
+            data.default,
+            data.size,
+            data.key !== originalKey ? data.key : undefined
         );
     }
 </script>
@@ -74,8 +77,7 @@
     label="Size"
     placeholder="Enter size"
     bind:value={data.size}
-    required={!editing}
-    readonly={editing} />
+    required={true} />
 {#if data.size >= 50}
     <InputTextarea
         id="default"

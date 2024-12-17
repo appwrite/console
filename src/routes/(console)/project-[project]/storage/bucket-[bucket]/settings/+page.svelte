@@ -87,6 +87,9 @@
     import { readOnly } from '$lib/stores/billing';
     import { GRACE_PERIOD_OVERRIDE } from '$lib/system';
     import { isValueOfStringEnum } from '$lib/helpers/types';
+    import type { PageData } from './$types';
+
+    export let data: PageData;
 
     let showDelete = false;
 
@@ -397,7 +400,7 @@
             </CardGrid>
         </Form>
 
-        <UpdateMaxFileSize />
+        <UpdateMaxFileSize currentPlan={data.currentPlan} />
 
         <Form onSubmit={updateAllowedExtensions}>
             <CardGrid hideOverflow>

@@ -3,8 +3,8 @@ import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ depends, parent }) => {
     const { members } = await parent();
-    depends(Dependencies.ORGANIZATION);
 
+    depends(Dependencies.ORGANIZATION);
     return {
         members
     };

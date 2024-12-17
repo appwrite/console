@@ -47,7 +47,9 @@
                 required
                 bind:files={$createFile.files}
                 allowedFileExtensions={$bucket.allowedFileExtensions}
-                maxSize={$bucket.maximumFileSize} />
+                maxSize={isCloud
+                    ? $bucket.maximumFileSize
+                    : ($bucket.maximumFileSize ?? sizeToBytes(service, 'MB', 1000))} />
         </div>
 
         {#if !showCustomId}
@@ -60,7 +62,7 @@
             </div>
         {:else}
             <div class="custom-id-wrapper">
-                <CustomId bind:show={showCustomId} name="File" bind:id={$createFile.id} />
+                <CustomId autofocus bind:show={showCustomId} name="File" bind:id={$createFile.id} />
             </div>
         {/if}
     </FormList>

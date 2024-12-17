@@ -122,7 +122,7 @@
 </Modal>
 
 <style lang="scss">
-    @import '@appwrite.io/pink/src/abstract/variables/_devices.scss';
+    @use '@appwrite.io/pink/src/abstract/variables/devices';
 
     .card {
         position: fixed;
@@ -133,7 +133,7 @@
         max-width: 600px;
     }
 
-    @media #{$break1} {
+    @media #{devices.$break1} {
         .card {
             bottom: 0.5rem;
             left: 0.5rem;

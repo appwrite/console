@@ -48,6 +48,10 @@
         return queries;
     }
 
+    function unescapeNewLines(logs: string) {
+        return logs.replace(/\\n/g, '\n');
+    }
+
     beforeNavigate((n) => {
         if (!$log.show) return;
         if (n.type === 'popstate') {
@@ -343,7 +347,11 @@
                                             {/if}
                                         </Alert>
                                     {/if}
-                                    <Code withCopy noMargin code={execution.logs} language="sh" />
+                                    <Code
+                                        withCopy
+                                        noMargin
+                                        code={unescapeNewLines(execution.logs)}
+                                        language="sh" />
                                 {:else}
                                     <Card isDashed isTile>
                                         <p class="text u-text-center">No response was recorded.</p>
@@ -351,7 +359,11 @@
                                 {/if}
                             {:else if selectedResponse === 'errors'}
                                 {#if execution?.errors}
-                                    <Code withCopy noMargin code={execution.errors} language="sh" />
+                                    <Code
+                                        withCopy
+                                        noMargin
+                                        code={unescapeNewLines(execution.errors)}
+                                        language="sh" />
                                 {:else}
                                     <Card isDashed isTile>
                                         <p class="text u-text-center">No response was recorded.</p>

@@ -111,8 +111,8 @@
     {/if}
     {#if $organization?.billingPlanDowngrade}
         <Alert type="info" class="common-section">
-            Your organization will change to a {tierToPlan(BillingPlan.FREE).name} plan once your current
-            billing cycle ends and your invoice is paid on {toLocaleDate(
+            Your organization will change to a {tierToPlan($organization?.billingPlanDowngrade)
+                .name} plan once your current billing cycle ends and your invoice is paid on {toLocaleDate(
                 $organization.billingNextInvoiceDate
             )}.
         </Alert>
@@ -120,7 +120,11 @@
     <div class="common-section">
         <Heading tag="h2" size="5">Billing</Heading>
     </div>
-    <PlanSummary />
+    <PlanSummary
+        creditList={data?.creditList}
+        members={data?.members}
+        currentPlan={data?.currentPlan}
+        invoices={data?.invoices.invoices} />
     <PaymentHistory />
     <PaymentMethods />
     <BillingAddress billingAddress={data?.billingAddress} />

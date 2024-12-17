@@ -10,15 +10,16 @@ export const load: PageLoad = async ({ params, url, route, depends }) => {
     const limit = getLimit(url, route, CARD_LIMIT);
     const view = getView(url, route, View.Grid);
     const offset = pageToOffset(page, limit);
+    const collections = await sdk.forProject.databases.listCollections(params.database, [
+        Query.limit(limit),
+        Query.offset(offset),
+        Query.orderDesc('')
+    ]);
 
     return {
         offset,
         limit,
         view,
-        collections: await sdk.forProject.databases.listCollections(params.database, [
-            Query.limit(limit),
-            Query.offset(offset),
-            Query.orderDesc('')
-        ])
+        collections
     };
 };

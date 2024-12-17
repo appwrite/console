@@ -31,8 +31,10 @@
             </div>
         {:else}
             <CustomId
+                autofocus
                 bind:show={showCustomId}
                 name="Project"
+                isProject={true}
                 bind:id={$createProject.id}
                 fullWidth />
         {/if}

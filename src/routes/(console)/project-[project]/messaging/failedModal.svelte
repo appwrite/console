@@ -19,8 +19,8 @@
             The message has been processed with errors. Please refer to the logs below for more
             information.
         </p>
-        <div style="max-inline-size: 524px">
-            <Code language="html" code={errors.join('\n')} noMargin noBoxPadding allowScroll />
+        <div style="max-inline-size: 524px" class="wrapped-code-block-for-multi-line">
+            <Code language="html" code={errors.join('\n')} withCopy allowScroll />
         </div>
     </div>
 
@@ -28,3 +28,12 @@
         <Button secondary on:click={() => (show = false)}>Close</Button>
     </svelte:fragment>
 </Modal>
+
+<style>
+    /* Certain errors are in a single line; this makes them multi-line for better readability. */
+    .wrapped-code-block-for-multi-line :global(pre),
+    .wrapped-code-block-for-multi-line :global(code) {
+        padding: unset;
+        white-space: pre-wrap;
+    }
+</style>

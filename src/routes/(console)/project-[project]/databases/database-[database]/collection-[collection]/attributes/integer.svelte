@@ -23,16 +23,18 @@
     export async function updateInteger(
         databaseId: string,
         collectionId: string,
-        data: Partial<Models.AttributeInteger>
+        data: Partial<Models.AttributeInteger>,
+        originalKey?: string
     ) {
         await sdk.forProject.databases.updateIntegerAttribute(
             databaseId,
             collectionId,
-            data.key,
+            originalKey,
             data.required,
             data.min,
             data.max,
-            data.default
+            data.default,
+            data.key !== originalKey ? data.key : undefined
         );
     }
 </script>
@@ -75,18 +77,27 @@
     $: handleDefaultState($required || $array);
 </script>
 
-<InputNumber
-    id="min"
-    label="Min"
-    placeholder="Enter size"
-    bind:value={data.min}
-    required={editing} />
-<InputNumber
-    id="max"
-    label="Max"
-    placeholder="Enter size"
-    bind:value={data.max}
-    required={editing} />
+<div>
+    <ul class="u-flex u-gap-16">
+        <li class="u-flex-basis-50-percent">
+            <InputNumber
+                id="min"
+                label="Min"
+                placeholder="Enter size"
+                bind:value={data.min}
+                required={editing} />
+        </li>
+
+        <li class="u-flex-basis-50-percent">
+            <InputNumber
+                id="max"
+                label="Max"
+                placeholder="Enter size"
+                bind:value={data.max}
+                required={editing} />
+        </li>
+    </ul>
+</div>
 <InputNumber
     id="default"
     label="Default value"

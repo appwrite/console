@@ -29,16 +29,19 @@
     export async function updateRelationship(
         databaseId: string,
         collectionId: string,
-        data: Partial<Models.AttributeRelationship>
+        data: Partial<Models.AttributeRelationship>,
+        originalKey?: string
     ) {
         if (!isValueOfStringEnum(RelationMutate, data.onDelete)) {
             throw new Error(`Invalid on delete: ${data.onDelete}`);
         }
+
         await sdk.forProject.databases.updateRelationshipAttribute(
             databaseId,
             collectionId,
-            data.key,
-            data.onDelete
+            originalKey,
+            data.onDelete,
+            data.key !== originalKey ? data.key : undefined
         );
     }
 </script>
@@ -154,30 +157,32 @@
     </ul>
 </li>
 
-<InputSelectSearch
-    id="related"
-    label="Related Collection"
-    name="collections"
-    bind:search
-    bind:value={data.relatedCollection}
-    required
-    interactiveOutput={!editing}
-    placeholder="Select a collection"
-    disabled={editing}
-    options={collections?.map((n) => ({ value: n.$id, label: n.$id, data: [n.name] })) ?? []}
-    on:select={updateKeyName}
-    let:option={o}>
-    <SelectSearchItem data={o.data}>
-        {o.label}
-    </SelectSearchItem>
-    <svelte:fragment slot="output" let:option={o}>
-        <output class="input-text" class:is-read-only={editing}>
-            <SelectSearchItem data={o.data}>
-                {o.label}
-            </SelectSearchItem>
-        </output>
-    </svelte:fragment>
-</InputSelectSearch>
+<div>
+    <InputSelectSearch
+        id="related"
+        label="Related Collection"
+        name="collections"
+        bind:search
+        bind:value={data.relatedCollection}
+        required
+        interactiveOutput={!editing}
+        placeholder="Select a collection"
+        disabled={editing}
+        options={collections?.map((n) => ({ value: n.$id, label: n.$id, data: [n.name] })) ?? []}
+        on:select={updateKeyName}
+        let:option={o}>
+        <SelectSearchItem data={o.data}>
+            {o.label}
+        </SelectSearchItem>
+        <svelte:fragment slot="output" let:option={o}>
+            <output class="input-text" class:is-read-only={editing}>
+                <SelectSearchItem data={o.data}>
+                    {o.label}
+                </SelectSearchItem>
+            </output>
+        </svelte:fragment>
+    </InputSelectSearch>
+</div>
 
 {#if data?.relatedCollection}
     <div>
@@ -187,16 +192,13 @@
             placeholder="Enter Key"
             bind:value={data.key}
             autofocus
-            readonly={editing}
             required />
 
-        <div class="u-flex u-gap-4 u-margin-block-start-8 u-small u-cross-center">
+        <div class="u-flex u-gap-4 u-margin-block-start-8 u-small">
             <span
                 class="icon-info u-cross-center u-margin-block-start-2 u-line-height-1 u-icon-small"
                 aria-hidden="true" />
-            <span class="text u-line-height-1-5">
-                Allowed characters: alphanumeric, hyphen, non-leading underscore, period
-            </span>
+            <span class="text u-line-height-1-5">Allowed characters: a-z, A-Z, 0-9, -, .</span>
         </div>
     </div>
     {#if way === 'two'}
@@ -209,12 +211,13 @@
                 required
                 readonly={editing} />
 
-            <div class="u-flex u-gap-4 u-margin-block-start-8 u-small u-cross-center">
+            <div class="u-flex u-gap-4 u-margin-block-start-8 u-small">
                 <span
                     class="icon-info u-cross-center u-margin-block-start-2 u-line-height-1 u-icon-small"
                     aria-hidden="true" />
                 <span class="text u-line-height-1-5">
-                    Allowed characters: alphanumeric, hyphen, non-leading underscore, period
+                    Allowed characters: a-z, A-Z, 0-9, -, . Once created, attribute key cannot be
+                    adjusted to maintain data integrity.
                 </span>
             </div>
         </div>

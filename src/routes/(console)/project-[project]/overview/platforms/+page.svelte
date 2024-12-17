@@ -6,13 +6,15 @@
     import CreateApple from './createApple.svelte';
     import CreateFlutter from './createFlutter.svelte';
     import CreateWeb from './createWeb.svelte';
+    import CreateReactNative from './createReactNative.svelte';
     import { versions } from './wizard/store';
 
     export enum Platform {
         Web,
         Flutter,
         Android,
-        Apple
+        Apple,
+        ReactNative
     }
 
     export async function addPlatform(type: Platform) {
@@ -24,7 +26,8 @@
         [Platform.Web]: CreateWeb,
         [Platform.Flutter]: CreateFlutter,
         [Platform.Android]: CreateAndroid,
-        [Platform.Apple]: CreateApple
+        [Platform.Apple]: CreateApple,
+        [Platform.ReactNative]: CreateReactNative
     };
 </script>
 
@@ -37,6 +40,7 @@
     import { app } from '$lib/stores/app';
     import type { PageData } from './$types';
     import { ContainerHeader } from '$lib/layout';
+    import { canWritePlatforms } from '$lib/stores/roles';
 
     export let data: PageData;
 
@@ -52,7 +56,9 @@
         'flutter-macos' = 'macOS',
         'flutter-windows' = 'Windows',
         'flutter-web' = 'Web',
-        'web' = 'Web'
+        'web' = 'Web',
+        'react-native-android' = 'Android',
+        'react-native-ios' = 'iOS'
     }
     let showDropdown = false;
     let showDropdownEmpty = false;
@@ -61,6 +67,8 @@
     const getPlatformInfo = (platform: string) => {
         if (platform.includes('flutter')) {
             return 'color/flutter';
+        } else if (platform.includes('react-native')) {
+            return 'color/react';
         } else if (platform.includes('apple')) {
             return 'color/apple';
         } else if (platform.includes('android')) {
@@ -80,15 +88,19 @@
     total={data?.platforms?.total}
     let:isButtonDisabled>
     <DropList bind:show={showDropdown} placement="bottom-start">
-        <Button on:click={() => (showDropdown = !showDropdown)} disabled={isButtonDisabled}>
-            <span class="icon-plus" aria-hidden="true" />
-            <span class="text">Add platform</span>
-        </Button>
+        {#if $canWritePlatforms}
+            <Button on:click={() => (showDropdown = !showDropdown)} disabled={isButtonDisabled}>
+                <span class="icon-plus" aria-hidden="true" />
+                <span class="text">Add platform</span>
+            </Button>
+        {/if}
         <svelte:fragment slot="list">
             <DropListItem on:click={() => addPlatform(Platform.Web)}>Web app</DropListItem>
             <DropListItem on:click={() => addPlatform(Platform.Flutter)}>Flutter app</DropListItem>
             <DropListItem on:click={() => addPlatform(Platform.Android)}>Android app</DropListItem>
             <DropListItem on:click={() => addPlatform(Platform.Apple)}>Apple app</DropListItem>
+            <DropListItem on:click={() => addPlatform(Platform.ReactNative)}
+                >React Native app</DropListItem>
         </svelte:fragment>
     </DropList>
 </ContainerHeader>
@@ -149,9 +161,13 @@
                         Documentation
                     </Button>
                     <DropList bind:show={showDropdownEmpty} placement="bottom-start">
-                        <Button secondary on:click={() => (showDropdownEmpty = !showDropdownEmpty)}>
-                            <span class="text">Add platform</span>
-                        </Button>
+                        {#if $canWritePlatforms}
+                            <Button
+                                secondary
+                                on:click={() => (showDropdownEmpty = !showDropdownEmpty)}>
+                                <span class="text">Add platform</span>
+                            </Button>
+                        {/if}
                         <svelte:fragment slot="list">
                             <DropListItem on:click={() => addPlatform(Platform.Web)}>
                                 Web

@@ -1,6 +1,4 @@
 <script>
-    import { settings } from '$lib/components/consent.svelte';
-    import { clickOnEnter } from '$lib/helpers/a11y';
     import { isCloud } from '$lib/system';
     import { version } from '$routes/(console)/store';
 
@@ -9,7 +7,7 @@
 
 <footer class="main-footer u-cross-center">
     <div class="main-footer-start">
-        <ul class="inline-links is-no-padding-first-and-last u-x-small u-flex-wrap u-row-gap-16">
+        <ul class="inline-links is-no-padding-first-and-last u-x-small u-flex-wrap u-gap-16">
             <li class="inline-links-item" style="line-height: 1.02;">
                 <div class="u-flex u-cross-center u-gap-8">
                     {#if isCloud}
@@ -44,14 +42,9 @@
             </li>
             {#if isCloud}
                 <li class="inline-links-item">
-                    <span
-                        style:cursor="pointer"
-                        role="button"
-                        tabindex="0"
-                        on:keyup={clickOnEnter}
-                        on:click={() => settings.set(true)}>
+                    <a href="https://appwrite.io/cookies" target="_blank" rel="noreferrer">
                         <span class="text">Cookies</span>
-                    </span>
+                    </a>
                 </li>
             {/if}
         </ul>
@@ -86,7 +79,18 @@
         margin-block-start: auto;
     }
 
+    .main-footer-start .inline-links-item {
+        padding-inline-end: 1rem;
+        padding-inline-start: unset;
+    }
+
     [class^='icon-']:not(.icon-cloud):not(:hover) {
         color: hsl(var(--color-neutral-50));
+    }
+
+    @media (max-width: 1200px) {
+        .main-footer {
+            gap: 2rem;
+        }
     }
 </style>

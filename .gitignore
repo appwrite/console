@@ -1,6 +1,7 @@
 .DS_Store
 .envrc
 .vscode
+.zed
 node_modules
 /build
 /.svelte-kit
@@ -150,3 +151,9 @@ dist
 
 # SvelteKit build / generate output
 .svelte-kit
+
+# Sentry Config File
+.sentryclirc
+
+# IDE specifics
+.idea

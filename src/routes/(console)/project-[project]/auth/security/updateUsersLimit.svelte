@@ -9,16 +9,15 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { project } from '../../store';
+    import { tick } from 'svelte';
 
-    const projectId = $project.$id;
-
-    let isLimited = $project.authLimit !== 0;
-    let newLimit = isLimited ? $project.authLimit : 100;
+    let isLimited = $project?.authLimit !== 0;
+    let newLimit = isLimited ? $project?.authLimit : 100;
 
     $: btnDisabled = (function isBtnDisabled() {
         if (
-            (!isLimited && $project.authLimit === 0) ||
-            (isLimited && $project.authLimit === newLimit)
+            (!isLimited && $project?.authLimit === 0) ||
+            (isLimited && $project?.authLimit === newLimit)
         ) {
             return true;
         }
@@ -28,7 +27,7 @@
 
     async function updateLimit() {
         try {
-            await sdk.forConsole.projects.updateAuthLimit(projectId, isLimited ? newLimit : 0);
+            await sdk.forConsole.projects.updateAuthLimit($project?.$id, isLimited ? newLimit : 0);
             await invalidate(Dependencies.PROJECT);
             addNotification({
                 type: 'success',
@@ -42,6 +41,14 @@
             });
             trackError(error, Submit.AuthLimitUpdate);
         }
+    }
+
+    let maxUsersInputField: HTMLInputElement | null = null;
+
+    $: if (isLimited && maxUsersInputField) {
+        tick().then(() => {
+            maxUsersInputField.focus();
+        });
     }
 </script>
 
@@ -98,7 +105,8 @@
                         class="input-text"
                         max="10000"
                         disabled={!isLimited}
-                        bind:value={newLimit} />
+                        bind:value={newLimit}
+                        bind:this={maxUsersInputField} />
                 </div>
             </li>
         </ul>

@@ -3,23 +3,23 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { LabelCard } from '$lib/components';
     import {
         EstimatedTotalBox,
         PlanComparisonBox,
+        PlanSelection,
         SelectPaymentMethod
     } from '$lib/components/billing';
     import ValidateCreditModal from '$lib/components/billing/validateCreditModal.svelte';
+    import Default from '$lib/components/roles/default.svelte';
     import { BillingPlan, Dependencies } from '$lib/constants';
     import { Button, Form, FormList, InputTags, InputText, Label } from '$lib/elements/forms';
-    import { formatCurrency } from '$lib/helpers/numbers';
     import {
         WizardSecondaryContainer,
         WizardSecondaryContent,
         WizardSecondaryFooter
     } from '$lib/layout';
     import type { Coupon, PaymentList } from '$lib/sdk/billing';
-    import { plansInfo, tierFree, tierPro, tierToPlan } from '$lib/stores/billing';
+    import { tierToPlan } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { organizationList, type Organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
@@ -27,7 +27,7 @@
     import { onMount } from 'svelte';
     import { writable } from 'svelte/store';
 
-    $: anyOrgFree = $organizationList.teams?.find(
+    $: anyOrgFree = $organizationList.teams?.some(
         (org) => (org as Organization)?.billingPlan === BillingPlan.FREE
     );
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$/i;
@@ -102,17 +102,6 @@
                     null
                 );
             } else {
-                // Create free organization if coming from onboarding
-                if (previousPage.includes('/console/onboarding') && !anyOrgFree) {
-                    await sdk.forConsole.billing.createOrganization(
-                        ID.unique(),
-                        'Personal Projects',
-                        BillingPlan.FREE,
-                        null,
-                        null
-                    );
-                }
-
                 org = await sdk.forConsole.billing.createOrganization(
                     ID.unique(),
                     name,
@@ -137,11 +126,11 @@
                     collaborators.forEach(async (collaborator) => {
                         await sdk.forConsole.teams.createMembership(
                             org.$id,
-                            ['owner'],
+                            ['developer'],
                             collaborator,
                             undefined,
                             undefined,
-                            `${$page.url.origin}/${base}/organization-${org.$id}`
+                            `${$page.url.origin}${base}/invite`
                         );
                     });
                 }
@@ -174,9 +163,7 @@
         }
     }
 
-    $: freePlan = $plansInfo.get(BillingPlan.FREE);
-    $: proPlan = $plansInfo.get(BillingPlan.PRO);
-    $: if (billingPlan === BillingPlan.PRO) {
+    $: if (billingPlan !== BillingPlan.FREE) {
         loadPaymentMethods();
     }
 </script>
@@ -202,57 +189,13 @@
                 For more details on our plans, visit our
                 <Button href="https://appwrite.io/pricing" external link>pricing page</Button>.
             </p>
-            <ul
-                class="u-flex u-gap-16 u-margin-block-start-8"
-                style="--p-grid-item-size:16em; --p-grid-item-size-small-screens:16rem; --grid-gap: 1rem;">
-                <li class="u-flex-basis-50-percent">
-                    <LabelCard
-                        name="plan"
-                        bind:group={billingPlan}
-                        value="tier-0"
-                        disabled={!!anyOrgFree}
-                        tooltipShow={!!anyOrgFree}
-                        tooltipText="You are limited to 1 Free organization per account.">
-                        <svelte:fragment slot="custom" let:disabled>
-                            <div
-                                class="u-flex u-flex-vertical u-gap-4 u-width-full-line"
-                                class:u-opacity-50={disabled}>
-                                <h4 class="body-text-2 u-bold">
-                                    {tierFree.name}
-                                </h4>
-                                <p class="u-color-text-gray u-small">{tierFree.description}</p>
-                                <p>
-                                    {formatCurrency(freePlan?.price ?? 0)}
-                                </p>
-                            </div>
-                        </svelte:fragment>
-                    </LabelCard>
-                </li>
-
-                <li class="u-flex-basis-50-percent">
-                    <LabelCard name="plan" bind:group={billingPlan} value="tier-1">
-                        <svelte:fragment slot="custom">
-                            <div class="u-flex u-flex-vertical u-gap-4 u-width-full-line">
-                                <h4 class="body-text-2 u-bold">
-                                    {tierPro.name}
-                                </h4>
-                                <p class="u-color-text-gray u-small">
-                                    {tierPro.description}
-                                </p>
-                                <p>
-                                    {formatCurrency(proPlan?.price ?? 0)} per member/month + usage
-                                </p>
-                            </div>
-                        </svelte:fragment>
-                    </LabelCard>
-                </li>
-            </ul>
-            {#if billingPlan === BillingPlan.PRO}
-                <FormList class="u-margin-block-start-16">
+            <PlanSelection bind:billingPlan {anyOrgFree} isNewOrg />
+            {#if billingPlan !== BillingPlan.FREE}
+                <FormList class="u-margin-block-start-24">
                     <InputTags
                         bind:tags={collaborators}
                         label="Invite members by email"
-                        tooltip="Invited members will have access to all services and payment data within your organization"
+                        popover={Default}
                         placeholder="Enter email address(es)"
                         validityRegex={emailRegex}
                         validityMessage="Invalid email address"

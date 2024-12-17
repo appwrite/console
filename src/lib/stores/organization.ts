@@ -19,7 +19,7 @@ export type Organization = Models.Team<Record<string, unknown>> & {
     billingAddressId?: string;
     amount: number;
     billingTaxId?: string;
-    billingPlanDowngrade?: string;
+    billingPlanDowngrade?: Tier;
 };
 
 export type OrganizationList = {
@@ -41,5 +41,6 @@ export const organizationList = derived(
     page,
     ($page) => $page.data.organizations as Models.TeamList<Record<string, unknown>>
 );
+
 export const organization = derived(page, ($page) => $page.data?.organization as Organization);
 export const members = derived(page, ($page) => $page.data.members as Models.MembershipList);

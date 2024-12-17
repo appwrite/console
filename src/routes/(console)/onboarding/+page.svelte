@@ -33,6 +33,10 @@
                   value: BillingPlan.PRO,
                   label: `${tierToPlan(BillingPlan.PRO).name} - ${formatCurrency($plansInfo.get(BillingPlan.PRO).price)}/month + add-ons`
               }
+              // {
+              //     value: BillingPlan.SCALE,
+              //     label: `${tierToPlan(BillingPlan.SCALE).name} - ${formatCurrency($plansInfo.get(BillingPlan.SCALE).price)}/month + usage`
+              // }
           ]
         : [];
 
@@ -121,7 +125,12 @@
                         </Pill>
                     </div>
                 {:else}
-                    <CustomId bind:show={showCustomId} name="Organization" isProject bind:id />
+                    <CustomId
+                        autofocus
+                        bind:show={showCustomId}
+                        name="Organization"
+                        isProject
+                        bind:id />
                 {/if}
                 {#if isCloud}
                     <div class="u-margin-block-start-8">

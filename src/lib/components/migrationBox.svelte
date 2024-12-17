@@ -1,7 +1,6 @@
 <script lang="ts" context="module">
-    import { last } from '$lib/helpers/array';
-    import { debounce } from '$lib/helpers/debounce';
     import { parseIfString } from '$lib/helpers/object';
+    import { getProjectId } from '$lib/helpers/project';
     import { sdk } from '$lib/stores/sdk';
     import type { Models } from '@appwrite.io/console';
     import { onMount } from 'svelte';
@@ -49,24 +48,19 @@
         return Number.isNaN(res) ? 0 : res;
     })();
 
-    const fetchMigrations = debounce(async () => {
-        const { migrations } = await sdk.forProject.migrations.list();
-        migration = last(migrations);
-    }, 1000);
-
-    fetchMigrations();
-
-    onMount(async () => {
-        sdk.forConsole.client.subscribe(['project', 'console'], async (response) => {
+    onMount(() => {
+        return sdk.forConsole.client.subscribe<Models.Migration>(['console'], async (response) => {
+            if (!response.channels.includes(`projects.${getProjectId()}`)) return;
             if (response.events.includes('migrations.*')) {
-                fetchMigrations();
+                if (response.payload.source === 'Backup') return;
+                migration = response.payload;
             }
         });
     });
 </script>
 
 {#if $showMigrationBox && migration}
-    <section class="upload-box is-float">
+    <section class="upload-box">
         <header class="upload-box-header">
             <h4 class="upload-box-title">
                 <span class="text">Importing Data</span>
@@ -79,7 +73,7 @@
             </button>
         </header>
         <div class="upload-box-content is-open">
-            <section class="progress-bar">
+            <section class="progress-bar u-padding-inline-16 u-padding-block-16">
                 <div class="progress-bar-top-line u-flex u-gap-8 u-main-space-between">
                     <span>{percentage}%</span>
                 </div>
@@ -93,9 +87,18 @@
 {/if}
 
 <style>
+    .upload-box-title {
+        font-size: 11px;
+    }
+
     .upload-box-content {
-        padding: 1.5rem;
         min-width: 400px;
         max-width: 100vw;
+    }
+
+    .upload-box-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 </style>

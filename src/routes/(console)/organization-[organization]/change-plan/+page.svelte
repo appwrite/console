@@ -3,14 +3,16 @@
     import { base } from '$app/paths';
     import { page } from '$app/stores';
     import { Submit, trackError, trackEvent } from '$lib/actions/analytics';
-    import { Alert, LabelCard } from '$lib/components';
+    import { Alert } from '$lib/components';
     import {
         EstimatedTotalBox,
         PlanComparisonBox,
         SelectPaymentMethod
     } from '$lib/components/billing';
     import PlanExcess from '$lib/components/billing/planExcess.svelte';
+    import PlanSelection from '$lib/components/billing/planSelection.svelte';
     import ValidateCreditModal from '$lib/components/billing/validateCreditModal.svelte';
+    import Default from '$lib/components/roles/default.svelte';
     import { BillingPlan, Dependencies, feedbackDowngradeOptions } from '$lib/constants';
     import {
         Button,
@@ -21,14 +23,14 @@
         InputTextarea,
         Label
     } from '$lib/elements/forms';
-    import { formatCurrency } from '$lib/helpers/numbers';
+    import { formatCurrency } from '$lib/helpers/numbers.js';
     import {
         WizardSecondaryContainer,
         WizardSecondaryContent,
         WizardSecondaryFooter
     } from '$lib/layout';
     import { type Coupon, type PaymentList } from '$lib/sdk/billing';
-    import { plansInfo, tierFree, tierPro, tierToPlan, type Tier } from '$lib/stores/billing';
+    import { plansInfo, tierToPlan, type Tier } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { organization, organizationList, type Organization } from '$lib/stores/organization';
     import { sdk } from '$lib/stores/sdk';
@@ -71,6 +73,7 @@
 
     let feedbackDowngradeReason: string;
     let feedbackMessage: string;
+    let selfService: boolean;
 
     onMount(async () => {
         if ($page.url.searchParams.has('code')) {
@@ -92,7 +95,14 @@
                 billingPlan = plan as BillingPlan;
             }
         }
-        billingPlan = BillingPlan.PRO;
+        if ($organization?.billingPlan === BillingPlan.SCALE) {
+            billingPlan = BillingPlan.SCALE;
+        } else {
+            billingPlan = BillingPlan.PRO;
+        }
+
+        const currentPlan = await sdk.forConsole.billing.getPlan($organization?.$id);
+        selfService = currentPlan.selfService;
     });
 
     async function loadPaymentMethods() {
@@ -105,9 +115,9 @@
     }
 
     async function handleSubmit() {
-        if (billingPlan === BillingPlan.FREE) {
+        if (isDowngrade) {
             await downgrade();
-        } else {
+        } else if (isUpgrade) {
             await upgrade();
         }
     }
@@ -139,14 +149,14 @@
                 })
             });
 
-            await goto(`${base}/organization-${$organization.$id}`);
+            await goto(previousPage);
             addNotification({
                 type: 'success',
                 isHtml: true,
                 message: `
-                    <b>${$organization.name}</b> has been changed to ${
-                        tierToPlan(billingPlan).name
-                    } plan.`
+                        <b>${$organization.name}</b> will change to ${
+                            tierToPlan(billingPlan).name
+                        } plan at the end of the current billing cycle.`
             });
 
             trackEvent(Submit.OrganizationDowngrade, {
@@ -157,7 +167,7 @@
                 type: 'error',
                 message: e.message
             });
-            trackError(e, isUpgrade ? Submit.OrganizationUpgrade : Submit.OrganizationDowngrade);
+            trackError(e, Submit.OrganizationDowngrade);
         }
     }
 
@@ -194,7 +204,7 @@
                         collaborator,
                         undefined,
                         undefined,
-                        `${$page.url.origin}/${base}/organization-${org.$id}`
+                        `${$page.url.origin}${base}/invite`
                     );
                 });
             }
@@ -207,23 +217,13 @@
             await invalidate(Dependencies.ACCOUNT);
             await invalidate(Dependencies.ORGANIZATION);
 
-            await goto(`${base}/organization-${org.$id}`);
-            if (isUpgrade) {
-                addNotification({
-                    type: 'success',
-                    message: 'Your organization has been upgraded'
-                });
-            } else {
-                addNotification({
-                    type: 'success',
-                    isHtml: true,
-                    message: `
-                        <b>${$organization.name}</b> will change to ${
-                            tierToPlan(billingPlan).name
-                        } plan at the end of the current billing cycle.`
-                });
-            }
-            trackEvent(isUpgrade ? Submit.OrganizationUpgrade : Submit.OrganizationDowngrade, {
+            await goto(previousPage);
+            addNotification({
+                type: 'success',
+                message: 'Your organization has been upgraded'
+            });
+
+            trackEvent(Submit.OrganizationUpgrade, {
                 plan: tierToPlan(billingPlan)?.name
             });
         } catch (e) {
@@ -231,15 +231,13 @@
                 type: 'error',
                 message: e.message
             });
-            trackError(e, isUpgrade ? Submit.OrganizationUpgrade : Submit.OrganizationDowngrade);
+            trackError(e, Submit.OrganizationUpgrade);
         }
     }
 
     $: isUpgrade = billingPlan > $organization.billingPlan;
     $: isDowngrade = billingPlan < $organization.billingPlan;
-    $: freePlan = $plansInfo.get(BillingPlan.FREE);
-    $: proPlan = $plansInfo.get(BillingPlan.PRO);
-    $: if (billingPlan === BillingPlan.PRO) {
+    $: if (billingPlan !== BillingPlan.FREE) {
         loadPaymentMethods();
     }
     $: isButtonDisabled = $organization.billingPlan === billingPlan;
@@ -258,76 +256,48 @@
                 For more details on our plans, visit our
                 <Button href="https://appwrite.io/pricing" external link>pricing page</Button>.
             </p>
-            {#if anyOrgFree && billingPlan === BillingPlan.PRO}
-                <Alert type="warning" class="u-margin-block-16">
-                    You are limited to one {tierToPlan(BillingPlan.FREE).name} organization per account.
-                    Consider upgrading or deleting <Button
-                        link
-                        href={`${base}/organization-${anyOrgFree.$id}`}>{anyOrgFree.name}</Button
-                    >.
-                </Alert>
+            {#if !selfService}
+                <Alert class="u-position-relative u-margin-block-start-16" type="info"
+                    >Your contract is not eligible for manual changes. Please reach out to schedule
+                    a call or setup a dialog.</Alert>
             {/if}
-            <ul
-                class="u-flex u-gap-16 u-margin-block-start-8"
-                class:u-margin-block-start-16={anyOrgFree && billingPlan === BillingPlan.PRO}
-                style="--p-grid-item-size:16em; --p-grid-item-size-small-screens:16rem; --grid-gap: 1rem;">
-                <li class="u-flex-basis-50-percent">
-                    <LabelCard
-                        name="plan"
-                        bind:group={billingPlan}
-                        disabled={!!anyOrgFree}
-                        value="tier-0"
-                        tooltipShow={!!anyOrgFree}
-                        tooltipText="You are limited to 1 Free organization per account.">
-                        <svelte:fragment slot="custom" let:disabled>
-                            <div
-                                class="u-flex u-flex-vertical u-gap-4 u-width-full-line"
-                                class:u-opacity-50={disabled}>
-                                <h4 class="body-text-2 u-bold">
-                                    {tierFree.name}
-                                    {#if $organization.billingPlan === BillingPlan.FREE}
-                                        <span class="inline-tag">Current plan</span>
-                                    {/if}
-                                </h4>
-                                <p class="u-color-text-gray u-small">{tierFree.description}</p>
-                                <p>
-                                    {formatCurrency(freePlan?.price ?? 0)}
-                                </p>
-                            </div>
-                        </svelte:fragment>
-                    </LabelCard>
-                </li>
+            <PlanSelection
+                bind:billingPlan
+                bind:selfService
+                anyOrgFree={!!anyOrgFree}
+                class={anyOrgFree && billingPlan !== BillingPlan.FREE
+                    ? 'u-margin-block-start-16'
+                    : ''} />
 
-                <li class="u-flex-basis-50-percent">
-                    <LabelCard name="plan" bind:group={billingPlan} value="tier-1">
-                        <svelte:fragment slot="custom">
-                            <div class="u-flex u-flex-vertical u-gap-4 u-width-full-line">
-                                <h4 class="body-text-2 u-bold">
-                                    {tierPro.name}
-                                    {#if $organization.billingPlan === BillingPlan.PRO}
-                                        <span class="inline-tag">Current plan</span>
-                                    {/if}
-                                </h4>
-                                <p class="u-color-text-gray u-small">
-                                    {tierPro.description}
-                                </p>
-                                <p>
-                                    {formatCurrency(proPlan?.price ?? 0)} per member/month + usage
-                                </p>
-                            </div>
-                        </svelte:fragment>
-                    </LabelCard>
-                </li>
-            </ul>
             {#if isDowngrade}
-                <PlanExcess tier={BillingPlan.FREE} class="u-margin-block-start-24" />
+                {#if billingPlan === BillingPlan.FREE}
+                    <PlanExcess
+                        tier={BillingPlan.FREE}
+                        class="u-margin-block-start-24"
+                        members={data?.members?.total ?? 0} />
+                {:else if billingPlan === BillingPlan.PRO && $organization.billingPlan === BillingPlan.SCALE}
+                    {@const extraMembers = collaborators?.length ?? 0}
+                    <Alert type="error" class="u-margin-block-start-24">
+                        <svelte:fragment slot="title">
+                            Your monthly payments will be adjusted for the Pro plan
+                        </svelte:fragment>
+                        After switching plans,
+                        <b
+                            >you will be charged {formatCurrency(
+                                extraMembers *
+                                    ($plansInfo?.get(billingPlan)?.addons?.member?.price ?? 0)
+                            )} monthly for {extraMembers} team members.</b> This will be reflected in
+                        your next invoice.
+                    </Alert>
+                {/if}
             {/if}
-            {#if billingPlan === BillingPlan.PRO && $organization.billingPlan !== BillingPlan.PRO}
+            <!-- Show email input if upgrading from free plan -->
+            {#if billingPlan !== BillingPlan.FREE && $organization.billingPlan === BillingPlan.FREE}
                 <FormList class="u-margin-block-start-16">
                     <InputTags
                         bind:tags={collaborators}
                         label="Invite members by email"
-                        tooltip="Invited members will have access to all services and payment data within your organization"
+                        popover={Default}
                         placeholder="Enter email address(es)"
                         validityRegex={emailRegex}
                         validityMessage="Invalid email address"
@@ -344,7 +314,7 @@
                     </Button>
                 {/if}
             {/if}
-            {#if !isUpgrade && billingPlan === BillingPlan.FREE && $organization.billingPlan !== BillingPlan.FREE}
+            {#if isDowngrade}
                 <FormList class="u-margin-block-start-24">
                     <InputSelect
                         id="reason"
@@ -355,6 +325,7 @@
                         bind:value={feedbackDowngradeReason} />
                     <InputTextarea
                         id="comment"
+                        required
                         label="If you need to elaborate, please do so here"
                         placeholder="Enter feedback"
                         bind:value={feedbackMessage} />
@@ -362,13 +333,14 @@
             {/if}
         </Form>
         <svelte:fragment slot="aside">
-            {#if billingPlan !== BillingPlan.FREE && $organization.billingPlan !== BillingPlan.PRO}
+            {#if billingPlan !== BillingPlan.FREE && $organization.billingPlan !== billingPlan && $organization.billingPlan !== BillingPlan.CUSTOM}
                 <EstimatedTotalBox
                     {billingPlan}
                     {collaborators}
                     bind:couponData
-                    bind:billingBudget />
-            {:else}
+                    bind:billingBudget
+                    {isDowngrade} />
+            {:else if $organization.billingPlan !== BillingPlan.CUSTOM}
                 <PlanComparisonBox downgrade={isDowngrade} />
             {/if}
         </svelte:fragment>
@@ -379,7 +351,7 @@
         <Button
             fullWidthMobile
             on:click={() => formComponent.triggerSubmit()}
-            disabled={$isSubmitting || isButtonDisabled}>
+            disabled={$isSubmitting || isButtonDisabled || !selfService}>
             Change plan
         </Button>
     </WizardSecondaryFooter>

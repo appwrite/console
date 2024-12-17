@@ -7,6 +7,7 @@
     import UpdateSessionAlerts from './updateSessionAlerts.svelte';
     import UpdateSessionLength from './updateSessionLength.svelte';
     import UpdateSessionsLimit from './updateSessionsLimit.svelte';
+    import UpdateMembershipPrivacy from './updateMembershipPrivacy.svelte';
     import UpdateUsersLimit from './updateUsersLimit.svelte';
 </script>
 
@@ -19,4 +20,5 @@
     <UpdatePersonalDataCheck />
     <UpdateSessionAlerts />
     <UpdateMockNumbers />
+    <UpdateMembershipPrivacy />
 </Container>

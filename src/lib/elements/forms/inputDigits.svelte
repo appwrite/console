@@ -38,6 +38,21 @@
         }
     });
 
+    /**
+     * Clears the input fields and moves the focus to the first input.
+     * Usually used when resetting fields on auth fails, etc.
+     */
+    export function clearInputsAndRefocus() {
+        value = '';
+        autoSubmitted = false;
+
+        if (element) {
+            const inputs = element.querySelectorAll('input');
+            inputs.forEach((input) => (input.value = ''));
+            if (autofocus) inputs[0].focus();
+        }
+    }
+
     onMount(() => {
         const interval = setInterval(() => {
             const input = element.querySelector('input');
@@ -71,7 +86,7 @@
 </FormItem>
 
 <style lang="scss">
-    @import '@appwrite.io/pink/src/abstract/variables/_devices.scss';
+    @use '@appwrite.io/pink/src/abstract/variables/devices';
 
     /* Default (including mobile) */
     ol {
@@ -84,7 +99,7 @@
     }
 
     /* for smaller screens */
-    @media #{$break2open} {
+    @media #{devices.$break2open} {
         ol {
             gap: 1rem;
 

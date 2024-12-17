@@ -22,6 +22,8 @@
     import { BillingPlan } from '$lib/constants';
     import { trackEvent } from '$lib/actions/analytics';
     import { upgradeURL } from '$lib/stores/billing';
+    import { Pill } from '$lib/elements';
+    import { tooltip } from '$lib/actions/tooltip';
 
     let offset = 0;
     let creditList: CreditList = {
@@ -51,6 +53,28 @@
             Query.limit(limit),
             Query.offset(offset)
         ]);
+        creditList = {
+            ...creditList,
+            credits: creditList.credits
+                .map((credit) => {
+                    const expiration = new Date(credit.expiration);
+                    return {
+                        ...credit,
+                        status: expiration < new Date() ? 'expired' : credit.status
+                    };
+                })
+                .sort((creditA, creditB) => {
+                    // Sort non-expired credits before expired ones
+                    if (creditA.status === 'expired' && creditB.status !== 'expired') return 1;
+                    if (creditA.status !== 'expired' && creditB.status === 'expired') return -1;
+
+                    // If both are non-expired or both are expired, sort by expiration date (soonest first)
+                    return (
+                        new Date(creditA.expiration).getTime() -
+                        new Date(creditB.expiration).getTime()
+                    );
+                })
+        };
     }
 
     $: if (offset !== null) {
@@ -112,10 +136,26 @@
                                     {formatCurrency(credit.total)}
                                 </TableCellText>
                                 <TableCellText title="remaining">
-                                    {formatCurrency(credit.credits)}
+                                    {#if credit.status === 'expired'}
+                                        <span
+                                            style="text-decoration: line-through;"
+                                            class:u-hide={credit.credits === 0}>
+                                            {formatCurrency(credit.credits)}</span> $0.00
+                                    {:else}
+                                        {formatCurrency(credit.credits)}
+                                    {/if}
                                 </TableCellText>
                                 <TableCellText title="expiry date">
-                                    {toLocaleDate(credit.expiration)}
+                                    {#if credit.status === 'expired'}
+                                        <span
+                                            use:tooltip={{
+                                                content: toLocaleDate(credit.expiration)
+                                            }}>
+                                            <Pill>Expired</Pill>
+                                        </span>
+                                    {:else}
+                                        {toLocaleDate(credit.expiration)}
+                                    {/if}
                                 </TableCellText>
                             </TableRow>
                         {/each}

@@ -5,6 +5,7 @@
     import { Button, Form, FormItem, FormItemPart } from '$lib/elements/forms';
     import { sdk } from '$lib/stores/sdk';
     import { project } from '../../store';
+    import { upgradeURL } from '$lib/stores/billing';
     import { addNotification } from '$lib/stores/notifications';
     import { invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
@@ -21,25 +22,23 @@
 
     let numbers: Models.MockNumber[] = $project?.authMockNumbers ?? [];
     let initialNumbers = [];
-    let projectId: string = $project.$id;
 
     $: initialNumbers = $project?.authMockNumbers?.map((num) => ({ ...num })) ?? [];
     $: isSubmitDisabled = JSON.stringify(numbers) === JSON.stringify(initialNumbers);
 
-    // temporarily enable the component for design review
     let isComponentDisabled: boolean =
-        (false && isSelfHosted) || (isCloud && $organization?.billingPlan === BillingPlan.FREE);
+        isSelfHosted || (isCloud && $organization?.billingPlan === BillingPlan.FREE);
     let emptyStateTitle: string = isSelfHosted
         ? 'Available on Appwrite Cloud'
         : 'Upgrade to add mock phone numbers';
     let emptyStateDescription: string = isSelfHosted
-        ? 'Sign up to Cloud to add mock phone numbers to your projects.'
+        ? 'Sign up for Cloud to add mock phone numbers to your projects.'
         : 'Upgrade to a Pro plan to add mock phone numbers to your project.';
     let cta: string = isSelfHosted ? 'Sign up' : 'Upgrade plan';
 
     async function updateMockNumbers() {
         try {
-            await sdk.forConsole.projects.updateMockNumbers(projectId, numbers);
+            await sdk.forConsole.projects.updateMockNumbers($project.$id, numbers);
             await invalidate(Dependencies.PROJECT);
             addNotification({
                 type: 'success',
@@ -88,7 +87,7 @@
             Generate <b>fictional</b> numbers to simulate phone verification when testing demo
             accounts for submitting your application to the App Store or Google Play.
             <a
-                href="https://appwrite.io/docs/products/auth/security#mock-numbers"
+                href="https://appwrite.io/docs/products/auth/security#mock-phone-numbers"
                 target="_blank"
                 class="u-underline"
                 rel="noopener noreferrer">
@@ -138,8 +137,8 @@
                             class="u-margin-block-start-32"
                             secondary
                             fullWidth
-                            href="https://cloud.appwrite.io/register"
-                            external
+                            external={isSelfHosted}
+                            href={isCloud ? $upgradeURL : 'https://cloud.appwrite.io/register'}
                             on:click={() => {
                                 trackEvent('click_cloud_signup', {
                                     from: 'button',

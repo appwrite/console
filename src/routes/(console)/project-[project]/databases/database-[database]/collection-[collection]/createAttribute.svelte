@@ -5,12 +5,11 @@
     import { goto, invalidate } from '$app/navigation';
     import { Dependencies } from '$lib/constants';
     import { page } from '$app/stores';
-    import { addNotification, dismissAllNotifications } from '$lib/stores/notifications';
+    import { addNotification } from '$lib/stores/notifications';
     import { base } from '$app/paths';
     import type { Attributes } from './store';
     import { Submit, trackEvent, trackError } from '$lib/actions/analytics';
     import { preferences } from '$lib/stores/preferences';
-    import { feedback } from '$lib/stores/feedback';
 
     export let showCreate = false;
     export let selectedOption: Option['name'] = null;
@@ -42,37 +41,6 @@
                 type: 'success',
                 message: `Attribute ${key ?? data?.key} has been created`
             });
-            if ($option.type === 'relationship') {
-                let counter = localStorage.getItem('createRelationshipCounter');
-
-                if (counter) {
-                    const parsedCounter = parseInt(counter);
-                    if (parsedCounter === 2) {
-                        addNotification({
-                            type: 'info',
-                            icon: 'question-mark-circle',
-                            message: `How is your experience with our new "Relationships" feature? We'd love to hear your feedback!`,
-                            timeout: 15000,
-                            buttons: [
-                                {
-                                    name: 'Give Feedback',
-                                    method: () => {
-                                        feedback.toggleFeedback();
-                                        dismissAllNotifications();
-                                    }
-                                }
-                            ]
-                        });
-                    } else if (parsedCounter < 2) {
-                        localStorage.setItem(
-                            'createRelationshipCounter',
-                            (parsedCounter + 1).toString()
-                        );
-                    }
-                } else {
-                    localStorage.setItem('createRelationshipCounter', '1');
-                }
-            }
             showCreate = false;
             trackEvent(Submit.AttributeCreate);
         } catch (e) {
@@ -122,12 +90,12 @@
                     autofocus
                     required />
 
-                <div class="u-flex u-gap-4 u-margin-block-start-8 u-small u-cross-center">
+                <div class="u-flex u-gap-4 u-margin-block-start-8 u-small">
                     <span
                         class="icon-info u-cross-center u-margin-block-start-2 u-line-height-1 u-icon-small"
                         aria-hidden="true" />
                     <span class="text u-line-height-1-5">
-                        Allowed characters: alphanumeric, hyphen, non-leading underscore, period
+                        Allowed characters: alphanumeric, hyphen, non-leading underscore, period.
                     </span>
                 </div>
             </div>

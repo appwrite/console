@@ -4,7 +4,7 @@
     export let content = '';
     export let classes = '';
 
-    function getIntials(name: string) {
+    function getInitials(name: string) {
         let words = name.split(' ');
         // If there is only one word, split it by underscore
         if (words.length === 1) {
@@ -32,7 +32,7 @@
 
 <div class="phone {classes}">
     <div class="avatar-initials u-text-center u-width-full-line u-line-height-1-5 u-medium u-bold">
-        {getIntials($project.name)}
+        {getInitials($project.name)}
     </div>
     <div class="project-name u-text-center u-x-small u-width-full-line">{$project.name}</div>
     <div class="chat u-text-center u-width-full-line">

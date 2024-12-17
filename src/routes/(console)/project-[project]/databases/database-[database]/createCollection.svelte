@@ -70,7 +70,12 @@
                     </span></Pill>
             </div>
         {:else}
-            <CustomId bind:show={showCustomId} name="Collection" bind:id autofocus={false} />
+            <CustomId
+                autofocus
+                bind:show={showCustomId}
+                name="Collection"
+                bind:id
+                fullWidth={true} />
         {/if}
     </FormList>
     <svelte:fragment slot="footer">

@@ -8,16 +8,16 @@
     import { addNotification } from '$lib/stores/notifications';
     import { sdk } from '$lib/stores/sdk';
     import { project } from '../../store';
+    import { tick } from 'svelte';
 
-    const projectId = $project.$id;
-    let passwordHistory = $project.authPasswordHistory < 1 ? 5 : $project.authPasswordHistory;
-    let passwordHistoryEnabled = ($project.authPasswordHistory ?? 0) != 0;
+    let passwordHistory = $project?.authPasswordHistory < 1 ? 5 : $project?.authPasswordHistory;
+    let passwordHistoryEnabled = ($project?.authPasswordHistory ?? 0) !== 0;
     let initialPasswordHistoryEnabled = passwordHistoryEnabled;
 
     async function updatePasswordHistoryLimit() {
         try {
             await sdk.forConsole.projects.updateAuthPasswordHistory(
-                projectId,
+                $project.$id,
                 passwordHistoryEnabled ? passwordHistory : 0
             );
             await invalidate(Dependencies.PROJECT);
@@ -34,6 +34,14 @@
             });
             trackError(error, Submit.AuthPasswordHistoryUpdate);
         }
+    }
+
+    let maxSessionInputField: InputNumber | null = null;
+
+    $: if (passwordHistoryEnabled && maxSessionInputField) {
+        tick().then(() => {
+            maxSessionInputField.addInputFocus();
+        });
     }
 </script>
 
@@ -60,6 +68,7 @@
                     min={1}
                     id="max-session"
                     label="Limit"
+                    bind:this={maxSessionInputField}
                     disabled={!passwordHistoryEnabled}
                     bind:value={passwordHistory} />
             </FormList>
@@ -67,8 +76,8 @@
 
         <svelte:fragment slot="actions">
             <Button
-                disabled={(passwordHistory === $project.authPasswordHistory ||
-                    $project.authPasswordHistory === 0) &&
+                disabled={(passwordHistory === $project?.authPasswordHistory ||
+                    $project?.authPasswordHistory === 0) &&
                     initialPasswordHistoryEnabled === passwordHistoryEnabled}
                 submit>Update</Button>
         </svelte:fragment>

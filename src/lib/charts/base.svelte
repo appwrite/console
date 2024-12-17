@@ -2,7 +2,7 @@
     import { registerTheme, use, init } from 'echarts/core';
     import { onDestroy, onMount } from 'svelte';
     import { app } from '$lib/stores/app';
-    import { defaultConfig } from './config';
+    import { dailyFormat, hourlyFormat, defaultConfig } from './config';
     import base from './base.json';
     import light from './light.json';
     import dark from './dark.json';
@@ -16,12 +16,14 @@
 
     export let options: EChartsOption;
     export let series: (BarSeriesOption | LineSeriesOption)[];
+    export let formatted: 'days' | 'hours' = 'days';
 
     let chart: ECharts;
     let container: HTMLDivElement;
 
     $: option = {
         ...defaultConfig,
+        ...(formatted === 'days' ? dailyFormat : hourlyFormat),
         ...options,
         series
     };

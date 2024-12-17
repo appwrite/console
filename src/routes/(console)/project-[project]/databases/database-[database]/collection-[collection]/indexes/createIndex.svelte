@@ -83,12 +83,9 @@
             });
             trackEvent(Submit.IndexCreate);
             showCreateIndex = false;
-        } catch (error) {
-            addNotification({
-                message: error.message,
-                type: 'error'
-            });
-            trackError(error, Submit.IndexCreate);
+        } catch (err) {
+            error = err.message;
+            trackError(err, Submit.IndexCreate);
         }
     }
 

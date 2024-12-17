@@ -11,6 +11,7 @@
     export let couponData: Partial<Coupon>;
     export let billingBudget: number;
     export let fixedCoupon = false; // If true, the coupon cannot be removed
+    export let isDowngrade = false;
 
     const today = new Date();
     const billingPayDate = new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000);
@@ -18,7 +19,7 @@
     let budgetEnabled = false;
 
     $: currentPlan = $plansInfo.get(billingPlan);
-    $: extraSeatsCost = (collaborators?.length ?? 0) * (currentPlan?.addons?.member?.price ?? 0);
+    $: extraSeatsCost = 0; // 0 untile trial period later replace (collaborators?.length ?? 0) * (currentPlan?.addons?.member?.price ?? 0);
     $: grossCost = currentPlan.price + extraSeatsCost;
     $: estimatedTotal =
         couponData?.status === 'active'
@@ -41,8 +42,8 @@
         <p class="text">{formatCurrency(currentPlan.price)}</p>
     </span>
     <span class="u-flex u-main-space-between">
-        <p class="text">Additional seats ({collaborators?.length})</p>
-        <p class="text">
+        <p class="text" class:u-bold={isDowngrade}>Additional seats ({collaborators?.length})</p>
+        <p class="text" class:u-bold={isDowngrade}>
             {formatCurrency(extraSeatsCost)}
         </p>
     </span>
@@ -51,17 +52,28 @@
     {/if}
     <div class="u-sep-block-start" />
     <span class="u-flex u-main-space-between">
-        <p class="text">Estimated total</p>
+        <p class="text">
+            Upcoming charge<br /><span class="u-color-text-gray"
+                >Due on {!currentPlan.trialDays
+                    ? toLocaleDate(billingPayDate.toString())
+                    : toLocaleDate(trialEndDate.toString())}</span>
+        </p>
         <p class="text">
             {formatCurrency(estimatedTotal)}
         </p>
     </span>
 
     <p class="text u-margin-block-start-16">
-        Your payment method will be charged this amount plus usage fees every 30 days {!currentPlan.trialDays
-            ? `starting ${toLocaleDate(billingPayDate.toString())}`
-            : ` after your trial period ends on ${toLocaleDate(trialEndDate.toString())}`}.
+        You'll pay <span class="u-bold">{formatCurrency(estimatedTotal)}</span> now, with our first
+        billing cycle starting on
+        <span class="u-bold"
+            >{!currentPlan.trialDays
+                ? toLocaleDate(billingPayDate.toString())
+                : toLocaleDate(trialEndDate.toString())}</span
+        >. Once your credits run out, you'll be charged
+        <span class="u-bold">{formatCurrency(currentPlan.price)}</span> plus usage fees every 30 days.
     </p>
+
     <FormList class="u-margin-block-start-24">
         <InputChoice
             type="switchbox"

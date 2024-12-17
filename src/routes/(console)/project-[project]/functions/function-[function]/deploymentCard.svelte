@@ -106,14 +106,14 @@
 </CardGrid>
 
 <style lang="scss">
-    @import '@appwrite.io/pink/src/abstract/variables/_devices.scss';
+    @use '@appwrite.io/pink/src/abstract/variables/devices';
 
     .stats-grid-box {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
     }
 
-    @media #{$break3open} {
+    @media #{devices.$break3open} {
         .stats-grid-box {
             grid-template-columns: repeat(4, 1fr);
         }

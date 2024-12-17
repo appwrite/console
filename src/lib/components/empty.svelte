@@ -5,14 +5,29 @@
     import EmptyDark from '$lib/images/empty-dark.svg';
     import { Heading } from '.';
     import { trackEvent } from '$lib/actions/analytics';
+    import { createEventDispatcher } from 'svelte';
 
     export let single = false;
+    export let isCard = true;
     export let noMedia = false;
     export let target: string = null;
     export let href: string = null;
     export let marginTop = false;
+    export let allowCreate = true;
+
+    const dispatch = createEventDispatcher();
+
+    function onClick(event) {
+        if (!allowCreate) {
+            return;
+        }
+        dispatch('click', event);
+    }
 
     function track() {
+        if (!allowCreate) {
+            return;
+        }
         if (target) {
             trackEvent(`click_create_${target}`, {
                 from: 'empty'
@@ -22,20 +37,22 @@
 </script>
 
 {#if single}
-    <article class="card u-grid u-cross-center u-width-full-line common-section">
+    <article class:card={isCard} class="u-grid u-cross-center u-width-full-line common-section">
         <div
             class="u-flex u-flex-vertical u-cross-center u-gap-24 u-width-full-line u-overflow-hidden u-padding-block-8">
             {#if !noMedia}
                 <button
                     type="button"
-                    on:click|preventDefault
                     on:click={track}
+                    on:click={onClick}
                     aria-label="create {target}">
-                    {#if $app.themeInUse === 'dark'}
-                        <img src={EmptyDark} alt="create" aria-hidden="true" height="242" />
-                    {:else}
-                        <img src={EmptyLight} alt="create" aria-hidden="true" height="242" />
-                    {/if}
+                    <slot name="empty-media">
+                        {#if $app.themeInUse === 'dark'}
+                            <img src={EmptyDark} alt="create" aria-hidden="true" height="242" />
+                        {:else}
+                            <img src={EmptyLight} alt="create" aria-hidden="true" height="242" />
+                        {/if}
+                    </slot>
                 </button>
             {/if}
             <slot>
@@ -54,9 +71,11 @@
                         text
                         event="empty_documentation"
                         ariaLabel="create {target}">Documentation</Button>
-                    <Button secondary on:click on:click={track}>
-                        Create {target}
-                    </Button>
+                    {#if allowCreate}
+                        <Button secondary on:click on:click={track}>
+                            Create {target}
+                        </Button>
+                    {/if}
                 </div>
             </slot>
         </div>
@@ -67,7 +86,8 @@
         on:click={track}
         aria-label="create"
         type="button"
-        class="card u-grid u-cross-center u-width-full-line dashed"
+        class:card={isCard}
+        class="u-grid u-cross-center u-width-full-line dashed"
         class:common-section={marginTop}>
         <div class="u-flex u-cross-center u-flex-vertical u-main-center u-flex">
             <div class="common-section">
