@@ -61,7 +61,7 @@
     {#each supportOptions as option}
         <Card
             isTile
-            class="restore-modal-inner-card u-flex u-flex-vertical u-gap-12"
+            class="support-option-card u-flex u-flex-vertical u-gap-12"
             style="border-radius: var(--border-radius-small, 8px); padding: 0.65rem;">
             <div class="u-flex u-flex-vertical u-gap-4">
                 <h4 class="body-text-2 u-bold">{option.label}</h4>
@@ -142,18 +142,21 @@
     </div>
 </section>
 
-<style>
+<style lang="scss">
     .support-section {
         gap: 1rem;
         padding: 20px;
         display: flex;
         flex-direction: column;
-    }
 
-    @media (max-width: 768px) {
-        .support-section {
+        @media (max-width: 768px) {
             gap: 1.25rem;
             padding: 0.5rem;
         }
+    }
+
+    :global(.theme-light .support-option-card) {
+        border: 1px solid var(--color-border-neutral, #ededf0);
+        background: var(--color-bgColor-neutral-default, #fafafb);
     }
 </style>
