@@ -73,10 +73,6 @@
 <div
     class="page-container u-flex-vertical u-cross-child-center u-cross-center u-margin-block-start-96">
     {#if isLoading}
-        <button
-            on:click={() => {
-                startAnimation = !startAnimation;
-            }}>toggle</button>
         <Loading {startAnimation} />
     {:else}
         <img
