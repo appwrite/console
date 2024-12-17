@@ -234,6 +234,7 @@
             </div>
         {:else}
             <CustomId
+                autofocus
                 bind:show={showCustomId}
                 name="Message"
                 bind:id={$messageParams[$providerType].messageId}
